@@ -1,0 +1,14 @@
+pipeline {
+  agent any
+  stages {
+    stage('Lint')  { steps { sh '(pylint3 lineage > pylint.log || echo "pylint3 exited with $?")' } }
+    stage('Report') {
+      steps {
+        step([$class:'TasksPublisher', canComputeNew:false, defaultEncoding:'', excludePattern:'',
+          healthy:'', high:'TODO,FIXME,XXX', low:'', normal:'CITE', pattern:'**/*.py, **/*.md', unHealthy:''])
+        step([$class:'WarningsPublisher', parserConfigurations: [[parserName:'PYLint', pattern:'pylint.log']],
+          unstableTotalAll:'1000', usePreviousBuildAsReference:true])
+      }
+    }
+  }
+}
