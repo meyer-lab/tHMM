@@ -6,23 +6,21 @@ using namespace std;
 
 class cell {
 	double tstop; // Time that the cell lifespan ends
-	cell *parent; // Pointer to the cell's parent
-	std::array<cell *, 2> children; // Pointer to the cells children
+	size_t parent; // Pointer to the cell's parent
+	std::array<size_t, 2> children; // Pointer to the cells children
 
 public:
 	explicit cell(double tstartIn, cell *parentIn) : tstart(tstartIn), parent(parentIn), latent(0) {
 		tstop = std::numeric_limits<double>::quiet_NaN();
 	}
 
-	std::array<cell *, 2> setDivide(double tstopIn) {
+	void setDivided(double tstopIn, std::array<size_t, 2> childrenIn) {
 		// Check that tstop isn't already set
 		// Check that children isn't already set
 		// 
-		
 
 		tstop = tstopIn;
-
-		return children;
+		children = childrenIn;
 	}
 
 	void setDead(double tstopIn) {
