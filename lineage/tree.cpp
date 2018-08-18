@@ -23,7 +23,7 @@ public:
 		weib = std::make_unique<weibT>(wA, wB);
 	}
 
-	std::pair<bool, float> genVal() {
+	std::pair<bool, float> operator() (){
 		return std::make_pair((*bern)(gen), (*weib)(gen));
 	}
 };
@@ -40,15 +40,17 @@ public:
 	}
 
 	void setDivided(float tstopIn, std::array<size_t, 2> childrenIn) {
-		// Check that tstop isn't already set
-		// Check that children isn't already set
-		// 
+		if (!isnan(tstop))
+			throw runtime_error("Set cell to divide when it already had an end event.");
 
 		tstop = tstopIn;
 		children = childrenIn;
 	}
 
 	void setDead(float tstopIn) {
+		if (!isnan(tstop))
+			throw runtime_error("Set cell to die when it already had an end event.");
+
 		tstop = tstopIn;
 	}
 
@@ -69,9 +71,6 @@ public:
 	}
 
 	void setDivide(size_t idx, float tdivide) {
-		if (!isnan(tree[idx].getTstop()))
-			throw runtime_error("Set cell to divide when it already had an end event.");
-
 		tree.emplace_back(tdivide, idx);
 		tree.emplace_back(tdivide, idx);
 
@@ -79,10 +78,44 @@ public:
 	}
 
 	void setDead(size_t idx, float tdead) {
-		if (!isnan(tree[idx].getTstop()))
-			throw runtime_error("Set cell to divide when it already had an end event.");
-
 		tree[idx].setDead(tdead);
+	}
+
+	/**
+	 * @brief      Determines an end event for the current cell.
+	 *
+	 * @param[in]  idx      The cell of interest.
+	 * @param      outcome  The distribution of outcomes.
+	 */
+	void setEnd(size_t idx, cellOutcome &outcome) {
+		if (!isnan(tree[idx].getTstop()))
+			throw runtime_error("Set cell event when it already had an end event.");
+
+		std::pair<bool, float> outt = outcome();
+
+		if (outt.first) {
+			setDivide(idx, outt.second);
+		} else {
+			setDead(idx, outt.second);
+		}
+	}
+
+	/**
+	 * @brief      Make sure all cells have end events up to time t. (No latent states.)
+	 *
+	 * @param[in]  t        The time point of interest.
+	 * @param      outcome  The distribution of outcomes.
+	 */
+	void fillToT(float t, cellOutcome &outcome) {
+		std::vector<cell>::iterator it;
+
+		it = findUnfinished(t);
+
+		while (it != tree.end()) {
+			setEnd(it - tree.begin(), outcome);
+
+			it = findUnfinished(t);
+		}
 	}
 
 	/**
