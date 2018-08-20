@@ -35,7 +35,7 @@ class cell {
 	std::array<size_t, 2> children; // Pointer to the cell's children
 
 public:
-	explicit cell(float tstartIn, size_t parentIn) : tstart(tstartIn), parent(parentIn), latent(0) {
+	explicit cell(float tstartIn, size_t parentIn) : parent(parentIn), latent(0), tstart(tstartIn) {
 		tstop = std::numeric_limits<float>::quiet_NaN();
 	}
 
@@ -52,6 +52,10 @@ public:
 			throw runtime_error("Set cell to die when it already had an end event.");
 
 		tstop = tstopIn;
+	}
+
+	size_t getParent() {
+		return parent;
 	}
 
 	inline float getTstop() {
