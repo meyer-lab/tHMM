@@ -10,4 +10,7 @@ test: cppcheck
 
 clean:
 	rm -f testResults.xml cppcheck cppcheck.gcda cppcheck.gcno coverage.info
-	rm -rf cppcheck.dSYM coverage.html
+	rm -rf cppcheck.dSYM coverage.html html
+
+docs: 
+	doxygen doxygen.cfg

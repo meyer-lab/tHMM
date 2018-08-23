@@ -23,6 +23,7 @@ public:
 
 		suiteOfTests->addTest(new CppUnit::TestCaller<interfaceTestCase>("testCellInit", &interfaceTestCase::testCellInit));
 		suiteOfTests->addTest(new CppUnit::TestCaller<interfaceTestCase>("testCellDoubleEndThrow", &interfaceTestCase::testCellDoubleEndThrow));
+		suiteOfTests->addTest(new CppUnit::TestCaller<interfaceTestCase>("testFill", &interfaceTestCase::testFill));
 
 		return suiteOfTests;
 	}
@@ -40,6 +41,17 @@ protected:
 		cellTest.setDead(2.0);
 
 		CPPUNIT_ASSERT_THROW(cellTest.setDivided(2.0, {{3, 4}}), std::runtime_error);
+	}
+
+	void testFill() {
+		cellOutcome dist(1.0, 1.0, 100.0);
+
+		tree TT;
+		TT.addUnrooted(0.0);
+
+		TT.fillToT(100.0, dist);
+
+		CPPUNIT_ASSERT(TT.getNcells() > 1);
 	}
 };
 

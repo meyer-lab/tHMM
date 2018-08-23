@@ -10,7 +10,7 @@ pipeline {
     stage('Test'){
       steps {
         sh 'make test'
-        //sh 'make docs'
+        sh 'make docs'
         sh 'valgrind --xml=yes --xml-file=valgrind.xml --track-origins=yes --leak-check=yes ./cppcheck'
       }
     }
@@ -34,6 +34,12 @@ pipeline {
           publishResultsForFailedBuilds: true,
           failBuildOnMissingReports: true,
           failBuildOnInvalidReports: true])
+        publishHTML([
+          allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false,
+          reportDir: 'html',
+          reportFiles: 'index.html',
+          reportName: 'Documentation',
+          reportTitles: ''])
         publishHTML([
           allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false,
           reportDir: 'coverage.html',
