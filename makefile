@@ -3,10 +3,9 @@
 cppcheck: lineage/cppcheck.cpp lineage/tree.hpp
 	clang++ -g --std=c++17 -coverage -mavx -march=native -Wall -Wextra -lcppunit lineage/cppcheck.cpp -o $@
 
-
 test: cppcheck
 	./cppcheck
-	lcov --capture --directory ./ --output-file coverage.info --no-external -q
+	lcov -c -d ./ -o coverage.info --no-external -q
 	genhtml coverage.info --output-directory coverage.html
 
 clean:

@@ -11,7 +11,7 @@ pipeline {
       steps {
         sh 'make test'
         //sh 'make docs'
-        sh 'valgrind --xml=yes --xml-file=valgrind.xml --track-origins=yes --leak-check=yes cppcheck'
+        sh 'valgrind --xml=yes --xml-file=valgrind.xml --track-origins=yes --leak-check=yes ./cppcheck'
       }
     }
     stage('Lint')  { steps { sh '(pylint3 lineage > pylint.log || echo "pylint3 exited with $?")' } }
