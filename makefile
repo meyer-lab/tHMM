@@ -6,9 +6,9 @@ cppcheck: lineage/cppcheck.cpp lineage/tree.hpp
 
 test: cppcheck
 	./cppcheck
-	lcov --capture --output-file coverage.info --no-external -q
+	lcov --capture --directory ./ --output-file coverage.info --no-external -q
 	genhtml coverage.info --output-directory coverage.html
 
 clean:
 	rm -f testResults.xml cppcheck cppcheck.gcda cppcheck.gcno coverage.info
-	rm -rf cppcheck.dSYM
+	rm -rf cppcheck.dSYM coverage.html
