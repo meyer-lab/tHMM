@@ -1,7 +1,7 @@
 
 
 cppcheck: lineage/cppcheck.cpp lineage/tree.hpp
-	clang++ -g --std=c++17 -coverage -mavx -march=native -Wall -Wextra -lcppunit lineage/cppcheck.cpp -o $@
+	g++ -g --std=c++17 -coverage -mavx -march=native -Wall -Wextra -lcppunit lineage/cppcheck.cpp -o $@
 
 test: cppcheck
 	./cppcheck
