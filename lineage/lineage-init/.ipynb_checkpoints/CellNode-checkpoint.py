@@ -12,16 +12,16 @@ class CellNode:
         self.right = right
         self.parent = parent
     
-    def hasLeftChild(self):
+    def hasLeft(self):
         return self.left
 
-    def hasRightChild(self):
+    def hasRight(self):
         return self.right
 
-    def isLeftChild(self):
+    def isLeft(self):
         return self.parent and self.parent.left == self
 
-    def isRightChild(self):
+    def isRight(self):
         return self.parent and self.parent.right == self
 
     def isParent(self):
@@ -36,17 +36,18 @@ class CellNode:
     def hasBothChildren(self):
         return self.right and self.left
 
-    def replaceCellNodeData(self, key, value, leftChild, rightChild):
+    def replaceCellNodeData(self, key, startT, endT, fate, left, right):
         self.key = key
         self.startT = startT
         self.endT = endT
         self.tau = self.endT - self.startT
-        self.leftChild = lc
-        self.rightChild = rc
+        self.fate = fate
+        self.left = leftChild
+        self.right = rightChild
         if self.hasLeftChild():
-            self.leftChild.parent = self
+            self.left.parent = self
         if self.hasRightChild():
-            self.rightChild.parent = self
+            self.right.parent = self
 
 
 
