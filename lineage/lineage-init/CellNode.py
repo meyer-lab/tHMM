@@ -2,7 +2,7 @@
 # description: a file to hold the cell class
 
 class CellNode:
-    def __init__(self, key, startT, endT=None, fate=None, left=None, right=None, parent=None):
+    def __init__(self, key, startT, endT=-1, fate=None, left=None, right=None, parent=None):
         self.key = key
         self.startT = startT
         self.endT = endT
@@ -36,21 +36,10 @@ class CellNode:
     def hasBothChildren(self):
         return self.right and self.left
 
-    def replaceCellNodeData(self, key, startT, endT, fate, left, right):
-        self.key = key
-        self.startT = startT
-        self.endT = endT
-        self.tau = self.endT - self.startT
-        self.fate = fate
-        self.left = leftChild
-        self.right = rightChild
-        if self.hasLeftChild():
-            self.left.parent = self
-        if self.hasRightChild():
-            self.right.parent = self
-
     def calcTau(self):
         self.tau = self.endT - self.startT   # calculate tau here
+        if self.tau < 0:
+            
     
     def die(self, endT):
         """ Cell dies without dividing. """
