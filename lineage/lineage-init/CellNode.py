@@ -4,7 +4,7 @@
 import sys
 
 class CellNode:
-    def __init__(self, key, startT, endT=0-sys.float_info.epsilon, fate=True, left=None, right=None, parent=None):
+    def __init__(self, key=1, startT=0, endT=-sys.float_info.epsilon, fate=True, left=None, right=None, parent=None):
         ''' Instantiates a cell node. Only requires a key '''
         self.key = key
         self.startT = startT
@@ -53,14 +53,16 @@ class CellNode:
     
     def divide(self, endT):
         """ Cell life ends through division. """
+        self.endT = endT
         self.fate = True   # division
-        self.endT = endT   # mark endT
 
         # two daughter cells emerge at this time... not sure about 1st and 3rd arguments bc I don't know what "key" is and don't know what python's statement for "this" is.
-        
         # self is Python's way of denoting this, self can actually be any word, but common practice is to denote it as self
-        self.left = CellNode(self.key, endT, parent=self)
-        self.right = CellNode(self.key, endT, parent=self)
+        # key is a binary number, basically if a parent's key is 1, then it's two daughters will have value 10 and 11
+        # if a parent has key 11001, then it's two daughter's will have values 110010 and 110011
+        
+        self.left = CellNode(key=(self.key<<1), startT=endT, parent=self)
+        self.right = CellNode(key=(self.key<<1)+1, startT=endT, parent=self)
 
     
 
