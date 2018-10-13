@@ -2,14 +2,14 @@
 # description: a file to hold the cell class
 
 class CellNode:
-    def __init__(self, key, startT, parent=None):
+    def __init__(self, key, startT, endT=None, fate=None, left=None, right=None, parent=None):
         self.key = key
         self.startT = startT
-        # self.endT = endT
-        # self.tau = self.endT - self.startT # avoiding self.t, since that is a common function (i.e. transposing matrices)
-        # self.fate = fate
-        # self.left = left
-        # self.right = right
+        self.endT = endT
+        self.tau = self.endT - self.startT # avoiding self.t, since that is a common function (i.e. transposing matrices)
+        self.fate = fate
+        self.left = left
+        self.right = right
         self.parent = parent
     
     def hasLeft(self):
@@ -63,6 +63,8 @@ class CellNode:
         self.endT = endT   # mark endT
 
         # two daughter cells emerge at this time... not sure about 1st and 3rd arguments bc I don't know what "key" is and don't know what python's statement for "this" is.
+        
+        # self is Python's way of denoting this, self can actually be any word, but common practice is to denote it as self
         self.left = CellNode(self.key, endT, parent=self)
         self.right = CellNode(self.key, endT, parent=self)
 
