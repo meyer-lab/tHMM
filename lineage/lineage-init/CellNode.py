@@ -1,12 +1,17 @@
 # author : shakthi visagan (shak360), adam weiner (adamcweiner)
 # description: a file to hold the cell class
 
+import sys
+
 class CellNode:
-    def __init__(self, key, startT, endT=-1, fate=None, left=None, right=None, parent=None):
+    def __init__(self, key, startT, endT=0-sys.float_info.epsilon, fate=True, left=None, right=None, parent=None):
+        ''' Instantiates a cell node. Only requires a key '''
         self.key = key
         self.startT = startT
         self.endT = endT
         self.tau = self.endT - self.startT # avoiding self.t, since that is a common function (i.e. transposing matrices)
+        if self.tau <= 0:
+            print("Warning: your cell lifetime {} is a non-positive number".format(self.tau))
         self.fate = fate
         self.left = left
         self.right = right
@@ -38,13 +43,13 @@ class CellNode:
 
     def calcTau(self):
         self.tau = self.endT - self.startT   # calculate tau here
-        if self.tau < 0:
-            
+        if self.tau <= 0:
+            print("Warning: your cell lifetime {} is a non-positive number".format(self.tau))
     
     def die(self, endT):
         """ Cell dies without dividing. """
         self.fate = False   # no division
-        self.endT = endT   # mark endT
+        self.endT = endT    # mark endT
     
     def divide(self, endT):
         """ Cell life ends through division. """
