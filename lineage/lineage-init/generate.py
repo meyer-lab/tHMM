@@ -9,8 +9,12 @@ def generate(numCells, locBern, cGom, locGom):
     # put first cell in list
     out = [cell0]
     
+    print("length of out: " + str(len(out)))
+    
     # have cell divide/die according to distribution
-    for j in len(out) and j < numCells:   # for all cells (cap at numCells)
+    for j in range(len(out)):   # for all cells (cap at numCells)
+        if j == numCells:
+            break
         x = out[j]
         if x.isUnfinished():
             x.tau = sp.gompertz.rvs(cGom)
