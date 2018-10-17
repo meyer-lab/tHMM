@@ -10,7 +10,7 @@ def generate(numCells, locBern, cGom, locGom):
     out = [cell0]
     
     # have cell divide/die according to distribution
-    for j in len(out) && j < numCells:   # for all cells (cap at numCells)
+    for j in len(out) and j < numCells:   # for all cells (cap at numCells)
         x = out[j]
         if x.isUnfinished():
             x.tau = sp.gompertz.rvs(cGom)
@@ -23,8 +23,6 @@ def generate(numCells, locBern, cGom, locGom):
                 out.append(temp2)
             else:
                 x.die(x.endT)
-        
                 
-    
     # return the list at end
     return out

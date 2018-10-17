@@ -4,7 +4,7 @@
 import sys
 
 class CellNode:
-    def __init__(self, key, startT=0, endT=NaN, fate=True, left=None, right=None, parent=None):
+    def __init__(self, key, startT=0, endT=float('nan'), fate=True, left=None, right=None, parent=None):
         ''' Instantiates a cell node. Only requires a key '''
         self.key = key
         self.startT = startT
@@ -41,11 +41,11 @@ class CellNode:
 
     def calcTau(self):
         self.tau = self.endT - self.startT   # calculate tau here
-        if self.tau == NaN:
+        if self.tau == float('nan'):
             print("Warning: your cell lifetime {} is a non-positive number".format(self.tau))
     
     def isUnfinished(self):
-        return self.endT == NaN   # returns true when cell is still alive
+        return self.endT == float('nan')   # returns true when cell is still alive
     
     def die(self, endT):
         """ Cell dies without dividing. """
