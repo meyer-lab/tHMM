@@ -2,6 +2,7 @@
 # description: a file to hold the cell class
 
 import sys
+import math
 
 class CellNode:
     def __init__(self, key, startT=0, endT=float('nan'), fate=True, left=None, right=None, parent=None):
@@ -45,7 +46,7 @@ class CellNode:
             print("Warning: your cell lifetime {} is a non-positive number".format(self.tau))
     
     def isUnfinished(self):
-        return self.endT == float('nan')   # returns true when cell is still alive
+        return math.isnan(self.endT)   # returns true when cell is still alive
     
     def die(self, endT):
         """ Cell dies without dividing. """
