@@ -65,11 +65,11 @@ class CellNode:
         # if a parent has key 11001, then it's two daughter's will have values 110010 and 110011
         
         if self.isRootParent():
-            self.left = CellNode(key=(self.key<<1), gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal+0.5)
-            self.right = CellNode(key=((self.key<<1)+1), gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal-0.5)
+            self.left = CellNode(key=(self.key<<1), gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal+50)
+            self.right = CellNode(key=((self.key<<1)+1), gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal-50)
         else:
-            self.left = CellNode(key=(self.key<<1), gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal+(0.24**(self.gen))*2.49**(self.gen))
-            self.right = CellNode(key=((self.key<<1)+1), gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal-(0.24**(self.gen))*2.49**(self.gen))
+            self.left = CellNode(key=(self.key<<1), gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal+(0.55**(self.gen))*(1.1**(self.gen))*self.plotVal)
+            self.right = CellNode(key=((self.key<<1)+1), gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal-(0.55**(self.gen))*(1.1**(self.gen))*self.plotVal)
             
         
         return (self.left, self.right)
