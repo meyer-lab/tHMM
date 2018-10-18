@@ -33,7 +33,7 @@ class CellNode:
         else:
             isRight = self.parent.right is self and self.parent.left is not self
         return isRight 
-    
+
     def isParent(self):
         return self.left.parent is self and self.right.parent is self
 
@@ -47,15 +47,15 @@ class CellNode:
         self.tau = self.endT - self.startT   # calculate tau here
         if math.isnan(self.tau):
             print("Warning: your cell lifetime {} is a nan".format(self.tau))
-    
+
     def isUnfinished(self):
         return math.isnan(self.endT)   # returns true when cell is still alive
-    
+
     def die(self, endT):
         """ Cell dies without dividing. """
         self.fate = False   # no division
         self.endT = endT    # mark endT
-    
+
     def divide(self, endT):
         """ Cell life ends through division. """
         self.endT = endT
@@ -63,25 +63,15 @@ class CellNode:
 
         # key is a binary number, basically if a parent's key is 1, then it's two daughters will have value 10 and 11
         # if a parent has key 11001, then it's two daughter's will have values 110010 and 110011
-        
+
         if self.isRootParent():
             self.left = CellNode(key=(self.key<<1), gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal+50)
             self.right = CellNode(key=((self.key<<1)+1), gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal-50)
         else:
             self.left = CellNode(key=(self.key<<1), gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal+(0.55**(self.gen))*(1.1**(self.gen))*self.plotVal)
             self.right = CellNode(key=((self.key<<1)+1), gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal-(0.55**(self.gen))*(1.1**(self.gen))*self.plotVal)
-            
-        
+
         return (self.left, self.right)
-
-    
-
-
-
-
-
-
-
 
 
 def generate(numCells, locBern, cGom):
