@@ -1,5 +1,6 @@
 """ Unit test file. """
 import unittest
+import math
 from ..CellNode import CellNode as c, generate
 
 class TestModel(unittest.TestCase):
@@ -10,9 +11,8 @@ class TestModel(unittest.TestCase):
         cell1 = c(key=0, startT=20.)
         
         # nan before setting death time
-        print('Cell1 endT: ' + str(cell1.endT))
-        #self.assertTrue(cell1.endT == float('nan'))
-        #self.assertTrue(cell1.tau == float('nan'))
+        self.assertTrue(math.isnan(cell1.endT))
+        self.assertTrue(math.isnan(cell1.tau))
         self.assertTrue(cell1.isUnfinished())
         
         # correct life span after setting endT
