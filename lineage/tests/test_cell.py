@@ -1,6 +1,6 @@
 """ Unit test file. """
 import unittest
-from ../lineage-init/CellNode import CellNode as c, generate
+from ..CellNode import CellNode as c, generate
 
 class TestModel(unittest.TestCase):
     """ Here are the unit tests. """
