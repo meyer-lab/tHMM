@@ -26,8 +26,12 @@ class TestModel(unittest.TestCase):
         cell1 = c(key=0, startT=20)
         cell2, cell3 = cell1.divide(40)
         
-        self.assertFalse(cell1.isUnfinished()) # cell is dead
-        
+        # cell divides at correct time & parent dies
+        self.assertFalse(cell1.isUnfinished())
+        self.assertTrue(cell1.tau == 20)
+        self.assertTrue(cell2.startT == 40)
+        self.assertTrue(cell2.isUnfinished())
+
         # left and right children exist for cell1 with proper linking
         self.assertTrue(cell1.left == cell2)
         self.assertTrue(cell1.right == cell3)
