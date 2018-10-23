@@ -13,7 +13,7 @@ pipeline {
         sh 'make docs'
       }
     }
-    stage('Lint')  { steps { sh '(pylint3 lineage > pylint.log || echo "pylint3 exited with $?")' } }
+    stage('Lint')  { steps { sh '(pylint3 --rcfile=.pylintrc lineage > pylint.log || echo "pylint3 exited with $?")' } }
     stage('Report') {
       steps {
         step([
@@ -29,7 +29,7 @@ pipeline {
         step([$class:'TasksPublisher', canComputeNew:false, defaultEncoding:'', excludePattern:'',
           healthy:'', high:'TODO,FIXME,XXX', low:'', normal:'CITE', pattern:'**/*.py, **/*.md **/*.cpp **/*.hpp', unHealthy:''])
         step([$class:'WarningsPublisher', parserConfigurations: [[parserName:'PYLint', pattern:'pylint.log']],
-          unstableTotalAll:'1000', usePreviousBuildAsReference:true])
+          unstableTotalAll:'100', usePreviousBuildAsReference:true])
         publishHTML([
           allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false,
           reportDir: 'html',
