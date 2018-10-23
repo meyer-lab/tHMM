@@ -16,9 +16,8 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell1.isUnfinished())
         
         # correct life span after setting endT
-        cell1.endT = 500
+        cell1.die(500)
         self.assertTrue(cell1.endT == 500)
-        cell1.calcTau()
         self.assertTrue(cell1.tau == 480)
         self.assertFalse(cell1.isUnfinished()) # cell is dead
 

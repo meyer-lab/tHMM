@@ -54,11 +54,14 @@ class CellNode:
         """ Cell dies without dividing. """
         self.fate = False   # no division
         self.endT = endT    # mark endT
+        self.calcTau()      # calculate Tau when cell dies
 
     def divide(self, endT):
         """ Cell life ends through division. """
         self.endT = endT
-        self.fate = True   # division
+        self.fate = True    # division
+        self.calcTau()      # calculate Tau when cell dies
+
 
         # key is a binary number, basically if a parent's key is 1, then it's two daughters will have value 10 and 11
         # if a parent has key 11001, then it's two daughter's will have values 110010 and 110011
