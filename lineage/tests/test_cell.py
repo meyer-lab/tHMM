@@ -7,17 +7,15 @@ class TestModel(unittest.TestCase):
     """ Here are the unit tests. """
 
     def test_lifetime(self):
-        """ Make sure cell lifetime variables behave properly. """
+        """ Make sure the cell isUnfinished before the cell dies and then make sure the cell's lifetime (tau) is calculated properly after it dies. """
         cell1 = c(key=0, startT=20)
 
         # nan before setting death time
-        self.assertTrue(math.isnan(cell1.endT))
         self.assertTrue(math.isnan(cell1.tau))
         self.assertTrue(cell1.isUnfinished())
 
         # correct life span after setting endT
         cell1.die(500)
-        self.assertTrue(cell1.endT == 500)
         self.assertTrue(cell1.tau == 480)
         self.assertFalse(cell1.isUnfinished()) # cell is dead
 
