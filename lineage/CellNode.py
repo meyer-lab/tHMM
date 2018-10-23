@@ -99,7 +99,7 @@ def plotTree(lineage):
             plt.plot(cell.endT, cell.plotVal, 'ro', markersize=10)
 
     plt.show()
-    plt.savefig('foo.pdf')
+    #plt.savefig('foo.pdf')
 
 
 
