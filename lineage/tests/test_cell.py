@@ -8,7 +8,7 @@ class TestModel(unittest.TestCase):
 
     def test_lifetime(self):
         """ Make sure the cell isUnfinished before the cell dies and then make sure the cell's lifetime (tau) is calculated properly after it dies. """
-        cell1 = c(key=0, startT=20)
+        cell1 = c(startT=20)
 
         # nan before setting death time
         self.assertTrue(math.isnan(cell1.tau))
@@ -21,7 +21,7 @@ class TestModel(unittest.TestCase):
 
     def test_divide(self):
         """ Make sure cells divide properly with proper parent/child member variables. """
-        cell1 = c(key=0, startT=20)
+        cell1 = c(startT=20)
         cell2, cell3 = cell1.divide(40)
 
         # cell divides at correct time & parent dies
