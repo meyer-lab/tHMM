@@ -18,20 +18,6 @@ class CellNode:
         self.parent = parent
         self.plotVal = plotVal
 
-    def isLeft(self):
-        if self.isRootParent():
-            isLeft = False
-        else:
-            isLeft = self.parent.left is self and self.parent.right is not self
-        return isLeft # is keyword checks whether two things are the same object, avoid for checking if two things are the same value
-
-    def isRight(self):
-        if self.isRootParent():
-            isRight = False
-        else:
-            isRight = self.parent.right is self and self.parent.left is not self
-        return isRight 
-
     def isParent(self):
         return self.left.parent is self and self.right.parent is self
 
