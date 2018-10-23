@@ -11,7 +11,6 @@ pipeline {
       steps {
         sh 'make test'
         sh 'make docs'
-        sh 'valgrind --xml=yes --xml-file=valgrind.xml --track-origins=yes --leak-check=yes ./cppcheck'
       }
     }
     stage('Lint')  { steps { sh '(pylint3 lineage > pylint.log || echo "pylint3 exited with $?")' } }
@@ -21,34 +20,12 @@ pipeline {
           healthy:'', high:'TODO,FIXME,XXX', low:'', normal:'CITE', pattern:'**/*.py, **/*.md **/*.cpp **/*.hpp', unHealthy:''])
         step([$class:'WarningsPublisher', parserConfigurations: [[parserName:'PYLint', pattern:'pylint.log']],
           unstableTotalAll:'1000', usePreviousBuildAsReference:true])
-        publishValgrind([
-          pattern: 'valgrind.xml',
-          failThresholdInvalidReadWrite: '1',
-          failThresholdDefinitelyLost: '100',
-          failThresholdTotal: '1000',
-          unstableThresholdInvalidReadWrite: '1',
-          unstableThresholdDefinitelyLost: '100',
-          unstableThresholdTotal: '1000',
-          sourceSubstitutionPaths: '',
-          publishResultsForAbortedBuilds: false,
-          publishResultsForFailedBuilds: true,
-          failBuildOnMissingReports: true,
-          failBuildOnInvalidReports: true])
         publishHTML([
           allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false,
           reportDir: 'html',
           reportFiles: 'index.html',
           reportName: 'Documentation',
           reportTitles: ''])
-        publishHTML([
-          allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false,
-          reportDir: 'coverage.html',
-          reportFiles: 'index.html',
-          reportName: 'C++ Coverage',
-          reportTitles: ''])
-        step([$class: 'XUnitBuilder',
-          thresholds: [[$class: 'FailedThreshold', unstableThreshold: '1']],
-          tools: [[$class: 'CppUnitJunitHudsonTestType', pattern: 'testResults.xml']]])
       }
     }
   }
