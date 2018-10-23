@@ -9,13 +9,23 @@ pipeline {
     }
     stage('Test'){
       steps {
-        sh 'make test'
+        sh 'make testcover'
         sh 'make docs'
       }
     }
     stage('Lint')  { steps { sh '(pylint3 lineage > pylint.log || echo "pylint3 exited with $?")' } }
     stage('Report') {
       steps {
+        step([
+          $class: 'CoberturaPublisher',
+          autoUpdateHealth: true,
+          autoUpdateStability: true,
+          coberturaReportFile: 'coverage.xml',
+          failNoReports: true,
+          failUnhealthy: true,
+          failUnstable: true,
+          sourceEncoding: 'UTF_8',
+          zoomCoverageChart: true])
         step([$class:'TasksPublisher', canComputeNew:false, defaultEncoding:'', excludePattern:'',
           healthy:'', high:'TODO,FIXME,XXX', low:'', normal:'CITE', pattern:'**/*.py, **/*.md **/*.cpp **/*.hpp', unHealthy:''])
         step([$class:'WarningsPublisher', parserConfigurations: [[parserName:'PYLint', pattern:'pylint.log']],
