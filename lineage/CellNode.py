@@ -91,7 +91,7 @@ class Tree:
     def __init__(self):
         self.tree = list()
     
-    def loadTree(csv_file)
+    def loadTree(csv_file):
         #TODO: write function to import a tree from external file
         pass
     
