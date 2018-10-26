@@ -59,7 +59,7 @@ class CellNode:
 
 
 def generate(numCells, locBern, cGom):
-    ''' generates list given a target number of cells, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
+    ''' generates list given a maximum number of cells, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create first cell
     cell0 = CellNode(startT=0)
     

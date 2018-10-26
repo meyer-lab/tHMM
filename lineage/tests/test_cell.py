@@ -35,3 +35,12 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell1.right == cell3)
         self.assertTrue(cell2.parent == cell1)
         self.assertTrue(cell3.parent == cell1)
+
+    def test_generate(self):
+        """ Make sure we can generate fake data properly. """
+        
+        # if cell always, divides it will stop at the maximum cell count
+        out1 = generate(10, 1.0, 0.6)
+        print('size = ' + str(len(out1)))
+        self.assertTrue(len(out1) == 10)
+        
