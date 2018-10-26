@@ -74,7 +74,7 @@ def generate(numCells, locBern, cGom):
             cell.tau = sp.gompertz.rvs(cGom)
             cell.endT = cell.startT + cell.tau
             cell.fate = sp.bernoulli.rvs(locBern) # assign fate
-            if cell.fate == 1:
+            if cell.fate == 1 and len(out) < numCells-1:
                 temp1, temp2 = cell.divide(cell.endT) # cell divides
                 # append to list
                 out.append(temp1)

@@ -39,8 +39,9 @@ class TestModel(unittest.TestCase):
     def test_generate(self):
         """ Make sure we can generate fake data properly. """
         
-        # if cell always, divides it will stop at the maximum cell count
+        # if cell always divides it will stop at the maximum cell count when odd and one cell below when even (you can't divide and produce only 1 cell)
+        out1 = generate(7, 1.0, 0.6)
+        self.assertTrue(len(out1) == 7)
         out1 = generate(10, 1.0, 0.6)
-        print('size = ' + str(len(out1)))
-        self.assertTrue(len(out1) == 10)
+        self.assertTrue(len(out1) == 9)
         
