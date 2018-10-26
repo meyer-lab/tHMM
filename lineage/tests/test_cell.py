@@ -55,3 +55,5 @@ class TestModel(unittest.TestCase):
             if len(out1) == 3:
                 nDiv += 1
         self.assertTrue(450 <= nDiv <= 550) # assert that it divided ~500 times
+
+        # 
