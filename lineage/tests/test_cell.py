@@ -1,6 +1,7 @@
 """ Unit test file. """
 import unittest
 import math
+import numpy as np
 from ..CellNode import CellNode as c, generate
 
 class TestModel(unittest.TestCase):
@@ -58,3 +59,19 @@ class TestModel(unittest.TestCase):
 
     def test_generate_time(self):
         """ Make sure generated fake data behaves properly when tuning the Gompertz parameters. """
+        
+        # average and stdev are both larger when c = 0.5 compared to c = 3
+        out_c05 = generate(499, 1.0, 0.5, 1) 
+        out_c3 = generate(499, 1.0, 3.0, 1)
+        
+        tau_c05 = [] # create an empty list 
+        tau_c3 = tau_c05.copy()
+        for n in range(499):
+            if out_c05[n].isUnfinished() is False:  # if cell has died, append tau to list
+                tau_c05.append(out_c05[n].tau)
+            if out_c3[n].isUnfinished() is False:  # if cell has died, append tau to list
+                tau_c3.append(out_c3[n].tau)
+
+        self.assertGreater(np.mean(tau_c05), np.mean(tau_c3))
+        self.assertGreater(np.std(tau_c05), np.std(tau_c3))
+        
