@@ -59,11 +59,10 @@ class TestModel(unittest.TestCase):
 
     def test_generate_time(self):
         """ Make sure generated fake data behaves properly when tuning the Gompertz parameters. """
-        
         # average and stdev are both larger when c = 0.5 compared to c = 3
         out_c05 = generate(499, 1.0, 0.5, 1) 
         out_c3 = generate(499, 1.0, 3.0, 1)
-        
+
         tau_c05 = [] # create an empty list 
         tau_c3 = tau_c05.copy()
         for n in range(499):
@@ -75,3 +74,17 @@ class TestModel(unittest.TestCase):
         self.assertGreater(np.mean(tau_c05), np.mean(tau_c3))
         self.assertGreater(np.std(tau_c05), np.std(tau_c3))
         
+        # average and stdev are both larger when scale = 0.5 compared to scale = 3
+        out_scale05 = generate(499, 1.0, 0.75, 0.5) 
+        out_scale3 = generate(499, 1.0, 0.75, 3)
+
+        tau_scale05 = [] # create an empty list 
+        tau_scale3 = tau_scale05.copy()
+        for n in range(499):
+            if out_scale05[n].isUnfinished() is False:  # if cell has died, append tau to list
+                tau_scale05.append(out_scale05[n].tau)
+            if out_scale3[n].isUnfinished() is False:  # if cell has died, append tau to list
+                tau_scale3.append(out_scale3[n].tau)
+
+        self.assertGreater(np.mean(tau_scale05), np.mean(tau_scale3))
+        self.assertGreater(np.std(tau_scale05), np.std(tau_scale3))
