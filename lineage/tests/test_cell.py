@@ -36,8 +36,8 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell2.parent == cell1)
         self.assertTrue(cell3.parent == cell1)
 
-    def test_generate(self):
-        """ Make sure we can generate fake data properly. """
+    def test_generate_fate(self):
+        """ Make sure we can generate fake data properly when tuning the Bernoulli parameter for cell fate. """
         # if cell always divides it will stop at the maximum cell count when odd and one cell below when even (you can't divide and produce only 1 cell)
         out1 = generate(7, 1.0, 0.6, 1)
         self.assertTrue(len(out1) == 7)
@@ -56,4 +56,5 @@ class TestModel(unittest.TestCase):
                 nDiv += 1
         self.assertTrue(450 <= nDiv <= 550) # assert that it divided ~500 times
 
-        # 
+    def test_generate_time(self):
+        """ Make sure generated fake data behaves properly when tuning the Gompertz parameters. """
