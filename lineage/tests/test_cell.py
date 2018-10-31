@@ -32,10 +32,10 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell2.isUnfinished())
 
         # left and right children exist for cell1 with proper linking
-        self.assertTrue(cell1.left == cell2)
-        self.assertTrue(cell1.right == cell3)
-        self.assertTrue(cell2.parent == cell1)
-        self.assertTrue(cell3.parent == cell1)
+        self.assertTrue(cell1.left is cell2)
+        self.assertTrue(cell1.right is cell3)
+        self.assertTrue(cell2.parent is cell1)
+        self.assertTrue(cell3.parent is cell1)
 
     def test_generate_fate(self):
         """ Make sure we can generate fake data properly when tuning the Bernoulli parameter for cell fate. """
