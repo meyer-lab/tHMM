@@ -68,9 +68,9 @@ class TestModel(unittest.TestCase):
         tau_c05 = [] # create an empty list 
         tau_c3 = tau_c05.copy()
         for n in range(pop_size):
-            if out_c05[n].isUnfinished() is False:  # if cell has died, append tau to list
+            if not out_c05[n].isUnfinished():  # if cell has died, append tau to list
                 tau_c05.append(out_c05[n].tau)
-            if out_c3[n].isUnfinished() is False:  # if cell has died, append tau to list
+            if not out_c3[n].isUnfinished():  # if cell has died, append tau to list
                 tau_c3.append(out_c3[n].tau)
 
         self.assertGreater(np.mean(tau_c05), np.mean(tau_c3))
@@ -83,9 +83,9 @@ class TestModel(unittest.TestCase):
         tau_scale05 = [] # create an empty list 
         tau_scale3 = tau_scale05.copy()
         for n in range(pop_size):
-            if out_scale05[n].isUnfinished() is False:  # if cell has died, append tau to list
+            if not out_scale05[n].isUnfinished():  # if cell has died, append tau to list
                 tau_scale05.append(out_scale05[n].tau)
-            if out_scale3[n].isUnfinished() is False:  # if cell has died, append tau to list
+            if not out_scale3[n].isUnfinished():  # if cell has died, append tau to list
                 tau_scale3.append(out_scale3[n].tau)
 
         self.assertGreater(np.mean(tau_scale3), np.mean(tau_scale05))
