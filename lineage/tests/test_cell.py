@@ -74,7 +74,7 @@ class TestModel(unittest.TestCase):
         self.assertGreater(np.mean(tau_c05), np.mean(tau_c3))
         self.assertGreater(np.std(tau_c05), np.std(tau_c3))
         
-        # average and stdev are both larger when scale = 0.5 compared to scale = 3
+        # average and stdev are both larger when scale = 3 compared to scale = 0.5
         out_scale05 = generate(499, 1.0, 0.75, 0.5) 
         out_scale3 = generate(499, 1.0, 0.75, 3)
 
@@ -86,5 +86,5 @@ class TestModel(unittest.TestCase):
             if out_scale3[n].isUnfinished() is False:  # if cell has died, append tau to list
                 tau_scale3.append(out_scale3[n].tau)
 
-        self.assertGreater(np.mean(tau_scale05), np.mean(tau_scale3))
-        self.assertGreater(np.std(tau_scale05), np.std(tau_scale3))
+        self.assertGreater(np.mean(tau_scale3), np.mean(tau_scale05))
+        self.assertGreater(np.std(tau_scale3), np.std(tau_scale05))
