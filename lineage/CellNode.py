@@ -58,8 +58,8 @@ class CellNode:
         return (self.left, self.right)
 
 
-def generate(numCells, locBern, cGom):
-    ''' generates list given a target number of cells, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
+def generate(numCells, locBern, cGom, cScale):
+    ''' generates list given a maximum number of cells, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create first cell
     cell0 = CellNode(startT=0)
     
@@ -71,10 +71,10 @@ def generate(numCells, locBern, cGom):
         if len(out) >= numCells:
             break
         if cell.isUnfinished():
-            cell.tau = sp.gompertz.rvs(cGom)
+            cell.tau = sp.gompertz.rvs(cGom, scale=cScale)
             cell.endT = cell.startT + cell.tau
             cell.fate = sp.bernoulli.rvs(locBern) # assign fate
-            if cell.fate == 1:
+            if cell.fate == 1 and len(out) < numCells-1:
                 temp1, temp2 = cell.divide(cell.endT) # cell divides
                 # append to list
                 out.append(temp1)
