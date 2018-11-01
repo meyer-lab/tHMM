@@ -59,7 +59,7 @@ class CellNode:
 
 
 def generate(numCells, locBern, cGom, cScale):
-    #TODO: maybe move this elsewhere? (it's not in a class or anything), maybe reconsider naming this as well to generateTree or generateLineage
+    #TODO: maybe move this elsewhere? (it's not in a class or anything), maybe reconsider naming this to generateTree or generateLineage
     ''' generates list given a maximum number of cells, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create first cell
     cell0 = CellNode(startT=0)
@@ -85,8 +85,6 @@ def generate(numCells, locBern, cGom, cScale):
                 
     # return the list at end
     return lineage
-
-
 
 class Tree:
     def __init__(self):
@@ -124,7 +122,6 @@ def generatePopulation(parameters):
     ''' generates list given a maximum number of lineage trees,'''
     pass
         
-
 class Population:
     def __init__(self):
         self.population = list()
@@ -147,9 +144,11 @@ class Population:
     def bernoulliParameterEstimator(self):
         '''Estimates the Bernoulli parameter for a given population using MLE'''
         population = self.population # assign population to a variable
-        mle_param_holder = []
-        for lineage in population:
-            for cell in lineage.tree:
-                if not cell.isUnfinished():
-                    mle_param_holder.append(cell.fate*1)
+        mle_param_holder = [] # instantiates list to hold cell fates as 1s or 0s
+        for lineage in population: # go through every lineage in the population
+            for cell in lineage.tree: # go through ever cell in the lineage
+                if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
+                    mle_param_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
+                    
+        return ( sum(mle_param_holder) / len(mle_param_holder) ) # add up all the 1s and divide by the total length 
     
