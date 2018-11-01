@@ -117,10 +117,16 @@ class Tree:
         plt.show()
         #plt.savefig('foo.pdf')
             
-def generatePopulation(parameters):
+def generatePopulation(numLineages, numCells, locBern, cGom, cScale):
     #TODO: go over how to organize and make various generate() methods
     ''' generates list given a maximum number of lineage trees,'''
-    pass
+    population = []
+    while len(population) < numLineages:
+        tempLineage = generate(numCells, locBern, cGom, cScale)
+        population.append(tempLineage)
+    
+    return(population)
+        
         
 class Population:
     def __init__(self):
