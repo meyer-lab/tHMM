@@ -59,6 +59,7 @@ class CellNode:
 
 
 def generate(numCells, locBern, cGom, cScale):
+    #TODO: maybe move this elsewhere? (it's not in a class or anything), maybe reconsider naming this as well to generateTree or generateLineage
     ''' generates list given a maximum number of cells, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create first cell
     cell0 = CellNode(startT=0)
@@ -105,19 +106,25 @@ class Tree:
             if cell.isRootParent():
                 plt.plot(cell.startT, cell.plotVal, 'bo', markersize=10) # plot the root parent cell as a blue dot
             
-            plt.plot([cell.startT,cell.endT],[cell.plotVal,cell.plotVal], 'k') # plot the root parent cell lifetime
+            plt.plot([cell.startT,cell.endT],[cell.plotVal,cell.plotVal], 'k') # plot the cell lifetime
             
             if cell.fate:
                 #TODO: replace the below if statement with the isUnfinished() method for clarity
                 if not math.isnan(cell.endT): # check for nan when some cells don't get a chance to be assigned their fate, before the experiment ends
                     plt.plot([cell.endT,cell.endT],[cell.left.plotVal,cell.right.plotVal],'k') # plot a splitting line if the cell divides
+            
             else:
                 plt.plot(cell.endT, cell.plotVal, 'ro', markersize=10) # plot a red dot if the cell dies
 
         plt.show()
         #plt.savefig('foo.pdf')
             
+def generatePopulation(parameters):
+    #TODO: go over how to organize and make various generate() methods
+    ''' generates list given a maximum number of lineage trees,'''
+    pass
         
+
 class Population:
     def __init__(self):
         self.population = list()
@@ -131,10 +138,18 @@ class Population:
         #TODO
         pass
     
-    def doublingTime(self, bernoulli, gompertzC, gompertzScale):
+    def doublingTime(self):
         # can be moved elsewhere if this isn't the right place for this function
-        '''For a given set of distribution parameters, calculates the population-level growth rate (i.e. doubling time)'''
+        '''For a given population, calculates the population-level growth rate (i.e. doubling time)'''
         #TODO
         pass
     
+    def bernoulliParameterEstimator(self):
+        '''Estimates the Bernoulli parameter for a given population using MLE'''
+        population = self.population # assign population to a variable
+        mle_param_holder = []
+        for lineage in population:
+            for cell in lineage.tree:
+                if not cell.isUnfinished():
+                    mle_param_holder.append(cell.fate*1)
     
