@@ -74,11 +74,11 @@ def generate(numCells, locBern, cGom, cScale):
             cell.tau = sp.gompertz.rvs(cGom, scale=cScale)
             cell.endT = cell.startT + cell.tau
             cell.fate = sp.bernoulli.rvs(locBern) # assign fate
-            if cell.fate == 1 and len(out) < numCells-1:
+            if cell.fate == 1 and len(lineage) < numCells-1:
                 temp1, temp2 = cell.divide(cell.endT) # cell divides
                 # append to list
-                out.append(temp1)
-                out.append(temp2)
+                lineage.append(temp1)
+                lineage.append(temp2)
             else:
                 cell.die(cell.endT)
                 
