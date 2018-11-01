@@ -86,7 +86,7 @@ def generate(numCells, locBern, cGom, cScale):
     # return the list at end
     return lineage
 
-class Tree:
+class Lineage:
     def __init__(self):
         self.tree = list()
     
@@ -122,7 +122,8 @@ def generatePopulation(numLineages, numCells, locBern, cGom, cScale):
     ''' generates list given a maximum number of lineage trees, and parameters to describe the underlying distribution'''
     population = []
     while len(population) < numLineages:
-        tempLineage = generate(numCells, locBern, cGom, cScale)
+        tempLineage = Lineage()
+        tempLineage.tree = generate(numCells, locBern, cGom, cScale)
         population.append(tempLineage)
     
     return(population)
@@ -130,7 +131,7 @@ def generatePopulation(numLineages, numCells, locBern, cGom, cScale):
         
 class Population:
     def __init__(self):
-        self.population = list()
+        self.group = list()
         
     def loadPopulation(self, csv_file):
         #TODO: write function to import a population from external file
@@ -149,7 +150,7 @@ class Population:
     
     def bernoulliParameterEstimator(self):
         '''Estimates the Bernoulli parameter for a given population using MLE'''
-        population = self.population # assign population to a variable
+        population = self.group # assign population to a variable
         mle_param_holder = [] # instantiates list to hold cell fates as 1s or 0s
         for lineage in population: # go through every lineage in the population
             for cell in lineage.tree: # go through ever cell in the lineage
