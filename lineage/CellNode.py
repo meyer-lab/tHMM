@@ -64,7 +64,7 @@ def generate(numCells, locBern, cGom, cScale):
     cell0 = CellNode(startT=0)
     
     # put first cell in list
-    out = [cell0]
+    lineage = [cell0]
     
     # have cell divide/die according to distribution
     for cell in out:   # for all cells (cap at numCells)
@@ -83,7 +83,7 @@ def generate(numCells, locBern, cGom, cScale):
                 cell.die(cell.endT)
                 
     # return the list at end
-    return out
+    return lineage
 
 
 
@@ -115,3 +115,5 @@ class Tree:
 
         plt.show()
         #plt.savefig('foo.pdf')
+        
+        
