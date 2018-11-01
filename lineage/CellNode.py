@@ -119,7 +119,7 @@ class Tree:
             
 def generatePopulation(numLineages, numCells, locBern, cGom, cScale):
     #TODO: go over how to organize and make various generate() methods
-    ''' generates list given a maximum number of lineage trees,'''
+    ''' generates list given a maximum number of lineage trees, and parameters to describe the underlying distribution'''
     population = []
     while len(population) < numLineages:
         tempLineage = generate(numCells, locBern, cGom, cScale)
@@ -156,5 +156,5 @@ class Population:
                 if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
                     mle_param_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
                     
-        return ( sum(mle_param_holder) / len(mle_param_holder) ) # add up all the 1s and divide by the total length 
+        return ( sum(mle_param_holder) / len(mle_param_holder) ) # add up all the 1s and divide by the total length (finding the average)
     
