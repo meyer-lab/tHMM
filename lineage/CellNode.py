@@ -67,8 +67,8 @@ def generate(numCells, locBern, cGom, cScale):
     lineage = [cell0]
     
     # have cell divide/die according to distribution
-    for cell in out:   # for all cells (cap at numCells)
-        if len(out) >= numCells:
+    for cell in lineage:   # for all cells (cap at numCells)
+        if len(lineage) >= numCells:
             break
         if cell.isUnfinished():
             cell.tau = sp.gompertz.rvs(cGom, scale=cScale)
@@ -117,3 +117,5 @@ class Tree:
         #plt.savefig('foo.pdf')
         
         
+class Population:
+    def 
