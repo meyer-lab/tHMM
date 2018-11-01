@@ -1,3 +1,4 @@
 *.sublime-workspace
 **/.ipynb_checkpoints
 **/__pycache__/
+lineage/jupyter-notebooks/
