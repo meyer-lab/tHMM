@@ -2,7 +2,7 @@
 import unittest
 import math
 import numpy as np
-from ..CellNode import CellNode as c, generate
+from ..CellNode import CellNode as c, generate, doubleT
 
 class TestModel(unittest.TestCase):
     """ Here are the unit tests. """
@@ -94,3 +94,8 @@ class TestModel(unittest.TestCase):
 
         self.assertGreater(np.mean(tau_scale3), np.mean(tau_scale05))
         self.assertGreater(np.std(tau_scale3), np.std(tau_scale05))
+
+    def test_doubleT(self):
+        """ Make sure doubling time is reached faster/slower based on varying parameters. """
+        controlT = doubleT(0.5, 0.6, 1)
+        print(controlT)

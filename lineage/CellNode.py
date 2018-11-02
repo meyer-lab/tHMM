@@ -89,8 +89,11 @@ def generate(initCells, maxCells, locBern, cGom, cScale):
 
 def doubleT(locBern, cGom, cScale):
     """ This function calculates the amount of time it takes for a cell population to double in size for a set of parameters. """
-    out = generate(1000, 2000, locBern, cGom, cScale)
-    
+    out = generate(1000, 2000, locBern, cGom, cScale) # go from 1000 to 2000 cells using generate
+    if len(out) is not 2000:
+        print("Cell count didn't double. Only " + str(len(out)) + " cells were generated")
+        return -1
+    return out[1999].startT # find the time at which the last cell was created
 
 
 class Tree:
