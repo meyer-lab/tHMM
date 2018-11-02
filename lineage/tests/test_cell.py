@@ -39,12 +39,16 @@ class TestModel(unittest.TestCase):
 
     def test_generate_fate(self):
         """ Make sure we can generate fake data properly when tuning the Bernoulli parameter for cell fate. """
-        # if cell always divides it will stop at the maximum cell count when odd and one cell below when even (you can't divide and produce only 1 cell)
-        out1 = generate(1, 7, 1.0, 0.6, 1)
+        # if cell always divides it will stop at the maximum cell count or one below
+        out1 = generate(1, 7, 1.0, 0.6, 1) # can be odd when starting with 1 cell
         self.assertTrue(len(out1) == 7)
-        out1 = generate(1, 10, 1.0, 0.6, 1)
+        out1 = generate(1, 10, 1.0, 0.6, 1) # can't be even with odd initial cell count
         self.assertTrue(len(out1) == 9)
-
+        out1 = generate(10, 50, 1.0, 0.6, 1) # works with 10 initial cells (even-->even) too
+        self.assertTrue(len(out1) == 50)
+        out1 = generate(10, 51, 1.0, 0.6, 1) # can't be odd with even initial cell count
+        self.assertTrue(len(out1) == 50)
+        
         # only 1 cell no matter numCells when cells always die
         out1 = generate(1, 7, 0.0, 0.6, 1)
         self.assertTrue(len(out1) == 1)
@@ -59,7 +63,7 @@ class TestModel(unittest.TestCase):
 
     def test_generate_time(self):
         """ Make sure generated fake data behaves properly when tuning the Gompertz parameters. """
-        pop_size = 499 # cell number will always be odd
+        pop_size = 499 # cell number will be odd if initCells=1
         
         # average and stdev are both larger when c = 0.5 compared to c = 3
         out_c05 = generate(1, pop_size, 1.0, 0.5, 1) 
