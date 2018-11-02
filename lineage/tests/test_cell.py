@@ -40,19 +40,19 @@ class TestModel(unittest.TestCase):
     def test_generate_fate(self):
         """ Make sure we can generate fake data properly when tuning the Bernoulli parameter for cell fate. """
         # if cell always divides it will stop at the maximum cell count when odd and one cell below when even (you can't divide and produce only 1 cell)
-        out1 = generate(7, 1.0, 0.6, 1)
+        out1 = generate(1, 7, 1.0, 0.6, 1)
         self.assertTrue(len(out1) == 7)
-        out1 = generate(10, 1.0, 0.6, 1)
+        out1 = generate(1, 10, 1.0, 0.6, 1)
         self.assertTrue(len(out1) == 9)
 
         # only 1 cell no matter numCells when cells always die
-        out1 = generate(7, 0.0, 0.6, 1)
+        out1 = generate(1, 7, 0.0, 0.6, 1)
         self.assertTrue(len(out1) == 1)
 
         # when locBern is 0.5 the initial cell divides ~1/2 the time
         nDiv = 0
         for i in range(1000):
-            out1 = generate(3, 0.5, 0.6, 1) # allow for 1 division max
+            out1 = generate(1, 3, 0.5, 0.6, 1) # allow for 1 division max
             if len(out1) == 3:
                 nDiv += 1
         self.assertTrue(450 <= nDiv <= 550) # assert that it divided ~500 times
@@ -62,8 +62,8 @@ class TestModel(unittest.TestCase):
         pop_size = 499 # cell number will always be odd
         
         # average and stdev are both larger when c = 0.5 compared to c = 3
-        out_c05 = generate(pop_size, 1.0, 0.5, 1) 
-        out_c3 = generate(pop_size, 1.0, 3.0, 1)
+        out_c05 = generate(1, pop_size, 1.0, 0.5, 1) 
+        out_c3 = generate(1, pop_size, 1.0, 3.0, 1)
 
         tau_c05 = [] # create an empty list 
         tau_c3 = tau_c05.copy()
@@ -77,8 +77,8 @@ class TestModel(unittest.TestCase):
         self.assertGreater(np.std(tau_c05), np.std(tau_c3))
         
         # average and stdev are both larger when scale = 3 compared to scale = 0.5
-        out_scale05 = generate(pop_size, 1.0, 0.75, 0.5) 
-        out_scale3 = generate(pop_size, 1.0, 0.75, 3)
+        out_scale05 = generate(1, pop_size, 1.0, 0.75, 0.5) 
+        out_scale3 = generate(1, pop_size, 1.0, 0.75, 3)
 
         tau_scale05 = [] # create an empty list 
         tau_scale3 = tau_scale05.copy()
