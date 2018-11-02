@@ -87,6 +87,10 @@ def generate(initCells, maxCells, locBern, cGom, cScale):
     # return the list at end
     return out
 
+def doubleT(locBern, cGom, cScale):
+    """ This function calculates the amount of time it takes for a cell population to double in size for a set of parameters. """
+    out = generate(1000, 2000, locBern, cGom, cScale)
+    
 
 
 class Tree:

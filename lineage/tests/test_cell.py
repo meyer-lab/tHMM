@@ -48,7 +48,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(len(out1) == 50)
         out1 = generate(10, 51, 1.0, 0.6, 1) # can't be odd with even initial cell count
         self.assertTrue(len(out1) == 50)
-        
+
         # only 1 cell no matter numCells when cells always die
         out1 = generate(1, 7, 0.0, 0.6, 1)
         self.assertTrue(len(out1) == 1)
