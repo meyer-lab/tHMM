@@ -58,7 +58,7 @@ class CellNode:
         return (self.left, self.right)
 
 
-def generate(numCells, locBern, cGom, cScale):
+def generateLineage(numCells, locBern, cGom, cScale):
     #TODO: maybe move this elsewhere? (it's not in a class or anything), maybe reconsider naming this to generateTree or generateLineage
     ''' generates list given a maximum number of cells, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create first cell
@@ -75,7 +75,7 @@ def generate(numCells, locBern, cGom, cScale):
             cell.tau = sp.gompertz.rvs(cGom, scale=cScale)
             cell.endT = cell.startT + cell.tau
             cell.fate = sp.bernoulli.rvs(locBern) # assign fate
-            if cell.fate == 1 and len(lineage) < numCells-1:
+            if cell.fate and len(lineage) < numCells-1:
                 temp1, temp2 = cell.divide(cell.endT) # cell divides
                 # append to list
                 lineage.append(temp1)
@@ -123,7 +123,7 @@ def generatePopulation(numLineages, numCells, locBern, cGom, cScale):
     population = []
     while len(population) < numLineages:
         tempLineage = Lineage()
-        tempLineage.tree = generate(numCells, locBern, cGom, cScale)
+        tempLineage.tree = generateLineage(numCells, locBern, cGom, cScale)
         population.append(tempLineage)
     
     return(population)
@@ -138,12 +138,11 @@ class Population:
         pass
     
     def plotPopulation(self):
-        '''plots a population of lineages based on list of lineages'''
+        '''plots a population of lineages'''
         #TODO
         pass
     
     def doublingTime(self):
-        # can be moved elsewhere if this isn't the right place for this function
         '''For a given population, calculates the population-level growth rate (i.e. doubling time)'''
         #TODO
         pass
