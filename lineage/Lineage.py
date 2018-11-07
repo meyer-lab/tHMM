@@ -39,7 +39,7 @@ class Lineage:
         #plt.savefig('foo.pdf')
         
         
-def generatePopulation(numLineages, numCells, locBern, cGom, cScale):
+def generatePopulationWithNum(numLineages, numCells, locBern, cGom, cScale):
     #TODO: go over how to organize and make various generate() methods
     ''' generates list given a maximum number of lineage trees, and parameters to describe the underlying distribution'''
     
@@ -51,7 +51,7 @@ def generatePopulation(numLineages, numCells, locBern, cGom, cScale):
     
     while len(population) < numLineages:
         tempLineage = Lineage()
-        tempLineage.tree = c.generateLineage(numCells, locBern, cGom, cScale)
+        tempLineage.tree = c.generateLineageWithNum(numCells, locBern, cGom, cScale)
         population.append(tempLineage)
     
     return(population)

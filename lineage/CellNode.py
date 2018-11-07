@@ -58,7 +58,7 @@ class CellNode:
         return (self.left, self.right)
 
 
-def generateLineage(numCells, locBern, cGom, cScale):
+def generateLineageWithNum(numCells, locBern, cGom, cScale):
     #TODO: maybe move this elsewhere? (it's not in a class or anything), maybe reconsider naming this to generateTree or generateLineage
     ''' generates list given a maximum number of cells, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create first cell
