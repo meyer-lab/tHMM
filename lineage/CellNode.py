@@ -7,7 +7,7 @@ import scipy.stats as sp
 import matplotlib.pyplot as plt
 
 class CellNode:
-    def __init__(self, gen=1, startT=0, endT=float('nan'), fate=True, left=None, right=None, parent=None, plotVal=0):
+    def __init__(self, gen=1, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, plotVal=0):
         ''' Instantiates a cell node.'''
         self.gen = gen
         self.startT = startT
@@ -34,7 +34,7 @@ class CellNode:
             print("Warning: your cell lifetime {} is a nan".format(self.tau))
 
     def isUnfinished(self):
-        return math.isnan(self.endT)   # returns true when cell is still alive
+        return math.isnan(self.endT) and self.fate is None   # returns true when cell is still alive
 
     def die(self, endT):
         """ Cell dies without dividing. """
@@ -120,7 +120,13 @@ class Lineage:
 def generatePopulation(numLineages, numCells, locBern, cGom, cScale):
     #TODO: go over how to organize and make various generate() methods
     ''' generates list given a maximum number of lineage trees, and parameters to describe the underlying distribution'''
-    population = []
+    
+    #create first lineage
+    lineage0 = Lineage()
+    
+    # put first lineage in list
+    population = [lineage0]
+    
     while len(population) < numLineages:
         tempLineage = Lineage()
         tempLineage.tree = generateLineage(numCells, locBern, cGom, cScale)
@@ -154,7 +160,10 @@ class Population:
         for lineage in population: # go through every lineage in the population
             for cell in lineage.tree: # go through ever cell in the lineage
                 if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
+                    print(cell.fate)
                     mle_param_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
+        #print((mle_param_holder))
+        print(len(mle_param_holder))
                     
         return ( sum(mle_param_holder) / len(mle_param_holder) ) # add up all the 1s and divide by the total length (finding the average)
     
