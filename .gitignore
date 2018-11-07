@@ -2,6 +2,4 @@
 **/.ipynb_checkpoints
 **/__pycache__/
 lineage/jupyter-notebooks/
-*.ipynb
-
 **.ipynb
