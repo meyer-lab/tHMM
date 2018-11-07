@@ -75,7 +75,7 @@ def generateLineage(numCells, locBern, cGom, cScale):
             cell.tau = sp.gompertz.rvs(cGom, scale=cScale)
             cell.endT = cell.startT + cell.tau
             cell.fate = sp.bernoulli.rvs(locBern) # assign fate
-            if cell.fate and len(lineage) < numCells-1:
+            if cell.fate:
                 temp1, temp2 = cell.divide(cell.endT) # cell divides
                 # append to list
                 lineage.append(temp1)
@@ -160,10 +160,7 @@ class Population:
         for lineage in population: # go through every lineage in the population
             for cell in lineage.tree: # go through ever cell in the lineage
                 if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
-                    print(cell.fate)
                     mle_param_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
-        #print((mle_param_holder))
-        print(len(mle_param_holder))
                     
         return ( sum(mle_param_holder) / len(mle_param_holder) ) # add up all the 1s and divide by the total length (finding the average)
     
