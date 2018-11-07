@@ -34,7 +34,7 @@ class Lineage:
             
             else:
                 plt.plot(cell.endT, cell.plotVal, 'ro', markersize=10) # plot a red dot if the cell dies
-
+        plt.plot()
         plt.show()
         #plt.savefig('foo.pdf')
         
@@ -55,7 +55,12 @@ def generatePopulationWithNum(numLineages, numCells, locBern, cGom, cScale):
         population.append(tempLineage)
     
     return(population)
-        
+
+
+def generatePopulationWithTime(numLineages, numCells, locBern, cGom, cScale):
+    #TODO: go over how to organize and make various generate() methods
+    ''' generates list given an experimental end time, and parameters to describe the underlying distribution'''   
+    pass
         
 class Population:
     def __init__(self):
