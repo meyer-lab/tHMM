@@ -49,17 +49,16 @@ class CellNode:
         self.calcTau()      # calculate Tau when cell dies
 
         if self.isRootParent():
-            self.left = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal+50)
-            self.right = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal-50)
+            self.left = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal+0.75)
+            self.right = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal-0.75)
         else:
-            self.left = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal+(0.5**(self.gen))*(1.1**(self.gen))*self.plotVal)
-            self.right = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal-(0.5**(self.gen))*(1.1**(self.gen))*self.plotVal)
+            self.left = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal+(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
+            self.right = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal-(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
 
         return (self.left, self.right)
 
 
 def generateLineageWithNum(numCells, locBern, cGom, cScale):
-    #TODO: maybe move this elsewhere? (it's not in a class or anything), maybe reconsider naming this to generateTree or generateLineage
     ''' generates list given a maximum number of cells, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create first cell
     cell0 = CellNode(startT=0)
@@ -86,7 +85,29 @@ def generateLineageWithNum(numCells, locBern, cGom, cScale):
     # return the list at end
     return lineage
 
-def generateLineageWithTime(numCells, locBern, cGom, cScale):
-    #TODO: maybe move this elsewhere? (it's not in a class or anything), maybe reconsider naming this to generateTree or generateLineage
+def generateLineageWithTime(experimentTime, locBern, cGom, cScale):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create first cell
+    cell0 = CellNode(startT=0)
+    
+    # put first cell in list
+    lineage = [cell0]
+    
+    # have cell divide/die according to distribution
+    for cell in lineage:   # for all cells (cap at numCells)
+        if cell.endT >= experimentTime:
+            break
+        if cell.isUnfinished():
+            cell.tau = sp.gompertz.rvs(cGom, scale=cScale)
+            cell.endT = cell.startT + cell.tau
+            cell.fate = sp.bernoulli.rvs(locBern) # assign fate
+            if cell.fate:
+                temp1, temp2 = cell.divide(cell.endT) # cell divides
+                # append to list
+                lineage.append(temp1)
+                lineage.append(temp2)
+            else:
+                cell.die(cell.endT)
+                
+    # return the list at end
+    return lineage
