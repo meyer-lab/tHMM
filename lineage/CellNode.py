@@ -86,7 +86,7 @@ def generateLineageWithNum(numCells, locBern, cGom, cScale):
     # return the list at end
     return lineage
 
-def generateLineageWithNum(numCells, locBern, cGom, cScale):
+def generateLineageWithTime(numCells, locBern, cGom, cScale):
     #TODO: maybe move this elsewhere? (it's not in a class or anything), maybe reconsider naming this to generateTree or generateLineage
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create first cell
