@@ -58,7 +58,7 @@ class Lineage:
         plt.show()
         
         
-def generatePopulationWithNum(numLineages, numCells, locBern, cGom, cScale):
+def generatePopulationWithNum(numLineages, numCells, locBern, cGom, scaleGom):
     #TODO: go over how to organize and make various generate() methods
     ''' generates list given a maximum number of lineage trees, and parameters to describe the underlying distribution'''
     
@@ -70,13 +70,13 @@ def generatePopulationWithNum(numLineages, numCells, locBern, cGom, cScale):
     
     while len(population) < numLineages:
         tempLineage = Lineage()
-        tempLineage.tree = c.generateLineageWithNum(numCells, locBern, cGom, cScale)
+        tempLineage.tree = c.generateLineageWithNum(numCells, locBern, cGom, scaleGom)
         population.append(tempLineage)
     
     return(population)
 
 
-def generatePopulationWithTime(numLineages, numCells, locBern, cGom, cScale):
+def generatePopulationWithTime(numLineages, numCells, locBern, cGom, scaleGom):
     #TODO: go over how to organize and make various generate() methods
     ''' generates list given an experimental end time, and parameters to describe the underlying distribution'''   
     pass
