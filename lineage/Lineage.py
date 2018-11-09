@@ -54,7 +54,7 @@ class Lineage:
         plt.title("Simulated Lineage Tree with Bernoulli Parameter of 0.6")
         plt.xlabel('Time (Arbitrary Units)')
         plt.tight_layout()
-        plt.savefig('foo.png')
+        #plt.savefig('foo.png')
         plt.show()
         
         
@@ -109,3 +109,6 @@ class Population:
                     mle_param_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
                     
         return ( sum(mle_param_holder) / len(mle_param_holder) ) # add up all the 1s and divide by the total length (finding the average)
+    
+    def gompertzParameterEstimator(self):
+        pass

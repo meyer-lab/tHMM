@@ -58,7 +58,7 @@ class CellNode:
         return (self.left, self.right)
 
 
-def generateLineageWithNum(numCells, locBern, cGom, cScale):
+def generateLineageWithNum(numCells, locBern, cGom, scaleGom):
     ''' generates list given a maximum number of cells, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create first cell
     cell0 = CellNode(startT=0)
@@ -71,7 +71,7 @@ def generateLineageWithNum(numCells, locBern, cGom, cScale):
         if len(lineage) >= numCells:
             break
         if cell.isUnfinished():
-            cell.tau = sp.gompertz.rvs(cGom, scale=cScale)
+            cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
             cell.endT = cell.startT + cell.tau
             cell.fate = sp.bernoulli.rvs(locBern) # assign fate
             if cell.fate:
@@ -85,7 +85,7 @@ def generateLineageWithNum(numCells, locBern, cGom, cScale):
     # return the list at end
     return lineage
 
-def generateLineageWithTime(experimentTime, locBern, cGom, cScale):
+def generateLineageWithTime(experimentTime, locBern, cGom, scaleGom):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create first cell
     cell0 = CellNode(startT=0)
@@ -98,7 +98,7 @@ def generateLineageWithTime(experimentTime, locBern, cGom, cScale):
         if cell.endT >= experimentTime:
             break
         if cell.isUnfinished():
-            cell.tau = sp.gompertz.rvs(cGom, scale=cScale)
+            cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
             cell.endT = cell.startT + cell.tau
             cell.fate = sp.bernoulli.rvs(locBern) # assign fate
             if cell.fate:
