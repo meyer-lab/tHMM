@@ -3,7 +3,9 @@
 
 import sys
 import math
+import numpy as np
 import scipy.stats as sp
+from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 import CellNode as c
 
@@ -90,7 +92,7 @@ class Population:
         pass
     
     def plotPopulation(self):
-        '''plots a population of lineages'''
+        '''plots a population growth'''
         #TODO
         pass
     
@@ -99,16 +101,37 @@ class Population:
         #TODO
         pass
     
-    def bernoulliParameterEstimator(self):
-        '''Estimates the Bernoulli parameter for a given population using MLE'''
+    def bernoulliParameterEstimatorAnalytical(self):
+        '''Estimates the Bernoulli parameter for a given population using MLE analytically'''
         population = self.group # assign population to a variable
-        mle_param_holder = [] # instantiates list to hold cell fates as 1s or 0s
+        fate_holder = [] # instantiates list to hold cell fates as 1s or 0s
         for lineage in population: # go through every lineage in the population
             for cell in lineage.tree: # go through ever cell in the lineage
                 if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
-                    mle_param_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
+                    fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
                     
-        return ( sum(mle_param_holder) / len(mle_param_holder) ) # add up all the 1s and divide by the total length (finding the average)
+        return ( sum(fate_holder) / len(fate_holder) ) # add up all the 1s and divide by the total length (finding the average)
+    
+    def negativeLogLikelihoodBern(locBernGuess, fate_holder):
+        return(-1*sp.bernoulli.logpmf(k=fate_holder, p=locBernGuess))
+            
+    def bernoulliParameterEstimatorNumerical(self):
+        '''Estimates the Bernoulli parameter for a given population using MLE numerically'''
+        population = self.group # assign population to a variable
+        fate_holder = [] # instantiates list to hold cell fates as 1s or 0s
+        for lineage in population: # go through every lineage in the population
+            for cell in lineage.tree: # go through ever cell in the lineage
+                if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
+                    fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
+                    
+        def negativeLogLikelihoodBern(locBernGuess, fate_holder):
+            return(-1*(sp.bernoulli.logpmf(k=fate_holder, p=locBernGuess)))
+        
+        res = minimize(negativeLogLikelihoodBern, x0=0.5, args=(fate_holder))
+        
+        return(res["x"])
+        
+
     
     def gompertzParameterEstimator(self):
         pass
