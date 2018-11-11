@@ -2,8 +2,8 @@
 import unittest
 import math
 import numpy as np
-from ..CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
 from ..Lineage import Lineage as l
+from ..CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
 
 class TestModel(unittest.TestCase):
     """ Here are the unit tests. """
