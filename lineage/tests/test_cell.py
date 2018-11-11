@@ -3,6 +3,7 @@ import unittest
 import math
 import numpy as np
 from ..CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
+from ..Lineage import Lineage as l
 
 class TestModel(unittest.TestCase):
     """ Here are the unit tests. """
@@ -90,3 +91,14 @@ class TestModel(unittest.TestCase):
 
         self.assertGreater(np.mean(tau_scale3), np.mean(tau_scale05))
         self.assertGreater(np.std(tau_scale3), np.std(tau_scale05))
+
+    def test_MLE_bern(self):
+        """ Generate multiple lineages based on time and estimate the bernoulli parameter with MLE. """
+        pop = l.Population()
+        experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
+        # division time of a cancer cell is about 20 hours
+        locBern = 0.6
+        cGom = 2
+        scaleGom = 0.5e2
+        numLineages = 20
+        pop.group = l.generatePopulationWithTime(numLineages=numLineages, experimentTime=experimentTime, locBern=locBern, cGom=cGom, scaleGom=scaleGom)
