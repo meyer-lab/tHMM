@@ -78,10 +78,22 @@ def generatePopulationWithNum(numLineages, numCells, locBern, cGom, scaleGom):
     return(population)
 
 
-def generatePopulationWithTime(numLineages, numCells, locBern, cGom, scaleGom):
+def generatePopulationWithTime(numLineages, experimentTime, locBern, cGom, scaleGom):
     #TODO: go over how to organize and make various generate() methods
-    ''' generates list given an experimental end time, and parameters to describe the underlying distribution'''   
-    pass
+    ''' generates list given a maximum number of lineage trees, and parameters to describe the underlying distribution'''
+    
+    #create first lineage
+    lineage0 = Lineage()
+    
+    # put first lineage in list
+    population = [lineage0]
+    
+    while len(population) < numLineages:
+        tempLineage = Lineage()
+        tempLineage.tree = c.generateLineageWithTime(experimentTime, locBern, cGom, scaleGom)
+        population.append(tempLineage)
+    
+    return(population)
         
 class Population:
     def __init__(self):
@@ -144,6 +156,6 @@ class Population:
         
         nllG = lambda *args: -LogLikelihoodGomp(*args)
         
-        res = minimize(nllG, x0=[1,1e3], bounds=((0,None),(0,None)), method="SLSQP", args=(tau_holder))
+        res = minimize(nllG, x0=[1,1e3], bounds=((0,5),(0,None)), method="SLSQP", args=(tau_holder))
         
         return(res.x)

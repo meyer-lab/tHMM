@@ -95,8 +95,6 @@ def generateLineageWithTime(experimentTime, locBern, cGom, scaleGom):
     
     # have cell divide/die according to distribution
     for cell in lineage:   # for all cells (cap at numCells)
-        if cell.endT >= experimentTime:
-            break
         if cell.isUnfinished():
             cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
             cell.endT = cell.startT + cell.tau
@@ -108,6 +106,8 @@ def generateLineageWithTime(experimentTime, locBern, cGom, scaleGom):
                 lineage.append(temp2)
             else:
                 cell.die(cell.endT)
-                
+            if cell.endT >= experimentTime:
+                break                
+    
     # return the list at end
     return lineage
