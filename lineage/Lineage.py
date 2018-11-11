@@ -54,6 +54,7 @@ class Lineage:
         
         plt.yticks([])        
         plt.title("Simulated Lineage Tree with Bernoulli Parameter of 0.6")
+        plt.xticks(np.arange(min(x), max(x)+1, 100.0))
         plt.xlabel('Time (Arbitrary Units)')
         plt.tight_layout()
         #plt.savefig('foo.png')
@@ -109,11 +110,8 @@ class Population:
             for cell in lineage.tree: # go through ever cell in the lineage
                 if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
                     fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
-                    
+                
         return ( sum(fate_holder) / len(fate_holder) ) # add up all the 1s and divide by the total length (finding the average)
-    
-    def negativeLogLikelihoodBern(locBernGuess, fate_holder):
-        return(-1*sp.bernoulli.logpmf(k=fate_holder, p=locBernGuess))
             
     def bernoulliParameterEstimatorNumerical(self):
         '''Estimates the Bernoulli parameter for a given population using MLE numerically'''
@@ -123,15 +121,30 @@ class Population:
             for cell in lineage.tree: # go through ever cell in the lineage
                 if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
                     fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
-                    
-        def negativeLogLikelihoodBern(locBernGuess, fate_holder):
-            return(-1*(sp.bernoulli.logpmf(k=fate_holder, p=locBernGuess)))
+                            
+        def LogLikelihoodBern(locBernGuess, fate_holder):
+            return(np.sum(sp.bernoulli.logpmf(k=fate_holder, p=locBernGuess)))
         
-        res = minimize(negativeLogLikelihoodBern, x0=0.5, args=(fate_holder))
+        nllB = lambda *args: -LogLikelihoodBern(*args)
         
-        return(res["x"])
+        res = minimize(nllB, x0=0.5, bounds=((0,1),), method="SLSQP", args=(fate_holder))
         
-
-    
-    def gompertzParameterEstimator(self):
-        pass
+        return(res.x[0])
+        
+    def gompertzParameterEstimatorNumerical(self):
+        '''Estimates the Gompertz parameters for a given population using MLE numerically'''
+        population = self.group # assign population to a variable
+        tau_holder = [] # instantiates list to hold cell fates as 1s or 0s
+        for lineage in population: # go through every lineage in the population
+            for cell in lineage.tree: # go through ever cell in the lineage
+                if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
+                    tau_holder.append(cell.tau) # append the cell lifetime
+                            
+        def LogLikelihoodGomp(gompParams, tau_holder):
+            return(np.sum(sp.gompertz.logpdf(x=tau_holder,c=gompParams[0], scale=gompParams[1])))
+        
+        nllG = lambda *args: -LogLikelihoodGomp(*args)
+        
+        res = minimize(nllG, x0=[1,1e3], bounds=((0,None),(0,None)), method="SLSQP", args=(tau_holder))
+        
+        return(res.x)
