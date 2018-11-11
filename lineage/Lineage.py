@@ -53,9 +53,8 @@ class Lineage:
             plt.plot([cell.startT,cell.endT], [timebarpos-0.1,timebarpos-0.1], linewidth=8, alpha=0.25)
         
         plt.yticks([])        
-        plt.title("Simulated Lineage Tree with Bernoulli Parameter of 0.6")
-        plt.xticks(np.arange(min(x), max(x)+1, 100.0))
-        plt.xlabel('Time (Arbitrary Units)')
+        plt.title("Simulated Lineage Tree with Bernoulli Parameter of ____ and Gompertz Parameters _________")
+        plt.xlabel('Time (Hours)')
         plt.tight_layout()
         #plt.savefig('foo.png')
         plt.show()
