@@ -2,7 +2,7 @@
 import unittest
 import math
 import numpy as np
-from ..Lineage import Lineage as l
+from ..Lineage import Lineage as l, generatePopulationWithNum, generatePopulationWithTime
 from ..CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
 
 class TestModel(unittest.TestCase):
