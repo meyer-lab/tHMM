@@ -57,7 +57,7 @@ class TestModel(unittest.TestCase):
                 nDiv += 1
         self.assertTrue(450 <= nDiv <= 550) # assert that it divided ~500 times
 
-    def test_generate_time(self):
+    def test_generate_lifetime(self):
         """ Make sure generated fake data behaves properly when tuning the Gompertz parameters. """
         pop_size = 499 # cell number will always be odd
         

@@ -99,6 +99,8 @@ def generateLineageWithTime(experimentTime, locBern, cGom, scaleGom):
             cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
             cell.endT = cell.startT + cell.tau
             cell.fate = sp.bernoulli.rvs(locBern) # assign fate
+            if cell.endT >= experimentTime:
+                break
             if cell.fate:
                 temp1, temp2 = cell.divide(cell.endT) # cell divides
                 # append to list
@@ -106,8 +108,6 @@ def generateLineageWithTime(experimentTime, locBern, cGom, scaleGom):
                 lineage.append(temp2)
             else:
                 cell.die(cell.endT)
-            if cell.endT >= experimentTime:
-                break                
     
     # return the list at end
     return lineage
