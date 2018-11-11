@@ -2,7 +2,7 @@
 import unittest
 import math
 import numpy as np
-from ..CellNode import CellNode as c, generate
+from ..CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
 
 class TestModel(unittest.TestCase):
     """ Here are the unit tests. """
@@ -40,19 +40,19 @@ class TestModel(unittest.TestCase):
     def test_generate_fate(self):
         """ Make sure we can generate fake data properly when tuning the Bernoulli parameter for cell fate. """
         # if cell always divides it will stop at the maximum cell count when odd and one cell below when even (you can't divide and produce only 1 cell)
-        out1 = generate(7, 1.0, 0.6, 1)
+        out1 = generateLineageWithNum(7, 1.0, 0.6, 1)
         self.assertTrue(len(out1) == 7)
-        out1 = generate(10, 1.0, 0.6, 1)
+        out1 = generateLineageWithNum(10, 1.0, 0.6, 1)
         self.assertTrue(len(out1) == 9)
 
         # only 1 cell no matter numCells when cells always die
-        out1 = generate(7, 0.0, 0.6, 1)
+        out1 = generateLineageWithNum(7, 0.0, 0.6, 1)
         self.assertTrue(len(out1) == 1)
 
         # when locBern is 0.5 the initial cell divides ~1/2 the time
         nDiv = 0
         for i in range(1000):
-            out1 = generate(3, 0.5, 0.6, 1) # allow for 1 division max
+            out1 = generateLineageWithNum(3, 0.5, 0.6, 1) # allow for 1 division max
             if len(out1) == 3:
                 nDiv += 1
         self.assertTrue(450 <= nDiv <= 550) # assert that it divided ~500 times
