@@ -7,7 +7,7 @@ import numpy as np
 import scipy.stats as sp
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
-import CellNode as c
+from .CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
 
 class Lineage:
     def __init__(self):
@@ -72,7 +72,7 @@ def generatePopulationWithNum(numLineages, numCells, locBern, cGom, scaleGom):
     
     while len(population) < numLineages:
         tempLineage = Lineage()
-        tempLineage.tree = c.generateLineageWithNum(numCells, locBern, cGom, scaleGom)
+        tempLineage.tree = generateLineageWithNum(numCells, locBern, cGom, scaleGom)
         population.append(tempLineage)
     
     return(population)
@@ -90,7 +90,7 @@ def generatePopulationWithTime(numLineages, experimentTime, locBern, cGom, scale
     
     while len(population) < numLineages:
         tempLineage = Lineage()
-        tempLineage.tree = c.generateLineageWithTime(experimentTime, locBern, cGom, scaleGom)
+        tempLineage.tree = generateLineageWithTime(experimentTime, locBern, cGom, scaleGom)
         population.append(tempLineage)
     
     return(population)
