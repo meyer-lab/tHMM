@@ -104,13 +104,13 @@ class TestModel(unittest.TestCase):
         pop = p() # initialize "pop" as of class Population
         
         # generate a population of lineages w.r.t. time
-        pop.group = gpt(numLineages=numLineages, experimentTime=experimentTime, locBern=locBern, cGom=cGom, scaleGom=scaleGom)
+        pop.group = gpt(numLineages, experimentTime, locBern, cGom, scaleGom)
         # both estimators must be within +/- 0.08 of true locBern
         self.assertTrue(0.52 <= p.bernoulliParameterEstimatorAnalytical(pop) <= 0.68)
         self.assertTrue(0.52 <= p.bernoulliParameterEstimatorNumerical(pop) <= 0.68)
         
         # generate a population of lineages w.r.t. number
-        pop.group = gpn(numLineages=numLineages, numCells=numCells, locBern=locBern, cGom=cGom, scaleGom=scaleGom)
+        pop.group = gpn(numLineages, numCells, locBern, cGom, scaleGom)
         # both estimators must be within +/- 0.08 of true locBern
         self.assertTrue(0.52 <= p.bernoulliParameterEstimatorAnalytical(pop) <= 0.68)
         self.assertTrue(0.52 <= p.bernoulliParameterEstimatorNumerical(pop) <= 0.68)
