@@ -93,7 +93,7 @@ class TestModel(unittest.TestCase):
         self.assertGreater(np.std(tau_scale3), np.std(tau_scale05))
 
     def test_MLE_bern(self):
-        """ Generate multiple lineages based on time and estimate the bernoulli parameter with MLE. """
+        """ Generate multiple lineages and estimate the bernoulli parameter with MLE. """
         experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
         # division time of a cancer cell is about 20 hours
         locBern = 0.6
@@ -102,15 +102,34 @@ class TestModel(unittest.TestCase):
         numLineages = 20
         numCells = 75
         pop = p() # initialize "pop" as of class Population
-        
+
         # generate a population of lineages w.r.t. time
         pop.group = gpt(numLineages, experimentTime, locBern, cGom, scaleGom)
         # both estimators must be within +/- 0.08 of true locBern
         self.assertTrue(0.52 <= p.bernoulliParameterEstimatorAnalytical(pop) <= 0.68)
         self.assertTrue(0.52 <= p.bernoulliParameterEstimatorNumerical(pop) <= 0.68)
-        
+
         # generate a population of lineages w.r.t. number
         pop.group = gpn(numLineages, numCells, locBern, cGom, scaleGom)
         # both estimators must be within +/- 0.08 of true locBern
         self.assertTrue(0.52 <= p.bernoulliParameterEstimatorAnalytical(pop) <= 0.68)
         self.assertTrue(0.52 <= p.bernoulliParameterEstimatorNumerical(pop) <= 0.68)
+
+    def test_MLE_gomp(self):
+        """ Generate multiple lineages and estimate the gompertz parameters with MLE. """
+        experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
+        # division time of a cancer cell is about 20 hours
+        locBern = 0.6
+        cGom = 2
+        scaleGom = 0.5e2
+        numLineages = 20
+        numCells = 75
+        pop = p() # initialize "pop" as of class Population
+
+        # generate a population of lineages w.r.t. time
+        pop.group = gpt(numLineages, experimentTime, locBern, cGom, scaleGom)
+        out = p.gompertzParameterEstimatorNumerical(pop) # out[0] is cGom and out[1] is scaleGom
+        print(out[0])
+        self.assertTrue(0.75 <= out[0] <= 3.25)
+        self.assertTrue(35 <= out[1] <= 65)
+        
