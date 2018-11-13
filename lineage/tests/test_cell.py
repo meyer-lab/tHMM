@@ -2,7 +2,7 @@
 import unittest
 import math
 import numpy as np
-from ..Lineage import Lineage as l, Population as p, generatePopulationWithNum as gn_l, generatePopulationWithTime as gt_l
+from ..Lineage import Lineage as l, Population as p, generatePopulationWithNum as gpn, generatePopulationWithTime as gpt
 from ..CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
 
 class TestModel(unittest.TestCase):
@@ -100,4 +100,9 @@ class TestModel(unittest.TestCase):
         cGom = 2
         scaleGom = 0.5e2
         numLineages = 20
-        p.group = gt_l(numLineages=numLineages, experimentTime=experimentTime, locBern=locBern, cGom=cGom, scaleGom=scaleGom)
+        pop = p() # initialize "pop" as of class Population
+        pop.group = gpt(numLineages=numLineages, experimentTime=experimentTime, locBern=locBern, cGom=cGom, scaleGom=scaleGom)
+
+        # both estimators must be within +/- 0.08 of true locBern
+        self.assertTrue(0.52 <= p.bernoulliParameterEstimatorAnalytical(pop) <= 0.68)
+        self.assertTrue(0.52 <= p.bernoulliParameterEstimatorNumerical(pop) <= 0.68)
