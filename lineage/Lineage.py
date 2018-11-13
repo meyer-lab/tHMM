@@ -96,8 +96,11 @@ def generatePopulationWithTime(numLineages, experimentTime, locBern, cGom, scale
     return(population)
         
 class Population:
-    def __init__(self):
-        self.group = list()
+    def __init__(self, option, numLineages, numCellsOrTime, locBern, cGom, scaleGom):
+        if option == "num":
+            self.group = generatePopulationWithNum(numLineages, numCellsOrTime, locBern, cGom, scaleGom)
+        if option == "time":
+            self.group = generatePopulationWithTime(numLineages, numCellsOrTime, locBern, cGom, scaleGom)
         
     def loadPopulation(self, csv_file):
         #TODO: write function to import a population from external file

@@ -4,7 +4,6 @@
 import sys
 import math
 import scipy.stats as sp
-import matplotlib.pyplot as plt
 
 class CellNode:
     def __init__(self, gen=1, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, plotVal=0):

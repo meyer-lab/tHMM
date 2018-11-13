@@ -124,16 +124,16 @@ class TestModel(unittest.TestCase):
         scaleGom = 0.5e2
         numLineages = 100
         numCells = 75
-        pop = p() # initialize "pop" as of class Population
+        popTime = p("time", numLineages, experimentTime, locBern, cGom, scaleGom) # initialize "pop" as of class Population
+        popNum = p("num", numLineages, numCells, locBern, cGom, scaleGom) # initialize "pop" as of class Population
+        
 
         # generate a population of lineages w.r.t. time
-        pop.group = gpt(numLineages, experimentTime, locBern, cGom, scaleGom)
-        out = p.gompertzParameterEstimatorNumerical(pop) # out[0] is cGom and out[1] is scaleGom
+        out = p.gompertzParameterEstimatorNumerical(popTime) # out[0] is cGom and out[1] is scaleGom
         self.assertTrue(1 <= out[0] <= 3) # +/- 1.0 of true cGom
         self.assertTrue(35 <= out[1] <= 65) # +/- 15 of scaleGom
         
         # generate a population of lineages w.r.t. number
-        pop.group = gpn(numLineages, numCells, locBern, cGom, scaleGom)
-        out = p.gompertzParameterEstimatorNumerical(pop) # out[0] is cGom and out[1] is scaleGom
+        out = p.gompertzParameterEstimatorNumerical(popNum) # out[0] is cGom and out[1] is scaleGom
         self.assertTrue(1 <= out[0] <= 3) # +/- 1.0 of true cGom
         self.assertTrue(40 <= out[1] <= 60) # +/- 10 of scaleGom
