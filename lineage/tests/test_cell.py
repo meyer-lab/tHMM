@@ -2,8 +2,10 @@
 import unittest
 import math
 import numpy as np
-from ..Lineage import Lineage as l, generatePopulationWithNum, generatePopulationWithTime
-from ..CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
+#from ..Lineage import Lineage as l, generatePopulationWithNum, generatePopulationWithTime
+#from ..CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
+import ~/lineage/Lineage as l
+import ~/lineage/CellNode as c
 
 class TestModel(unittest.TestCase):
     """ Here are the unit tests. """
