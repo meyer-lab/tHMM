@@ -2,7 +2,7 @@
 import unittest
 import math
 import numpy as np
-from ..Lineage import Lineage as l, generatePopulationWithNum, generatePopulationWithTime
+from ..Lineage import Lineage as l, Population as p, generatePopulationWithNum as gn_l, generatePopulationWithTime as gt_l
 from ..CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
 
 class TestModel(unittest.TestCase):
@@ -94,11 +94,10 @@ class TestModel(unittest.TestCase):
 
     def test_MLE_bern(self):
         """ Generate multiple lineages based on time and estimate the bernoulli parameter with MLE. """
-        pop = l.Population()
         experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
         # division time of a cancer cell is about 20 hours
         locBern = 0.6
         cGom = 2
         scaleGom = 0.5e2
         numLineages = 20
-        pop.group = l.generatePopulationWithTime(numLineages=numLineages, experimentTime=experimentTime, locBern=locBern, cGom=cGom, scaleGom=scaleGom)
+        p.group = gt_l(numLineages=numLineages, experimentTime=experimentTime, locBern=locBern, cGom=cGom, scaleGom=scaleGom)
