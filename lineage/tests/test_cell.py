@@ -101,19 +101,16 @@ class TestModel(unittest.TestCase):
         scaleGom = 0.5e2
         numLineages = 100
         numCells = 75
-        pop = p() # initialize "pop" as of class Population
+        popTime = p("time", numLineages, experimentTime, locBern, cGom, scaleGom) # initialize "pop" as of class Population
+        popNum = p("num", numLineages, numCells, locBern, cGom, scaleGom) # initialize "pop" as of class Population
 
-        # generate a population of lineages w.r.t. time
-        pop.group = gpt(numLineages, experimentTime, locBern, cGom, scaleGom)
-        # both estimators must be within +/- 0.08 of true locBern
-        self.assertTrue(0.52 <= p.bernoulliParameterEstimatorAnalytical(pop) <= 0.68)
-        self.assertTrue(0.52 <= p.bernoulliParameterEstimatorNumerical(pop) <= 0.68)
+        # both estimators must be within +/- 0.08 of true locBern for popTime
+        self.assertTrue(0.52 <= p.bernoulliParameterEstimatorAnalytical(popTime) <= 0.68)
+        self.assertTrue(0.52 <= p.bernoulliParameterEstimatorNumerical(popTime) <= 0.68)
 
-        # generate a population of lineages w.r.t. number
-        pop.group = gpn(numLineages, numCells, locBern, cGom, scaleGom)
-        # both estimators must be within +/- 0.08 of true locBern
-        self.assertTrue(0.52 <= p.bernoulliParameterEstimatorAnalytical(pop) <= 0.68)
-        self.assertTrue(0.52 <= p.bernoulliParameterEstimatorNumerical(pop) <= 0.68)
+        # both estimators must be within +/- 0.08 of true locBern for popNum
+        self.assertTrue(0.52 <= p.bernoulliParameterEstimatorAnalytical(popNum) <= 0.68)
+        self.assertTrue(0.52 <= p.bernoulliParameterEstimatorNumerical(popNum) <= 0.68)
 
     def test_MLE_gomp(self):
         """ Generate multiple lineages and estimate the gompertz parameters with MLE. """
@@ -126,14 +123,13 @@ class TestModel(unittest.TestCase):
         numCells = 75
         popTime = p("time", numLineages, experimentTime, locBern, cGom, scaleGom) # initialize "pop" as of class Population
         popNum = p("num", numLineages, numCells, locBern, cGom, scaleGom) # initialize "pop" as of class Population
-        
 
-        # generate a population of lineages w.r.t. time
+        # test for lineages w.r.t. time
         out = p.gompertzParameterEstimatorNumerical(popTime) # out[0] is cGom and out[1] is scaleGom
         self.assertTrue(1 <= out[0] <= 3) # +/- 1.0 of true cGom
         self.assertTrue(35 <= out[1] <= 65) # +/- 15 of scaleGom
-        
-        # generate a population of lineages w.r.t. number
+
+        # test for lineages w.r.t. number
         out = p.gompertzParameterEstimatorNumerical(popNum) # out[0] is cGom and out[1] is scaleGom
         self.assertTrue(1 <= out[0] <= 3) # +/- 1.0 of true cGom
         self.assertTrue(40 <= out[1] <= 60) # +/- 10 of scaleGom
