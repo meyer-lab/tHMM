@@ -101,22 +101,32 @@ def doublingTime(numLineages, locBern, cGom, scaleGom):
     pop = generatePopulationWithTime(numLineages, 0, locBern, cGom, scaleGom)
     print('size of initial population: ' + str(len(pop)))
     
-    # while the current number of living cells in pop is less than 2*numLineages
-        # allow for all cells to divide or die
-    for cell in pop:   # for all cells
-        if len(pop) >= numLineages * 2:
-            break
-        if cell.isUnfinished():
-            cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
-            cell.endT = cell.startT + cell.tau
-            cell.fate = sp.bernoulli.rvs(locBern) # assign fate
-            if cell.fate:
-                temp1, temp2 = cell.divide(cell.endT) # cell divides
-                # append to list
-                lineage.append(temp1)
-                lineage.append(temp2)
-            else:
-                cell.die(cell.endT)
+    numAlive = len(pop)
+    # for all lineages in the pop
+        # for all cells in each lineage
+            # if the cell isUnifinished
+                # add 1 to numAlive
+                # allow for cell to divide/die according to parameters
+                    # add 1 to numAlive during division
+                    # subtract 1 from numAlive during death
+            # if numAlive > 2*numLineages
+                # return startT of current cell 
+            
+    for lin in pop:   # for all lineages in pop
+        for cell in lin: # for all cells in each lineage
+            if numAlive >= numLineages * 2:
+                break
+            if cell.isUnfinished():
+                cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
+                cell.endT = cell.startT + cell.tau
+                cell.fate = sp.bernoulli.rvs(locBern) # assign fate
+                if cell.fate:
+                    temp1, temp2 = cell.divide(cell.endT) # cell divides
+                    # append to list
+                    lineage.append(temp1)
+                    lineage.append(temp2)
+                else:
+                    cell.die(cell.endT)
         
     # startT of the newest cell is the official doubling time of the population
     return pop[-1].startT
