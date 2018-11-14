@@ -112,7 +112,7 @@ def doublingTime(numLineages, locBern, cGom, scaleGom):
                             # return startT of newest cell 
                     # subtract 1 from numAlive during death
             
-            
+    ### the issue with this method is that it will run the first lineage in the population to completion before going to any other lineages (i.e. it's a depth-first approach)
     for lin in pop:   # for all lineages in pop
         for cell in lin: # for all cells in each lineage
             if numAlive >= numLineages * 2:
