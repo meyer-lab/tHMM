@@ -2,12 +2,8 @@
 import unittest
 import math
 import numpy as np
-<<<<<<< HEAD
-from ..CellNode import CellNode as c, generate, doubleT
-=======
 from ..Lineage import Lineage as l, Population as p, generatePopulationWithNum as gpn, generatePopulationWithTime as gpt
 from ..CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
->>>>>>> master
 
 class TestModel(unittest.TestCase):
     """ Here are the unit tests. """
@@ -44,20 +40,6 @@ class TestModel(unittest.TestCase):
 
     def test_generate_fate(self):
         """ Make sure we can generate fake data properly when tuning the Bernoulli parameter for cell fate. """
-<<<<<<< HEAD
-        # if cell always divides it will stop at the maximum cell count or one below
-        out1 = generate(1, 7, 1.0, 0.6, 1) # can be odd when starting with 1 cell
-        self.assertTrue(len(out1) == 7)
-        out1 = generate(1, 10, 1.0, 0.6, 1) # can't be even with odd initial cell count
-        self.assertTrue(len(out1) == 9)
-        out1 = generate(10, 50, 1.0, 0.6, 1) # works with 10 initial cells (even-->even) too
-        self.assertTrue(len(out1) == 50)
-        out1 = generate(10, 51, 1.0, 0.6, 1) # can't be odd with even initial cell count
-        self.assertTrue(len(out1) == 50)
-
-        # only 1 cell no matter numCells when cells always die
-        out1 = generate(1, 7, 0.0, 0.6, 1)
-=======
         # if cell always divides it will stop at the maximum cell count when odd and one cell above when even (you can't divide and produce only 1 cell)
         out1 = generateLineageWithNum(7, 1.0, 0.6, 1)
         self.assertTrue(len(out1) == 7)
@@ -66,33 +48,23 @@ class TestModel(unittest.TestCase):
 
         # only 1 cell no matter numCells when cells always die
         out1 = generateLineageWithNum(7, 0.0, 0.6, 1)
->>>>>>> master
         self.assertTrue(len(out1) == 1)
 
         # when locBern is 0.5 the initial cell divides ~1/2 the time
         nDiv = 0
         for i in range(1000):
-<<<<<<< HEAD
-            out1 = generate(1, 3, 0.5, 0.6, 1) # allow for 1 division max
-=======
             out1 = generateLineageWithNum(3, 0.5, 0.6, 1) # allow for 1 division max
->>>>>>> master
             if len(out1) == 3:
                 nDiv += 1
         self.assertTrue(450 <= nDiv <= 550) # assert that it divided ~500 times
 
     def test_generate_lifetime(self):
         """ Make sure generated fake data behaves properly when tuning the Gompertz parameters. """
-        pop_size = 499 # cell number will be odd if initCells=1
+        pop_size = 499 # cell number will always be odd
         
         # average and stdev are both larger when c = 0.5 compared to c = 3
-<<<<<<< HEAD
-        out_c05 = generate(1, pop_size, 1.0, 0.5, 1) 
-        out_c3 = generate(1, pop_size, 1.0, 3.0, 1)
-=======
         out_c05 = generateLineageWithNum(pop_size, 1.0, 0.5, 1) 
         out_c3 = generateLineageWithNum(pop_size, 1.0, 3.0, 1)
->>>>>>> master
 
         tau_c05 = [] # create an empty list 
         tau_c3 = tau_c05.copy()
@@ -106,13 +78,8 @@ class TestModel(unittest.TestCase):
         self.assertGreater(np.std(tau_c05), np.std(tau_c3))
         
         # average and stdev are both larger when scale = 3 compared to scale = 0.5
-<<<<<<< HEAD
-        out_scale05 = generate(1, pop_size, 1.0, 0.75, 0.5) 
-        out_scale3 = generate(1, pop_size, 1.0, 0.75, 3)
-=======
         out_scale05 = generateLineageWithNum(pop_size, 1.0, 0.75, 0.5) 
         out_scale3 = generateLineageWithNum(pop_size, 1.0, 0.75, 3)
->>>>>>> master
 
         tau_scale05 = [] # create an empty list 
         tau_scale3 = tau_scale05.copy()
@@ -125,12 +92,6 @@ class TestModel(unittest.TestCase):
         self.assertGreater(np.mean(tau_scale3), np.mean(tau_scale05))
         self.assertGreater(np.std(tau_scale3), np.std(tau_scale05))
 
-<<<<<<< HEAD
-    def test_doubleT(self):
-        """ Make sure doubling time is reached faster/slower based on varying parameters. """
-        controlT = doubleT(0.5, 0.6, 1)
-        print(controlT)
-=======
     def test_MLE_bern(self):
         """ Generate multiple lineages and estimate the bernoulli parameter with MLE. """
         experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
@@ -172,4 +133,3 @@ class TestModel(unittest.TestCase):
         out = p.gompertzParameterEstimatorNumerical(popNum) # out[0] is cGom and out[1] is scaleGom
         self.assertTrue(1 <= out[0] <= 3) # +/- 1.0 of true cGom
         self.assertTrue(40 <= out[1] <= 60) # +/- 10 of scaleGom
->>>>>>> master
