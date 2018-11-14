@@ -94,6 +94,33 @@ def generatePopulationWithTime(numLineages, experimentTime, locBern, cGom, scale
         population.append(tempLineage)
     
     return(population)
+
+def doublingTime(numLineages, locBern, cGom, scaleGom):
+    """ For a given population, calculates the population-level growth rate (i.e. doubling time) """
+    # create a population of 1000 cells but don't let them divide or die
+    pop = generatePopulationWithTime(numLineages, 0, locBern, cGom, scaleGom)
+    print('size of initial population: ' + str(len(pop)))
+    
+    # while the current number of living cells in pop is less than 2*numLineages
+        # allow for all cells to divide or die
+    for cell in pop:   # for all cells
+        if len(pop) >= numLineages * 2:
+            break
+        if cell.isUnfinished():
+            cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
+            cell.endT = cell.startT + cell.tau
+            cell.fate = sp.bernoulli.rvs(locBern) # assign fate
+            if cell.fate:
+                temp1, temp2 = cell.divide(cell.endT) # cell divides
+                # append to list
+                lineage.append(temp1)
+                lineage.append(temp2)
+            else:
+                cell.die(cell.endT)
+        
+    # startT of the newest cell is the official doubling time of the population
+    return pop[-1].startT
+                
         
 class Population:
     def __init__(self, option, numLineages, numCellsOrTime, locBern, cGom, scaleGom):

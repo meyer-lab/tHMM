@@ -2,7 +2,7 @@
 import unittest
 import math
 import numpy as np
-from ..Lineage import Lineage as l, Population as p, generatePopulationWithNum as gpn, generatePopulationWithTime as gpt
+from ..Lineage import Lineage as l, Population as p, generatePopulationWithNum as gpn, generatePopulationWithTime as gpt, doublingTime
 from ..CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
 
 class TestModel(unittest.TestCase):
@@ -133,3 +133,6 @@ class TestModel(unittest.TestCase):
         out = p.gompertzParameterEstimatorNumerical(popNum) # out[0] is cGom and out[1] is scaleGom
         self.assertTrue(1 <= out[0] <= 3) # +/- 1.0 of true cGom
         self.assertTrue(40 <= out[1] <= 60) # +/- 10 of scaleGom
+
+    def test_doubleT(self):
+        print(doublingTime(25, 0.6, 1, 3))
