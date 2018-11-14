@@ -124,12 +124,12 @@ class TestModel(unittest.TestCase):
         popTime = p("time", numLineages, experimentTime, locBern, cGom, scaleGom) # initialize "pop" as of class Population
         popNum = p("num", numLineages, numCells, locBern, cGom, scaleGom) # initialize "pop" as of class Population
 
-        # test for lineages w.r.t. time
+        # test populations w.r.t. time
         out = p.gompertzParameterEstimatorNumerical(popTime) # out[0] is cGom and out[1] is scaleGom
         self.assertTrue(1 <= out[0] <= 3) # +/- 1.0 of true cGom
         self.assertTrue(35 <= out[1] <= 65) # +/- 15 of scaleGom
 
-        # test for lineages w.r.t. number
+        # test populations w.r.t. number
         out = p.gompertzParameterEstimatorNumerical(popNum) # out[0] is cGom and out[1] is scaleGom
         self.assertTrue(1 <= out[0] <= 3) # +/- 1.0 of true cGom
         self.assertTrue(40 <= out[1] <= 60) # +/- 10 of scaleGom
