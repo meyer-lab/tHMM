@@ -105,12 +105,13 @@ def doublingTime(numLineages, locBern, cGom, scaleGom):
     # for all lineages in the pop
         # for all cells in each lineage
             # if the cell isUnifinished
-                # add 1 to numAlive
+                # determine behavior based on parameters
                 # allow for cell to divide/die according to parameters
                     # add 1 to numAlive during division
+                        # if numAlive > 2*numLineages
+                            # return startT of newest cell 
                     # subtract 1 from numAlive during death
-            # if numAlive > 2*numLineages
-                # return startT of current cell 
+            
             
     for lin in pop:   # for all lineages in pop
         for cell in lin: # for all cells in each lineage
@@ -121,11 +122,16 @@ def doublingTime(numLineages, locBern, cGom, scaleGom):
                 cell.endT = cell.startT + cell.tau
                 cell.fate = sp.bernoulli.rvs(locBern) # assign fate
                 if cell.fate:
+                    numAlive += 1 # net increase of 1 cell
                     temp1, temp2 = cell.divide(cell.endT) # cell divides
-                    # append to list
-                    lineage.append(temp1)
-                    lineage.append(temp2)
+                    # append to the current lineage
+                    lin.append(temp1)
+                    lin.append(temp2)
+                    # check count of number of live cells
+                    if (numAlive > 2*numLineages):
+                        return temp2.startT
                 else:
+                    numAlive -= 1 # net decrease of 1 cell
                     cell.die(cell.endT)
         
     # startT of the newest cell is the official doubling time of the population
