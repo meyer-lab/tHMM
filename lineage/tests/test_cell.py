@@ -2,8 +2,8 @@
 import unittest
 import math
 import numpy as np
-from ..Lineage import Lineage as l, Population as p, generatePopulationWithNum as gpn, generatePopulationWithTime as gpt, doublingTime
-from ..CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
+from ..Lineage import Lineage as l, Population as p, generatePopulationWithNum as gpn, generatePopulationWithTime as gpt
+from ..CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime, doublingTime
 
 class TestModel(unittest.TestCase):
     """ Here are the unit tests. """
@@ -135,4 +135,4 @@ class TestModel(unittest.TestCase):
         self.assertTrue(40 <= out[1] <= 60) # +/- 10 of scaleGom
 
     def test_doubleT(self):
-        print(doublingTime(25, 0.6, 1, 3))
+        print(doublingTime(1000, 0.6, 2, 50))

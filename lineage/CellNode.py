@@ -110,3 +110,35 @@ def generateLineageWithTime(experimentTime, locBern, cGom, scaleGom):
     
     # return the list at end
     return lineage
+
+def doublingTime(initCells, locBern, cGom, scaleGom):
+    ''' calculates the doubling time of a homogeneous cell population given the three parameters and an initial cell count. '''
+    #create an empty lineage
+    lineage = []
+    
+    # create initCells copies of cell0
+    for ii in range(initCells):
+        lineage.append(CellNode(startT=0))
+
+    numAlive = initCells # track the number of cells
+    
+    # have cell divide/die according to distribution
+    for cell in lineage:   # for all cells (cap at numCells)
+        if numAlive >= 2*initCells:
+            break
+        if cell.isUnfinished():
+            cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
+            cell.endT = cell.startT + cell.tau
+            cell.fate = sp.bernoulli.rvs(locBern) # assign fate
+            if cell.fate:
+                temp1, temp2 = cell.divide(cell.endT) # cell divides
+                # append to list
+                lineage.append(temp1)
+                lineage.append(temp2)
+                numAlive += 1 # net increase of 1 alive cell
+            else:
+                cell.die(cell.endT)
+                numAlive -= 1 # net decrease of 1 alive cell
+                
+    # return the start time of final cell created
+    return lineage[-1].startT

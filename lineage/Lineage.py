@@ -93,51 +93,9 @@ def generatePopulationWithTime(numLineages, experimentTime, locBern, cGom, scale
         tempLineage.tree = generateLineageWithTime(experimentTime, locBern, cGom, scaleGom)
         population.append(tempLineage)
     
-    return(population)
+    return(population)         
 
-def doublingTime(numLineages, locBern, cGom, scaleGom):
-    """ For a given population, calculates the population-level growth rate (i.e. doubling time) """
-    # create a population of 1000 cells but don't let them divide or die
-    pop = generatePopulationWithTime(numLineages, 0, locBern, cGom, scaleGom)
-    print('size of initial population: ' + str(len(pop)))
-    
-    numAlive = len(pop)
-    # for all lineages in the pop
-        # for all cells in each lineage
-            # if the cell isUnifinished
-                # determine behavior based on parameters
-                # allow for cell to divide/die according to parameters
-                    # add 1 to numAlive during division
-                        # if numAlive > 2*numLineages
-                            # return startT of newest cell 
-                    # subtract 1 from numAlive during death
-            
-    ### the issue with this method is that it will run the first lineage in the population to completion before going to any other lineages (i.e. it's a depth-first approach)
-    for lin in pop:   # for all lineages in pop
-        for cell in lin: # for all cells in each lineage
-            if numAlive >= numLineages * 2:
-                break
-            if cell.isUnfinished():
-                cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
-                cell.endT = cell.startT + cell.tau
-                cell.fate = sp.bernoulli.rvs(locBern) # assign fate
-                if cell.fate:
-                    numAlive += 1 # net increase of 1 cell
-                    temp1, temp2 = cell.divide(cell.endT) # cell divides
-                    # append to the current lineage
-                    lin.append(temp1)
-                    lin.append(temp2)
-                    # check count of number of live cells
-                    if (numAlive > 2*numLineages):
-                        return temp2.startT
-                else:
-                    numAlive -= 1 # net decrease of 1 cell
-                    cell.die(cell.endT)
-        
-    # startT of the newest cell is the official doubling time of the population
-    return pop[-1].startT
-                
-        
+
 class Population:
     def __init__(self, option, numLineages, numCellsOrTime, locBern, cGom, scaleGom):
         if option == "num":
