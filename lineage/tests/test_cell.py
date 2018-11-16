@@ -135,7 +135,18 @@ class TestModel(unittest.TestCase):
         self.assertTrue(40 <= out[1] <= 60) # +/- 10 of scaleGom
 
     def test_doubleT(self):
-        print("Doubling time for 1000 cells that always divide is: ")
-        print(doublingTime(1000, 1, 2, 50))
-        print ("Doubling time for 1000 cells that divide 60% of the time is: ")
-        print(doublingTime(1000, 0.6, 2, 50))
+        num = 25
+        dt_fast = np.zeros((num))
+        dt_slow = dt_fast.copy()
+
+        for ii in range(num):
+            dt_fast[ii] = doublingTime(1000, 1, 2, 50)
+            dt_slow[ii] = doublingTime(1000, 0.6, 2, 50)
+
+        print("when cells always divide: ")
+        print("average time = " + str(np.mean(dt_fast)))
+        print("standard deviation = " + str(np.std(dt_fast)))
+
+        print("when cells divide 60% of the time: ")
+        print("average time = " + str(np.mean(dt_slow)))
+        print("standard deviation = " + str(np.std(dt_slow)))
