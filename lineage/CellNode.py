@@ -19,20 +19,25 @@ class CellNode:
         self.plotVal = plotVal
 
     def isParent(self):
+        """ Return the parent of the current cell. """
         return self.left.parent is self and self.right.parent is self
 
     def isChild(self):
+        """ Returns true if this cell has a known parent. """
         return self.parent.isParent()
-    
+
     def isRootParent(self):
+        """Returns true if this cell has no documented parent. """
         return (self.gen == 1 and self.parent is None)
 
     def calcTau(self):
+        """ Find the cell's lifetime. """
         self.tau = self.endT - self.startT   # calculate tau here
         if math.isnan(self.tau):
             print("Warning: your cell lifetime {} is a nan".format(self.tau))
 
     def isUnfinished(self):
+        """ See if the cell is living or has already died/divided. """
         return math.isnan(self.endT) and self.fate is None   # returns true when cell is still alive
 
     def die(self, endT):
@@ -61,10 +66,10 @@ def generateLineageWithNum(numCells, locBern, cGom, scaleGom):
     ''' generates list given a maximum number of cells, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create first cell
     cell0 = CellNode(startT=0)
-    
+
     # put first cell in list
     lineage = [cell0]
-    
+
     # have cell divide/die according to distribution
     for cell in lineage:   # for all cells (cap at numCells)
         if len(lineage) >= numCells:
@@ -80,7 +85,7 @@ def generateLineageWithNum(numCells, locBern, cGom, scaleGom):
                 lineage.append(temp2)
             else:
                 cell.die(cell.endT)
-                
+
     # return the list at end
     return lineage
 
@@ -88,10 +93,10 @@ def generateLineageWithTime(experimentTime, locBern, cGom, scaleGom):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create first cell
     cell0 = CellNode(startT=0)
-    
+
     # put first cell in list
     lineage = [cell0]
-    
+
     # have cell divide/die according to distribution
     for cell in lineage:   # for all cells (cap at numCells)
         if cell.isUnfinished():
@@ -107,7 +112,7 @@ def generateLineageWithTime(experimentTime, locBern, cGom, scaleGom):
                 lineage.append(temp2)
             else:
                 cell.die(cell.endT)
-    
+
     # return the list at end
     return lineage
 
@@ -115,13 +120,13 @@ def doublingTime(initCells, locBern, cGom, scaleGom):
     ''' calculates the doubling time of a homogeneous cell population given the three parameters and an initial cell count. '''
     #create an empty lineage
     lineage = []
-    
+
     # create initCells copies of cell0
     for ii in range(initCells):
         lineage.append(CellNode(startT=0))
 
     numAlive = initCells # track the number of cells
-    
+
     # have cell divide/die according to distribution
     for cell in lineage:   # for all cells (cap at numCells)
         if numAlive >= 2*initCells:
@@ -139,6 +144,6 @@ def doublingTime(initCells, locBern, cGom, scaleGom):
             else:
                 cell.die(cell.endT)
                 numAlive -= 1 # net decrease of 1 alive cell
-                
+
     # return the start time of final cell created
     return lineage[-1].startT
