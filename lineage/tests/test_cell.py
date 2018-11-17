@@ -145,4 +145,3 @@ class TestModel(unittest.TestCase):
             dt_slow[ii] = doublingTime(1000, 0.6, 2, 50)
 
         self.assertGreater(np.mean(dt_slow), np.mean(dt_fast))
-        self.assertGreater(np.std(dt_slow), np.std(dt_fast))
