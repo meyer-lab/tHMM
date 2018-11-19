@@ -145,7 +145,12 @@ def doublingTime(initCells, locBern, cGom, scaleGom):
                 cell.die(cell.endT)
                 numAlive -= 1 # net decrease of 1 alive cell
 
-    print("lineage size: " + str(len(lineage)))
+    count = 0
+    for cell in lineage:
+        if cell.isUnfinished():
+            count += 1
+    print("number of unfinished cells at end: " + str(count))
+    
     for cell in lineage:
         if cell.startT > lineage[-1].startT:
             print("A cell was created after the recorded `doublingTime`")
