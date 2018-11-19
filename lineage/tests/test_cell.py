@@ -136,7 +136,7 @@ class TestModel(unittest.TestCase):
 
     def test_doubleT(self):
         """ Check that cells double quicker when they always divide. """
-        num = 5
+        num = 15
         dt_fast = np.zeros((num))
         dt_slow = dt_fast.copy()
 
