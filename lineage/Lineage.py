@@ -7,7 +7,7 @@ import numpy as np
 import scipy.stats as sp
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
-from .CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
+from CellNode import CellNode as c, generateLineageWithNum, generateLineageWithTime
 
 class Lineage:
     def __init__(self):
