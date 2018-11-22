@@ -134,5 +134,6 @@ def doublingTime(initCells, locBern, cGom, scaleGom):
                 count += 1
         print("when time is " + str(experimentTime) + " the number of unfinished cells at end is " + str(count))
 
+    # fit to exponential curve and find exponent (c)
     # return the start time of final cell created
     return lineage[-1].startT
