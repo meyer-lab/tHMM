@@ -4,6 +4,9 @@
 import sys
 import math
 import scipy.stats as sp
+from scipy.optimize import curve_fit
+import numpy as np
+import matplotlib.pyplot as plt
 
 class CellNode:
     def __init__(self, gen=1, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, plotVal=0):
@@ -127,8 +130,10 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
 def doublingTime(initCells, locBern, cGom, scaleGom):
     ''' calculates the doubling time of a homogeneous cell population given the three parameters and an initial cell count. '''
     numAlive = [] # list that stores the number of alive cells for each experimentTime
+    experimentTimes = np.logspace(start=0, stop=2, num=49)
+    experimentTimes = [0] + experimentTimes
     
-    for experimentTime in range(50):
+    for experimentTime in experimentTimes:
         lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom)
         count = 0
         for cell in lineage:
@@ -137,8 +142,32 @@ def doublingTime(initCells, locBern, cGom, scaleGom):
         numAlive.append(count)
         print("when time is " + str(experimentTime) + " the number of unfinished cells at end is " + str(count))
 
-    # fit to exponential curve and find exponential coefficient (gamma)
+    ''' 
+    Fit to exponential curve and find exponential coefficient. 
+    '''
     
-    # doubleT = ln(2) / gamma
+    def expFunc(experimentTimes, *expParam):
+        """ Calculates the exponential."""
+        return(initCells * np.exp(expParam[0] * experimentTimes))
+
+    expY = lambda experimentTimes, expParam: expFunc(experimentTimes, expParam)
     
-    # return doubleT
+    fitExpParam, _ = curve_fit(expY, experimentTimes, numAlive, p0=[0]) # fit an exponential curve to generated data
+    
+    doubleT = np.log(2) / fitExpParam[0] # relationship between doubling time and exponential function
+    
+    '''
+    Plotting routing: feel free to comment out.
+    '''
+    plt.figure(1, figsize=(10,8))
+    plt.scatter(experimentTimes, numAlive, c='b', marker='.', label='generated data')
+    plt.plot(experimentTimes, expY(experimentTimes, fitExpParam), 'r--', label='fit w/ c={}'.format(round(fitExpParam[0],5)))
+    plt.legend()
+    plt.xlabel('Time [hrs]')
+    plt.ylabel('Cell Count [number]')
+    plt.title('Exponential Fitting w/ c={c} and Doubling Time={d} hrs'.format(c=round(fitExpParam[0],5), d=round(doubleT,2)))
+    plt.grid()
+    #plt.savefig('exp.png')
+    plt.show()
+    
+    return doubleT
