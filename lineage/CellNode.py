@@ -95,13 +95,14 @@ def generateLineageWithNum(numCells, locBern, cGom, scaleGom):
     # return the list at end
     return lineage
 
-def generateLineageWithTime(experimentTime, locBern, cGom, scaleGom):
+def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
-    #create first cell
-    cell0 = CellNode(startT=0)
+    #create an empty lineage
+    lineage = []
 
-    # put first cell in list
-    lineage = [cell0]
+    # create initCells copies of cell0
+    for ii in range(initCells):
+        lineage.append(CellNode(startT=0))
 
     # have cell divide/die according to distribution
     for cell in lineage:   # for all cells (cap at numCells)
