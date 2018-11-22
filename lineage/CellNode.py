@@ -126,14 +126,19 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
 
 def doublingTime(initCells, locBern, cGom, scaleGom):
     ''' calculates the doubling time of a homogeneous cell population given the three parameters and an initial cell count. '''
+    numAlive = [] # list that stores the number of alive cells for each experimentTime
+    
     for experimentTime in range(50):
         lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom)
         count = 0
         for cell in lineage:
             if cell.isUnfinished():
                 count += 1
+        numAlive.append(count)
         print("when time is " + str(experimentTime) + " the number of unfinished cells at end is " + str(count))
 
-    # fit to exponential curve and find exponent (c)
-    # return the start time of final cell created
-    return lineage[-1].startT
+    # fit to exponential curve and find exponential coefficient (gamma)
+    
+    # doubleT = ln(2) / gamma
+    
+    # return doubleT
