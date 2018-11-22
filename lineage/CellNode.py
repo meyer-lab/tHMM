@@ -40,6 +40,12 @@ class CellNode:
         """ See if the cell is living or has already died/divided. """
         return math.isnan(self.endT) and self.fate is None   # returns true when cell is still alive
 
+    def setUnfinished(self):
+        """ Set a finished cell back to being unfinished. """
+        self.endT = float('nan')
+        self.fate = None
+        self.calcTau()
+    
     def die(self, endT):
         """ Cell dies without dividing. """
         self.fate = False   # no division
@@ -102,16 +108,17 @@ def generateLineageWithTime(experimentTime, locBern, cGom, scaleGom):
         if cell.isUnfinished():
             cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
             cell.endT = cell.startT + cell.tau
-            cell.fate = sp.bernoulli.rvs(locBern) # assign fate
-            if cell.endT >= experimentTime:
-                break
-            if cell.fate:
-                temp1, temp2 = cell.divide(cell.endT) # cell divides
-                # append to list
-                lineage.append(temp1)
-                lineage.append(temp2)
-            else:
-                cell.die(cell.endT)
+            if cell.endT < experimentTime: # determine fate only if endT is within range
+                cell.fate = sp.bernoulli.rvs(locBern) # assign fate
+                if cell.fate:
+                    temp1, temp2 = cell.divide(cell.endT) # cell divides
+                    # append to list
+                    lineage.append(temp1)
+                    lineage.append(temp2)
+                else:
+                    cell.die(cell.endT)
+            else: # if the endT is past the experimentTime
+                cell.setUnfinished() # reset cell to be unfinished and move to next cell
 
     # return the list at end
     return lineage
