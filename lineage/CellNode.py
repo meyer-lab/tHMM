@@ -44,7 +44,7 @@ class CellNode:
         """ Set a finished cell back to being unfinished. """
         self.endT = float('nan')
         self.fate = None
-        self.calcTau()
+        self.tau = float('nan')
     
     def die(self, endT):
         """ Cell dies without dividing. """

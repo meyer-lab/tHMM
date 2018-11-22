@@ -86,7 +86,7 @@ def generatePopulationWithTime(numLineages, experimentTime, locBern, cGom, scale
 
     while len(population) < numLineages:
         tempLineage = Lineage()
-        tempLineage.tree = generateLineageWithTime(experimentTime, locBern, cGom, scaleGom)
+        tempLineage.tree = generateLineageWithTime(1, experimentTime, locBern, cGom, scaleGom) # start with 1 cell per lineage
         population.append(tempLineage)
 
     return(population)

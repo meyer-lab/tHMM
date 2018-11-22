@@ -134,14 +134,14 @@ class TestModel(unittest.TestCase):
         self.assertTrue(1 <= out[0] <= 3) # +/- 1.0 of true cGom
         self.assertTrue(40 <= out[1] <= 60) # +/- 10 of scaleGom
 
-    def test_doubleT(self):
-        """ Check that cells double quicker when they always divide. """
-        num = 15
-        dt_fast = np.zeros((num))
-        dt_slow = dt_fast.copy()
-
-        for ii in range(num):
-            dt_fast[ii] = doublingTime(1000, 1, 2, 50)
-            dt_slow[ii] = doublingTime(1000, 0.6, 2, 50)
-
-        self.assertGreater(np.mean(dt_slow), np.mean(dt_fast))
+#    def test_doubleT(self):
+#        """ Check that cells double quicker when they always divide. """
+#        num = 15
+#        dt_fast = np.zeros((num))
+#        dt_slow = dt_fast.copy()
+#
+#        for ii in range(num):
+#            dt_fast[ii] = doublingTime(1000, 1, 2, 50)
+#            dt_slow[ii] = doublingTime(1000, 0.6, 2, 50)
+#
+#        self.assertGreater(np.mean(dt_slow), np.mean(dt_fast))
