@@ -4,8 +4,8 @@
 import sys
 import math
 import scipy.stats as sp
-from scipy.optimize import curve_fit
 import numpy as np
+from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
 class CellNode:
@@ -140,7 +140,6 @@ def doublingTime(initCells, locBern, cGom, scaleGom):
             if cell.isUnfinished():
                 count += 1
         numAlive.append(count)
-        print("when time is " + str(experimentTime) + " the number of unfinished cells at end is " + str(count))
 
     ''' 
     Fit to exponential curve and find exponential coefficient. 
@@ -158,7 +157,7 @@ def doublingTime(initCells, locBern, cGom, scaleGom):
     
     '''
     Plotting routing: feel free to comment out.
-    '''
+    
     plt.figure(1, figsize=(10,8))
     plt.scatter(experimentTimes, numAlive, c='b', marker='.', label='generated data')
     plt.plot(experimentTimes, expY(experimentTimes, fitExpParam), 'r--', label='fit w/ c={}'.format(round(fitExpParam[0],5)))
@@ -169,5 +168,5 @@ def doublingTime(initCells, locBern, cGom, scaleGom):
     plt.grid()
     #plt.savefig('exp.png')
     plt.show()
-    
+    '''
     return doubleT

@@ -136,4 +136,11 @@ class TestModel(unittest.TestCase):
 
     def test_doubleT(self):
         """ Check for basic functionality of doubleT. """
-        doublingTime(1000, 0.6, 2, 50)
+        base = doublingTime(1000, 0.7, 2, 50)
+
+        # doubles quicker when cells always divide
+        self.assertGreater(base, doublingTime(1000, 1, 2, 50))
+
+        # doubles quicker when cell lifetime is shorter (larger c & lower scale == shorter life)
+        self.assertGreater(base, doublingTime(1000, 0.7, 3, 50))
+        self.assertGreater(base, doublingTime(1000, 0.7, 2, 1))
