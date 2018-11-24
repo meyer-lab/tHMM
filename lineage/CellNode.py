@@ -104,7 +104,7 @@ def doublingTime(initCells, locBern, cGom, scaleGom):
     numAlive = [] # list that stores the number of alive cells for each experimentTime
     experimentTimes = np.logspace(start=0, stop=2, num=49)
     experimentTimes = [0] + experimentTimes
-    
+
     for experimentTime in experimentTimes:
         lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom)
         count = 0
@@ -113,32 +113,15 @@ def doublingTime(initCells, locBern, cGom, scaleGom):
                 count += 1
         numAlive.append(count)
 
-    ''' 
-    Fit to exponential curve and find exponential coefficient. 
-    '''
-    
+    # Fit to exponential curve and find exponential coefficient. 
     def expFunc(experimentTimes, *expParam):
         """ Calculates the exponential."""
         return(initCells * np.exp(expParam[0] * experimentTimes))
 
     expY = lambda experimentTimes, expParam: expFunc(experimentTimes, expParam)
-    
+
     fitExpParam, _ = curve_fit(expY, experimentTimes, numAlive, p0=[0]) # fit an exponential curve to generated data
-    
+
     doubleT = np.log(2) / fitExpParam[0] # relationship between doubling time and exponential function
-    
-    '''
-    Plotting routing: feel free to comment out.
-    
-    plt.figure(1, figsize=(10,8))
-    plt.scatter(experimentTimes, numAlive, c='b', marker='.', label='generated data')
-    plt.plot(experimentTimes, expY(experimentTimes, fitExpParam), 'r--', label='fit w/ c={}'.format(round(fitExpParam[0],5)))
-    plt.legend()
-    plt.xlabel('Time [hrs]')
-    plt.ylabel('Cell Count [number]')
-    plt.title('Exponential Fitting w/ c={c} and Doubling Time={d} hrs'.format(c=round(fitExpParam[0],5), d=round(doubleT,2)))
-    plt.grid()
-    #plt.savefig('exp.png')
-    plt.show()
-    '''
+
     return doubleT
