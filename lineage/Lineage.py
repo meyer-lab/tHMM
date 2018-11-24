@@ -75,19 +75,17 @@ def generatePopulationWithNum(numLineages, numCells, locBern, cGom, scaleGom):
 
     return(population)
 
-def generatePopulationWithTime(numLineages, experimentTime, locBern, cGom, scaleGom):
-    ''' generates list given a maximum number of lineage trees, and parameters to describe the underlying distribution'''
+def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom):
+    ''' generates a population of lineages that abide by distinct parameters. '''
 
-    #create first lineage
-    lineage0 = Lineage()
+    assert(len(initCells) == len(locBern) == len(cGom) == len(scaleGom)) # make sure all lists have same length
+    numLineages = len(initCells)
+    population = [] # create empty list
 
-    # put first lineage in list
-    population = [lineage0]
-
-    while len(population) < numLineages:
-        tempLineage = Lineage()
-        tempLineage.tree = generateLineageWithTime(1, experimentTime, locBern, cGom, scaleGom) # start with 1 cell per lineage
-        population.append(tempLineage)
+    for ii in range(numLineages):
+        temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii]) # create a temporary lineage
+        for cell in temp:
+            population.append(cell) # append all individual cells into a population
 
     return(population)
 
