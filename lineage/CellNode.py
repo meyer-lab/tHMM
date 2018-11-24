@@ -70,40 +70,12 @@ class CellNode:
 
         return (self.left, self.right)
 
-
-def generateLineageWithNum(numCells, locBern, cGom, scaleGom):
-    ''' generates list given a maximum number of cells, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
-    #create first cell
-    cell0 = CellNode(startT=0)
-
-    # put first cell in list
-    lineage = [cell0]
-
-    # have cell divide/die according to distribution
-    for cell in lineage:   # for all cells (cap at numCells)
-        if len(lineage) >= numCells:
-            break
-        if cell.isUnfinished():
-            cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
-            cell.endT = cell.startT + cell.tau
-            cell.fate = sp.bernoulli.rvs(locBern) # assign fate
-            if cell.fate:
-                temp1, temp2 = cell.divide(cell.endT) # cell divides
-                # append to list
-                lineage.append(temp1)
-                lineage.append(temp2)
-            else:
-                cell.die(cell.endT)
-
-    # return the list at end
-    return lineage
-
 def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create an empty lineage
     lineage = []
 
-    # create initCells copies of cell0
+    # initialize the list with cells
     for ii in range(initCells):
         lineage.append(CellNode(startT=0))
 
