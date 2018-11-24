@@ -25,9 +25,9 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
 
 
 class Population:
-    def __init__(self, initCells, time, locBern, cGom, scaleGom):
+    def __init__(self, experimentTime, initCells, locBern, cGom, scaleGom):
         """ Builds the appropriate population according to option and args. """
-        self.group = generatePopulationWithTime(time, initCells, locBern, cGom, scaleGom)
+        self.group = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom)
 
     def loadPopulation(self, csv_file):
         #TODO: write function to import a population from external file
