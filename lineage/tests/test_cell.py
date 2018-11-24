@@ -39,45 +39,51 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell3.parent is cell1)
 
     def test_generate_fate(self):
-        """ Make sure we can generate fake data properly when tuning the Bernoulli parameter for cell fate. """
-        
+        """ There are more live cells at end of 100 hour experiment when bernoulli param is larger """
+        out_5 = generateLineageWithTime(100, 100, 0.5, 2, 50)
+        count_5 = 0
+        for cell in out_5:
+            if cell.isUnfinished():
+                count_5 += 1
+        out_8 = generateLineageWithTime(100, 100, 0.8, 2, 50)
+        count_8 = 0
+        for cell in out_8:
+            if cell.isUnfinished():
+                count_8 += 1
+
+        self.assertGreater(count_8, count_5)
 
     def test_generate_lifetime(self):
         """ Make sure generated fake data behaves properly when tuning the Gompertz parameters. """        
-        print("testing lifetime")
         # average and stdev are both larger when c = 0.5 compared to c = 3
         out_c05 = generateLineageWithTime(10, 100, 0.8, 0.5, 50) 
-        print("made out_c05")
         out_c3 = generateLineageWithTime(10, 100, 0.8, 3.0, 50)
-        print("made out_c3")
 
         tau_c05 = [] # create an empty list 
         tau_c3 = tau_c05.copy()
-        for n in range(pop_size):
-            if not out_c05[n].isUnfinished():  # if cell has died, append tau to list
-                tau_c05.append(out_c05[n].tau)
-            if not out_c3[n].isUnfinished():  # if cell has died, append tau to list
-                tau_c3.append(out_c3[n].tau)
+        for n in out_c05:
+            if not n.isUnfinished():  # if cell has died, append tau to list
+                tau_c05.append(n.tau)
+        for n in out_c3:
+            if not n.isUnfinished():  # if cell has died, append tau to list
+                tau_c3.append(n.tau)
 
-        print("done appending taus")
         self.assertGreater(np.mean(tau_c05), np.mean(tau_c3))
         self.assertGreater(np.std(tau_c05), np.std(tau_c3))
         
         # average and stdev are both larger when scale = 3 compared to scale = 0.5
         out_scale40 = generateLineageWithTime(10, 100, 0.8, 2, 40) 
-        print("made out_scale05")
         out_scale50 = generateLineageWithTime(10, 100, 0.8, 2, 50)
-        print("made out_scale3")
 
         tau_scale40 = [] # create an empty list 
         tau_scale50 = tau_scale40.copy()
-        for n in range(pop_size):
-            if not out_scale40[n].isUnfinished():  # if cell has died, append tau to list
-                tau_scale05.append(out_scale05[n].tau)
-            if not out_scale50[n].isUnfinished():  # if cell has died, append tau to list
-                tau_scale3.append(out_scale3[n].tau)
+        for n in out_scale40:
+            if not n.isUnfinished():  # if cell has died, append tau to list
+                tau_scale40.append(n.tau)
+        for n in out_scale50:  
+            if not n.isUnfinished():  # if cell has died, append tau to list
+                tau_scale50.append(n.tau)
 
-        print("done appending taus")
         self.assertGreater(np.mean(tau_scale50), np.mean(tau_scale40))
         self.assertGreater(np.std(tau_scale50), np.std(tau_scale40))
 
