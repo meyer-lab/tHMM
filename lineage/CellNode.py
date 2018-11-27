@@ -25,6 +25,7 @@ class CellNode:
         return self.parent.isParent()
     
     def isRootParent(self):
+        # needs to be fixed, may have
         return (self.gen == 1 and self.parent is None)
 
     def calcTau(self):
