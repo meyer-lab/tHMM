@@ -30,8 +30,13 @@ class CellNode:
         return self.parent.isParent()
 
     def isRootParent(self):
-        """Returns true if this cell has no documented parent. """
-        return (self.gen == 1 and self.parent is None)
+        """ Returns whether this is a starting cell with no parent. """
+        if self.parent is None:
+            assert self.gen == 1
+            return True
+        else:
+            assert self.gen > 1
+            return False
 
     def calcTau(self):
         """ Find the cell's lifetime. """
