@@ -38,6 +38,22 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell2.parent is cell1)
         self.assertTrue(cell3.parent is cell1)
 
+    def test_generate_endT(self):
+        """ Make sure experiment ends at proper time when using generateLineageWithTime. """
+        out = generateLineageWithTime(100, 100, 0.5, 2, 50)
+        for cell in out:
+            if cell.isUnfinished(): # if cell is alive
+                self.assertTrue(math.isnan(cell.endT)) # don't know final lifetime
+                self.assertTrue(math.isnan(cell.tau))
+                self.assertLess(cell.startT, 100) # was created before end of experiment
+                self.assertTrue(cell.fate == None) # fate is none
+            else:
+                self.assertLess(cell.endT, 100) # endT is before end of experiment
+                self.assertFalse(math.isnan(cell.tau)) # tau is not NaN
+                self.assertLess(cell.startT, cell.endT) # start time is before endT
+                self.assertTrue(cell.fate != None) # fate is none
+                
+
     def test_generate_fate(self):
         """ There are more live cells at end of 100 hour experiment when bernoulli param is larger """
         out_5 = generateLineageWithTime(100, 100, 0.5, 2, 50)
