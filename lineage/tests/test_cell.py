@@ -52,7 +52,6 @@ class TestModel(unittest.TestCase):
                 self.assertFalse(math.isnan(cell.tau)) # tau is not NaN
                 self.assertLess(cell.startT, cell.endT) # start time is before endT
                 self.assertTrue(cell.fate != None) # fate is none
-                
 
     def test_generate_fate(self):
         """ There are more live cells at end of 100 hour experiment when bernoulli param is larger """
