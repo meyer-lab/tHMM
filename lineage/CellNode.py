@@ -46,8 +46,6 @@ class CellNode:
 
     def isUnfinished(self):
         """ See if the cell is living or has already died/divided. """
-        # is this the right way to go about doing this
-        # we might have cells with an endT but no fate?
         return math.isnan(self.endT) and self.fate is None   # returns true when cell is still alive
 
     def setUnfinished(self):
