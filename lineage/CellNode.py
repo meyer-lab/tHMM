@@ -12,6 +12,7 @@ class CellNode:
     def __init__(self, gen=1, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, plotVal=0):
         ''' Instantiates a cell node.'''
         self.gen = gen
+        self.linID = linID
         self.startT = startT
         self.endT = endT
         self.tau = self.endT - self.startT # avoiding self.t, since that is a common function (i.e. transposing matrices)
@@ -75,14 +76,14 @@ class CellNode:
 
         return (self.left, self.right)
 
-def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
+def generatePopulationWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create an empty lineage
     lineage = []
 
     # initialize the list with cells
     for ii in range(initCells):
-        lineage.append(CellNode(startT=0))
+        lineage.append(CellNode(startT=0, linID = ii))
 
     # have cell divide/die according to distribution
     for cell in lineage:   # for all cells (cap at numCells)
