@@ -38,6 +38,13 @@ class CellNode:
         else:
             assert self.gen > 1
             return False
+    
+    def isLeaf(self):
+        '''Returns wheter a cell is a leaf with no children)'''
+        if cell.left is None and cell.right is None
+            return(True) 
+        else:
+            return(False)
 
     def calcTau(self):
         """ Find the cell's lifetime. """
