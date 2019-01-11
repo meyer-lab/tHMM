@@ -9,7 +9,7 @@ from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
 class CellNode:
-    def __init__(self, gen=1, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, plotVal=0):
+    def __init__(self, gen=1, linID=0, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, plotVal=0):
         ''' Instantiates a cell node.'''
         self.gen = gen
         self.linID = linID
@@ -75,11 +75,11 @@ class CellNode:
         self.calcTau()      # calculate Tau when cell dies
 
         if self.isRootParent():
-            self.left = CellNode(gen=self.gen+1, startT=endT, parent=self, linID=self.linID, plotVal=self.plotVal+0.75)
-            self.right = CellNode(gen=self.gen+1, startT=endT, parent=self, linID=self.linID, plotVal=self.plotVal-0.75)
+            self.left = CellNode(gen=self.gen+1, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal+0.75)
+            self.right = CellNode(gen=self.gen+1, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal-0.75)
         else:
-            self.left = CellNode(gen=self.gen+1, startT=endT, parent=self, linID=self.linID, plotVal=self.plotVal+(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
-            self.right = CellNode(gen=self.gen+1, startT=endT, parent=self, linID=self.linID, plotVal=self.plotVal-(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
+            self.left = CellNode(gen=self.gen+1, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal+(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
+            self.right = CellNode(gen=self.gen+1, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal-(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
 
         return (self.left, self.right)
 
