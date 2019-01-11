@@ -1,6 +1,9 @@
 import numpy as np
 
+    #make utils.py that stores all our helper functions (not related to the tree)
 
+    
+    
 def remove_NaNs(X)
     '''Removes unfinished cells in a population'''
     count = 0
@@ -9,55 +12,68 @@ def remove_NaNs(X)
             X.pop(count)
             count-=1
         count+=1
-            
+        
+  
+    
 class tHMM:
-    def __init__(self, numstates, X):
-        ''' Instantiates a tHMM.'''
-        self.numstates = numstates
-        self.X = X
-        self.get_numlineages()
-        self.get_treelist()
+    def __init__(self, X, numStates=1):
+        ''' Instantiates a tHMM. '''
+        self.X = X # list containing lineage, should be in correct format (contain no NaNs)
+        self.numStates = numStates # number of discrete hidden states 
+        self.get_numLineages() # gets the number of lineages in our population
+        self.get_Population() # arranges the population into a list of lineages (each lineage might have varying length)
         self.get_paramlist() 
         
-    def get_numlineages(self):
-        '''outputs total number of cell lineages'''
-        linID_holder = []
-        for cell in self.X:
-            linID_holder.append(cell.linID)
-        self.numlineages = max(linID.holder)+1
-        return(self.numlineages)
+    def get_numLineages(self):
+        ''' Outputs total number of cell lineages in given Population. '''
+        linID_holder = [] # temporary list to hold all the linIDs of the cells in the population
+        for cell in self.X: # for each cell in the population
+            linID_holder.append(cell.linID) # append the linID of each cell
+        self.numLineages = max(linID.holder)+1 # the number of lineages is the maximum linID+1
+        return(self.numLineages)
     
-    def get_treelist(self):
-        '''creates a full population list of lists which contain each lineage in the population'''
-        numlineages = self.get_numlineages()
-        self.population = []
-        for lineage in range(numlineages):
-            temp_lineage = []
-            for cell in self.X:
-                if cell.linID == lineage:
-                    temp_lineage.append(cell)
-            self.population.append(temp_lineage)
-        return(self.population)
+    def get_Population(self):
+        ''' Creates a full population list of lists which contain each lineage in the population. '''
+        self.population = [] # full list to hold all the lineages
+        for lineage_num in range(self.numLineages): # iterate over the number of lineages in the population
+            temp_lineage = [] # temporary list to hold the cells of a certain lineage with a particular linID
+            for cell in self.X: # for each cell in the population
+                if cell.linID == lineage_num: # if the cell's linID is the lineage num
+                    temp_lineage.append(cell) # append the cell to that certain lineage
+            self.Population.append(temp_lineage) # append the lineage to the Population holder
+        return(self.Population)
     
     def get_paramlist(self):
-        temp_params = {'pi': np.zeros((self.numstates)), 'T': np.zeros((self.numstates, self.numstates)), 'E': np.zeros((self.numstates,3))}
-        self.paramlist = []
-        for lin in range(self.numlineages):
-            self.paramlist.append(temp_params.copy())
+        ''' Creates a list of dictionaries holding the tHMM parameters for each lineage. '''
+        temp_params = {"pi": np.zeros((self.numStates,1)), # inital state distributions [Kx1]
+                       "T": np.zeros((self.numStates, self.numStates)), # state transition matrix [KxK]
+                       "E": np.zeros((self.numStates,3))} # sequence of emission likelihood distribution parameters [Kx3]
+        self.paramlist = [] # list that is numLineages long of parameters for each lineage tree in our population
+        for lineage_num in range(self.numlineages): # for each lineage in our population
+            self.paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
         return(self.paramlist)
     
-    def get_leaves(lineage):
-        '''Gives a list of leaves in a lineage'''
-        temp_leaves = []
-        for cell in lineage:
-            if cell.left is None and cell.right is None:
-                temp_leaves.append(cell)
-        return(temp_leaves)
-                    
-    #make utils.py that stores all our helper functions (not related to the tree)
+    '''
+    The following are tree manipulating
+    functions, that will be used when
+    defining more complicated recursions
+    when calculating probabilities for
+    Downward and Upward recursions.
+    '''
     
-    def tree_recursion(cell,subtree):
-        if cell.isLeaf():
+    def get_leaves(lineage):
+        ''' Ouputs a list of leaves in a lineage. '''
+        temp_leaves = [] # temporary list to hold the leaves of a lineage
+        for cell in lineage: # for each cell in the lineage
+            if (cell.left is None and cell.right is None) or (cell.left.isUnfinished() and cell.right.isUnfinished()): 
+                # if the cell has no daughters or if the daughters had NaN times
+                # why aren't we using isLeaf() here?
+                temp_leaves.append(cell) # append those cells
+        return(temp_leaves)
+                        
+    def tree_recursion(cell, subtree):
+        ''' Basic recursion method used in all following tree traversal methods. '''
+        if cell.Leaf(): # base case: if a leaf, end the recursion
             return
         subtree.append(cell.left)
         subtree.append(cell.right)
@@ -97,30 +113,39 @@ class tHMM:
             if cell not in mixed_sub:
                 not_mixed.append(cell)
         return mixed_sub, not_mixed
+    
+    '''
+    This is the end of the necessary 
+    tree manipulation helper functions.
+    '''
 
     def get_Marginal_State_Distribution(self):
-        '''Marginal State Distribution recursion from Durand et al, 2004'''
+        '''
+        Marginal State Distribution recursion from Durand et al, 2004
+        '''
         self.MSD = [] # temporary Marginal State Distribution holder
-        for num in self.numlineages: # for each lineage in our population
-            lineage = self.population[num] # getting the lineage in the population by index
+        for num in self.numLineages: # for each lineage in our Population
+            
+            lineage = self.Population[num] # getting the lineage in the Population by index
             params = self.paramlist[num] # getting the respective params by index
-            MSD_array = np.zeros((len(lineage),self.numstates)) # instantiating N by K array
+            
+            MSD_array = np.zeros((len(lineage),self.numStates)) # instantiating N by K array
             for cell in lineage: # for each cell in the lineage
                 if cell.isRootParent(): # base case uses pi parameter
-                    for states in self.numstates: # for each state
+                    for states in self.numStates: # for each state
                         MSD_array[0][state] = params["pi"][state] # base case using pi parameter
                 else:
                     parent_cell_idx = lineage.index(cell.parent) # get the index of the parent cell
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
                     
-                    for state_k in self.numstates: # recursion based on parent cell
+                    for state_k in self.numStates: # recursion based on parent cell
                         temp_sum_holder = []
-                        for state_j in self.numstates:
+                        for state_j in self.numStates:
                             temp = params["T"][state_j][state_k] * MSD_array[parent_cell_idx][state_j]
                             temp_sum_holder.append(temp)
                         MSD_array[current_cell_idx][state_k] = sum(temp_sum_holder)
                         
-            self.MSD.append(MSD_array) # Marginal States Distributions for each lineage in the population
+            self.MSD.append(MSD_array) # Marginal States Distributions for each lineage in the Population
                         
             
         
