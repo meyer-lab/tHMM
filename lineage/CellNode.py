@@ -75,11 +75,11 @@ class CellNode:
         self.calcTau()      # calculate Tau when cell dies
 
         if self.isRootParent():
-            self.left = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal+0.75)
-            self.right = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal-0.75)
+            self.left = CellNode(gen=self.gen+1, startT=endT, parent=self, linID=self.linID, plotVal=self.plotVal+0.75)
+            self.right = CellNode(gen=self.gen+1, startT=endT, parent=self, linID=self.linID, plotVal=self.plotVal-0.75)
         else:
-            self.left = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal+(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
-            self.right = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal-(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
+            self.left = CellNode(gen=self.gen+1, startT=endT, parent=self, linID=self.linID, plotVal=self.plotVal+(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
+            self.right = CellNode(gen=self.gen+1, startT=endT, parent=self, linID=self.linID, plotVal=self.plotVal-(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
 
         return (self.left, self.right)
 
