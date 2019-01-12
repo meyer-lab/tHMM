@@ -140,8 +140,12 @@ class tHMM:
             Marginal State Distribution (MSD) matrix and recursion. 
             
             This is the probability that a hidden state variable z_n is of
-            state k, that is, each value in the MSD array for each lineage is
-            the probability P(z_n = k) for all z_n in the hidden state tree
+            state k, that is, each value in the N by K MSD array for each lineage is
+            the probability 
+            
+            P(z_n = k) 
+            
+            for all z_n in the hidden state tree
             and for all k in the total number of discrete states. Each MSD array is
             an N by K array (an entry for each cell and an entry for each state),
             and each lineage has its own MSD array.
@@ -181,8 +185,21 @@ class tHMM:
             Emission Likelihood (EL) matrix. 
             
             Each element in this N by K matrix represents the probability 
-            P(x_n = x | z_n = k) for all x_n and z_n in our observed and 
-            hidden state tree and for all possible discrete states k.
+            
+            P(x_n = x | z_n = k) 
+            
+            for all x_n and z_n in our observed and hidden state tree 
+            and for all possible discrete states k. Since we have a 
+            multiple observation model, that is
+            
+            x_n = {x_B, x_G},
+            
+            consists of more than one observation, x_n1 = division(1) or 
+            x_nB = death(0) (which is one of the observations x_B) and the other
+            being, xnG = lifetime, lifetime >=0, (which is the other observation x_G)
+            we make the assumption that
+            
+            P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_G | z_n = k).
         '''
         self.EL = [] # full Emission Likelihood holder
         for num in self.numLineages: # for each lineage in our Population
@@ -199,7 +216,7 @@ class tHMM:
                 k_gomp_c = E_param_k[1] # gompertz c parameter
                 k_gomp_s = E_param_k[2] # gompertz scale parameter
 
-                for cell in lineage: # for eac
+                for cell in lineage: # for each cell in the lineage
                     temp_b = sp.stats.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
                     temp_g = sp.stats.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood 
 
@@ -210,29 +227,33 @@ class tHMM:
             self.EL.append(EL_array)
         return(self.EL)
 
-    def get_leaf_Norms(self):
+    def get_leaf_NF(self):
         '''
-            Gets the normalizing factor for the downward recursion
-            only for the leaves.
-            We first calculate the joint following probability
+            Normalizing factor (NF) matrix. 
+            
+            Each element in this N by 1 matrix is the normalizing 
+            factor for each beta value calculation for each node.
+            This normalizing factor is basically the marginal
+            observation distribution for a node.
+            
+            This function gets the normalizing factor for 
+            the downward recursion only for the leaves.
+            We first calculate the joint probability
             using the definition of conditional probability:
             
-            P(x_n = x | z_n = k) * P(z_n = k) = 
-            P(x_n = x , z_n = k), 
+            P(x_n = x | z_n = k) * P(z_n = k) = P(x_n = x , z_n = k).  
             
-            and in code,
-            
-            EL[n,k] * MSD[n,k] = Norms[n].
-            
-            We can then sum this probability over k, using the
-            law of total probability:
+            We can then sum this joint probability over k, using the
+            law of total probability, and obtain the marginal 
+            observation distribution P(x_n = x):
             
             sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
+            
         '''
-        self.Norms = []
+        self.NF = []
         for num in self.numLineages: # for each lineage in our Population
             
-            Norm_array = np.zeros((len(lineage), 1)) # instantiating N by 1 array
+            NF_array = np.zeros((len(lineage), 1)) # instantiating N by 1 array
                 
             lineage = self.Population[num] # getting the lineage in the Population by index
             MSD_array = self.MSD[num] # getting the MSD of the respective lineage
@@ -245,14 +266,15 @@ class tHMM:
                     
                     for state_k in self.numstates: # for each state
                         joint_prob = MSD_array[leaf_cell_idx, state_k] * EL_array[leaf_cell_idx, state_k] # calculate the product
+                        # maybe we can consider making this a 
                         # this product is the joint probability
-                        temp_sum_holder.append(joint_prob) # append the joint probability
+                        temp_sum_holder.append(joint_prob) # append the joint probability to be summed
                         
                     Norm_array[leaf_cell_idx] = sum(temp_sum_holder) # law of total probability
                     # the sum of the joint probabilities is the marginal probability
                     
-            self.Norms.append(Norm_array)
-        return(self.Norms)
+            self.NF.append(Norm_array)
+        return(self.NF)
                     
             
             
