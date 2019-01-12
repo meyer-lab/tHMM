@@ -194,9 +194,9 @@ class tHMM:
             
             x_n = {x_B, x_G},
             
-            consists of more than one observation, x_n1 = division(1) or 
-            x_nB = death(0) (which is one of the observations x_B) and the other
-            being, xnG = lifetime, lifetime >=0, (which is the other observation x_G)
+            consists of more than one observation, x_B = division(1) or 
+            death(0) (which is one of the observations x_B) and the other
+            being, x_G = lifetime, lifetime >=0, (which is the other observation x_G)
             we make the assumption that
             
             P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_G | z_n = k).
