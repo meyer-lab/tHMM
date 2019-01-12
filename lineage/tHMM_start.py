@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.stats as sp
 
     #make utils.py that stores all our helper functions (not related to the tree)
 
@@ -9,6 +10,10 @@ def remove_NaNs(X)
     count = 0
     for cell in X:
         if cell.isUnfinished():
+            if cell.parent.left is cell:
+                cell.parent.left = None
+            if cell.parent.right is cell:
+                cell.parent.right = None
             X.pop(count)
             count-=1
         count+=1
@@ -23,6 +28,9 @@ class tHMM:
         self.get_numLineages() # gets the number of lineages in our population
         self.get_Population() # arranges the population into a list of lineages (each lineage might have varying length)
         self.get_paramlist() 
+        self.get_Marginal_State_Distributions()
+        self.get_Emission_Likelihoods()
+        self.get_get_leaf_Norms()
         
     def get_numLineages(self):
         ''' Outputs total number of cell lineages in given Population. '''
@@ -47,7 +55,7 @@ class tHMM:
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage. '''
         temp_params = {"pi": np.zeros((self.numStates,1)), # inital state distributions [Kx1]
                        "T": np.zeros((self.numStates, self.numStates)), # state transition matrix [KxK]
-                       "E": np.zeros((self.numStates,3))} # sequence of emission likelihood distribution parameters [Kx3]
+                       "E": np.zeros((self.numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
         self.paramlist = [] # list that is numLineages long of parameters for each lineage tree in our population
         for lineage_num in range(self.numlineages): # for each lineage in our population
             self.paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
@@ -61,6 +69,8 @@ class tHMM:
     Downward and Upward recursions.
     '''
     
+    '''
+    #Think about deleting
     def get_leaves(lineage):
         ''' Ouputs a list of leaves in a lineage. '''
         temp_leaves = [] # temporary list to hold the leaves of a lineage
@@ -70,15 +80,18 @@ class tHMM:
                 # why aren't we using isLeaf() here?
                 temp_leaves.append(cell) # append those cells
         return(temp_leaves)
+     '''
                         
     def tree_recursion(cell, subtree):
         ''' Basic recursion method used in all following tree traversal methods. '''
-        if cell.Leaf(): # base case: if a leaf, end the recursion
+        if cell.isLeaf(): # base case: if a leaf, end the recursion
             return
-        subtree.append(cell.left)
-        subtree.append(cell.right)
-        tree_recursion(cell.left, subtree)
-        tree_recursion(cell.right, subtree)
+        if cell.left is not None:
+            subtree.append(cell.left)
+            tree_recursion(cell.left, subtree)
+        if cell.right is not None:
+            subtree.append(cell.right)
+            tree_recursion(cell.right, subtree)
         return
     
     def get_subtrees(node,lineage):
@@ -119,11 +132,20 @@ class tHMM:
     tree manipulation helper functions.
     '''
 
-    def get_Marginal_State_Distribution(self):
+    def get_Marginal_State_Distributions(self):
         '''
-        Marginal State Distribution recursion from Durand et al, 2004
+            Marginal State Distribution (MSD) recursion from Durand et al, 2004. 
+            This is the probability that a hidden state variable z_n is of
+            state k, that is, each value in the MSD array for each lineage is
+            the probability P(z_n = k) for all z_n in the hidden state tree
+            and for all k in the total number of discrete states. Each MSD array is
+            an N by K array (an entry for each cell and an entry for each state,
+            and each lineage has its own MSD array.
+            
+            Unit test should be that the addition of all elements in each row 
+            for every row is equal to 1.
         '''
-        self.MSD = [] # temporary Marginal State Distribution holder
+        self.MSD = [] # full Marginal State Distribution holder
         for num in self.numLineages: # for each lineage in our Population
             
             lineage = self.Population[num] # getting the lineage in the Population by index
@@ -133,7 +155,7 @@ class tHMM:
             for cell in lineage: # for each cell in the lineage
                 if cell.isRootParent(): # base case uses pi parameter
                     for states in self.numStates: # for each state
-                        MSD_array[0][state] = params["pi"][state] # base case using pi parameter
+                        MSD_array[0,state] = params["pi"][state,:] # base case using pi parameter
                 else:
                     parent_cell_idx = lineage.index(cell.parent) # get the index of the parent cell
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
@@ -141,14 +163,93 @@ class tHMM:
                     for state_k in self.numStates: # recursion based on parent cell
                         temp_sum_holder = []
                         for state_j in self.numStates:
-                            temp = params["T"][state_j][state_k] * MSD_array[parent_cell_idx][state_j]
+                            temp = params["T"][state_j,state_k] * MSD_array[parent_cell_idx][state_j]
                             temp_sum_holder.append(temp)
-                        MSD_array[current_cell_idx][state_k] = sum(temp_sum_holder)
+                        MSD_array[current_cell_idx,state_k] = sum(temp_sum_holder)
                         
             self.MSD.append(MSD_array) # Marginal States Distributions for each lineage in the Population
+        return(self.MSD)
+
                         
+    def get_Emission_Likelihoods(self):
+        '''
+            Emission Likelihood matrix. Each element in this N by K matrix
+            represents the probability P(x_n = x | z_n = k) for x_n and z_n
+            in our observed and hidden state tree and for all possible discrete
+            states k.
+        '''
+        self.EL = [] # full Emission Likelihood holder
+        for num in self.numLineages: # for each lineage in our Population
+
+            lineage = self.Population[num] # getting the lineage in the Population by index
+            params = self.paramlist[num] # getting the respective params by index
+
+            EL_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
+            E_param_array = params["E"] # K by 3 array 
+
+            for state_k in self.numStates: # for each state 
+                E_param_k = E_param_array[state,:] # get the emission parameters for that state
+                k_bern = E_param_k[0] # bernoulli rate parameter
+                k_gomp_c = E_param_k[1] # gompertz c parameter
+                k_gomp_s = E_param_k[2] # gompertz scale parameter
+
+                for cell in lineage: # for eac
+                    temp_b = sp.stats.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
+                    temp_g = sp.stats.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood 
+
+                    current_cell_idx = lineage.index(cell) # get the index of the current cell
+
+                    EL_array[current_cell_idx, state_k] = temp_b * temp_g
+
+            self.EL.append(EL_array)
+        return(self.EL)
+
+    def get_leaf_Norms(self):
+        '''
+            Gets the normalizing factor for the downward recursion
+            only for the leaves.
+            We first calculate the joint following probability
+            using the definition of conditional probability:
             
-        
+            P(x_n = x | z_n = k) * P(z_n = k) = 
+            P(x_n = x , z_n = k), 
+            
+            and in code,
+            
+            EL[n,k] * MSD[n,k] = Norms[n].
+            
+            We can then sum this probability over k, using the
+            law of total probability:
+            
+            sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
+        '''
+        self.Norms = []
+        for num in self.numLineages: # for each lineage in our Population
+            
+            Norm_array = np.zeros((len(lineage), 1)) # instantiating N by 1 array
+                
+            lineage = self.Population[num] # getting the lineage in the Population by index
+            MSD_array = self.MSD[num] # getting the MSD of the respective lineage
+            EL_array = self.EL[num] # geting the EL of the respective lineage
+
+            for cell in lineage: # for each cell in the lineage
+                if cell.isLeaf(): # if it is a leaf
+                    leaf_cell_idx = lineage.index(cell) # get the index of the leaf
+                    temp_sum_holder = [] # create a temporary list 
+                    
+                    for state_k in self.numstates: # for each state
+                        joint_prob = MSD_array[leaf_cell_idx, state_k] * EL_array[leaf_cell_idx, state_k] # calculate the product
+                        # this product is the joint probability
+                        temp_sum_holder.append(joint_prob) # append the joint probability
+                        
+                    Norm_array[leaf_cell_idx] = sum(temp_sum_holder) # law of total probability
+                    # the sum of the joint probabilities is the marginal probability
+                    
+            self.Norms.append(Norm_array)
+        return(self.Norms)
+                    
+            
+            
     
     
     
