@@ -7,17 +7,15 @@ import scipy.stats as sp
     
 def remove_NaNs(X)
     '''Removes unfinished cells in a population'''
-    count = 0
+
     for cell in X:
+        unfinished_leaf_cell_idx = lineage.index(cell)
         if cell.isUnfinished():
             if cell.parent.left is cell:
                 cell.parent.left = None
             if cell.parent.right is cell:
                 cell.parent.right = None
-            X.pop(count)
-            count-=1
-        count+=1
-        
+            X.pop(unfinished_leaf_cell_idx)        
   
     
 class tHMM:
