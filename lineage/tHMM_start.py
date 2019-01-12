@@ -72,19 +72,6 @@ class tHMM:
     Downward and Upward recursions.
     '''
     
-    '''
-    #Think about deleting
-    def get_leaves(lineage):
-        ''' Ouputs a list of leaves in a lineage. '''
-        temp_leaves = [] # temporary list to hold the leaves of a lineage
-        for cell in lineage: # for each cell in the lineage
-            if (cell.left is None and cell.right is None) or (cell.left.isUnfinished() and cell.right.isUnfinished()): 
-                # if the cell has no daughters or if the daughters had NaN times
-                # why aren't we using isLeaf() here?
-                temp_leaves.append(cell) # append those cells
-        return(temp_leaves)
-     '''
-                        
     def tree_recursion(cell, subtree):
         ''' Basic recursion method used in all following tree traversal methods. '''
         if cell.isLeaf(): # base case: if a leaf, end the recursion
@@ -237,15 +224,17 @@ class tHMM:
             observation distribution for a node.
             
             This function gets the normalizing factor for 
-            the downward recursion only for the leaves.
+            the upward recursion only for the leaves.
             We first calculate the joint probability
             using the definition of conditional probability:
             
             P(x_n = x | z_n = k) * P(z_n = k) = P(x_n = x , z_n = k).  
             
-            We can then sum this joint probability over k, using the
-            law of total probability, and obtain the marginal 
-            observation distribution P(x_n = x):
+            We can then sum this joint probability over k, 
+            which are the possible states z_n can be,
+            and through the law of total probability, 
+            obtain the marginal observation distribution 
+            P(x_n = x):
             
             sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
             
@@ -265,14 +254,21 @@ class tHMM:
                     temp_sum_holder = [] # create a temporary list 
                     
                     for state_k in self.numstates: # for each state
-                        joint_prob = MSD_array[leaf_cell_idx, state_k] * EL_array[leaf_cell_idx, state_k] # calculate the product
-                        # maybe we can consider making this a 
+                        joint_prob = MSD_array[leaf_cell_idx, state_k] * EL_array[leaf_cell_idx, state_k] # def of conditional prob
+                        # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
                         # this product is the joint probability
+                        
+                        # maybe we can consider making this a dot product instead of looping and summing
+                        # but I feel like that would be less readable at the sake of speed
+                        
                         temp_sum_holder.append(joint_prob) # append the joint probability to be summed
                         
-                    Norm_array[leaf_cell_idx] = sum(temp_sum_holder) # law of total probability
+                    marg_prob = sum(temp_sum_holder) # law of total probability
+                    # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
                     # the sum of the joint probabilities is the marginal probability
                     
+                    Norm_array[leaf_cell_idx] = marg_prob # each cell gets its own marg prob
+                         
             self.NF.append(Norm_array)
         return(self.NF)
                     
