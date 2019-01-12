@@ -137,12 +137,13 @@ class tHMM:
 
     def get_Marginal_State_Distributions(self):
         '''
-            Marginal State Distribution (MSD) recursion from Durand et al, 2004. 
+            Marginal State Distribution (MSD) matrix and recursion. 
+            
             This is the probability that a hidden state variable z_n is of
             state k, that is, each value in the MSD array for each lineage is
             the probability P(z_n = k) for all z_n in the hidden state tree
             and for all k in the total number of discrete states. Each MSD array is
-            an N by K array (an entry for each cell and an entry for each state,
+            an N by K array (an entry for each cell and an entry for each state),
             and each lineage has its own MSD array.
             
             Unit test should be that the addition of all elements in each row 
@@ -151,12 +152,12 @@ class tHMM:
         self.MSD = [] # full Marginal State Distribution holder
         for num in self.numLineages: # for each lineage in our Population
             
-            lineage = self.Population[num] # getting the lineage in the Population by index
-            params = self.paramlist[num] # getting the respective params by index
+            lineage = self.Population[num] # getting the lineage in the Population by lineage index
+            params = self.paramlist[num] # getting the respective params by lineage index
             
             MSD_array = np.zeros((len(lineage),self.numStates)) # instantiating N by K array
             for cell in lineage: # for each cell in the lineage
-                if cell.isRootParent(): # base case uses pi parameter
+                if cell.isRootParent(): # base case uses pi parameter at the root cells of the tree
                     for states in self.numStates: # for each state
                         MSD_array[0,state] = params["pi"][state,:] # base case using pi parameter
                 else:
@@ -164,9 +165,10 @@ class tHMM:
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
                     
                     for state_k in self.numStates: # recursion based on parent cell
-                        temp_sum_holder = []
-                        for state_j in self.numStates:
+                        temp_sum_holder = [] # for all states k, calculate the sum of temp
+                        for state_j in self.numStates: # for all states j, calculate temp
                             temp = params["T"][state_j,state_k] * MSD_array[parent_cell_idx][state_j]
+                            # temp = T_jk * P(z_parent(n) = j)
                             temp_sum_holder.append(temp)
                         MSD_array[current_cell_idx,state_k] = sum(temp_sum_holder)
                         
@@ -176,19 +178,20 @@ class tHMM:
                         
     def get_Emission_Likelihoods(self):
         '''
-            Emission Likelihood matrix. Each element in this N by K matrix
-            represents the probability P(x_n = x | z_n = k) for x_n and z_n
-            in our observed and hidden state tree and for all possible discrete
-            states k.
+            Emission Likelihood (EL) matrix. 
+            
+            Each element in this N by K matrix represents the probability 
+            P(x_n = x | z_n = k) for all x_n and z_n in our observed and 
+            hidden state tree and for all possible discrete states k.
         '''
         self.EL = [] # full Emission Likelihood holder
         for num in self.numLineages: # for each lineage in our Population
 
-            lineage = self.Population[num] # getting the lineage in the Population by index
-            params = self.paramlist[num] # getting the respective params by index
+            lineage = self.Population[num] # getting the lineage in the Population by lineage index
+            params = self.paramlist[num] # getting the respective params by lineage index
 
-            EL_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
-            E_param_array = params["E"] # K by 3 array 
+            EL_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array for each lineage
+            E_param_array = params["E"] # K by 3 array of distribution parameters for each lineage
 
             for state_k in self.numStates: # for each state 
                 E_param_k = E_param_array[state,:] # get the emission parameters for that state
