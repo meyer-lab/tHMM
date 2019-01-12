@@ -7,9 +7,9 @@ import scipy.stats as sp
     
 def remove_NaNs(X)
     '''Removes unfinished cells in a population'''
-
+    
+    unfinished_leaf_cell_idx_holder = [] # list to hold the indices of unfinished cells
     for cell in X: # for each cell in X
-        unfinished_leaf_cell_idx_holder = [] # list to hold the indices of unfinished cells
         if cell.isUnfinished(): # if the cell has NaNs in its times
             unfinished_leaf_cell_idx = lineage.index(cell) # get the index of the cell 
             unfinished_leaf_cell_idx_holder.append(unfinished_leaf_cell_idx) # append the cell's index to list
@@ -19,8 +19,8 @@ def remove_NaNs(X)
             elif cell.parent.right is cell: # or if it is the right daughter of the parent cell
                 cell.parent.right = None # replace the cell with None
                 
-        for idx in unfinished_leaf_cell_idx_holder: # for each of the unfinished cell indices 
-            X.pop(idx) # remove those objects from our population
+    for idx in unfinished_leaf_cell_idx_holder: # for each of the unfinished cell indices 
+        X.pop(idx) # remove those objects from our population
   
     
 class tHMM:
