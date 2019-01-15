@@ -26,38 +26,41 @@ class tHMM:
         ''' Instantiates a tHMM. '''
         self.X = X # list containing lineage, should be in correct format (contain no NaNs)
         self.numStates = numStates # number of discrete hidden states 
-        self.get_numLineages() # gets the number of lineages in our population
-        self.get_Population() # arranges the population into a list of lineages (each lineage might have varying length)
-        self.get_paramlist() 
-        self.get_Marginal_State_Distributions()
-        self.get_Emission_Likelihoods()
-        self.get_get_leaf_Norms()
-        
+        #self.get_numLineages() # gets the number of lineages in our population
+        #self.get_Population() # arranges the population into a list of lineages (each lineage might have varying length)
+        #self.get_paramlist() 
+        #self.get_Marginal_State_Distributions()
+        #self.get_Emission_Likelihoods()
+        #self.get_get_leaf_Norms()
+        self.numLineages = -99
+        self.population = [] # full list to hold all the lineages
+        self.paramlist = [] # list that is numLineages long of parameters for each lineage tree in our population
+        self.MSD = [] # full Marginal State Distribution holder
+        self.EL = [] # full Emission Likelihood holder
+
     def get_numLineages(self):
         ''' Outputs total number of cell lineages in given Population. '''
         linID_holder = [] # temporary list to hold all the linIDs of the cells in the population
         for cell in self.X: # for each cell in the population
             linID_holder.append(cell.linID) # append the linID of each cell
-        self.numLineages = max(linID.holder)+1 # the number of lineages is the maximum linID+1
+        self.numLineages = max(linID_holder)+1 # the number of lineages is the maximum linID+1
         return(self.numLineages)
     
     def get_Population(self):
         ''' Creates a full population list of lists which contain each lineage in the population. '''
-        self.population = [] # full list to hold all the lineages
         for lineage_num in range(self.numLineages): # iterate over the number of lineages in the population
             temp_lineage = [] # temporary list to hold the cells of a certain lineage with a particular linID
             for cell in self.X: # for each cell in the population
                 if cell.linID == lineage_num: # if the cell's linID is the lineage num
                     temp_lineage.append(cell) # append the cell to that certain lineage
-            self.Population.append(temp_lineage) # append the lineage to the Population holder
-        return(self.Population)
+            self.population.append(temp_lineage) # append the lineage to the Population holder
+        return(self.population)
     
     def get_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage. '''
         temp_params = {"pi": np.zeros((self.numStates,1)), # inital state distributions [Kx1]
                        "T": np.zeros((self.numStates, self.numStates)), # state transition matrix [KxK]
                        "E": np.zeros((self.numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
-        self.paramlist = [] # list that is numLineages long of parameters for each lineage tree in our population
         for lineage_num in range(self.numlineages): # for each lineage in our population
             self.paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
         return(self.paramlist)
@@ -138,7 +141,6 @@ class tHMM:
             Unit test should be that the addition of all elements in each row 
             for every row is equal to 1.
         '''
-        self.MSD = [] # full Marginal State Distribution holder
         for num in self.numLineages: # for each lineage in our Population
             
             lineage = self.Population[num] # getting the lineage in the Population by lineage index
@@ -186,7 +188,6 @@ class tHMM:
             
             P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_G | z_n = k).
         '''
-        self.EL = [] # full Emission Likelihood holder
         for num in self.numLineages: # for each lineage in our Population
 
             lineage = self.Population[num] # getting the lineage in the Population by lineage index
@@ -242,7 +243,7 @@ class tHMM:
             
             NF_array = np.zeros((len(lineage), 1)) # instantiating N by 1 array
                 
-            lineage = self.Population[num] # getting the lineage in the Population by index
+            lineage = self.population[num] # getting the lineage in the Population by index
             MSD_array = self.MSD[num] # getting the MSD of the respective lineage
             EL_array = self.EL[num] # geting the EL of the respective lineage
 

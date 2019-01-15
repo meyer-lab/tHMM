@@ -31,7 +31,7 @@ class TestModel(unittest.TestCase):
         cGom = [2, 0.5]
         scaleGom = [40, 50]
         X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
-        
+
         t = tHMM(X) # build the tHMM class with X
         self.assertTrue(t.get_numLineages() == 100) # call func
         
