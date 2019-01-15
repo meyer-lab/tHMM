@@ -49,3 +49,19 @@ class TestModel(unittest.TestCase):
         print(numLin)
         self.assertTrue(numLin == 100) # call func
         
+    def test_get_Population(self):
+        experimentTime = 50.
+        initCells = [50] # there should be 50 lineages b/c there are 50 initial cells
+        locBern = [0.6]
+        cGom = [2]
+        scaleGom = [40]
+        X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
+
+        t = tHMM(X) # build the tHMM class with X
+        pop = t.get_Population()
+        self.assertTrue(len(pop) == initCells[0]) # len(pop) corresponds to the number of lineages
+        
+        # check that all cells in a lineage have same linID
+        for i, lineage in enumerate(pop): # for each lineage
+            for cell in lineage: # for each cell in said lineage
+                self.assertTrue(i == cell.linID) # linID should correspond with I
