@@ -21,9 +21,13 @@ class TestModel(unittest.TestCase):
                 num_NAN += 1
         print("Number of initial NANs: " + str(num_NAN))
 
-        remove_NaNs(X)
-        for cell in X:
+        Y = remove_NaNs(X)
+        num_NAN = 0
+        for cell in Y:
             if cell.isUnfinished():
-                print("this cell should've been deleted")
+                num_NAN += 1
+        print("Number of NANs left at end: " + str(num_NAN))
+
+        self.assertTrue(num_NAN == 0)
                 
         
