@@ -214,7 +214,7 @@ class tHMM:
             self.EL.append(EL_array)
         return(self.EL)
 
-    def get_leaf_NF(self):
+    def get_leaf_Normalizing_Factors(self):
         '''
             Normalizing factor (NF) matrix. 
             
@@ -272,8 +272,25 @@ class tHMM:
             self.NF.append(Norm_array)
         return(self.NF)
                     
+    def get_beta_leaves(self):
+                
+        self.betas = []
+        for num in self.numLineages: # for each lineage in our Population
             
+            beta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
+                
+            lineage = self.Population[num] # getting the lineage in the Population by index
+            MSD_array = self.MSD[num] # getting the MSD of the respective lineage
+            EL_array = self.EL[num] # geting the EL of the respective lineage
+            NF_array = self.NF[num]
             
-    
-    
-    
+            for cell in lineage: # for each cell in the lineage
+                if cell.isLeaf(): # if it is a leaf
+                    leaf_cell_idx = lineage.index(cell) # get the index of the leaf
+                    for state_k in self.numStates:
+                        num1 = EL_array[leaf_cell_idx, state_k]
+                        num2 = MSD_array[leaf_cell_idx, state_k]
+                        denom = NF_array[leaf_cell_idx, 1]
+                        beta_array[leaf_cell_idx, state_k] = num1 * num2 / denom
+            self.betas.append(beta_array)
+        return self.betas
