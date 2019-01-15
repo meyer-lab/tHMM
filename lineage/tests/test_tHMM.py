@@ -26,6 +26,18 @@ class TestModel(unittest.TestCase):
     def test_get_numLineages(self):
         """ Checks to see that the initial number of cells created is the number of lineages. """
         experimentTime = 50.
+        initCells = [50] # there should be 50 lineages b/c there are 50 initial cells
+        locBern = [0.6]
+        cGom = [2]
+        scaleGom = [40]
+        X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
+
+        t = tHMM(X) # build the tHMM class with X
+        numLin = t.get_numLineages()
+        print(numLin)
+        self.assertTrue(numLin == 50) # call func
+
+        # case where the lineages follow different parameter sets
         initCells = [50, 50] # there should be 100 lineages b/c there are 100 initial cells
         locBern = [0.6, 0.8]
         cGom = [2, 0.5]
@@ -33,5 +45,7 @@ class TestModel(unittest.TestCase):
         X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
 
         t = tHMM(X) # build the tHMM class with X
-        self.assertTrue(t.get_numLineages() == 100) # call func
+        numLin = t.get_numLineages()
+        print(numLin)
+        self.assertTrue(numLin == 100) # call func
         
