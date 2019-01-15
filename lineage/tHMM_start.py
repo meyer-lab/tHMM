@@ -8,19 +8,30 @@ import scipy.stats as sp
 def remove_NaNs(X):
     '''Removes unfinished cells in a population'''
     # unfinished_leaf_cell_idx_holder = [] # list to hold the indices of unfinished cells
-    Y = X.copy()
-    for cell in Y: # for each cell in X
-        if cell.isUnfinished(): # if the cell has NaNs in its times
+    #Y = X.copy()
+    print("len(X): " + str(len(X)))
+    ii = 0
+    while ii in range(len(X)): # for each cell in X
+        print(ii)
+        if X[ii].isUnfinished(): # if the cell has NaNs in its times
+            print("deleting cell at " + str(ii))
             #unfinished_leaf_cell_idx = X.index(cell) # get the index of the cell 
             #unfinished_leaf_cell_idx_holder.append(unfinished_leaf_cell_idx) # append the cell's index to list
-            if cell.parent is None: # do nothing if the parent pointer doesn't point to a cell
-                pass
-            elif cell.parent.left is cell: # if it is the left daughter of the parent cell
-                cell.parent.left = None # replace the cell with None
-            elif cell.parent.right is cell: # or if it is the right daughter of the parent cell
-                cell.parent.right = None # replace the cell with None
-            Y.remove(cell)
-    return Y
+            if X[ii].parent is None: # do nothing if the parent pointer doesn't point to a cell
+                X.remove(X[ii]) # pop the cell at the current position
+                ii = ii-1 # move back one position to avoid skipping in for-loop
+            elif X[ii].parent.left is X[ii]: # if it is the left daughter of the parent cell
+                X[ii].parent.left = None # replace the cell with None
+                X.remove(X[ii]) # pop the cell at the current position
+                ii = ii-1 # move back one position to avoid skipping in for-loop
+            elif X[ii].parent.right is X[ii]: # or if it is the right daughter of the parent cell
+                X[ii].parent.right = None # replace the cell with None
+                X.remove(X[ii]) # pop the cell at the current position
+                ii = ii-1 # move back one position to avoid skipping in for-loop
+        ii += 1 # always iterate one position forward
+            
+    
+    return X
     #for idx in unfinished_leaf_cell_idx_holder: # for each of the unfinished cell indices 
     #    X.pop(idx) # remove those objects from our population
   
