@@ -10,7 +10,7 @@ class TestModel(unittest.TestCase):
     def test_remove_NaNs(self):
         """ Checks to see that cells with a NaN of tau are eliminated from the list. """
         experimentTime = 100.
-        initCells = [100, 100]
+        initCells = [50, 50]
         locBern = [0.6, 0.8]
         cGom = [2, 0.5]
         scaleGom = [40, 50]
