@@ -7,35 +7,20 @@ import scipy.stats as sp
     
 def remove_NaNs(X):
     '''Removes unfinished cells in a population'''
-    # unfinished_leaf_cell_idx_holder = [] # list to hold the indices of unfinished cells
-    #Y = X.copy()
-    print("len(X): " + str(len(X)))
-    ii = 0
+    ii = 0 # establish an int outside of the loop
     while ii in range(len(X)): # for each cell in X
-        print(ii)
         if X[ii].isUnfinished(): # if the cell has NaNs in its times
-            print("deleting cell at " + str(ii))
-            #unfinished_leaf_cell_idx = X.index(cell) # get the index of the cell 
-            #unfinished_leaf_cell_idx_holder.append(unfinished_leaf_cell_idx) # append the cell's index to list
             if X[ii].parent is None: # do nothing if the parent pointer doesn't point to a cell
-                X.remove(X[ii]) # pop the cell at the current position
-                ii = ii-1 # move back one position to avoid skipping in for-loop
+                pass
             elif X[ii].parent.left is X[ii]: # if it is the left daughter of the parent cell
                 X[ii].parent.left = None # replace the cell with None
-                X.remove(X[ii]) # pop the cell at the current position
-                ii = ii-1 # move back one position to avoid skipping in for-loop
             elif X[ii].parent.right is X[ii]: # or if it is the right daughter of the parent cell
                 X[ii].parent.right = None # replace the cell with None
-                X.remove(X[ii]) # pop the cell at the current position
-                ii = ii-1 # move back one position to avoid skipping in for-loop
-        ii += 1 # always iterate one position forward
-            
-    
-    return X
-    #for idx in unfinished_leaf_cell_idx_holder: # for each of the unfinished cell indices 
-    #    X.pop(idx) # remove those objects from our population
-  
-    
+            X.pop(ii) # pop the unfinished cell at the current position
+        else:
+            ii += 1 # only move forward in the list if you don't delete a cell
+    return X  
+
 class tHMM:
     def __init__(self, X, numStates=1):
         ''' Instantiates a tHMM. '''
