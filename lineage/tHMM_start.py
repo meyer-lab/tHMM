@@ -5,7 +5,7 @@ import scipy.stats as sp
 
     
     
-def remove_NaNs(X)
+def remove_NaNs(X):
     '''Removes unfinished cells in a population'''
     
     unfinished_leaf_cell_idx_holder = [] # list to hold the indices of unfinished cells

@@ -41,7 +41,7 @@ class CellNode:
     
     def isLeaf(self):
         '''Returns wheter a cell is a leaf with no children)'''
-        if cell.left is None and cell.right is None
+        if cell.left is None and cell.right is None:
             return(True) 
         else:
             return(False)
@@ -83,7 +83,7 @@ class CellNode:
 
         return (self.left, self.right)
 
-def generatePopulationWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
+def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create an empty lineage
     lineage = []
