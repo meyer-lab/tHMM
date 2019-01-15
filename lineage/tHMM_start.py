@@ -216,7 +216,7 @@ class tHMM:
 
     def get_leaf_Normalizing_Factors(self):
         '''
-            Normalizing factor (NF) matrix. 
+            Normalizing factor (NF) matrix and base case at the leaves. 
             
             Each element in this N by 1 matrix is the normalizing 
             factor for each beta value calculation for each node.
@@ -239,7 +239,7 @@ class tHMM:
             sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
             
         '''
-        self.NF = []
+        self.NF = [] # full Normalizing Factors holder
         for num in self.numLineages: # for each lineage in our Population
             
             NF_array = np.zeros((len(lineage), 1)) # instantiating N by 1 array
@@ -273,8 +273,31 @@ class tHMM:
         return(self.NF)
                     
     def get_beta_leaves(self):
+        '''
+            beta matrix and base case at the leaves.
+            
+            Each element in this N by K matrix is the beta value
+            for each cell and at each state. In particular, this
+            value is derived from the Marginal State Distributions
+            (MSD), the Emission Likelihoods (EL), and the 
+            Normalizing Factors (NF). In particular, each beta value
+            for the leaves is exactly the probability
+            
+            beta[n,k] = P(z_n = k | x_n = x).
+            
+            Using Bayes Theorem, we see that the above equals
+            
+                        P(x_n = x | z_n = k) * P(z_n = k)
+            beta[n,k] = _________________________________
+                                    P(x_n = x)
+            
+            The first value in the numerator is the Emission
+            Likelihoods. The second value in the numerator is
+            the Marginal State Distributions. The value in the
+            denominator is the Normalizing Factor.                                
+        '''
                 
-        self.betas = []
+        self.betas = [] # full betas holder
         for num in self.numLineages: # for each lineage in our Population
             
             beta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
@@ -287,10 +310,15 @@ class tHMM:
             for cell in lineage: # for each cell in the lineage
                 if cell.isLeaf(): # if it is a leaf
                     leaf_cell_idx = lineage.index(cell) # get the index of the leaf
-                    for state_k in self.numStates:
-                        num1 = EL_array[leaf_cell_idx, state_k]
-                        num2 = MSD_array[leaf_cell_idx, state_k]
-                        denom = NF_array[leaf_cell_idx, 1]
+                    for state_k in self.numStates: # for each state 
+                        # see expression in docstring
+                        num1 = EL_array[leaf_cell_idx, state_k] # Emission Likelihood
+                        #  P(x_n = x | z_n = k)
+                        num2 = MSD_array[leaf_cell_idx, state_k] # Marginal State Distribution
+                        # P(z_n = k)
+                        denom = NF_array[leaf_cell_idx, 1] # Normalizing Factor (same regardless of state)
+                        # P(x_n = x)
                         beta_array[leaf_cell_idx, state_k] = num1 * num2 / denom
+                        
             self.betas.append(beta_array)
         return self.betas
