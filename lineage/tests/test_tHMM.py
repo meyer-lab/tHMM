@@ -17,13 +17,13 @@ class TestModel(unittest.TestCase):
         X = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
         num_NAN = 0
         for cell in X:
-            if cell.tau is float('nan'):
+            if cell.isUnfinished():
                 num_NAN += 1
         print("Number of initial NANs: " + str(num_NAN))
 
         remove_NaNs(X)
         for cell in X:
-            if cell.tau is float('nan'):
+            if cell.isUnfinished():
                 print("this cell should've been deleted")
                 
         

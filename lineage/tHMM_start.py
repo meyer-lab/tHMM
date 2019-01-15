@@ -11,7 +11,7 @@ def remove_NaNs(X):
     unfinished_leaf_cell_idx_holder = [] # list to hold the indices of unfinished cells
     for cell in X: # for each cell in X
         if cell.isUnfinished(): # if the cell has NaNs in its times
-            unfinished_leaf_cell_idx = lineage.index(cell) # get the index of the cell 
+            unfinished_leaf_cell_idx = X.index(cell) # get the index of the cell 
             unfinished_leaf_cell_idx_holder.append(unfinished_leaf_cell_idx) # append the cell's index to list
             
             if cell.parent.left is cell: # if it is the left daughter of the parent cell
