@@ -19,6 +19,12 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
     for ii in range(numLineages):
         temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii]) # create a temporary lineage
         for cell in temp:
+            sum_prev = 0
+            j = 0
+            while j < ii:
+                sum_prev += initCells[j]
+                j += 1
+            cell.linID += sum_prev
             population.append(cell) # append all individual cells into a population
 
     return(population)
