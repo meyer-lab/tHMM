@@ -330,4 +330,5 @@ class tHMM:
             num1 = B(node_n,state_k)
             num2 = T(state_j, state_k)
             denom = MSD[n, state_k]
-            holder.app
+            holder.append(num1*num2/denom)
+        return(sum(holder))
