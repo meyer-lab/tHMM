@@ -7,7 +7,7 @@ import scipy.stats as sp
     
 def remove_NaNs(X):
     '''Removes unfinished cells in a population'''
-    ii = 0 # establish an int outside of the loop
+    ii = 0 # establish a count outside of the loop
     while ii in range(len(X)): # for each cell in X
         if X[ii].isUnfinished(): # if the cell has NaNs in its times
             if X[ii].parent is None: # do nothing if the parent pointer doesn't point to a cell
@@ -220,7 +220,7 @@ class tHMM:
             
             Each element in this N by 1 matrix is the normalizing 
             factor for each beta value calculation for each node.
-            This normalizing factor is basically the marginal
+            This normalizing factor is essentially the marginal
             observation distribution for a node.
             
             This function gets the normalizing factor for 
@@ -267,9 +267,9 @@ class tHMM:
                     # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
                     # the sum of the joint probabilities is the marginal probability
                     
-                    Norm_array[leaf_cell_idx] = marg_prob # each cell gets its own marg prob
+                    NF_array[leaf_cell_idx] = marg_prob # each cell gets its own marg prob
                          
-            self.NF.append(Norm_array)
+            self.NF.append(NF_array)
         return(self.NF)
                     
     def get_beta_leaves(self):
@@ -280,7 +280,7 @@ class tHMM:
             for each cell and at each state. In particular, this
             value is derived from the Marginal State Distributions
             (MSD), the Emission Likelihoods (EL), and the 
-            Normalizing Factors (NF). In particular, each beta value
+            Normalizing Factors (NF). Each beta value
             for the leaves is exactly the probability
             
             beta[n,k] = P(z_n = k | x_n = x).
@@ -321,14 +321,41 @@ class tHMM:
                         beta_array[leaf_cell_idx, state_k] = num1 * num2 / denom
                         
             self.betas.append(beta_array)
-        return self.betas
+        return( self.betas )
     
-    def beta_getter(state_j,node_m,node_n):
-        assert(node_n.parent is node_m)
-        holder=[]
-        for state_k in numstates:
-            num1 = B(node_n,state_k)
-            num2 = T(state_j, state_k)
-            denom = MSD[n, state_k]
-            holder.append(num1*num2/denom)
-        return(sum(holder))
+    def beta_parent_child_func(beta_array, T, MSD_array, numstates, state_j, node_parent_m_idx, node_child_n_idx):
+        '''
+            This "helper" function calculates the probability 
+            described as a 'beta-link' between parent and child
+            nodes in our tree for some state j. This beta-link
+            value is what lets you calculate the values of
+            higher (in the direction of from the leave
+            to the root node) node beta and Normalizing Factor
+            values.
+        '''
+        summand_holder=[] # summing over the states
+        for state_k in numstates: # for each state k
+            num1 = beta_array[node_child_n_idx, state_k] # get the already calculated beta at node n for state k
+            num2 = T[state_j, state_k] # get the transition rate for going from state j to state k
+            # P( z_n = k | z_m = j)
+            denom = MSD_array[node_child_n_idx, state_k] # get the MSD for node n at state k
+            # P(z_n = k)
+            summand_holder.append(num1*num2/denom)
+        return( sum(summand_holder) )
+    
+    
+    def get_beta_and_NF_nonleaves(self):
+        for num in self.numLineages: # for each lineage in our Population
+            
+            lineage = self.Population[num] # getting the lineage in the Population by index
+            beta_array = self.betas[num] # getting the betas of the respective lineage
+            NF_array = self.NF[num] # getting the NF of the respective lineage
+            MSD_array = self.MSD[num] # getting the MSD of the respective lineage
+            EL_array = self.EL[num] # geting the EL of the respective lineage
+            params = self.paramlist[num] # getting the respective params by lineage index
+            T = params["T"] # getting the transition matrix of the respective lineage
+
+             
+            
+            
+        
