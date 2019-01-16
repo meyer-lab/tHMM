@@ -138,3 +138,16 @@ def doublingTime(initCells, locBern, cGom, scaleGom):
     doubleT = np.log(2) / fitExpParam[0] # relationship between doubling time and exponential function
 
     return doubleT
+
+def find_sister(self):
+    '''finds sister cell for cell leaves going left to right. dont return if there is no sibling cell present. this is for the beta matrix of all non-leave cells'''
+    if cell.parent is None:
+        return None    
+    par = self.parent
+    if par.right is cell:
+        return par.left
+    elif par.left is cell:
+        return par.right
+    else:
+        return None
+    

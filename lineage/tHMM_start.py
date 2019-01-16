@@ -322,3 +322,12 @@ class tHMM:
                         
             self.betas.append(beta_array)
         return self.betas
+    
+    def beta_getter(state_j,node_m,node_n):
+        assert(node_n.parent is node_m)
+        holder=[]
+        for state_k in numstates:
+            num1 = B(node_n,state_k)
+            num2 = T(state_j, state_k)
+            denom = MSD[n, state_k]
+            holder.app
