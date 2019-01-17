@@ -427,7 +427,17 @@ class tHMM:
                 
                 start -= 1
                 
-
+    def calculate_log_likelihood()
+        for num in self.numLineages: # for each lineage in our Population
+            
+            lineage = self.Population[num] # getting the lineage in the Population by index
+            
+            NF_array = self.NF[num] # getting the NF of the respective lineage
+            log_NF_array = np.log(NF_array)
+            log_holder = []
+            for index in range(len(lineage)):
+                log_holder.append(log_NF_array(index))
+        return(sum(log_holder))
     
                 
                 
