@@ -22,6 +22,22 @@ def remove_NaNs(X):
             ii += 1 # only move forward in the list if you don't delete a cell
     return X  
 
+def max_gen(lineage):
+        '''finds the max generation in a lineage'''
+        gen_holder = 1
+        for cell in lineage:
+            if cell.generation > gen_holder:
+                gen_holder = cell.generation
+        return(gen_holder)
+    
+    def get_gen(gen, lineage):
+        '''creates a list with all cells in the max generation'''
+        first_set = []
+        for cell in lineage:
+            if cell.gen == gen:
+                first_set.append(cell)
+        return(first_set)
+
 class tHMM:
     def __init__(self, X, numStates=1):
         ''' Instantiates a tHMM. '''
@@ -369,22 +385,6 @@ class tHMM:
         result = reduce((lambda x, y: x * y), beta_m_n_holder) # calculates the product of items in a list
         return(result)
     
-    def max_gen(lineage):
-        '''finds the max generation in a lineage'''
-        gen_holder = 1
-        for cell in lineage:
-            if cell.generation > gen_holder:
-                gen_holder = cell.generation
-        return(gen_holder)
-    
-    def get_gen(gen, lineage):
-        '''creates a list with all cells in the max generation'''
-        first_set = []
-        for cell in lineage:
-            if cell.gen == gen:
-                first_set.append(cell)
-        return(first_set)
-    
     def get_parents_for_max_gen(level):
         parent_holder = {}
         for cell in level:
@@ -489,7 +489,7 @@ class tHMM:
         delta_m_n_holder = [] # list to hold the factors in the product
         node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
         children_idx_list = [] # list to hold the children
-        if node_parent_m.left:
+        if node_parent_m.left: #when you say .left, it means it exists and it will go through
             node_child_n_left_idx = lineage.index(node_parent_m.left)
             children_idx_list.append(node_child_n_left_idx)
         if node_parent_m.right:
@@ -526,7 +526,31 @@ class tHMM:
                             
                 start -= 1
         
-        
+    def Viterbi(self):
+        for num in numlineages:
+            delta_array = self.deltas[num]
+            lineage = self.population[num]
+            params = self.paramlist[num]
+            T = params['T']
+            pi = params['pi']
+            opt_state_tree = np.zeros((len(length)))
+            possible_first_states = np.multiply(delta_array[0,:], pi)
+            opt_state_tree[0] = max(possible_first_states)
+            max_level = max_gen(lineage)
+            count = 1
+            while count < max_level:
+                level = get_gen(count)
+                for cell in level:
+                    temp = get_daughter(cell)
+                    for n in temp:
+                        child_idx = lineage.index(n)
+                        parent_idx = lineage.index(n.parent)
+                        parent_state = opt_state_true[parent_idx]
+                        possible_states = np.multiply(delta_array[child_idx,:], T[parent,state,:])
+                        opt_state_tree[child_idx] = max[possible_states,]
+                count += 1
+            
+    
         
         
         '''    # shakthi pseudocode:
