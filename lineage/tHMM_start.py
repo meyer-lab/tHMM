@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.stats as sp
+from functools import reduce # used to take the product of items in a list
 
     #make utils.py that stores all our helper functions (not related to the tree)
 
@@ -314,16 +315,19 @@ class tHMM:
                         # see expression in docstring
                         num1 = EL_array[leaf_cell_idx, state_k] # Emission Likelihood
                         #  P(x_n = x | z_n = k)
+                        
                         num2 = MSD_array[leaf_cell_idx, state_k] # Marginal State Distribution
                         # P(z_n = k)
+                        
                         denom = NF_array[leaf_cell_idx, 1] # Normalizing Factor (same regardless of state)
                         # P(x_n = x)
+                        
                         beta_array[leaf_cell_idx, state_k] = num1 * num2 / denom
                         
             self.betas.append(beta_array)
         return( self.betas )
     
-    def beta_parent_child_func(beta_array, T, MSD_array, numstates, state_j, node_parent_m_idx, node_child_n_idx):
+    def beta_parent_child_func(lineage, beta_array, T, MSD_array, numstates, state_j, node_parent_m_idx, node_child_n_idx):
         '''
             This "helper" function calculates the probability 
             described as a 'beta-link' between parent and child
@@ -333,16 +337,36 @@ class tHMM:
             to the root node) node beta and Normalizing Factor
             values.
         '''
+        assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx])
+        assert( lineage[node_child_n_idx].isLeft() or lineage[node_child_n_idx].isRight() )
         summand_holder=[] # summing over the states
         for state_k in numstates: # for each state k
             num1 = beta_array[node_child_n_idx, state_k] # get the already calculated beta at node n for state k
             num2 = T[state_j, state_k] # get the transition rate for going from state j to state k
             # P( z_n = k | z_m = j)
+            
             denom = MSD_array[node_child_n_idx, state_k] # get the MSD for node n at state k
             # P(z_n = k)
+            
             summand_holder.append(num1*num2/denom)
         return( sum(summand_holder) )
     
+    def get_beta_parent_child_prod(beta_array, T, MSD_array, numstates, state_j, node_parent_m_idx):
+        beta_m_n_holder = []
+        node_parent_m_idx = lineage.index(node_parent_m)
+        children_idx_list = []
+        if node_parent_m.left:
+            node_child_n_left_idx = lineage.index(node_parent_m.left)
+            children_idx_list.append(node_child_n_left_idx)
+        if node_parent_m.right:
+            node_child_n_right_idx = lineage.index(node_parent_m.right)
+            children_idx_list.append(node_child_n_right_idx)
+        for node_child_n_idx in children_idx_list:
+            beta_m_n = beta_parent_child_func(lineage, beta_array, T, MSD_array, numstates, state_j, node_parent_m_idx, node_child_n_idx)
+            beta_m_n_holder.append(beta_m_n)
+        
+        result = reduce((lambda x, y: x * y), beta_m_n_holder) # calculates the product of items in a list
+        return(result)
     
     def get_beta_and_NF_nonleaves(self):
         for num in self.numLineages: # for each lineage in our Population
@@ -354,8 +378,14 @@ class tHMM:
             EL_array = self.EL[num] # geting the EL of the respective lineage
             params = self.paramlist[num] # getting the respective params by lineage index
             T = params["T"] # getting the transition matrix of the respective lineage
-
-             
+            
+            for cell in lineage:
+                #base case
+                if cell.isRoot():
+                    # TODO
+                else:
+                    
+                    
             
             
         
