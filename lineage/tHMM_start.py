@@ -392,6 +392,14 @@ class tHMM:
             parent_holder.add(lineage.index(parent_cell))
         return(parent_holder)
     
+    def get_daughters(cell):
+        temp = []
+        if cell.left:
+            temp.append(cell.left)
+        if cell.right:
+            temp.append(cell.right)
+        return temp
+    
     def get_beta_and_NF_nonleaves(self):
         for num in self.numLineages: # for each lineage in our Population
             
@@ -525,7 +533,7 @@ class tHMM:
                         delta_array[node_parent_m_idx, state_k] = fac1*fac2
                             
                 start -= 1
-        
+    
     def Viterbi(self):
         for num in numlineages:
             delta_array = self.deltas[num]
