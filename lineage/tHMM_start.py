@@ -591,10 +591,6 @@ class tHMM:
             
     def move_up(self):
         start = self.max_gen() '''
-        
-            
-            
-                    
                 
                     
                     
