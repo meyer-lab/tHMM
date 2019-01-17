@@ -369,6 +369,29 @@ class tHMM:
         result = reduce((lambda x, y: x * y), beta_m_n_holder) # calculates the product of items in a list
         return(result)
     
+    def max_gen(lineage):
+        '''finds the max generation in a lineage'''
+        gen_holder = 1
+        for cell in lineage:
+            if cell.generation > gen_holder:
+                gen_holder = cell.generation
+        return(gen_holder)
+    
+    def get_gen(gen, lineage):
+        '''creates a list with all cells in the max generation'''
+        first_set = []
+        for cell in lineage:
+            if cell.gen == gen:
+                first_set.append(cell)
+        return(first_set)
+    
+    def get_parents_for_max_gen(level):
+        parent_holder = {}
+        for cell in level:
+            parent_cell = cell.parent
+            parent_holder.add(lineage.index(parent_cell))
+        return(parent_holder)
+    
     def get_beta_and_NF_nonleaves(self):
         for num in self.numLineages: # for each lineage in our Population
             
@@ -380,7 +403,37 @@ class tHMM:
             params = self.paramlist[num] # getting the respective params by lineage index
             T = params["T"] # getting the transition matrix of the respective lineage
             
-            # shakthi pseudocode:
+            start = max_gen()
+            while start > 1:
+                level = get_gen(start)
+                
+                for node_parent_m_idx in parent_holder:
+                    num_holder = []
+                    for state_k in self.numstates:
+                        fac1 = get_beta_parent_child_prod(beta_array=beta_array,
+                                                          T=T,
+                                                          MSD_array=MSD_array,
+                                                          numstates=self.numstates,
+                                                          state_j=state_k, 
+                                                          node_parent_m_idx = node_parent_m_idx)
+                        
+                        fac2 = EL_array[node_parent_m_idx, state_k]
+                        fac3 = MSD_array[node_parent_m_idx, state_k]
+                        num_holder.append(fac1*fac2*fac3)
+                    NF_array[node_parent_m_idx] = sum(num_holder)
+                    for state_k in self.numstates:
+                        beta_array[node_parent_m_idx, state_k] = num_holder[state_k] / NF_array[node_parent_m_idx]                
+
+                
+                start -= 1
+                
+
+    
+                
+                
+                
+            
+        '''    # shakthi pseudocode:
             
             # go through the leaf nodes
             # collect the parents of the leaf nodes
@@ -406,6 +459,11 @@ class tHMM:
             
             # the above wont work
             # all the parents might not be on the same level in the tree
+            
+            
+    def move_up(self):
+        start = self.max_gen() '''
+        
             
             
                     
