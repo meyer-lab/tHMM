@@ -28,11 +28,11 @@ class tHMM:
         self.X = X # list containing lineage, should be in correct format (contain no NaNs)
         self.numStates = numStates # number of discrete hidden states
         self.numLineages = -99
+        self.get_numLineages() # gets the number of lineages in our population
         self.population = [] # full list to hold all the lineages
         self.paramlist = [] # list that is numLineages long of parameters for each lineage tree in our population
         self.MSD = [] # full Marginal State Distribution holder
         self.EL = [] # full Emission Likelihood holder
-        self.get_numLineages() # gets the number of lineages in our population
         #self.get_Population() # arranges the population into a list of lineages (each lineage might have varying length)
         #self.get_paramlist() 
         #self.get_Marginal_State_Distributions()
@@ -337,8 +337,9 @@ class tHMM:
             to the root node) node beta and Normalizing Factor
             values.
         '''
-        assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx])
-        assert( lineage[node_child_n_idx].isLeft() or lineage[node_child_n_idx].isRight() )
+        assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
+        assert( lineage[node_child_n_idx].isLeft() or lineage[node_child_n_idx].isRight() ) # # if the child-parent relationship
+        # is correct, then the child must be either the left daughter or the right daughter
         summand_holder=[] # summing over the states
         for state_k in numstates: # for each state k
             num1 = beta_array[node_child_n_idx, state_k] # get the already calculated beta at node n for state k
@@ -352,9 +353,9 @@ class tHMM:
         return( sum(summand_holder) )
     
     def get_beta_parent_child_prod(beta_array, T, MSD_array, numstates, state_j, node_parent_m_idx):
-        beta_m_n_holder = []
-        node_parent_m_idx = lineage.index(node_parent_m)
-        children_idx_list = []
+        beta_m_n_holder = [] # list to hold the factors in the product
+        node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
+        children_idx_list = [] # list to hold the children
         if node_parent_m.left:
             node_child_n_left_idx = lineage.index(node_parent_m.left)
             children_idx_list.append(node_child_n_left_idx)
@@ -379,11 +380,36 @@ class tHMM:
             params = self.paramlist[num] # getting the respective params by lineage index
             T = params["T"] # getting the transition matrix of the respective lineage
             
-            for cell in lineage:
-                #base case
-                if cell.isRoot():
-                    # TODO
-                else:
+            # shakthi pseudocode:
+            
+            # go through the leaf nodes
+            # collect the parents of the leaf nodes
+            # take the set of the parents
+            # for each parent:
+            #   calculate the NF
+            #   store the NF
+            #   calulate the beta
+            #   store the beta
+            # find the parents in the set of parents
+            # for each parent:
+            #   calculate the NF
+            #   store the NF
+            #   calulate the beta
+            #   store the beta
+            # ...
+            # do this until the set of the parents is just the root node
+            #   calculate the NF
+            #   store the NF
+            #   calculate the beta
+            #   store the beta
+            # done
+            
+            # the above wont work
+            # all the parents might not be on the same level in the tree
+            
+            
+                    
+                
                     
                     
             
