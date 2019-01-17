@@ -406,7 +406,7 @@ class tHMM:
             start = max_gen()
             while start > 1:
                 level = get_gen(start)
-                
+                parent_holder = get_parents_for_max_gen(level)
                 for node_parent_m_idx in parent_holder:
                     num_holder = []
                     for state_k in self.numstates:
@@ -439,10 +439,96 @@ class tHMM:
                 log_holder.append(log_NF_array(index))
         return(sum(log_holder))
     
+               
+############ VITERBI #############        
+
+    def get_delta_leaves(self):
+        '''
+         calculates deltas for the leaves                              
+        '''
                 
-                
-                
+        #self.deltas = [] 
+        for num in self.numLineages: # for each lineage in our Population
             
+            delta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
+            lineage = self.Population[num] # getting the lineage in the Population by index
+            
+            EL_array = self.EL[num] # geting the EL of the respective lineage
+            
+            for cell in lineage: # for each cell in the lineage
+                if cell.isLeaf(): # if it is a leaf
+                    leaf_cell_idx = lineage.index(cell) # get the index of the leaf                     
+                    delta_array[leaf_cell_idx, :] = EL_array[leaf_cell_idx, :]
+                        
+            self.deltas.append(delta_array)              
+        
+    def delta_parent_child_func(lineage, delta_array, T, numstates, state_j, node_parent_m_idx, node_child_n_idx):
+        '''
+            This "helper" function calculates the probability 
+            described as a 'beta-link' between parent and child
+            nodes in our tree for some state j. This beta-link
+            value is what lets you calculate the values of
+            higher (in the direction of from the leave
+            to the root node) node beta and Normalizing Factor
+            values.
+        '''
+        assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
+        assert( lineage[node_child_n_idx].isLeft() or lineage[node_child_n_idx].isRight() ) # # if the child-parent relationship
+        # is correct, then the child must be either the left daughter or the right daughter
+        max_holder=[] # summing over the states
+        for state_k in numstates: # for each state k
+            num1 = beta_array[node_child_n_idx, state_k] # get the already calculated beta at node n for state k
+            num2 = T[state_j, state_k] # get the transition rate for going from state j to state k
+            # P( z_n = k | z_m = j)
+            
+            max_holder.append(num1*num2)
+        return( max(max_holder) )
+        
+        
+    def get_delta_parent_child_prod(delta_array, T, numstates, state_j, node_parent_m_idx):
+        delta_m_n_holder = [] # list to hold the factors in the product
+        node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
+        children_idx_list = [] # list to hold the children
+        if node_parent_m.left:
+            node_child_n_left_idx = lineage.index(node_parent_m.left)
+            children_idx_list.append(node_child_n_left_idx)
+        if node_parent_m.right:
+            node_child_n_right_idx = lineage.index(node_parent_m.right)
+            children_idx_list.append(node_child_n_right_idx)
+        for node_child_n_idx in children_idx_list:
+            delta_m_n = delta_parent_child_func(lineage, delta_array, T, numstates, state_j, node_parent_m_idx, node_child_n_idx)
+            deltaa_m_n_holder.append(delta_m_n)
+        
+        result = reduce((lambda x, y: x * y), delta_m_n_holder) # calculates the product of items in a list
+        return(result)
+        
+    def get_delta_nonleaves(self):
+        for num in self.numLineages: # for each lineage in our Population
+            
+            lineage = self.Population[num] # getting the lineage in the Population by index
+           
+            EL_array = self.EL[num] # geting the EL of the respective lineage
+            params = self.paramlist[num] # getting the respective params by lineage index
+            T = params["T"] # getting the transition matrix of the respective lineage
+            
+            start = max_gen()
+            while start > 1:
+                level = get_gen(start)
+                parent_holder = get_parents_for_max_gen(level)
+                for node_parent_m_idx in parent_holder:
+                    #prod_holder = []
+                    for state_k in self.numstates:
+                        fac1 = get_delta_parent_child_prod(delta_array, T, numstates, state_j, node_parent_m_idx)
+                        
+                        fac2 = EL_array[node_parent_m_idx, state_k]
+                        
+                        delta_array[node_parent_m_idx, state_k] = fac1*fac2
+                            
+                start -= 1
+        
+        
+        
+        
         '''    # shakthi pseudocode:
             
             # go through the leaf nodes
