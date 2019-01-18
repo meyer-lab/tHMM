@@ -26,8 +26,8 @@ def max_gen(lineage):
         '''finds the max generation in a lineage'''
         gen_holder = 1
         for cell in lineage:
-            if cell.generation > gen_holder:
-                gen_holder = cell.generation
+            if cell.gen > gen_holder:
+                gen_holder = cell.gen
         return gen_holder
     
 def get_gen(gen, lineage):
@@ -176,7 +176,7 @@ class tHMM:
                     for state_k in self.numStates: # recursion based on parent cell
                         temp_sum_holder = [] # for all states k, calculate the sum of temp
                         for state_j in self.numStates: # for all states j, calculate temp
-                            temp = params["T"][state_j,state_k] * MSD_array[parent_cell_idx][state_j]
+                            temp = params["T"][state_j,state_k] * MSD_array[parent_cell_idx, state_j]
                             # temp = T_jk * P(z_parent(n) = j)
                             temp_sum_holder.append(temp)
                         MSD_array[current_cell_idx,state_k] = sum(temp_sum_holder)
