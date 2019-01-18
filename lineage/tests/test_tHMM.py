@@ -4,9 +4,37 @@ import math
 import numpy as np
 from ..Lineage import Population as p, generatePopulationWithTime as gpt
 from ..tHMM_start import tHMM, remove_NaNs
+from ..CellNode import CellNode
 
 class TestModel(unittest.TestCase):
     """ Here are the unit tests. """
+    def setUp(self):
+        """ small trees that can be used to run unit tests and check for edge cases. """
+        # 3 level tree with no gaps
+        cell1 = CellNode(startT=0, linID=1)
+        cell2, cell3 = cell1.divide(10)
+        cell4, cell5 = cell2.divide(15)
+        cell6, cell7 = cell3.divide(20)
+        self.lineage1 = [cell1, cell2, cell3, cell4, cell5, cell6, cell7]
+
+        # 3 level tree where only one of the 2nd generation cells divides
+        cell10 = CellNode(startT=0, linID=2)
+        cell11, cell12 = cell10.divide(10)
+        cell13, cell14 = cell11.divide(15)
+        self.lineage2 = [cell10, cell11, cell12, cell13, cell14]
+
+        # 3 level tree where one of the 2nd generation cells doesn't divide and the other only has one daughter cell
+        cell20 = CellNode(startT=0, linID=3)
+        cell21, cell22 = cell20.divide(10)
+        cell23, _ = cell21.divide(15)
+        cell21.right = None # reset the right pointer to None to effectively delete the cell from the lineage
+        self.lineage3 = [cell20, cell21, cell22, cell23]
+        
+        # example where lineage is just one cell
+        cell30 = CellNode(startT=0, linID=4)
+        self.lineage4 = [cell30]
+        
+        
     def test_remove_NaNs(self):
         """ Checks to see that cells with a NaN of tau are eliminated from a population list. """
         experimentTime = 100.
@@ -34,7 +62,6 @@ class TestModel(unittest.TestCase):
 
         t = tHMM(X) # build the tHMM class with X
         numLin = t.get_numLineages()
-        print(numLin)
         self.assertTrue(numLin == 50) # call func
 
         # case where the lineages follow different parameter sets
@@ -46,7 +73,6 @@ class TestModel(unittest.TestCase):
 
         t = tHMM(X) # build the tHMM class with X
         numLin = t.get_numLineages()
-        print(numLin)
         self.assertTrue(numLin == 100) # call func
 
     def test_get_Population(self):

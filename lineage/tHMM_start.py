@@ -30,13 +30,13 @@ def max_gen(lineage):
                 gen_holder = cell.generation
         return(gen_holder)
     
-    def get_gen(gen, lineage):
-        '''creates a list with all cells in the max generation'''
-        first_set = []
-        for cell in lineage:
-            if cell.gen == gen:
-                first_set.append(cell)
-        return(first_set)
+def get_gen(gen, lineage):
+    '''creates a list with all cells in the max generation'''
+    first_set = []
+    for cell in lineage:
+        if cell.gen == gen:
+            first_set.append(cell)
+    return(first_set)
 
 class tHMM:
     def __init__(self, X, numStates=1):
@@ -91,7 +91,7 @@ class tHMM:
     Downward and Upward recursions.
     '''
     
-    def tree_recursion(cell, subtree):
+    def tree_recursion(self, cell, subtree):
         ''' Basic recursion method used in all following tree traversal methods. '''
         if cell.isLeaf(): # base case: if a leaf, end the recursion
             return
@@ -103,7 +103,7 @@ class tHMM:
             tree_recursion(cell.right, subtree)
         return
     
-    def get_subtrees(node,lineage):
+    def get_subtrees(self, node, lineage):
         '''Get subtrees for one lineage'''
         subtree_list = [node] 
         tree_recursion(node,subtree)
@@ -113,7 +113,7 @@ class tHMM:
                 not_subtree.append(cell)
         return subtree, not_subtree
     
-    def find_two_subtrees(node,lineage):
+    def find_two_subtrees(node, lineage):
         '''Gets the left and right subtrees from a cell'''
         left_sub,_ = get_subtrees(cell.left,lineage)
         right_sub,_ = get_subtrees(cell.right,lineage)
@@ -123,7 +123,7 @@ class tHMM:
                 neither_subtree.append(cell)
         return left_sub, right_sub, neither_subtree
     
-    def get_mixed_subtrees(node_m,node_n,lineage):
+    def get_mixed_subtrees(node_m, node_n, lineage):
         m_sub,_ = get_subtrees(node_m,lineage)
         n_sub,_ = get_subtrees(node_n,lineage)
         mixed_sub = []
@@ -180,9 +180,10 @@ class tHMM:
                             # temp = T_jk * P(z_parent(n) = j)
                             temp_sum_holder.append(temp)
                         MSD_array[current_cell_idx,state_k] = sum(temp_sum_holder)
-                        
+
             self.MSD.append(MSD_array) # Marginal States Distributions for each lineage in the Population
-        return(self.MSD)
+
+        return self.MSD
 
                         
     def get_Emission_Likelihoods(self):
@@ -285,9 +286,9 @@ class tHMM:
                     # the sum of the joint probabilities is the marginal probability
                     
                     NF_array[leaf_cell_idx] = marg_prob # each cell gets its own marg prob
-                         
+
             self.NF.append(NF_array)
-        return(self.NF)
+        return self.NF
                     
     def get_beta_leaves(self):
         '''
@@ -316,7 +317,7 @@ class tHMM:
                 
         self.betas = [] # full betas holder
         for num in self.numLineages: # for each lineage in our Population
-            
+
             beta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
                 
             lineage = self.Population[num] # getting the lineage in the Population by index
@@ -366,7 +367,7 @@ class tHMM:
             # P(z_n = k)
             
             summand_holder.append(num1*num2/denom)
-        return( sum(summand_holder) )
+        return sum(summand_holder)
     
     def get_beta_parent_child_prod(beta_array, T, MSD_array, numstates, state_j, node_parent_m_idx):
         beta_m_n_holder = [] # list to hold the factors in the product
@@ -381,28 +382,28 @@ class tHMM:
         for node_child_n_idx in children_idx_list:
             beta_m_n = beta_parent_child_func(lineage, beta_array, T, MSD_array, numstates, state_j, node_parent_m_idx, node_child_n_idx)
             beta_m_n_holder.append(beta_m_n)
-        
+
         result = reduce((lambda x, y: x * y), beta_m_n_holder) # calculates the product of items in a list
-        return(result)
+        return result
     
-    def get_parents_for_max_gen(level):
+    def get_parents_for_max_gen(self, level):
         parent_holder = {}
         for cell in level:
             parent_cell = cell.parent
             parent_holder.add(lineage.index(parent_cell))
-        return(parent_holder)
-    
-    def get_daughters(cell):
+        return parent_holder
+
+    def get_daughters(self, cell):
         temp = []
         if cell.left:
             temp.append(cell.left)
         if cell.right:
             temp.append(cell.right)
         return temp
-    
+
     def get_beta_and_NF_nonleaves(self):
         for num in self.numLineages: # for each lineage in our Population
-            
+
             lineage = self.Population[num] # getting the lineage in the Population by index
             beta_array = self.betas[num] # getting the betas of the respective lineage
             NF_array = self.NF[num] # getting the NF of the respective lineage
@@ -410,7 +411,7 @@ class tHMM:
             EL_array = self.EL[num] # geting the EL of the respective lineage
             params = self.paramlist[num] # getting the respective params by lineage index
             T = params["T"] # getting the transition matrix of the respective lineage
-            
+
             start = max_gen()
             while start > 1:
                 level = get_gen(start)
@@ -432,10 +433,10 @@ class tHMM:
                     for state_k in self.numstates:
                         beta_array[node_parent_m_idx, state_k] = num_holder[state_k] / NF_array[node_parent_m_idx]                
 
-                
                 start -= 1
                 
-    def calculate_log_likelihood()
+    def calculate_log_likelihood(self):
+        """ Calculates log likelihood for NF. """
         for num in self.numLineages: # for each lineage in our Population
             
             lineage = self.Population[num] # getting the lineage in the Population by index
@@ -445,31 +446,27 @@ class tHMM:
             log_holder = []
             for index in range(len(lineage)):
                 log_holder.append(log_NF_array(index))
-        return(sum(log_holder))
-    
-               
+        return sum(log_holder)
+
 ############ VITERBI #############        
 
     def get_delta_leaves(self):
-        '''
-         calculates deltas for the leaves                              
-        '''
-                
+        ''' calculates deltas for the leaves '''
         #self.deltas = [] 
         for num in self.numLineages: # for each lineage in our Population
-            
+
             delta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
             lineage = self.Population[num] # getting the lineage in the Population by index
-            
+
             EL_array = self.EL[num] # geting the EL of the respective lineage
-            
+
             for cell in lineage: # for each cell in the lineage
                 if cell.isLeaf(): # if it is a leaf
                     leaf_cell_idx = lineage.index(cell) # get the index of the leaf                     
                     delta_array[leaf_cell_idx, :] = EL_array[leaf_cell_idx, :]
-                        
+
             self.deltas.append(delta_array)              
-        
+
     def delta_parent_child_func(lineage, delta_array, T, numstates, state_j, node_parent_m_idx, node_child_n_idx):
         '''
             This "helper" function calculates the probability 
