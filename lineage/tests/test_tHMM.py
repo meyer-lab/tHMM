@@ -3,36 +3,36 @@ import unittest
 import math
 import numpy as np
 from ..Lineage import Population as p, generatePopulationWithTime as gpt
-from ..tHMM_start import tHMM, remove_NaNs, max_gen
+from ..tHMM_start import tHMM, remove_NaNs, max_gen, get_gen
 from ..CellNode import CellNode
 
 class TestModel(unittest.TestCase):
     """ Here are the unit tests. """
     def setUp(self):
-        """ small trees that can be used to run unit tests and check for edge cases. """
+        """ Small trees that can be used to run unit tests and check for edge cases. Some cells are labeled as self so they can be accessed in unit tests for comparisons. """
         # 3 level tree with no gaps
         cell1 = CellNode(startT=0, linID=1)
         cell2, cell3 = cell1.divide(10)
-        cell4, cell5 = cell2.divide(15)
-        cell6, cell7 = cell3.divide(20)
-        self.lineage1 = [cell1, cell2, cell3, cell4, cell5, cell6, cell7]
+        self.cell4, self.cell5 = cell2.divide(15)
+        self.cell6, self.cell7 = cell3.divide(20)
+        self.lineage1 = [cell1, cell2, cell3, self.cell4, self.cell5, self.cell6, self.cell7]
 
         # 3 level tree where only one of the 2nd generation cells divides
         cell10 = CellNode(startT=0, linID=2)
-        cell11, cell12 = cell10.divide(10)
-        cell13, cell14 = cell11.divide(15)
-        self.lineage2 = [cell10, cell11, cell12, cell13, cell14]
+        self.cell11, self.cell12 = cell10.divide(10)
+        self.cell13, self.cell14 = self.cell11.divide(15)
+        self.lineage2 = [cell10, self.cell11, self.cell12, self.cell13, self.cell14]
 
         # 3 level tree where one of the 2nd generation cells doesn't divide and the other only has one daughter cell
         cell20 = CellNode(startT=0, linID=3)
         cell21, cell22 = cell20.divide(10)
-        cell23, _ = cell21.divide(15)
+        self.cell23, _ = cell21.divide(15)
         cell21.right = None # reset the right pointer to None to effectively delete the cell from the lineage
-        self.lineage3 = [cell20, cell21, cell22, cell23]
+        self.lineage3 = [cell20, cell21, cell22, self.cell23]
         
         # example where lineage is just one cell
-        cell30 = CellNode(startT=0, linID=4)
-        self.lineage4 = [cell30]
+        self.cell30 = CellNode(startT=0, linID=4)
+        self.lineage4 = [self.cell30]
         
         
     def test_remove_NaNs(self):
@@ -100,3 +100,30 @@ class TestModel(unittest.TestCase):
         self.assertTrue(max_gen(self.lineage2) == 3)
         self.assertTrue(max_gen(self.lineage3) == 3)
         self.assertTrue(max_gen(self.lineage4) == 1) # lineage 4 is just one cell
+
+    def test_get_gen(self):
+        """ Checks to make sure get_gen of a certain lineage returns the proper cells. """
+        temp1 = get_gen(3, self.lineage1) # bottom row of lineage row
+        self.assertIn(self.cell4, temp1)
+        self.assertIn(self.cell5, temp1)
+        self.assertIn(self.cell6, temp1)
+        self.assertIn(self.cell7, temp1)
+        self.assertTrue(len(temp1) == 4)
+
+        temp2 = get_gen(2, self.lineage2) # 2nd generation of lineage 2
+        self.assertIn(self.cell11, temp2)
+        self.assertIn(self.cell12, temp2)
+        self.assertTrue(len(temp2) == 2)
+
+        temp3 = get_gen(3, self.lineage2) # 3rd generation of lineage 2
+        self.assertIn(self.cell13, temp3)
+        self.assertIn(self.cell14, temp3)
+        self.assertTrue(len(temp3) == 2)
+
+        temp4 = get_gen(3, self.lineage3)
+        self.assertIn(self.cell23, temp4)
+        self.assertTrue(len(temp4) == 1)
+
+        temp5 = get_gen(1, self.lineage4)
+        self.assertIn(self.cell30, temp5)
+        self.assertTrue(len(temp5) == 1)

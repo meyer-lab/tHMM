@@ -31,7 +31,7 @@ def max_gen(lineage):
         return gen_holder
     
 def get_gen(gen, lineage):
-    '''creates a list with all cells in the max generation'''
+    '''creates a list with all cells in the given generation'''
     first_set = []
     for cell in lineage:
         if cell.gen == gen:
@@ -216,7 +216,7 @@ class tHMM:
             E_param_array = params["E"] # K by 3 array of distribution parameters for each lineage
 
             for state_k in self.numStates: # for each state 
-                E_param_k = E_param_array[state,:] # get the emission parameters for that state
+                E_param_k = E_param_array[state_k,:] # get the emission parameters for that state
                 k_bern = E_param_k[0] # bernoulli rate parameter
                 k_gomp_c = E_param_k[1] # gompertz c parameter
                 k_gomp_s = E_param_k[2] # gompertz scale parameter
