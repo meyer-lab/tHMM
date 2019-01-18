@@ -28,7 +28,7 @@ def max_gen(lineage):
         for cell in lineage:
             if cell.generation > gen_holder:
                 gen_holder = cell.generation
-        return(gen_holder)
+        return gen_holder
     
 def get_gen(gen, lineage):
     '''creates a list with all cells in the max generation'''
@@ -36,7 +36,7 @@ def get_gen(gen, lineage):
     for cell in lineage:
         if cell.gen == gen:
             first_set.append(cell)
-    return(first_set)
+    return first_set
 
 class tHMM:
     def __init__(self, X, numStates=1):
@@ -167,7 +167,7 @@ class tHMM:
             MSD_array = np.zeros((len(lineage),self.numStates)) # instantiating N by K array
             for cell in lineage: # for each cell in the lineage
                 if cell.isRootParent(): # base case uses pi parameter at the root cells of the tree
-                    for states in self.numStates: # for each state
+                    for state in self.numStates: # for each state
                         MSD_array[0,state] = params["pi"][state,:] # base case using pi parameter
                 else:
                     parent_cell_idx = lineage.index(cell.parent) # get the index of the parent cell

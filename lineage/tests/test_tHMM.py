@@ -3,7 +3,7 @@ import unittest
 import math
 import numpy as np
 from ..Lineage import Population as p, generatePopulationWithTime as gpt
-from ..tHMM_start import tHMM, remove_NaNs
+from ..tHMM_start import tHMM, remove_NaNs, max_gen
 from ..CellNode import CellNode
 
 class TestModel(unittest.TestCase):
@@ -76,6 +76,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(numLin == 100) # call func
 
     def test_get_Population(self):
+        """ Tests that populations are lists of lineages and each cell in a lineage has the correct linID. """
         experimentTime = 50.
         initCells = [50] # there should be 50 lineages b/c there are 50 initial cells
         locBern = [0.6]
@@ -91,3 +92,11 @@ class TestModel(unittest.TestCase):
         for i, lineage in enumerate(pop): # for each lineage
             for cell in lineage: # for each cell in said lineage
                 self.assertTrue(i == cell.linID) # linID should correspond with i
+
+    def test_max_gen(self):
+        """ Calls lineages 1 through 4 and ensures that the maximimum number of generations is correct in each case. """
+        # lineages 1-3 have 3 levels/generations
+        self.assertTrue(max_gen(self.lineage1) == 3)
+        self.assertTrue(max_gen(self.lineage2) == 3)
+        self.assertTrue(max_gen(self.lineage3) == 3)
+        self.assertTrue(max_gen(self.lineage4) == 1) # lineage 4 is just one cell
