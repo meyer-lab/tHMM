@@ -85,7 +85,7 @@ class TestModel(unittest.TestCase):
         X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
 
         t = tHMM(X) # build the tHMM class with X
-        pop = t.get_Population()
+        pop = t.init_Population()
         self.assertTrue(len(pop) == initCells[0]) # len(pop) corresponds to the number of lineages
 
         # check that all cells in a lineage have same linID

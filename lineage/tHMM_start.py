@@ -44,12 +44,10 @@ class tHMM:
         self.X = X # list containing lineage, should be in correct format (contain no NaNs)
         self.numStates = numStates # number of discrete hidden states
         self.numLineages = self.get_numLineages() # gets the number of lineages in our population
-        self.population = [] # full list to hold all the lineages
-        self.paramlist = [] # list that is numLineages long of parameters for each lineage tree in our population
+        self.population = self.init_Population() # # arranges the population into a list of lineages (each lineage might have varying length)
+        self.paramlist = self.init_paramlist() # list that is numLineages long of parameters for each lineage tree in our population
         self.MSD = [] # full Marginal State Distribution holder
         self.EL = [] # full Emission Likelihood holder
-        #self.get_Population() # arranges the population into a list of lineages (each lineage might have varying length)
-        self.init_paramlist() 
         #self.get_Marginal_State_Distributions()
         #self.get_Emission_Likelihoods()
         #self.get_get_leaf_Norms()
@@ -63,24 +61,26 @@ class tHMM:
         numLineages = max(linID_holder)+1 # the number of lineages is the maximum linID+1
         return numLineages
 
-    def get_Population(self):
+    def init_Population(self):
         ''' Creates a full population list of lists which contain each lineage in the population. '''
+        population = []
         for lineage_num in range(self.numLineages): # iterate over the number of lineages in the population
             temp_lineage = [] # temporary list to hold the cells of a certain lineage with a particular linID
             for cell in self.X: # for each cell in the population
                 if cell.linID == lineage_num: # if the cell's linID is the lineage num
                     temp_lineage.append(cell) # append the cell to that certain lineage
-            self.population.append(temp_lineage) # append the lineage to the Population holder
-        return self.population
+            population.append(temp_lineage) # append the lineage to the Population holder
+        return population
 
     def init_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage. '''
+        paramlist = []
         temp_params = {"pi": np.zeros((self.numStates)), # inital state distributions [Kx1]
                        "T": np.zeros((self.numStates, self.numStates)), # state transition matrix [KxK]
                        "E": np.zeros((self.numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
         for lineage_num in range(self.numLineages): # for each lineage in our population
-            self.paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
-        return self.paramlist
+            paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
+        return paramlist
 
     '''
     The following are tree manipulating
