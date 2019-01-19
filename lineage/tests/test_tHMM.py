@@ -49,7 +49,7 @@ class TestModel(unittest.TestCase):
             if cell.isUnfinished():
                 num_NAN += 1
 
-        self.assertTrue(num_NAN == 0) # there should be no unfinished cells left
+        self.assertEqual(num_NAN, 0) # there should be no unfinished cells left
 
     def test_get_numLineages(self):
         """ Checks to see that the initial number of cells created is the number of lineages. """
@@ -62,7 +62,7 @@ class TestModel(unittest.TestCase):
 
         t = tHMM(X) # build the tHMM class with X
         numLin = t.get_numLineages()
-        self.assertTrue(numLin == 50) # call func
+        self.assertEqual(numLin, 50) # call func
 
         # case where the lineages follow different parameter sets
         initCells = [50, 42, 8] # there should be 100 lineages b/c there are 100 initial cells
@@ -73,9 +73,9 @@ class TestModel(unittest.TestCase):
 
         t = tHMM(X) # build the tHMM class with X
         numLin = t.get_numLineages()
-        self.assertTrue(numLin == 100) # call func
+        self.assertEqual(numLin, 100) # call func
 
-    def test_get_Population(self):
+    def test_init_Population(self):
         """ Tests that populations are lists of lineages and each cell in a lineage has the correct linID. """
         experimentTime = 50.
         initCells = [50] # there should be 50 lineages b/c there are 50 initial cells
@@ -86,20 +86,20 @@ class TestModel(unittest.TestCase):
 
         t = tHMM(X) # build the tHMM class with X
         pop = t.init_Population()
-        self.assertTrue(len(pop) == initCells[0]) # len(pop) corresponds to the number of lineages
+        self.assertEqual(len(pop), initCells[0]) # len(pop) corresponds to the number of lineages
 
         # check that all cells in a lineage have same linID
         for i, lineage in enumerate(pop): # for each lineage
             for cell in lineage: # for each cell in said lineage
-                self.assertTrue(i == cell.linID) # linID should correspond with i
+                self.assertEqual(i, cell.linID) # linID should correspond with i
 
     def test_max_gen(self):
         """ Calls lineages 1 through 4 and ensures that the maximimum number of generations is correct in each case. """
         # lineages 1-3 have 3 levels/generations
-        self.assertTrue(max_gen(self.lineage1) == 3)
-        self.assertTrue(max_gen(self.lineage2) == 3)
-        self.assertTrue(max_gen(self.lineage3) == 3)
-        self.assertTrue(max_gen(self.lineage4) == 1) # lineage 4 is just one cell
+        self.assertEqual(max_gen(self.lineage1), 3)
+        self.assertEqual(max_gen(self.lineage2), 3)
+        self.assertEqual(max_gen(self.lineage3), 3)
+        self.assertEqual(max_gen(self.lineage4), 1) # lineage 4 is just one cell
 
     def test_get_gen(self):
         """ Checks to make sure get_gen of a certain lineage returns the proper cells. """
@@ -108,22 +108,37 @@ class TestModel(unittest.TestCase):
         self.assertIn(self.cell5, temp1)
         self.assertIn(self.cell6, temp1)
         self.assertIn(self.cell7, temp1)
-        self.assertTrue(len(temp1) == 4)
+        self.assertEqual(len(temp1), 4)
 
         temp2 = get_gen(2, self.lineage2) # 2nd generation of lineage 2
         self.assertIn(self.cell11, temp2)
         self.assertIn(self.cell12, temp2)
-        self.assertTrue(len(temp2) == 2)
+        self.assertEqual(len(temp2), 2)
 
         temp3 = get_gen(3, self.lineage2) # 3rd generation of lineage 2
         self.assertIn(self.cell13, temp3)
         self.assertIn(self.cell14, temp3)
-        self.assertTrue(len(temp3) == 2)
+        self.assertEqual(len(temp3), 2)
 
         temp4 = get_gen(3, self.lineage3)
         self.assertIn(self.cell23, temp4)
-        self.assertTrue(len(temp4) == 1)
+        self.assertEqual(len(temp4), 1)
 
         temp5 = get_gen(1, self.lineage4)
         self.assertIn(self.cell30, temp5)
-        self.assertTrue(len(temp5) == 1)
+        self.assertEqual(len(temp5), 1)
+
+    def test_init_paramlist(self):
+        """ Make sure paramlist has proper labels and sizes. """
+        experimentTime = 50.
+        initCells = [50] # there should be 50 lineages b/c there are 50 initial cells
+        locBern = [0.6]
+        cGom = [2]
+        scaleGom = [40]
+        X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
+        X = remove_NaNs(X)
+        t = tHMM(X, numStates=2) # build the tHMM class with X
+        self.assertEqual(t.paramlist[0]["pi"].shape[0], 2) # make sure shape is numStates
+        self.assertEqual(t.paramlist[0]["T"].shape[0], 2) # make sure shape is numStates
+        self.assertEqual(t.paramlist[0]["T"].shape[1], 2) # make sure shape is numStates
+        self.assertEqual(t.paramlist[0]["E"].shape[0], 2) # make sure shape is numStates
