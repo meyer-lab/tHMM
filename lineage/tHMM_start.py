@@ -46,9 +46,9 @@ class tHMM:
         self.numLineages = self.get_numLineages() # gets the number of lineages in our population
         self.population = self.init_Population() # # arranges the population into a list of lineages (each lineage might have varying length)
         self.paramlist = self.init_paramlist() # list that is numLineages long of parameters for each lineage tree in our population
-        self.MSD = [] # full Marginal State Distribution holder
+        self.MSD = self.get_Marginal_State_Distributions() # full Marginal State Distribution holder
         self.EL = [] # full Emission Likelihood holder
-        self.get_Marginal_State_Distributions()
+        #self.get_Marginal_State_Distributions()
         #self.get_Emission_Likelihoods()
         #self.get_get_leaf_Norms()
 
@@ -100,6 +100,7 @@ class tHMM:
             Unit test should be that the addition of all elements in each row 
             for every row is equal to 1.
         '''
+        MSD = []
         for num in range(self.numLineages): # for each lineage in our Population
             lineage = self.population[num] # getting the lineage in the Population by lineage index
             params = self.paramlist[num] # getting the respective params by lineage index
@@ -119,9 +120,9 @@ class tHMM:
                             temp_sum_holder.append(temp)
                         MSD_array[current_cell_idx,state_k] = sum(temp_sum_holder)
 
-            self.MSD.append(MSD_array) # Marginal States Distributions for each lineage in the Population
+            MSD.append(MSD_array) # Marginal States Distributions for each lineage in the Population
 
-        return self.MSD
+        return MSD
 
                         
     def get_Emission_Likelihoods(self):

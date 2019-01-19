@@ -37,7 +37,7 @@ class TestModel(unittest.TestCase):
         # create a common population to use in all tests
         experimentTime = 50.
         initCells = [50] # there should be 50 lineages b/c there are 50 initial cells
-        locBern = [0.6]
+        locBern = [0.8]
         cGom = [2]
         scaleGom = [40]
         self.X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
@@ -129,3 +129,13 @@ class TestModel(unittest.TestCase):
         self.assertEqual(t.paramlist[0]["T"].shape[0], 2) # make sure shape is numStates
         self.assertEqual(t.paramlist[0]["T"].shape[1], 2) # make sure shape is numStates
         self.assertEqual(t.paramlist[0]["E"].shape[0], 2) # make sure shape is numStates
+
+    def test_get_MSD(self):
+        """ Calls get_Marginal_State_Distributions and prints the output for now. """
+        X = remove_NaNs(self.X)
+        t = tHMM(X, numStates=2) # build the tHMM class with X
+        MSD = t.get_Marginal_State_Distributions()
+        self.assertEqual(len(MSD), 50) # there are 50 lineages in the population
+        for ii in range(len(MSD)):
+            self.assertGreater(MSD[ii].shape[0], 0) # at least one cell in each lineage
+            self.assertEqual(MSD[ii].shape[1], 2) # there are 2 states for each cell
