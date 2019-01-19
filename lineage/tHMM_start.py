@@ -48,7 +48,7 @@ class tHMM:
         self.paramlist = self.init_paramlist() # list that is numLineages long of parameters for each lineage tree in our population
         self.MSD = [] # full Marginal State Distribution holder
         self.EL = [] # full Emission Likelihood holder
-        #self.get_Marginal_State_Distributions()
+        self.get_Marginal_State_Distributions()
         #self.get_Emission_Likelihoods()
         #self.get_get_leaf_Norms()
 
@@ -101,22 +101,19 @@ class tHMM:
             for every row is equal to 1.
         '''
         for num in self.numLineages: # for each lineage in our Population
-            
             lineage = self.Population[num] # getting the lineage in the Population by lineage index
             params = self.paramlist[num] # getting the respective params by lineage index
-            
             MSD_array = np.zeros((len(lineage),self.numStates)) # instantiating N by K array
             for cell in lineage: # for each cell in the lineage
                 if cell.isRootParent(): # base case uses pi parameter at the root cells of the tree
-                    for state in self.numStates: # for each state
+                    for state in range(self.numStates): # for each state
                         MSD_array[0,state] = params["pi"][state,:] # base case using pi parameter
                 else:
                     parent_cell_idx = lineage.index(cell.parent) # get the index of the parent cell
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
-                    
-                    for state_k in self.numStates: # recursion based on parent cell
+                    for state_k in range(self.numStates): # recursion based on parent cell
                         temp_sum_holder = [] # for all states k, calculate the sum of temp
-                        for state_j in self.numStates: # for all states j, calculate temp
+                        for state_j in range(self.numStates): # for all states j, calculate temp
                             temp = params["T"][state_j,state_k] * MSD_array[parent_cell_idx, state_j]
                             # temp = T_jk * P(z_parent(n) = j)
                             temp_sum_holder.append(temp)
@@ -148,15 +145,13 @@ class tHMM:
             
             P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_G | z_n = k).
         '''
-        for num in self.numLineages: # for each lineage in our Population
-
+        for num in range(self.numLineages_: # for each lineage in our Population
             lineage = self.Population[num] # getting the lineage in the Population by lineage index
             params = self.paramlist[num] # getting the respective params by lineage index
-
             EL_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array for each lineage
             E_param_array = params["E"] # K by 3 array of distribution parameters for each lineage
 
-            for state_k in self.numStates: # for each state 
+            for state_k in range(self.numStates): # for each state 
                 E_param_k = E_param_array[state_k,:] # get the emission parameters for that state
                 k_bern = E_param_k[0] # bernoulli rate parameter
                 k_gomp_c = E_param_k[1] # gompertz c parameter
@@ -199,10 +194,8 @@ class tHMM:
             
         '''
         self.NF = [] # full Normalizing Factors holder
-        for num in self.numLineages: # for each lineage in our Population
-            
+        for num in range(self.numLineages): # for each lineage in our Population
             NF_array = np.zeros((len(lineage), 1)) # instantiating N by 1 array
-                
             lineage = self.population[num] # getting the lineage in the Population by index
             MSD_array = self.MSD[num] # getting the MSD of the respective lineage
             EL_array = self.EL[num] # geting the EL of the respective lineage
@@ -211,8 +204,7 @@ class tHMM:
                 if cell.isLeaf(): # if it is a leaf
                     leaf_cell_idx = lineage.index(cell) # get the index of the leaf
                     temp_sum_holder = [] # create a temporary list 
-                    
-                    for state_k in self.numstates: # for each state
+                    for state_k in range(self.numstates): # for each state
                         joint_prob = MSD_array[leaf_cell_idx, state_k] * EL_array[leaf_cell_idx, state_k] # def of conditional prob
                         # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
                         # this product is the joint probability
@@ -257,19 +249,16 @@ class tHMM:
         '''
                 
         self.betas = [] # full betas holder
-        for num in self.numLineages: # for each lineage in our Population
-
+        for num in range(self.numLineages): # for each lineage in our Population
             beta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
-                
             lineage = self.Population[num] # getting the lineage in the Population by index
             MSD_array = self.MSD[num] # getting the MSD of the respective lineage
             EL_array = self.EL[num] # geting the EL of the respective lineage
             NF_array = self.NF[num]
-            
             for cell in lineage: # for each cell in the lineage
                 if cell.isLeaf(): # if it is a leaf
                     leaf_cell_idx = lineage.index(cell) # get the index of the leaf
-                    for state_k in self.numStates: # for each state 
+                    for state_k in range(self.numStates): # for each state 
                         # see expression in docstring
                         num1 = EL_array[leaf_cell_idx, state_k] # Emission Likelihood
                         #  P(x_n = x | z_n = k)
@@ -299,7 +288,7 @@ class tHMM:
         assert( lineage[node_child_n_idx].isLeft() or lineage[node_child_n_idx].isRight() ) # # if the child-parent relationship
         # is correct, then the child must be either the left daughter or the right daughter
         summand_holder=[] # summing over the states
-        for state_k in numstates: # for each state k
+        for state_k in range(numstates): # for each state k
             num1 = beta_array[node_child_n_idx, state_k] # get the already calculated beta at node n for state k
             num2 = T[state_j, state_k] # get the transition rate for going from state j to state k
             # P( z_n = k | z_m = j)
@@ -310,7 +299,7 @@ class tHMM:
             summand_holder.append(num1*num2/denom)
         return sum(summand_holder)
     
-    def get_beta_parent_child_prod(beta_array, T, MSD_array, numstates, state_j, node_parent_m_idx):
+    def get_beta_parent_child_prod(self, beta_array, T, MSD_array, numstates, state_j, node_parent_m_idx):
         beta_m_n_holder = [] # list to hold the factors in the product
         node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
         children_idx_list = [] # list to hold the children
@@ -343,8 +332,7 @@ class tHMM:
         return temp
 
     def get_beta_and_NF_nonleaves(self):
-        for num in self.numLineages: # for each lineage in our Population
-
+        for num in range(self.numLineages): # for each lineage in our Population
             lineage = self.Population[num] # getting the lineage in the Population by index
             beta_array = self.betas[num] # getting the betas of the respective lineage
             NF_array = self.NF[num] # getting the NF of the respective lineage
@@ -359,7 +347,7 @@ class tHMM:
                 parent_holder = get_parents_for_max_gen(level)
                 for node_parent_m_idx in parent_holder:
                     num_holder = []
-                    for state_k in self.numstates:
+                    for state_k in range(self.numstates):
                         fac1 = get_beta_parent_child_prod(beta_array=beta_array,
                                                           T=T,
                                                           MSD_array=MSD_array,
@@ -371,7 +359,7 @@ class tHMM:
                         fac3 = MSD_array[node_parent_m_idx, state_k]
                         num_holder.append(fac1*fac2*fac3)
                     NF_array[node_parent_m_idx] = sum(num_holder)
-                    for state_k in self.numstates:
+                    for state_k in range(self.numstates):
                         beta_array[node_parent_m_idx, state_k] = num_holder[state_k] / NF_array[node_parent_m_idx]                
 
                 start -= 1
@@ -394,13 +382,10 @@ class tHMM:
     def get_delta_leaves(self):
         ''' calculates deltas for the leaves '''
         #self.deltas = [] 
-        for num in self.numLineages: # for each lineage in our Population
-
+        for num in range(self.numLineages): # for each lineage in our Population
             delta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
             lineage = self.Population[num] # getting the lineage in the Population by index
-
             EL_array = self.EL[num] # geting the EL of the respective lineage
-
             for cell in lineage: # for each cell in the lineage
                 if cell.isLeaf(): # if it is a leaf
                     leaf_cell_idx = lineage.index(cell) # get the index of the leaf                     
@@ -408,7 +393,7 @@ class tHMM:
 
             self.deltas.append(delta_array)              
 
-    def delta_parent_child_func(lineage, delta_array, T, numstates, state_j, node_parent_m_idx, node_child_n_idx):
+    def delta_parent_child_func(self, lineage, delta_array, T, numstates, state_j, node_parent_m_idx, node_child_n_idx):
         '''
             This "helper" function calculates the probability 
             described as a 'beta-link' between parent and child
@@ -422,7 +407,7 @@ class tHMM:
         assert( lineage[node_child_n_idx].isLeft() or lineage[node_child_n_idx].isRight() ) # # if the child-parent relationship
         # is correct, then the child must be either the left daughter or the right daughter
         max_holder=[] # summing over the states
-        for state_k in numstates: # for each state k
+        for state_k in range(numstates): # for each state k
             num1 = beta_array[node_child_n_idx, state_k] # get the already calculated beta at node n for state k
             num2 = T[state_j, state_k] # get the transition rate for going from state j to state k
             # P( z_n = k | z_m = j)
@@ -431,7 +416,7 @@ class tHMM:
         return( max(max_holder) )
         
         
-    def get_delta_parent_child_prod(delta_array, T, numstates, state_j, node_parent_m_idx):
+    def get_delta_parent_child_prod(self, delta_array, T, numstates, state_j, node_parent_m_idx):
         delta_m_n_holder = [] # list to hold the factors in the product
         node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
         children_idx_list = [] # list to hold the children
@@ -449,27 +434,22 @@ class tHMM:
         return(result)
         
     def get_delta_nonleaves(self):
-        for num in self.numLineages: # for each lineage in our Population
-            
+        for num in range(self.numLineages): # for each lineage in our Population
             lineage = self.Population[num] # getting the lineage in the Population by index
-           
             EL_array = self.EL[num] # geting the EL of the respective lineage
             params = self.paramlist[num] # getting the respective params by lineage index
             T = params["T"] # getting the transition matrix of the respective lineage
-            
             start = max_gen()
             while start > 1:
                 level = get_gen(start)
                 parent_holder = get_parents_for_max_gen(level)
                 for node_parent_m_idx in parent_holder:
                     #prod_holder = []
-                    for state_k in self.numstates:
+                    for state_k in range(self.numstates):
                         fac1 = get_delta_parent_child_prod(delta_array, T, numstates, state_j, node_parent_m_idx)
-                        
                         fac2 = EL_array[node_parent_m_idx, state_k]
-                        
                         delta_array[node_parent_m_idx, state_k] = fac1*fac2
-                            
+
                 start -= 1
     
     def Viterbi(self):
@@ -494,44 +474,4 @@ class tHMM:
                         parent_state = opt_state_true[parent_idx]
                         possible_states = np.multiply(delta_array[child_idx,:], T[parent,state,:])
                         opt_state_tree[child_idx] = max[possible_states,]
-                count += 1
-            
-    
-        
-        
-        '''    # shakthi pseudocode:
-            
-            # go through the leaf nodes
-            # collect the parents of the leaf nodes
-            # take the set of the parents
-            # for each parent:
-            #   calculate the NF
-            #   store the NF
-            #   calulate the beta
-            #   store the beta
-            # find the parents in the set of parents
-            # for each parent:
-            #   calculate the NF
-            #   store the NF
-            #   calulate the beta
-            #   store the beta
-            # ...
-            # do this until the set of the parents is just the root node
-            #   calculate the NF
-            #   store the NF
-            #   calculate the beta
-            #   store the beta
-            # done
-            
-            # the above wont work
-            # all the parents might not be on the same level in the tree
-            
-            
-    def move_up(self):
-        start = self.max_gen() '''
-                
-                    
-                    
-            
-            
-        
+                count += 1        
