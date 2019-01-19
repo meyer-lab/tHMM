@@ -82,64 +82,6 @@ class tHMM:
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
         return paramlist
 
-    '''
-    The following are tree manipulating
-    functions, that will be used when
-    defining more complicated recursions
-    when calculating probabilities for
-    Downward and Upward recursions.
-    '''
-    
-    def tree_recursion(self, cell, subtree):
-        ''' Basic recursion method used in all following tree traversal methods. '''
-        if cell.isLeaf(): # base case: if a leaf, end the recursion
-            return
-        if cell.left is not None:
-            subtree.append(cell.left)
-            tree_recursion(cell.left, subtree)
-        if cell.right is not None:
-            subtree.append(cell.right)
-            tree_recursion(cell.right, subtree)
-        return
-    
-    def get_subtrees(self, node, lineage):
-        '''Get subtrees for one lineage'''
-        subtree_list = [node] 
-        tree_recursion(node,subtree)
-        not_subtree = []
-        for cell in lineage:
-            if cell not in subtree:
-                not_subtree.append(cell)
-        return subtree, not_subtree
-    
-    def find_two_subtrees(node, lineage):
-        '''Gets the left and right subtrees from a cell'''
-        left_sub,_ = get_subtrees(cell.left,lineage)
-        right_sub,_ = get_subtrees(cell.right,lineage)
-        neither_subtree=[]
-        for cell in lineage:
-            if cell not in left_sub and cell not in right_sub:
-                neither_subtree.append(cell)
-        return left_sub, right_sub, neither_subtree
-    
-    def get_mixed_subtrees(node_m, node_n, lineage):
-        m_sub,_ = get_subtrees(node_m,lineage)
-        n_sub,_ = get_subtrees(node_n,lineage)
-        mixed_sub = []
-        for cell in m_sub:
-            if cell not in n_sub:
-                mixed_sub.append(cell)
-        not_mixed = []
-        for cell in lineage:
-            if cell not in mixed_sub:
-                not_mixed.append(cell)
-        return mixed_sub, not_mixed
-    
-    '''
-    This is the end of the necessary 
-    tree manipulation helper functions.
-    '''
-
     def get_Marginal_State_Distributions(self):
         '''
             Marginal State Distribution (MSD) matrix and recursion. 
