@@ -100,14 +100,14 @@ class tHMM:
             Unit test should be that the addition of all elements in each row 
             for every row is equal to 1.
         '''
-        for num in self.numLineages: # for each lineage in our Population
-            lineage = self.Population[num] # getting the lineage in the Population by lineage index
+        for num in range(self.numLineages): # for each lineage in our Population
+            lineage = self.population[num] # getting the lineage in the Population by lineage index
             params = self.paramlist[num] # getting the respective params by lineage index
             MSD_array = np.zeros((len(lineage),self.numStates)) # instantiating N by K array
             for cell in lineage: # for each cell in the lineage
                 if cell.isRootParent(): # base case uses pi parameter at the root cells of the tree
                     for state in range(self.numStates): # for each state
-                        MSD_array[0,state] = params["pi"][state,:] # base case using pi parameter
+                        MSD_array[0,state] = params["pi"][state] # base case using pi parameter
                 else:
                     parent_cell_idx = lineage.index(cell.parent) # get the index of the parent cell
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
@@ -145,8 +145,8 @@ class tHMM:
             
             P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_G | z_n = k).
         '''
-        for num in range(self.numLineages_: # for each lineage in our Population
-            lineage = self.Population[num] # getting the lineage in the Population by lineage index
+        for num in range(self.numLineages): # for each lineage in our Population
+            lineage = self.population[num] # getting the lineage in the Population by lineage index
             params = self.paramlist[num] # getting the respective params by lineage index
             EL_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array for each lineage
             E_param_array = params["E"] # K by 3 array of distribution parameters for each lineage
@@ -251,7 +251,7 @@ class tHMM:
         self.betas = [] # full betas holder
         for num in range(self.numLineages): # for each lineage in our Population
             beta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
-            lineage = self.Population[num] # getting the lineage in the Population by index
+            lineage = self.population[num] # getting the lineage in the Population by index
             MSD_array = self.MSD[num] # getting the MSD of the respective lineage
             EL_array = self.EL[num] # geting the EL of the respective lineage
             NF_array = self.NF[num]
@@ -333,7 +333,7 @@ class tHMM:
 
     def get_beta_and_NF_nonleaves(self):
         for num in range(self.numLineages): # for each lineage in our Population
-            lineage = self.Population[num] # getting the lineage in the Population by index
+            lineage = self.population[num] # getting the lineage in the Population by index
             beta_array = self.betas[num] # getting the betas of the respective lineage
             NF_array = self.NF[num] # getting the NF of the respective lineage
             MSD_array = self.MSD[num] # getting the MSD of the respective lineage
@@ -368,7 +368,7 @@ class tHMM:
         """ Calculates log likelihood for NF. """
         for num in self.numLineages: # for each lineage in our Population
             
-            lineage = self.Population[num] # getting the lineage in the Population by index
+            lineage = self.population[num] # getting the lineage in the Population by index
             
             NF_array = self.NF[num] # getting the NF of the respective lineage
             log_NF_array = np.log(NF_array)
@@ -384,7 +384,7 @@ class tHMM:
         #self.deltas = [] 
         for num in range(self.numLineages): # for each lineage in our Population
             delta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
-            lineage = self.Population[num] # getting the lineage in the Population by index
+            lineage = self.population[num] # getting the lineage in the Population by index
             EL_array = self.EL[num] # geting the EL of the respective lineage
             for cell in lineage: # for each cell in the lineage
                 if cell.isLeaf(): # if it is a leaf
@@ -435,7 +435,7 @@ class tHMM:
         
     def get_delta_nonleaves(self):
         for num in range(self.numLineages): # for each lineage in our Population
-            lineage = self.Population[num] # getting the lineage in the Population by index
+            lineage = self.population[num] # getting the lineage in the Population by index
             EL_array = self.EL[num] # geting the EL of the respective lineage
             params = self.paramlist[num] # getting the respective params by lineage index
             T = params["T"] # getting the transition matrix of the respective lineage

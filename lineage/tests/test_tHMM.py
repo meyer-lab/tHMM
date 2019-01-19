@@ -29,12 +29,19 @@ class TestModel(unittest.TestCase):
         self.cell23, _ = cell21.divide(15)
         cell21.right = None # reset the right pointer to None to effectively delete the cell from the lineage
         self.lineage3 = [cell20, cell21, cell22, self.cell23]
-        
+
         # example where lineage is just one cell
         self.cell30 = CellNode(startT=0, linID=4)
         self.lineage4 = [self.cell30]
-        
-        
+
+        # create a common population to use in all tests
+        experimentTime = 50.
+        initCells = [50] # there should be 50 lineages b/c there are 50 initial cells
+        locBern = [0.6]
+        cGom = [2]
+        scaleGom = [40]
+        self.X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
+
     def test_remove_NaNs(self):
         """ Checks to see that cells with a NaN of tau are eliminated from a population list. """
         experimentTime = 100.
@@ -53,40 +60,26 @@ class TestModel(unittest.TestCase):
 
     def test_get_numLineages(self):
         """ Checks to see that the initial number of cells created is the number of lineages. """
-        experimentTime = 50.
-        initCells = [50] # there should be 50 lineages b/c there are 50 initial cells
-        locBern = [0.6]
-        cGom = [2]
-        scaleGom = [40]
-        X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
-
-        t = tHMM(X) # build the tHMM class with X
+        t = tHMM(self.X) # build the tHMM class with self.X
         numLin = t.get_numLineages()
         self.assertEqual(numLin, 50) # call func
 
         # case where the lineages follow different parameter sets
+        experimentTime = 50.
         initCells = [50, 42, 8] # there should be 100 lineages b/c there are 100 initial cells
         locBern = [0.6, 0.8, 0.7]
         cGom = [2, 0.5, 1]
         scaleGom = [40, 50, 45]
         X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
-
         t = tHMM(X) # build the tHMM class with X
         numLin = t.get_numLineages()
         self.assertEqual(numLin, 100) # call func
 
     def test_init_Population(self):
         """ Tests that populations are lists of lineages and each cell in a lineage has the correct linID. """
-        experimentTime = 50.
-        initCells = [50] # there should be 50 lineages b/c there are 50 initial cells
-        locBern = [0.6]
-        cGom = [2]
-        scaleGom = [40]
-        X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
-
-        t = tHMM(X) # build the tHMM class with X
+        t = tHMM(self.X) # build the tHMM class with X
         pop = t.init_Population()
-        self.assertEqual(len(pop), initCells[0]) # len(pop) corresponds to the number of lineages
+        self.assertEqual(len(pop), 50) # len(pop) corresponds to the number of lineages
 
         # check that all cells in a lineage have same linID
         for i, lineage in enumerate(pop): # for each lineage
@@ -130,13 +123,7 @@ class TestModel(unittest.TestCase):
 
     def test_init_paramlist(self):
         """ Make sure paramlist has proper labels and sizes. """
-        experimentTime = 50.
-        initCells = [50] # there should be 50 lineages b/c there are 50 initial cells
-        locBern = [0.6]
-        cGom = [2]
-        scaleGom = [40]
-        X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
-        X = remove_NaNs(X)
+        X = remove_NaNs(self.X)
         t = tHMM(X, numStates=2) # build the tHMM class with X
         self.assertEqual(t.paramlist[0]["pi"].shape[0], 2) # make sure shape is numStates
         self.assertEqual(t.paramlist[0]["T"].shape[0], 2) # make sure shape is numStates
