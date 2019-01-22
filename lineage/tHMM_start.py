@@ -204,7 +204,7 @@ class tHMM:
                 if cell.isLeaf(): # if it is a leaf
                     leaf_cell_idx = lineage.index(cell) # get the index of the leaf
                     temp_sum_holder = [] # create a temporary list 
-                    for state_k in range(self.numstates): # for each state
+                    for state_k in range(self.numStates): # for each state
                         joint_prob = MSD_array[leaf_cell_idx, state_k] * EL_array[leaf_cell_idx, state_k] # def of conditional prob
                         # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
                         # this product is the joint probability

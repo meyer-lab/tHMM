@@ -134,7 +134,7 @@ class TestModel(unittest.TestCase):
         MSD = t.get_Marginal_State_Distributions()
         self.assertEqual(len(MSD), 50) # there are 50 lineages in the population
         for ii in range(len(MSD)):
-            self.assertGreater(MSD[ii].shape[0], 0) # at least one cell in each lineage
+            self.assertGreaterEqual(MSD[ii].shape[0], 0) # at least zero cells in each lineage
             self.assertEqual(MSD[ii].shape[1], 2) # there are 2 states for each cell
 
     def test_get_EL(self):
@@ -144,5 +144,5 @@ class TestModel(unittest.TestCase):
         EL = t.get_Emission_Likelihoods()
         self.assertEqual(len(EL), 50) # there are 50 lineages in the population
         for ii in range(len(EL)):
-            self.assertGreater(EL[ii].shape[0], 0) # at least one cell in each lineage
+            self.assertGreaterEqual(EL[ii].shape[0], 0) # at least zero cells in each lineage
             self.assertEqual(EL[ii].shape[1], 2) # there are 2 states for each cell
