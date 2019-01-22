@@ -3,7 +3,7 @@ import unittest
 import math
 import numpy as np
 from ..Lineage import Population as p, generatePopulationWithTime as gpt
-from ..tHMM_start import tHMM, remove_NaNs, max_gen, get_gen
+from ..tHMM_start import tHMM, remove_NaNs, max_gen, get_gen, get_numLineages, init_Population
 from ..CellNode import CellNode
 
 class TestModel(unittest.TestCase):
@@ -60,8 +60,7 @@ class TestModel(unittest.TestCase):
 
     def test_get_numLineages(self):
         """ Checks to see that the initial number of cells created is the number of lineages. """
-        t = tHMM(self.X) # build the tHMM class with self.X
-        numLin = t.get_numLineages()
+        numLin = get_numLineages(self.X)
         self.assertEqual(numLin, 50) # call func
 
         # case where the lineages follow different parameter sets
@@ -71,14 +70,12 @@ class TestModel(unittest.TestCase):
         cGom = [2, 0.5, 1]
         scaleGom = [40, 50, 45]
         X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
-        t = tHMM(X) # build the tHMM class with X
-        numLin = t.get_numLineages()
+        numLin = get_numLineages(X)
         self.assertEqual(numLin, 100) # call func
 
     def test_init_Population(self):
         """ Tests that populations are lists of lineages and each cell in a lineage has the correct linID. """
-        t = tHMM(self.X) # build the tHMM class with X
-        pop = t.init_Population()
+        pop = init_Population(self.X, 50)
         self.assertEqual(len(pop), 50) # len(pop) corresponds to the number of lineages
 
         # check that all cells in a lineage have same linID
@@ -140,7 +137,7 @@ class TestModel(unittest.TestCase):
             self.assertGreater(MSD[ii].shape[0], 0) # at least one cell in each lineage
             self.assertEqual(MSD[ii].shape[1], 2) # there are 2 states for each cell
 
-    def get_Emission_Likelihoods(self):
+    def test_get_EL(self):
         """ Calls get_Emission_Likelihoods and ensures the output is of correct data type and structure. """
         X = remove_NaNs(self.X)
         t = tHMM(X, numStates=2) # build the tHMM class with X

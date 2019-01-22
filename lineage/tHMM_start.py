@@ -38,37 +38,36 @@ def get_gen(gen, lineage):
             first_set.append(cell)
     return first_set
 
+def get_numLineages(X):
+    ''' Outputs total number of cell lineages in given Population. '''
+    linID_holder = [] # temporary list to hold all the linIDs of the cells in the population
+    for cell in X: # for each cell in the population
+        linID_holder.append(cell.linID) # append the linID of each cell
+    numLineages = max(linID_holder)+1 # the number of lineages is the maximum linID+1
+    return numLineages
+
+def init_Population(X, numLineages):
+    ''' Creates a full population list of lists which contain each lineage in the population. '''
+    population = []
+    for lineage_num in range(numLineages): # iterate over the number of lineages in the population
+        temp_lineage = [] # temporary list to hold the cells of a certain lineage with a particular linID
+        for cell in X: # for each cell in the population
+            if cell.linID == lineage_num: # if the cell's linID is the lineage num
+                temp_lineage.append(cell) # append the cell to that certain lineage
+        population.append(temp_lineage) # append the lineage to the Population holder
+    return population
+
 class tHMM:
     def __init__(self, X, numStates=1):
         ''' Instantiates a tHMM. '''
         self.X = X # list containing lineage, should be in correct format (contain no NaNs)
         self.numStates = numStates # number of discrete hidden states
-        self.numLineages = self.get_numLineages() # gets the number of lineages in our population
-        self.population = self.init_Population() # # arranges the population into a list of lineages (each lineage might have varying length)
+        self.numLineages = get_numLineages(self.X) # gets the number of lineages in our population
+        self.population = init_Population(self.X, self.numLineages) # arranges the population into a list of lineages (each lineage might have varying length)
         self.paramlist = self.init_paramlist() # list that is numLineages long of parameters for each lineage tree in our population
         self.MSD = self.get_Marginal_State_Distributions() # full Marginal State Distribution holder
         self.EL = self.get_Emission_Likelihoods() # full Emission Likelihood holder
         #self.get_get_leaf_Norms()
-
-
-    def get_numLineages(self):
-        ''' Outputs total number of cell lineages in given Population. '''
-        linID_holder = [] # temporary list to hold all the linIDs of the cells in the population
-        for cell in self.X: # for each cell in the population
-            linID_holder.append(cell.linID) # append the linID of each cell
-        numLineages = max(linID_holder)+1 # the number of lineages is the maximum linID+1
-        return numLineages
-
-    def init_Population(self):
-        ''' Creates a full population list of lists which contain each lineage in the population. '''
-        population = []
-        for lineage_num in range(self.numLineages): # iterate over the number of lineages in the population
-            temp_lineage = [] # temporary list to hold the cells of a certain lineage with a particular linID
-            for cell in self.X: # for each cell in the population
-                if cell.linID == lineage_num: # if the cell's linID is the lineage num
-                    temp_lineage.append(cell) # append the cell to that certain lineage
-            population.append(temp_lineage) # append the lineage to the Population holder
-        return population
 
     def init_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage. '''
