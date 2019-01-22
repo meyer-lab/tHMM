@@ -47,9 +47,7 @@ class tHMM:
         self.population = self.init_Population() # # arranges the population into a list of lineages (each lineage might have varying length)
         self.paramlist = self.init_paramlist() # list that is numLineages long of parameters for each lineage tree in our population
         self.MSD = self.get_Marginal_State_Distributions() # full Marginal State Distribution holder
-        self.EL = [] # full Emission Likelihood holder
-        #self.get_Marginal_State_Distributions()
-        #self.get_Emission_Likelihoods()
+        self.EL = self.get_Emission_Likelihoods() # full Emission Likelihood holder
         #self.get_get_leaf_Norms()
 
 
@@ -160,8 +158,8 @@ class tHMM:
                 k_gomp_s = E_param_k[2] # gompertz scale parameter
 
                 for cell in lineage: # for each cell in the lineage
-                    temp_b = sp.stats.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
-                    temp_g = sp.stats.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood 
+                    temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
+                    temp_g = sp.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood 
 
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
 
