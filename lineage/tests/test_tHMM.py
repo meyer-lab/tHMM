@@ -146,3 +146,12 @@ class TestModel(unittest.TestCase):
         for ii in range(len(EL)):
             self.assertGreaterEqual(EL[ii].shape[0], 0) # at least zero cells in each lineage
             self.assertEqual(EL[ii].shape[1], 2) # there are 2 states for each cell
+
+    def test_get_leaf_NF(self):
+        """ Calls get_leaf_Normalizing_Factors and ensures the output is of correct data type and structure. """
+        X = remove_NaNs(self.X)
+        t = tHMM(X, numStates=2) # build the tHMM class with X
+        NF = t.get_leaf_Normalizing_Factors()
+        self.assertEqual(len(NF), 50) # there are 50 lineages in the population
+        for ii in range(len(NF)):
+            self.assertGreaterEqual(NF[ii].shape[0], 0) # at least zero cells in each lineage
