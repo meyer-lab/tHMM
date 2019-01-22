@@ -146,6 +146,7 @@ class tHMM:
             
             P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_G | z_n = k).
         '''
+        EL = []
         for num in range(self.numLineages): # for each lineage in our Population
             lineage = self.population[num] # getting the lineage in the Population by lineage index
             params = self.paramlist[num] # getting the respective params by lineage index
@@ -166,8 +167,9 @@ class tHMM:
 
                     EL_array[current_cell_idx, state_k] = temp_b * temp_g
 
-            self.EL.append(EL_array)
-        return(self.EL)
+            EL.append(EL_array) # append the EL_array for each lineage
+
+        return EL
 
     def get_leaf_Normalizing_Factors(self):
         '''

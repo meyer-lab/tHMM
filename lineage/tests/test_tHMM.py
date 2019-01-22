@@ -131,7 +131,7 @@ class TestModel(unittest.TestCase):
         self.assertEqual(t.paramlist[0]["E"].shape[0], 2) # make sure shape is numStates
 
     def test_get_MSD(self):
-        """ Calls get_Marginal_State_Distributions and prints the output for now. """
+        """ Calls get_Marginal_State_Distributions and ensures the output is of correct data type and structure. """
         X = remove_NaNs(self.X)
         t = tHMM(X, numStates=2) # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
@@ -139,3 +139,13 @@ class TestModel(unittest.TestCase):
         for ii in range(len(MSD)):
             self.assertGreater(MSD[ii].shape[0], 0) # at least one cell in each lineage
             self.assertEqual(MSD[ii].shape[1], 2) # there are 2 states for each cell
+
+    def get_Emission_Likelihoods(self):
+        """ Calls get_Emission_Likelihoods and ensures the output is of correct data type and structure. """
+        X = remove_NaNs(self.X)
+        t = tHMM(X, numStates=2) # build the tHMM class with X
+        EL = t.get_Emission_Likelihoods()
+        self.assertEqual(len(EL), 50) # there are 50 lineages in the population
+        for ii in range(len(EL)):
+            self.assertGreater(EL[ii].shape[0], 0) # at least one cell in each lineage
+            self.assertEqual(EL[ii].shape[1], 2) # there are 2 states for each cell
