@@ -67,7 +67,7 @@ class tHMM:
         self.paramlist = self.init_paramlist() # list that is numLineages long of parameters for each lineage tree in our population
         self.MSD = self.get_Marginal_State_Distributions() # full Marginal State Distribution holder
         self.EL = self.get_Emission_Likelihoods() # full Emission Likelihood holder
-        #self.get_get_leaf_Norms()
+        self.NF = self.get_leaf_Normalizing_Factors()
 
     def init_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage. '''
@@ -193,10 +193,10 @@ class tHMM:
             sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
             
         '''
-        self.NF = [] # full Normalizing Factors holder
+        NF = [] # full Normalizing Factors holder
         for num in range(self.numLineages): # for each lineage in our Population
-            NF_array = np.zeros((len(lineage), 1)) # instantiating N by 1 array
             lineage = self.population[num] # getting the lineage in the Population by index
+            NF_array = np.zeros((len(lineage))) # instantiating N by 1 array
             MSD_array = self.MSD[num] # getting the MSD of the respective lineage
             EL_array = self.EL[num] # geting the EL of the respective lineage
 
@@ -220,8 +220,9 @@ class tHMM:
                     
                     NF_array[leaf_cell_idx] = marg_prob # each cell gets its own marg prob
 
-            self.NF.append(NF_array)
-        return self.NF
+            NF.append(NF_array)
+
+        return NF
                     
     def get_beta_leaves(self):
         '''

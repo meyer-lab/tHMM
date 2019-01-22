@@ -41,10 +41,10 @@ class CellNode:
     
     def isLeaf(self):
         '''Returns wheter a cell is a leaf with no children)'''
-        if cell.left is None and cell.right is None:
-            return(True) 
+        if self.left is None and self.right is None:
+            return True
         else:
-            return(False)
+            return False
 
     def calcTau(self):
         """ Find the cell's lifetime. """
