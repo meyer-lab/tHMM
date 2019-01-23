@@ -284,7 +284,7 @@ class tHMM:
             values.
         '''
         assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
-        assert( lineage[node_child_n_idx].isLeft() or lineage[node_child_n_idx].isRight() ) # # if the child-parent relationship
+        assert( lineage[node_child_n_idx].isChild() ) # # if the child-parent relationship
         # is correct, then the child must be either the left daughter or the right daughter
         summand_holder=[] # summing over the states
         for state_k in range(self.numStates): # for each state k
@@ -399,7 +399,7 @@ class tHMM:
             values.
         '''
         assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
-        assert( lineage[node_child_n_idx].isLeft() or lineage[node_child_n_idx].isRight() ) # # if the child-parent relationship
+        assert( lineage[node_child_n_idx].isChild() ) # # if the child-parent relationship
         # is correct, then the child must be either the left daughter or the right daughter
         max_holder=[] # summing over the states
         for state_k in range(numstates): # for each state k
