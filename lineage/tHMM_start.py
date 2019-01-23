@@ -85,6 +85,7 @@ class tHMM:
         self.NF = self.get_leaf_Normalizing_Factors()
         self.betas = self.get_beta_leaves()
         self.get_beta_and_NF_nonleaves() # this function might cause some problems
+        self.deltas = self.get_delta_leaves()
 
     def init_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage. '''
@@ -362,9 +363,7 @@ class tHMM:
     def calculate_log_likelihood(self):
         """ Calculates log likelihood for NF. """
         for num in self.numLineages: # for each lineage in our Population
-            
             lineage = self.population[num] # getting the lineage in the Population by index
-            
             NF_array = self.NF[num] # getting the NF of the respective lineage
             log_NF_array = np.log(NF_array)
             log_holder = []
@@ -375,18 +374,19 @@ class tHMM:
 ############ VITERBI #############        
 
     def get_delta_leaves(self):
-        ''' calculates deltas for the leaves '''
-        #self.deltas = [] 
+        ''' creates a deltas list for all cells but only calculates the delta value for the leaves '''
+        deltas = [] 
         for num in range(self.numLineages): # for each lineage in our Population
-            delta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
             lineage = self.population[num] # getting the lineage in the Population by index
+            delta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
             EL_array = self.EL[num] # geting the EL of the respective lineage
             for cell in lineage: # for each cell in the lineage
                 if cell.isLeaf(): # if it is a leaf
                     leaf_cell_idx = lineage.index(cell) # get the index of the leaf                     
                     delta_array[leaf_cell_idx, :] = EL_array[leaf_cell_idx, :]
 
-            self.deltas.append(delta_array)              
+            deltas.append(delta_array)
+        return deltas
 
     def delta_parent_child_func(self, lineage, delta_array, T, numstates, state_j, node_parent_m_idx, node_child_n_idx):
         '''
