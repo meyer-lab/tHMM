@@ -58,7 +58,7 @@ def init_Population(X, numLineages):
     return population
 
 def get_parents_for_level(level, lineage):
-    parent_holder = set()
+    parent_holder = set() #set makes sure only one index is put in and no overlap
     for cell in level:
         parent_cell = cell.parent
         parent_holder.add(lineage.index(parent_cell))
@@ -299,10 +299,6 @@ class tHMM:
             values.
         '''
         assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
-        if node_child_n_idx == 0:
-            print("not a child")
-            print("lineage: " + str(lineage))
-            print("node_child_n_idx: " + str(node_child_n_idx))
         assert( lineage[node_child_n_idx].isChild() ) # # if the child-parent relationship
         # is correct, then the child must be either the left daughter or the right daughter
         summand_holder=[] # summing over the states
@@ -320,10 +316,10 @@ class tHMM:
         beta_m_n_holder = [] # list to hold the factors in the product
         node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
         children_idx_list = [] # list to hold the children
-        if node_parent_m.left:
+        if node_parent_m.left is not None:
             node_child_n_left_idx = lineage.index(node_parent_m.left)
             children_idx_list.append(node_child_n_left_idx)
-        if node_parent_m.right:
+        if node_parent_m.right is not None:
             node_child_n_right_idx = lineage.index(node_parent_m.right)
             children_idx_list.append(node_child_n_right_idx)
         for node_child_n_idx in children_idx_list:

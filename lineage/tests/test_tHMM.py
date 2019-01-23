@@ -3,7 +3,7 @@ import unittest
 import math
 import numpy as np
 from ..Lineage import Population as p, generatePopulationWithTime as gpt
-from ..tHMM_start import tHMM, remove_NaNs, max_gen, get_gen, get_numLineages, init_Population
+from ..tHMM_start import tHMM, remove_NaNs, max_gen, get_gen, get_numLineages, init_Population, get_parents_for_level
 from ..CellNode import CellNode
 
 class TestModel(unittest.TestCase):
@@ -117,6 +117,12 @@ class TestModel(unittest.TestCase):
         temp5 = get_gen(1, self.lineage4)
         self.assertIn(self.cell30, temp5)
         self.assertEqual(len(temp5), 1)
+        
+    def test_get_parents_for_level(self):
+        """ Make sure the proper parents are returned of a specific level. """
+        level = get_gen(3, self.lineage1)
+        temp1 = get_parents_for_level(level, self.lineage1)
+        print(temp1)
 
     def test_init_paramlist(self):
         """ Make sure paramlist has proper labels and sizes. """

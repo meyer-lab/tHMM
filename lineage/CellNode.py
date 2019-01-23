@@ -23,8 +23,11 @@ class CellNode:
         self.plotVal = plotVal
 
     def isParent(self):
-        """ Return the parent of the current cell. """
-        return self.left.parent is self or self.right.parent is self
+        """ Return true if the cell has at least one daughter. """
+        if self.left or self.right:
+            return True
+        else:
+            return False
 
     def isChild(self):
         """ Returns true if this cell has a known parent. """
