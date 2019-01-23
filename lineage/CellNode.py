@@ -24,7 +24,7 @@ class CellNode:
 
     def isParent(self):
         """ Return the parent of the current cell. """
-        return self.left.parent is self and self.right.parent is self
+        return self.left.parent is self or self.right.parent is self
 
     def isChild(self):
         """ Returns true if this cell has a known parent. """

@@ -57,6 +57,21 @@ def init_Population(X, numLineages):
         population.append(temp_lineage) # append the lineage to the Population holder
     return population
 
+def get_parents_for_level(level, lineage):
+    parent_holder = set()
+    for cell in level:
+        parent_cell = cell.parent
+        parent_holder.add(lineage.index(parent_cell))
+    return parent_holder
+
+def get_daughters(cell):
+    temp = []
+    if cell.left:
+        temp.append(cell.left)
+    if cell.right:
+        temp.append(cell.right)
+    return temp
+
 class tHMM:
     def __init__(self, X, numStates=1):
         ''' Instantiates a tHMM. '''
@@ -284,6 +299,10 @@ class tHMM:
             values.
         '''
         assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
+        if node_child_n_idx == 0:
+            print("not a child")
+            print("lineage: " + str(lineage))
+            print("node_child_n_idx: " + str(node_child_n_idx))
         assert( lineage[node_child_n_idx].isChild() ) # # if the child-parent relationship
         # is correct, then the child must be either the left daughter or the right daughter
         summand_holder=[] # summing over the states
@@ -313,21 +332,6 @@ class tHMM:
 
         result = reduce((lambda x, y: x * y), beta_m_n_holder) # calculates the product of items in a list
         return result
-    
-    def get_parents_for_max_gen(self, level, lineage):
-        parent_holder = set()
-        for cell in level:
-            parent_cell = cell.parent
-            parent_holder.add(lineage.index(parent_cell))
-        return parent_holder
-
-    def get_daughters(self, cell):
-        temp = []
-        if cell.left:
-            temp.append(cell.left)
-        if cell.right:
-            temp.append(cell.right)
-        return temp
 
     def get_beta_and_NF_nonleaves(self):
         for num in range(self.numLineages): # for each lineage in our Population
@@ -340,7 +344,7 @@ class tHMM:
             start = max_gen(lineage) # start at the lowest level of the lineage
             while start > 1:
                 level = get_gen(start, lineage)
-                parent_holder = self.get_parents_for_max_gen(level, lineage)
+                parent_holder = get_parents_for_level(level, lineage)
                 for node_parent_m_idx in parent_holder:
                     num_holder = []
                     for state_k in range(self.numStates):
