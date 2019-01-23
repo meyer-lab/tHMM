@@ -68,11 +68,13 @@ class tHMM:
         self.MSD = self.get_Marginal_State_Distributions() # full Marginal State Distribution holder
         self.EL = self.get_Emission_Likelihoods() # full Emission Likelihood holder
         self.NF = self.get_leaf_Normalizing_Factors()
+        self.betas = self.get_beta_leaves()
+        self.get_beta_and_NF_nonleaves() # this function might cause some problems
 
     def init_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage. '''
         paramlist = []
-        temp_params = {"pi": np.zeros((self.numStates)), # inital state distributions [Kx1]
+        temp_params = {"pi": np.zeros((self.numStates)), # inital state distributions [K]
                        "T": np.zeros((self.numStates, self.numStates)), # state transition matrix [KxK]
                        "E": np.zeros((self.numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
         for lineage_num in range(self.numLineages): # for each lineage in our population
@@ -248,11 +250,10 @@ class tHMM:
             the Marginal State Distributions. The value in the
             denominator is the Normalizing Factor.                                
         '''
-                
-        self.betas = [] # full betas holder
+        betas = [] # full betas holder
         for num in range(self.numLineages): # for each lineage in our Population
-            beta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
             lineage = self.population[num] # getting the lineage in the Population by index
+            beta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
             MSD_array = self.MSD[num] # getting the MSD of the respective lineage
             EL_array = self.EL[num] # geting the EL of the respective lineage
             NF_array = self.NF[num]
@@ -263,19 +264,16 @@ class tHMM:
                         # see expression in docstring
                         num1 = EL_array[leaf_cell_idx, state_k] # Emission Likelihood
                         #  P(x_n = x | z_n = k)
-                        
                         num2 = MSD_array[leaf_cell_idx, state_k] # Marginal State Distribution
                         # P(z_n = k)
-                        
-                        denom = NF_array[leaf_cell_idx, 1] # Normalizing Factor (same regardless of state)
+                        denom = NF_array[leaf_cell_idx] # Normalizing Factor (same regardless of state)
                         # P(x_n = x)
-                        
                         beta_array[leaf_cell_idx, state_k] = num1 * num2 / denom
-                        
-            self.betas.append(beta_array)
-        return( self.betas )
+
+            betas.append(beta_array)
+        return betas
     
-    def beta_parent_child_func(lineage, beta_array, T, MSD_array, numstates, state_j, node_parent_m_idx, node_child_n_idx):
+    def beta_parent_child_func(self, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx, node_child_n_idx):
         '''
             This "helper" function calculates the probability 
             described as a 'beta-link' between parent and child
@@ -289,18 +287,17 @@ class tHMM:
         assert( lineage[node_child_n_idx].isLeft() or lineage[node_child_n_idx].isRight() ) # # if the child-parent relationship
         # is correct, then the child must be either the left daughter or the right daughter
         summand_holder=[] # summing over the states
-        for state_k in range(numstates): # for each state k
+        for state_k in range(self.numStates): # for each state k
             num1 = beta_array[node_child_n_idx, state_k] # get the already calculated beta at node n for state k
             num2 = T[state_j, state_k] # get the transition rate for going from state j to state k
             # P( z_n = k | z_m = j)
-            
             denom = MSD_array[node_child_n_idx, state_k] # get the MSD for node n at state k
             # P(z_n = k)
-            
+
             summand_holder.append(num1*num2/denom)
         return sum(summand_holder)
     
-    def get_beta_parent_child_prod(self, beta_array, T, MSD_array, numstates, state_j, node_parent_m_idx):
+    def get_beta_parent_child_prod(self, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
         beta_m_n_holder = [] # list to hold the factors in the product
         node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
         children_idx_list = [] # list to hold the children
@@ -311,14 +308,14 @@ class tHMM:
             node_child_n_right_idx = lineage.index(node_parent_m.right)
             children_idx_list.append(node_child_n_right_idx)
         for node_child_n_idx in children_idx_list:
-            beta_m_n = beta_parent_child_func(lineage, beta_array, T, MSD_array, numstates, state_j, node_parent_m_idx, node_child_n_idx)
+            beta_m_n = self.beta_parent_child_func(lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx, node_child_n_idx)
             beta_m_n_holder.append(beta_m_n)
 
         result = reduce((lambda x, y: x * y), beta_m_n_holder) # calculates the product of items in a list
         return result
     
-    def get_parents_for_max_gen(self, level):
-        parent_holder = {}
+    def get_parents_for_max_gen(self, level, lineage):
+        parent_holder = set()
         for cell in level:
             parent_cell = cell.parent
             parent_holder.add(lineage.index(parent_cell))
@@ -335,33 +332,30 @@ class tHMM:
     def get_beta_and_NF_nonleaves(self):
         for num in range(self.numLineages): # for each lineage in our Population
             lineage = self.population[num] # getting the lineage in the Population by index
-            beta_array = self.betas[num] # getting the betas of the respective lineage
-            NF_array = self.NF[num] # getting the NF of the respective lineage
             MSD_array = self.MSD[num] # getting the MSD of the respective lineage
             EL_array = self.EL[num] # geting the EL of the respective lineage
             params = self.paramlist[num] # getting the respective params by lineage index
             T = params["T"] # getting the transition matrix of the respective lineage
 
-            start = max_gen()
+            start = max_gen(lineage) # start at the lowest level of the lineage
             while start > 1:
-                level = get_gen(start)
-                parent_holder = get_parents_for_max_gen(level)
+                level = get_gen(start, lineage)
+                parent_holder = self.get_parents_for_max_gen(level, lineage)
                 for node_parent_m_idx in parent_holder:
                     num_holder = []
-                    for state_k in range(self.numstates):
-                        fac1 = get_beta_parent_child_prod(beta_array=beta_array,
+                    for state_k in range(self.numStates):
+                        fac1 = self.get_beta_parent_child_prod(lineage=lineage,
+                                                          beta_array=self.betas[num],
                                                           T=T,
                                                           MSD_array=MSD_array,
-                                                          numstates=self.numstates,
                                                           state_j=state_k, 
                                                           node_parent_m_idx = node_parent_m_idx)
-                        
                         fac2 = EL_array[node_parent_m_idx, state_k]
                         fac3 = MSD_array[node_parent_m_idx, state_k]
                         num_holder.append(fac1*fac2*fac3)
-                    NF_array[node_parent_m_idx] = sum(num_holder)
-                    for state_k in range(self.numstates):
-                        beta_array[node_parent_m_idx, state_k] = num_holder[state_k] / NF_array[node_parent_m_idx]                
+                    self.NF[num][node_parent_m_idx] = sum(num_holder)
+                    for state_k in range(self.numStates):
+                        self.betas[num][node_parent_m_idx, state_k] = num_holder[state_k] / self.NF[num][node_parent_m_idx]           
 
                 start -= 1
                 
