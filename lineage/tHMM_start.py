@@ -85,6 +85,8 @@ class tHMM:
         self.NF = self.get_leaf_Normalizing_Factors()
         self.betas = self.get_beta_leaves()
         self.get_beta_and_NF_nonleaves() # this function might cause some problems
+        # adam do you still need this comment?
+        self.LL = self.calculate_log_likelihood() # calculates the LL after the first pass
         self.deltas = self.get_delta_leaves()
 
     def init_paramlist(self):
@@ -295,7 +297,7 @@ class tHMM:
             described as a 'beta-link' between parent and child
             nodes in our tree for some state j. This beta-link
             value is what lets you calculate the values of
-            higher (in the direction of from the leave
+            higher (in the direction from the leave
             to the root node) node beta and Normalizing Factor
             values.
         '''
@@ -361,16 +363,16 @@ class tHMM:
                 start -= 1
                 
     def calculate_log_likelihood(self):
-        """ Calculates log likelihood for NF. """
+        """ Calculates log likelihood."""
+        LL = []
         for num in self.numLineages: # for each lineage in our Population
             lineage = self.population[num] # getting the lineage in the Population by index
             NF_array = self.NF[num] # getting the NF of the respective lineage
             log_NF_array = np.log(NF_array)
-            log_holder = []
-            for index in range(len(lineage)):
-                log_holder.append(log_NF_array(index))
-        return sum(log_holder)
-
+            ll_per_num = sum(log_NF_array)
+            LL.append(ll_per_num)
+        return(LL)
+    
 ############ VITERBI #############        
 
     def get_delta_leaves(self):
@@ -389,15 +391,6 @@ class tHMM:
         return deltas
 
     def delta_parent_child_func(self, lineage, delta_array, T, numstates, state_j, node_parent_m_idx, node_child_n_idx):
-        '''
-            This "helper" function calculates the probability 
-            described as a 'beta-link' between parent and child
-            nodes in our tree for some state j. This beta-link
-            value is what lets you calculate the values of
-            higher (in the direction of from the leave
-            to the root node) node beta and Normalizing Factor
-            values.
-        '''
         assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
         assert( lineage[node_child_n_idx].isChild() ) # # if the child-parent relationship
         # is correct, then the child must be either the left daughter or the right daughter
@@ -449,14 +442,16 @@ class tHMM:
     
     def Viterbi(self):
         for num in numlineages:
-            delta_array = self.deltas[num]
+            delta_array = self.deltas[num] # deltas are not being manip. just accessed so this is OK
             lineage = self.population[num]
             params = self.paramlist[num]
             T = params['T']
             pi = params['pi']
-            opt_state_tree = np.zeros((len(length)))
+            
+            opt_state_tree = np.zeros((len(lineage)))
             possible_first_states = np.multiply(delta_array[0,:], pi)
-            opt_state_tree[0] = max(possible_first_states)
+            max_state_prob = max(possible_first_states)
+            opt_state_tree[0] = possible_first_states.index(max_state_prob)
             max_level = max_gen(lineage)
             count = 1
             while count < max_level:
