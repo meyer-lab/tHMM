@@ -122,7 +122,7 @@ class TestModel(unittest.TestCase):
         """ Make sure the proper parents are returned of a specific level. """
         level = get_gen(3, self.lineage1)
         temp1 = get_parents_for_level(level, self.lineage1)
-        print(temp1)
+        self.assertEqual(temp1, {1, 2})
 
     def test_init_paramlist(self):
         """ Make sure paramlist has proper labels and sizes. """

@@ -88,6 +88,7 @@ class tHMM:
         # adam do you still need this comment?
         self.LL = self.calculate_log_likelihood() # calculates the LL after the first pass
         self.deltas = self.get_delta_leaves()
+        self.get_delta_nonleaves()
 
     def init_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage. '''
@@ -365,19 +366,19 @@ class tHMM:
     def calculate_log_likelihood(self):
         """ Calculates log likelihood."""
         LL = []
-        for num in self.numLineages: # for each lineage in our Population
+        for num in range(self.numLineages): # for each lineage in our Population
             lineage = self.population[num] # getting the lineage in the Population by index
             NF_array = self.NF[num] # getting the NF of the respective lineage
             log_NF_array = np.log(NF_array)
             ll_per_num = sum(log_NF_array)
             LL.append(ll_per_num)
-        return(LL)
+        return LL
     
 ############ VITERBI #############        
 
     def get_delta_leaves(self):
         ''' creates a deltas list for all cells but only calculates the delta value for the leaves '''
-        deltas = [] 
+        deltas = []
         for num in range(self.numLineages): # for each lineage in our Population
             lineage = self.population[num] # getting the lineage in the Population by index
             delta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
@@ -390,21 +391,20 @@ class tHMM:
             deltas.append(delta_array)
         return deltas
 
-    def delta_parent_child_func(self, lineage, delta_array, T, numstates, state_j, node_parent_m_idx, node_child_n_idx):
+    def delta_parent_child_func(self, lineage, delta_array, T, state_j, node_parent_m_idx, node_child_n_idx):
         assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
-        assert( lineage[node_child_n_idx].isChild() ) # # if the child-parent relationship
-        # is correct, then the child must be either the left daughter or the right daughter
+        assert( lineage[node_child_n_idx].isChild() ) # if the child-parent relationship is correct, then the child must be either the left daughter or the right daughter
         max_holder=[] # summing over the states
-        for state_k in range(numstates): # for each state k
+        for state_k in range(self.numStates): # for each state k
             num1 = beta_array[node_child_n_idx, state_k] # get the already calculated beta at node n for state k
             num2 = T[state_j, state_k] # get the transition rate for going from state j to state k
             # P( z_n = k | z_m = j)
-            
+
             max_holder.append(num1*num2)
-        return( max(max_holder) )
+        return max(max_holder)
         
         
-    def get_delta_parent_child_prod(self, delta_array, T, numstates, state_j, node_parent_m_idx):
+    def get_delta_parent_child_prod(self, lineage, delta_array, T, state_j, node_parent_m_idx):
         delta_m_n_holder = [] # list to hold the factors in the product
         node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
         children_idx_list = [] # list to hold the children
@@ -415,31 +415,30 @@ class tHMM:
             node_child_n_right_idx = lineage.index(node_parent_m.right)
             children_idx_list.append(node_child_n_right_idx)
         for node_child_n_idx in children_idx_list:
-            delta_m_n = delta_parent_child_func(lineage, delta_array, T, numstates, state_j, node_parent_m_idx, node_child_n_idx)
+            delta_m_n =self.delta_parent_child_func(lineage, delta_array, T, state_j, node_parent_m_idx, node_child_n_idx)
             deltaa_m_n_holder.append(delta_m_n)
-        
+
         result = reduce((lambda x, y: x * y), delta_m_n_holder) # calculates the product of items in a list
-        return(result)
-        
+        return result
+
     def get_delta_nonleaves(self):
         for num in range(self.numLineages): # for each lineage in our Population
             lineage = self.population[num] # getting the lineage in the Population by index
             EL_array = self.EL[num] # geting the EL of the respective lineage
             params = self.paramlist[num] # getting the respective params by lineage index
             T = params["T"] # getting the transition matrix of the respective lineage
-            start = max_gen()
+            start = max_gen(lineage)
             while start > 1:
-                level = get_gen(start)
-                parent_holder = get_parents_for_max_gen(level)
+                level = get_gen(start, lineage)
+                parent_holder = get_parents_for_level(level, lineage)
                 for node_parent_m_idx in parent_holder:
-                    #prod_holder = []
-                    for state_k in range(self.numstates):
-                        fac1 = get_delta_parent_child_prod(delta_array, T, numstates, state_j, node_parent_m_idx)
+                    for state_k in range(self.numStates):
+                        fac1 = self.get_delta_parent_child_prod(lineage, self.deltas[num], T, state_j, node_parent_m_idx)
                         fac2 = EL_array[node_parent_m_idx, state_k]
-                        delta_array[node_parent_m_idx, state_k] = fac1*fac2
+                        self.deltas[num][node_parent_m_idx, state_k] = fac1*fac2
 
                 start -= 1
-    
+
     def Viterbi(self):
         for num in numlineages:
             delta_array = self.deltas[num] # deltas are not being manip. just accessed so this is OK
