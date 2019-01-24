@@ -2,10 +2,8 @@ import numpy as np
 import scipy.stats as sp
 from functools import reduce # used to take the product of items in a list
 
-    #make utils.py that stores all our helper functions (not related to the tree)
+#make utils.py that stores all our helper functions (not related to the tree)
 
-    
-    
 def remove_NaNs(X):
     '''Removes unfinished cells in a population'''
     ii = 0 # establish a count outside of the loop
@@ -20,7 +18,7 @@ def remove_NaNs(X):
             X.pop(ii) # pop the unfinished cell at the current position
         else:
             ii += 1 # only move forward in the list if you don't delete a cell
-    return X  
+    return X
 
 def max_gen(lineage):
         '''finds the max generation in a lineage'''
@@ -55,6 +53,7 @@ def init_Population(X, numLineages):
     return population
 
 def get_parents_for_level(level, lineage):
+    """ Returns a set of all the parents of all the cells in a given level/generation. For example this would give you all the non-leaf cells in the generation above the one given. """
     parent_holder = set() #set makes sure only one index is put in and no overlap
     for cell in level:
         parent_cell = cell.parent
@@ -62,6 +61,7 @@ def get_parents_for_level(level, lineage):
     return parent_holder
 
 def get_daughters(cell):
+    """ Returns a list of the daughters of a given cell. """
     temp = []
     if cell.left:
         temp.append(cell.left)
@@ -314,6 +314,7 @@ class tHMM:
         return sum(summand_holder)
     
     def get_beta_parent_child_prod(self, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
+        """ Calculates the beta coefficient for every parent-child relationship of a given parent cell in a given state. """
         beta_m_n_holder = [] # list to hold the factors in the product
         node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
         children_idx_list = [] # list to hold the children
@@ -331,6 +332,7 @@ class tHMM:
         return result
 
     def get_beta_and_NF_nonleaves(self):
+        """ Traverses through each tree and calculates the beta coefficient for each non-leaf cell. The normalizing factors (NFs) are also calculated as an intermediate for determining each beta term. Helper functions are called to determine one of the terms in the NF equation. """
         for num in range(self.numLineages): # for each lineage in our Population
             lineage = self.population[num] # getting the lineage in the Population by index
             MSD_array = self.MSD[num] # getting the MSD of the respective lineage
@@ -356,7 +358,7 @@ class tHMM:
                         num_holder.append(fac1*fac2*fac3)
                     self.NF[num][node_parent_m_idx] = sum(num_holder)
                     for state_k in range(self.numStates):
-                        self.betas[num][node_parent_m_idx, state_k] = num_holder[state_k] / self.NF[num][node_parent_m_idx]           
+                        self.betas[num][node_parent_m_idx, state_k] = num_holder[state_k] / self.NF[num][node_parent_m_idx]         
 
                 start -= 1
                 
@@ -389,6 +391,7 @@ class tHMM:
         return deltas
 
     def delta_parent_child_func(self, lineage, delta_array, beta_array, T, state_j, node_parent_m_idx, node_child_n_idx):
+        """ Calculates the delta coefficient for a single parent-child relationship where the parent is in a given state. """
         assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
         assert( lineage[node_child_n_idx].isChild() ) # if the child-parent relationship is correct, then the child must be either the left daughter or the right daughter
         max_holder=[] # summing over the states
@@ -402,6 +405,7 @@ class tHMM:
         
         
     def get_delta_parent_child_prod(self, lineage, delta_array, beta_array, T, state_j, node_parent_m_idx):
+    """ Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state. """
         delta_m_n_holder = [] # list to hold the factors in the product
         node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
         children_idx_list = [] # list to hold the children
@@ -419,13 +423,14 @@ class tHMM:
         return result
 
     def get_delta_nonleaves(self):
+        """ Calculates the delta coefficients for all non-leaf cells. """
         for num in range(self.numLineages): # for each lineage in our Population
             lineage = self.population[num] # getting the lineage in the Population by index
             EL_array = self.EL[num] # geting the EL of the respective lineage
             params = self.paramlist[num] # getting the respective params by lineage index
             T = params["T"] # getting the transition matrix of the respective lineage
-            start = max_gen(lineage)
-            while start > 1:
+            start = max_gen(lineage) # start at the leafs in the maximum generation
+            while start > 1: # move up one generation until the 2nd generation is the children and the root nodes are the parents
                 level = get_gen(start, lineage)
                 parent_holder = get_parents_for_level(level, lineage)
                 for node_parent_m_idx in parent_holder:
@@ -450,8 +455,8 @@ class tHMM:
             possible_first_states = np.multiply(delta_array[0,:], pi)
             opt_state_tree[0] = np.argmax(possible_first_states)
             max_level = max_gen(lineage)
-            count = 1
-            while count < max_level:
+            count = 1 # start at the root nodes
+            while count < max_level: # move down until the lowest leaf node is reached
                 level = get_gen(count, lineage)
                 for cell in level:
                     parent_idx = lineage.index(cell)

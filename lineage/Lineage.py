@@ -24,7 +24,7 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
             while j < ii:
                 sum_prev += initCells[j]
                 j += 1
-            cell.linID += sum_prev
+            cell.linID += sum_prev # shift the lineageID so there's no overlap with populations of different parameters
             population.append(cell) # append all individual cells into a population
 
     return(population)
