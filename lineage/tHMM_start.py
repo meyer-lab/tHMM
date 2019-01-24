@@ -93,8 +93,8 @@ class tHMM:
     def init_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage. '''
         paramlist = []
-        temp_params = {"pi": np.zeros((self.numStates)), # inital state distributions [K]
-                       "T": np.zeros((self.numStates, self.numStates)), # state transition matrix [KxK]
+        temp_params = {"pi": np.zeros((self.numStates))+1/(self.numStates), # inital state distributions [K]
+                       "T": np.zeros((self.numStates, self.numStates))+1/(self.numStates), # state transition matrix [KxK]
                        "E": np.zeros((self.numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
         for lineage_num in range(self.numLineages): # for each lineage in our population
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
