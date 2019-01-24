@@ -24,11 +24,8 @@ def remove_NaNs(X):
 
 def max_gen(lineage):
         '''finds the max generation in a lineage'''
-        gen_holder = 1
-        for cell in lineage:
-            if cell.gen > gen_holder:
-                gen_holder = cell.gen
-        return gen_holder
+        max_gen = reduce(lambda x, y: x.gen if (x.gen > y.gen) else y.gen, lineage)
+        return(max_gen)
     
 def get_gen(gen, lineage):
     '''creates a list with all cells in the given generation'''
