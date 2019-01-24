@@ -391,7 +391,7 @@ class tHMM:
             deltas.append(delta_array)
         return deltas
 
-    def delta_parent_child_func(self, lineage, delta_array, T, state_j, node_parent_m_idx, node_child_n_idx):
+    def delta_parent_child_func(self, lineage, delta_array, beta_array, T, state_j, node_parent_m_idx, node_child_n_idx):
         assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
         assert( lineage[node_child_n_idx].isChild() ) # if the child-parent relationship is correct, then the child must be either the left daughter or the right daughter
         max_holder=[] # summing over the states
@@ -404,7 +404,7 @@ class tHMM:
         return max(max_holder)
         
         
-    def get_delta_parent_child_prod(self, lineage, delta_array, T, state_j, node_parent_m_idx):
+    def get_delta_parent_child_prod(self, lineage, delta_array, beta_array, T, state_j, node_parent_m_idx):
         delta_m_n_holder = [] # list to hold the factors in the product
         node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
         children_idx_list = [] # list to hold the children
@@ -415,8 +415,8 @@ class tHMM:
             node_child_n_right_idx = lineage.index(node_parent_m.right)
             children_idx_list.append(node_child_n_right_idx)
         for node_child_n_idx in children_idx_list:
-            delta_m_n =self.delta_parent_child_func(lineage, delta_array, T, state_j, node_parent_m_idx, node_child_n_idx)
-            deltaa_m_n_holder.append(delta_m_n)
+            delta_m_n =self.delta_parent_child_func(lineage, delta_array, beta_array, T, state_j, node_parent_m_idx, node_child_n_idx)
+            delta_m_n_holder.append(delta_m_n)
 
         result = reduce((lambda x, y: x * y), delta_m_n_holder) # calculates the product of items in a list
         return result
@@ -433,7 +433,7 @@ class tHMM:
                 parent_holder = get_parents_for_level(level, lineage)
                 for node_parent_m_idx in parent_holder:
                     for state_k in range(self.numStates):
-                        fac1 = self.get_delta_parent_child_prod(lineage, self.deltas[num], T, state_j, node_parent_m_idx)
+                        fac1 = self.get_delta_parent_child_prod(lineage, self.deltas[num], self.betas[num], T, state_k, node_parent_m_idx)
                         fac2 = EL_array[node_parent_m_idx, state_k]
                         self.deltas[num][node_parent_m_idx, state_k] = fac1*fac2
 
