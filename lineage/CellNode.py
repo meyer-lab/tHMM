@@ -1,14 +1,14 @@
-# author : shakthi visagan (shak360), adam weiner (adamcweiner)
-# description: a file to hold the cell class
-
+""" author : shakthi visagan (shak360), adam weiner (adamcweiner)
+description: a file to hold the cell class
+"""
 import sys
 import math
-import scipy.stats as sp
 import numpy as np
-from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
+from scipy import optimize, stats as sp
 
 class CellNode:
+    """ Each cell in our tree will consist of a node containing these traits. """
     def __init__(self, gen=1, linID=0, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, plotVal=0):
         ''' Instantiates a cell node.'''
         self.gen = gen # the generation of the cell, root cells are of generation 1, each division adds 1 to the previous generation
@@ -42,7 +42,7 @@ class CellNode:
         else:
             assert self.gen > 1
             return False
-    
+
     def isLeaf(self):
         '''Returns wheter a cell is a leaf with no children)'''
         if self.left is None and self.right is None:
@@ -65,7 +65,7 @@ class CellNode:
         self.endT = float('nan')
         self.fate = None
         self.tau = float('nan')
-    
+
     def die(self, endT):
         """ Cell dies without dividing. """
         self.fate = False   # no division
@@ -86,6 +86,18 @@ class CellNode:
             self.right = CellNode(gen=self.gen+1, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal-(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
 
         return (self.left, self.right)
+
+    def find_sister(self):
+        '''finds sister cell for cell leaves going left to right. dont return if there is no sibling cell present. this is for the beta matrix of all non-leave cells'''
+        if self.parent is None:
+            return None
+        par = self.parent
+        if par.right is self:
+            return par.left
+        elif par.left is self:
+            return par.right
+        else:
+            return None
 
 def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
@@ -130,29 +142,15 @@ def doublingTime(initCells, locBern, cGom, scaleGom):
                 count += 1
         numAlive.append(count)
 
-    # Fit to exponential curve and find exponential coefficient. 
+    # Fit to exponential curve and find exponential coefficient.
     def expFunc(experimentTimes, *expParam):
         """ Calculates the exponential."""
-        return(initCells * np.exp(expParam[0] * experimentTimes))
+        return initCells * np.exp(expParam[0] * experimentTimes)
 
     expY = lambda experimentTimes, expParam: expFunc(experimentTimes, expParam)
 
-    fitExpParam, _ = curve_fit(expY, experimentTimes, numAlive, p0=[0]) # fit an exponential curve to generated data
+    fitExpParam, _ = optimize.curve_fit(expY, experimentTimes, numAlive, p0=[0]) # fit an exponential curve to generated data
 
     doubleT = np.log(2) / fitExpParam[0] # relationship between doubling time and exponential function
 
     return doubleT
-
-def find_sister(self):
-    '''finds sister cell for cell leaves going left to right. dont return if there is no sibling cell present. this is for the beta matrix of all non-leave cells'''
-    if cell.parent is None:
-        return None    
-    par = self.parent
-    if par.right is cell:
-        return par.left
-    elif par.left is cell:
-        return par.right
-    else:
-        return None
-    
-    
