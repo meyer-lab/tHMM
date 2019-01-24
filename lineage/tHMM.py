@@ -405,7 +405,7 @@ class tHMM:
         
         
     def get_delta_parent_child_prod(self, lineage, delta_array, beta_array, T, state_j, node_parent_m_idx):
-    """ Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state. """
+        """ Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state. """
         delta_m_n_holder = [] # list to hold the factors in the product
         node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
         children_idx_list = [] # list to hold the children
