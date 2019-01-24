@@ -11,16 +11,17 @@ import matplotlib.pyplot as plt
 class CellNode:
     def __init__(self, gen=1, linID=0, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, plotVal=0):
         ''' Instantiates a cell node.'''
-        self.gen = gen
-        self.linID = linID
-        self.startT = startT
-        self.endT = endT
+        self.gen = gen # the generation of the cell, root cells are of generation 1, each division adds 1 to the previous generation
+        self.linID = linID # the lineage identity of the cell, keeps track of what lineage a cell belongs to
+        self.startT = startT # the starting time of the cell, the point at which it spawned into existence
+        self.endT = endT # the end time of the cell, the point at which it either divided or died, can be NaN
         self.tau = self.endT - self.startT # avoiding self.t, since that is a common function (i.e. transposing matrices)
-        self.fate = fate
-        self.left = left
-        self.right = right
-        self.parent = parent
-        self.plotVal = plotVal
+        # tau is how long the cell lived
+        self.fate = fate # the fate at the endT of the cell, 0 is death, 1 is division
+        self.left = left # the left daughter of the cell, either returns a CellNode or NoneType object
+        self.right = right # the right daughter of the cell, either returns a CellNode or NoneType object
+        self.parent = parent # the parent of the cell, returns a CellNode object (except at the root node)
+        self.plotVal = plotVal # value that assists in plotting
 
     def isParent(self):
         """ Return true if the cell has at least one daughter. """
