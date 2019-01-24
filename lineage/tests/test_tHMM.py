@@ -161,3 +161,14 @@ class TestModel(unittest.TestCase):
         self.assertEqual(len(NF), 50) # there are 50 lineages in the population
         for ii in range(len(NF)):
             self.assertGreaterEqual(NF[ii].shape[0], 0) # at least zero cells in each lineage
+
+    def test_viterbi(self):
+        """ Builds the tHMM class and calls the Viterbi function to find"""
+        X = remove_NaNs(self.X)
+        t = tHMM(X, numStates=2) # build the tHMM class with X
+        out = t.Viterbi()
+        self.assertEqual(len(out), 50) # there are 50 lineages in X
+        for lineage in out:
+            for ii in range(lineage.size):
+                self.assertIn(lineage[ii], range(0,2)) # make sure each element is within the range of numStates
+            

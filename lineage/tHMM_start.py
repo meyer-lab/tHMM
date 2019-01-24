@@ -440,27 +440,31 @@ class tHMM:
                 start -= 1
 
     def Viterbi(self):
-        for num in numlineages:
+        """ Runs the viterbi algorithm and returns a list of arrays containing the optimal state of each cell. """
+        all_states = []
+        for num in range(self.numLineages):
             delta_array = self.deltas[num] # deltas are not being manip. just accessed so this is OK
             lineage = self.population[num]
             params = self.paramlist[num]
             T = params['T']
             pi = params['pi']
-            
-            opt_state_tree = np.zeros((len(lineage)))
+
+            opt_state_tree = np.zeros((len(lineage)), dtype=int)
             possible_first_states = np.multiply(delta_array[0,:], pi)
-            max_state_prob = max(possible_first_states)
-            opt_state_tree[0] = possible_first_states.index(max_state_prob)
+            opt_state_tree[0] = np.argmax(possible_first_states)
             max_level = max_gen(lineage)
             count = 1
             while count < max_level:
-                level = get_gen(count)
+                level = get_gen(count, lineage)
                 for cell in level:
-                    temp = get_daughter(cell)
+                    parent_idx = lineage.index(cell)
+                    temp = get_daughters(cell)
                     for n in temp:
                         child_idx = lineage.index(n)
-                        parent_idx = lineage.index(n.parent)
-                        parent_state = opt_state_true[parent_idx]
-                        possible_states = np.multiply(delta_array[child_idx,:], T[parent,state,:])
-                        opt_state_tree[child_idx] = max[possible_states,]
-                count += 1        
+                        parent_state = opt_state_tree[parent_idx]
+                        possible_states = np.multiply(delta_array[child_idx,:], T[parent_state,:])
+                        opt_state_tree[child_idx] = np.argmax(possible_states)
+                count += 1
+            all_states.append(opt_state_tree)
+
+        return all_states
