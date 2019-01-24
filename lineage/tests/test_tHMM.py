@@ -3,7 +3,7 @@ import unittest
 import math
 import numpy as np
 from ..Lineage import Population as p, generatePopulationWithTime as gpt
-from ..tHMM_start import tHMM, remove_NaNs, max_gen, get_gen, get_numLineages, init_Population, get_parents_for_level
+from ..tHMM import tHMM, remove_NaNs, max_gen, get_gen, get_numLineages, init_Population, get_parents_for_level
 from ..CellNode import CellNode
 
 class TestModel(unittest.TestCase):
