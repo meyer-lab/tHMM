@@ -1,9 +1,12 @@
+""" This file holds the bulk of our tHMM calculations. """
+
 import numpy as np
 import scipy.stats as sp
 from functools import reduce # used to take the product of items in a list
 from .utils import *
 
 class tHMM:
+    """ Main tHMM class. """
     def __init__(self, X, numStates=1):
         ''' Instantiates a tHMM. '''
         self.X = X # list containing lineage, should be in correct format (contain no NaNs)
@@ -15,8 +18,7 @@ class tHMM:
         self.EL = self.get_Emission_Likelihoods() # full Emission Likelihood holder
         self.NF = self.get_leaf_Normalizing_Factors()
         self.betas = self.get_beta_leaves()
-        self.get_beta_and_NF_nonleaves() # this function might cause some problems
-        # adam do you still need this comment?
+        self.get_beta_and_NF_nonleaves()
         self.LL = self.calculate_log_likelihood() # calculates the LL after the first pass
         self.deltas = self.get_delta_leaves()
         self.get_delta_nonleaves()
@@ -33,20 +35,20 @@ class tHMM:
 
     def get_Marginal_State_Distributions(self):
         '''
-            Marginal State Distribution (MSD) matrix and recursion. 
-            
+            Marginal State Distribution (MSD) matrix and recursion.
+
             This is the probability that a hidden state variable z_n is of
             state k, that is, each value in the N by K MSD array for each lineage is
-            the probability 
-            
-            P(z_n = k) 
-            
+            the probability
+
+            P(z_n = k)
+
             for all z_n in the hidden state tree
             and for all k in the total number of discrete states. Each MSD array is
             an N by K array (an entry for each cell and an entry for each state),
             and each lineage has its own MSD array.
-            
-            Unit test should be that the addition of all elements in each row 
+
+            Unit test should be that the addition of all elements in each row
             for every row is equal to 1.
         '''
         MSD = []
@@ -73,26 +75,25 @@ class tHMM:
 
         return MSD
 
-                        
     def get_Emission_Likelihoods(self):
         '''
-            Emission Likelihood (EL) matrix. 
-            
-            Each element in this N by K matrix represents the probability 
-            
-            P(x_n = x | z_n = k) 
-            
-            for all x_n and z_n in our observed and hidden state tree 
-            and for all possible discrete states k. Since we have a 
+            Emission Likelihood (EL) matrix.
+
+            Each element in this N by K matrix represents the probability
+
+            P(x_n = x | z_n = k)
+
+            for all x_n and z_n in our observed and hidden state tree
+            and for all possible discrete states k. Since we have a
             multiple observation model, that is
-            
+
             x_n = {x_B, x_G},
-            
-            consists of more than one observation, x_B = division(1) or 
+
+            consists of more than one observation, x_B = division(1) or
             death(0) (which is one of the observations x_B) and the other
             being, x_G = lifetime, lifetime >=0, (which is the other observation x_G)
             we make the assumption that
-            
+
             P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_G | z_n = k).
         '''
         EL = []
@@ -102,7 +103,7 @@ class tHMM:
             EL_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array for each lineage
             E_param_array = params["E"] # K by 3 array of distribution parameters for each lineage
 
-            for state_k in range(self.numStates): # for each state 
+            for state_k in range(self.numStates): # for each state
                 E_param_k = E_param_array[state_k,:] # get the emission parameters for that state
                 k_bern = E_param_k[0] # bernoulli rate parameter
                 k_gomp_c = E_param_k[1] # gompertz c parameter
@@ -110,7 +111,7 @@ class tHMM:
 
                 for cell in lineage: # for each cell in the lineage
                     temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
-                    temp_g = sp.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood 
+                    temp_g = sp.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood
 
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
 
@@ -122,28 +123,28 @@ class tHMM:
 
     def get_leaf_Normalizing_Factors(self):
         '''
-            Normalizing factor (NF) matrix and base case at the leaves. 
-            
-            Each element in this N by 1 matrix is the normalizing 
+            Normalizing factor (NF) matrix and base case at the leaves.
+
+            Each element in this N by 1 matrix is the normalizing
             factor for each beta value calculation for each node.
             This normalizing factor is essentially the marginal
             observation distribution for a node.
-            
-            This function gets the normalizing factor for 
+
+            This function gets the normalizing factor for
             the upward recursion only for the leaves.
             We first calculate the joint probability
             using the definition of conditional probability:
-            
-            P(x_n = x | z_n = k) * P(z_n = k) = P(x_n = x , z_n = k).  
-            
-            We can then sum this joint probability over k, 
+
+            P(x_n = x | z_n = k) * P(z_n = k) = P(x_n = x , z_n = k).
+
+            We can then sum this joint probability over k,
             which are the possible states z_n can be,
-            and through the law of total probability, 
-            obtain the marginal observation distribution 
+            and through the law of total probability,
+            obtain the marginal observation distribution
             P(x_n = x):
-            
+
             sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
-            
+
         '''
         NF = [] # full Normalizing Factors holder
         for num in range(self.numLineages): # for each lineage in our Population
@@ -155,50 +156,50 @@ class tHMM:
             for cell in lineage: # for each cell in the lineage
                 if cell.isLeaf(): # if it is a leaf
                     leaf_cell_idx = lineage.index(cell) # get the index of the leaf
-                    temp_sum_holder = [] # create a temporary list 
+                    temp_sum_holder = [] # create a temporary list
                     for state_k in range(self.numStates): # for each state
                         joint_prob = MSD_array[leaf_cell_idx, state_k] * EL_array[leaf_cell_idx, state_k] # def of conditional prob
                         # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
                         # this product is the joint probability
-                        
+
                         # maybe we can consider making this a dot product instead of looping and summing
                         # but I feel like that would be less readable at the sake of speed
-                        
+
                         temp_sum_holder.append(joint_prob) # append the joint probability to be summed
-                        
+
                     marg_prob = sum(temp_sum_holder) # law of total probability
                     # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
                     # the sum of the joint probabilities is the marginal probability
-                    
+
                     NF_array[leaf_cell_idx] = marg_prob # each cell gets its own marg prob
 
             NF.append(NF_array)
 
         return NF
-                    
+
     def get_beta_leaves(self):
         '''
             beta matrix and base case at the leaves.
-            
+
             Each element in this N by K matrix is the beta value
             for each cell and at each state. In particular, this
             value is derived from the Marginal State Distributions
             (MSD), the Emission Likelihoods (EL), and the 
             Normalizing Factors (NF). Each beta value
             for the leaves is exactly the probability
-            
+
             beta[n,k] = P(z_n = k | x_n = x).
-            
+
             Using Bayes Theorem, we see that the above equals
-            
+
                         P(x_n = x | z_n = k) * P(z_n = k)
             beta[n,k] = _________________________________
                                     P(x_n = x)
-            
+
             The first value in the numerator is the Emission
             Likelihoods. The second value in the numerator is
             the Marginal State Distributions. The value in the
-            denominator is the Normalizing Factor.                                
+            denominator is the Normalizing Factor.
         '''
         betas = [] # full betas holder
         for num in range(self.numLineages): # for each lineage in our Population
@@ -210,7 +211,7 @@ class tHMM:
             for cell in lineage: # for each cell in the lineage
                 if cell.isLeaf(): # if it is a leaf
                     leaf_cell_idx = lineage.index(cell) # get the index of the leaf
-                    for state_k in range(self.numStates): # for each state 
+                    for state_k in range(self.numStates): # for each state
                         # see expression in docstring
                         num1 = EL_array[leaf_cell_idx, state_k] # Emission Likelihood
                         #  P(x_n = x | z_n = k)
@@ -222,10 +223,10 @@ class tHMM:
 
             betas.append(beta_array)
         return betas
-    
+
     def beta_parent_child_func(self, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx, node_child_n_idx):
         '''
-            This "helper" function calculates the probability 
+            This "helper" function calculates the probability
             described as a 'beta-link' between parent and child
             nodes in our tree for some state j. This beta-link
             value is what lets you calculate the values of
@@ -246,7 +247,7 @@ class tHMM:
 
             summand_holder.append(num1*num2/denom)
         return sum(summand_holder)
-    
+
     def get_beta_parent_child_prod(self, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
         """ Calculates the beta coefficient for every parent-child relationship of a given parent cell in a given state. """
         beta_m_n_holder = [] # list to hold the factors in the product
@@ -285,17 +286,17 @@ class tHMM:
                                                           beta_array=self.betas[num],
                                                           T=T,
                                                           MSD_array=MSD_array,
-                                                          state_j=state_k, 
+                                                          state_j=state_k,
                                                           node_parent_m_idx = node_parent_m_idx)
                         fac2 = EL_array[node_parent_m_idx, state_k]
                         fac3 = MSD_array[node_parent_m_idx, state_k]
                         num_holder.append(fac1*fac2*fac3)
                     self.NF[num][node_parent_m_idx] = sum(num_holder)
                     for state_k in range(self.numStates):
-                        self.betas[num][node_parent_m_idx, state_k] = num_holder[state_k] / self.NF[num][node_parent_m_idx]         
+                        self.betas[num][node_parent_m_idx, state_k] = num_holder[state_k] / self.NF[num][node_parent_m_idx]
 
                 start -= 1
-                
+
     def calculate_log_likelihood(self):
         """ Calculates log likelihood."""
         LL = []
@@ -306,8 +307,8 @@ class tHMM:
             ll_per_num = sum(log_NF_array)
             LL.append(ll_per_num)
         return LL
-    
-############ VITERBI #############        
+
+############ VITERBI #############
 
     def get_delta_leaves(self):
         ''' creates a deltas list for all cells but only calculates the delta value for the leaves '''
@@ -318,7 +319,7 @@ class tHMM:
             EL_array = self.EL[num] # geting the EL of the respective lineage
             for cell in lineage: # for each cell in the lineage
                 if cell.isLeaf(): # if it is a leaf
-                    leaf_cell_idx = lineage.index(cell) # get the index of the leaf                     
+                    leaf_cell_idx = lineage.index(cell) # get the index of the leaf
                     delta_array[leaf_cell_idx, :] = EL_array[leaf_cell_idx, :]
 
             deltas.append(delta_array)
@@ -336,8 +337,7 @@ class tHMM:
 
             max_holder.append(num1*num2)
         return max(max_holder)
-        
-        
+
     def get_delta_parent_child_prod(self, lineage, delta_array, beta_array, T, state_j, node_parent_m_idx):
         """ Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state. """
         delta_m_n_holder = [] # list to hold the factors in the product
