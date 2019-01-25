@@ -1,13 +1,10 @@
-# author : shakthi visagan (shak360), adam weiner (adamcweiner)
-# description: a file to hold the lineage class and population class
+""" author : shakthi visagan (shak360), adam weiner (adamcweiner)
+description: a file to hold the population class and functions that simulate a population """
 
-import sys
-import math
 import numpy as np
 import scipy.stats as sp
 from scipy.optimize import minimize
-import matplotlib.pyplot as plt
-from .CellNode import CellNode as c, generateLineageWithTime
+from .CellNode import generateLineageWithTime
 
 def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom):
     ''' generates a population of lineages that abide by distinct parameters. '''
@@ -27,21 +24,21 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
             cell.linID += sum_prev # shift the lineageID so there's no overlap with populations of different parameters
             population.append(cell) # append all individual cells into a population
 
-    return(population)
+    return population
 
 
 class Population:
+    """ This class holds populations of cells and estimates the parameters of how they behave. """
     def __init__(self, experimentTime, initCells, locBern, cGom, scaleGom):
         """ Builds the appropriate population according to option and args. """
         self.group = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom)
 
     def loadPopulation(self, csv_file):
-        #TODO: write function to import a population from external file
+        """ Write a function that imports a population from an external file. """
         pass
 
     def plotPopulation(self):
-        '''plots a population growth'''
-        #TODO
+        ''' Write a function that plots a population whether it was imported or generated. '''
         pass
 
     def bernoulliParameterEstimatorAnalytical(self):
@@ -52,7 +49,7 @@ class Population:
             if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
                 fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
 
-        return ( sum(fate_holder) / len(fate_holder) ) # add up all the 1s and divide by the total length (finding the average)
+        return sum(fate_holder) / len(fate_holder) # add up all the 1s and divide by the total length (finding the average)
 
     def bernoulliParameterEstimatorNumerical(self):
         '''Estimates the Bernoulli parameter for a given population using MLE numerically'''
@@ -70,7 +67,7 @@ class Population:
 
         res = minimize(nllB, x0=0.5, bounds=((0,1),), method="SLSQP", args=(fate_holder))
 
-        return(res.x[0])
+        return res.x[0]
 
     def gompertzParameterEstimatorNumerical(self):
         '''Estimates the Gompertz parameters for a given population using MLE numerically'''
@@ -88,4 +85,4 @@ class Population:
 
         res = minimize(nllG, x0=[1,1e3], bounds=((0,5),(0,None)), method="SLSQP", options={'maxiter': 1e6}, args=(tau_holder))
 
-        return(res.x)
+        return res.x

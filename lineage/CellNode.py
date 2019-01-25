@@ -1,10 +1,8 @@
 """ author : shakthi visagan (shak360), adam weiner (adamcweiner)
 description: a file to hold the cell class
 """
-import sys
 import math
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy import optimize, stats as sp
 
 class CellNode:
