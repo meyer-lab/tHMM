@@ -1,5 +1,4 @@
 """ This is a file full of helper functions used in tHMM.py """
-from functools import reduce
 
 def remove_NaNs(X):
     '''Removes unfinished cells in a population'''
@@ -24,7 +23,7 @@ def max_gen(lineage):
         if cell.gen > gen_holder:
             gen_holder = cell.gen
     return gen_holder
-    
+
 def get_gen(gen, lineage):
     '''creates a list with all cells in the given generation'''
     first_set = []

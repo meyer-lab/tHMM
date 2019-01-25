@@ -9,7 +9,7 @@ from .CellNode import generateLineageWithTime
 def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom):
     ''' generates a population of lineages that abide by distinct parameters. '''
 
-    assert(len(initCells) == len(locBern) == len(cGom) == len(scaleGom)) # make sure all lists have same length
+    assert len(initCells) == len(locBern) == len(cGom) == len(scaleGom) # make sure all lists have same length
     numLineages = len(initCells)
     population = [] # create empty list
 
@@ -61,7 +61,7 @@ class Population:
 
         def LogLikelihoodBern(locBernGuess, fate_holder):
             """ Calculates the log likelihood for bernoulli. """
-            return(np.sum(sp.bernoulli.logpmf(k=fate_holder, p=locBernGuess)))
+            return np.sum(sp.bernoulli.logpmf(k=fate_holder, p=locBernGuess))
 
         nllB = lambda *args: -LogLikelihoodBern(*args)
 
@@ -79,7 +79,7 @@ class Population:
 
         def LogLikelihoodGomp(gompParams, tau_holder):
             """ Calculates the log likelihood for gompertz. """
-            return(np.sum(sp.gompertz.logpdf(x=tau_holder,c=gompParams[0], scale=gompParams[1])))
+            return np.sum(sp.gompertz.logpdf(x=tau_holder,c=gompParams[0], scale=gompParams[1]))
 
         nllG = lambda *args: -LogLikelihoodGomp(*args)
 
