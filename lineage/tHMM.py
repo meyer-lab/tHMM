@@ -18,10 +18,10 @@ class tHMM:
         self.EL = self.get_Emission_Likelihoods() # full Emission Likelihood holder
         self.NF = self.get_leaf_Normalizing_Factors()
         self.betas = self.get_beta_leaves()
-        self.get_beta_and_NF_nonleaves()
+        self.get_beta_and_NF_nonleaves(self.betas, self.NF)
         self.LL = self.calculate_log_likelihood() # calculates the LL after the first pass
         self.deltas = self.get_delta_leaves()
-        self.get_delta_nonleaves()
+        self.get_delta_nonleaves(self.deltas)
 
     def init_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage. '''
@@ -266,7 +266,7 @@ class tHMM:
         result = reduce((lambda x, y: x * y), beta_m_n_holder) # calculates the product of items in a list
         return result
 
-    def get_beta_and_NF_nonleaves(self):
+    def get_beta_and_NF_nonleaves(self, betas, NF):
         """ Traverses through each tree and calculates the beta coefficient for each non-leaf cell. The normalizing factors (NFs) are also calculated as an intermediate for determining each beta term. Helper functions are called to determine one of the terms in the NF equation. """
         for num in range(self.numLineages): # for each lineage in our Population
             lineage = self.population[num] # getting the lineage in the Population by index
@@ -283,7 +283,7 @@ class tHMM:
                     num_holder = []
                     for state_k in range(self.numStates):
                         fac1 = self.get_beta_parent_child_prod(lineage=lineage,
-                                                          beta_array=self.betas[num],
+                                                          beta_array=betas[num],
                                                           T=T,
                                                           MSD_array=MSD_array,
                                                           state_j=state_k,
@@ -291,9 +291,9 @@ class tHMM:
                         fac2 = EL_array[node_parent_m_idx, state_k]
                         fac3 = MSD_array[node_parent_m_idx, state_k]
                         num_holder.append(fac1*fac2*fac3)
-                    self.NF[num][node_parent_m_idx] = sum(num_holder)
+                    NF[num][node_parent_m_idx] = sum(num_holder)
                     for state_k in range(self.numStates):
-                        self.betas[num][node_parent_m_idx, state_k] = num_holder[state_k] / self.NF[num][node_parent_m_idx]
+                        betas[num][node_parent_m_idx, state_k] = num_holder[state_k] / NF[num][node_parent_m_idx]
 
                 start -= 1
 
@@ -356,7 +356,7 @@ class tHMM:
         result = reduce((lambda x, y: x * y), delta_m_n_holder) # calculates the product of items in a list
         return result
 
-    def get_delta_nonleaves(self):
+    def get_delta_nonleaves(self, deltas):
         """ Calculates the delta coefficients for all non-leaf cells. """
         for num in range(self.numLineages): # for each lineage in our Population
             lineage = self.population[num] # getting the lineage in the Population by index
@@ -371,7 +371,7 @@ class tHMM:
                     for state_k in range(self.numStates):
                         fac1 = self.get_delta_parent_child_prod(lineage, self.deltas[num], self.betas[num], T, state_k, node_parent_m_idx)
                         fac2 = EL_array[node_parent_m_idx, state_k]
-                        self.deltas[num][node_parent_m_idx, state_k] = fac1*fac2
+                        deltas[num][node_parent_m_idx, state_k] = fac1*fac2
 
                 start -= 1
 
