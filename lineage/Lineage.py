@@ -83,6 +83,6 @@ class Population:
 
         nllG = lambda *args: -LogLikelihoodGomp(*args)
 
-        res = minimize(nllG, x0=[1,1e3], bounds=((0,5),(0,None)), method="SLSQP", options={'maxiter': 1e6}, args=(tau_holder))
+        res = minimize(nllG, x0=[1,1e3], bounds=((0,5),(0,None)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
 
         return res.x

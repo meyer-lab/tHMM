@@ -1,9 +1,8 @@
-""" This file holds the bulk of our tHMM calculations. """
+""" This file holds the parameters of our tHMM in the tHMM class. """
 
 import numpy as np
 import scipy.stats as sp
-from functools import reduce # used to take the product of items in a list
-from .utils import *
+from .Lineage_utils import get_numLineages, init_Population
 
 class tHMM:
     """ Main tHMM class. """
@@ -14,23 +13,25 @@ class tHMM:
         self.numLineages = get_numLineages(self.X) # gets the number of lineages in our population
         self.population = init_Population(self.X, self.numLineages) # arranges the population into a list of lineages (each lineage might have varying length)
         self.paramlist = self.init_paramlist() # list that is numLineages long of parameters for each lineage tree in our population
+        
         self.MSD = self.get_Marginal_State_Distributions() # full Marginal State Distribution holder
         self.EL = self.get_Emission_Likelihoods() # full Emission Likelihood holder
-        self.NF = self.get_leaf_Normalizing_Factors()
-        self.betas = self.get_beta_leaves()
-        self.get_beta_and_NF_nonleaves(self.betas, self.NF)
-        self.LL = self.calculate_log_likelihood() # calculates the LL after the first pass
-        self.deltas = self.get_delta_leaves()
-        self.get_delta_nonleaves(self.deltas)
 
     def init_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage. '''
         paramlist = []
-        temp_params = {"pi": np.zeros((self.numStates))+1/(self.numStates), # inital state distributions [K]
-                       "T": np.zeros((self.numStates, self.numStates))+1/(self.numStates), # state transition matrix [KxK]
-                       "E": np.zeros((self.numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
-        for lineage_num in range(self.numLineages): # for each lineage in our population
+        numStates = self.numStates
+        numLineages = self.numLineages
+        temp_params = {"pi": np.zeros((numStates))+1/(numStates), # inital state distributions [K] initialized to 1/K
+                       "T": np.zeros((numStates, numStates)) + 1/(numStates), # state transition matrix [KxK] initialized to 1/K
+                       "E": np.zeros((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
+        temp_params["E"][:,0] = np.ones(numStates) * 0.5 # initializing all Bernoulli p parameters to 0.5
+        temp_params["E"][:,1] = np.ones(numStates) * 2 # initializing all Gompertz c parameters to 
+        temp_params["E"][:,2] = np.ones(numStates) * 0.5e2 # initializing all Gompoertz s(cale) parameters to 
+        
+        for lineage_num in range(numLineages): # for each lineage in our population
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
+            
         return paramlist
 
     def get_Marginal_State_Distributions(self):
@@ -41,38 +42,44 @@ class tHMM:
             state k, that is, each value in the N by K MSD array for each lineage is
             the probability
 
-            P(z_n = k)
+            P(z_n = k),
 
             for all z_n in the hidden state tree
             and for all k in the total number of discrete states. Each MSD array is
             an N by K array (an entry for each cell and an entry for each state),
             and each lineage has its own MSD array.
-
-            Unit test should be that the addition of all elements in each row
-            for every row is equal to 1.
         '''
+        numStates = self.numStates
+        numLineages = self.numLineages
+        population = self.population
+        paramlist = self.paramlist
+        
         MSD = []
-        for num in range(self.numLineages): # for each lineage in our Population
-            lineage = self.population[num] # getting the lineage in the Population by lineage index
-            params = self.paramlist[num] # getting the respective params by lineage index
-            MSD_array = np.zeros((len(lineage),self.numStates)) # instantiating N by K array
+
+        for num in range(numLineages): # for each lineage in our Population
+            lineage = population[num] # getting the lineage in the Population by lineage index
+            params = paramlist[num] # getting the respective params by lineage index
+            MSD_array = np.zeros((len(lineage),numStates)) # instantiating N by K array
+            
             for cell in lineage: # for each cell in the lineage
                 if cell.isRootParent(): # base case uses pi parameter at the root cells of the tree
-                    for state in range(self.numStates): # for each state
+
+                    for state in range(numStates): # for each state
                         MSD_array[0,state] = params["pi"][state] # base case using pi parameter
                 else:
                     parent_cell_idx = lineage.index(cell.parent) # get the index of the parent cell
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
-                    for state_k in range(self.numStates): # recursion based on parent cell
+
+                    for state_k in range(numStates): # recursion based on parent cell
                         temp_sum_holder = [] # for all states k, calculate the sum of temp
-                        for state_j in range(self.numStates): # for all states j, calculate temp
+                        
+                        for state_j in range(numStates): # for all states j, calculate temp
                             temp = params["T"][state_j,state_k] * MSD_array[parent_cell_idx, state_j]
                             # temp = T_jk * P(z_parent(n) = j)
                             temp_sum_holder.append(temp)
+                            
                         MSD_array[current_cell_idx,state_k] = sum(temp_sum_holder)
-
             MSD.append(MSD_array) # Marginal States Distributions for each lineage in the Population
-
         return MSD
 
     def get_Emission_Likelihoods(self):
@@ -81,7 +88,7 @@ class tHMM:
 
             Each element in this N by K matrix represents the probability
 
-            P(x_n = x | z_n = k)
+            P(x_n = x | z_n = k),
 
             for all x_n and z_n in our observed and hidden state tree
             and for all possible discrete states k. Since we have a
@@ -96,14 +103,20 @@ class tHMM:
 
             P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_G | z_n = k).
         '''
+        numStates = self.numStates
+        numLineages = self.numLineages
+        population = self.population
+        paramlist = self.paramlist
+        
         EL = []
-        for num in range(self.numLineages): # for each lineage in our Population
-            lineage = self.population[num] # getting the lineage in the Population by lineage index
-            params = self.paramlist[num] # getting the respective params by lineage index
-            EL_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array for each lineage
+        
+        for num in range(numLineages): # for each lineage in our Population
+            lineage = population[num] # getting the lineage in the Population by lineage index
+            params = paramlist[num] # getting the respective params by lineage index
+            EL_array = np.zeros((len(lineage), numStates)) # instantiating N by K array for each lineage
             E_param_array = params["E"] # K by 3 array of distribution parameters for each lineage
 
-            for state_k in range(self.numStates): # for each state
+            for state_k in range(numStates): # for each state
                 E_param_k = E_param_array[state_k,:] # get the emission parameters for that state
                 k_bern = E_param_k[0] # bernoulli rate parameter
                 k_gomp_c = E_param_k[1] # gompertz c parameter
@@ -112,295 +125,9 @@ class tHMM:
                 for cell in lineage: # for each cell in the lineage
                     temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
                     temp_g = sp.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood
-
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
-
                     EL_array[current_cell_idx, state_k] = temp_b * temp_g
-
+                    
             EL.append(EL_array) # append the EL_array for each lineage
-
         return EL
-
-    def get_leaf_Normalizing_Factors(self):
-        '''
-            Normalizing factor (NF) matrix and base case at the leaves.
-
-            Each element in this N by 1 matrix is the normalizing
-            factor for each beta value calculation for each node.
-            This normalizing factor is essentially the marginal
-            observation distribution for a node.
-
-            This function gets the normalizing factor for
-            the upward recursion only for the leaves.
-            We first calculate the joint probability
-            using the definition of conditional probability:
-
-            P(x_n = x | z_n = k) * P(z_n = k) = P(x_n = x , z_n = k).
-
-            We can then sum this joint probability over k,
-            which are the possible states z_n can be,
-            and through the law of total probability,
-            obtain the marginal observation distribution
-            P(x_n = x):
-
-            sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
-
-        '''
-        NF = [] # full Normalizing Factors holder
-        for num in range(self.numLineages): # for each lineage in our Population
-            lineage = self.population[num] # getting the lineage in the Population by index
-            NF_array = np.zeros((len(lineage))) # instantiating N by 1 array
-            MSD_array = self.MSD[num] # getting the MSD of the respective lineage
-            EL_array = self.EL[num] # geting the EL of the respective lineage
-
-            for cell in lineage: # for each cell in the lineage
-                if cell.isLeaf(): # if it is a leaf
-                    leaf_cell_idx = lineage.index(cell) # get the index of the leaf
-                    temp_sum_holder = [] # create a temporary list
-                    for state_k in range(self.numStates): # for each state
-                        joint_prob = MSD_array[leaf_cell_idx, state_k] * EL_array[leaf_cell_idx, state_k] # def of conditional prob
-                        # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
-                        # this product is the joint probability
-
-                        # maybe we can consider making this a dot product instead of looping and summing
-                        # but I feel like that would be less readable at the sake of speed
-
-                        temp_sum_holder.append(joint_prob) # append the joint probability to be summed
-
-                    marg_prob = sum(temp_sum_holder) # law of total probability
-                    # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
-                    # the sum of the joint probabilities is the marginal probability
-
-                    NF_array[leaf_cell_idx] = marg_prob # each cell gets its own marg prob
-
-            NF.append(NF_array)
-
-        return NF
-
-    def get_beta_leaves(self):
-        '''
-            beta matrix and base case at the leaves.
-
-            Each element in this N by K matrix is the beta value
-            for each cell and at each state. In particular, this
-            value is derived from the Marginal State Distributions
-            (MSD), the Emission Likelihoods (EL), and the 
-            Normalizing Factors (NF). Each beta value
-            for the leaves is exactly the probability
-
-            beta[n,k] = P(z_n = k | x_n = x).
-
-            Using Bayes Theorem, we see that the above equals
-
-                        P(x_n = x | z_n = k) * P(z_n = k)
-            beta[n,k] = _________________________________
-                                    P(x_n = x)
-
-            The first value in the numerator is the Emission
-            Likelihoods. The second value in the numerator is
-            the Marginal State Distributions. The value in the
-            denominator is the Normalizing Factor.
-        '''
-        betas = [] # full betas holder
-        for num in range(self.numLineages): # for each lineage in our Population
-            lineage = self.population[num] # getting the lineage in the Population by index
-            beta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
-            MSD_array = self.MSD[num] # getting the MSD of the respective lineage
-            EL_array = self.EL[num] # geting the EL of the respective lineage
-            NF_array = self.NF[num]
-            for cell in lineage: # for each cell in the lineage
-                if cell.isLeaf(): # if it is a leaf
-                    leaf_cell_idx = lineage.index(cell) # get the index of the leaf
-                    for state_k in range(self.numStates): # for each state
-                        # see expression in docstring
-                        num1 = EL_array[leaf_cell_idx, state_k] # Emission Likelihood
-                        #  P(x_n = x | z_n = k)
-                        num2 = MSD_array[leaf_cell_idx, state_k] # Marginal State Distribution
-                        # P(z_n = k)
-                        denom = NF_array[leaf_cell_idx] # Normalizing Factor (same regardless of state)
-                        # P(x_n = x)
-                        beta_array[leaf_cell_idx, state_k] = num1 * num2 / denom
-
-            betas.append(beta_array)
-        return betas
-
-    def beta_parent_child_func(self, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx, node_child_n_idx):
-        '''
-            This "helper" function calculates the probability
-            described as a 'beta-link' between parent and child
-            nodes in our tree for some state j. This beta-link
-            value is what lets you calculate the values of
-            higher (in the direction from the leave
-            to the root node) node beta and Normalizing Factor
-            values.
-        '''
-        assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
-        assert( lineage[node_child_n_idx].isChild() ) # # if the child-parent relationship
-        # is correct, then the child must be either the left daughter or the right daughter
-        summand_holder=[] # summing over the states
-        for state_k in range(self.numStates): # for each state k
-            num1 = beta_array[node_child_n_idx, state_k] # get the already calculated beta at node n for state k
-            num2 = T[state_j, state_k] # get the transition rate for going from state j to state k
-            # P( z_n = k | z_m = j)
-            denom = MSD_array[node_child_n_idx, state_k] # get the MSD for node n at state k
-            # P(z_n = k)
-
-            summand_holder.append(num1*num2/denom)
-        return sum(summand_holder)
-
-    def get_beta_parent_child_prod(self, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
-        """ Calculates the beta coefficient for every parent-child relationship of a given parent cell in a given state. """
-        beta_m_n_holder = [] # list to hold the factors in the product
-        node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
-        children_idx_list = [] # list to hold the children
-        if node_parent_m.left is not None:
-            node_child_n_left_idx = lineage.index(node_parent_m.left)
-            children_idx_list.append(node_child_n_left_idx)
-        if node_parent_m.right is not None:
-            node_child_n_right_idx = lineage.index(node_parent_m.right)
-            children_idx_list.append(node_child_n_right_idx)
-        for node_child_n_idx in children_idx_list:
-            beta_m_n = self.beta_parent_child_func(lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx, node_child_n_idx)
-            beta_m_n_holder.append(beta_m_n)
-
-        result = reduce((lambda x, y: x * y), beta_m_n_holder) # calculates the product of items in a list
-        return result
-
-    def get_beta_and_NF_nonleaves(self, betas, NF):
-        """ Traverses through each tree and calculates the beta coefficient for each non-leaf cell. The normalizing factors (NFs) are also calculated as an intermediate for determining each beta term. Helper functions are called to determine one of the terms in the NF equation. """
-        for num in range(self.numLineages): # for each lineage in our Population
-            lineage = self.population[num] # getting the lineage in the Population by index
-            MSD_array = self.MSD[num] # getting the MSD of the respective lineage
-            EL_array = self.EL[num] # geting the EL of the respective lineage
-            params = self.paramlist[num] # getting the respective params by lineage index
-            T = params["T"] # getting the transition matrix of the respective lineage
-
-            start = max_gen(lineage) # start at the lowest level of the lineage
-            while start > 1:
-                level = get_gen(start, lineage)
-                parent_holder = get_parents_for_level(level, lineage)
-                for node_parent_m_idx in parent_holder:
-                    num_holder = []
-                    for state_k in range(self.numStates):
-                        fac1 = self.get_beta_parent_child_prod(lineage=lineage,
-                                                          beta_array=betas[num],
-                                                          T=T,
-                                                          MSD_array=MSD_array,
-                                                          state_j=state_k,
-                                                          node_parent_m_idx = node_parent_m_idx)
-                        fac2 = EL_array[node_parent_m_idx, state_k]
-                        fac3 = MSD_array[node_parent_m_idx, state_k]
-                        num_holder.append(fac1*fac2*fac3)
-                    NF[num][node_parent_m_idx] = sum(num_holder)
-                    for state_k in range(self.numStates):
-                        betas[num][node_parent_m_idx, state_k] = num_holder[state_k] / NF[num][node_parent_m_idx]
-
-                start -= 1
-
-    def calculate_log_likelihood(self):
-        """ Calculates log likelihood."""
-        LL = []
-        for num in range(self.numLineages): # for each lineage in our Population
-            lineage = self.population[num] # getting the lineage in the Population by index
-            NF_array = self.NF[num] # getting the NF of the respective lineage
-            log_NF_array = np.log(NF_array)
-            ll_per_num = sum(log_NF_array)
-            LL.append(ll_per_num)
-        return LL
-
-############ VITERBI #############
-
-    def get_delta_leaves(self):
-        ''' creates a deltas list for all cells but only calculates the delta value for the leaves '''
-        deltas = []
-        for num in range(self.numLineages): # for each lineage in our Population
-            lineage = self.population[num] # getting the lineage in the Population by index
-            delta_array = np.zeros((len(lineage), self.numStates)) # instantiating N by K array
-            EL_array = self.EL[num] # geting the EL of the respective lineage
-            for cell in lineage: # for each cell in the lineage
-                if cell.isLeaf(): # if it is a leaf
-                    leaf_cell_idx = lineage.index(cell) # get the index of the leaf
-                    delta_array[leaf_cell_idx, :] = EL_array[leaf_cell_idx, :]
-
-            deltas.append(delta_array)
-        return deltas
-
-    def delta_parent_child_func(self, lineage, delta_array, beta_array, T, state_j, node_parent_m_idx, node_child_n_idx):
-        """ Calculates the delta coefficient for a single parent-child relationship where the parent is in a given state. """
-        assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
-        assert( lineage[node_child_n_idx].isChild() ) # if the child-parent relationship is correct, then the child must be either the left daughter or the right daughter
-        max_holder=[] # summing over the states
-        for state_k in range(self.numStates): # for each state k
-            num1 = beta_array[node_child_n_idx, state_k] # get the already calculated beta at node n for state k
-            num2 = T[state_j, state_k] # get the transition rate for going from state j to state k
-            # P( z_n = k | z_m = j)
-
-            max_holder.append(num1*num2)
-        return max(max_holder)
-
-    def get_delta_parent_child_prod(self, lineage, delta_array, beta_array, T, state_j, node_parent_m_idx):
-        """ Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state. """
-        delta_m_n_holder = [] # list to hold the factors in the product
-        node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
-        children_idx_list = [] # list to hold the children
-        if node_parent_m.left: #when you say .left, it means it exists and it will go through
-            node_child_n_left_idx = lineage.index(node_parent_m.left)
-            children_idx_list.append(node_child_n_left_idx)
-        if node_parent_m.right:
-            node_child_n_right_idx = lineage.index(node_parent_m.right)
-            children_idx_list.append(node_child_n_right_idx)
-        for node_child_n_idx in children_idx_list:
-            delta_m_n =self.delta_parent_child_func(lineage, delta_array, beta_array, T, state_j, node_parent_m_idx, node_child_n_idx)
-            delta_m_n_holder.append(delta_m_n)
-
-        result = reduce((lambda x, y: x * y), delta_m_n_holder) # calculates the product of items in a list
-        return result
-
-    def get_delta_nonleaves(self, deltas):
-        """ Calculates the delta coefficients for all non-leaf cells. """
-        for num in range(self.numLineages): # for each lineage in our Population
-            lineage = self.population[num] # getting the lineage in the Population by index
-            EL_array = self.EL[num] # geting the EL of the respective lineage
-            params = self.paramlist[num] # getting the respective params by lineage index
-            T = params["T"] # getting the transition matrix of the respective lineage
-            start = max_gen(lineage) # start at the leafs in the maximum generation
-            while start > 1: # move up one generation until the 2nd generation is the children and the root nodes are the parents
-                level = get_gen(start, lineage)
-                parent_holder = get_parents_for_level(level, lineage)
-                for node_parent_m_idx in parent_holder:
-                    for state_k in range(self.numStates):
-                        fac1 = self.get_delta_parent_child_prod(lineage, self.deltas[num], self.betas[num], T, state_k, node_parent_m_idx)
-                        fac2 = EL_array[node_parent_m_idx, state_k]
-                        deltas[num][node_parent_m_idx, state_k] = fac1*fac2
-
-                start -= 1
-
-    def Viterbi(self):
-        """ Runs the viterbi algorithm and returns a list of arrays containing the optimal state of each cell. """
-        all_states = []
-        for num in range(self.numLineages):
-            delta_array = self.deltas[num] # deltas are not being manip. just accessed so this is OK
-            lineage = self.population[num]
-            params = self.paramlist[num]
-            T = params['T']
-            pi = params['pi']
-
-            opt_state_tree = np.zeros((len(lineage)), dtype=int)
-            possible_first_states = np.multiply(delta_array[0,:], pi)
-            opt_state_tree[0] = np.argmax(possible_first_states)
-            max_level = max_gen(lineage)
-            count = 1 # start at the root nodes
-            while count < max_level: # move down until the lowest leaf node is reached
-                level = get_gen(count, lineage)
-                for cell in level:
-                    parent_idx = lineage.index(cell)
-                    temp = get_daughters(cell)
-                    for n in temp:
-                        child_idx = lineage.index(n)
-                        parent_state = opt_state_tree[parent_idx]
-                        possible_states = np.multiply(delta_array[child_idx,:], T[parent_state,:])
-                        opt_state_tree[child_idx] = np.argmax(possible_states)
-                count += 1
-            all_states.append(opt_state_tree)
-
-        return all_states
+    

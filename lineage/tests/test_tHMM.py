@@ -2,15 +2,22 @@
 import unittest
 import math
 import numpy as np
-from ..Lineage import Population as p, generatePopulationWithTime as gpt
+from ..Viterbi import Viterbi
+from ..UpwardRecursion import get_leaf_Normalizing_Factors
 from ..tHMM import tHMM
-from ..utils import remove_NaNs, max_gen, get_gen, get_numLineages, init_Population, get_parents_for_level
+from ..tHMM_utils import max_gen, get_gen, get_parents_for_level
+from ..Lineage_utils import remove_NaNs, get_numLineages, init_Population
+from ..Lineage import Population as p, generatePopulationWithTime as gpt
 from ..CellNode import CellNode
 
 class TestModel(unittest.TestCase):
     """ Here are the unit tests. """
     def setUp(self):
-        """ Small trees that can be used to run unit tests and check for edge cases. Some cells are labeled as self so they can be accessed in unit tests for comparisons. """
+        """ 
+            Small trees that can be used to run unit tests and 
+            check for edge cases. Some cells are labeled as self 
+                so they can be accessed in unit tests for comparisons. 
+        """
         # 3 level tree with no gaps
         cell1 = CellNode(startT=0, linID=1)
         cell2, cell3 = cell1.divide(10)
@@ -42,6 +49,10 @@ class TestModel(unittest.TestCase):
         cGom = [2]
         scaleGom = [40]
         self.X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
+
+    ################################
+    # Lineage_utils.py tests below #
+    ################################
 
     def test_remove_NaNs(self):
         """ Checks to see that cells with a NaN of tau are eliminated from a population list. """
@@ -83,7 +94,11 @@ class TestModel(unittest.TestCase):
         for i, lineage in enumerate(pop): # for each lineage
             for cell in lineage: # for each cell in said lineage
                 self.assertEqual(i, cell.linID) # linID should correspond with i
-
+                
+    ############################            
+    # tHMM_utils.pytests below #
+    ############################
+    
     def test_max_gen(self):
         """ Calls lineages 1 through 4 and ensures that the maximimum number of generations is correct in each case. """
         # lineages 1-3 have 3 levels/generations
@@ -124,6 +139,10 @@ class TestModel(unittest.TestCase):
         level = get_gen(3, self.lineage1)
         temp1 = get_parents_for_level(level, self.lineage1)
         self.assertEqual(temp1, {1, 2})
+        
+    #######################
+    # tHMM.py tests below #
+    #######################
 
     def test_init_paramlist(self):
         """ Make sure paramlist has proper labels and sizes. """
@@ -143,6 +162,8 @@ class TestModel(unittest.TestCase):
         for ii in range(len(MSD)):
             self.assertGreaterEqual(MSD[ii].shape[0], 0) # at least zero cells in each lineage
             self.assertEqual(MSD[ii].shape[1], 2) # there are 2 states for each cell
+            for node_n in range(MSD[ii].shape[0]):
+                self.assertEqual(sum(MSD[ii][node_n,:]), 1) # the rows should sum to 1
 
     def test_get_EL(self):
         """ Calls get_Emission_Likelihoods and ensures the output is of correct data type and structure. """
@@ -153,21 +174,29 @@ class TestModel(unittest.TestCase):
         for ii in range(len(EL)):
             self.assertGreaterEqual(EL[ii].shape[0], 0) # at least zero cells in each lineage
             self.assertEqual(EL[ii].shape[1], 2) # there are 2 states for each cell
+            
+    ##################################
+    # UpwardRecursion.py tests below #
+    ##################################
 
     def test_get_leaf_NF(self):
         """ Calls get_leaf_Normalizing_Factors and ensures the output is of correct data type and structure. """
         X = remove_NaNs(self.X)
         t = tHMM(X, numStates=2) # build the tHMM class with X
-        NF = t.get_leaf_Normalizing_Factors()
+        NF = get_leaf_Normalizing_Factors(t)
         self.assertEqual(len(NF), 50) # there are 50 lineages in the population
         for ii in range(len(NF)):
             self.assertGreaterEqual(NF[ii].shape[0], 0) # at least zero cells in each lineage
-
+            
+    ##########################
+    # Viterbi.py tests below #
+    ##########################
+    
     def test_viterbi(self):
         """ Builds the tHMM class and calls the Viterbi function to find"""
         X = remove_NaNs(self.X)
         t = tHMM(X, numStates=2) # build the tHMM class with X
-        out = t.Viterbi()
+        out = Viterbi(t)
         self.assertEqual(len(out), 50) # there are 50 lineages in X
         for lineage in out:
             for ii in range(lineage.size):
