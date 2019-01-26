@@ -7,7 +7,7 @@ from ..UpwardRecursion import get_leaf_Normalizing_Factors
 from ..tHMM import tHMM
 from ..tHMM_utils import max_gen, get_gen, get_parents_for_level
 from ..Lineage_utils import remove_NaNs, get_numLineages, init_Population
-from ..Lineage import Population as p, generatePopulationWithTime as gpt
+from ..Lineage import generatePopulationWithTime as gpt
 from ..CellNode import CellNode
 
 class TestModel(unittest.TestCase):
