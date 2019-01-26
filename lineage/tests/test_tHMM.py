@@ -1,7 +1,6 @@
 """ Unit test file. """
 import unittest
-import math
-import numpy as np
+
 from ..Viterbi import Viterbi
 from ..UpwardRecursion import get_leaf_Normalizing_Factors
 from ..tHMM import tHMM
