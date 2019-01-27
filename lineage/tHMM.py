@@ -12,6 +12,7 @@ class tHMM:
         self.numStates = numStates # number of discrete hidden states
         self.numLineages = get_numLineages(self.X) # gets the number of lineages in our population
         self.population = init_Population(self.X, self.numLineages) # arranges the population into a list of lineages (each lineage might have varying length)
+        assert(self.numLineages == len(self.population))
         self.paramlist = self.init_paramlist() # list that is numLineages long of parameters for each lineage tree in our population
         
         self.MSD = self.get_Marginal_State_Distributions() # full Marginal State Distribution holder
