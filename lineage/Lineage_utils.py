@@ -20,10 +20,11 @@ def remove_NaNs(X):
 
 def get_numLineages(X):
     ''' Outputs total number of cell lineages in given Population. '''
-    linID_holder = [] # temporary list to hold all the linIDs of the cells in the population
+    root_cell_holder = [] # temporary list to hold all the linIDs of the cells in the population
     for cell in X: # for each cell in the population
-        linID_holder.append(cell.linID) # append the linID of each cell
-    numLineages = max(linID_holder)+1 # the number of lineages is the maximum linID+1
+        if cell.isRootParent():
+            root_cell_holder.append(cell.linID) # append the linID of each cell
+    numLineages = len(root_cell_holder) # the number of lineages is the maximum linID+1
     return numLineages
 
 def init_Population(X, numLineages):

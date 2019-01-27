@@ -26,7 +26,6 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
 
     return population
 
-
 class Population:
     """ This class holds populations of cells and estimates the parameters of how they behave. """
     def __init__(self, experimentTime, initCells, locBern, cGom, scaleGom):
