@@ -49,6 +49,12 @@ class TestModel(unittest.TestCase):
         cGom = [2]
         scaleGom = [40]
         self.X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
+        
+        initCells = [20, 30] # there should be around 50 lineages b/c there are 50 initial cells
+        locBern = [0.999, 0.6]
+        cGom = [2, 3]
+        scaleGom = [40, 50]
+        self.X2 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
 
     ################################
     # Lineage_utils.py tests below #
@@ -258,12 +264,12 @@ class TestModel(unittest.TestCase):
         t = tHMM(X, numStates=numStates) # build the tHMM class with X
         fake_param_list = []
         numLineages = t.numLineages
-        temp_params = {"pi": np.ones((numStates))/(numStates), # inital state distributions [K] initialized to 1/K + 
-                       "T": np.ones((numStates, numStates))/(numStates), # state transition matrix [KxK] initialized to 1/K
+        temp_params = {"pi": np.ones((numStates), dtype=int)/(numStates), # inital state distributions [K] initialized to 1/K + 
+                       "T": np.ones((numStates, numStates), dtype=int)/(numStates), # state transition matrix [KxK] initialized to 1/K
                        "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
         temp_params["pi"][1] = 0 # the hidden state for the second node should always be 1
-        to_state_one = np.zeros((numStates, numStates))
-        to_state_one[:,1] = np.ones((numStates))
+        to_state_one = np.zeros((numStates, numStates), dtype=int)
+        to_state_one[:,1] = np.ones((numStates), dtype=int)
         temp_params["T"] = to_state_one # should always end up in state 1 regardless of previous state
         # since transition matrix is a dependent matrix (0 is now a trivial state)
         temp_params["E"][:,0] *= 0.5 # initializing all Bernoulli p parameters to 0.5
@@ -274,6 +280,8 @@ class TestModel(unittest.TestCase):
             fake_param_list.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
             assert(len(fake_param_list) == lineage_num+1)
         t.paramlist = fake_param_list
+        t.MSD = t.get_Marginal_State_Distributions() # rerun these with new parameters
+        t.EL = t.get_Emission_Likelihoods() # rerun these with new parameters
         # run Viterbi with new parameter list
         deltas, state_ptrs = get_leaf_deltas(t) # gets the deltas matrix
         self.assertLessEqual(len(deltas), 50) # there are <=50 lineages in X
@@ -289,3 +297,69 @@ class TestModel(unittest.TestCase):
             all_ones = curr_all_states[1:] # get all the items in the list except the first item
             # this list should now be all ones since everything will always transition to 1
             self.assertTrue(all(all_ones))
+            
+    def test_viterbi3(self):
+        '''
+        Builds the tHMM class and calls
+        the Viterbi function to find
+        the optimal hidden states.
+        Now trying to see if altering the parameters
+        gives one different optimal state
+        trees. For this example, we have two
+        homogeneous populations. Using parameter sets that
+        describe those homogenous populations.
+        '''
+        X = remove_NaNs(self.X2)
+        numStates=2
+        t = tHMM(X, numStates=numStates) # build the tHMM class with X
+        fake_param_list = []
+        numLineages = t.numLineages
+        temp_params = {"pi": np.ones((numStates), dtype=float)/(numStates), # inital state distributions [K] initialized to 1/K
+                       "T": np.eye(2, dtype=int), # state transition matrix [KxK] initialized to identity (no transitions)
+                       # should always end up in state 1 regardless of previous state
+                       "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
+        
+        temp_params["pi"][0] = 2/5 # the population is distributed as such 2/5 is of state 0
+        temp_params["pi"][1] = 3/5 # state 1 occurs 3/5 of the time
+
+        temp_params["E"][0,0] *= 0.999 # initializing all Bernoulli p parameters to 0.5
+        temp_params["E"][0,1] *= 2 # initializing all Gompertz c parameters to 2
+        temp_params["E"][0,2] *= 40 # initializing all Gompoertz s(cale) parameters to 50
+        
+        temp_params["E"][1,0] *= 0.6 # initializing all Bernoulli p parameters to 0.5
+        temp_params["E"][1,1] *= 3 # initializing all Gompertz c parameters to 2
+        temp_params["E"][1,2] *= 50 # initializing all Gompoertz s(cale) parameters to 50
+        
+        for lineage_num in range(numLineages): # for each lineage in our population
+            fake_param_list.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
+            assert(len(fake_param_list) == lineage_num+1)
+        t.paramlist = fake_param_list
+        t.MSD = t.get_Marginal_State_Distributions() # rerun these with new parameters
+        t.EL = t.get_Emission_Likelihoods() # rerun these with new parameters
+        # run Viterbi with new parameter list
+        deltas, state_ptrs = get_leaf_deltas(t) # gets the deltas matrix
+        self.assertLessEqual(len(deltas), 50) # there are <=50 lineages in X
+        self.assertLessEqual(len(state_ptrs), 50) # there are <=50 lineages in X
+        get_nonleaf_deltas(t, deltas, state_ptrs)
+        self.assertLessEqual(len(deltas), 50) # there are <=50 lineages in X
+        self.assertLessEqual(len(state_ptrs), 50) # there are <=50 lineages in X
+        all_states = Viterbi(t, deltas, state_ptrs)
+        self.assertLessEqual(len(all_states), 50) # there are <=50 lineages in X
+        num_of_zeros = 0 # counts how many lineages were all of the 0 states
+        num_of_ones = 0 # counts how many lineages were all of the 1 states
+        for num in range(numLineages):
+            curr_all_states = all_states[num]
+            if curr_all_states[0] == 0:
+                all_zeros = curr_all_states
+                self.assertFalse(all(all_zeros))
+                # this should be true since the homogenous lineage is all of state 0
+                num_of_zeros+=1
+            else:
+                all_ones = curr_all_states
+                self.assertTrue(all(all_ones))
+                # this should be true since the homogenous lineage is all of state 1
+                num_of_ones+=1
+        self.assertLess(num_of_zeros,num_of_ones)
+        # there should be a greater number of lineages with all ones than all zeros as hidden states
+                
+                
