@@ -1,6 +1,4 @@
-# utility and helper functions for cleaning up input
-# populations and lineages
-# and other needs in the tHMM class
+'''utility and helper functions for cleaning up input populations and lineages and other needs in the tHMM class'''
 
 def remove_NaNs(X):
     '''Removes unfinished cells in Population'''
