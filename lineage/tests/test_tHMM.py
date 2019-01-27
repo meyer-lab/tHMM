@@ -49,7 +49,7 @@ class TestModel(unittest.TestCase):
         cGom = [2]
         scaleGom = [40]
         self.X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
-        
+
         initCells = [20, 30] # there should be around 50 lineages b/c there are 50 initial cells
         locBern = [0.999, 0.6]
         cGom = [2, 3]
@@ -249,7 +249,7 @@ class TestModel(unittest.TestCase):
         self.assertLessEqual(len(state_ptrs), 50) # there are <=50 lineages in X
         all_states = Viterbi(t, deltas, state_ptrs)
         self.assertLessEqual(len(all_states), 50) # there are <=50 lineages in X
-        
+
     def test_viterbi2(self):
         '''
         Builds the tHMM class and calls
@@ -264,7 +264,7 @@ class TestModel(unittest.TestCase):
         t = tHMM(X, numStates=numStates) # build the tHMM class with X
         fake_param_list = []
         numLineages = t.numLineages
-        temp_params = {"pi": np.ones((numStates), dtype=int)/(numStates), # inital state distributions [K] initialized to 1/K + 
+        temp_params = {"pi": np.ones((numStates), dtype=int)/(numStates), # inital state distributions [K] initialized to 1/K
                        "T": np.ones((numStates, numStates), dtype=int)/(numStates), # state transition matrix [KxK] initialized to 1/K
                        "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
         temp_params["pi"][1] = 0 # the hidden state for the second node should always be 1
@@ -275,7 +275,7 @@ class TestModel(unittest.TestCase):
         temp_params["E"][:,0] *= 0.5 # initializing all Bernoulli p parameters to 0.5
         temp_params["E"][:,1] *= 2 # initializing all Gompertz c parameters to 2
         temp_params["E"][:,2] *= 50 # initializing all Gompoertz s(cale) parameters to 50
-        
+
         for lineage_num in range(numLineages): # for each lineage in our population
             fake_param_list.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
             assert(len(fake_param_list) == lineage_num+1)
@@ -297,7 +297,7 @@ class TestModel(unittest.TestCase):
             all_ones = curr_all_states[1:] # get all the items in the list except the first item
             # this list should now be all ones since everything will always transition to 1
             self.assertTrue(all(all_ones))
-            
+
     def test_viterbi3(self):
         '''
         Builds the tHMM class and calls
@@ -318,18 +318,18 @@ class TestModel(unittest.TestCase):
                        "T": np.eye(2, dtype=int), # state transition matrix [KxK] initialized to identity (no transitions)
                        # should always end up in state 1 regardless of previous state
                        "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
-        
+
         temp_params["pi"][0] = 2/5 # the population is distributed as such 2/5 is of state 0
         temp_params["pi"][1] = 3/5 # state 1 occurs 3/5 of the time
 
         temp_params["E"][0,0] *= 0.999 # initializing all Bernoulli p parameters to 0.5
         temp_params["E"][0,1] *= 2 # initializing all Gompertz c parameters to 2
         temp_params["E"][0,2] *= 40 # initializing all Gompoertz s(cale) parameters to 50
-        
+
         temp_params["E"][1,0] *= 0.6 # initializing all Bernoulli p parameters to 0.5
         temp_params["E"][1,1] *= 3 # initializing all Gompertz c parameters to 2
         temp_params["E"][1,2] *= 50 # initializing all Gompoertz s(cale) parameters to 50
-        
+
         for lineage_num in range(numLineages): # for each lineage in our population
             fake_param_list.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
             assert(len(fake_param_list) == lineage_num+1)
@@ -361,5 +361,3 @@ class TestModel(unittest.TestCase):
                 num_of_ones+=1
         self.assertLess(num_of_zeros,num_of_ones)
         # there should be a greater number of lineages with all ones than all zeros as hidden states
-                
-                
