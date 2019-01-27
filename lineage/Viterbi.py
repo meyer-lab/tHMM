@@ -14,8 +14,8 @@ def get_leaf_deltas(tHMMobj):
 
     '''
     numStates = tHMMobj.numStates
-    numLineages = tHMM.numLineages
-    population = tHMM.population
+    numLineages = tHMMobj.numLineages
+    population = tHMMobj.population
     EL = tHMMobj.EL
 
     deltas = []
@@ -56,12 +56,12 @@ def get_nonleaf_deltas(tHMMobj, deltas):
             
             for node_parent_m_idx in parent_holder:
                 for state_k in range(numStates):
-                    fac1 = get_delta_parent_child_prod(numStates=numStates,
-                                                       lineage=lineage,
-                                                       delta_array=deltas[num],
-                                                       T=T,
-                                                       state_k=state_k, 
-                                                       node_parent_m_idx=node_parent_m_idx)
+                    fac1, max_state_ptr = get_delta_parent_child_prod(numStates=numStates,
+                                                                      lineage=lineage,
+                                                                      delta_array=deltas[num],
+                                                                      T=T,
+                                                                      state_k=state_k, 
+                                                                      node_parent_m_idx=node_parent_m_idx)
                     fac2 = EL_array[node_parent_m_idx, state_k]
                     deltas[num][node_parent_m_idx, state_k] = fac1*fac2
 
@@ -74,6 +74,7 @@ def get_delta_parent_child_prod(numStates, lineage, delta_array, T, state_k, nod
     '''
     
     delta_m_n_holder = [] # list to hold the factors in the product
+    max_state_ptr = []
     node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
     children_idx_list = [] # list to hold the children
     if node_parent_m.left: 
@@ -91,9 +92,10 @@ def get_delta_parent_child_prod(numStates, lineage, delta_array, T, state_k, nod
                                             node_parent_m_idx=node_parent_m_idx,
                                             node_child_n_idx=node_child_n_idx)
         delta_m_n_holder.append(delta_m_n)
+        max_state_ptr.append((node_child_n_idx,state_ptr))
 
     result = reduce((lambda x, y: x * y), delta_m_n_holder) # calculates the product of items in a list
-    return result
+    return result, max_state_ptr
 
 
 def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_parent_m_idx, node_child_n_idx):
@@ -111,7 +113,7 @@ def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_pa
 
         max_holder.append(num1*num2)
         result = max(max_holder)
-        state_ptr = np.argmax(max_holder)
+        state_ptr = np.argmax(max_holder) # gets the state of the maximum value
     return max(max_holder), state_ptr
 
 def Viterbi(self):

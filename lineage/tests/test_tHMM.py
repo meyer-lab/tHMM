@@ -1,7 +1,7 @@
 """ Unit test file. """
 import unittest
 
-from ..Viterbi import Viterbi
+from ..Viterbi import get_leaf_deltas
 from ..UpwardRecursion import get_leaf_Normalizing_Factors
 from ..tHMM import tHMM
 from ..tHMM_utils import max_gen, get_gen, get_parents_for_level
@@ -195,9 +195,7 @@ class TestModel(unittest.TestCase):
         """ Builds the tHMM class and calls the Viterbi function to find"""
         X = remove_NaNs(self.X)
         t = tHMM(X, numStates=2) # build the tHMM class with X
-        out = Viterbi(t)
-        self.assertEqual(len(out), 50) # there are 50 lineages in X
-        for lineage in out:
-            for ii in range(lineage.size):
-                self.assertIn(lineage[ii], range(0,2)) # make sure each element is within the range of numStates
+        deltas = get_leaf_deltas(t) # gets the deltas matrix
+        self.assertEqual(len(deltas), 50) # there are 50 lineages in X
+
             
