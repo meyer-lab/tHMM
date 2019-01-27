@@ -1,4 +1,4 @@
-# contains the methods that completes the downward recursion
+'''This file contains the methods that completes the downward recursion and evaulates the beta values.'''
 
 import numpy as np
 from .tHMM_utils import max_gen, get_gen, get_parents_for_level
@@ -19,13 +19,13 @@ def get_leaf_Normalizing_Factors(tHMMobj):
 
     P(x_n = x | z_n = k) * P(z_n = k) = P(x_n = x , z_n = k),
     where n are the leaf nodes.
-    
+
     We can then sum this joint probability over k,
     which are the possible states z_n can be,
     and through the law of total probability,
     obtain the marginal observation distribution
     P(x_n = x):
-    
+
     sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
     '''
     numStates = tHMMobj.numStates
@@ -46,13 +46,13 @@ def get_leaf_Normalizing_Factors(tHMMobj):
             if cell.isLeaf(): # if it is a leaf
                 leaf_cell_idx = lineage.index(cell) # get the index of the leaf
                 temp_sum_holder = [] # create a temporary list
-                
+
                 for state_k in range(numStates): # for each state
                     joint_prob = MSD_array[leaf_cell_idx, state_k] * EL_array[leaf_cell_idx, state_k] # def of conditional prob
                     # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
                     # this product is the joint probability
                     temp_sum_holder.append(joint_prob) # append the joint probability to be summed
-                    
+
                 marg_prob = sum(temp_sum_holder) # law of total probability
                 # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
                 # the sum of the joint probabilities is the marginal probability
@@ -63,19 +63,19 @@ def get_leaf_Normalizing_Factors(tHMMobj):
 def get_leaf_betas(tHMMobj, NF):
     '''
     beta matrix and base case at the leaves.
-    
+
     Each element in this N by K matrix is the beta value
     for each cell and at each state. In particular, this
     value is derived from the Marginal State Distributions
-    (MSD), the Emission Likelihoods (EL), and the 
+    (MSD), the Emission Likelihoods (EL), and the
     Normalizing Factors (NF). Each beta value
     for the leaves is exactly the probability
-    
+
     beta[n,k] = P(z_n = k | x_n = x).
-    
+
     Using Bayes Theorem, we see that the above equals
-    
-    numerator = P(x_n = x | z_n = k) * P(z_n = k)        
+
+    numerator = P(x_n = x | z_n = k) * P(z_n = k)
     denominator = P(x_n = x)
     beta[n,k] = numerator / denominator
 
@@ -120,13 +120,13 @@ def get_leaf_betas(tHMMobj, NF):
 
 def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
     '''
-    Traverses through each tree and calculates the 
-    beta value for each non-leaf cell. The normalizing factors (NFs) 
-    are also calculated as an intermediate for determining each 
-    beta term. Helper functions are called to determine one of 
-    the terms in the NF equation. This term is also used in the calculation 
-    of the betas. The recursion is upwards from the leaves to 
-    the roots
+    Traverses through each tree and calculates the
+    beta value for each non-leaf cell. The normalizing factors (NFs)
+    are also calculated as an intermediate for determining each
+    beta term. Helper functions are called to determine one of
+    the terms in the NF equation. This term is also used in the calculation
+    of the betas. The recursion is upwards from the leaves to
+    the roots.
     '''
     numStates = tHMMobj.numStates
     numLineages = tHMMobj.numLineages
@@ -168,8 +168,8 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
 
 def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
     '''
-    Calculates the product of beta-links for every parent-child 
-    relationship of a given parent cell in a given state. 
+    Calculates the product of beta-links for every parent-child
+    relationship of a given parent cell in a given state.
     '''
     beta_m_n_holder = [] # list to hold the factors in the product
     node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
@@ -187,7 +187,7 @@ def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, sta
                                           T=T,
                                           MSD_array=MSD_array,
                                           state_j=state_j,
-                                          node_parent_m_idx=node_parent_m_idx, 
+                                          node_parent_m_idx=node_parent_m_idx,
                                           node_child_n_idx=node_child_n_idx)
         beta_m_n_holder.append(beta_m_n)
     result = np.prod(beta_m_n_holder) # calculates the product of items in a list
@@ -203,8 +203,8 @@ def beta_parent_child_func(numStates, lineage, beta_array, T, MSD_array, state_j
     to the root node) node beta and Normalizing Factor
     values.
     '''
-    assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx] ) # check the child-parent relationship
-    assert( lineage[node_child_n_idx].isChild() ) # if the child-parent relationship is correct, then the child must 
+    assert(lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
+    assert(lineage[node_child_n_idx].isChild()) # if the child-parent relationship is correct, then the child must
     # either be the left daughter or the right daughter
     summand_holder=[] # summing over the states
 
