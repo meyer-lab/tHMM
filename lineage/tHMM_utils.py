@@ -17,10 +17,10 @@ def get_gen(gen, lineage):
     return first_set
 
 def get_parents_for_level(level, lineage):
-    """ 
-        Returns a set of all the parents of all the cells in a 
-        given level/generation. For example this would give you 
-        all the non-leaf cells in the generation above the one given. 
+    """
+        Returns a set of all the parents of all the cells in a
+        given level/generation. For example this would give you
+        all the non-leaf cells in the generation above the one given.
     """
     parent_holder = set() #set makes sure only one index is put in and no overlap
     for cell in level:

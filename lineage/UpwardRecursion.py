@@ -220,7 +220,7 @@ def beta_parent_child_func(numStates, lineage, beta_array, T, MSD_array, state_j
 
 def calculate_log_likelihood(tHMMobj, NF):
     '''
-    Calculates log likelihood.
+    Calculates log likelihood of NF for each lineage.
     '''
     numLineages = tHMMobj.numLineages
 

@@ -49,6 +49,12 @@ class TestModel(unittest.TestCase):
         scaleGom = [40]
         self.X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
 
+        initCells = [25, 25] # there should be 50 lineages b/c there are 50 initial cells
+        locBern = [0.8, 0.5]
+        cGom = [2, 3]
+        scaleGom = [40, 50]
+        self.X2 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
+
     ################################
     # Lineage_utils.py tests below #
     ################################
@@ -232,7 +238,7 @@ class TestModel(unittest.TestCase):
         the Viterbi function to find
         the optimal hidden states.
         '''
-        X = remove_NaNs(self.X)
+        X = remove_NaNs(self.X2)
         t = tHMM(X, numStates=2) # build the tHMM class with X
         deltas, state_ptrs = get_leaf_deltas(t) # gets the deltas matrix
         self.assertLessEqual(len(deltas), 50) # there are <=50 lineages in X
@@ -241,4 +247,5 @@ class TestModel(unittest.TestCase):
         self.assertLessEqual(len(deltas), 50) # there are <=50 lineages in X
         self.assertLessEqual(len(state_ptrs), 50) # there are <=50 lineages in X
         all_states = Viterbi(t, deltas, state_ptrs)
+        print(all_states)
         self.assertLessEqual(len(all_states), 50) # there are <=50 lineages in X
