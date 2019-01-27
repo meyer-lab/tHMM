@@ -140,7 +140,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
     for num in range(numLineages): # for each lineage in our Population
         lineage = population[num] # getting the lineage in the Population by index
         MSD_array = MSD[num] # getting the MSD of the respective lineage
-        EL_array = E[num] # geting the EL of the respective lineage
+        EL_array = EL[num] # geting the EL of the respective lineage
         params = paramlist[num] # getting the respective params by lineage index
         T = params["T"] # getting the transition matrix of the respective lineage
 
@@ -190,7 +190,7 @@ def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, sta
                                           node_parent_m_idx=node_parent_m_idx, 
                                           node_child_n_idx=node_child_n_idx)
         beta_m_n_holder.append(beta_m_n)
-    result = reduce((lambda x, y: x * y), beta_m_n_holder) # calculates the product of items in a list
+    result = np.prod(beta_m_n_holder) # calculates the product of items in a list
     return result
 
 def beta_parent_child_func(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx, node_child_n_idx):
