@@ -88,13 +88,13 @@ def get_delta_parent_child_prod(numStates, lineage, delta_array, T, state_k, nod
                                             lineage=lineage,
                                             delta_array=delta_array, 
                                             T=T, 
-                                            state_k=state_k,
+                                            state_j=state_k,
                                             node_parent_m_idx=node_parent_m_idx,
                                             node_child_n_idx=node_child_n_idx)
         delta_m_n_holder.append(delta_m_n)
         max_state_ptr.append((node_child_n_idx,state_ptr))
 
-    result = reduce((lambda x, y: x * y), delta_m_n_holder) # calculates the product of items in a list
+    result = np.prod(delta_m_n_holder) # calculates the product of items in a list
     return result, max_state_ptr
 
 
