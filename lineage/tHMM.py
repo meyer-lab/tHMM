@@ -23,18 +23,17 @@ class tHMM:
         paramlist = []
         numStates = self.numStates
         numLineages = self.numLineages
-        temp_params = {"pi": np.zeros((numStates))+1/(numStates), # inital state distributions [K] initialized to 1/K + 
-                       "T": np.zeros((numStates, numStates)) + 1/(numStates), # state transition matrix [KxK] initialized to 1/K
-                       "E": np.zeros((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
-        temp_params["E"][:,0] = np.ones(numStates) * 0.5 # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][:,1] = np.ones(numStates) * 2 # initializing all Gompertz c parameters to 2
-        temp_params["E"][:,2] = np.ones(numStates) * 50 # initializing all Gompoertz s(cale) parameters to 50
-        
+        temp_params = {"pi": np.ones((numStates)) / numStates, # inital state distributions [K] initialized to 1/K
+                       "T": np.ones((numStates, numStates)) / numStates, # state transition matrix [KxK] initialized to 1/K
+                       "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
+        temp_params["E"][:,0] *= 0.5 # initializing all Bernoulli p parameters to 0.5
+        temp_params["E"][:,1] *= 2. # initializing all Gompertz c parameters to 2
+        temp_params["E"][:,2] *= 50. # initializing all Gompoertz s(cale) parameters to 50
+
         for lineage_num in range(numLineages): # for each lineage in our population
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
             assert(len(paramlist) == lineage_num+1)
 
-            
         return paramlist
 
     def get_Marginal_State_Distributions(self):
@@ -55,14 +54,14 @@ class tHMM:
         numLineages = self.numLineages
         population = self.population
         paramlist = self.paramlist
-        
+
         MSD = []
 
         for num in range(numLineages): # for each lineage in our Population
             lineage = population[num] # getting the lineage in the Population by lineage index
             params = paramlist[num] # getting the respective params by lineage index
             MSD_array = np.zeros((len(lineage),numStates)) # instantiating N by K array
-            
+
             for cell in lineage: # for each cell in the lineage
                 if cell.isRootParent(): # base case uses pi parameter at the root cells of the tree
 
@@ -74,12 +73,12 @@ class tHMM:
 
                     for state_k in range(numStates): # recursion based on parent cell
                         temp_sum_holder = [] # for all states k, calculate the sum of temp
-                        
+
                         for state_j in range(numStates): # for all states j, calculate temp
                             temp = params["T"][state_j,state_k] * MSD_array[parent_cell_idx, state_j]
                             # temp = T_jk * P(z_parent(n) = j)
                             temp_sum_holder.append(temp)
-                            
+
                         MSD_array[current_cell_idx,state_k] = sum(temp_sum_holder)
             MSD.append(MSD_array) # Marginal States Distributions for each lineage in the Population
         return MSD
@@ -109,9 +108,9 @@ class tHMM:
         numLineages = self.numLineages
         population = self.population
         paramlist = self.paramlist
-        
+
         EL = []
-        
+
         for num in range(numLineages): # for each lineage in our Population
             lineage = population[num] # getting the lineage in the Population by lineage index
             params = paramlist[num] # getting the respective params by lineage index
@@ -129,6 +128,6 @@ class tHMM:
                     temp_g = sp.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
                     EL_array[current_cell_idx, state_k] = temp_b * temp_g
-                    
+
             EL.append(EL_array) # append the EL_array for each lineage
         return EL
