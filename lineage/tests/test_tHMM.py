@@ -15,7 +15,7 @@ class TestModel(unittest.TestCase):
         """ 
             Small trees that can be used to run unit tests and 
             check for edge cases. Some cells are labeled as self 
-                so they can be accessed in unit tests for comparisons. 
+            so they can be accessed in unit tests for comparisons. 
         """
         # 3 level tree with no gaps
         cell1 = CellNode(startT=0, linID=1)
@@ -93,11 +93,11 @@ class TestModel(unittest.TestCase):
         for i, lineage in enumerate(pop): # for each lineage
             for cell in lineage: # for each cell in said lineage
                 self.assertEqual(i, cell.linID) # linID should correspond with i
-                
+
     ############################            
     # tHMM_utils.pytests below #
     ############################
-    
+
     def test_max_gen(self):
         """ Calls lineages 1 through 4 and ensures that the maximimum number of generations is correct in each case. """
         # lineages 1-3 have 3 levels/generations
@@ -132,7 +132,7 @@ class TestModel(unittest.TestCase):
         temp5 = get_gen(1, self.lineage4)
         self.assertIn(self.cell30, temp5)
         self.assertEqual(len(temp5), 1)
-        
+
     def test_get_parents_for_level(self):
         """ Make sure the proper parents are returned of a specific level. """
         level = get_gen(3, self.lineage1)
@@ -173,7 +173,7 @@ class TestModel(unittest.TestCase):
         for ii in range(len(EL)):
             self.assertGreaterEqual(EL[ii].shape[0], 0) # at least zero cells in each lineage
             self.assertEqual(EL[ii].shape[1], 2) # there are 2 states for each cell
-            
+
     ##################################
     # UpwardRecursion.py tests below #
     ##################################
@@ -186,11 +186,11 @@ class TestModel(unittest.TestCase):
         self.assertEqual(len(NF), 50) # there are 50 lineages in the population
         for ii in range(len(NF)):
             self.assertGreaterEqual(NF[ii].shape[0], 0) # at least zero cells in each lineage
-            
+
     ##########################
     # Viterbi.py tests below #
     ##########################
-    
+
     def test_viterbi(self):
         """ Builds the tHMM class and calls the Viterbi function to find"""
         X = remove_NaNs(self.X)
@@ -201,8 +201,6 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(t, deltas, state_ptrs)
         self.assertEqual(len(deltas), 50) # there are 50 lineages in X
         self.assertEqual(len(state_ptrs), 50) # there are 50 lineages in X
-        print(deltas[0])
-        print(state_ptrs[0])
         
 
             
