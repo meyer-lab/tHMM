@@ -1,7 +1,7 @@
 """ Unit test file. """
 import unittest
 
-from ..Viterbi import get_leaf_deltas
+from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas
 from ..UpwardRecursion import get_leaf_Normalizing_Factors
 from ..tHMM import tHMM
 from ..tHMM_utils import max_gen, get_gen, get_parents_for_level
@@ -197,5 +197,8 @@ class TestModel(unittest.TestCase):
         t = tHMM(X, numStates=2) # build the tHMM class with X
         deltas = get_leaf_deltas(t) # gets the deltas matrix
         self.assertEqual(len(deltas), 50) # there are 50 lineages in X
+        get_nonleaf_deltas(t, deltas)
+        self.assertEqual(len(deltas), 50) # there are 50 lineages in X
+        
 
             
