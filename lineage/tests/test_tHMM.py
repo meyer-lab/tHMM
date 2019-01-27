@@ -194,7 +194,7 @@ class TestModel(unittest.TestCase):
 
     def test_get_EL(self):
         '''
-        Calls get_Emission_Likelihoods and ensures 
+        Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         '''
         X = remove_NaNs(self.X)
