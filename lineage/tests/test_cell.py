@@ -2,7 +2,7 @@
 import unittest
 import math
 import numpy as np
-from ..Lineage import Population as p, generatePopulationWithTime as gpt
+from ..Lineage import Population as p
 from ..CellNode import CellNode as c, generateLineageWithTime, doublingTime
 
 class TestModel(unittest.TestCase):

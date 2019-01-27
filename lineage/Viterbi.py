@@ -1,7 +1,7 @@
 # contains the methods that completes Viterbi decoding algorithm
 
 import numpy as np
-from .tHMM_utils import *
+from .tHMM_utils import max_gen, get_gen, get_daughters
 
 def get_leaf_deltas(tHMMobj):
     ''' 
@@ -121,7 +121,7 @@ def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_pa
         max_holder.append(num1*num2)
         result = max(max_holder)
         state_ptr = np.argmax(max_holder) # gets the state of the maximum value
-    return max(max_holder), state_ptr
+    return result, state_ptr
 
 def Viterbi(tHMMobj, deltas, state_ptrs):
     '''

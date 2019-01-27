@@ -1,6 +1,8 @@
 # utility and helper functions for recursions
 # and other needs in the tHMM class
 
+import numpy as np
+
 def max_gen(lineage):
     '''finds the max generation in a lineage'''
     gen_holder = 1
