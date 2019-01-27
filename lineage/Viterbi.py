@@ -1,17 +1,9 @@
-# contains the methods that completes Viterbi decoding algorithm
-
+'''This file contains the methods for the Viterbi algorithm implemented in an a upward recursion.'''
 import numpy as np
 from .tHMM_utils import max_gen, get_gen, get_parents_for_level, get_daughters
 
 def get_leaf_deltas(tHMMobj):
-    ''' 
-    delta matrix and base case at the leaves.
-    
-    Each element in this N by K matrix is the 
-    probability for the leaves
-
-    P(x_n = x | z_n = k).
-    '''
+    '''delta matrix and base case at the leaves. Each element in this N by K matrix is the probability for the leaves P(x_n = x | z_n = k).'''
     numStates = tHMMobj.numStates
     numLineages = tHMMobj.numLineages
     population = tHMMobj.population
@@ -36,9 +28,7 @@ def get_leaf_deltas(tHMMobj):
     return deltas, state_ptrs
 
 def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
-    '''
-     Calculates the delta values for all non-leaf cells. 
-    '''
+    '''Calculates the delta values for all non-leaf cells.'''
     numStates = tHMMobj.numStates
     numLineages = tHMMobj.numLineages
     population = tHMMobj.population
@@ -71,11 +61,7 @@ def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
             curr_gen -= 1
 
 def get_delta_parent_child_prod(numStates, lineage, delta_array, T, state_k, node_parent_m_idx):
-    '''
-    Calculates the delta coefficient for every parent-child 
-    relationship of a given parent cell in a given state.
-    '''
-
+    '''Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.'''
     delta_m_n_holder = [] # list to hold the factors in the product
     max_state_ptr = []
     node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
@@ -104,10 +90,7 @@ def get_delta_parent_child_prod(numStates, lineage, delta_array, T, state_k, nod
     return result, max_state_ptr
 
 def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_parent_m_idx, node_child_n_idx):
-    '''
-    Calculates the delta value for a single parent-child 
-    relationship where the parent is in a given state. 
-    '''
+    '''Calculates the delta value for a single parent-child relationship where the parent is in a given state.'''
     assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
     assert( lineage[node_child_n_idx].isChild() ) # if the child-parent relationship is correct, then the child must be either the left daughter or the right daughter
     max_holder=[] # maxing over the states
@@ -122,11 +105,7 @@ def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_pa
     return result, state_ptr
 
 def Viterbi(tHMMobj, deltas, state_ptrs):
-    '''
-    Runs the viterbi algorithm and returns a 
-    list of arrays containing the optimal state of each cell.
-    '''
-    numStates = tHMMobj.numStates
+    '''Runs the viterbi algorithm and returns a list of arrays containing the optimal state of each cell.'''
     numLineages = tHMMobj.numLineages
     population = tHMMobj.population
     paramlist = tHMMobj.paramlist

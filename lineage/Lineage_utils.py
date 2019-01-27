@@ -31,7 +31,7 @@ def get_numLineages(X):
     return numLineages
 
 def init_Population(X, numLineages):
-    ''' Creates a full population list of lists which contain each lineage in the Population. '''
+    '''Creates a full population list of lists which contain each lineage in the Population.'''
     root_cell_holder = [] # temp list to hold the root cells in the population
     for cell in X: # for each cell in the population
         if cell.isRootParent():

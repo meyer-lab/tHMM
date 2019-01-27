@@ -143,9 +143,7 @@ def doublingTime(initCells, locBern, cGom, scaleGom):
         """ Calculates the exponential."""
         return initCells * np.exp(expParam[0] * experimentTimes)
 
-    expY = lambda experimentTimes, expParam: expFunc(experimentTimes, expParam)
-
-    fitExpParam, _ = optimize.curve_fit(expY, experimentTimes, numAlive, p0=[0]) # fit an exponential curve to generated data
+    fitExpParam, _ = optimize.curve_fit(expFunc, experimentTimes, numAlive, p0=[0]) # fit an exponential curve to generated data
 
     doubleT = np.log(2) / fitExpParam[0] # relationship between doubling time and exponential function
 
