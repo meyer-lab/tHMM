@@ -195,10 +195,14 @@ class TestModel(unittest.TestCase):
         """ Builds the tHMM class and calls the Viterbi function to find"""
         X = remove_NaNs(self.X)
         t = tHMM(X, numStates=2) # build the tHMM class with X
-        deltas = get_leaf_deltas(t) # gets the deltas matrix
+        deltas, state_ptrs = get_leaf_deltas(t) # gets the deltas matrix
         self.assertEqual(len(deltas), 50) # there are 50 lineages in X
-        get_nonleaf_deltas(t, deltas)
+        self.assertEqual(len(state_ptrs), 50) # there are 50 lineages in X
+        get_nonleaf_deltas(t, deltas, state_ptrs)
         self.assertEqual(len(deltas), 50) # there are 50 lineages in X
+        self.assertEqual(len(state_ptrs), 50) # there are 50 lineages in X
+        print(deltas[0])
+        print(state_ptrs[0])
         
 
             

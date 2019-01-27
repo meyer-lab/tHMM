@@ -26,8 +26,8 @@ class tHMM:
                        "T": np.zeros((numStates, numStates)) + 1/(numStates), # state transition matrix [KxK] initialized to 1/K
                        "E": np.zeros((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
         temp_params["E"][:,0] = np.ones(numStates) * 0.5 # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][:,1] = np.ones(numStates) * 2 # initializing all Gompertz c parameters to 
-        temp_params["E"][:,2] = np.ones(numStates) * 0.5e2 # initializing all Gompoertz s(cale) parameters to 
+        temp_params["E"][:,1] = np.ones(numStates) * 2 # initializing all Gompertz c parameters to 2
+        temp_params["E"][:,2] = np.ones(numStates) * 50 # initializing all Gompoertz s(cale) parameters to 50
         
         for lineage_num in range(numLineages): # for each lineage in our population
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
