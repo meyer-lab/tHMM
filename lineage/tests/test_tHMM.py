@@ -1,7 +1,7 @@
 """ Unit test file. """
 import unittest
 
-from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas
+from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from ..UpwardRecursion import get_leaf_Normalizing_Factors
 from ..tHMM import tHMM
 from ..tHMM_utils import max_gen, get_gen, get_parents_for_level
@@ -201,6 +201,12 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(t, deltas, state_ptrs)
         self.assertEqual(len(deltas), 50) # there are 50 lineages in X
         self.assertEqual(len(state_ptrs), 50) # there are 50 lineages in X
+        print(deltas[0])
+        print(state_ptrs[0])
+        all_states = Viterbi(t, deltas, state_ptrs)
+        self.assertEqual(len(all_states), 50) # there are 50 lineages in X
+        print(all_states[0])
+        
         
 
             

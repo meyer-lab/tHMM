@@ -123,22 +123,29 @@ def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_pa
         state_ptr = np.argmax(max_holder) # gets the state of the maximum value
     return max(max_holder), state_ptr
 
-def Viterbi(self):
+def Viterbi(tHMMobj, deltas, state_ptrs):
     '''
         Runs the viterbi algorithm and returns a 
         list of arrays containing the optimal state of each cell.
     '''
+    numStates = tHMMobj.numStates
+    numLineages = tHMMobj.numLineages
+    population = tHMMobj.population
+    paramlist = tHMMobj.paramlist
+    
     all_states = []
-    for num in range(self.numLineages):
-        delta_array = self.deltas[num] # deltas are not being manip. just accessed so this is OK
-        lineage = self.population[num]
-        params = self.paramlist[num]
+    
+    for num in range(numLineages):
+        lineage = population[num]
+        params = paramlist[num]
         T = params['T']
         pi = params['pi']
+        delta_array = deltas[num]
+        state_ptrs_array = state_ptrs[num]
 
         opt_state_tree = np.zeros((len(lineage)), dtype=int)
         possible_first_states = np.multiply(delta_array[0,:], pi)
-        opt_state_tree[0] = np.argmax(possible_first_states)
+        opt_state_tree[0] = np.argmax(possible_first_states)    
         max_level = max_gen(lineage)
         count = 1 # start at the root nodes
         while count < max_level: # move down until the lowest leaf node is reached
@@ -149,8 +156,10 @@ def Viterbi(self):
                 for n in temp:
                     child_idx = lineage.index(n)
                     parent_state = opt_state_tree[parent_idx]
-                    possible_states = np.multiply(delta_array[child_idx,:], T[parent_state,:])
-                    opt_state_tree[child_idx] = np.argmax(possible_states)
+                    temp = state_ptrs_array[parent_idx, parent_state]
+                    for child_state_tuple in temp:
+                        if child_state_tuple[0] == child_idx:
+                            opt_state_tree[child_idx] = child_state_tuple[1]
             count += 1
         all_states.append(opt_state_tree)
 

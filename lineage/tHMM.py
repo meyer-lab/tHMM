@@ -22,7 +22,7 @@ class tHMM:
         paramlist = []
         numStates = self.numStates
         numLineages = self.numLineages
-        temp_params = {"pi": np.zeros((numStates))+1/(numStates), # inital state distributions [K] initialized to 1/K
+        temp_params = {"pi": np.zeros((numStates))+1/(numStates), # inital state distributions [K] initialized to 1/K + 
                        "T": np.zeros((numStates, numStates)) + 1/(numStates), # state transition matrix [KxK] initialized to 1/K
                        "E": np.zeros((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
         temp_params["E"][:,0] = np.ones(numStates) * 0.5 # initializing all Bernoulli p parameters to 0.5
@@ -31,6 +31,7 @@ class tHMM:
         
         for lineage_num in range(numLineages): # for each lineage in our population
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
+
             
         return paramlist
 

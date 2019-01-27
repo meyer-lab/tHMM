@@ -59,13 +59,11 @@ class Population:
             if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
                 fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
 
-        def LogLikelihoodBern(locBernGuess, fate_holder):
+        def negLogLikelihoodBern(locBernGuess, fate_holder):
             """ Calculates the log likelihood for bernoulli. """
-            return np.sum(sp.bernoulli.logpmf(k=fate_holder, p=locBernGuess))
+            return -1*np.sum(sp.bernoulli.logpmf(k=fate_holder, p=locBernGuess))
 
-        nllB = lambda *args: -LogLikelihoodBern(*args)
-
-        res = minimize(nllB, x0=0.5, bounds=((0,1),), method="SLSQP", args=(fate_holder))
+        res = minimize(negLogLikelihoodBern, x0=0.5, bounds=((0,1),), method="SLSQP", args=(fate_holder))
 
         return res.x[0]
 
@@ -77,12 +75,10 @@ class Population:
             if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
                 tau_holder.append(cell.tau) # append the cell lifetime
 
-        def LogLikelihoodGomp(gompParams, tau_holder):
+        def negLogLikelihoodGomp(gompParams, tau_holder):
             """ Calculates the log likelihood for gompertz. """
-            return np.sum(sp.gompertz.logpdf(x=tau_holder,c=gompParams[0], scale=gompParams[1]))
+            return -1*np.sum(sp.gompertz.logpdf(x=tau_holder,c=gompParams[0], scale=gompParams[1]))
 
-        nllG = lambda *args: -LogLikelihoodGomp(*args)
-
-        res = minimize(nllG, x0=[1,1e3], bounds=((0,5),(0,None)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
+        res = minimize(negLogLikelihoodGomp, x0=[1,1e3], bounds=((0,5),(0,None)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
 
         return res.x
