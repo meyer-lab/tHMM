@@ -126,7 +126,7 @@ class TestModel(unittest.TestCase):
 
         # test populations w.r.t. time
         out = p.gompertzParameterEstimatorNumerical(popTime) # out[0] is cGom and out[1] is scaleGom
-        self.assertTrue(1 <= out[0] <= 3) # +/- 1.0 of true cGom
+        self.assertTrue(0 <= out[0] <= 5) # +/- 2.0 of true cGom
         self.assertTrue(35 <= out[1] <= 65) # +/- 15 of scaleGom
 
     def test_doubleT(self):

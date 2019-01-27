@@ -201,11 +201,8 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(t, deltas, state_ptrs)
         self.assertEqual(len(deltas), 50) # there are 50 lineages in X
         self.assertEqual(len(state_ptrs), 50) # there are 50 lineages in X
-        print(deltas[0])
-        print(state_ptrs[0])
         all_states = Viterbi(t, deltas, state_ptrs)
         self.assertEqual(len(all_states), 50) # there are 50 lineages in X
-        print(all_states[0])
         
         
 
