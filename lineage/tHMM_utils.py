@@ -1,8 +1,6 @@
 # utility and helper functions for recursions
 # and other needs in the tHMM class
 
-import numpy as np
-
 def max_gen(lineage):
     '''finds the max generation in a lineage'''
     gen_holder = 1
@@ -39,14 +37,3 @@ def get_daughters(cell):
     if cell.right:
         temp.append(cell.right)
     return temp
-
-def calculate_log_likelihood(population, numLineages, NF):
-    """ Calculates log likelihood."""
-    LL = []
-    for num in range(numLineages): # for each lineage in our Population
-        lineage = population[num] # getting the lineage in the Population by index
-        NF_array = NF[num] # getting the NF of the respective lineage
-        log_NF_array = np.log(NF_array)
-        ll_per_num = sum(log_NF_array)
-        LL.append(ll_per_num)
-    return LL

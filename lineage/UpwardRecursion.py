@@ -217,3 +217,19 @@ def beta_parent_child_func(numStates, lineage, beta_array, T, MSD_array, state_j
         summand_holder.append(numer1*numer2/denom)
 
     return sum(summand_holder)
+
+def calculate_log_likelihood(tHMMobj, NF):
+    '''
+    Calculates log likelihood.
+    '''
+    numLineages = tHMMobj.numLineages
+
+    LL = []
+
+    for num in range(numLineages): # for each lineage in our Population
+        NF_array = NF[num] # getting the NF of the respective lineage
+        log_NF_array = np.log(NF_array)
+        ll_per_num = sum(log_NF_array)
+        LL.append(ll_per_num)
+
+    return LL
