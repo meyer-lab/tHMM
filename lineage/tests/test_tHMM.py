@@ -1,5 +1,6 @@
 ''' Unit test file. '''
 import unittest
+import numpy as np
 
 from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from ..UpwardRecursion import get_leaf_Normalizing_Factors
@@ -242,3 +243,50 @@ class TestModel(unittest.TestCase):
         self.assertLessEqual(len(state_ptrs), 50) # there are <=50 lineages in X
         all_states = Viterbi(t, deltas, state_ptrs)
         self.assertLessEqual(len(all_states), 50) # there are <=50 lineages in X
+        
+    def test_viterbi2(self):
+        '''
+        Builds the tHMM class and calls
+        the Viterbi function to find
+        the optimal hidden states.
+        Now trying to see if altering the parameters
+        gives one different optimal state
+        trees.
+        '''
+        X = remove_NaNs(self.X)
+        numStates=2
+        t = tHMM(X, numStates=numStates) # build the tHMM class with X
+        fake_param_list = []
+        numLineages = t.numLineages
+        temp_params = {"pi": np.zeros((numStates))+1/(numStates), # inital state distributions [K] initialized to 1/K + 
+                       "T": np.zeros((numStates, numStates)) + 1/(numStates), # state transition matrix [KxK] initialized to 1/K
+                       "E": np.zeros((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
+        temp_params["pi"][0] = 1 # the hidden state for the first node should always be 0
+        temp_params["pi"][1] = 0 # the hidden state for the second node should always be 1
+        to_state_one = np.zeros((numStates, numStates))
+        to_state_one[:,1] = np.ones((numStates))
+        temp_params["T"] = to_state_one # should always end up in state 1 regardless of previous state
+        # since transition matrix is a dependent matrix (0 is now a trivial state)
+        temp_params["E"][:,0] = np.ones(numStates) * 0.5 # initializing all Bernoulli p parameters to 0.5
+        temp_params["E"][:,1] = np.ones(numStates) * 2 # initializing all Gompertz c parameters to 2
+        temp_params["E"][:,2] = np.ones(numStates) * 50 # initializing all Gompoertz s(cale) parameters to 50
+        
+        for lineage_num in range(numLineages): # for each lineage in our population
+            fake_param_list.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
+            assert(len(fake_param_list) == lineage_num+1)
+        t.paramlist = fake_param_list
+        # run Viterbi with new parameter list
+        deltas, state_ptrs = get_leaf_deltas(t) # gets the deltas matrix
+        self.assertLessEqual(len(deltas), 50) # there are <=50 lineages in X
+        self.assertLessEqual(len(state_ptrs), 50) # there are <=50 lineages in X
+        get_nonleaf_deltas(t, deltas, state_ptrs)
+        self.assertLessEqual(len(deltas), 50) # there are <=50 lineages in X
+        self.assertLessEqual(len(state_ptrs), 50) # there are <=50 lineages in X
+        all_states = Viterbi(t, deltas, state_ptrs)
+        self.assertLessEqual(len(all_states), 50) # there are <=50 lineages in X
+        for num in range(numLineages):
+            curr_all_states = all_states[num]
+            self.assertEqual(curr_all_states[0], 0) # the first state should always be 0
+            all_ones = curr_all_states[1:] # get all the items in the list except the first item
+            # this list should now be all ones since everything will always transition to 1
+            self.assertTrue(all(all_ones))

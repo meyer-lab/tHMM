@@ -99,7 +99,6 @@ class TestModel(unittest.TestCase):
                 tau_scale50.append(n.tau)
 
         self.assertGreater(np.mean(tau_scale50), np.mean(tau_scale40))
-        self.assertGreater(np.std(tau_scale50), np.std(tau_scale40))
 
     def test_MLE_bern(self):
         """Generate multiple lineages and estimate the bernoulli parameter with MLE."""
@@ -126,7 +125,7 @@ class TestModel(unittest.TestCase):
         # test populations w.r.t. time
         out = p.gompertzParameterEstimatorNumerical(popTime) # out[0] is cGom and out[1] is scaleGom
         self.assertTrue(0 <= out[0] <= 5) # +/- 2.0 of true cGom
-        self.assertTrue(35 <= out[1] <= 65) # +/- 15 of scaleGom
+        self.assertTrue(30 <= out[1] <= 70) # +/- 20 of scaleGom
 
     def test_doubleT(self):
         """Check for basic functionality of doubleT."""
