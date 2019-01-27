@@ -5,13 +5,12 @@ from .tHMM_utils import max_gen, get_gen, get_parents_for_level, get_daughters
 
 def get_leaf_deltas(tHMMobj):
     ''' 
-        delta matrix and base case at the leaves.
+    delta matrix and base case at the leaves.
+    
+    Each element in this N by K matrix is the 
+    probability for the leaves
 
-        Each element in this N by K matrix is the 
-        probability for the leaves
-        
-        P(x_n = x | z_n = k).
-
+    P(x_n = x | z_n = k).
     '''
     numStates = tHMMobj.numStates
     numLineages = tHMMobj.numLineages
@@ -38,7 +37,7 @@ def get_leaf_deltas(tHMMobj):
 
 def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
     '''
-        Calculates the delta values for all non-leaf cells. 
+     Calculates the delta values for all non-leaf cells. 
     '''
     numStates = tHMMobj.numStates
     numLineages = tHMMobj.numLineages
@@ -73,23 +72,23 @@ def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
 
 def get_delta_parent_child_prod(numStates, lineage, delta_array, T, state_k, node_parent_m_idx):
     '''
-        Calculates the delta coefficient for every parent-child 
-        relationship of a given parent cell in a given state.
+    Calculates the delta coefficient for every parent-child 
+    relationship of a given parent cell in a given state.
     '''
-    
+
     delta_m_n_holder = [] # list to hold the factors in the product
     max_state_ptr = []
     node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
     children_idx_list = [] # list to hold the children
-    
+
     if node_parent_m.left: 
         node_child_n_left_idx = lineage.index(node_parent_m.left)
         children_idx_list.append(node_child_n_left_idx)
-        
+
     if node_parent_m.right:
         node_child_n_right_idx = lineage.index(node_parent_m.right)
         children_idx_list.append(node_child_n_right_idx)
-        
+
     for node_child_n_idx in children_idx_list:
         delta_m_n, state_ptr = delta_parent_child_func(numStates=numStates,
                                             lineage=lineage,
@@ -104,11 +103,10 @@ def get_delta_parent_child_prod(numStates, lineage, delta_array, T, state_k, nod
     result = np.prod(delta_m_n_holder) # calculates the product of items in a list
     return result, max_state_ptr
 
-
 def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_parent_m_idx, node_child_n_idx):
     '''
-        Calculates the delta value for a single parent-child 
-        relationship where the parent is in a given state. 
+    Calculates the delta value for a single parent-child 
+    relationship where the parent is in a given state. 
     '''
     assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
     assert( lineage[node_child_n_idx].isChild() ) # if the child-parent relationship is correct, then the child must be either the left daughter or the right daughter
@@ -125,16 +123,16 @@ def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_pa
 
 def Viterbi(tHMMobj, deltas, state_ptrs):
     '''
-        Runs the viterbi algorithm and returns a 
-        list of arrays containing the optimal state of each cell.
+    Runs the viterbi algorithm and returns a 
+    list of arrays containing the optimal state of each cell.
     '''
     numStates = tHMMobj.numStates
     numLineages = tHMMobj.numLineages
     population = tHMMobj.population
     paramlist = tHMMobj.paramlist
-    
+
     all_states = []
-    
+
     for num in range(numLineages):
         lineage = population[num]
         params = paramlist[num]
@@ -161,5 +159,5 @@ def Viterbi(tHMMobj, deltas, state_ptrs):
                             opt_state_tree[child_idx] = child_state_tuple[1]
             count += 1
         all_states.append(opt_state_tree)
-
+        
     return all_states
