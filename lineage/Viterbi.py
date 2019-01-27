@@ -138,11 +138,8 @@ def Viterbi(tHMMobj, deltas, state_ptrs):
     for num in range(numLineages):
         lineage = population[num]
         params = paramlist[num]
-        T = params['T']
         pi = params['pi']
         delta_array = deltas[num]
-        print(len(lineage))
-        print(delta_array)
         state_ptrs_array = state_ptrs[num]
 
         opt_state_tree = np.zeros((len(lineage)), dtype=int)
