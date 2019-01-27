@@ -51,7 +51,7 @@ def get_nonleaf_deltas(tHMMobj, deltas):
         curr_gen = max_gen(lineage) # start at the leafs in the maximum generation
         
         while curr_gen > 1: # move up one generation until the 2nd generation is the children and the root nodes are the parents
-            level = get_gen(start, lineage)
+            level = get_gen(curr_gen, lineage)
             parent_holder = get_parents_for_level(level, lineage)
             
             for node_parent_m_idx in parent_holder:
