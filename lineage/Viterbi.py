@@ -83,7 +83,7 @@ def get_delta_parent_child_prod(numStates, lineage, delta_array, T, state_k, nod
         node_child_n_right_idx = lineage.index(node_parent_m.right)
         children_idx_list.append(node_child_n_right_idx)
     for node_child_n_idx in children_idx_list:
-        delta_m_n = delta_parent_child_func(numStates=numStates,
+        delta_m_n, state_ptr = delta_parent_child_func(numStates=numStates,
                                             lineage=lineage,
                                             delta_array=delta_array, 
                                             T=T, 
@@ -110,7 +110,9 @@ def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_pa
         # P( z_n = k | z_m = j)
 
         max_holder.append(num1*num2)
-    return max(max_holder)
+        result = max(max_holder)
+        state_ptr = np.argmax(max_holder)
+    return max(max_holder), state_ptr
 
 def Viterbi(self):
     '''
