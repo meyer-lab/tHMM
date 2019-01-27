@@ -87,9 +87,12 @@ class CellNode:
 
     def get_root_cell(self):
         '''Gets the root cell associated with the cell.'''
+        cell_linID = self.linID
         curr_cell = self
         while curr_cell.gen > 1:
             curr_cell = curr_cell.parent
+            assert(cell_linID == curr_cell.linID)
+        assert(cell_linID == curr_cell.linID)
         return(curr_cell)
 
 def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):

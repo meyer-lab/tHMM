@@ -33,14 +33,14 @@ def get_numLineages(X):
 def init_Population(X, numLineages):
     ''' Creates a full population list of lists which contain each lineage in the Population. '''
     root_cell_holder = [] # temp list to hold the root cells in the population
-     for cell in X: # for each cell in the population
+    for cell in X: # for each cell in the population
         if cell.isRootParent():
             root_cell_holder.append(cell)
     population = []
     for lineage_num in range(numLineages): # iterate over the number of lineages in the population
         temp_lineage = [] # temporary list to hold the cells of a certain lineage with a particular linID
         for cell in X: # for each cell in the population
-            if cell.get_root_cell is root_cell_holder[lineage_num]: # if the cell's root cell is the root cell we're on
+            if cell.get_root_cell() is root_cell_holder[lineage_num]: # if the cell's root cell is the root cell we're on
                 assert(cell.linID == cell.get_root_cell().linID)
                 temp_lineage.append(cell) # append the cell to that certain lineage
         if len(temp_lineage)>0:

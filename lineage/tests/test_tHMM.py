@@ -185,7 +185,7 @@ class TestModel(unittest.TestCase):
         X = remove_NaNs(self.X)
         t = tHMM(X, numStates=2) # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
-        self.assertEqual(len(MSD), 50) # there are 50 lineages in the population
+        self.assertLessEqual(len(MSD), 50) # there are <=50 lineages in the population
         for ii in range(len(MSD)):
             self.assertGreaterEqual(MSD[ii].shape[0], 0) # at least zero cells in each lineage
             self.assertEqual(MSD[ii].shape[1], 2) # there are 2 states for each cell
@@ -200,7 +200,7 @@ class TestModel(unittest.TestCase):
         X = remove_NaNs(self.X)
         t = tHMM(X, numStates=2) # build the tHMM class with X
         EL = t.get_Emission_Likelihoods()
-        self.assertEqual(len(EL), 50) # there are 50 lineages in the population
+        self.assertLessEqual(len(EL), 50) # there are <=50 lineages in the population
         for ii in range(len(EL)):
             self.assertGreaterEqual(EL[ii].shape[0], 0) # at least zero cells in each lineage
             self.assertEqual(EL[ii].shape[1], 2) # there are 2 states for each cell
@@ -218,7 +218,7 @@ class TestModel(unittest.TestCase):
         X = remove_NaNs(self.X)
         t = tHMM(X, numStates=2) # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(t)
-        self.assertEqual(len(NF), 50) # there are 50 lineages in the population
+        self.assertLessEqual(len(NF), 50) # there are <=50 lineages in the population
         for ii in range(len(NF)):
             self.assertGreaterEqual(NF[ii].shape[0], 0) # at least zero cells in each lineage
 
@@ -235,15 +235,15 @@ class TestModel(unittest.TestCase):
         X = remove_NaNs(self.X)
         t = tHMM(X, numStates=2) # build the tHMM class with X
         deltas, state_ptrs = get_leaf_deltas(t) # gets the deltas matrix
-        self.assertEqual(len(deltas), 50) # there are 50 lineages in X
-        self.assertEqual(len(state_ptrs), 50) # there are 50 lineages in X
+        self.assertLessEqual(len(deltas), 50) # there are <=50 lineages in X
+        self.assertLessEqual(len(state_ptrs), 50) # there are <=50 lineages in X
         get_nonleaf_deltas(t, deltas, state_ptrs)
-        self.assertEqual(len(deltas), 50) # there are 50 lineages in X
-        self.assertEqual(len(state_ptrs), 50) # there are 50 lineages in X
+        self.assertLessEqual(len(deltas), 50) # there are <=50 lineages in X
+        self.assertLessEqual(len(state_ptrs), 50) # there are <=50 lineages in X
         #print(deltas)
         #print(state_ptrs)
         all_states = Viterbi(t, deltas, state_ptrs)
-        self.assertEqual(len(all_states), 50) # there are 50 lineages in X
+        self.assertLessEqual(len(all_states), 50) # there are <=50 lineages in X
         #print(all_states)
         
         
