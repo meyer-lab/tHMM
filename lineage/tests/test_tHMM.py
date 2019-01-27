@@ -50,12 +50,6 @@ class TestModel(unittest.TestCase):
         scaleGom = [40]
         self.X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
 
-        initCells = [25, 25] # there should be 50 lineages b/c there are 50 initial cells
-        locBern = [0.8, 0.5]
-        cGom = [2, 3]
-        scaleGom = [40, 50]
-        self.X2 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
-
     ################################
     # Lineage_utils.py tests below #
     ################################
@@ -239,7 +233,7 @@ class TestModel(unittest.TestCase):
         the Viterbi function to find
         the optimal hidden states.
         '''
-        X = remove_NaNs(self.X2)
+        X = remove_NaNs(self.X)
         t = tHMM(X, numStates=2) # build the tHMM class with X
         deltas, state_ptrs = get_leaf_deltas(t) # gets the deltas matrix
         self.assertLessEqual(len(deltas), 50) # there are <=50 lineages in X
@@ -248,7 +242,6 @@ class TestModel(unittest.TestCase):
         self.assertLessEqual(len(deltas), 50) # there are <=50 lineages in X
         self.assertLessEqual(len(state_ptrs), 50) # there are <=50 lineages in X
         all_states = Viterbi(t, deltas, state_ptrs)
-        print(all_states)
         self.assertLessEqual(len(all_states), 50) # there are <=50 lineages in X
         
     def test_viterbi2(self):
@@ -265,18 +258,17 @@ class TestModel(unittest.TestCase):
         t = tHMM(X, numStates=numStates) # build the tHMM class with X
         fake_param_list = []
         numLineages = t.numLineages
-        temp_params = {"pi": np.zeros((numStates))+1/(numStates), # inital state distributions [K] initialized to 1/K + 
-                       "T": np.zeros((numStates, numStates)) + 1/(numStates), # state transition matrix [KxK] initialized to 1/K
-                       "E": np.zeros((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
-        temp_params["pi"][0] = 1 # the hidden state for the first node should always be 0
+        temp_params = {"pi": np.ones((numStates))/(numStates), # inital state distributions [K] initialized to 1/K + 
+                       "T": np.ones((numStates, numStates))/(numStates), # state transition matrix [KxK] initialized to 1/K
+                       "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
         temp_params["pi"][1] = 0 # the hidden state for the second node should always be 1
         to_state_one = np.zeros((numStates, numStates))
         to_state_one[:,1] = np.ones((numStates))
         temp_params["T"] = to_state_one # should always end up in state 1 regardless of previous state
         # since transition matrix is a dependent matrix (0 is now a trivial state)
-        temp_params["E"][:,0] = np.ones(numStates) * 0.5 # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][:,1] = np.ones(numStates) * 2 # initializing all Gompertz c parameters to 2
-        temp_params["E"][:,2] = np.ones(numStates) * 50 # initializing all Gompoertz s(cale) parameters to 50
+        temp_params["E"][:,0] *= 0.5 # initializing all Bernoulli p parameters to 0.5
+        temp_params["E"][:,1] *= 2 # initializing all Gompertz c parameters to 2
+        temp_params["E"][:,2] *= 50 # initializing all Gompoertz s(cale) parameters to 50
         
         for lineage_num in range(numLineages): # for each lineage in our population
             fake_param_list.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
