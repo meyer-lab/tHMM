@@ -240,8 +240,5 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(t, deltas, state_ptrs)
         self.assertLessEqual(len(deltas), 50) # there are <=50 lineages in X
         self.assertLessEqual(len(state_ptrs), 50) # there are <=50 lineages in X
-        #print(deltas)
-        #print(state_ptrs)
         all_states = Viterbi(t, deltas, state_ptrs)
         self.assertLessEqual(len(all_states), 50) # there are <=50 lineages in X
-        #print(all_states)

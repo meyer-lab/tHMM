@@ -78,6 +78,6 @@ class Population:
             """ Calculates the log likelihood for gompertz. """
             return -1*np.sum(sp.gompertz.logpdf(x=tau_holder,c=gompParams[0], scale=gompParams[1]))
 
-        res = minimize(negLogLikelihoodGomp, x0=[1,1e3], bounds=((0,5),(0,None)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
+        res = minimize(negLogLikelihoodGomp, x0=[2,50], bounds=((0,5),(0,None)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
 
         return res.x
