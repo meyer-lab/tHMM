@@ -1,32 +1,32 @@
 # contains the methods that completes the downward recursion
 
 import numpy as np
-from .tHMM_utils import *
+from .tHMM_utils import max_gen, get_gen, get_parents_for_level
 
 def get_leaf_Normalizing_Factors(tHMMobj):
     '''
-        Normalizing factor (NF) matrix and base case at the leaves.
-        
-        Each element in this N by 1 matrix is the normalizing
-        factor for each beta value calculation for each node.
-        This normalizing factor is essentially the marginal
-        observation distribution for a node.
+    Normalizing factor (NF) matrix and base case at the leaves.
 
-        This function gets the normalizing factor for
-        the upward recursion only for the leaves.
-        We first calculate the joint probability
-        using the definition of conditional probability:
+    Each element in this N by 1 matrix is the normalizing
+    factor for each beta value calculation for each node.
+    This normalizing factor is essentially the marginal
+    observation distribution for a node.
 
-        P(x_n = x | z_n = k) * P(z_n = k) = P(x_n = x , z_n = k),
-        where n are the leaf nodes.
+    This function gets the normalizing factor for
+    the upward recursion only for the leaves.
+    We first calculate the joint probability
+    using the definition of conditional probability:
 
-        We can then sum this joint probability over k,
-        which are the possible states z_n can be,
-        and through the law of total probability,
-        obtain the marginal observation distribution
-        P(x_n = x):
-
-        sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
+    P(x_n = x | z_n = k) * P(z_n = k) = P(x_n = x , z_n = k),
+    where n are the leaf nodes.
+    
+    We can then sum this joint probability over k,
+    which are the possible states z_n can be,
+    and through the law of total probability,
+    obtain the marginal observation distribution
+    P(x_n = x):
+    
+    sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
     '''
     numStates = tHMMobj.numStates
     numLineages = tHMMobj.numLineages
@@ -62,27 +62,27 @@ def get_leaf_Normalizing_Factors(tHMMobj):
 
 def get_leaf_betas(tHMMobj, NF):
     '''
-        beta matrix and base case at the leaves.
-        
-        Each element in this N by K matrix is the beta value
-        for each cell and at each state. In particular, this
-        value is derived from the Marginal State Distributions
-        (MSD), the Emission Likelihoods (EL), and the 
-        Normalizing Factors (NF). Each beta value
-        for the leaves is exactly the probability
+    beta matrix and base case at the leaves.
+    
+    Each element in this N by K matrix is the beta value
+    for each cell and at each state. In particular, this
+    value is derived from the Marginal State Distributions
+    (MSD), the Emission Likelihoods (EL), and the 
+    Normalizing Factors (NF). Each beta value
+    for the leaves is exactly the probability
+    
+    beta[n,k] = P(z_n = k | x_n = x).
+    
+    Using Bayes Theorem, we see that the above equals
+    
+    numerator = P(x_n = x | z_n = k) * P(z_n = k)        
+    denominator = P(x_n = x)
+    beta[n,k] = numerator / denominator
 
-        beta[n,k] = P(z_n = k | x_n = x).
-
-        Using Bayes Theorem, we see that the above equals
-        
-                    P(x_n = x | z_n = k) * P(z_n = k)
-        beta[n,k] = _________________________________
-                               P(x_n = x)
-
-        The first value in the numerator is the Emission
-        Likelihoods. The second value in the numerator is
-        the Marginal State Distributions. The value in the
-        denominator is the Normalizing Factor.
+    The first value in the numerator is the Emission
+    Likelihoods. The second value in the numerator is
+    the Marginal State Distributions. The value in the
+    denominator is the Normalizing Factor.
     '''
     numStates = tHMMobj.numStates
     numLineages = tHMMobj.numLineages
@@ -120,13 +120,13 @@ def get_leaf_betas(tHMMobj, NF):
 
 def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
     '''
-        Traverses through each tree and calculates the 
-        beta value for each non-leaf cell. The normalizing factors (NFs) 
-        are also calculated as an intermediate for determining each 
-        beta term. Helper functions are called to determine one of 
-        the terms in the NF equation. This term is also used in the calculation 
-        of the betas. The recursion is upwards from the leaves to 
-        the roots
+    Traverses through each tree and calculates the 
+    beta value for each non-leaf cell. The normalizing factors (NFs) 
+    are also calculated as an intermediate for determining each 
+    beta term. Helper functions are called to determine one of 
+    the terms in the NF equation. This term is also used in the calculation 
+    of the betas. The recursion is upwards from the leaves to 
+    the roots
     '''
     numStates = tHMMobj.numStates
     numLineages = tHMMobj.numLineages
@@ -168,8 +168,8 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
 
 def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
     '''
-        Calculates the product of beta-links for every parent-child 
-        relationship of a given parent cell in a given state. 
+    Calculates the product of beta-links for every parent-child 
+    relationship of a given parent cell in a given state. 
     '''
     beta_m_n_holder = [] # list to hold the factors in the product
     node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
@@ -195,13 +195,13 @@ def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, sta
 
 def beta_parent_child_func(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx, node_child_n_idx):
     '''
-        This "helper" function calculates the probability
-        described as a 'beta-link' between parent and child
-        nodes in our tree for some state j. This beta-link
-        value is what lets you calculate the values of
-        higher (in the direction from the leave
-        to the root node) node beta and Normalizing Factor
-        values.
+    This "helper" function calculates the probability
+    described as a 'beta-link' between parent and child
+    nodes in our tree for some state j. This beta-link
+    value is what lets you calculate the values of
+    higher (in the direction from the leave
+    to the root node) node beta and Normalizing Factor
+    values.
     '''
     assert( lineage[node_child_n_idx].parent is lineage[node_parent_m_idx] ) # check the child-parent relationship
     assert( lineage[node_child_n_idx].isChild() ) # if the child-parent relationship is correct, then the child must 

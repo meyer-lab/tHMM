@@ -37,18 +37,17 @@ class tHMM:
 
     def get_Marginal_State_Distributions(self):
         '''
-            Marginal State Distribution (MSD) matrix and recursion.
+        Marginal State Distribution (MSD) matrix and recursion.
+        This is the probability that a hidden state variable z_n is of
+        state k, that is, each value in the N by K MSD array for each lineage is
+        the probability
+        
+        P(z_n = k),
 
-            This is the probability that a hidden state variable z_n is of
-            state k, that is, each value in the N by K MSD array for each lineage is
-            the probability
-
-            P(z_n = k),
-
-            for all z_n in the hidden state tree
-            and for all k in the total number of discrete states. Each MSD array is
-            an N by K array (an entry for each cell and an entry for each state),
-            and each lineage has its own MSD array.
+        for all z_n in the hidden state tree
+        and for all k in the total number of discrete states. Each MSD array is
+        an N by K array (an entry for each cell and an entry for each state),
+        and each lineage has its own MSD array.
         '''
         numStates = self.numStates
         numLineages = self.numLineages
@@ -85,24 +84,24 @@ class tHMM:
 
     def get_Emission_Likelihoods(self):
         '''
-            Emission Likelihood (EL) matrix.
+        Emission Likelihood (EL) matrix.
 
-            Each element in this N by K matrix represents the probability
+        Each element in this N by K matrix represents the probability
 
-            P(x_n = x | z_n = k),
+        P(x_n = x | z_n = k),
 
-            for all x_n and z_n in our observed and hidden state tree
-            and for all possible discrete states k. Since we have a
-            multiple observation model, that is
+        for all x_n and z_n in our observed and hidden state tree
+        and for all possible discrete states k. Since we have a
+        multiple observation model, that is
 
-            x_n = {x_B, x_G},
+        x_n = {x_B, x_G},
 
-            consists of more than one observation, x_B = division(1) or
-            death(0) (which is one of the observations x_B) and the other
-            being, x_G = lifetime, lifetime >=0, (which is the other observation x_G)
-            we make the assumption that
+        consists of more than one observation, x_B = division(1) or
+        death(0) (which is one of the observations x_B) and the other
+        being, x_G = lifetime, lifetime >=0, (which is the other observation x_G)
+        we make the assumption that
 
-            P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_G | z_n = k).
+        P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_G | z_n = k).
         '''
         numStates = self.numStates
         numLineages = self.numLineages
@@ -131,4 +130,3 @@ class tHMM:
                     
             EL.append(EL_array) # append the EL_array for each lineage
         return EL
-    
