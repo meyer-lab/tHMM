@@ -85,18 +85,6 @@ class CellNode:
 
         return (self.left, self.right)
 
-    def find_sister(self):
-        '''finds sister cell for cell leaves going left to right. dont return if there is no sibling cell present. this is for the beta matrix of all non-leave cells'''
-        if self.parent is None:
-            return None
-        par = self.parent
-        if par.right is self:
-            return par.left
-        elif par.left is self:
-            return par.right
-        else:
-            return None
-
 def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create an empty lineage
