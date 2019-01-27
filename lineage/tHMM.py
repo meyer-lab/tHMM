@@ -31,6 +31,7 @@ class tHMM:
         
         for lineage_num in range(numLineages): # for each lineage in our population
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
+            assert(len(paramlist) == lineage_num+1)
 
             
         return paramlist
