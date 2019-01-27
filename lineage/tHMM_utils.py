@@ -1,5 +1,4 @@
-# utility and helper functions for recursions
-# and other needs in the tHMM class
+'''utility and helper functions for recursions and other needs in the tHMM class'''
 
 def max_gen(lineage):
     '''finds the max generation in a lineage'''
