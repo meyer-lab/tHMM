@@ -20,20 +20,29 @@ def remove_NaNs(X):
 
 def get_numLineages(X):
     ''' Outputs total number of cell lineages in given Population. '''
-    root_cell_holder = [] # temporary list to hold all the linIDs of the cells in the population
+    root_cell_holder = [] # temp list to hold the root cells in the population
+    root_cell_linID_holder = [] # temporary list to hold all the linIDs of the root cells in the population
     for cell in X: # for each cell in the population
         if cell.isRootParent():
-            root_cell_holder.append(cell.linID) # append the linID of each cell
-    numLineages = len(root_cell_holder) # the number of lineages is the maximum linID+1
+            root_cell_holder.append(cell)
+            root_cell_linID_holder.append(cell.linID) # append the linID of each cell
+    assert(len(root_cell_holder) == len(root_cell_linID_holder))
+    numLineages = len(root_cell_holder) # the number of lineages is the number of root cells
     return numLineages
 
 def init_Population(X, numLineages):
     ''' Creates a full population list of lists which contain each lineage in the Population. '''
+    root_cell_holder = [] # temp list to hold the root cells in the population
+     for cell in X: # for each cell in the population
+        if cell.isRootParent():
+            root_cell_holder.append(cell)
     population = []
     for lineage_num in range(numLineages): # iterate over the number of lineages in the population
         temp_lineage = [] # temporary list to hold the cells of a certain lineage with a particular linID
         for cell in X: # for each cell in the population
-            if cell.linID == lineage_num: # if the cell's linID is the lineage num
+            if cell.get_root_cell is root_cell_holder[lineage_num]: # if the cell's root cell is the root cell we're on
+                assert(cell.linID == cell.get_root_cell().linID)
                 temp_lineage.append(cell) # append the cell to that certain lineage
-        population.append(temp_lineage) # append the lineage to the Population holder
+        if len(temp_lineage)>0:
+            population.append(temp_lineage) # append the lineage to the Population holder
     return population

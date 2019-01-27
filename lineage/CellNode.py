@@ -87,7 +87,10 @@ class CellNode:
 
     def get_root_cell(self):
         '''Gets the root cell associated with the cell.'''
-        
+        curr_cell = self
+        while curr_cell.gen > 1:
+            curr_cell = curr_cell.parent
+        return(curr_cell)
 
 def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
