@@ -1,3 +1,7 @@
+#to do : make sure everything is aligned correctly
+# self should become tHMMobj
+
+
 def get_gamma_roots(self):
     '''need the first gamma terms in the baum welch, which are just the beta values of the root nodes.'''
         gammas = []
