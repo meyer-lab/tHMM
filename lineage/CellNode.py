@@ -1,29 +1,32 @@
-# author : shakthi visagan (shak360), adam weiner (adamcweiner)
-# description: a file to hold the cell class
-
-import sys
+""" author : shakthi visagan (shak360), adam weiner (adamcweiner)
+description: a file to hold the cell class
+"""
 import math
-import scipy.stats as sp
 import numpy as np
-from scipy.optimize import curve_fit
-import matplotlib.pyplot as plt
+from scipy import optimize, stats as sp
 
 class CellNode:
-    def __init__(self, gen=1, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, plotVal=0):
+    """ Each cell in our tree will consist of a node containing these traits. """
+    def __init__(self, gen=1, linID=0, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, plotVal=0):
         ''' Instantiates a cell node.'''
-        self.gen = gen
-        self.startT = startT
-        self.endT = endT
+        self.gen = gen # the generation of the cell, root cells are of generation 1, each division adds 1 to the previous generation
+        self.linID = linID # the lineage identity of the cell, keeps track of what lineage a cell belongs to
+        self.startT = startT # the starting time of the cell, the point at which it spawned into existence
+        self.endT = endT # the end time of the cell, the point at which it either divided or died, can be NaN
         self.tau = self.endT - self.startT # avoiding self.t, since that is a common function (i.e. transposing matrices)
-        self.fate = fate
-        self.left = left
-        self.right = right
-        self.parent = parent
-        self.plotVal = plotVal
+        # tau is how long the cell lived
+        self.fate = fate # the fate at the endT of the cell, 0 is death, 1 is division
+        self.left = left # the left daughter of the cell, either returns a CellNode or NoneType object
+        self.right = right # the right daughter of the cell, either returns a CellNode or NoneType object
+        self.parent = parent # the parent of the cell, returns a CellNode object (except at the root node)
+        self.plotVal = plotVal # value that assists in plotting
 
     def isParent(self):
-        """ Return the parent of the current cell. """
-        return self.left.parent is self and self.right.parent is self
+        """ Return true if the cell has at least one daughter. """
+        if self.left or self.right:
+            return True
+        else:
+            return False
 
     def isChild(self):
         """ Returns true if this cell has a known parent. """
@@ -36,6 +39,13 @@ class CellNode:
             return True
         else:
             assert self.gen > 1
+            return False
+
+    def isLeaf(self):
+        '''Returns wheter a cell is a leaf with no children)'''
+        if self.left is None and self.right is None:
+            return True
+        else:
             return False
 
     def calcTau(self):
@@ -53,7 +63,7 @@ class CellNode:
         self.endT = float('nan')
         self.fate = None
         self.tau = float('nan')
-    
+
     def die(self, endT):
         """ Cell dies without dividing. """
         self.fate = False   # no division
@@ -67,13 +77,23 @@ class CellNode:
         self.calcTau()      # calculate Tau when cell dies
 
         if self.isRootParent():
-            self.left = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal+0.75)
-            self.right = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal-0.75)
+            self.left = CellNode(gen=self.gen+1, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal+0.75)
+            self.right = CellNode(gen=self.gen+1, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal-0.75)
         else:
-            self.left = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal+(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
-            self.right = CellNode(gen=self.gen+1, startT=endT, parent=self, plotVal=self.plotVal-(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
+            self.left = CellNode(gen=self.gen+1, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal+(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
+            self.right = CellNode(gen=self.gen+1, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal-(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
 
         return (self.left, self.right)
+
+    def get_root_cell(self):
+        '''Gets the root cell associated with the cell.'''
+        cell_linID = self.linID
+        curr_cell = self
+        while curr_cell.gen > 1:
+            curr_cell = curr_cell.parent
+            assert(cell_linID == curr_cell.linID)
+        assert(cell_linID == curr_cell.linID)
+        return(curr_cell)
 
 def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
@@ -82,7 +102,7 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
 
     # initialize the list with cells
     for ii in range(initCells):
-        lineage.append(CellNode(startT=0))
+        lineage.append(CellNode(startT=0, linID = ii))
 
     # have cell divide/die according to distribution
     for cell in lineage:   # for all cells (cap at numCells)
@@ -118,14 +138,12 @@ def doublingTime(initCells, locBern, cGom, scaleGom):
                 count += 1
         numAlive.append(count)
 
-    # Fit to exponential curve and find exponential coefficient. 
+    # Fit to exponential curve and find exponential coefficient.
     def expFunc(experimentTimes, *expParam):
         """ Calculates the exponential."""
-        return(initCells * np.exp(expParam[0] * experimentTimes))
+        return initCells * np.exp(expParam[0] * experimentTimes)
 
-    expY = lambda experimentTimes, expParam: expFunc(experimentTimes, expParam)
-
-    fitExpParam, _ = curve_fit(expY, experimentTimes, numAlive, p0=[0]) # fit an exponential curve to generated data
+    fitExpParam, _ = optimize.curve_fit(expFunc, experimentTimes, numAlive, p0=[0]) # fit an exponential curve to generated data
 
     doubleT = np.log(2) / fitExpParam[0] # relationship between doubling time and exponential function
 
