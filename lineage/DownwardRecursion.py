@@ -53,6 +53,7 @@ def get_nonleaf_gammas(tHMMobj, gammas, betas):
                         sum_holder = []
 
                         for state_j in range(numStates):
+                            T_fac = T[,] #this needs to be filled out
                             gamma_parent = gammas[num][parent_idx, state_j]
                             beta_parent = beta_array[parent_idx, state_j]
                             sum_holder.append(T*gamma_parent/beta_parent)
