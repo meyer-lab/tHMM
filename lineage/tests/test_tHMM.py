@@ -376,7 +376,8 @@ class TestModel(unittest.TestCase):
         structure.
         '''
         X = remove_NaNs(self.X)
-        tHMMobj = tHMM(X, numStates=2) # build the tHMM class with X
+        numStates = 2
+        tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
         numLineages = tHMMobj.numLineages
         NF = get_leaf_Normalizing_Factors(tHMMobj)
         betas = get_leaf_betas(tHMMobj, NF)
@@ -385,4 +386,8 @@ class TestModel(unittest.TestCase):
         get_nonroot_gammas(tHMMobj, gammas, betas)
         self.assertLessEqual(len(gammas), 50) # there are <=50 lineages in the population
         for ii in range(len(gammas)):
+            print(gammas[ii])
+            print(betas[ii])
             self.assertGreaterEqual(gammas[ii].shape[0], 0) # at least zero cells in each lineage
+            for state_k in range(numStates):
+                self.assertEqual(gammas[ii][0,state_k],betas[ii][0,state_k])

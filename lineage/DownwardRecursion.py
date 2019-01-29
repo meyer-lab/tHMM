@@ -5,6 +5,7 @@
 
 import numpy as np
 from .tHMM_utils import max_gen, get_gen, get_parents_for_level, get_daughters
+from .UpwardRecursion import beta_parent_child_func
 
 
 def get_root_gammas(tHMMobj, betas):
@@ -50,24 +51,24 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                 for daughter_idx in daughter_idxs_list:
                     child_idx = lineage.index(daughter_idx) 
 
-                    for state_child_k in range(numStates):
-                        beta_child = beta_array[child_idx, state_child_k]
-                        MSD_child = MSD_array[child_idx, state_child_k]
+                    for child_state_k in range(numStates):
+                        beta_child = beta_array[child_idx, child_state_k]
+                        MSD_child = MSD_array[child_idx, child_state_k]
                         sum_holder = []
 
-                        for state_j_parent in range(numStates):
-                            T_fac = T[state_j,state__child_k] #this needs to be filled out
-                            gamma_parent = gammas[num][parent_idx, state_j]
+                        for parent_state_j in range(numStates):
+                            T_fac = T[parent_state_j,child_state_k] #this needs to be filled out
+                            gamma_parent = gammas[num][parent_idx, parent_state_j]
                             beta_parent = beta_parent_child_func(numStates=numStates,
                                                                  lineage=lineage,
                                                                  beta_array=beta_array,
                                                                  T=T,
                                                                  MSD_array=MSD_array,
-                                                                 state_j=, 
+                                                                 state_j=parent_state_j, 
                                                                  node_parent_m_idx=parent_idx,
                                                                  node_child_n_idx=child_idx)
-                            sum_holder.append(TT_fac*gamma_parent/beta_parent)
+                            sum_holder.append(T_fac*gamma_parent/beta_parent)
                             
-                        gamma_state_k = beta_child * sum(sum_holder) / MSD_child
-                        gammas[num][child_idx, state_child_k] = gamma_state_child_k
+                        gamma_child_state_k = beta_child * sum(sum_holder) / MSD_child
+                        gammas[num][child_idx, child_state_k] = gamma_child_state_k
             curr_level += 1
