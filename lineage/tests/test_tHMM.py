@@ -2,8 +2,9 @@
 import unittest
 import numpy as np
 
+from ..DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
-from ..UpwardRecursion import get_leaf_Normalizing_Factors
+from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
 from ..tHMM import tHMM
 from ..tHMM_utils import max_gen, get_gen, get_parents_for_level
 from ..Lineage_utils import remove_NaNs, get_numLineages, init_Population
@@ -363,3 +364,25 @@ class TestModel(unittest.TestCase):
                 num_of_ones+=1
         self.assertLess(num_of_zeros,num_of_ones)
         # there should be a greater number of lineages with all ones than all zeros as hidden states
+        
+    ####################################
+    # DownwardRecursion.py tests below #
+    ####################################
+
+    def test_get_leaf_NF(self):
+        '''
+        Calls get_leaf_Normalizing_Factors and
+        ensures the output is of correct data type and
+        structure.
+        '''
+        X = remove_NaNs(self.X)
+        tHMMobj = tHMM(X, numStates=2) # build the tHMM class with X
+        numLineages = tHMMobj.numLineages
+        NF = get_leaf_Normalizing_Factors(tHMMobj)
+        betas = get_leaf_betas(tHMMobj, NF)
+        get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
+        gammas = get_root_gammas(tHMMobj, betas)
+        get_nonroot_gammas(tHMMobj, gammas, betas)
+        self.assertLessEqual(len(gammas), 50) # there are <=50 lineages in the population
+        for ii in range(len(gammas)):
+            self.assertGreaterEqual(gammas[ii].shape[0], 0) # at least zero cells in each lineage
