@@ -1,15 +1,22 @@
-    def get_zeta(self, node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
-        '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
-        child = lineage.index(node_child_n_idx)
-        parent = lineage.index(node_parent_m_idx)
-        assert[child.parent = parent]
-        assert[parent.isLeft = child or parent.isRight = child]
-        beta_child_state_k = beta_array[child, state_k]
-        gamma_parent_state_j = gamma_array[parent_state_j]
-        MSD_child_state_k = MSD_array[child, state_k]
-        beta_parent_child = get_beta_parent_child_prod(self, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx)
-        zeta = beta_child_state_k*T*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child)
-        return(zeta)
+#to do : make sure everything is aligned correctly
+# self should become tHMMobj
+# add docstring to the document
+# fix linting
+
+def get_zeta(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
+    '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
+    child = lineage.index(node_child_n_idx)
+    parent = lineage.index(node_parent_m_idx)
+
+    assert(child.parent is parent)
+    assert(parent.isLeft is child or parent.isRight is child)
+    
+    beta_child_state_k = beta_array[child, state_k]
+    gamma_parent_state_j = gamma_array[parent_state_j]
+    MSD_child_state_k = MSD_array[child, state_k]
+    beta_parent_child = get_beta_parent_child_prod(self, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx)
+    zeta = beta_child_state_k*T*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child)
+    return(zeta)
 
 def fit(self, tolerance = 0.1, verbose = false):
         truth_list = [True] # self.numLineages # create a list with only True for each lineage
