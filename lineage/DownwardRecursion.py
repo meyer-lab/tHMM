@@ -49,14 +49,14 @@ def get_gamma_non_leaves(tHMMobj, gammas, betas):
 
                     for state_k in range(numStates):
                         beta_child = beta_array[child_idx, state_k]
-                        MSD_array[child_idx, state_k]
+                        MSD_child = MSD_array[child_idx, state_k]
                         sum_holder = []
 
-                        for state_j in range(numstates):
+                        for state_j in range(numStates):
                             gamma_parent = gammas[num][parent_idx, state_j]
                             beta_parent = beta_array[parent_idx, state_j]
                             sum_holder.append(T*gamma_parent/beta_parent)
                             
-                        gamma_state_k = beta_child/MSD_child*sum(sum_holder)
+                        gamma_state_k = beta_child * sum(sum_holder) /MSD_child
                     gammas[num][child_idx, gamma_state_k]       
             curr_level += 1
