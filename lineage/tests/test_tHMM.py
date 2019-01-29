@@ -312,6 +312,7 @@ class TestModel(unittest.TestCase):
         X = remove_NaNs(self.X2)
         numStates=2
         t = tHMM(X, numStates=numStates) # build the tHMM class with X
+
         fake_param_list = []
         numLineages = t.numLineages
         temp_params = {"pi": np.ones((numStates), dtype=float)/(numStates), # inital state distributions [K] initialized to 1/K
@@ -334,6 +335,7 @@ class TestModel(unittest.TestCase):
             fake_param_list.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
             assert(len(fake_param_list) == lineage_num+1)
         t.paramlist = fake_param_list
+
         t.MSD = t.get_Marginal_State_Distributions() # rerun these with new parameters
         t.EL = t.get_Emission_Likelihoods() # rerun these with new parameters
         # run Viterbi with new parameter list
