@@ -20,7 +20,7 @@ def get_root_gammas(tHMMobj, betas):
 
     return(gammas)
 
-def get_gamma_non_leaves(tHMMobj, gammas, betas):
+def get_nonleaf_gammas(tHMMobj, gammas, betas):
     '''get the gammas for all other nodes using recursion from the root nodes'''
     numStates = tHMMobj.numStates
     numLineages = tHMMobj.numLineages
