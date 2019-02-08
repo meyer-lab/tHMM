@@ -48,20 +48,27 @@ def get_all_zetas(parent_state_j, child_state_k,, lineage, beta_array, MSD_array
         curr_level += 1
     return sum(holder)
 
-def fit(tHMMobj, tolerance = 0.1, verbose = false):
-
+def fit(tHMMobj, tolerance = 0.1, verbose = False):
+    
+    old_LL_list = [-inf] * numLineages
+    new_LL_list = calculate_log_likelihood(tHMMobj, NF)
+    truth_list = [new_LL_list[lineage] - old_LL_list[lineage] > tolerance for lineage in zip(new_LL_list, old_LL_list)]
+    
+    while any(truth_list): # exit the loop 
+        old_LL_list = new_LL_list
+        
         numLineages = tHMMobj.numLineages
         numStates = tHMMobj.numStates
         population = tHMMobj.population
         
+        # calculation loop
         NF = get_leaf_Normalizing_Factors(tHMMobj)
         betas = get_leaf_betas(tHMMobj, NF)
         get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
-        new_LL_list = calculate_log_likelihood(tHMMobj, NF)
         gammas = get_root_gammas(tHMMobj, betas)
         get_nonleaf_gammas(tHMMobj, gammas, betas)
         
-        # pi,  updates
+        # update loop        
         for num in range(numLineages):
             lineage = population[num]
             beta_array = betas[num]
@@ -71,7 +78,7 @@ def fit(tHMMobj, tolerance = 0.1, verbose = false):
             for state_j in numStates:
                 denom = sum(gamma_array[:-1,state_j]) # gammas [NxK]
                 for state_k in numStates:
-                    numer = zetalkdjgalskhug(parent_state_j=state_j,
+                    numer = get_all_zetas(parent_state_j=state_j,
                                              child_state_k=state_k,
                                              lineage=lineage, 
                                              beta_array=beta_array, 
@@ -80,80 +87,19 @@ def fit(tHMMobj, tolerance = 0.1, verbose = false):
                                              T= tHMMobj.paramlist[num]["T"] )
                     tHMMobj.paramlist[num]["T"][state_j,state_k] = numer/denom
                     
+        # tolerance checking
+        new_LL_list = []
+        NF = get_leaf_Normalizing_Factors(tHMMobj)
+        for num in range(numLineages):
+            NF_array = NF[num]
+            log_NF_array = np.log(NF_array)
+            ll_per_num = sum(log_NF_array)
+            new_LL.append(ll_per_num) 
             
-            
-        
-        
-        
-        #old_LL_list = [inf] * numLineages
-        
         truth_list = [new_LL_list[lineage] - old_LL_list[lineage] > tolerance for lineage in zip(new_LL_list, old_LL_list)]
-        
-        while any(truth_list): # exit the loop 
-            old_LL_list = new_LL_list
-            # re run recursions
-            # with new parameters
-            
-            MSD = get_Marginal_State_Distributions()
-            EL = self.get_Emission_Likelihoods()
-            NF = self.get_leaf_Normalizing_Factors()
-            betas = self.get_beta_leaves()
-            self.get_beta_and_NF_nonleaves(betas, NF)
-            gammas = self.get_gamma_roots()
-            self.get_gamma_non_leaves
-           
 
-            # update
-            pi = gammas[0,:]
-            for state_j in self.numstates:
-                for state_k in self.numstates:
-                    denom = sum(gammas[:, state_j])
-                    for cell in range(len(lineage))
-                    node_parent_m_idx = 
-                    T[state_j, state_k] = sum(get_zeta(self, node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T)/sum(gammas[:, state_j])
+                    
             
             
-            
-            
-            
-            
-            
-            
-        
-        
-        
-        
-        
-        
-        
-        
-        pi_update = []
-        for num in range(self.numLineages): # for each lineage in our Population
-            old_LL = inf #caclulates starting log likelihood before while loop
-            new_LL = 0
-            while new_LL - old_LL > tolerance:
-                old_LL = new_LL
-                
-                get_Marginal_State_Distributions
-                
-                lineage = self.population[num] # getting the lineage in the Population by index
-                betas = self.betas[num] # instantiating N by K array
-                MSD_array = self.MSD[num] # getting the MSD of the respective lineage
-                params = self.paramlist[num]
-                T = params['T']
-                pi_update[num] = gammas[0,:]
-                
-                
-                
-                ##new _LL
-                new_LL = []
-                 # for each lineage in our Population
-                    lineage = self.population # getting the lineage in the Population by index
-                    NF_array = self.NF # getting the NF of the respective lineage
-                    log_NF_array = np.log(NF_array)
-                    ll_per_num = sum(log_NF_array)
-                    new_LL.append(ll_per_num) 
-            
-    
-    
+
     
