@@ -232,12 +232,8 @@ def calculate_log_likelihood(tHMMobj, NF):
     LL = []
 
     for num in range(numLineages): # for each lineage in our Population
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-        print(NF[num])
         NF_array = NF[num] # getting the NF of the respective lineage
         log_NF_array = np.log(NF_array)
-        print("##############################################")
-        print(log_NF_array)
         ll_per_num = sum(log_NF_array)
         LL.append(ll_per_num)
 

@@ -27,7 +27,7 @@ class tHMM:
                        "T": np.ones((numStates, numStates)) / numStates, # state transition matrix [KxK] initialized to 1/K
                        "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
         for state_j in range(numStates):
-            temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 0.5
+            temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
             temp_params["E"][state_j,1] = 2.0*(1+np.random.uniform()) # initializing all Gompertz c parameters to 2
             temp_params["E"][state_j,2] = 50.0*(1+np.random.uniform()) # initializing all Gompoertz s(cale) parameters to 50
 

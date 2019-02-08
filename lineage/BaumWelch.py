@@ -4,6 +4,8 @@
 # fix linting
 
 import numpy as np
+import sys
+import math
 
 from .tHMM_utils import max_gen, get_gen, get_parents_for_level, get_daughters
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
@@ -21,8 +23,27 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
     beta_child_state_k = beta_array[node_child_n_idx, state_k]
     gamma_parent_state_j = gamma_array[node_parent_m_idx, state_j]
     MSD_child_state_k = MSD_array[node_child_n_idx, state_k]
+    #print("MSD")
+    #print(MSD_child_state_k)
+    #if MSD_child_state_k == 0 or math.isnan(MSD_child_state_k):
+    #   print("STOPPPPPPPPOPOPP")
+    #   sys.exit()
     numStates = MSD_array.shape[1]
-    beta_parent_child_state_j = get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx)
+    also_numStates = gamma_array.shape[1]
+    also_also_numStates = beta_array.shape[1]
+    assert(numStates == also_numStates == also_also_numStates)
+    beta_parent_child_state_j = get_beta_parent_child_prod(numStates=numStates,
+                                                           lineage=lineage,
+                                                           beta_array=beta_array,
+                                                           T=T,
+                                                           MSD_array=MSD_array,
+                                                           state_j=state_j,
+                                                           node_parent_m_idx=node_parent_m_idx)
+    #print("beta")
+    #print(beta_parent_child_state_j)
+    #if beta_parent_child_state_j == 0 or math.isnan(beta_parent_child_state_j):
+    #    print("STOPPPPPPPPOPOPP")
+    #    sys.exit()
     zeta = beta_child_state_k*T[state_j,state_k]*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child_state_j)
     return(zeta)
 
@@ -57,31 +78,28 @@ def fit(tHMMobj, tolerance=0.1, verbose=False):
     numLineages = tHMMobj.numLineages
     numStates = tHMMobj.numStates
     population = tHMMobj.population
+    
+    # first E step
+
     NF = get_leaf_Normalizing_Factors(tHMMobj)
-        
+    betas = get_leaf_betas(tHMMobj, NF)
+    get_nonleaf_NF_and_betas(tHMMobj, NF, betas)     
+    gammas = get_root_gammas(tHMMobj, betas)
+    get_nonroot_gammas(tHMMobj, gammas, betas) 
+    
+    # first stopping condition check
+    
     old_LL_list = [-np.inf] * numLineages
-    print(old_LL_list)
     new_LL_list = calculate_log_likelihood(tHMMobj, NF)
-    print(new_LL_list)
     truth_list = []
     for lineage_iter in range(len(new_LL_list)):
         truth_list.append(new_LL_list[lineage_iter] - old_LL_list[lineage_iter] > tolerance)
     count = 0
-    print(truth_list)
     while any(truth_list): # exit the loop 
         if verbose:
             print('iter: {}'.format(count))
         count+=1
-        old_LL_list = new_LL_list
-        
-        # calculation loop
-        tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
-        tHMMobj.EL = tHMMobj.get_Emission_Likelihoods() 
-        NF = get_leaf_Normalizing_Factors(tHMMobj)
-        betas = get_leaf_betas(tHMMobj, NF)
-        get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
-        gammas = get_root_gammas(tHMMobj, betas)
-        get_nonroot_gammas(tHMMobj, gammas, betas)
+        old_LL_list = new_LL_list  
         
         # update loop        
         for num in range(numLineages):
@@ -89,12 +107,9 @@ def fit(tHMMobj, tolerance=0.1, verbose=False):
             beta_array = betas[num]
             MSD_array = tHMMobj.MSD[num]
             gamma_array = gammas[num]
-            print(gamma_array)
             tHMMobj.paramlist[num]["pi"] = gamma_array[0,:]
             for state_j in range(numStates):
                 denom = sum(gamma_array[:-1,state_j]) # gammas [NxK]
-                print("denom")
-                print(denom)
                 for state_k in range(numStates):
                     numer = get_all_zetas(parent_state_j=state_j,
                                              child_state_k=state_k,
@@ -104,10 +119,10 @@ def fit(tHMMobj, tolerance=0.1, verbose=False):
                                              gamma_array=gamma_array,
                                              T=tHMMobj.paramlist[num]["T"])
                     tHMMobj.paramlist[num]["T"][state_j,state_k] = numer/denom
+                    
             max_state_holder = []
             for cell in range(len(lineage)):
-                print(np.argmax(gamma_array[cell,:]))
-                max_state_holder.append(np.argmax(gamma_array[cell,:]))
+                max_state_holder.append(np.argmax(gammas[num][cell,:]))
             state_obs_holder = []
             for state_j in range(numStates):
                 state_obs = []
@@ -118,22 +133,34 @@ def fit(tHMMobj, tolerance=0.1, verbose=False):
                 state_obs_holder.append(state_obs)
                             
             for state_j in range(numStates):
-                if len(state_obs_holder[state_j]) > 0: # this shit needs to be fixed
-                    tHMMobj.paramlist[num]["E"][state_j,0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
-                    c_estimate, scale_estimate = gompertzParameterEstimatorNumerical(state_obs_holder[state_j])
-                    tHMMobj.paramlist[num]["E"][state_j,1] = c_estimate
-                    tHMMobj.paramlist[num]["E"][state_j,2] = scale_estimate     
-                    
-        # tolerance checking
-        new_LL_list = []
+                tHMMobj.paramlist[num]["E"][state_j,0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
+                print(  tHMMobj.paramlist[num]["E"][state_j,0] )
+                c_estimate, scale_estimate = gompertzParameterEstimatorNumerical(state_obs_holder[state_j])
+                tHMMobj.paramlist[num]["E"][state_j,1] = c_estimate
+                tHMMobj.paramlist[num]["E"][state_j,2] = scale_estimate     
+        
+        tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
+        tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
+
         NF = get_leaf_Normalizing_Factors(tHMMobj)
-        for num in range(numLineages):
-            NF_array = NF[num]
-            log_NF_array = np.log(NF_array)
-            ll_per_num = sum(log_NF_array)
-            new_LL.append(ll_per_num) 
+        betas = get_leaf_betas(tHMMobj, NF)
+        get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
+        gammas = get_root_gammas(tHMMobj, betas)
+        get_nonroot_gammas(tHMMobj, gammas, betas) 
+        
+        # tolerance checking
+        new_LL_list = calculate_log_likelihood(tHMMobj, NF)
             
-        truth_list = [new_LL_list[lineage] - old_LL_list[lineage] > tolerance for lineage in zip(new_LL_list, old_LL_list)]
+        if verbose:
+            print("Average Log-Likelihood across all lineages: ")
+            print(np.mean(new_LL_list))
+            
+        for lineage_iter in range(len(new_LL_list)):
+            truth_list.append(new_LL_list[lineage_iter] - old_LL_list[lineage_iter] > tolerance)
+            
+        if count > 75:
+            break
+            
 
                     
             
