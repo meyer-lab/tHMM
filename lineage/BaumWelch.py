@@ -26,6 +26,7 @@ def fit(tHMMobj, tolerance = 0.1, verbose = false):
         numLineages = tHMMobj.numLineages
         numStates = tHMMobj.numStates
         population = tHMMobj.population
+        
         NF = get_leaf_Normalizing_Factors(tHMMobj)
         betas = get_leaf_betas(tHMMobj, NF)
         get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
