@@ -4,6 +4,7 @@
 # fix linting
 
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
+from .Lineage_utils import bernoulliParameterEstimatorAnalytical, gompertzParameterEstimatorNumerical
 
 
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
@@ -62,6 +63,8 @@ def fit(tHMMobj, tolerance = 0.1, verbose = False):
         population = tHMMobj.population
         
         # calculation loop
+        tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
+        tHMMobj.EL = tHMMobj.get_Emission_Likelihoods() 
         NF = get_leaf_Normalizing_Factors(tHMMobj)
         betas = get_leaf_betas(tHMMobj, NF)
         get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
@@ -84,8 +87,24 @@ def fit(tHMMobj, tolerance = 0.1, verbose = False):
                                              beta_array=beta_array, 
                                              MSD_array=MSD_array,
                                              gamma_array=gamma_array,
-                                             T= tHMMobj.paramlist[num]["T"] )
+                                             T=tHMMobj.paramlist[num]["T"])
                     tHMMobj.paramlist[num]["T"][state_j,state_k] = numer/denom
+            max_state_holder = []
+            for cell in len(lineage):
+                max_state_holder.append(np.argmax(gamma_array[cell,:]))
+            state_obs_holder = []
+            for state_j in numStates:
+                state_obs = []
+                for cell in lineage:
+                    cell_idx = lineage.index(cell)
+                    if max_state_holder[cell_idx] == state_j:
+                        state_obs.append(cell)
+                            
+            for state_j in numStates:
+                tHMMobj.paramlist[num]["E"][state_j,0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
+                c_estimate, scale_estimate = gompertzParameterEstimatorNumerical(state_obs_holder[state_j])
+                tHMMobj.paramlist[num]["E"][state_j,1] = c_estimate
+                tHMMobj.paramlist[num]["E"][state_j,2] = scale_estimate     
                     
         # tolerance checking
         new_LL_list = []
