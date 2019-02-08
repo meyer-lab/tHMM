@@ -67,7 +67,7 @@ def bernoulliParameterEstimatorAnalytical(X):
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
             
-    return sum(fate_holder) / len(fate_holder) # add up all the 1s and divide by the total length (finding the average)
+    return (sum(fate_holder) + 1)/ (len(fate_holder) + 2) # add up all the 1s and divide by the total length (finding the average)
 
 def bernoulliParameterEstimatorNumerical(X):
     '''Estimates the Bernoulli parameter for a given population using MLE numerically'''
@@ -85,7 +85,7 @@ def bernoulliParameterEstimatorNumerical(X):
 
 def gompertzParameterEstimatorNumerical(X):
     '''Estimates the Gompertz parameters for a given population using MLE numerically'''
-    tau_holder = [] # instantiates list
+    tau_holder = [20] # instantiates list
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             tau_holder.append(cell.tau) # append the cell lifetime
