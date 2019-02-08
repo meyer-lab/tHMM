@@ -1,7 +1,11 @@
 '''utility and helper functions for cleaning up input populations and lineages and other needs in the tHMM class'''
 
+import numpy as np
+import scipy.stats as sp
+from scipy.optimize import minimize
+
 def remove_NaNs(X):
-    '''Removes unfinished cells in Population'''
+    '''Removes unfinished cells in Population and root cells with no daughters'''
     ii = 0 # establish a count outside of the loop
     while ii in range(len(X)): # for each cell in X
         if X[ii].isUnfinished(): # if the cell has NaNs in its times
@@ -14,14 +18,24 @@ def remove_NaNs(X):
             X.pop(ii) # pop the unfinished cell at the current position
         else:
             ii += 1 # only move forward in the list if you don't delete a cell
+    ii = 0
+    while ii in range(len(X)): # for each cell in X
+        if X[ii].isRootParent(): # if the cell is a root parent
+            if X[ii].left is None and X[ii].right is None:
+                X.pop(ii) # pop the unfinished cell at the current position
+            else:
+                ii += 1
+        else:
+            ii += 1 # only move forward in the list if you don't delete a cell
     return X
 
-def get_numLineages(X):
+def get_numLineages(Y):
     ''' Outputs total number of cell lineages in given Population. '''
+    X = remove_NaNs(Y)
     root_cell_holder = [] # temp list to hold the root cells in the population
     root_cell_linID_holder = [] # temporary list to hold all the linIDs of the root cells in the population
     for cell in X: # for each cell in the population
-        if cell.isRootParent():
+        if cell.isRootParent(): 
             root_cell_holder.append(cell)
             root_cell_linID_holder.append(cell.linID) # append the linID of each cell
     assert(len(root_cell_holder) == len(root_cell_linID_holder))
@@ -30,9 +44,10 @@ def get_numLineages(X):
 
 def init_Population(X, numLineages):
     '''Creates a full population list of lists which contain each lineage in the Population.'''
+    X = remove_NaNs(X)
     root_cell_holder = [] # temp list to hold the root cells in the population
     for cell in X: # for each cell in the population
-        if cell.isRootParent():
+        if cell.isRootParent() and cell.isParent:
             root_cell_holder.append(cell)
     population = []
     for lineage_num in range(numLineages): # iterate over the number of lineages in the population
@@ -41,7 +56,7 @@ def init_Population(X, numLineages):
             if cell.get_root_cell() is root_cell_holder[lineage_num]: # if the cell's root cell is the root cell we're on
                 assert(cell.linID == cell.get_root_cell().linID)
                 temp_lineage.append(cell) # append the cell to that certain lineage
-        if len(temp_lineage)>0:
+        if len(temp_lineage)>1: # want to avoid lineages with <= 1 cell
             population.append(temp_lineage) # append the lineage to the Population holder
     return population
 
@@ -70,9 +85,8 @@ def bernoulliParameterEstimatorNumerical(X):
 
 def gompertzParameterEstimatorNumerical(X):
     '''Estimates the Gompertz parameters for a given population using MLE numerically'''
-    population = self.group # assign population to a variable
     tau_holder = [] # instantiates list
-    for cell in population: # go through every cell in the population
+    for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             tau_holder.append(cell.tau) # append the cell lifetime
             

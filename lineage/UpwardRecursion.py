@@ -31,6 +31,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
     numStates = tHMMobj.numStates
     numLineages = tHMMobj.numLineages
     population = tHMMobj.population
+    assert(numLineages == len(population))
     MSD = tHMMobj.MSD
     EL = tHMMobj.EL
 
@@ -40,7 +41,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
         lineage = population[num] # getting the lineage in the Population by index
         MSD_array = MSD[num] # getting the MSD of the respective lineage
         EL_array = EL[num] # geting the EL of the respective lineage
-        NF_array = np.zeros((len(lineage))) # instantiating N by 1 array
+        NF_array = np.zeros((len(lineage)), dtype=float) # instantiating N by 1 array
 
         for cell in lineage: # for each cell in the lineage
             if cell.isLeaf(): # if it is a leaf
@@ -48,12 +49,16 @@ def get_leaf_Normalizing_Factors(tHMMobj):
                 temp_sum_holder = [] # create a temporary list
 
                 for state_k in range(numStates): # for each state
+                    #print("MSD {}".format(MSD_array[leaf_cell_idx, state_k] ))
+                    #print("EL {}".format(EL_array[leaf_cell_idx, state_k] ))
                     joint_prob = MSD_array[leaf_cell_idx, state_k] * EL_array[leaf_cell_idx, state_k] # def of conditional prob
                     # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
                     # this product is the joint probability
                     temp_sum_holder.append(joint_prob) # append the joint probability to be summed
 
                 marg_prob = sum(temp_sum_holder) # law of total probability
+                if marg_prob == 0:
+                    print("Marg Prob {}".format(marg_prob))
                 # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
                 # the sum of the joint probabilities is the marginal probability
                 NF_array[leaf_cell_idx] = marg_prob # each cell gets its own marg prob
@@ -227,8 +232,12 @@ def calculate_log_likelihood(tHMMobj, NF):
     LL = []
 
     for num in range(numLineages): # for each lineage in our Population
+        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        print(NF[num])
         NF_array = NF[num] # getting the NF of the respective lineage
         log_NF_array = np.log(NF_array)
+        print("##############################################")
+        print(log_NF_array)
         ll_per_num = sum(log_NF_array)
         LL.append(ll_per_num)
 
