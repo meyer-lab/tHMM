@@ -141,7 +141,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
     EL = tHMMobj.EL
     # NF is an input argument
     # betas is an input argument
-
+# needsoeifj os
     for num in range(numLineages): # for each lineage in our Population
         lineage = population[num] # getting the lineage in the Population by index
         MSD_array = MSD[num] # getting the MSD of the respective lineage
