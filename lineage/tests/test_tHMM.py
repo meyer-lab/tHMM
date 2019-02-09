@@ -57,6 +57,12 @@ class TestModel(unittest.TestCase):
         cGom = [2, 3]
         scaleGom = [40, 50]
         self.X2 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
+        
+        initCells = [1] # there should be around 50 lineages b/c there are 50 initial cells
+        locBern = [0.999]
+        cGom = [2]
+        scaleGom = [40]
+        self.X3 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
 
     ################################
     # Lineage_utils.py tests below #
@@ -402,12 +408,12 @@ class TestModel(unittest.TestCase):
         '''
         Calls baum welch.
         '''
-        X = remove_NaNs(self.X2)
+        X = remove_NaNs(self.X3)
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
         for num in range(tHMMobj.numLineages):
             print(tHMMobj.paramlist[num]["T"])
-        fit(tHMMobj, tolerance =0.1, verbose=True)
+        fit(tHMMobj, verbose=True)
         for num in range(tHMMobj.numLineages):
             print(tHMMobj.paramlist[num]["T"])
         
