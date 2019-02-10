@@ -45,7 +45,7 @@ class TestModel(unittest.TestCase):
         self.lineage4 = [self.cell30]
 
         # create a common population to use in all tests
-        experimentTime = 50.
+        experimentTime = 100.
         initCells = [50] # there should be 50 lineages b/c there are 50 initial cells
         locBern = [0.8]
         cGom = [2]
@@ -404,18 +404,60 @@ class TestModel(unittest.TestCase):
     ############################
     # BaumWelch.py tests below #
     ############################
-    def test_Baum_Welch(self):
-        '''
-        Calls baum welch.
-        '''
+    woke = 0
+    if woke == 1:
+        def test_Baum_Welch(self):
+            '''
+            Calls baum welch.
+            '''
+            X = remove_NaNs(self.X3)
+            numStates = 2
+            tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
+            for num in range(tHMMobj.numLineages):
+                print(tHMMobj.paramlist[num]["T"])
+            fit(tHMMobj, verbose=True)
+            for num in range(tHMMobj.numLineages):
+                print(tHMMobj.paramlist[num]["T"])
+            
+            
+    def test_Baum_Welch_multipletimes(self):
+        self.X3 = self.X3
         X = remove_NaNs(self.X3)
+        reps = 10
         numStates = 2
-        tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
-        for num in range(tHMMobj.numLineages):
-            print(tHMMobj.paramlist[num]["T"])
-        fit(tHMMobj, verbose=True)
-        for num in range(tHMMobj.numLineages):
-            print(tHMMobj.paramlist[num]["T"])
+        bern = np.zeros(reps)
+        c = np.zeros(reps)
+        scale = np.zeros(reps)
+        Ts = []
+        for num in range(reps):
+            
+            tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
+            fit(tHMMobj, verbose=True)
+            
+            diag = np.diagonal(tHMMobj.paramlist[0]["T"])
+            s = np.argmax(diag)
+            
+            flatT = tHMMobj.paramlist[0]["T"].flatten() 
+            Ts.append(flatT)
+            
+            bern[num] = (tHMMobj.paramlist[0]["E"][s,0])
+            print(bern[num])
+            c[num] = tHMMobj.paramlist[0]["E"][s,1]
+            print(c[num])
+            scale[num] = tHMMobj.paramlist[0]["E"][s,2]
+            print(scale[num])
+            print(tHMMobj.paramlist[0]["T"])
+        
+        print('bern mean and SD:', np.mean(bern), np.std(bern))
+        print('c mean and SD:', np.mean(c), np.std(c))
+        print('scale meand and SD:', np.mean(scale), np.std(scale))
+        T_mean = np.mean(Ts, axis=0)
+        T_std = np.std(Ts, axis=0)
+        T_mean_reshape = np.reshape(T_mean, (2, 2))
+        T_std_reshape = np.reshape(T_std, (2, 2))
+        print('Transition Matrix mean', T_mean_reshape)
+        print('Transition Matrix SD', T_std_reshape)
+              
         
     
     
