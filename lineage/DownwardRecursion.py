@@ -54,10 +54,11 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                     for child_state_k in range(numStates):
                         beta_child = beta_array[child_idx, child_state_k]
                         MSD_child = MSD_array[child_idx, child_state_k]
+                        coeff = beta_child/MSD_child
                         sum_holder = []
 
                         for parent_state_j in range(numStates):
-                            T_fac = T[parent_state_j,child_state_k] #this needs to be filled out
+                            T_fac = T[parent_state_j,child_state_k]
                             gamma_parent = gammas[num][parent_idx, parent_state_j]
                             beta_parent = beta_parent_child_func(numStates=numStates,
                                                                  lineage=lineage,
@@ -69,6 +70,6 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                                                                  node_child_n_idx=child_idx)
                             sum_holder.append(T_fac*gamma_parent/beta_parent)
                             
-                        gamma_child_state_k = beta_child * sum(sum_holder) / MSD_child
+                        gamma_child_state_k = coeff * sum(sum_holder)
                         gammas[num][child_idx, child_state_k] = gamma_child_state_k
             curr_level += 1

@@ -47,6 +47,21 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
     zeta = beta_child_state_k*T[state_j,state_k]*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child_state_j)
     return(zeta)
 
+def get_all_gammas(lineage, gamma_array_at_state_j):
+    '''sum of the list of all the gamma parent child for all the parent child relationships'''
+    curr_level = 1
+    max_level = max_gen(lineage)
+    holder = []
+    while curr_level < max_level:
+        level = get_gen(curr_level, lineage) #get lineage for the gen
+        
+        for cell in level:
+            cell_idx = lineage.index(cell)
+            holder.append(gamma_array_at_state_j[cell_idx])
+                
+        curr_level += 1
+    return sum(holder)
+
 def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array, gamma_array, T):
     '''sum of the list of all the zeta parent child for all the parent cells for a given state transition pair'''
     curr_level = 1
@@ -99,13 +114,10 @@ def fit(tHMMobj, tolerance=1e-10, verbose=False):
     count = 0
     while go: # exit the loop 
 
-        #if verbose:
-            #print('iter: {}'.format(count))
+        if verbose:
+            print('iter: {}'.format(count))
         count+=1
-        '''
-        print("old list")
-        print(old_LL_list)
-        '''
+
         old_LL_list = new_LL_list  
         
         # update loop        
@@ -116,7 +128,8 @@ def fit(tHMMobj, tolerance=1e-10, verbose=False):
             gamma_array = gammas[num]
             tHMMobj.paramlist[num]["pi"] = gamma_array[0,:]
             for state_j in range(numStates):
-                denom = sum(gamma_array[:-1,state_j]) # gammas [NxK]
+                gamma_array_at_state_j = gamma_array[:,state_j]
+                denom = get_all_gammas(lineage, gamma_array_at_state_j)
                 for state_k in range(numStates):
                     numer = get_all_zetas(parent_state_j=state_j,
                                              child_state_k=state_k,
@@ -149,13 +162,6 @@ def fit(tHMMobj, tolerance=1e-10, verbose=False):
                 c_estimate, scale_estimate = gompertzParameterEstimatorNumerical(state_obs_holder[state_j])
                 tHMMobj.paramlist[num]["E"][state_j,1] = c_estimate
                 tHMMobj.paramlist[num]["E"][state_j,2] = scale_estimate     
-                '''
-                print("Bernoulli for state {}".format(state_j))
-                print(tHMMobj.paramlist[num]["E"][state_j,0] )                
-                print("c estimate for state {}".format(state_j))
-                print(tHMMobj.paramlist[num]["E"][state_j,1] )
-                print("scale estimate for state {}".format(state_j))
-                print(tHMMobj.paramlist[num]["E"][state_j,2] )'''
         
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
@@ -168,33 +174,16 @@ def fit(tHMMobj, tolerance=1e-10, verbose=False):
         
         # tolerance checking
         new_LL_list = calculate_log_likelihood(tHMMobj, NF)
-        
-              
-        #print("new list")
-        #print(new_LL_list)
-        
-        #if verbose:
-            #print("Average Log-Likelihood across all lineages: ")
-            #print(np.mean(new_LL_list)) 
+                
+        if verbose:
+            print()
+            print("Average Log-Likelihood across all lineages: ")
+            print(np.mean(new_LL_list)) 
             
         for lineage_iter in range(len(new_LL_list)):
-            #print("calculation")
             calculation = abs(new_LL_list[lineage_iter] - old_LL_list[lineage_iter])
-            #print(calculation)
             truth_list[lineage_iter] = (calculation > tolerance)       
-        go = any(truth_list)
-        #print("go")
-        #print(go)
-        
-
-    
-    '''      
-        if count > 75:
-            break
-    '''
-            
-
-                    
+        go = any(truth_list)                  
             
             
 

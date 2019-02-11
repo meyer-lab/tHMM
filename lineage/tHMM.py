@@ -81,6 +81,9 @@ class tHMM:
                             temp_sum_holder.append(temp)
 
                         MSD_array[current_cell_idx,state_k] = sum(temp_sum_holder)
+            
+            MSD_row_sums = np.sum(MSD_array, axis=1)
+            assert(all(MSD_row_sums))
             MSD.append(MSD_array) # Marginal States Distributions for each lineage in the Population
         return MSD
 
@@ -129,6 +132,8 @@ class tHMM:
                     temp_g = sp.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
                     EL_array[current_cell_idx, state_k] = temp_b * temp_g
-
+                    
+            EL_row_sums = np.sum(EL_array, axis=1) # the sum of the elements in a row for all the rows should be 1
+            assert(all(EL_row_sums)) # the sum of all the rows should be 1 (True)
             EL.append(EL_array) # append the EL_array for each lineage
         return EL
