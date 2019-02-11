@@ -83,6 +83,21 @@ def bernoulliParameterEstimatorNumerical(X):
     res = minimize(negLogLikelihoodBern, x0=0.5, bounds=((0,1),), method="SLSQP", args=(fate_holder))
     return res.x[0]
 
+def gompertzParameterEstimatorAnalytical(X):
+    '''Estimates the Gompertz parameters for a given population using MLE numerically'''
+    tau_holder = [20] # instantiates list
+    for cell in X: # go through every cell in the population
+        if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
+            tau_holder.append(cell.tau) # append the cell lifetime
+            
+    def negLogLikelihoodGomp(gompParams, tau_holder):
+        """ Calculates the log likelihood for gompertz. """
+        return -1*np.sum(sp.gompertz.logpdf(x=tau_holder,c=gompParams[0], scale=gompParams[1]))
+    
+    res = minimize(negLogLikelihoodGomp, x0=[2,40], bounds=((0,10),(0,100)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
+
+    return res.x
+
 def gompertzParameterEstimatorNumerical(X):
     '''Estimates the Gompertz parameters for a given population using MLE numerically'''
     tau_holder = [20] # instantiates list
@@ -97,3 +112,4 @@ def gompertzParameterEstimatorNumerical(X):
     res = minimize(negLogLikelihoodGomp, x0=[2,40], bounds=((0,10),(0,100)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
 
     return res.x
+

@@ -23,11 +23,6 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
     beta_child_state_k = beta_array[node_child_n_idx, state_k]
     gamma_parent_state_j = gamma_array[node_parent_m_idx, state_j]
     MSD_child_state_k = MSD_array[node_child_n_idx, state_k]
-    #print("MSD")
-    #print(MSD_child_state_k)
-    #if MSD_child_state_k == 0 or math.isnan(MSD_child_state_k):
-    #   print("STOPPPPPPPPOPOPP")
-    #   sys.exit()
     numStates = MSD_array.shape[1]
     also_numStates = gamma_array.shape[1]
     also_also_numStates = beta_array.shape[1]
@@ -39,11 +34,6 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
                                                            MSD_array=MSD_array,
                                                            state_j=state_j,
                                                            node_parent_m_idx=node_parent_m_idx)
-    #print("beta")
-    #print(beta_parent_child_state_j)
-    #if beta_parent_child_state_j == 0 or math.isnan(beta_parent_child_state_j):
-    #    print("STOPPPPPPPPOPOPP")
-    #    sys.exit()
     zeta = beta_child_state_k*T[state_j,state_k]*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child_state_j)
     return(zeta)
 
@@ -122,6 +112,8 @@ def fit(tHMMobj, tolerance=1e-10, verbose=False):
         
         # update loop        
         for num in range(numLineages):
+            if not truth_list[num]:
+                break
             lineage = population[num]
             beta_array = betas[num]
             MSD_array = tHMMobj.MSD[num]

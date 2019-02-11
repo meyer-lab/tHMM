@@ -73,3 +73,5 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                         gamma_child_state_k = coeff * sum(sum_holder)
                         gammas[num][child_idx, child_state_k] = gamma_child_state_k
             curr_level += 1
+        gamma_row_sums = np.sum(gammas[num], axis=1)
+        assert(all(gamma_row_sums))
