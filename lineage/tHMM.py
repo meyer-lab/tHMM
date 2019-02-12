@@ -13,9 +13,9 @@ class tHMM:
         self.numStates = numStates # number of discrete hidden states
         self.numLineages = get_numLineages(self.X) # gets the number of lineages in our population
         self.population = init_Population(self.X, self.numLineages) # arranges the population into a list of lineages (each lineage might have varying length)
-        assert(self.numLineages == len(self.population))
+        assert self.numLineages == len(self.population)
         self.paramlist = self.init_paramlist() # list that is numLineages long of parameters for each lineage tree in our population
-        
+
         self.MSD = self.get_Marginal_State_Distributions() # full Marginal State Distribution holder
         self.EL = self.get_Emission_Likelihoods() # full Emission Likelihood holder
 
@@ -34,7 +34,7 @@ class tHMM:
 
         for lineage_num in range(numLineages): # for each lineage in our population
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
-            assert(len(paramlist) == lineage_num+1)
+            assert len(paramlist) == lineage_num+1
 
         return paramlist
 
@@ -44,7 +44,7 @@ class tHMM:
         This is the probability that a hidden state variable z_n is of
         state k, that is, each value in the N by K MSD array for each lineage is
         the probability
-        
+
         P(z_n = k),
 
         for all z_n in the hidden state tree
@@ -67,7 +67,7 @@ class tHMM:
                 MSD_array[0,state_k] = params["pi"][state_k]
             MSD.append(MSD_array)
 
-        for num in range(numLineages):  
+        for num in range(numLineages):
             lineage = population[num] # getting the lineage in the Population by lineage index
             curr_level = 2
             max_level = max_gen(lineage)
@@ -92,7 +92,7 @@ class tHMM:
                 print([num])
                 print(MSD_row_sums)
                 print(MSD[num])
-            assert np.allclose(MSD_row_sums, 1.0)      
+            assert np.allclose(MSD_row_sums, 1.0)
         return MSD
 
     def get_Emission_Likelihoods(self):
@@ -140,6 +140,6 @@ class tHMM:
                     temp_g = sp.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
                     EL_array[current_cell_idx, state_k] = temp_b * temp_g
-            
+
             EL.append(EL_array) # append the EL_array for each lineage
         return EL
