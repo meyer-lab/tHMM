@@ -398,6 +398,7 @@ class TestModel(unittest.TestCase):
     ############################
 
     def test_Baum_Welch_(self):
+        '''tests baum welch simply by running it.'''
         X = remove_NaNs(self.X2)
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
