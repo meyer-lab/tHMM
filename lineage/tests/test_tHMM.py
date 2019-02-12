@@ -347,7 +347,7 @@ class TestModel(unittest.TestCase):
 
         for lineage_num in range(numLineages): # for each lineage in our population
             fake_param_list.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
-            assert(len(fake_param_list) == lineage_num+1)
+            assert len(fake_param_list) == lineage_num+1
         t.paramlist = fake_param_list
 
         t.MSD = t.get_Marginal_State_Distributions() # rerun these with new parameters
