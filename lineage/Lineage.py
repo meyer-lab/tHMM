@@ -39,29 +39,3 @@ class Population:
     def plotPopulation(self):
         ''' Write a function that plots a population whether it was imported or generated. '''
         pass
-
-    def bernoulliParameterEstimatorAnalytical(self):
-        '''Estimates the Bernoulli parameter for a given population using MLE analytically'''
-        population = self.group # assign population to a variable
-        fate_holder = [1] # instantiates list to hold cell fates as 1s or 0s
-        for cell in population: # go through every cell in the population
-            if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
-                fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
-
-        return sum(fate_holder) / len(fate_holder) # add up all the 1s and divide by the total length (finding the average)
-
-    def gompertzParameterEstimatorNumerical(self):
-        '''Estimates the Gompertz parameters for a given population using MLE numerically'''
-        population = self.group # assign population to a variable
-        tau_holder = [20] # instantiates list
-        for cell in population: # go through every cell in the population
-            if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
-                tau_holder.append(cell.tau) # append the cell lifetime
-
-        def negLogLikelihoodGomp(gompParams, tau_holder):
-            """ Calculates the log likelihood for gompertz. """
-            return -1*np.sum(sp.gompertz.logpdf(x=tau_holder,c=gompParams[0], scale=gompParams[1]))
-
-        res = minimize(negLogLikelihoodGomp, x0=[2,40], bounds=((0,10),(0,100)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
-
-        return res.x
