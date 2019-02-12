@@ -1,3 +1,4 @@
+'''Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch'''
 import numpy as np
 
 from .tHMM_utils import max_gen, get_gen, get_daughters
@@ -8,8 +9,8 @@ from .Lineage_utils import bernoulliParameterEstimatorAnalytical, gompertzParame
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
     '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
 
-    assert(lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
-    assert(lineage[node_child_n_idx].isChild()) # if the child-parent relationship is correct, then the child must
+    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx] # check the child-parent relationship
+    assert lineage[node_child_n_idx].isChild() # if the child-parent relationship is correct, then the child must
     # either be the left daughter or the right daughter
 
     beta_child_state_k = beta_array[node_child_n_idx, state_k]
@@ -18,7 +19,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
     numStates = MSD_array.shape[1]
     also_numStates = gamma_array.shape[1]
     also_also_numStates = beta_array.shape[1]
-    assert(numStates == also_numStates == also_also_numStates)
+    assert numStates == also_numStates == also_also_numStates
     beta_parent_child_state_j = get_beta_parent_child_prod(numStates=numStates,
                                                            lineage=lineage,
                                                            beta_array=beta_array,
@@ -27,7 +28,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
                                                            state_j=state_j,
                                                            node_parent_m_idx=node_parent_m_idx)
     zeta = beta_child_state_k*T[state_j,state_k]*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child_state_j)
-    return(zeta)
+    return zeta
 
 def get_all_gammas(lineage, gamma_array_at_state_j):
     '''sum of the list of all the gamma parent child for all the parent child relationships'''
@@ -36,11 +37,10 @@ def get_all_gammas(lineage, gamma_array_at_state_j):
     holder = []
     while curr_level < max_level:
         level = get_gen(curr_level, lineage) #get lineage for the gen
-        
         for cell in level:
             cell_idx = lineage.index(cell)
             holder.append(gamma_array_at_state_j[cell_idx])
-                
+
         curr_level += 1
     return sum(holder)
 
@@ -51,13 +51,13 @@ def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array,
     holder = []
     while curr_level < max_level:
         level = get_gen(curr_level, lineage) #get lineage for the gen
-        
+
         for cell in level:
             parent_idx = lineage.index(cell)
             daughter_idxs_list = get_daughters(cell)
-            
+
             for daughter_idx in daughter_idxs_list:
-                child_idx = lineage.index(daughter_idx) 
+                child_idx = lineage.index(daughter_idx)
                 holder.append(zeta_parent_child_func(node_parent_m_idx=parent_idx,
                                                      node_child_n_idx=child_idx,
                                                      state_j=parent_state_j,
@@ -71,7 +71,7 @@ def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array,
     return sum(holder)
 
 def fit(tHMMobj, tolerance=1e-10, verbose=False):
-    
+    '''Runs the tHMM function through Baum Welch fitting'''
     numLineages = tHMMobj.numLineages
     numStates = tHMMobj.numStates
     population = tHMMobj.population
