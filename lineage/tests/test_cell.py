@@ -2,7 +2,7 @@
 import unittest
 import math
 import numpy as np
-from ..Lineage_utils import generatePopulationWithTime, gompertzParameterEstimatorNumerical, bernoulliParameterEstimatorAnalytical 
+from ..Lineage_utils import generatePopulationWithTime, gompertzParameterEstimatorNumerical, bernoulliParameterEstimatorAnalytical
 from ..CellNode import CellNode as c, generateLineageWithTime, doublingTime
 
 class TestModel(unittest.TestCase):
