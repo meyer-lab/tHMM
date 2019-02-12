@@ -91,8 +91,8 @@ def get_delta_parent_child_prod(numStates, lineage, delta_array, T, state_k, nod
 
 def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_parent_m_idx, node_child_n_idx):
     '''Calculates the delta value for a single parent-child relationship where the parent is in a given state.'''
-    assert(lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
-    assert(lineage[node_child_n_idx].isChild()) # if the child-parent relationship is correct, then the child must be either the left daughter or the right daughter
+    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx] # check the child-parent relationship
+    assert lineage[node_child_n_idx].isChild() # if the child-parent relationship is correct, then the child must be either the left daughter or the right daughter
     max_holder=[] # maxing over the states
     for state_k in range(numStates): # for each state k
         num1 = delta_array[node_child_n_idx, state_k] # get the already calculated delta at node n for state k
