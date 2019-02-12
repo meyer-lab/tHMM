@@ -69,20 +69,6 @@ def bernoulliParameterEstimatorAnalytical(X):
             
     return (sum(fate_holder) + 1)/ (len(fate_holder) + 2) # add up all the 1s and divide by the total length (finding the average)
 
-def bernoulliParameterEstimatorNumerical(X):
-    '''Estimates the Bernoulli parameter for a given population using MLE numerically'''
-    fate_holder = [1] # instantiates list to hold cell fates as 1s or 0s
-    for cell in X: # go through every cell in the population
-        if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
-            fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
-            
-    def negLogLikelihoodBern(locBernGuess, fate_holder):
-        """ Calculates the log likelihood for bernoulli. """
-        return -1*np.sum(sp.bernoulli.logpmf(k=fate_holder, p=locBernGuess))
-    
-    res = minimize(negLogLikelihoodBern, x0=0.5, bounds=((0,1),), method="SLSQP", args=(fate_holder))
-    return res.x[0]
-
 def gompertzParameterEstimatorNumerical(X):
     '''Estimates the Gompertz parameters for a given population using MLE numerically'''
     tau_holder = [20] # instantiates list with a dummy cell
