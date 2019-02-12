@@ -35,7 +35,7 @@ def get_numLineages(Y):
     root_cell_holder = [] # temp list to hold the root cells in the population
     root_cell_linID_holder = [] # temporary list to hold all the linIDs of the root cells in the population
     for cell in X: # for each cell in the population
-        if cell.isRootParent(): 
+        if cell.isRootParent():
             root_cell_holder.append(cell)
             root_cell_linID_holder.append(cell.linID) # append the linID of each cell
     assert(len(root_cell_holder) == len(root_cell_linID_holder))

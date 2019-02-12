@@ -401,7 +401,7 @@ class TestModel(unittest.TestCase):
             self.assertGreaterEqual(gammas[ii].shape[0], 0) # at least zero cells in each lineage
             for state_k in range(numStates):
                 self.assertEqual(gammas[ii][0,state_k],betas[ii][0,state_k])
-    
+
     ############################
     # BaumWelch.py tests below #
     ############################
@@ -439,4 +439,4 @@ class TestModel(unittest.TestCase):
     #    print("Expected Gompertz c: {}".format(2))
     #    print('Gompertz c mean: {} and SD: {}'.format(np.mean(c), np.std(c)))
     #    print("Expected Gompertz scale: {}".format(40))
-    #   print('Gompertz scale mean: {} and SD: {}'.format(np.mean(scale), np.std(scale)))
+    #    print('Gompertz scale mean: {} and SD: {}'.format(np.mean(scale), np.std(scale)))
