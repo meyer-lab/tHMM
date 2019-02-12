@@ -1,7 +1,4 @@
-#to do : make sure everything is aligned correctly
-# self should become tHMMobj
-# add docstring to the document
-# fix linting
+'''File holds the code for the downward recursion.'''
 
 import numpy as np
 from .tHMM_utils import max_gen, get_gen, get_parents_for_level, get_daughters
