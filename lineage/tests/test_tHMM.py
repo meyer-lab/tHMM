@@ -44,7 +44,7 @@ class TestModel(unittest.TestCase):
         self.lineage4 = [self.cell30]
 
         # create a common population to use in all tests
-        experimentTime = 50
+        experimentTime = 50.
         initCells = [50] # there should be 50 lineages b/c there are 50 initial cells
         locBern = [0.8]
         cGom = [2]
