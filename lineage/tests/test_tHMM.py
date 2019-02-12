@@ -117,7 +117,7 @@ class TestModel(unittest.TestCase):
         self.assertEqual(len(pop), numLin) # len(pop) corresponds to the number of lineages
 
         # check that all cells in a lineage have same linID
-        for i, lineage in enumerate(pop): # for each lineage
+        for lineage in pop: # for each lineage
             prev_cell_linID = lineage[0].linID
             for cell in lineage: # for each cell in said lineage
                 self.assertEqual(prev_cell_linID, cell.linID) # linID should correspond with i
@@ -391,7 +391,6 @@ class TestModel(unittest.TestCase):
         X = remove_NaNs(self.X)
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
-        numLineages = tHMMobj.numLineages
         NF = get_leaf_Normalizing_Factors(tHMMobj)
         betas = get_leaf_betas(tHMMobj, NF)
         get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
