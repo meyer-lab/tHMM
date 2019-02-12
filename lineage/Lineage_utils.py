@@ -59,7 +59,7 @@ def get_numLineages(Y):
         if cell.isRootParent():
             root_cell_holder.append(cell)
             root_cell_linID_holder.append(cell.linID) # append the linID of each cell
-    assert(len(root_cell_holder) == len(root_cell_linID_holder))
+    assert len(root_cell_holder) == len(root_cell_linID_holder)
     numLineages = len(root_cell_holder) # the number of lineages is the number of root cells
     return numLineages
 
@@ -75,7 +75,7 @@ def init_Population(X, numLineages):
         temp_lineage = [] # temporary list to hold the cells of a certain lineage with a particular linID
         for cell in X: # for each cell in the population
             if cell.get_root_cell() is root_cell_holder[lineage_num]: # if the cell's root cell is the root cell we're on
-                assert(cell.linID == cell.get_root_cell().linID)
+                assert cell.linID == cell.get_root_cell().linID 
                 temp_lineage.append(cell) # append the cell to that certain lineage
         if len(temp_lineage)>1: # want to avoid lineages with <= 1 cell
             population.append(temp_lineage) # append the lineage to the Population holder
@@ -87,7 +87,7 @@ def bernoulliParameterEstimatorAnalytical(X):
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
-            
+
     return (sum(fate_holder) + 1)/ (len(fate_holder) + 2) # add up all the 1s and divide by the total length (finding the average)
 
 def gompertzParameterEstimatorNumerical(X):
@@ -96,11 +96,11 @@ def gompertzParameterEstimatorNumerical(X):
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             tau_holder.append(cell.tau) # append the cell lifetime
-            
+
     def negLogLikelihoodGomp(gompParams, tau_holder):
         """ Calculates the log likelihood for gompertz. """
         return -1*np.sum(sp.gompertz.logpdf(x=tau_holder,c=gompParams[0], scale=gompParams[1]))
-    
+
     res = minimize(negLogLikelihoodGomp, x0=[2,40], bounds=((0,10),(0,100)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
 
     return res.x
