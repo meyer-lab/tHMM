@@ -58,13 +58,13 @@ class TestModel(unittest.TestCase):
         scaleGom = [40, 50]
         self.X2 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
         
-        '''
-        initCells = [1] # there should be around 50 lineages b/c there are 50 initial cells
-        locBern = [0.999]
-        cGom = [2]
-        scaleGom = [40]
-        self.X3 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
-        '''
+        
+        #initCells = [1] # there should be around 50 lineages b/c there are 50 initial cells
+        #locBern = [0.999]
+        #cGom = [2]
+        #scaleGom = [40]
+        #self.X3 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
+        
 
     ################################
     # Lineage_utils.py tests below #
@@ -405,43 +405,41 @@ class TestModel(unittest.TestCase):
     ############################
     # BaumWelch.py tests below #
     ############################
-    '''
-    def test_Baum_Welch_(self):
-        X = remove_NaNs(self.X2)
-        numStates = 2
-        tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
-        fit(tHMMobj, verbose=True)
-            
-    def test_Baum_Welch_multipletimes(self):
-        X = remove_NaNs(self.X3)
-        reps = 10
-        numStates = 2
-        bern = np.zeros(reps)
-        c = np.zeros(reps)
-        scale = np.zeros(reps)
-        for num in range(reps):
-            
-            tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
-            fit(tHMMobj, verbose=False)
-            
-            diag = np.diagonal(tHMMobj.paramlist[0]["T"])
-            chosen_state = np.argmax(diag)
-            
-            bern[num] = (tHMMobj.paramlist[0]["E"][chosen_state,0])
-            print("\nRun {} Bernoulli p: {}".format(num, bern[num]))
-            c[num] = tHMMobj.paramlist[0]["E"][chosen_state,1]
-            print("Run {} Gompertz c: {}".format(num, c[num]))
-            scale[num] = tHMMobj.paramlist[0]["E"][chosen_state,2]
-            print("Run {} Gompertz scale: {}".format(num, scale[num]))
-            print("Run {} Initial Probabilities: ".format(num))
-            print(tHMMobj.paramlist[0]["pi"])
-            print("Run {} Transition Matrix: ".format(num))
-            print(tHMMobj.paramlist[0]["T"])
-        
-        print("Expected Bernoulli p: {}".format(0.999))
-        print('Bernoulli p mean: {} and SD: {}'.format(np.mean(bern), np.std(bern)))
-        print("Expected Gompertz c: {}".format(2))
-        print('Gompertz c mean: {} and SD: {}'.format(np.mean(c), np.std(c)))
-        print("Expected Gompertz scale: {}".format(40))
-        print('Gompertz scale mean: {} and SD: {}'.format(np.mean(scale), np.std(scale)))
-    '''
+
+    #def test_Baum_Welch_(self):
+    #    X = remove_NaNs(self.X2)
+    #    numStates = 2
+    #    tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
+    #    fit(tHMMobj, verbose=True)
+       
+    #def test_Baum_Welch_multipletimes(self):
+    #    X = remove_NaNs(self.X3)
+    #    reps = 10
+    #    numStates = 2
+    #    bern = np.zeros(reps)
+    #    c = np.zeros(reps)
+    #    scale = np.zeros(reps)
+    #    for num in range(reps):
+    #        
+    #        tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
+    #        fit(tHMMobj, verbose=False)
+    #        
+    #        diag = np.diagonal(tHMMobj.paramlist[0]["T"])
+    #        chosen_state = np.argmax(diag)
+
+    #        bern[num] = (tHMMobj.paramlist[0]["E"][chosen_state,0])
+    #        print("\nRun {} Bernoulli p: {}".format(num, bern[num]))
+    #        c[num] = tHMMobj.paramlist[0]["E"][chosen_state,1]
+    #        print("Run {} Gompertz c: {}".format(num, c[num]))
+    #        scale[num] = tHMMobj.paramlist[0]["E"][chosen_state,2]
+    #        print("Run {} Gompertz scale: {}".format(num, scale[num]))
+    #        print("Run {} Initial Probabilities: ".format(num))
+    #        print(tHMMobj.paramlist[0]["pi"])
+    #        print("Run {} Transition Matrix: ".format(num))
+    #        print(tHMMobj.paramlist[0]["T"])
+    #        print("Expected Bernoulli p: {}".format(0.999))
+    #    print('Bernoulli p mean: {} and SD: {}'.format(np.mean(bern), np.std(bern)))
+    #    print("Expected Gompertz c: {}".format(2))
+    #    print('Gompertz c mean: {} and SD: {}'.format(np.mean(c), np.std(c)))
+    #    print("Expected Gompertz scale: {}".format(40))
+    #   print('Gompertz scale mean: {} and SD: {}'.format(np.mean(scale), np.std(scale)))
