@@ -1,17 +1,9 @@
-#to do : make sure everything is aligned correctly
-# self should become tHMMobj
-# add docstring to the document
-# fix linting
-
 import numpy as np
-import sys
-import math
 
-from .tHMM_utils import max_gen, get_gen, get_parents_for_level, get_daughters
+from .tHMM_utils import max_gen, get_gen, get_daughters
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, get_beta_parent_child_prod
 from .Lineage_utils import bernoulliParameterEstimatorAnalytical, gompertzParameterEstimatorNumerical
-
 
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
     '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
@@ -176,7 +168,3 @@ def fit(tHMMobj, tolerance=1e-10, verbose=False):
             calculation = abs(new_LL_list[lineage_iter] - old_LL_list[lineage_iter])
             truth_list[lineage_iter] = (calculation > tolerance)       
         go = any(truth_list)                  
-            
-            
-
-    

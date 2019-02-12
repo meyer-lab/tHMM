@@ -62,7 +62,7 @@ def init_Population(X, numLineages):
 
 def bernoulliParameterEstimatorAnalytical(X):
     '''Estimates the Bernoulli parameter for a given population using MLE analytically'''
-    fate_holder = [] # instantiates list to hold cell fates as 1s or 0s
+    fate_holder = [0] # instantiates list to hold cell fates as 1s or 0s
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
@@ -71,7 +71,7 @@ def bernoulliParameterEstimatorAnalytical(X):
 
 def bernoulliParameterEstimatorNumerical(X):
     '''Estimates the Bernoulli parameter for a given population using MLE numerically'''
-    fate_holder = [] # instantiates list to hold cell fates as 1s or 0s
+    fate_holder = [0] # instantiates list to hold cell fates as 1s or 0s
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
@@ -83,24 +83,9 @@ def bernoulliParameterEstimatorNumerical(X):
     res = minimize(negLogLikelihoodBern, x0=0.5, bounds=((0,1),), method="SLSQP", args=(fate_holder))
     return res.x[0]
 
-def gompertzParameterEstimatorAnalytical(X):
-    '''Estimates the Gompertz parameters for a given population using MLE numerically'''
-    tau_holder = [20] # instantiates list
-    for cell in X: # go through every cell in the population
-        if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
-            tau_holder.append(cell.tau) # append the cell lifetime
-            
-    def negLogLikelihoodGomp(gompParams, tau_holder):
-        """ Calculates the log likelihood for gompertz. """
-        return -1*np.sum(sp.gompertz.logpdf(x=tau_holder,c=gompParams[0], scale=gompParams[1]))
-    
-    res = minimize(negLogLikelihoodGomp, x0=[2,40], bounds=((0,10),(0,100)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
-
-    return res.x
-
 def gompertzParameterEstimatorNumerical(X):
     '''Estimates the Gompertz parameters for a given population using MLE numerically'''
-    tau_holder = [20] # instantiates list
+    tau_holder = [20] # instantiates list with a dummy cell
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             tau_holder.append(cell.tau) # append the cell lifetime
@@ -112,4 +97,3 @@ def gompertzParameterEstimatorNumerical(X):
     res = minimize(negLogLikelihoodGomp, x0=[2,40], bounds=((0,10),(0,100)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
 
     return res.x
-

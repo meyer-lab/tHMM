@@ -43,7 +43,7 @@ class Population:
     def bernoulliParameterEstimatorAnalytical(self):
         '''Estimates the Bernoulli parameter for a given population using MLE analytically'''
         population = self.group # assign population to a variable
-        fate_holder = [] # instantiates list to hold cell fates as 1s or 0s
+        fate_holder = [1] # instantiates list to hold cell fates as 1s or 0s
         for cell in population: # go through every cell in the population
             if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
                 fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
@@ -53,7 +53,7 @@ class Population:
     def bernoulliParameterEstimatorNumerical(self):
         '''Estimates the Bernoulli parameter for a given population using MLE numerically'''
         population = self.group # assign population to a variable
-        fate_holder = [] # instantiates list to hold cell fates as 1s or 0s
+        fate_holder = [1] # instantiates list to hold cell fates as 1s or 0s
         for cell in population: # go through every cell in the population
             if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
                 fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
@@ -69,7 +69,7 @@ class Population:
     def gompertzParameterEstimatorNumerical(self):
         '''Estimates the Gompertz parameters for a given population using MLE numerically'''
         population = self.group # assign population to a variable
-        tau_holder = [] # instantiates list
+        tau_holder = [20] # instantiates list
         for cell in population: # go through every cell in the population
             if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
                 tau_holder.append(cell.tau) # append the cell lifetime

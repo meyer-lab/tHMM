@@ -55,7 +55,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
                     temp_sum_holder.append(joint_prob) # append the joint probability to be summed
 
                 marg_prob = sum(temp_sum_holder) # law of total probability
-                assert(marg_prob > 0 and marg_prob < 1)
+                assert(marg_prob > 0 and marg_prob <= 1)
                 # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
                 # the sum of the joint probabilities is the marginal probability
                 NF_array[leaf_cell_idx] = marg_prob # each leaf is now intialized

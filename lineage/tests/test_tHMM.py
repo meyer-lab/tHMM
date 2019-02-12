@@ -53,16 +53,18 @@ class TestModel(unittest.TestCase):
         self.X = gpt(experimentTime, initCells, locBern, cGom, scaleGom) # generate a population
 
         initCells = [40, 10] # there should be around 50 lineages b/c there are 50 initial cells
-        locBern = [0.999, 0.6]
+        locBern = [0.999, 0.8]
         cGom = [2, 3]
         scaleGom = [40, 50]
         self.X2 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
         
+        '''
         initCells = [1] # there should be around 50 lineages b/c there are 50 initial cells
         locBern = [0.999]
         cGom = [2]
         scaleGom = [40]
-        self.X3 = gpt(110, initCells, locBern, cGom, scaleGom)
+        self.X3 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
+        '''
 
     ################################
     # Lineage_utils.py tests below #
@@ -404,7 +406,13 @@ class TestModel(unittest.TestCase):
     ############################
     # BaumWelch.py tests below #
     ############################
-
+    '''
+    def test_Baum_Welch_(self):
+        X = remove_NaNs(self.X2)
+        numStates = 2
+        tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
+        fit(tHMMobj, verbose=True)
+            
     def test_Baum_Welch_multipletimes(self):
         X = remove_NaNs(self.X3)
         reps = 10
@@ -437,5 +445,4 @@ class TestModel(unittest.TestCase):
         print('Gompertz c mean: {} and SD: {}'.format(np.mean(c), np.std(c)))
         print("Expected Gompertz scale: {}".format(40))
         print('Gompertz scale mean: {} and SD: {}'.format(np.mean(scale), np.std(scale)))
-    
-    
+    '''
