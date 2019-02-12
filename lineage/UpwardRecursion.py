@@ -31,7 +31,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
     numStates = tHMMobj.numStates
     numLineages = tHMMobj.numLineages
     population = tHMMobj.population
-    assert(numLineages == len(population))
+    assert numLineages == len(population)
     MSD = tHMMobj.MSD
     EL = tHMMobj.EL
 
@@ -55,7 +55,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
                     temp_sum_holder.append(joint_prob) # append the joint probability to be summed
 
                 marg_prob = sum(temp_sum_holder) # law of total probability
-                assert(marg_prob > 0 and marg_prob <= 1)
+                assert 0 < marg_prob <= 1
                 # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
                 # the sum of the joint probabilities is the marginal probability
                 NF_array[leaf_cell_idx] = marg_prob # each leaf is now intialized
@@ -168,7 +168,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                     betas[num][node_parent_m_idx, state_j] = numer_holder[state_j] / NF[num][node_parent_m_idx]
             curr_gen -= 1
         beta_row_sums = np.sum(betas[num], axis=1)
-        assert np.allclose(beta_row_sums, 1.0)      
+        assert np.allclose(beta_row_sums, 1.0)
 
 
 def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
@@ -208,8 +208,8 @@ def beta_parent_child_func(numStates, lineage, beta_array, T, MSD_array, state_j
     to the root node) node beta and Normalizing Factor
     values.
     '''
-    assert(lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
-    assert(lineage[node_child_n_idx].isChild()) # if the child-parent relationship is correct, then the child must
+    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx] # check the child-parent relationship
+    assert lineage[node_child_n_idx].isChild() # if the child-parent relationship is correct, then the child must
     # either be the left daughter or the right daughter
     summand_holder=[] # summing over the states
 
