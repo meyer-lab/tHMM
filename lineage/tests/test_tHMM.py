@@ -57,14 +57,14 @@ class TestModel(unittest.TestCase):
         cGom = [2, 3]
         scaleGom = [40, 50]
         self.X2 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
-        
-        
+
+
         #initCells = [1] # there should be around 50 lineages b/c there are 50 initial cells
         #locBern = [0.999]
         #cGom = [2]
         #scaleGom = [40]
         #self.X3 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
-        
+
 
     ################################
     # Lineage_utils.py tests below #
@@ -377,7 +377,7 @@ class TestModel(unittest.TestCase):
                 num_of_ones+=1
         self.assertGreater(num_of_zeros,num_of_ones)
         # there should be a greater number of lineages with all ones than all zeros as hidden states
-        
+
     ####################################
     # DownwardRecursion.py tests below #
     ####################################
@@ -401,7 +401,7 @@ class TestModel(unittest.TestCase):
             self.assertGreaterEqual(gammas[ii].shape[0], 0) # at least zero cells in each lineage
             for state_k in range(numStates):
                 self.assertEqual(gammas[ii][0,state_k],betas[ii][0,state_k])
-                
+    
     ############################
     # BaumWelch.py tests below #
     ############################
@@ -411,7 +411,7 @@ class TestModel(unittest.TestCase):
     #    numStates = 2
     #    tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
     #    fit(tHMMobj, verbose=True)
-       
+
     #def test_Baum_Welch_multipletimes(self):
     #    X = remove_NaNs(self.X3)
     #    reps = 10
@@ -420,13 +420,10 @@ class TestModel(unittest.TestCase):
     #    c = np.zeros(reps)
     #    scale = np.zeros(reps)
     #    for num in range(reps):
-    #        
     #        tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
     #        fit(tHMMobj, verbose=False)
-    #        
     #        diag = np.diagonal(tHMMobj.paramlist[0]["T"])
     #        chosen_state = np.argmax(diag)
-
     #        bern[num] = (tHMMobj.paramlist[0]["E"][chosen_state,0])
     #        print("\nRun {} Bernoulli p: {}".format(num, bern[num]))
     #        c[num] = tHMMobj.paramlist[0]["E"][chosen_state,1]
