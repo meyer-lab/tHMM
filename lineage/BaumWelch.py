@@ -115,7 +115,6 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             MSD_array = tHMMobj.MSD[num]
             gamma_array = gammas[num]
             tHMMobj.paramlist[num]["pi"] = gamma_array[0,:]
-            ruhtsueht = False
             for state_j in range(numStates):
                 gamma_array_at_state_j = gamma_array[:,state_j]
                 denom = get_all_gammas(lineage, gamma_array_at_state_j)

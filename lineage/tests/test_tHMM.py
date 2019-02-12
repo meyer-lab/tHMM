@@ -402,4 +402,4 @@ class TestModel(unittest.TestCase):
         X = remove_NaNs(self.X2)
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
-        fit(tHMMobj, max_iter=100, verbose=False)
+        fit(tHMMobj, max_iter=100, verbose=True)

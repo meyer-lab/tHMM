@@ -2,6 +2,7 @@
 
 import numpy as np
 from .tHMM_utils import max_gen, get_gen, get_parents_for_level
+import math
 
 def get_leaf_Normalizing_Factors(tHMMobj):
     '''
@@ -59,6 +60,9 @@ def get_leaf_Normalizing_Factors(tHMMobj):
                 # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
                 # the sum of the joint probabilities is the marginal probability
                 NF_array[leaf_cell_idx] = marg_prob # each leaf is now intialized
+                if marg_prob==0:
+                    print( NF_array[leaf_cell_idx])
+                    print(NF_array)
         NF.append(NF_array)
     return NF
 
@@ -166,9 +170,14 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                 NF[num][node_parent_m_idx] = sum(numer_holder)
                 for state_j in range(numStates):
                     betas[num][node_parent_m_idx, state_j] = numer_holder[state_j] / NF[num][node_parent_m_idx]
+                    if math.isnan(betas[num][node_parent_m_idx, state_j]):
+                        print( betas[num][node_parent_m_idx, state_j])
+                        print(NF[num][node_parent_m_idx])
+                        print(NF[num])
+                        print(betas[num])
+                        print(lineage[num])
             curr_gen -= 1
-        beta_row_sums = np.sum(betas[num], axis=1)
-        assert np.allclose(beta_row_sums, 1.0)
+
 
 
 def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
