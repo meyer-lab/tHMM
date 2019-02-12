@@ -1,8 +1,8 @@
-''' Unit test file. '''
+''' Unit test file. Contains tests for the functions in Lineage_utils.py, tHMM_utils.py, UpwardRecursion.py, DownwardRecursion.py, BaumWelch.py'''
 import unittest
 import numpy as np
 
-# from ..BaumWelch import fit
+from ..BaumWelch import fit
 from ..DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
@@ -116,9 +116,9 @@ class TestModel(unittest.TestCase):
                 # sometimes lineages have one cell and those are removed
                 # possibly a better way to test
 
-    ############################
-    # tHMM_utils.pytests below #
-    ############################
+    #####################
+    # tHMM_utils. below #
+    #####################
 
     def test_max_gen(self):
         '''
@@ -397,37 +397,11 @@ class TestModel(unittest.TestCase):
     # BaumWelch.py tests below #
     ############################
 
-    #def test_Baum_Welch_(self):
-    #    X = remove_NaNs(self.X2)
-    #    numStates = 2
-    #    tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
-    #    fit(tHMMobj, verbose=True)
-
-    #def test_Baum_Welch_multipletimes(self):
-    #    X = remove_NaNs(self.X3)
-    #    reps = 10
-    #    numStates = 2
-    #    bern = np.zeros(reps)
-    #    c = np.zeros(reps)
-    #    scale = np.zeros(reps)
-    #    for num in range(reps):
-    #        tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
-    #        fit(tHMMobj, verbose=False)
-    #        diag = np.diagonal(tHMMobj.paramlist[0]["T"])
-    #        chosen_state = np.argmax(diag)
-    #        bern[num] = (tHMMobj.paramlist[0]["E"][chosen_state,0])
-    #        print("\nRun {} Bernoulli p: {}".format(num, bern[num]))
-    #        c[num] = tHMMobj.paramlist[0]["E"][chosen_state,1]
-    #        print("Run {} Gompertz c: {}".format(num, c[num]))
-    #        scale[num] = tHMMobj.paramlist[0]["E"][chosen_state,2]
-    #        print("Run {} Gompertz scale: {}".format(num, scale[num]))
-    #        print("Run {} Initial Probabilities: ".format(num))
-    #        print(tHMMobj.paramlist[0]["pi"])
-    #        print("Run {} Transition Matrix: ".format(num))
-    #        print(tHMMobj.paramlist[0]["T"])
-    #        print("Expected Bernoulli p: {}".format(0.999))
-    #    print('Bernoulli p mean: {} and SD: {}'.format(np.mean(bern), np.std(bern)))
-    #    print("Expected Gompertz c: {}".format(2))
-    #    print('Gompertz c mean: {} and SD: {}'.format(np.mean(c), np.std(c)))
-    #    print("Expected Gompertz scale: {}".format(40))
-    #    print('Gompertz scale mean: {} and SD: {}'.format(np.mean(scale), np.std(scale)))
+    def test_Baum_Welch_(self):
+        X = remove_NaNs(self.X2)
+        numStates = 2
+        tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
+        fit(tHMMobj, verbose=True)
+        for num in range(tHMMobj.numLineages):
+            print(tHMMobj.paramlist[num]["pi"])
+            print(tHMMobj.paramlist[num]["T"])

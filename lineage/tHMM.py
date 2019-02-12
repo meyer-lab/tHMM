@@ -3,6 +3,7 @@
 import numpy as np
 import scipy.stats as sp
 from .Lineage_utils import get_numLineages, init_Population
+from .tHMM_utils import max_gen, get_gen
 
 class tHMM:
     """ Main tHMM class. """
@@ -62,29 +63,31 @@ class tHMM:
             lineage = population[num] # getting the lineage in the Population by lineage index
             params = paramlist[num] # getting the respective params by lineage index
             MSD_array = np.zeros((len(lineage),numStates)) # instantiating N by K array
+            MSD_array[0,:] = params["pi"]
+            MSD.append(MSD_array)
 
-            for cell in lineage: # for each cell in the lineage
-                if cell.isRootParent(): # base case uses pi parameter at the root cells of the tree
-
-                    for state in range(numStates): # for each state
-                        MSD_array[0,state] = params["pi"][state] # base case using pi parameter
-                else:
+        for num in range(numLineages):  
+            lineage = population[num] # getting the lineage in the Population by lineage index
+            curr_level = 2
+            max_level = max_gen(lineage)
+            while curr_level <= max_level:
+                level = get_gen(curr_level, lineage) #get lineage for the gen
+                for cell in level:
                     parent_cell_idx = lineage.index(cell.parent) # get the index of the parent cell
-                    current_cell_idx = lineage.index(cell) # get the index of the current cell
-
+                    current_cell_idx = lineage.index(cell)
                     for state_k in range(numStates): # recursion based on parent cell
                         temp_sum_holder = [] # for all states k, calculate the sum of temp
 
                         for state_j in range(numStates): # for all states j, calculate temp
-                            temp = params["T"][state_j,state_k] * MSD_array[parent_cell_idx, state_j]
+                            temp = params["T"][state_j,state_k] * MSD[num][parent_cell_idx, state_j]
                             # temp = T_jk * P(z_parent(n) = j)
                             temp_sum_holder.append(temp)
 
-                        MSD_array[current_cell_idx,state_k] = sum(temp_sum_holder)
-            
-            MSD_row_sums = np.sum(MSD_array, axis=1)
+                        MSD[num][current_cell_idx,state_k] = sum(temp_sum_holder)
+
+                curr_level += 1
+            MSD_row_sums = np.sum(MSD[num], axis=1)
             assert(all(MSD_row_sums))
-            MSD.append(MSD_array) # Marginal States Distributions for each lineage in the Population
         return MSD
 
     def get_Emission_Likelihoods(self):

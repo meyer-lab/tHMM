@@ -152,20 +152,20 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
             parent_holder = get_parents_for_level(level, lineage)
             for node_parent_m_idx in parent_holder:
                 numer_holder = []
-                for state_k in range(tHMMobj.numStates):
+                for state_j in range(tHMMobj.numStates):
                     fac1 = get_beta_parent_child_prod(numStates=numStates,
                                                       lineage=lineage,
                                                       MSD_array=MSD_array,
                                                       T=T,
                                                       beta_array=betas[num],
-                                                      state_j=state_k,
+                                                      state_j=state_j,
                                                       node_parent_m_idx=node_parent_m_idx)
-                    fac2 = EL_array[node_parent_m_idx, state_k]
-                    fac3 = MSD_array[node_parent_m_idx, state_k]
+                    fac2 = EL_array[node_parent_m_idx, state_j]
+                    fac3 = MSD_array[node_parent_m_idx, state_j]
                     numer_holder.append(fac1*fac2*fac3)
                 NF[num][node_parent_m_idx] = sum(numer_holder)
-                for state_k in range(numStates):
-                    betas[num][node_parent_m_idx, state_k] = numer_holder[state_k] / NF[num][node_parent_m_idx]
+                for state_j in range(numStates):
+                    betas[num][node_parent_m_idx, state_j] = numer_holder[state_j] / NF[num][node_parent_m_idx]
             curr_gen -= 1
         beta_row_sums = np.sum(betas[num], axis=1)
         assert(all(beta_row_sums))

@@ -35,13 +35,14 @@ def get_all_gammas(lineage, gamma_array_at_state_j):
     curr_level = 1
     max_level = max_gen(lineage)
     holder = []
-    while curr_level < max_level:
+    while curr_level < max_level: # get all the gammas but not the ones at the last level
         level = get_gen(curr_level, lineage) #get lineage for the gen
         for cell in level:
             cell_idx = lineage.index(cell)
             holder.append(gamma_array_at_state_j[cell_idx])
 
         curr_level += 1
+    
     return sum(holder)
 
 def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array, gamma_array, T):
@@ -111,6 +112,7 @@ def fit(tHMMobj, tolerance=1e-10, verbose=False):
             MSD_array = tHMMobj.MSD[num]
             gamma_array = gammas[num]
             tHMMobj.paramlist[num]["pi"] = gamma_array[0,:]
+            ruhtsueht = False
             for state_j in range(numStates):
                 gamma_array_at_state_j = gamma_array[:,state_j]
                 denom = get_all_gammas(lineage, gamma_array_at_state_j)
@@ -122,10 +124,29 @@ def fit(tHMMobj, tolerance=1e-10, verbose=False):
                                              MSD_array=MSD_array,
                                              gamma_array=gamma_array,
                                              T=tHMMobj.paramlist[num]["T"])
-                    tHMMobj.paramlist[num]["T"][state_j,state_k] = numer/denom
+                    if denom == 0:
+                        print(numer)
+                        print(denom)
+                        print(beta_array)
+                        print(gamma_array)
+                        print(MSD_array)
+                        print(tHMMobj.paramlist[num]["pi"])
+                        print(tHMMobj.paramlist[num]["T"])
+                        tHMMobj.paramlist[num]["T"][state_j,state_k] = 0
+                        ruhtsueht = True
+                    else:
+                        tHMMobj.paramlist[num]["T"][state_j,state_k] = numer/denom
             
             T_NN = tHMMobj.paramlist[num]["T"]
             row_sums = T_NN.sum(axis=1)
+            if ruhtsueht:
+                print(T_NN[0,0])
+                print(T_NN[0,1])
+                print(T_NN[0,0]+T_NN[0,1])
+                print(T_NN[1,0])
+                print(T_NN[1,1])
+                print(T_NN[1,0]+T_NN[1,1])
+                print(row_sums)
             T_new = T_NN / row_sums[:, np.newaxis]
             tHMMobj.paramlist[num]["T"] = T_new
             
