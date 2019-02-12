@@ -62,7 +62,7 @@ def init_Population(X, numLineages):
 
 def bernoulliParameterEstimatorAnalytical(X):
     '''Estimates the Bernoulli parameter for a given population using MLE analytically'''
-    fate_holder = [0] # instantiates list to hold cell fates as 1s or 0s
+    fate_holder = [1] # instantiates list to hold cell fates as 1s or 0s
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
@@ -71,7 +71,7 @@ def bernoulliParameterEstimatorAnalytical(X):
 
 def bernoulliParameterEstimatorNumerical(X):
     '''Estimates the Bernoulli parameter for a given population using MLE numerically'''
-    fate_holder = [0] # instantiates list to hold cell fates as 1s or 0s
+    fate_holder = [1] # instantiates list to hold cell fates as 1s or 0s
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
