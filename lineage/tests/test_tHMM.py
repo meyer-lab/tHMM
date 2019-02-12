@@ -269,7 +269,7 @@ class TestModel(unittest.TestCase):
         t = tHMM(X, numStates=numStates) # build the tHMM class with X
         fake_param_list = []
         numLineages = t.numLineages
-        temp_params = {"pi": np.ones((numStates), dtype=int)/(numStates), # inital state distributions [K] initialized to 1/K
+        temp_params = {"pi": np.ones((numStates), dtype=int), # inital state distributions [K] initialized to 1/K
                        "T": np.ones((numStates, numStates), dtype=int)/(numStates), # state transition matrix [KxK] initialized to 1/K
                        "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
         temp_params["pi"][1] = 0 # the hidden state for the second node should always be 1
@@ -401,7 +401,4 @@ class TestModel(unittest.TestCase):
         X = remove_NaNs(self.X2)
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
-        fit(tHMMobj, verbose=True)
-        for num in range(tHMMobj.numLineages):
-            print(tHMMobj.paramlist[num]["pi"])
-            print(tHMMobj.paramlist[num]["T"])
+        fit(tHMMobj, max_iter=100, verbose=False)

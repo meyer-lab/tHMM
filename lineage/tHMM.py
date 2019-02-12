@@ -62,8 +62,9 @@ class tHMM:
         for num in range(numLineages): # for each lineage in our Population
             lineage = population[num] # getting the lineage in the Population by lineage index
             params = paramlist[num] # getting the respective params by lineage index
-            MSD_array = np.zeros((len(lineage),numStates)) # instantiating N by K array
-            MSD_array[0,:] = params["pi"]
+            MSD_array = np.zeros((len(lineage),numStates), dtype=float) # instantiating N by K array
+            for state_k in range(numStates):
+                MSD_array[0,state_k] = params["pi"][state_k]
             MSD.append(MSD_array)
 
         for num in range(numLineages):  
@@ -87,7 +88,11 @@ class tHMM:
 
                 curr_level += 1
             MSD_row_sums = np.sum(MSD[num], axis=1)
-            assert(all(MSD_row_sums))
+            if not np.allclose(MSD_row_sums, 1.0):
+                print([num])
+                print(MSD_row_sums)
+                print(MSD[num])
+            assert np.allclose(MSD_row_sums, 1.0)      
         return MSD
 
     def get_Emission_Likelihoods(self):
@@ -135,8 +140,6 @@ class tHMM:
                     temp_g = sp.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
                     EL_array[current_cell_idx, state_k] = temp_b * temp_g
-                    
-            EL_row_sums = np.sum(EL_array, axis=1) # the sum of the elements in a row for all the rows should be 1
-            assert(all(EL_row_sums)) # the sum of all the rows should be 1 (True)
+            
             EL.append(EL_array) # append the EL_array for each lineage
         return EL

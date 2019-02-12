@@ -27,7 +27,10 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
                                                            MSD_array=MSD_array,
                                                            state_j=state_j,
                                                            node_parent_m_idx=node_parent_m_idx)
-    zeta = beta_child_state_k*T[state_j,state_k]*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child_state_j)
+    if beta_parent_child_state_j == 0:
+        zeta = 0
+    else:
+        zeta = beta_child_state_k*T[state_j,state_k]*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child_state_j)
     return zeta
 
 def get_all_gammas(lineage, gamma_array_at_state_j):
@@ -71,7 +74,7 @@ def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array,
         curr_level += 1
     return sum(holder)
 
-def fit(tHMMobj, tolerance=1e-10, verbose=False):
+def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     '''Runs the tHMM function through Baum Welch fitting'''
     numLineages = tHMMobj.numLineages
     numStates = tHMMobj.numStates
@@ -125,28 +128,16 @@ def fit(tHMMobj, tolerance=1e-10, verbose=False):
                                              gamma_array=gamma_array,
                                              T=tHMMobj.paramlist[num]["T"])
                     if denom == 0:
-                        print(numer)
-                        print(denom)
-                        print(beta_array)
-                        print(gamma_array)
-                        print(MSD_array)
-                        print(tHMMobj.paramlist[num]["pi"])
-                        print(tHMMobj.paramlist[num]["T"])
                         tHMMobj.paramlist[num]["T"][state_j,state_k] = 0
-                        ruhtsueht = True
                     else:
                         tHMMobj.paramlist[num]["T"][state_j,state_k] = numer/denom
             
             T_NN = tHMMobj.paramlist[num]["T"]
             row_sums = T_NN.sum(axis=1)
-            if ruhtsueht:
-                print(T_NN[0,0])
-                print(T_NN[0,1])
-                print(T_NN[0,0]+T_NN[0,1])
-                print(T_NN[1,0])
-                print(T_NN[1,1])
-                print(T_NN[1,0]+T_NN[1,1])
-                print(row_sums)
+            for row_sum in row_sums:
+                if row_sum==0:
+                    row_sums[np.where(row_sums==0.)]=-1
+                    
             T_new = T_NN / row_sums[:, np.newaxis]
             tHMMobj.paramlist[num]["T"] = T_new
             
@@ -188,4 +179,9 @@ def fit(tHMMobj, tolerance=1e-10, verbose=False):
         for lineage_iter in range(len(new_LL_list)):
             calculation = abs(new_LL_list[lineage_iter] - old_LL_list[lineage_iter])
             truth_list[lineage_iter] = (calculation > tolerance)       
-        go = any(truth_list)                  
+        go = any(truth_list)  
+        
+        if count > max_iter:
+            if verbose:
+                print("Max iteration of {} steps achieved. Exiting Baum-Welch EM while loop.".format(max_iter))
+            break

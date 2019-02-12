@@ -168,7 +168,8 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                     betas[num][node_parent_m_idx, state_j] = numer_holder[state_j] / NF[num][node_parent_m_idx]
             curr_gen -= 1
         beta_row_sums = np.sum(betas[num], axis=1)
-        assert(all(beta_row_sums))
+        assert np.allclose(beta_row_sums, 1.0)      
+
 
 def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
     '''
