@@ -57,14 +57,6 @@ class TestModel(unittest.TestCase):
         scaleGom = [40, 50]
         self.X2 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
 
-
-        #initCells = [1] # there should be around 50 lineages b/c there are 50 initial cells
-        #locBern = [0.999]
-        #cGom = [2]
-        #scaleGom = [40]
-        #self.X3 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
-
-
     ################################
     # Lineage_utils.py tests below #
     ################################
