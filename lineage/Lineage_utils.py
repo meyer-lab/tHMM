@@ -75,7 +75,7 @@ def init_Population(X, numLineages):
         temp_lineage = [] # temporary list to hold the cells of a certain lineage with a particular linID
         for cell in X: # for each cell in the population
             if cell.get_root_cell() is root_cell_holder[lineage_num]: # if the cell's root cell is the root cell we're on
-                assert cell.linID == cell.get_root_cell().linID 
+                assert cell.linID == cell.get_root_cell().linID
                 temp_lineage.append(cell) # append the cell to that certain lineage
         if len(temp_lineage)>1: # want to avoid lineages with <= 1 cell
             population.append(temp_lineage) # append the lineage to the Population holder
