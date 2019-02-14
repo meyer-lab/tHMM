@@ -29,6 +29,9 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
                                                            node_parent_m_idx=node_parent_m_idx)
     if beta_parent_child_state_j == 0:
         zeta = 0
+        print((MSD_child_state_k*beta_parent_child_state_j))
+        print(MSD_child_state_k)
+        print(beta_array)
     else:
         zeta = beta_child_state_k*T[state_j,state_k]*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child_state_j)
     return zeta
@@ -101,7 +104,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     while go: # exit the loop
 
         if verbose:
-            print('iter: {}'.format(count))
+            print('\n iter: {}'.format(count))
         count+=1
 
         old_LL_list = new_LL_list
@@ -130,12 +133,14 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                         tHMMobj.paramlist[num]["T"][state_j,state_k] = 0
                     else:
                         tHMMobj.paramlist[num]["T"][state_j,state_k] = numer/denom
-
+            max_state = np.argmax(tHMMobj.paramlist[num]["pi"])
             T_NN = tHMMobj.paramlist[num]["T"]
             row_sums = T_NN.sum(axis=1)
             for row_sum in row_sums:
-                if row_sum==0:
-                    row_sums[np.where(row_sums==0.)]=-1
+                if row_sum==0.:
+                    index = np.where(row_sums==row_sum)
+                    T_NN[index,max_state] = 1
+            row_sums = T_NN.sum(axis=1)
 
             T_new = T_NN / row_sums[:, np.newaxis]
             tHMMobj.paramlist[num]["T"] = T_new

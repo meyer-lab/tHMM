@@ -403,3 +403,8 @@ class TestModel(unittest.TestCase):
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=True)
+        for num in range(tHMMobj.numLineages):
+            print("\n")
+            print(len(tHMMobj.population[num]))
+            print(tHMMobj.paramlist[num]["pi"])
+            print(tHMMobj.paramlist[num]["T"])

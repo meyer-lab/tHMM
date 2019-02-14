@@ -1,6 +1,5 @@
 '''This file contains the methods that completes the downward recursion and evaulates the beta values.'''
 
-import math
 import numpy as np
 from .tHMM_utils import max_gen, get_gen, get_parents_for_level
 
@@ -166,11 +165,6 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                 NF[num][node_parent_m_idx] = sum(numer_holder)
                 for state_j in range(numStates):
                     betas[num][node_parent_m_idx, state_j] = numer_holder[state_j] / NF[num][node_parent_m_idx]
-                    if math.isnan(betas[num][node_parent_m_idx, state_j]):
-                        print( betas[num][node_parent_m_idx, state_j])
-                        print(NF[num][node_parent_m_idx])
-                        print(NF[num])
-                        print(betas[num])
             curr_gen -= 1
 
 
