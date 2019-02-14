@@ -45,7 +45,7 @@ def get_all_gammas(lineage, gamma_array_at_state_j):
             holder.append(gamma_array_at_state_j[cell_idx])
 
         curr_level += 1
-
+    
     return sum(holder)
 
 def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array, gamma_array, T):
@@ -79,34 +79,34 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     numLineages = tHMMobj.numLineages
     numStates = tHMMobj.numStates
     population = tHMMobj.population
-
+    
     # first E step
 
     NF = get_leaf_Normalizing_Factors(tHMMobj)
     betas = get_leaf_betas(tHMMobj, NF)
-    get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
+    get_nonleaf_NF_and_betas(tHMMobj, NF, betas)     
     gammas = get_root_gammas(tHMMobj, betas)
-    get_nonroot_gammas(tHMMobj, gammas, betas)
-
+    get_nonroot_gammas(tHMMobj, gammas, betas) 
+    
     # first stopping condition check
-
+    
     old_LL_list = [-np.inf] * numLineages
     new_LL_list = calculate_log_likelihood(tHMMobj, NF)
     truth_list = []
     for lineage_iter in range(len(new_LL_list)):
         truth_list.append(abs(new_LL_list[lineage_iter] - old_LL_list[lineage_iter]) > tolerance)
     go = any(truth_list)
-
+    
     count = 0
-    while go: # exit the loop
+    while go: # exit the loop 
 
         if verbose:
             print('iter: {}'.format(count))
         count+=1
 
-        old_LL_list = new_LL_list
-        
-        # update loop        
+        old_LL_list = new_LL_list  
+
+        # update loop
         for num in range(numLineages):
             if not truth_list[num]:
                 break
