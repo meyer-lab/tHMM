@@ -120,12 +120,12 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                 denom = get_all_gammas(lineage, gamma_array_at_state_j)
                 for state_k in range(numStates):
                     numer = get_all_zetas(parent_state_j=state_j,
-                                             child_state_k=state_k,
-                                             lineage=lineage, 
-                                             beta_array=beta_array, 
-                                             MSD_array=MSD_array,
-                                             gamma_array=gamma_array,
-                                             T=tHMMobj.paramlist[num]["T"])
+                                          child_state_k=state_k,
+                                          lineage=lineage, 
+                                          beta_array=beta_array, 
+                                          MSD_array=MSD_array,
+                                          gamma_array=gamma_array,
+                                          T=tHMMobj.paramlist[num]["T"])
                     if denom == 0:
                         tHMMobj.paramlist[num]["T"][state_j,state_k] = 0
                     else:
