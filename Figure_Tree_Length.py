@@ -1,17 +1,18 @@
 '''Makes Figure 1 of Tree Length vs. Predictive Accuracy'''
 import unittest
 import numpy as np
-
-from BaumWelch import fit
-from DownwardRecursion import get_root_gammas, get_nonroot_gammas
-from Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
-from UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
-from tHMM import tHMM
-from tHMM_utils import max_gen, get_gen, get_parents_for_level
-from Lineage_utils import remove_NaNs, get_numLineages, init_Population
-from Lineage import generatePopulationWithTime as gpt
-from CellNode import CellNode
 from matplotlib import pyplot as plt
+
+from lineage.BaumWelch import fit
+from lineage.DownwardRecursion import get_root_gammas, get_nonroot_gammas
+from lineage.Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
+from lineage.UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
+from lineage.tHMM import tHMM
+from lineage.tHMM_utils import max_gen, get_gen, get_parents_for_level
+from lineage.Lineage_utils import remove_NaNs, get_numLineages, init_Population
+from lineage.Lineage_utils import generatePopulationWithTime as gpt
+from lineage.CellNode import CellNode
+
 
 experimentTime = 50
 initCells = [1] # there should be around 50 lineages b/c there are 50 initial cells
