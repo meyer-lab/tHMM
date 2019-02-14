@@ -18,7 +18,7 @@ from lineage.CellNode import CellNode
 
 
 
-initCells = [1] # there should be around 50 lineages b/c there are 50 initial cells
+experimentTime = 60
 locBern = [0.999]
 cGom = [2]
 scaleGom = [40]
@@ -32,72 +32,73 @@ viterbi = []
 
 lin_length = []
 
-time1 = 60
-time2 = 100
-times = range(time1,time2)
+lineage1 = 1
+lineage2 = 3
+lineages = range(lienage1,lineage2)
 
 accuracy_holder = []
 
-for num in times:
+for num in lineage:
     
-        experimentTime = num
+        initCells = [num]
         X1 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
         X = remove_NaNs(X1)
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
         fit(tHMMobj, verbose=False)
 
-        diag = np.diagonal(tHMMobj.paramlist[0]["T"])
-        chosen_state = np.argmax(diag)
-            
-        bern.append(tHMMobj.paramlist[0]["E"][chosen_state,0])
-        #print("\nRun {} Bernoulli p: {}".format(num, bern[num]))
-        c.append(tHMMobj.paramlist[0]["E"][chosen_state,1])
-        #print("Run {} Gompertz c: {}".format(num, c[num]))
-        scale.append(tHMMobj.paramlist[0]["E"][chosen_state,2])
-        #print("Run {} Gompertz scale: {}".format(num, scale[num]))
-        #print("Run {} Initial Probabilities: ".format(num))
-        #print(tHMMobj.paramlist[0]["pi"])
-        #print("Run {} Transition Matrix: ".format(num))
-        #print(tHMMobj.paramlist[0]["T"])
-        deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
-        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
-        v = Viterbi(tHMMobj, deltas, state_ptrs)
-        viterbi.append(v)
-        
-        
-        counts = np.bincount(v[0])
-        maxcount = np.argmax(counts)
-        a = np.zeros((len(v[0])),dtype=int)
-        for i in range(len(v[0])):
-            a[i] = maxcount
-        actual.append(a)
-        
-        #write a holder for all lineages
-        wrong = 0
-        for num in range(tHMMobj.numLineages): # for each lineage in our Population
-            lineage = tHMMobj.population[num] # getting the lineage in the Population by lineage index
-            '''
-            print(v)
-            print(a)
-            print(len(v[0]))
-            print(range(len(lineage)))
-            '''
-            for cell in range(len(lineage)): # for each cell in the lineage
-                if v[0][cell] == a[cell]:
-                    pass
-                    #print(viterbi[cell.index],actual[cell.index])
-                else:
-                    wrong = wrong + 1
-            
-        accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage
-        
-        accuracy_holder.append(accuracy)
-        
-        lin_length.append(len(lineage))
+        for lin in lineages
+            diag = np.diagonal(tHMMobj.paramlist[0]["T"])
+            chosen_state = np.argmax(diag)
+
+            bern.append(tHMMobj.paramlist[0]["E"][chosen_state,0])
+            #print("\nRun {} Bernoulli p: {}".format(num, bern[num]))
+            c.append(tHMMobj.paramlist[0]["E"][chosen_state,1])
+            #print("Run {} Gompertz c: {}".format(num, c[num]))
+            scale.append(tHMMobj.paramlist[0]["E"][chosen_state,2])
+            #print("Run {} Gompertz scale: {}".format(num, scale[num]))
+            #print("Run {} Initial Probabilities: ".format(num))
+            #print(tHMMobj.paramlist[0]["pi"])
+            #print("Run {} Transition Matrix: ".format(num))
+            #print(tHMMobj.paramlist[0]["T"])
+            deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
+            get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+            v = Viterbi(tHMMobj, deltas, state_ptrs)
+            viterbi.append(v)
+
+
+            counts = np.bincount(v[0])
+            maxcount = np.argmax(counts)
+            a = np.zeros((len(v[0])),dtype=int)
+            for i in range(len(v[0])):
+                a[i] = maxcount
+            actual.append(a)
+
+            #write a holder for all lineages
+            wrong = 0
+            for num in range(tHMMobj.numLineages): # for each lineage in our Population
+                lineage = tHMMobj.population[num] # getting the lineage in the Population by lineage index
+                '''
+                print(v)
+                print(a)
+                print(len(v[0]))
+                print(range(len(lineage)))
+                '''
+                for cell in range(len(lineage)): # for each cell in the lineage
+                    if v[0][cell] == a[cell]:
+                        pass
+                        #print(viterbi[cell.index],actual[cell.index])
+                    else:
+                        wrong = wrong + 1
+
+            accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage
+
+            accuracy_holder.append(accuracy)
+
+            lin_length.append(len(lineage))
         
 x=np.arange(time1,time2)
 
-
+1=2
 
 #figure 1a - accuracy
 
