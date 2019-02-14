@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 
-from lineage-growth.lineage.BaumWelch import fit
+from BaumWelch import fit
 from DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
