@@ -85,7 +85,13 @@ class tHMM:
                             temp_sum_holder.append(temp)
 
                         MSD[num][current_cell_idx,state_k] = sum(temp_sum_holder)
-
+                    MSD_row_sum = sum(MSD[num][current_cell_idx,:])
+                    if not np.allclose(MSD_row_sum, 1.0):
+                        for state_k in range(numStates):
+                            if np.isclose(MSD[num][current_cell_idx,state_k], 1.):
+                                MSD[num][current_cell_idx,state_k] = 1.
+                            else:
+                                MSD[num][current_cell_idx,state_k] = 0.
                 curr_level += 1
             MSD_row_sums = np.sum(MSD[num], axis=1)
             if not np.allclose(MSD_row_sums, 1.0):

@@ -56,13 +56,9 @@ def get_leaf_Normalizing_Factors(tHMMobj):
                     temp_sum_holder.append(joint_prob) # append the joint probability to be summed
 
                 marg_prob = sum(temp_sum_holder) # law of total probability
-                assert 0 < marg_prob <= 1
                 # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
                 # the sum of the joint probabilities is the marginal probability
                 NF_array[leaf_cell_idx] = marg_prob # each leaf is now intialized
-                if marg_prob==0:
-                    print( NF_array[leaf_cell_idx])
-                    print(NF_array)
         NF.append(NF_array)
     return NF
 
@@ -175,7 +171,6 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                         print(NF[num][node_parent_m_idx])
                         print(NF[num])
                         print(betas[num])
-                        print(lineage[num])
             curr_gen -= 1
 
 
