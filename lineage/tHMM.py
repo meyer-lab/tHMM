@@ -96,7 +96,7 @@ class tHMM:
                 curr_level += 1
             MSD_row_sums = np.sum(MSD[num], axis=1)
             if not np.allclose(MSD_row_sums, 1.0):
-                print([num])
+                print([num]) # these can be removed
                 print(MSD_row_sums)
                 print(MSD[num])
             assert np.allclose(MSD_row_sums, 1.0)
