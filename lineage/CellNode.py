@@ -23,10 +23,8 @@ class CellNode:
 
     def isParent(self):
         """ Return true if the cell has at least one daughter. """
-        if self.left or self.right:
-            return True
-        else:
-            return False
+        return self.left or self.right
+
 
     def isChild(self):
         """ Returns true if this cell has a known parent. """
@@ -34,19 +32,15 @@ class CellNode:
 
     def isRootParent(self):
         """ Returns whether this is a starting cell with no parent. """
+        bool_parent = False
         if self.parent is None:
             assert self.gen == 1
-            return True
-        else:
-            assert self.gen > 1
-            return False
+            bool_parent = True
+        return bool_parent
 
     def isLeaf(self):
         '''Returns wheter a cell is a leaf with no children)'''
-        if self.left is None and self.right is None:
-            return True
-        else:
-            return False
+        return self.left is None and self.right is None
 
     def calcTau(self):
         """ Find the cell's lifetime. """
@@ -91,9 +85,9 @@ class CellNode:
         curr_cell = self
         while curr_cell.gen > 1:
             curr_cell = curr_cell.parent
-            assert(cell_linID == curr_cell.linID)
-        assert(cell_linID == curr_cell.linID)
-        return(curr_cell)
+            assert cell_linID == curr_cell.linID
+        assert cell_linID == curr_cell.linID
+        return curr_cell
 
 def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''

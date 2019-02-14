@@ -3,6 +3,7 @@
 import numpy as np
 import scipy.stats as sp
 from .Lineage_utils import get_numLineages, init_Population
+from .tHMM_utils import max_gen, get_gen
 
 class tHMM:
     """ Main tHMM class. """
@@ -12,9 +13,9 @@ class tHMM:
         self.numStates = numStates # number of discrete hidden states
         self.numLineages = get_numLineages(self.X) # gets the number of lineages in our population
         self.population = init_Population(self.X, self.numLineages) # arranges the population into a list of lineages (each lineage might have varying length)
-        assert(self.numLineages == len(self.population))
+        assert self.numLineages == len(self.population)
         self.paramlist = self.init_paramlist() # list that is numLineages long of parameters for each lineage tree in our population
-        
+
         self.MSD = self.get_Marginal_State_Distributions() # full Marginal State Distribution holder
         self.EL = self.get_Emission_Likelihoods() # full Emission Likelihood holder
 
@@ -26,13 +27,14 @@ class tHMM:
         temp_params = {"pi": np.ones((numStates)) / numStates, # inital state distributions [K] initialized to 1/K
                        "T": np.ones((numStates, numStates)) / numStates, # state transition matrix [KxK] initialized to 1/K
                        "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
-        temp_params["E"][:,0] *= 0.5 # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][:,1] *= 2. # initializing all Gompertz c parameters to 2
-        temp_params["E"][:,2] *= 50. # initializing all Gompoertz s(cale) parameters to 50
+        for state_j in range(numStates):
+            temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
+            temp_params["E"][state_j,1] = 2.0*(1+np.random.uniform()) # initializing all Gompertz c parameters to 2
+            temp_params["E"][state_j,2] = 50.0*(1+np.random.uniform()) # initializing all Gompoertz s(cale) parameters to 50
 
         for lineage_num in range(numLineages): # for each lineage in our population
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
-            assert(len(paramlist) == lineage_num+1)
+            assert len(paramlist) == lineage_num+1
 
         return paramlist
 
@@ -42,7 +44,7 @@ class tHMM:
         This is the probability that a hidden state variable z_n is of
         state k, that is, each value in the N by K MSD array for each lineage is
         the probability
-        
+
         P(z_n = k),
 
         for all z_n in the hidden state tree
@@ -60,27 +62,44 @@ class tHMM:
         for num in range(numLineages): # for each lineage in our Population
             lineage = population[num] # getting the lineage in the Population by lineage index
             params = paramlist[num] # getting the respective params by lineage index
-            MSD_array = np.zeros((len(lineage),numStates)) # instantiating N by K array
+            MSD_array = np.zeros((len(lineage),numStates), dtype=float) # instantiating N by K array
+            for state_k in range(numStates):
+                MSD_array[0,state_k] = params["pi"][state_k]
+            MSD.append(MSD_array)
 
-            for cell in lineage: # for each cell in the lineage
-                if cell.isRootParent(): # base case uses pi parameter at the root cells of the tree
-
-                    for state in range(numStates): # for each state
-                        MSD_array[0,state] = params["pi"][state] # base case using pi parameter
-                else:
+        for num in range(numLineages):
+            lineage = population[num] # getting the lineage in the Population by lineage index
+            curr_level = 2
+            max_level = max_gen(lineage)
+            while curr_level <= max_level:
+                level = get_gen(curr_level, lineage) #get lineage for the gen
+                for cell in level:
                     parent_cell_idx = lineage.index(cell.parent) # get the index of the parent cell
-                    current_cell_idx = lineage.index(cell) # get the index of the current cell
-
+                    current_cell_idx = lineage.index(cell)
                     for state_k in range(numStates): # recursion based on parent cell
                         temp_sum_holder = [] # for all states k, calculate the sum of temp
 
                         for state_j in range(numStates): # for all states j, calculate temp
-                            temp = params["T"][state_j,state_k] * MSD_array[parent_cell_idx, state_j]
+                            temp = params["T"][state_j,state_k] * MSD[num][parent_cell_idx, state_j]
                             # temp = T_jk * P(z_parent(n) = j)
                             temp_sum_holder.append(temp)
 
-                        MSD_array[current_cell_idx,state_k] = sum(temp_sum_holder)
-            MSD.append(MSD_array) # Marginal States Distributions for each lineage in the Population
+                        MSD[num][current_cell_idx,state_k] = sum(temp_sum_holder)
+                    MSD_row_sum = sum(MSD[num][current_cell_idx,:])
+                    max_state = np.argmax(MSD[num][current_cell_idx,:])
+                    if MSD_row_sum == 0.:
+                        for state_k in range(numStates):
+                            if state_k == max_state:
+                                MSD[num][current_cell_idx,state_k] = 1
+                            else:
+                                MSD[num][current_cell_idx,state_k] = 0
+                curr_level += 1
+            MSD_row_sums = np.sum(MSD[num], axis=1)
+            if not np.allclose(MSD_row_sums, 1.0):
+                print([num])
+                print(MSD_row_sums)
+                print(MSD[num])
+            assert np.allclose(MSD_row_sums, 1.0)
         return MSD
 
     def get_Emission_Likelihoods(self):
