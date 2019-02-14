@@ -2,7 +2,7 @@
 import unittest
 import math
 import numpy as np
-from ..Lineage import Population as p
+from ..Lineage_utils import generatePopulationWithTime, gompertzParameterEstimatorNumerical, bernoulliParameterEstimatorAnalytical
 from ..CellNode import CellNode as c, generateLineageWithTime, doublingTime
 
 class TestModel(unittest.TestCase):
@@ -107,11 +107,10 @@ class TestModel(unittest.TestCase):
         cGom = [2]
         scaleGom = [0.5e2]
         initCells = [100]
-        popTime = p(experimentTime, initCells, locBern, cGom, scaleGom) # initialize "pop" as of class Population
+        popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom) # initialize "pop" as of class Population
 
         # both estimators must be within +/- 0.08 of true locBern for popTime
-        self.assertTrue(0.52 <= p.bernoulliParameterEstimatorAnalytical(popTime) <= 0.68)
-        self.assertTrue(0.52 <= p.bernoulliParameterEstimatorNumerical(popTime) <= 0.68)
+        self.assertTrue(0.52 <= bernoulliParameterEstimatorAnalytical(popTime) <= 0.68)
 
     def test_MLE_gomp(self):
         """Generate multiple lineages and estimate the gompertz parameters with MLE."""
@@ -120,10 +119,10 @@ class TestModel(unittest.TestCase):
         cGom = [2]
         scaleGom = [0.5e2]
         initCells = [100]
-        popTime = p(experimentTime, initCells, locBern, cGom, scaleGom) # initialize "pop" as of class Population
+        popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom) # initialize "pop" as of class Population
 
         # test populations w.r.t. time
-        out = p.gompertzParameterEstimatorNumerical(popTime) # out[0] is cGom and out[1] is scaleGom
+        out = gompertzParameterEstimatorNumerical(popTime) # out[0] is cGom and out[1] is scaleGom
         self.assertTrue(0 <= out[0] <= 5) # +/- 2.0 of true cGom
         self.assertTrue(30 <= out[1] <= 70) # +/- 20 of scaleGom
 

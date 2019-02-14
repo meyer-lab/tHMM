@@ -31,6 +31,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
     numStates = tHMMobj.numStates
     numLineages = tHMMobj.numLineages
     population = tHMMobj.population
+    assert numLineages == len(population)
     MSD = tHMMobj.MSD
     EL = tHMMobj.EL
 
@@ -40,7 +41,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
         lineage = population[num] # getting the lineage in the Population by index
         MSD_array = MSD[num] # getting the MSD of the respective lineage
         EL_array = EL[num] # geting the EL of the respective lineage
-        NF_array = np.zeros((len(lineage))) # instantiating N by 1 array
+        NF_array = np.zeros((len(lineage)), dtype=float) # instantiating N by 1 array
 
         for cell in lineage: # for each cell in the lineage
             if cell.isLeaf(): # if it is a leaf
@@ -56,7 +57,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
                 marg_prob = sum(temp_sum_holder) # law of total probability
                 # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
                 # the sum of the joint probabilities is the marginal probability
-                NF_array[leaf_cell_idx] = marg_prob # each cell gets its own marg prob
+                NF_array[leaf_cell_idx] = marg_prob # each leaf is now intialized
         NF.append(NF_array)
     return NF
 
@@ -150,21 +151,23 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
             parent_holder = get_parents_for_level(level, lineage)
             for node_parent_m_idx in parent_holder:
                 numer_holder = []
-                for state_k in range(tHMMobj.numStates):
+                for state_j in range(tHMMobj.numStates):
                     fac1 = get_beta_parent_child_prod(numStates=numStates,
                                                       lineage=lineage,
                                                       MSD_array=MSD_array,
                                                       T=T,
                                                       beta_array=betas[num],
-                                                      state_j=state_k,
+                                                      state_j=state_j,
                                                       node_parent_m_idx=node_parent_m_idx)
-                    fac2 = EL_array[node_parent_m_idx, state_k]
-                    fac3 = MSD_array[node_parent_m_idx, state_k]
+                    fac2 = EL_array[node_parent_m_idx, state_j]
+                    fac3 = MSD_array[node_parent_m_idx, state_j]
                     numer_holder.append(fac1*fac2*fac3)
                 NF[num][node_parent_m_idx] = sum(numer_holder)
-                for state_k in range(numStates):
-                    betas[num][node_parent_m_idx, state_k] = numer_holder[state_k] / NF[num][node_parent_m_idx]
+                for state_j in range(numStates):
+                    betas[num][node_parent_m_idx, state_j] = numer_holder[state_j] / NF[num][node_parent_m_idx]
             curr_gen -= 1
+
+
 
 def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
     '''
@@ -203,8 +206,8 @@ def beta_parent_child_func(numStates, lineage, beta_array, T, MSD_array, state_j
     to the root node) node beta and Normalizing Factor
     values.
     '''
-    assert(lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]) # check the child-parent relationship
-    assert(lineage[node_child_n_idx].isChild()) # if the child-parent relationship is correct, then the child must
+    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx] # check the child-parent relationship
+    assert lineage[node_child_n_idx].isChild() # if the child-parent relationship is correct, then the child must
     # either be the left daughter or the right daughter
     summand_holder=[] # summing over the states
 
