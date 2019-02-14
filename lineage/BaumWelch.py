@@ -156,7 +156,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                 tHMMobj.paramlist[num]["E"][state_j,0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
                 c_estimate, scale_estimate = gompertzParameterEstimatorNumerical(state_obs_holder[state_j])
                 tHMMobj.paramlist[num]["E"][state_j,1] = c_estimate
-                tHMMobj.paramlist[num]["E"][state_j,2] = scale_estimate     
+                tHMMobj.paramlist[num]["E"][state_j,2] = scale_estimate
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
@@ -177,8 +177,8 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
 
         for lineage_iter in range(len(new_LL_list)):
             calculation = abs(new_LL_list[lineage_iter] - old_LL_list[lineage_iter])
-            truth_list[lineage_iter] = (calculation > tolerance)       
-        go = any(truth_list)  
+            truth_list[lineage_iter] = (calculation > tolerance)
+        go = any(truth_list)
 
         if count > max_iter:
             if verbose:

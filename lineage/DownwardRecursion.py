@@ -19,7 +19,7 @@ def get_root_gammas(tHMMobj, betas):
         gamma_array[0,:] = betas[num][0,:]
         gammas.append(gamma_array)
 
-    return(gammas)
+    return gammas
 
 def get_nonroot_gammas(tHMMobj, gammas, betas):
     '''get the gammas for all other nodes using recursion from the root nodes'''
@@ -28,25 +28,25 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
     population = tHMMobj.population
     paramlist = tHMMobj.paramlist
     MSD = tHMMobj.MSD
-    
+
     for num in range(numLineages): # for each lineage in our Population
         lineage = population[num] # getting the lineage in the Population by index
         MSD_array = MSD[num] # getting the MSD of the respective lineage
         params = paramlist[num]
         beta_array = betas[num] # instantiating N by K array
         T = params['T']
-        
+
         curr_level = 1
         max_level = max_gen(lineage)
-        
+
         while curr_level < max_level:
             level = get_gen(curr_level, lineage) #get lineage for the gen
             for cell in level:
                 parent_idx = lineage.index(cell)
-                daughter_idxs_list = get_daughters(cell) 
+                daughter_idxs_list = get_daughters(cell)
 
                 for daughter_idx in daughter_idxs_list:
-                    child_idx = lineage.index(daughter_idx) 
+                    child_idx = lineage.index(daughter_idx)
 
                     for child_state_k in range(numStates):
                         beta_child = beta_array[child_idx, child_state_k]
@@ -62,14 +62,13 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                                                                  beta_array=beta_array,
                                                                  T=T,
                                                                  MSD_array=MSD_array,
-                                                                 state_j=parent_state_j, 
+                                                                 state_j=parent_state_j,
                                                                  node_parent_m_idx=parent_idx,
                                                                  node_child_n_idx=child_idx)
                             if beta_parent == 0:
                                 sum_holder.append(0)
                             else:
                                 sum_holder.append(T_fac*gamma_parent/beta_parent)
-                            
                         gamma_child_state_k = coeff * sum(sum_holder)
                         gammas[num][child_idx, child_state_k] = gamma_child_state_k
                         for state_k in range(numStates):

@@ -87,7 +87,7 @@ class CellNode:
             curr_cell = curr_cell.parent
             assert cell_linID == curr_cell.linID
         assert cell_linID == curr_cell.linID
-        return(curr_cell)
+        return curr_cell
 
 def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
