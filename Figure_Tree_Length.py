@@ -22,66 +22,57 @@ initCells = [1] # there should be around 50 lineages b/c there are 50 initial ce
 locBern = [0.999]
 cGom = [2]
 scaleGom = [40]
-reps = 10
+reps = 3
 numStates = 2
-bern = []
-c = []
-scale = []
-actual = []
-viterbi = []
 
 lin_length = []
 
-time1 = 60
+accuracy_holder_holder = []
+bern = []
+c = []
+scale = []
+cells = []
+
+
+accuracy_st = []
+bern_st = []
+c_st = []
+scale_st = []
+cells_st = []
+
+time1 = 50
 time2 = 100
 times = range(time1,time2)
 
-accuracy_holder = []
-
-for num in times:
-    
-        experimentTime = num
+for experimentTime in times:
+    accuracy_holder = []
+    bern_holder = []
+    c_holder = []
+    scale_holder = []
+    cells_holder = []
+    for rep in range(reps):
         X1 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
         X = remove_NaNs(X1)
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
         fit(tHMMobj, verbose=False)
-
         diag = np.diagonal(tHMMobj.paramlist[0]["T"])
         chosen_state = np.argmax(diag)
             
-        bern.append(tHMMobj.paramlist[0]["E"][chosen_state,0])
-        #print("\nRun {} Bernoulli p: {}".format(num, bern[num]))
-        c.append(tHMMobj.paramlist[0]["E"][chosen_state,1])
-        #print("Run {} Gompertz c: {}".format(num, c[num]))
-        scale.append(tHMMobj.paramlist[0]["E"][chosen_state,2])
-        #print("Run {} Gompertz scale: {}".format(num, scale[num]))
-        #print("Run {} Initial Probabilities: ".format(num))
-        #print(tHMMobj.paramlist[0]["pi"])
-        #print("Run {} Transition Matrix: ".format(num))
-        #print(tHMMobj.paramlist[0]["T"])
         deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         v = Viterbi(tHMMobj, deltas, state_ptrs)
-        viterbi.append(v)
-        
-        
+
         counts = np.bincount(v[0])
         maxcount = np.argmax(counts)
         a = np.zeros((len(v[0])),dtype=int)
         for i in range(len(v[0])):
             a[i] = maxcount
-        actual.append(a)
         
         #write a holder for all lineages
         wrong = 0
         for num in range(tHMMobj.numLineages): # for each lineage in our Population
             lineage = tHMMobj.population[num] # getting the lineage in the Population by lineage index
-            '''
-            print(v)
-            print(a)
-            print(len(v[0]))
-            print(range(len(lineage)))
-            '''
+
             for cell in range(len(lineage)): # for each cell in the lineage
                 if v[0][cell] == a[cell]:
                     pass
@@ -92,22 +83,71 @@ for num in times:
         accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage
         
         accuracy_holder.append(accuracy)
+        bern_holder.append(tHMMobj.paramlist[0]["E"][chosen_state,0])
+        c_holder.append(tHMMobj.paramlist[0]["E"][chosen_state,1])
+        scale_holder.append(tHMMobj.paramlist[0]["E"][chosen_state,2])
+        cells_holder.append(len(lineage))
         
-        lin_length.append(len(lineage))
+    accuracy_holder_holder.append(np.mean(accuracy_holder))
+    bern.append(np.mean(bern_holder))
+    c.append(np.mean(c_holder))
+    scale.append(np.mean(scale_holder))
+    cells.append(np.mean(cells_holder))
+
+    accuracy_st.append(np.std(accuracy_holder))
+    bern_st.append(np.std(bern_holder))
+    c_st.append(np.std(c_holder))
+    scale_st.append(np.std(scale_holder))
+    cells_st.append(np.std(cells_holder))
         
-x=np.arange(time1,time2)
 
-
+x=cells
 
 #figure 1a - accuracy
 
 
-fig1=plt.figure()
-ax=fig1.add_subplot(111)
-plt.errorbar(lin_length, accuracy_holder, yerr=np.std(bern), fmt='o', c='b',marker="^",label='accuracy',fillstyle='none')
+
+
+# Now switch to a more OO interface to exercise more features.
+fig, axs = plt.subplots(nrows=2, ncols=2, sharex=True)
+ax = axs[0,0]
+ax.set_xscale('log')
+ax.errorbar(x, accuracy_holder_holder, yerr=accuracy_st, fmt='o', c='b',marker="^",label='accuracy',fillstyle='none')
+ax.axhline(y=1, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r',)
+
+plt.legend(loc=2)
+ax.set_title('Accuracy')
+#ax.locator_params(nbins=4)
+ax = axs[0,1]
+ax.set_xscale('log')
+ax.errorbar(x, bern, yerr=bern_st, fmt='o', c='b',marker="^",label='bern',fillstyle='none')
+ax.set_title('Bernoulli Parameter')
+ax.axhline(y=locBern, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r',)
+
+ax = axs[1,0]
+ax.set_xscale('log')
+ax.errorbar(x,c,yerr = c_st,fmt='o',c='g',marker=(8,2,0),label='c')
+ax.axhline(y=cGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r',)
+ax.set_title('Gompertz C')
+plt.xlabel('Average Number of Cells per Lineage')
+
+ax = axs[1,1]
+ax.set_xscale('log')
+ax.errorbar(x,scale,yerr = scale_st,fmt='o',c='k',label='scale')
+ax.axhline(y=scaleGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r',)
+ax.set_title('Gompertz Scale')
+
+fig.suptitle('Variable errorbars')
+plt.xlabel('Average Number of Cells per Lineage')
+plt.savefig('test.png')
+
+'''fig, ax = plt.subplots(2,2)
+
+ax=fig.add_subplot(111)
+plt.errorbar(x, accuracy_holder_holder, yerr=np.std(bern_st), fmt='o', c='b',marker="^",label='accuracy',fillstyle='none')
 plt.axhline(y=1, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r',)
 plt.xscale('log')
-plt.xlabel('Cells')
+plt.xlabel('Average Number of Cells per Lineage')
 plt.legend(loc=2)
 plt.savefig('Figure1a.png')
 
@@ -118,8 +158,8 @@ plt.savefig('Figure1a.png')
 #ax=fig2.add_subplot(111)
 
 fig2=plt.figure()
-ax=fig2.add_subplot(111)
-plt.errorbar(lin_length, bern, yerr=np.std(bern), fmt='o', c='b',marker="^",label='bern',fillstyle='none')
+ax=fig.add_subplot(212)
+plt.errorbar(x, bern, yerr=np.std(bern_st), fmt='o', c='b',marker="^",label='bern',fillstyle='none')
 plt.axhline(y=locBern, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r',)
 plt.xscale('log')
 plt.xlabel('Cells')
@@ -132,10 +172,10 @@ plt.savefig('Figure1b.png')
 
 
 fig3=plt.figure()
-ax=fig3.add_subplot(111)
+ax=fig3.add_subplot(321)
 
 
-plt.errorbar(lin_length,c,yerr = np.std(c),fmt='o',c='g',marker=(8,2,0),label='c')
+plt.errorbar(x,c,yerr = np.std(c_st),fmt='o',c='g',marker=(8,2,0),label='c')
 plt.axhline(y=cGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r',)
 plt.xscale('log')
 plt.xlabel('Cells')
@@ -145,13 +185,13 @@ plt.savefig('Figure1c.png')
 #fig 4
 
 fig4=plt.figure()
-ax=fig4.add_subplot(111)
+ax=fig4.add_subplot(422)
 
 
-plt.errorbar(lin_length,scale,yerr = np.std(scale),fmt='o',c='k',label='scale')
+plt.errorbar(x,scale,yerr = np.std(scale_st),fmt='o',c='k',label='scale')
 #plt.plot(y * points, linestyle=linestyle, color=color, linewidth=3)
 plt.axhline(y=scaleGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r',)
 plt.xscale('log')
 plt.xlabel('Cells')
 plt.legend(loc=2)
-plt.savefig('Figure1d.png')
+plt.savefig('Figure1d.png')'''

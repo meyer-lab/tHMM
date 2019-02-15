@@ -18,99 +18,130 @@ from lineage.CellNode import CellNode
 
 
 
-experimentTime = 60
+experimentTime = 90
 locBern = [0.999]
 cGom = [2]
 scaleGom = [40]
-reps = 10
+reps = 3
 numStates = 2
 bern = []
 c = []
 scale = []
-actual = []
-viterbi = []
 
-lin_length = []
+
+accuracy_st = []
+bern_st = []
+c_st = []
+scale_st = []
+
+
+length_holder_tHMM = []
 
 lineage1 = 1
 lineage2 = 3
-lineages = range(lienage1,lineage2)
+populations = range(lineage1,lineage2)
 
-accuracy_holder = []
+accuracy_holder_tHMM = [] #list of lists of lists
 
-for num in lineage:
-    
+for num in populations: #a pop with num number of lineages
+    accuracy_holder_lin = [] #list of lists        
+    bern_holder = []
+    c_holder = []
+    scale_holder = []  
+    for rep in range(reps):
+        accuracy_rep = []
+        bern_rep = []
+        c_rep = []
+        scale_rep = []
+        
         initCells = [num]
         X1 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
         X = remove_NaNs(X1)
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
         fit(tHMMobj, verbose=False)
-
-        for lin in lineages
-            diag = np.diagonal(tHMMobj.paramlist[0]["T"])
+        for lin in range(tHMMobj.numLineages): #go through each lineage for a thmm with a set of lineages
+            diag = np.diagonal(tHMMobj.paramlist[lin]["T"])
             chosen_state = np.argmax(diag)
-
-            bern.append(tHMMobj.paramlist[0]["E"][chosen_state,0])
-            #print("\nRun {} Bernoulli p: {}".format(num, bern[num]))
-            c.append(tHMMobj.paramlist[0]["E"][chosen_state,1])
-            #print("Run {} Gompertz c: {}".format(num, c[num]))
-            scale.append(tHMMobj.paramlist[0]["E"][chosen_state,2])
-            #print("Run {} Gompertz scale: {}".format(num, scale[num]))
-            #print("Run {} Initial Probabilities: ".format(num))
-            #print(tHMMobj.paramlist[0]["pi"])
-            #print("Run {} Transition Matrix: ".format(num))
-            #print(tHMMobj.paramlist[0]["T"])
             deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
             get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
             v = Viterbi(tHMMobj, deltas, state_ptrs)
-            viterbi.append(v)
-
-
-            counts = np.bincount(v[0])
+            counts = np.bincount(v[lin])
             maxcount = np.argmax(counts)
-            a = np.zeros((len(v[0])),dtype=int)
-            for i in range(len(v[0])):
+            a = np.zeros((len(v[lin])),dtype=int)
+            for i in range(len(v[lin])):
                 a[i] = maxcount
-            actual.append(a)
-
-            #write a holder for all lineages
             wrong = 0
-            for num in range(tHMMobj.numLineages): # for each lineage in our Population
-                lineage = tHMMobj.population[num] # getting the lineage in the Population by lineage index
-                '''
-                print(v)
-                print(a)
-                print(len(v[0]))
-                print(range(len(lineage)))
-                '''
-                for cell in range(len(lineage)): # for each cell in the lineage
-                    if v[0][cell] == a[cell]:
-                        pass
-                        #print(viterbi[cell.index],actual[cell.index])
-                    else:
-                        wrong = wrong + 1
+            lineage = tHMMobj.population[lin] # getting the lineage in the Population by lineage index
+            for cell in range(len(lineage)): # for each cell in the lineage
+                if v[lin][cell] == a[cell]:
+                    pass
+                            #print(viterbi[cell.index],actual[cell.index])
+                else:
+                    wrong = wrong + 1
 
             accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage
-
-            accuracy_holder.append(accuracy)
-
-            lin_length.append(len(lineage))
+            
+            accuracy_rep.append(accuracy)
+            bern_rep.append(tHMMobj.paramlist[lin]["E"][chosen_state,0])
+            c_rep.append(tHMMobj.paramlist[lin]["E"][chosen_state,1])
+            scale_rep.append(tHMMobj.paramlist[lin]["E"][chosen_state,2])
         
-x=np.arange(time1,time2)
+        accuracy_holder_lin.append(np.mean(accuracy_rep))
+        bern_holder.append(np.mean(bern_rep))
+        c_holder.append(np.mean(c_rep))
+        scale_holder.append(np.mean(scale_rep))
+    
+    accuracy_holder_tHMM.append(np.mean(accuracy_holder_lin))
+    length_holder_tHMM.append(num)
+    bern.append(np.mean(bern_holder))
+    c.append(np.mean(c_holder))
+    scale.append(np.mean(scale_holder))
+    
+    accuracy_st.append(np.std(accuracy_holder_lin))
+    bern_st.append(np.std(bern_holder))
+    c_st.append(np.std(c_holder))
+    scale_st.append(np.std(scale_holder))
 
-1=2
+            
+x=np.arange(lineage1,lineage2)
 
-#figure 1a - accuracy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''#figure 1a - accuracy
 
 
 fig1=plt.figure()
 ax=fig1.add_subplot(111)
-plt.errorbar(lin_length, accuracy_holder, yerr=np.std(bern), fmt='o', c='b',marker="^",label='accuracy',fillstyle='none')
+plt.errorbar(length_holder_tHMM, accuracy_holder_tHMM, yerr=accuracy_st, fmt='o', c='b',marker="^",label='accuracy',fillstyle='none')
 plt.axhline(y=1, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r',)
 plt.xscale('log')
 plt.xlabel('Cells')
 plt.legend(loc=2)
-plt.savefig('Figure1a.png')
+plt.savefig('Figure2a.png')
 
 #figure 1b - bern
 
@@ -120,14 +151,14 @@ plt.savefig('Figure1a.png')
 
 fig2=plt.figure()
 ax=fig2.add_subplot(111)
-plt.errorbar(lin_length, bern, yerr=np.std(bern), fmt='o', c='b',marker="^",label='bern',fillstyle='none')
+plt.errorbar(length_holder_tHMM, bern, yerr=bern_st, fmt='o', c='b',marker="^",label='bern',fillstyle='none')
 plt.axhline(y=locBern, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r',)
 plt.xscale('log')
 plt.xlabel('Cells')
 #ax.errorbar(lin_length,bern,yerr = np.std(bern),c='b',marker="^",ls='--',label='bern',fillstyle='none')
 
 plt.legend(loc=2)
-plt.savefig('Figure1b.png')
+plt.savefig('Figure2b.png')
 
 ###figure 1c -gomp
 
@@ -136,12 +167,12 @@ fig3=plt.figure()
 ax=fig3.add_subplot(111)
 
 
-plt.errorbar(lin_length,c,yerr = np.std(c),fmt='o',c='g',marker=(8,2,0),label='c')
+plt.errorbar(length_holder_tHMM,c,yerr = c_st,fmt='o',c='g',marker=(8,2,0),label='c')
 plt.axhline(y=cGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r',)
 plt.xscale('log')
 plt.xlabel('Cells')
 plt.legend(loc=2)
-plt.savefig('Figure1c.png')
+plt.savefig('Figure2c.png')
 
 #fig 4
 
@@ -149,10 +180,11 @@ fig4=plt.figure()
 ax=fig4.add_subplot(111)
 
 
-plt.errorbar(lin_length,scale,yerr = np.std(scale),fmt='o',c='k',label='scale')
+plt.errorbar(length_holder_tHMM,scale,yerr = scale_st,fmt='o',c='k',label='scale')
 #plt.plot(y * points, linestyle=linestyle, color=color, linewidth=3)
 plt.axhline(y=scaleGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r',)
 plt.xscale('log')
 plt.xlabel('Cells')
 plt.legend(loc=2)
-plt.savefig('Figure1d.png')
+plt.savefig('Figure2d.png')
+'''
