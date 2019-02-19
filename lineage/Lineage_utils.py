@@ -5,23 +5,35 @@ import scipy.stats as sp
 from scipy.optimize import minimize
 from .CellNode import generateLineageWithTime
 
-def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom):
+def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None):
     ''' generates a population of lineages that abide by distinct parameters. '''
 
     assert len(initCells) == len(locBern) == len(cGom) == len(scaleGom) # make sure all lists have same length
     numLineages = len(initCells)
     population = [] # create empty list
 
-    for ii in range(numLineages):
-        temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii]) # create a temporary lineage
-        for cell in temp:
-            sum_prev = 0
-            j = 0
-            while j < ii:
-                sum_prev += initCells[j]
-                j += 1
-            cell.linID += sum_prev # shift the lineageID so there's no overlap with populations of different parameters
-            population.append(cell) # append all individual cells into a population
+    if switchT is None: # when there is no heterogeneity over time
+        for ii in range(numLineages):
+            temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii]) # create a temporary lineage
+            for cell in temp:
+                sum_prev = 0
+                j = 0
+                while j < ii:
+                    sum_prev += initCells[j]
+                    j += 1
+                cell.linID += sum_prev # shift the lineageID so there's no overlap with populations of different parameters
+                population.append(cell) # append all individual cells into a population
+    else: # when the second set of parameters is defined
+        for ii in range(numLineages):
+            temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii]) # create a temporary lineage
+            for cell in temp:
+                sum_prev = 0
+                j = 0
+                while j < ii:
+                    sum_prev += initCells[j]
+                    j += 1
+                cell.linID += sum_prev # shift the lineageID so there's no overlap with populations of different parameters
+                population.append(cell) # append all individual cells into a population
 
     return population
 
