@@ -140,15 +140,18 @@ class TestModel(unittest.TestCase):
     def test_hetergeneous_pop(self):
         """ Calls generatePopulationWithTime when there is a switch in parameters over the course of the experiment's time. """
         experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
+        # first set of parameters (from t=0 to t=100)
         locBern = [0.6]
         cGom = [2]
         scaleGom = [0.5e2]
         initCells = [100]
-        switchT = 100
+        switchT = 100 # switch at t=100
+        # second set of parameters (from t=100 to t=experimentTime)
         bern2 = [0.85]
         cG2 = [2]
         scaleG2 = [40]
-        popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2) # initialize "pop" as of class Population
+        popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2) # initialize "pop" as of class Populations
+        bernEstimate = bernoulliParameterEstimatorAnalytical(popTime)
 
         # the Bernoulli parameter estimate should be greater than than locBern since bern2>locBern
-        self.assertTrue(bernoulliParameterEstimatorAnalytical(popTime) > 0.6)
+        self.assertTrue(bernEstimate > 0.7)
