@@ -136,3 +136,19 @@ class TestModel(unittest.TestCase):
         # doubles quicker when cell lifetime is shorter (larger c & lower scale == shorter life)
         self.assertGreater(base, doublingTime(100, 0.7, 3, 50))
         self.assertGreater(base, doublingTime(100, 0.7, 2, 40))
+
+    def test_hetergeneous_pop(self):
+        """ Calls generatePopulationWithTime when there is a switch in parameters over the course of the experiment's time. """
+        experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
+        locBern = [0.6]
+        cGom = [2]
+        scaleGom = [0.5e2]
+        initCells = [100]
+        switchT = 100
+        bern2 = [0.85]
+        cG2 = [2]
+        scaleG2 = [40]
+        popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2) # initialize "pop" as of class Population
+
+        # the Bernoulli parameter estimate should be greater than than locBern since bern2>locBern
+        self.assertTrue(bernoulliParameterEstimatorAnalytical(popTime) > 0.6)
