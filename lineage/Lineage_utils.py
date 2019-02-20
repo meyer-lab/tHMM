@@ -2,7 +2,7 @@
 
 import numpy as np
 import scipy.stats as sp
-from scipy.optimize import minimize, least_squares
+from scipy.optimize import minimize
 from .CellNode import generateLineageWithTime
 
 def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None):
@@ -156,10 +156,10 @@ def gompertzAnalytical(X):
     def error_b(b):
         """ Returns the square root of the squared error between left and right terms. """
         error = np.absolute(left_term(b) - right_term(b))
-        print(error)
+        print("b: " + str(b) + ", error: " + str(error))
         return error
 
-    res = minimize(error_b, x0=[(1./45.)], bounds=((1E-3,10),), method="SLSQP", options={'maxiter': 1e10})   
+    res = minimize(error_b, x0=[(1./45.)], bounds=((1E-3,10),), method="COBYLA", options={'maxiter': 1e10})   
     b = res.x
     print("res.x: " + str(res.x))
     # solve for a in terms of b
