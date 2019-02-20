@@ -159,12 +159,9 @@ def gompertzAnalytical(X):
         print("b: " + str(b) + ", error: " + str(error))
         return error
 
-    cons_dict=[{'type': 'ineq',
-                 'fun': lambda b: 1.-b}, # 1.-b>0
-               {'type': 'ineq',
-                 'fun': lambda b: b-0.01}] # b-0.01>0
+    # cons_dict=[{'type': 'ineq', 'fun': lambda b: 1.-b}, {'type': 'ineq','fun': lambda b: b-0.01}] # b-0.01>0
     # res = minimize(error_b, x0=[(1./45.)], bounds=((1E-3,10),), method="SLSQP", options={'maxiter': 1e10})
-    res = minimize(error_b, x0=[(1./45.)], constraints=cons_dict, method="COBYLA", options={'maxiter': 1e10})
+    res = minimize(error_b, x0=[(1./45.)], method="powell", options={'maxiter': 1e10})
     b = res.x
     print("res.x: " + str(res.x))
     # solve for a in terms of b
