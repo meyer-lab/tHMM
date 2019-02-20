@@ -131,7 +131,7 @@ class TestModel(unittest.TestCase):
         experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
         locBern = [0.6]
         cGom = [2]
-        scaleGom = [0.5e2]
+        scaleGom = [50.]
         initCells = [100]
         popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom) # initialize "pop" as of class Population
 
