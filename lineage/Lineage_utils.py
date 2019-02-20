@@ -2,7 +2,7 @@
 
 import numpy as np
 import scipy.stats as sp
-from scipy.optimize import minimize
+from scipy.optimize import minimize, least_squares
 from .CellNode import generateLineageWithTime
 
 def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None):
@@ -126,6 +126,7 @@ def gompertzAnalytical(X):
             tau_holder.append(cell.tau) # append the cell lifetime
 
     n = len(tau_holder) # number of cells
+    print("n: " + str(n))
 
     def help_exp(b):
         """ Returns an expression commonly used in the analytical solution. """
