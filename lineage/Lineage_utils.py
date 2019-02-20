@@ -116,3 +116,54 @@ def gompertzParameterEstimatorNumerical(X):
     res = minimize(negLogLikelihoodGomp, x0=[2,40], bounds=((0,10),(0,100)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
 
     return res.x
+
+def gompertzAnalytical(X):
+    """ Uses analytical solution for one of the two gompertz parameters. """
+    # create list of all our taus
+    tau_holder = []
+    for cell in X: # go through every cell in the population
+        if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
+            tau_holder.append(cell.tau) # append the cell lifetime
+
+    n = len(tau_holder) # number of cells
+
+    def help_exp(b):
+        """ Returns an expression commonly used in the analytical solution. """
+        temp = []
+        for ii in range(n):
+            temp.append(np.exp(b*tau_holder[ii]))
+        return sum(temp)
+
+    def left_term(b):
+        """ Returns one of the two expressions used in the MLE for b. """
+        temp = []
+        denom = (help_exp(b) / n) - 1.0 # denominator is not dependent on ii
+        for ii in range(n):
+            numer = tau_holder[ii] * np.exp(b*tau_holder[ii])
+            temp.append(numer/denom)
+        return sum(temp)
+
+    def right_term(b):
+        """ Returns the other expression used in the MLE for b. """
+        temp = []
+        denom = ((b/n) * help_exp(b)) - b
+        for ii in range(n):
+            numer = np.exp(b*tau_holder[ii]) - 1.0
+            temp.append((numer/denom) + tau_holder[ii])
+        return sum(temp)
+
+    def error_b(b):
+        """ Returns the square root of the squared error between left and right terms. """
+        return np.sqrt((left_term(b) - right_term(b))**2)
+
+    res = minimize(error_b, x0=(1./40.), bounds=(0,10), method="SLSQP", options={'maxiter': 1e7})   
+    b = res.x
+    # solve for a in terms of b
+    a = b / ((help_exp(b) / n) - 1.0)
+
+    # convert from their a and b to our cGom and scale
+    c = a / b
+    scale = 1.0 / b
+
+    return c, scale
+        

@@ -2,7 +2,7 @@
 import unittest
 import math
 import numpy as np
-from ..Lineage_utils import generatePopulationWithTime, gompertzParameterEstimatorNumerical, bernoulliParameterEstimatorAnalytical
+from ..Lineage_utils import generatePopulationWithTime, gompertzParameterEstimatorNumerical, bernoulliParameterEstimatorAnalytical, gompertzAnalytical
 from ..CellNode import CellNode as c, generateLineageWithTime, doublingTime
 
 class TestModel(unittest.TestCase):
@@ -125,6 +125,22 @@ class TestModel(unittest.TestCase):
         out = gompertzParameterEstimatorNumerical(popTime) # out[0] is cGom and out[1] is scaleGom
         self.assertTrue(0 <= out[0] <= 5) # +/- 2.0 of true cGom
         self.assertTrue(30 <= out[1] <= 70) # +/- 20 of scaleGom
+        
+    def test_MLE_gomp_analytical(self):
+        """ Use the analytical shortcut to estimate the gompertz parameters. """
+        experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
+        locBern = [0.6]
+        cGom = [2]
+        scaleGom = [0.5e2]
+        initCells = [100]
+        popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom) # initialize "pop" as of class Population
+
+        # test populations w.r.t. time
+        c_out, scale_out = gompertzAnalytical(popTime) # out[0] is cGom and out[1] is scaleGom
+        print("c_out: " + str(c_out))
+        print("scale_out: " + str(scale_out))
+        self.assertTrue(0 <= c_out <= 5) # +/- 2.0 of true cGom
+        self.assertTrue(30 <= scale_out <= 70) # +/- 20 of scaleGom
 
     def test_doubleT(self):
         """Check for basic functionality of doubleT."""
