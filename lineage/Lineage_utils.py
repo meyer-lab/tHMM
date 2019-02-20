@@ -159,7 +159,9 @@ def gompertzAnalytical(X):
         print("b: " + str(b) + ", error: " + str(error))
         return error
 
-    res = minimize(error_b, x0=[(1./45.)], bounds=((1E-3,10),), method="COBYLA", options={'maxiter': 1e10})   
+    con = [{'type': 'ineq', 'fun': lambda x: x > 0}] # constrain function to be larger than 0?
+    # res = minimize(error_b, x0=[(1./45.)], bounds=((1E-3,10),), method="SLSQP", options={'maxiter': 1e10})
+    res = minimize(error_b, x0=[(1./45.)], constraints=con, method="COBYLA", options={'maxiter': 1e10})
     b = res.x
     print("res.x: " + str(res.x))
     # solve for a in terms of b
