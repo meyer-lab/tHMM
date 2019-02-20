@@ -156,7 +156,7 @@ def gompertzAnalytical(X):
         """ Returns the square root of the squared error between left and right terms. """
         return np.sqrt((left_term(b) - right_term(b))**2)
 
-    res = minimize(error_b, x0=(1./40.), bounds=(0,10), method="SLSQP", options={'maxiter': 1e7})   
+    res = minimize(error_b, x0=[(1./40.)], bounds=((0,10),), method="SLSQP", options={'maxiter': 1e7})   
     b = res.x
     # solve for a in terms of b
     a = b / ((help_exp(b) / n) - 1.0)
