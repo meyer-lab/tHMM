@@ -399,8 +399,8 @@ class TestModel(unittest.TestCase):
 
     def test_Baum_Welch_(self):
         '''tests baum welch simply by running it.'''
-                # creating a heterogeneous tree
-        
+        # creating a heterogeneous tree
+
         MASexperimentTime = 125
         MASinitCells = [1]
         MASlocBern = [0.99999999999]
@@ -411,7 +411,7 @@ class TestModel(unittest.TestCase):
         while len(masterLineage) == 0:
             masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
             masterLineage = remove_NaNs(masterLineage)
-        print(len(masterLineage))        
+        print(len(masterLineage))
         experimentTime2 = 75
         initCells2 = [1]
         locBern2 = [0.7]
@@ -423,7 +423,7 @@ class TestModel(unittest.TestCase):
             sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
             sublineage2 = remove_NaNs(sublineage2)
         print(len(sublineage2))
-        
+
         cell_endT_holder = []
         for cell in masterLineage:
             cell_endT_holder.append(cell.endT)
@@ -431,7 +431,7 @@ class TestModel(unittest.TestCase):
         master_cell_endT = max(cell_endT_holder) # get the longest tau in the list
         master_cell_endT_idx = np.argmax(cell_endT_holder) # get the idx of the longest tau in the lineage
         master_cell = masterLineage[master_cell_endT_idx] # get the master cell via the longest tau index
-        
+
         for cell in sublineage2:
             cell.linID = master_cell.linID
             cell.gen += master_cell.gen
@@ -442,7 +442,7 @@ class TestModel(unittest.TestCase):
         sublineage2[0].parent = master_cell
         newLineage = masterLineage + sublineage2
         print(len(newLineage))
-        
+
         X = remove_NaNs(newLineage)
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
