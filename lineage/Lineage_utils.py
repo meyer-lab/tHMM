@@ -161,7 +161,7 @@ def gompertzAnalytical(X):
 
     # cons_dict=[{'type': 'ineq', 'fun': lambda b: 1.-b}, {'type': 'ineq','fun': lambda b: b-0.01}] # b-0.01>0
     # res = minimize(error_b, x0=[(1./45.)], bounds=((1E-3,10),), method="SLSQP", options={'maxiter': 1e10})
-    res = minimize(error_b, x0=[(45.)], method="powell", options={'maxiter': 1e10})
+    res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
     b = 1. / res.x
     print("res.x: " + str(res.x))
     # solve for a in terms of b
