@@ -176,6 +176,4 @@ def gompertzAnalytical(X):
         scale = res.x
         result = [c, scale] # true estimate with non-empty sequence of data
 
-
     return result
-        
