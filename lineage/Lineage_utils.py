@@ -124,7 +124,12 @@ def gompertzParameterEstimatorNumerical(X):
     return result
 
 def gompertzAnalytical(X):
-    """ Uses analytical solution for one of the two gompertz parameters. """
+    """
+    Uses analytical solution for one of the two gompertz parameters.
+    See Pg. 14 of The Gompertz distribution and Maximum Likelihood Estimation of its parameters - a revision
+    by Adam Lenart
+    November 28, 2011
+    """
     # create list of all our taus
     tau_holder = []
     for cell in X: # go through every cell in the population
