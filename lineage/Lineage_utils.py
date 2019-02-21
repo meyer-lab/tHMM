@@ -95,12 +95,15 @@ def init_Population(X, numLineages):
 
 def bernoulliParameterEstimatorAnalytical(X):
     '''Estimates the Bernoulli parameter for a given population using MLE analytically'''
-    fate_holder = [1] # instantiates list to hold cell fates as 1s or 0s
+    fate_holder = [] # instantiates list to hold cell fates as 1s or 0s
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
+    result = 0.5 # dummy estimate
+    if len(fate_holder) != 0:
+        result = (sum(fate_holder))/ (len(fate_holder)) # add up all the 1s and divide by the total length (finding the average)
 
-    return (sum(fate_holder) + 1)/ (len(fate_holder) + 2) # add up all the 1s and divide by the total length (finding the average)
+    return result 
 
 def gompertzParameterEstimatorNumerical(X):
     '''Estimates the Gompertz parameters for a given population using MLE numerically'''
@@ -120,7 +123,7 @@ def gompertzParameterEstimatorNumerical(X):
 def gompertzAnalytical(X):
     """ Uses analytical solution for one of the two gompertz parameters. """
     # create list of all our taus
-    tau_holder = []
+    tau_holder = [20]
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             tau_holder.append(cell.tau) # append the cell lifetime
