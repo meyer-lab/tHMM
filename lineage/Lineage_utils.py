@@ -107,7 +107,7 @@ def bernoulliParameterEstimatorAnalytical(X):
 
 def gompertzParameterEstimatorNumerical(X):
     '''Estimates the Gompertz parameters for a given population using MLE numerically'''
-    tau_holder = [20] # instantiates list with a dummy cell
+    tau_holder = [] # instantiates list with a dummy cell
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             tau_holder.append(cell.tau) # append the cell lifetime
@@ -116,14 +116,17 @@ def gompertzParameterEstimatorNumerical(X):
         """ Calculates the log likelihood for gompertz. """
         return -1*np.sum(sp.gompertz.logpdf(x=tau_holder,c=gompParams[0], scale=gompParams[1]))
 
-    res = minimize(negLogLikelihoodGomp, x0=[2,40], bounds=((0,10),(0,100)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
-
-    return res.x
+    result = [2,50] # dummy estimate
+    if len(tau_holder) != 0:
+        res = minimize(negLogLikelihoodGomp, x0=result, bounds=((0,10),(0,100)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
+        result = res.x # true estimate with non-empty sequence of data
+  
+    return result
 
 def gompertzAnalytical(X):
     """ Uses analytical solution for one of the two gompertz parameters. """
     # create list of all our taus
-    tau_holder = [20]
+    tau_holder = []
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             tau_holder.append(cell.tau) # append the cell lifetime
@@ -159,16 +162,20 @@ def gompertzAnalytical(X):
         """ Returns the square root of the squared error between left and right terms. """
         error = np.absolute(left_term(1./scale) - right_term(1./scale))
         return error
+    
+    result = [2,50] # dummy estimate
+    if len(tau_holder) != 0:
+        #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
+        res = minimize_scalar(error_b, bounds=(1, 100), method='bounded')
+        b = 1. / res.x
+        # solve for a in terms of b
+        a = b / ((help_exp(b) / n) - 1.0)
 
-    #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
-    res = minimize_scalar(error_b, bounds=(1, 100), method='bounded')
-    b = 1. / res.x
-    # solve for a in terms of b
-    a = b / ((help_exp(b) / n) - 1.0)
+        # convert from their a and b to our cGom and scale
+        c = a / b
+        scale = res.x
+        result = [c, scale] # true estimate with non-empty sequence of data
 
-    # convert from their a and b to our cGom and scale
-    c = a / b
-    scale = res.x
 
-    return c, scale
+    return result
         
