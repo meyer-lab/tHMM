@@ -126,8 +126,8 @@ class TestModel(unittest.TestCase):
         """ Use the analytical shortcut to estimate the gompertz parameters. """
         # test populations w.r.t. time
         c_out, scale_out = gompertzAnalytical(self.pop1)
-        self.assertTrue(0 <= c_out <= 5) # +/- 2.0 of true cGom
-        self.assertTrue(30 <= scale_out <= 70) # +/- 20 of scaleGom
+        self.assertTrue(0 <= c_out <= 5) # +/- 3.0 of true cGom
+        self.assertTrue(35 <= scale_out <= 65) # +/- 15 of scaleGom
 
     def test_doubleT(self):
         """Check for basic functionality of doubleT."""
