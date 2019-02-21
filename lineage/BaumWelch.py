@@ -27,13 +27,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
                                                            MSD_array=MSD_array,
                                                            state_j=state_j,
                                                            node_parent_m_idx=node_parent_m_idx)
-    if beta_parent_child_state_j == 0:
-        zeta = 0
-        print((MSD_child_state_k*beta_parent_child_state_j))
-        print(MSD_child_state_k)
-        print(beta_array)
-    else:
-        zeta = beta_child_state_k*T[state_j,state_k]*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child_state_j)
+    zeta = beta_child_state_k*T[state_j,state_k]*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child_state_j)
     return zeta
 
 def get_all_gammas(lineage, gamma_array_at_state_j):
