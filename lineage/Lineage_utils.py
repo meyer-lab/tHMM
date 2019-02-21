@@ -126,7 +126,6 @@ def gompertzAnalytical(X):
             tau_holder.append(cell.tau) # append the cell lifetime
 
     n = len(tau_holder) # number of cells
-    print("n: " + str(n))
 
     def help_exp(b):
         """ Returns an expression commonly used in the analytical solution. """
@@ -156,15 +155,11 @@ def gompertzAnalytical(X):
     def error_b(scale):
         """ Returns the square root of the squared error between left and right terms. """
         error = np.absolute(left_term(1./scale) - right_term(1./scale))
-        print("scale: " + str(scale) + ", error: " + str(error))
         return error
 
-    # cons_dict=[{'type': 'ineq', 'fun': lambda b: 1.-b}, {'type': 'ineq','fun': lambda b: b-0.01}] # b-0.01>0
-    #res = minimize(error_b, x0=[(45.)], bounds=((1,100),), method="SLSQP", options={'maxiter': 1e10})
     #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
     res = minimize_scalar(error_b, bounds=(1, 100), method='bounded')
     b = 1. / res.x
-    # print("res.x: " + str(res.x))
     # solve for a in terms of b
     a = b / ((help_exp(b) / n) - 1.0)
 
