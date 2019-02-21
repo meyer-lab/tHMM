@@ -2,7 +2,7 @@
 import unittest
 import math
 import numpy as np
-from ..Lineage_utils import generatePopulationWithTime, gompertzParameterEstimatorNumerical, bernoulliParameterEstimatorAnalytical, gompertzAnalytical
+from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, gompertzAnalytical
 from ..CellNode import CellNode as c, generateLineageWithTime, doublingTime
 
 class TestModel(unittest.TestCase):
@@ -115,13 +115,6 @@ class TestModel(unittest.TestCase):
         """ Generate multiple lineages and estimate the bernoulli parameter with MLE. Estimators must be within +/- 0.08 of true locBern for popTime. """
         self.assertTrue(0.52 <= bernoulliParameterEstimatorAnalytical(self.pop1) <= 0.68)
 
-    def test_MLE_gomp(self):
-        """Generate multiple lineages and estimate the gompertz parameters with MLE."""
-        # test populations w.r.t. time
-        out = gompertzParameterEstimatorNumerical(self.pop1) # out[0] is cGom and out[1] is scaleGom
-        self.assertTrue(0 <= out[0] <= 5) # +/- 2.0 of true cGom
-        self.assertTrue(30 <= out[1] <= 70) # +/- 20 of scaleGom
-        
     def test_MLE_gomp_analytical(self):
         """ Use the analytical shortcut to estimate the gompertz parameters. """
         # test populations w.r.t. time

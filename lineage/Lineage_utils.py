@@ -103,24 +103,6 @@ def bernoulliParameterEstimatorAnalytical(X):
     if len(fate_holder) != 0:
         result = (sum(fate_holder))/ (len(fate_holder)) # add up all the 1s and divide by the total length (finding the average)
 
-    return result 
-
-def gompertzParameterEstimatorNumerical(X):
-    '''Estimates the Gompertz parameters for a given population using MLE numerically'''
-    tau_holder = [] # instantiates list with a dummy cell
-    for cell in X: # go through every cell in the population
-        if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
-            tau_holder.append(cell.tau) # append the cell lifetime
-
-    def negLogLikelihoodGomp(gompParams, tau_holder):
-        """ Calculates the log likelihood for gompertz. """
-        return -1*np.sum(sp.gompertz.logpdf(x=tau_holder,c=gompParams[0], scale=gompParams[1]))
-
-    result = [2,50] # dummy estimate
-    if len(tau_holder) != 0:
-        res = minimize(negLogLikelihoodGomp, x0=result, bounds=((0,10),(0,100)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
-        result = res.x # true estimate with non-empty sequence of data
-  
     return result
 
 def gompertzAnalytical(X):
@@ -167,7 +149,7 @@ def gompertzAnalytical(X):
         """ Returns the square root of the squared error between left and right terms. """
         error = np.absolute(left_term(1./scale) - right_term(1./scale))
         return error
-    
+
     result = [2,50] # dummy estimate
     if len(tau_holder) != 0:
         #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
