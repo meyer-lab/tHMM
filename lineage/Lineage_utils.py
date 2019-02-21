@@ -165,7 +165,7 @@ def gompertzAnalytical(X):
 
     # convert from their a and b to our cGom and scale
     c = a / b
-    scale = 1.0 / b
+    scale = res.x
 
     return c, scale
         
