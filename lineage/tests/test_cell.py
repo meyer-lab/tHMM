@@ -120,6 +120,7 @@ class TestModel(unittest.TestCase):
         # test populations w.r.t. time
         out = gompertzParameterEstimatorNumerical(self.pop1) # out[0] is cGom and out[1] is scaleGom
         print("numerical estimator: " + str(out))
+
         self.assertTrue(0 <= out[0] <= 5) # +/- 2.0 of true cGom
         self.assertTrue(30 <= out[1] <= 70) # +/- 20 of scaleGom
         
@@ -129,6 +130,7 @@ class TestModel(unittest.TestCase):
         c_out, scale_out = gompertzAnalytical(self.pop1) # out[0] is cGom and out[1] is scaleGom
         print("c_out: " + str(c_out))
         print("scale_out: " + str(scale_out))
+
         self.assertTrue(0 <= c_out <= 5) # +/- 2.0 of true cGom
         self.assertTrue(30 <= scale_out <= 70) # +/- 20 of scaleGom
 

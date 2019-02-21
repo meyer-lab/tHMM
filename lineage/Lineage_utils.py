@@ -2,7 +2,7 @@
 
 import numpy as np
 import scipy.stats as sp
-from scipy.optimize import minimize
+from scipy.optimize import minimize, minimize_scalar
 from .CellNode import generateLineageWithTime
 
 def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None):
@@ -160,10 +160,11 @@ def gompertzAnalytical(X):
         return error
 
     # cons_dict=[{'type': 'ineq', 'fun': lambda b: 1.-b}, {'type': 'ineq','fun': lambda b: b-0.01}] # b-0.01>0
-    # res = minimize(error_b, x0=[(1./45.)], bounds=((1E-3,10),), method="SLSQP", options={'maxiter': 1e10})
-    res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
+    #res = minimize(error_b, x0=[(45.)], bounds=((1,100),), method="SLSQP", options={'maxiter': 1e10})
+    #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
+    res = minimize_scalar(error_b, bounds=(1, 100), method='bounded')
     b = 1. / res.x
-    print("res.x: " + str(res.x))
+    # print("res.x: " + str(res.x))
     # solve for a in terms of b
     a = b / ((help_exp(b) / n) - 1.0)
 
