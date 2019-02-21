@@ -453,8 +453,8 @@ class TestModel(unittest.TestCase):
             print(tHMMobj.paramlist[num]["pi"])
             print("Transition State Matrix: ")
             print(tHMMobj.paramlist[num]["T"])
-        tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions() # rerun these with new parameters
-        tHMMobj.EL = tHMMobj.get_Emission_Likelihoods() # rerun these with new parameters
         deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
+        for num in range(tHMMobj.numLineages):
+            print(all_states[num])
