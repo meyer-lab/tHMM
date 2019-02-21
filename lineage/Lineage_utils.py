@@ -153,16 +153,16 @@ def gompertzAnalytical(X):
             temp.append((numer/denom) + tau_holder[ii])
         return sum(temp)
 
-    def error_b(b):
+    def error_b(scale):
         """ Returns the square root of the squared error between left and right terms. """
-        error = np.absolute(left_term(b) - right_term(b))
-        print("b: " + str(b) + ", error: " + str(error))
+        error = np.absolute(left_term(1./scale) - right_term(1./scale))
+        print("scale: " + str(scale) + ", error: " + str(error))
         return error
 
     # cons_dict=[{'type': 'ineq', 'fun': lambda b: 1.-b}, {'type': 'ineq','fun': lambda b: b-0.01}] # b-0.01>0
     # res = minimize(error_b, x0=[(1./45.)], bounds=((1E-3,10),), method="SLSQP", options={'maxiter': 1e10})
-    res = minimize(error_b, x0=[(1./45.)], method="powell", options={'maxiter': 1e10})
-    b = res.x
+    res = minimize(error_b, x0=[(45.)], method="powell", options={'maxiter': 1e10})
+    b = 1. / res.x
     print("res.x: " + str(res.x))
     # solve for a in terms of b
     a = b / ((help_exp(b) / n) - 1.0)
