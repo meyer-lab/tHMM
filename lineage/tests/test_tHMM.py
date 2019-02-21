@@ -399,12 +399,62 @@ class TestModel(unittest.TestCase):
 
     def test_Baum_Welch_(self):
         '''tests baum welch simply by running it.'''
-        X = remove_NaNs(self.X2)
+                # creating a heterogeneous tree
+        
+        MASexperimentTime = 39
+        MASinitCells = [1]
+        MASlocBern = [0.99999999999]
+        MAScGom = [2]
+        MASscaleGom = [30]
+        masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
+        masterLineage = remove_NaNs(masterLineage)
+        while len(masterLineage) == 0:
+            masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
+            masterLineage = remove_NaNs(masterLineage)
+        print(len(masterLineage))        
+        experimentTime2 = 90
+        initCells2 = [1]
+        locBern2 = [0.7]
+        cGom2 = [2]
+        scaleGom2 = [30]
+        sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
+        sublineage2 = remove_NaNs(sublineage2)
+        while len(sublineage2) == 0:
+            sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
+            sublineage2 = remove_NaNs(sublineage2)
+        print(len(sublineage2))
+        
+        cell_endT_holder = []
+        for cell in masterLineage:
+            cell_endT_holder.append(cell.endT)
+
+        master_cell_endT = max(cell_endT_holder) # get the longest tau in the list
+        master_cell_endT_idx = np.argmax(cell_endT_holder) # get the idx of the longest tau in the lineage
+        master_cell = masterLineage[master_cell_endT_idx] # get the master cell via the longest tau index
+        
+        for cell in sublineage2:
+            cell.linID = master_cell.linID
+            cell.gen += master_cell.gen
+            cell.startT += master_cell_endT
+            cell.endT += master_cell_endT
+
+        master_cell.left = sublineage2[0]
+        sublineage2[0].parent = master_cell
+        newLineage = masterLineage + sublineage2
+        print(len(newLineage))
+        
+        X = remove_NaNs(newLineage)
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
-        fit(tHMMobj, max_iter=100, verbose=True)
+        fit(tHMMobj, max_iter=200, verbose=True)
         for num in range(tHMMobj.numLineages):
             print("\n")
-            print(len(tHMMobj.population[num]))
+            print("Initial Proabablities: ")
             print(tHMMobj.paramlist[num]["pi"])
+            print("Transition State Matrix: ")
             print(tHMMobj.paramlist[num]["T"])
+        tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions() # rerun these with new parameters
+        tHMMobj.EL = tHMMobj.get_Emission_Likelihoods() # rerun these with new parameters
+        deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
+        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
