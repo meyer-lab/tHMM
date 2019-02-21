@@ -401,18 +401,18 @@ class TestModel(unittest.TestCase):
         '''tests baum welch simply by running it.'''
                 # creating a heterogeneous tree
         
-        MASexperimentTime = 100
+        MASexperimentTime = 90
         MASinitCells = [1]
         MASlocBern = [0.99999999999]
-        MAScGom = [0.4]
-        MASscaleGom = [45]
+        MAScGom = [1]
+        MASscaleGom = [50]
         masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
         masterLineage = remove_NaNs(masterLineage)
         while len(masterLineage) == 0:
             masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
             masterLineage = remove_NaNs(masterLineage)
         print(len(masterLineage))        
-        experimentTime2 = 100
+        experimentTime2 = 90
         initCells2 = [1]
         locBern2 = [0.7]
         cGom2 = [2]
