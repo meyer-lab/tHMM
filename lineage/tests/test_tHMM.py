@@ -404,7 +404,7 @@ class TestModel(unittest.TestCase):
         MASexperimentTime = 100
         MASinitCells = [1]
         MASlocBern = [0.99999999999]
-        MAScGom = [4]
+        MAScGom = [0.4]
         MASscaleGom = [45]
         masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
         masterLineage = remove_NaNs(masterLineage)
