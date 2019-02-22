@@ -19,6 +19,10 @@ def get_root_gammas(tHMMobj, betas):
         gamma_array[0,:] = betas[num][0,:]
         gammas.append(gamma_array)
 
+    for num in range(numLineages):
+        gammas_0_row_sum = np.sum(gammas[num][0])
+        assert np.isclose(gammas_0_row_sum, 1.)
+
     return gammas
 
 def get_nonroot_gammas(tHMMobj, gammas, betas):
@@ -71,4 +75,6 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                         for state_k in range(numStates):
                             assert gammas[num][0,state_k] == betas[num][0,state_k]
             curr_level += 1
-     
+    for num in range(numLineages):
+        gammas_row_sum = np.sum(gammas[num], axis=1)
+        assert np.allclose(gammas_row_sum, 1.)
