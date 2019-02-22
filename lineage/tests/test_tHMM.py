@@ -397,7 +397,7 @@ class TestModel(unittest.TestCase):
     # BaumWelch.py tests below #
     ############################
 
-    def test_Baum_Welch_(self):
+    def test_Baum_Welch_1(self):
         '''tests baum welch simply by running it.'''
         # creating a heterogeneous tree
 
@@ -446,7 +446,7 @@ class TestModel(unittest.TestCase):
         X = remove_NaNs(newLineage)
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
-        fit(tHMMobj, max_iter=200, verbose=True)
+        fit(tHMMobj, max_iter=500, verbose=True)
         for num in range(tHMMobj.numLineages):
             print("\n")
             print("Initial Proabablities: ")
@@ -458,3 +458,38 @@ class TestModel(unittest.TestCase):
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         for num in range(tHMMobj.numLineages):
             print(all_states[num])
+            
+            
+    def test_Baum_Welch_2(self):
+        '''tests baum welch simply by running it.'''
+        # creating a heterogeneous tree
+        experimentTime = 125 + 75
+        initCells = [1]
+        locBern = [0.99999999999]
+        cGom = [1]
+        scaleGom = [75]
+        switchT = 125
+        bern2 = [0.6]
+        cG2 = [2]
+        scaleG2 = [50]
+        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2)
+        while len(LINEAGE) == 0:
+            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2)
+        X = remove_NaNs(LINEAGE)
+        numStates = 2
+        tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
+        fit(tHMMobj, max_iter=500, verbose=True)
+        for num in range(tHMMobj.numLineages):
+            print("\n")
+            print("Initial Proabablities: ")
+            print(tHMMobj.paramlist[num]["pi"])
+            print("Transition State Matrix: ")
+            print(tHMMobj.paramlist[num]["T"])
+        deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
+        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
+        for num in range(tHMMobj.numLineages):
+            print(all_states[num])
+
+        
+        
