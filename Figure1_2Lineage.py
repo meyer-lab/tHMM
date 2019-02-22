@@ -53,7 +53,7 @@ for experimentTime in times: #a pop with num number of lineages
     scaleGom_2_h2 = []
     
     for rep in range(reps):
-
+        print('Rep:', rep)
         MASexperimentTime = T_MAS
         masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
         masterLineage = remove_NaNs(masterLineage)
@@ -85,9 +85,9 @@ for experimentTime in times: #a pop with num number of lineages
         sublineage2[0].parent = master_cell
         newLineage = masterLineage + sublineage2
         
-        print(len(sublineage2)+len(masterLineage))
         
         X = remove_NaNs(newLineage)
+        print(len(newLineage))
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
         fit(tHMMobj, max_iter=200, verbose=False)
@@ -112,7 +112,7 @@ for experimentTime in times: #a pop with num number of lineages
 
             
             #assign state 1 and state 2
-            T_non_diag = np.zeros(2)
+            T_non_diag = np.zeros(numStates)
             for state_j in range(numStates):
                 for state_k in range(numStates):
                     if state_j != state_k:
@@ -136,13 +136,15 @@ for experimentTime in times: #a pop with num number of lineages
                         wrong += 1           
             
             accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage
-            
 
             
             acc_h3.append(accuracy)
             cell_h3.append(len(lineage))
+            print('h3',cell_h3)
             bern_MAS_h3.append(E[state_1,0])
+            print('M',E[state_1,0])
             bern_2_h3.append(E[state_2,0])
+            print('2',E[state_2,0])
             cGom_MAS_h3.append(E[state_1,1])
             cGom_2_h3.append(E[state_2,1])
             scaleGom_MAS_h3.append(E[state_1,2])
@@ -150,6 +152,7 @@ for experimentTime in times: #a pop with num number of lineages
         
         acc_h2.extend(acc_h3)
         cell_h2.extend(cell_h3)
+        print('h2', cell_h2)
         bern_MAS_h2.extend(bern_MAS_h3)
         bern_2_h2.extend(bern_2_h3)
         cGom_MAS_h2.extend(cGom_MAS_h3)
@@ -159,6 +162,7 @@ for experimentTime in times: #a pop with num number of lineages
         
     acc_h1.extend(acc_h2)
     cell_h1.extend(cell_h2)
+    print('h1',cell_h1)
     bern_MAS_h1.extend(bern_MAS_h2)
     bern_2_h1.extend(bern_2_h2)
     cGom_MAS_h1.extend(cGom_MAS_h2)
@@ -167,7 +171,7 @@ for experimentTime in times: #a pop with num number of lineages
     scaleGom_2_h1.extend(scaleGom_2_h2)
             
 x=cell_h1
-
+print(max(x))
 fig, axs = plt.subplots(nrows=2, ncols=2, sharex=True)
 ax = axs[0,0]
 ax.errorbar(x, acc_h1, fmt='o', c='b',marker="*",fillstyle='none')
