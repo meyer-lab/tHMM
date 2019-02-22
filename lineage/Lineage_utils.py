@@ -2,26 +2,38 @@
 
 import numpy as np
 import scipy.stats as sp
-from scipy.optimize import minimize
+from scipy.optimize import minimize, minimize_scalar
 from .CellNode import generateLineageWithTime
 
-def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom):
+def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None):
     ''' generates a population of lineages that abide by distinct parameters. '''
 
     assert len(initCells) == len(locBern) == len(cGom) == len(scaleGom) # make sure all lists have same length
     numLineages = len(initCells)
     population = [] # create empty list
 
-    for ii in range(numLineages):
-        temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii]) # create a temporary lineage
-        for cell in temp:
-            sum_prev = 0
-            j = 0
-            while j < ii:
-                sum_prev += initCells[j]
-                j += 1
-            cell.linID += sum_prev # shift the lineageID so there's no overlap with populations of different parameters
-            population.append(cell) # append all individual cells into a population
+    if switchT is None: # when there is no heterogeneity over time
+        for ii in range(numLineages):
+            temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii]) # create a temporary lineage
+            for cell in temp:
+                sum_prev = 0
+                j = 0
+                while j < ii:
+                    sum_prev += initCells[j]
+                    j += 1
+                cell.linID += sum_prev # shift the lineageID so there's no overlap with populations of different parameters
+                population.append(cell) # append all individual cells into a population
+    else: # when the second set of parameters is defined
+        for ii in range(numLineages):
+            temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii]) # create a temporary lineage
+            for cell in temp:
+                sum_prev = 0
+                j = 0
+                while j < ii:
+                    sum_prev += initCells[j]
+                    j += 1
+                cell.linID += sum_prev # shift the lineageID so there's no overlap with populations of different parameters
+                population.append(cell) # append all individual cells into a population
 
     return population
 
@@ -83,24 +95,72 @@ def init_Population(X, numLineages):
 
 def bernoulliParameterEstimatorAnalytical(X):
     '''Estimates the Bernoulli parameter for a given population using MLE analytically'''
-    fate_holder = [1] # instantiates list to hold cell fates as 1s or 0s
+    fate_holder = [] # instantiates list to hold cell fates as 1s or 0s
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
+    result = 0.5 # dummy estimate
+    if len(fate_holder) != 0:
+        result = (sum(fate_holder))/ (len(fate_holder)) # add up all the 1s and divide by the total length (finding the average)
 
-    return (sum(fate_holder) + 1)/ (len(fate_holder) + 2) # add up all the 1s and divide by the total length (finding the average)
+    return result
 
-def gompertzParameterEstimatorNumerical(X):
-    '''Estimates the Gompertz parameters for a given population using MLE numerically'''
-    tau_holder = [20] # instantiates list with a dummy cell
+def gompertzAnalytical(X):
+    """
+    Uses analytical solution for one of the two gompertz parameters.
+    See Pg. 14 of The Gompertz distribution and Maximum Likelihood Estimation of its parameters - a revision
+    by Adam Lenart
+    November 28, 2011
+    """
+    # create list of all our taus
+    tau_holder = []
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
             tau_holder.append(cell.tau) # append the cell lifetime
 
-    def negLogLikelihoodGomp(gompParams, tau_holder):
-        """ Calculates the log likelihood for gompertz. """
-        return -1*np.sum(sp.gompertz.logpdf(x=tau_holder,c=gompParams[0], scale=gompParams[1]))
+    n = len(tau_holder) # number of cells
 
-    res = minimize(negLogLikelihoodGomp, x0=[2,40], bounds=((0,10),(0,100)), method="SLSQP", options={'maxiter': 1e7}, args=(tau_holder))
+    def help_exp(b):
+        """ Returns an expression commonly used in the analytical solution. """
+        temp = []
+        for ii in range(n):
+            temp.append(np.exp(b*tau_holder[ii]))
+        return sum(temp)
 
-    return res.x
+    def left_term(b):
+        """ Returns one of the two expressions used in the MLE for b. """
+        temp = []
+        denom = (help_exp(b) / n) - 1.0 # denominator is not dependent on ii
+        for ii in range(n):
+            numer = tau_holder[ii] * np.exp(b*tau_holder[ii])
+            temp.append(numer/denom)
+        return sum(temp)
+
+    def right_term(b):
+        """ Returns the other expression used in the MLE for b. """
+        temp = []
+        denom = ((b/n) * help_exp(b)) - b
+        for ii in range(n):
+            numer = np.exp(b*tau_holder[ii]) - 1.0
+            temp.append((numer/denom) + tau_holder[ii])
+        return sum(temp)
+
+    def error_b(scale):
+        """ Returns the square root of the squared error between left and right terms. """
+        error = np.absolute(left_term(1./scale) - right_term(1./scale))
+        return error
+
+    result = [2,50] # dummy estimate
+    if len(tau_holder) != 0:
+        #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
+        res = minimize_scalar(error_b, bounds=(1, 100), method='bounded')
+        b = 1. / res.x
+        # solve for a in terms of b
+        a = b / ((help_exp(b) / n) - 1.0)
+
+        # convert from their a and b to our cGom and scale
+        c = a / b
+        scale = res.x
+        result = [c, scale] # true estimate with non-empty sequence of data
+
+    return result

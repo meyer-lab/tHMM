@@ -2,11 +2,22 @@
 import unittest
 import math
 import numpy as np
-from ..Lineage_utils import generatePopulationWithTime, gompertzParameterEstimatorNumerical, bernoulliParameterEstimatorAnalytical
+from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, gompertzAnalytical
 from ..CellNode import CellNode as c, generateLineageWithTime, doublingTime
 
 class TestModel(unittest.TestCase):
     """Here are the unit tests."""
+    def setUp(self):
+        """ Create populations that are used for all tests. """
+        experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
+        locBern = [0.6]
+        cGom = [2]
+        scaleGom = [0.5e2]
+        initCells = [100]
+        self.pop1 = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom) # initialize "pop" as of class Population
+        
+        
+    
     def test_lifetime(self):
         """Make sure the cell isUnfinished before the cell dies and then make sure the cell's lifetime (tau) is calculated properly after it dies."""
         cell1 = c(startT=20)
@@ -101,30 +112,15 @@ class TestModel(unittest.TestCase):
         self.assertGreater(np.mean(tau_scale50), np.mean(tau_scale40))
 
     def test_MLE_bern(self):
-        """Generate multiple lineages and estimate the bernoulli parameter with MLE."""
-        experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
-        locBern = [0.6]
-        cGom = [2]
-        scaleGom = [0.5e2]
-        initCells = [100]
-        popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom) # initialize "pop" as of class Population
+        """ Generate multiple lineages and estimate the bernoulli parameter with MLE. Estimators must be within +/- 0.08 of true locBern for popTime. """
+        self.assertTrue(0.52 <= bernoulliParameterEstimatorAnalytical(self.pop1) <= 0.68)
 
-        # both estimators must be within +/- 0.08 of true locBern for popTime
-        self.assertTrue(0.52 <= bernoulliParameterEstimatorAnalytical(popTime) <= 0.68)
-
-    def test_MLE_gomp(self):
-        """Generate multiple lineages and estimate the gompertz parameters with MLE."""
-        experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
-        locBern = [0.6]
-        cGom = [2]
-        scaleGom = [0.5e2]
-        initCells = [100]
-        popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom) # initialize "pop" as of class Population
-
+    def test_MLE_gomp_analytical(self):
+        """ Use the analytical shortcut to estimate the gompertz parameters. """
         # test populations w.r.t. time
-        out = gompertzParameterEstimatorNumerical(popTime) # out[0] is cGom and out[1] is scaleGom
-        self.assertTrue(0 <= out[0] <= 5) # +/- 2.0 of true cGom
-        self.assertTrue(30 <= out[1] <= 70) # +/- 20 of scaleGom
+        c_out, scale_out = gompertzAnalytical(self.pop1)
+        self.assertTrue(0 <= c_out <= 5) # +/- 3.0 of true cGom
+        self.assertTrue(35 <= scale_out <= 65) # +/- 15 of scaleGom
 
     def test_doubleT(self):
         """Check for basic functionality of doubleT."""
@@ -136,3 +132,22 @@ class TestModel(unittest.TestCase):
         # doubles quicker when cell lifetime is shorter (larger c & lower scale == shorter life)
         self.assertGreater(base, doublingTime(100, 0.7, 3, 50))
         self.assertGreater(base, doublingTime(100, 0.7, 2, 40))
+
+    def test_hetergeneous_pop(self):
+        """ Calls generatePopulationWithTime when there is a switch in parameters over the course of the experiment's time. """
+        experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
+        # first set of parameters (from t=0 to t=100)
+        locBern = [0.6]
+        cGom = [2]
+        scaleGom = [0.5e2]
+        initCells = [100]
+        switchT = 100 # switch at t=100
+        # second set of parameters (from t=100 to t=experimentTime)
+        bern2 = [0.85]
+        cG2 = [2]
+        scaleG2 = [40]
+        popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2) # initialize "pop" as of class Populations
+        bernEstimate = bernoulliParameterEstimatorAnalytical(popTime)
+
+        # the Bernoulli parameter estimate should be greater than than locBern since bern2>locBern
+        self.assertTrue(bernEstimate > 0.7)

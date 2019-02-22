@@ -89,7 +89,7 @@ class CellNode:
         assert cell_linID == curr_cell.linID
         return curr_cell
 
-def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
+def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
     #create an empty lineage
     lineage = []
@@ -101,10 +101,18 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom):
     # have cell divide/die according to distribution
     for cell in lineage:   # for all cells (cap at numCells)
         if cell.isUnfinished():
-            cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
+            if switchT is not None and cell.startT > switchT: # when the cells should abide by the second set of parameters
+                cell.tau = sp.gompertz.rvs(cG2, scale=scaleG2)
+            else: # use first set of parameters for non-heterogeneous lineages or before the switch time
+                cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
             cell.endT = cell.startT + cell.tau
             if cell.endT < experimentTime: # determine fate only if endT is within range
-                cell.fate = sp.bernoulli.rvs(locBern) # assign fate
+                # assign cell fate
+                if switchT is not None and cell.startT > switchT: # when the cells should abide by the second set of parameters
+                    cell.fate = sp.bernoulli.rvs(bern2)
+                else: # use first set of parameters for non-heterogeneous lineages or before the switch time
+                    cell.fate = sp.bernoulli.rvs(locBern) # assign fate
+                # divide or die based on fate
                 if cell.fate:
                     temp1, temp2 = cell.divide(cell.endT) # cell divides
                     # append to list
