@@ -33,21 +33,8 @@ def process(data, deltaT):
             temp1, temp2 = cell.divide(endT=data[row, 2]*deltaT, trackID_d1=data[row, 5], trackID_d2=data[row, 6])
             pop.append(temp1)
             pop.append(temp2)
-    
+
     return pop
-    
-    # put all cells in pop but ignore linID and left/right pointers for now
-    #pop = []
-    #for ii in range(data.shape[0]):
-    #    objID = data[ii, 0]
-    #    startT = deltaT * data[ii, 1]
-    #    fate = data[ii, 3]
-    #    if fate == -1: # if cell is unfinished at end of imaging
-    #        fate = None # assign fate back to None
-    #        endT = None
-    #    else: # if cell divides or dies we can assign the endT based on final frame
-    #        endT = deltaT * data[ii, 2]
-    #    pop.append(CellNode())
 
 def is_root_node(data, row):
     """ Returns True if none the object_ID (0 position) is not found in either of the child columns for any other cell"""
