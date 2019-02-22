@@ -7,7 +7,7 @@ from scipy import optimize, stats as sp
 
 class CellNode:
     """ Each cell in our tree will consist of a node containing these traits. """
-    def __init__(self, gen=1, linID=0, trackID=None startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, plotVal=0):
+    def __init__(self, gen=1, linID=0, trackID=None, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, plotVal=0):
         ''' Instantiates a cell node.'''
         self.gen = gen # the generation of the cell, root cells are of generation 1, each division adds 1 to the previous generation
         self.linID = linID # the lineage identity of the cell, keeps track of what lineage a cell belongs to
