@@ -117,6 +117,9 @@ def get_leaf_betas(tHMMobj, NF):
                     beta_array[leaf_cell_idx, state_k] = numer1 * numer2 / denom
 
         betas.append(beta_array)
+    for num in range(numLineages):
+        betas_last_row_sum = np.sum(betas[num][-1])
+        assert np.isclose(betas_last_row_sum, 1.)
     return betas
 
 def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
@@ -166,6 +169,9 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                 for state_j in range(numStates):
                     betas[num][node_parent_m_idx, state_j] = numer_holder[state_j] / NF[num][node_parent_m_idx]
             curr_gen -= 1
+    for num in range(numLineages):
+        betas_row_sum = np.sum(betas[num], axis=1)
+        assert np.allclose(betas_row_sum, 1.)
 
 
 

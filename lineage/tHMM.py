@@ -66,6 +66,10 @@ class tHMM:
             for state_k in range(numStates):
                 MSD_array[0,state_k] = params["pi"][state_k]
             MSD.append(MSD_array)
+        
+        for num in range(numLineages):
+            MSD_0_row_sum = np.sum(MSD[num][0])
+            assert np.isclose(MSD_0_row_sum, 1.)
 
         for num in range(numLineages):
             lineage = population[num] # getting the lineage in the Population by lineage index
@@ -85,20 +89,8 @@ class tHMM:
                             temp_sum_holder.append(temp)
 
                         MSD[num][current_cell_idx,state_k] = sum(temp_sum_holder)
-                    MSD_row_sum = sum(MSD[num][current_cell_idx,:])
-                    max_state = np.argmax(MSD[num][current_cell_idx,:])
-                    if MSD_row_sum == 0.:
-                        for state_k in range(numStates):
-                            if state_k == max_state:
-                                MSD[num][current_cell_idx,state_k] = 1
-                            else:
-                                MSD[num][current_cell_idx,state_k] = 0
                 curr_level += 1
             MSD_row_sums = np.sum(MSD[num], axis=1)
-            if not np.allclose(MSD_row_sums, 1.0):
-                print([num])
-                print(MSD_row_sums)
-                print(MSD[num])
             assert np.allclose(MSD_row_sums, 1.0)
         return MSD
 
