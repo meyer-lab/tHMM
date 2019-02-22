@@ -25,7 +25,8 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
                 population.append(cell) # append all individual cells into a population
     else: # when the second set of parameters is defined
         for ii in range(numLineages):
-            temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii]) # create a temporary lineage
+            temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii]) 
+            # create a temporary lineage
             for cell in temp:
                 sum_prev = 0
                 j = 0
