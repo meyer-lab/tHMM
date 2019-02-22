@@ -7,7 +7,7 @@ from scipy import optimize, stats as sp
 
 class CellNode:
     """ Each cell in our tree will consist of a node containing these traits. """
-    def __init__(self, gen=1, linID=0, trackID=None, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, plotVal=0):
+    def __init__(self, gen=1, linID=0, trackID=None, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, plotVal=0, true_state=None):
         ''' Instantiates a cell node.'''
         self.gen = gen # the generation of the cell, root cells are of generation 1, each division adds 1 to the previous generation
         self.linID = linID # the lineage identity of the cell, keeps track of what lineage a cell belongs to
@@ -21,6 +21,7 @@ class CellNode:
         self.parent = parent # the parent of the cell, returns a CellNode object (except at the root node)
         self.plotVal = plotVal # value that assists in plotting
         self.trackID = trackID # ID (integer) of the cell used during image tracking
+        self.true_state = true_state # indicates whether cell is PC9 (0) or H1299 (1)
 
     def isParent(self):
         """ Return true if the cell has at least one daughter. """
@@ -71,11 +72,11 @@ class CellNode:
         self.calcTau()      # calculate Tau when cell dies
 
         if self.isRootParent():
-            self.left = CellNode(gen=self.gen+1, trackID=trackID_d1, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal+0.75)
-            self.right = CellNode(gen=self.gen+1, trackID=trackID_d2, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal-0.75)
+            self.left = CellNode(gen=self.gen+1, trackID=trackID_d1, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal+0.75, true_state=self.true_state)
+            self.right = CellNode(gen=self.gen+1, trackID=trackID_d2, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal-0.75, true_state=self.true_state)
         else:
-            self.left = CellNode(gen=self.gen+1, trackID=trackID_d1, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal+(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
-            self.right = CellNode(gen=self.gen+1, trackID=trackID_d2, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal-(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal)
+            self.left = CellNode(gen=self.gen+1, trackID=trackID_d1, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal+(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal, true_state=self.true_state)
+            self.right = CellNode(gen=self.gen+1, trackID=trackID_d2, linID=self.linID, startT=endT, parent=self, plotVal=self.plotVal-(0.5**(self.gen))*(1.35**(self.gen))*self.plotVal, true_state=self.true_state)
 
         return (self.left, self.right)
 
