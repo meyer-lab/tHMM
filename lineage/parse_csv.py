@@ -25,8 +25,8 @@ def process(data, deltaT):
     linID = 0
     for ii in range(data.shape[0]):
         if is_root_node(data, ii): # if this row represents a root node
-            pop.append(CellNode(linID=linID, trackID=data[ii, 0], startT=(deltaT*data[ii, 1])))
-            linID += 1 # increment by 1 for each root node added
+            pop.append(CellNode(linID=linID, trackID=data[ii, 0], startT=(deltaT*data[ii, 1]), true_state=data[ii, 7]))
+            linID += 1 # increment lineage by 1 for each root node added
 
     # cycle through to handle divisions and deaths using CellNode functions
     for cell in pop:
@@ -73,6 +73,7 @@ for cell in pop1:
     print("\n")
     print("trackID: " + str(cell.trackID))
     print("linID: " + str(cell.linID))
+    print("true_state: " + str(cell.true_state))
     print("gen: " + str(cell.gen))
     print("startT: " + str(cell.startT))
     print("endT: " + str(cell.endT))
