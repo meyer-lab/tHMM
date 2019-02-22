@@ -125,7 +125,6 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                                           T=tHMMobj.paramlist[num]["T"])
                     tHMMobj.paramlist[num]["T"][state_j,state_k] = numer/denom
                     
-            max_state = np.argmax(tHMMobj.paramlist[num]["pi"])
             T_NN = tHMMobj.paramlist[num]["T"]
             row_sums = T_NN.sum(axis=1)
 

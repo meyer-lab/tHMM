@@ -89,8 +89,6 @@ class tHMM:
                             temp_sum_holder.append(temp)
 
                         MSD[num][current_cell_idx,state_k] = sum(temp_sum_holder)
-                    MSD_row_sum = sum(MSD[num][current_cell_idx,:])
-                    max_state = np.argmax(MSD[num][current_cell_idx,:])
                 curr_level += 1
             MSD_row_sums = np.sum(MSD[num], axis=1)
             assert np.allclose(MSD_row_sums, 1.0)

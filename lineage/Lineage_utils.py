@@ -1,7 +1,6 @@
 '''utility and helper functions for cleaning up input populations and lineages and other needs in the tHMM class'''
 
 import numpy as np
-import scipy.stats as sp
 from scipy.optimize import minimize, minimize_scalar
 from .CellNode import generateLineageWithTime
 
