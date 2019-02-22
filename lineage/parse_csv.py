@@ -23,6 +23,7 @@ def process(data, deltaT):
 
     # cycle through to handle divisions and deaths using CellNode functions
     for cell in pop:
+        print("len(pop): " + str(len(pop)))
         row = find_row(data, cell) # find the row of said cell in the CSV file
         if data[row, 3] == 0: # if the cell dies
             cell.die(data[row, 2]*deltaT) # force it to die at the last frame
@@ -59,9 +60,13 @@ def is_root_node(data, row):
 def find_row(data, cell):
     """ Returns the row number of the data matrix that corresponds to the CellNode (cell) given. """
     ID = cell.trackID
+    print("ID: " + str(ID))
     row = -1
     for ii in range(0, data.shape[0]):
+        #print("ii: " + str(ii))
+        #print("data[ii, 0]: " + str(data[ii, 0]))
         if ID == data[ii, 0]: # if the ID matches the first column of said row
+            # print("assigning row")
             row = ii
             break
     assert row >= 0 # make sure the row was actually found
