@@ -40,8 +40,8 @@ c_st = []
 scale_st = []
 cells_st = []
 
-time1 = 50
-time2 = 100
+time1 = 80
+time2 = 82
 times = range(time1,time2)
 
 for experimentTime in times:
