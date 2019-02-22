@@ -13,7 +13,7 @@ def load_data(filename):
             if data[ii,jj] == "None": # if entry is the string None
                 data[ii,jj] = None # reassign entry to keyword None
             else:
-                data[ii,jj] = float(data[ii,jj]) # force all strings into integers
+                data[ii,jj] = float(data[ii,jj]) # force all strings into floats
     return data
 
 data = load_data('data/capstone-practice-format.csv')
@@ -69,3 +69,19 @@ def find_row(data, cell):
 
 pop1 = process(data, 5.0)
 print("length of pop: " + str(len(pop1)))
+for cell in pop1:
+    print("\n")
+    print("trackID: " + str(cell.trackID))
+    print("linID: " + str(cell.linID))
+    print("gen: " + str(cell.gen))
+    print("startT: " + str(cell.startT))
+    print("endT: " + str(cell.endT))
+    print("tau: " + str(cell.tau))
+    print("fate: " + str(cell.fate))
+    if cell.left is not None:
+        print("left.trackID: " + str(cell.left.trackID))
+    if cell.right is not None:
+        print("right.trackID: " + str(cell.right.trackID))
+    if cell.parent is not None:
+        print("parent.trackID: " + str(cell.parent.trackID))
+    print("\n")
