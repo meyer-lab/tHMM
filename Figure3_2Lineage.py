@@ -228,6 +228,6 @@ ax.axhline(y=MASscaleGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, colo
 ax.axhline(y=scaleGom2, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
 ax.set_title('Gompertz Scale')
 
-fig.suptitle('Lineage Length effect on tHMM Classification')
+fig.suptitle('KL Divergence between intralineage cell types')
 
 plt.savefig('TEST_KLdiv_classification.png')
