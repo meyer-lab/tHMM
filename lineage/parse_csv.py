@@ -10,6 +10,11 @@ def load_data(filename):
 
 data = load_data('data/capstone-practice-format.csv')
 print(data.shape)
+for ii in range(data.shape[0]):
+    for jj in range(data.shape[1]):
+        if data[ii,jj] == "None": # if entry is the string None
+            data[ii,jj] = None # reassign entry to keyword None
+            
 
 def process(data, deltaT):
     """ Convert the CSV file into population of cells with each cell being a CellNode object. deltaT represents the time lapse between images. """
@@ -44,19 +49,18 @@ def is_root_node(data, row):
     print("obj_ID: " + str(obj_ID))
     for ii in range(data.shape[0]):
         print("ii: " + str(ii))
-        print("data[ii, 5]: " + str(data[ii, 5]))
+        print("data[ii, 5]: " + str(type(data[ii, 5])))
         print("data[ii, 6]: " + str(data[ii, 6]))
-        # default left and right to be integers not seen in the data
-        left = -99
-        right = -99
-        if data[ii, 5] is not None:
+        if data[ii, 5] is None or data[ii, 6] is None: # don't make comparisons if they're both None
+            print("one of the child ptrs is None")
+            pass
+        else:
             left = int(data[ii, 5])
-        if data[ii, 6] is not None:
             right = int(data[ii, 6])
-        if obj_ID == left or obj_ID == right: # if the objectID is found to be one of the daughter cells
-            print("going into if statement")
-            temp = False # data in this row doesn't represent a root node
-            break
+            if obj_ID == left or obj_ID == right: # if the objectID is found to be one of the daughter cells
+                print("going into if statement")
+                temp = False # data in this row doesn't represent a root node
+                break
     return temp
 
 def find_row(data, cell):
