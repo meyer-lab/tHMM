@@ -15,7 +15,7 @@ from lineage.Lineage_utils import remove_NaNs, get_numLineages, init_Population
 from lineage.Lineage_utils import generatePopulationWithTime as gpt
 from lineage.CellNode import CellNode
 
-
+################ Number of cell in a single lineage
 
 T_MAS = 200
 T_2 = 75
