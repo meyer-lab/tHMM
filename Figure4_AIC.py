@@ -22,7 +22,7 @@ T_MAS = 200
 T_2 = 75
 
 state1 = 2
-state2 = 5
+state2 = 4
 states = range(state1,state2+1) 
 reps = 1
 
@@ -47,7 +47,7 @@ scaleGom_2_h1 = []
 AIC_h1 = []
 
 for numStates in states: #a pop with num number of lineages
-    
+    print('numstates', numStates)
     acc_h2 = []
     cell_h2 = []
     bern_h2 = []
@@ -60,7 +60,6 @@ for numStates in states: #a pop with num number of lineages
     LL_h2 = []
     
     for rep in range(reps):
-        print('Rep:', rep)
         MASexperimentTime = T_MAS
         masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
         masterLineage = remove_NaNs(masterLineage)
