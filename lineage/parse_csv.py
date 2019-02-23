@@ -8,12 +8,19 @@ def load_data(filename):
     path = dirname(abspath(__file__))
     data = pd.read_csv(join(path, filename)).values
     # convert away from strings
-    for ii in range(data.shape[0]):
+    ii = 0
+    while ii < data.shape[0]:
         for jj in range(data.shape[1]):
             if data[ii,jj] == "None": # if entry is the string None
                 data[ii,jj] = None # reassign entry to keyword None
             else:
                 data[ii,jj] = float(data[ii,jj]) # force all strings into floats
+        # delete rows for cells that are seen in the first frame
+        if data[ii, 1] == 0:
+            data = np.delete(data, ii, 0) # delete row
+        else:
+            ii += 1 # increment by 1 if you don't delete the row
+
     return data
 
 data = load_data('data/capstone-practice-format.csv')
