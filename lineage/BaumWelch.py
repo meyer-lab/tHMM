@@ -3,7 +3,7 @@ import numpy as np
 
 from .tHMM_utils import max_gen, get_gen, get_daughters
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
-from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, get_beta_parent_child_prod
+from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, get_beta_parent_child_prod, beta_parent_child_func
 from .Lineage_utils import bernoulliParameterEstimatorAnalytical, gompertzAnalytical 
 
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
@@ -20,13 +20,14 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
     also_numStates = gamma_array.shape[1]
     also_also_numStates = beta_array.shape[1]
     assert numStates == also_numStates == also_also_numStates
-    beta_parent_child_state_j = get_beta_parent_child_prod(numStates=numStates,
+    '''beta_parent_child_state_j = get_beta_parent_child_prod(numStates=numStates,
                                                            lineage=lineage,
                                                            beta_array=beta_array,
                                                            T=T,
                                                            MSD_array=MSD_array,
                                                            state_j=state_j,
-                                                           node_parent_m_idx=node_parent_m_idx)
+                                                           node_parent_m_idx=node_parent_m_idx) '''
+    beta_parent_child_state_j = beta_parent_child_func(numStates=numStates, lineage=lineage, beta_array=beta_array, T=T, MSD_array=MSD_array, state_j=state_j, node_parent_m_idx=node_parent_m_idx, node_child_n_idx=node_child_n_idx)
     zeta = beta_child_state_k*T[state_j,state_k]*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child_state_j)
     return zeta
 
