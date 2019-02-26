@@ -17,22 +17,19 @@ from lineage.CellNode import CellNode
 
 ########################## Number of Lineages in a population
 
-T_MAS = 50
-T_2 = 50
-
 lineage_start = 1
-lineage_end = 2
+lineage_end = 5
 lineages = range(lineage_start, lineage_end + 1) 
 reps = 1
 
-#MASinitCells = [1]
-MASlocBern = [0.99999999999]
-MAScGom = [2]
-MASscaleGom = [30]
-initCells2 = [1]
-locBern2 = [0.7]
-cGom2 = [1.5]
-scaleGom2 = [25]
+experimentTime = 50
+locBern = [0.99999999999]
+cGom = [2]
+scaleGom = [30]
+switchT = 20
+bern2 = [0.7]
+cG2 = [1.5]
+scaleG2 = [25]
 
 acc_h1 = [] #list of lists of lists
 cell_h1 = []
@@ -58,6 +55,7 @@ for lineage_num in lineages: #a pop with num number of lineages
     
     for rep in range(reps):
         print('Rep:', rep)
+        '''
         MASinitCells = [lineage_num]
         initCells2 = [lineage_num]
         MASexperimentTime = T_MAS
@@ -68,7 +66,7 @@ for lineage_num in lineages: #a pop with num number of lineages
             masterLineage = remove_NaNs(masterLineage)
         experimentTime2 = T_2
         newLineage = []
-        '''
+        
         for lineage in range(lineage_num):
             sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
             sublineage2 = remove_NaNs(sublineage2)
@@ -96,21 +94,15 @@ for lineage_num in lineages: #a pop with num number of lineages
         '''
         
         
-        experimentTime = 125 + 75
-        initCells = []
-        locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
-        switchT = 125
-        bern2 = [0.6]
-        cG2 = [2]
-        scaleG2 = [50]
+
+        initCells = [lineage_num]
+
         LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2)
         while len(LINEAGE) == 0:
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2)
         
         X = remove_NaNs(LINEAGE)
-        print(len(newLineage))
+        print(len(LINEAGE))
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
         fit(tHMMobj, max_iter=200, verbose=False)
@@ -147,17 +139,18 @@ for lineage_num in lineages: #a pop with num number of lineages
             #state_2 = np.argmax(T_non_diag)
             
             state_1 = np.argmax(pi)
-            state_2 = np.argmax(pi)
+            state_2 = np.argmin(pi)
+            
             
             
             wrong = 0
             for cell in range(len(lineage)):
-                if cell < len(masterLineage):
+                if lineage[cell].startT < switchT:
                     if all_states[lin][cell] == state_1:
                         pass
                     else:
                         wrong += 1
-                elif cell >= len(masterLineage) and cell < len(newLineage):
+                elif lineage[cell].startT > switchT:
                     if all_states[lin][cell] == state_2:
                         pass
                     else:
@@ -191,47 +184,47 @@ for lineage_num in lineages: #a pop with num number of lineages
     acc_h1.append(np.mean(acc_h2))
     cell_h1.extend(cell_h2)
     print('h1',cell_h1)
-    bern_MAS_h1.extend(bern_MAS_h2)
-    bern_2_h1.extend(bern_2_h2)
-    cGom_MAS_h1.extend(cGom_MAS_h2)
-    cGom_2_h1.extend(cGom_2_h2)
-    scaleGom_MAS_h1.extend(scaleGom_MAS_h2)
-    scaleGom_2_h1.extend(scaleGom_2_h2)
+    bern_MAS_h1.append(np.mean(bern_MAS_h2))
+    bern_2_h1.append(np.mean(bern_2_h2))
+    cGom_MAS_h1.append(np.mean(cGom_MAS_h2))
+    cGom_2_h1.append(np.mean(cGom_2_h2))
+    scaleGom_MAS_h1.append(np.mean(scaleGom_MAS_h2))
+    scaleGom_2_h1.append(np.mean(scaleGom_2_h2))
     lineage_h1.append(lineage_num)
             
-x=cell_h1
+x=lineage_h1
 print(max(x))
 fig, axs = plt.subplots(nrows=2, ncols=2, sharex=True)
 ax = axs[0,0]
-ax.errorbar(lineage_h1, acc_h1, fmt='o', c='b',marker="*",fillstyle='none')
+ax.errorbar(x, acc_h1, fmt='o', c='b',marker="*",fillstyle='none')
 ax.axhline(y=1, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b',)
 ax.set_title('Accuracy')
 #ax.locator_params(nbins=4)
 
 ax = axs[0,1]
-ax.errorbar(x, bern_MAS_h1, fmt='o', c='b',marker="^",fillstyle='none')
+ax.errorbar(x, bern_MAS_h1, fmt='o', c='r',marker="^",fillstyle='none')
 ax.errorbar(x, bern_2_h1, fmt='o', c='g',marker="^",fillstyle='none')
-ax.set_title('Bernoulli Parameter')
-ax.axhline(y= MASlocBern, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b')
-ax.axhline(y=locBern2, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
+ax.set_title('Bernoulli')
+ax.axhline(y= locBern, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
+ax.axhline(y= bern2, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
 
 ax = axs[1,0]
-ax.set_xlabel('Cells')
-ax.errorbar(x,cGom_MAS_h1, fmt='o',c='b',marker=(8,2,0))
-ax.errorbar(x,cGom_2_h1, fmt='o',c='g',marker=(8,2,0))
-ax.axhline(y=MAScGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b')
-ax.axhline(y=cGom2, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
+ax.set_xlabel('Number of Lineages')
+ax.errorbar(x,cGom_MAS_h1, fmt='o',c='r',marker="^",fillstyle='none')
+ax.errorbar(x,cGom_2_h1, fmt='o',c='g',marker="^",fillstyle='none')
+ax.axhline(y=cGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
+ax.axhline(y=cG2, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
 ax.set_title('Gompertz C')
 
 
 ax = axs[1,1]
-ax.set_xlabel('Cells')
-ax.errorbar(x,scaleGom_MAS_h1, fmt='o',c='b', marker="1")
-ax.errorbar(x,scaleGom_2_h1, fmt='o',c='g', marker="1")
-ax.axhline(y=MASscaleGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b')
-ax.axhline(y=scaleGom2, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
+ax.set_xlabel('Number of Lineages')
+ax.errorbar(x,scaleGom_MAS_h1, fmt='o',c='r',marker="^",fillstyle='none')
+ax.errorbar(x,scaleGom_2_h1, fmt='o',c='g',marker="^",fillstyle='none')
+ax.axhline(y=scaleGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
+ax.axhline(y=scaleG2, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
 ax.set_title('Gompertz Scale')
 
-fig.suptitle('Lineage Length effect on tHMM Classification')
+fig.suptitle('Lineages in a Population')
 
 plt.savefig('TEST_lineage_number_classification.png')
