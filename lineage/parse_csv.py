@@ -1,7 +1,7 @@
 from os.path import join, dirname, abspath
 import pandas as pd
 import numpy as np
-from CellNode import CellNode
+from .CellNode import CellNode
 
 def load_data(filename):
     """ Return path of CSV files. """
@@ -22,8 +22,6 @@ def load_data(filename):
             ii += 1 # increment by 1 if you don't delete the row
 
     return data
-
-data = load_data('data/capstone-practice-format.csv')
 
 def process(data, deltaT):
     """ Convert the CSV file into population of cells with each cell being a CellNode object. deltaT represents the time lapse between images. """
@@ -72,24 +70,3 @@ def find_row(data, cell):
             break
     assert row >= 0 # make sure the row was actually found
     return row
-
-
-pop1 = process(data, 5.0)
-print("length of pop: " + str(len(pop1)))
-for cell in pop1:
-    print("\n")
-    print("trackID: " + str(cell.trackID))
-    print("linID: " + str(cell.linID))
-    print("true_state: " + str(cell.true_state))
-    print("gen: " + str(cell.gen))
-    print("startT: " + str(cell.startT))
-    print("endT: " + str(cell.endT))
-    print("tau: " + str(cell.tau))
-    print("fate: " + str(cell.fate))
-    if cell.left is not None:
-        print("left.trackID: " + str(cell.left.trackID))
-    if cell.right is not None:
-        print("right.trackID: " + str(cell.right.trackID))
-    if cell.parent is not None:
-        print("parent.trackID: " + str(cell.parent.trackID))
-    print("\n")
