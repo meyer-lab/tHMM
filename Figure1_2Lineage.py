@@ -18,10 +18,10 @@ from lineage.CellNode import CellNode
 
 ################ Number of cell in a single lineage
 
-T_MAS = 75
-T_2 = 75
+T_MAS = 85
+T_2 = 85
 times = range(1,2) 
-reps = 5
+reps = 20
 switchT = 25
 
 MASinitCells = [1]
@@ -55,16 +55,8 @@ for experimentTime in times: #a pop with num number of lineages
     scaleGom_2_h2 = []
     
     for rep in range(reps):
-        print('Rep:', rep)
+        print('Rep:', rep)       
         
-        newLineage = gpt(75, MASinitCells, MASlocBern, MAScGom, MASscaleGom, switchT, locBern2, cGom2, scaleGom2)
-        while len(newLineage) == 0:
-            newLineage = gpt(experimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom, switchT, locBern2, cGom2, scaleGom2)
-        
-        X = remove_NaNs(newLineage)
-        print(len(newLineage))
-        
-        '''
         MASexperimentTime = T_MAS
         masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
         masterLineage = remove_NaNs(masterLineage)
@@ -95,7 +87,7 @@ for experimentTime in times: #a pop with num number of lineages
         master_cell.left = sublineage2[0]
         sublineage2[0].parent = master_cell
         newLineage = masterLineage + sublineage2
-        '''
+        
         
         X = remove_NaNs(newLineage)
         print(len(newLineage))
@@ -122,7 +114,6 @@ for experimentTime in times: #a pop with num number of lineages
             E = tHMMobj.paramlist[lin]["E"]
             pi = tHMMobj.paramlist[lin]["pi"] 
 
-            '''
             #assign state 1 and state 2
             T_non_diag = np.zeros(numStates)
             for state_j in range(numStates):
@@ -150,33 +141,8 @@ for experimentTime in times: #a pop with num number of lineages
                     else:
                         wrong += 1           
 
-            accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage
-            '''
-            
-            state_1 = np.argmax(pi)
-            state_2 = np.argmin(pi)
-            
-            trues = []
-        
-            
-            wrong = 0
-            for cell in range(len(lineage)):
-                trues.append(lineage[cell].true_state)
-                if lineage[cell].true_state == 0:
-                    if all_states[lin][cell] == state_1:
-                        pass
-                    else:
-                        wrong += 1
-                elif lineage[cell].true_state == 1:
-                    if all_states[lin][cell] == state_2:
-                        pass
-                    else:
-                        wrong += 1           
-            print('viterbi',all_states[lin])
-            print('trues', trues)
-            
-            print('pi', pi)
-            accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage
+            accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage           
+
 
             
             acc_h3.append(accuracy)
@@ -215,7 +181,7 @@ x=cell_h1
 print(max(x))
 fig, axs = plt.subplots(nrows=2, ncols=2, sharex=True)
 ax = axs[0,0]
-ax.set_ylim(0,1)
+ax.set_ylim(0,1.1)
 l1 = ax.errorbar(x, acc_h1, fmt='o', c='b',marker="*",fillstyle='none', label = 'Accuracy')
 ax.axhline(y=1, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b',)
 ax.set_title('Accuracy')
@@ -230,6 +196,7 @@ ax.axhline(y=locBern2, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='
 
 ax = axs[1,0]
 ax.set_xlabel('Cells')
+ax.set_xscale("log", nonposx='clip')
 ax.errorbar(x,cGom_MAS_h1, fmt='o',c='r',marker="^",fillstyle='none', label = 'State 1')
 ax.errorbar(x,cGom_2_h1, fmt='o',c='g',marker="^",fillstyle='none', label = 'State 2')
 ax.axhline(y=MAScGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
@@ -239,6 +206,7 @@ ax.set_title('Gompertz C')
 
 ax = axs[1,1]
 ax.set_xlabel('Cells')
+ax.set_xscale("log", nonposx='clip')
 ax.errorbar(x,scaleGom_MAS_h1, fmt='o',c='r',marker="^",fillstyle='none', label = 'State 1')
 ax.errorbar(x,scaleGom_2_h1, fmt='o',c='g',marker="^",fillstyle='none', label = 'State 2')
 ax.axhline(y=MASscaleGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
@@ -255,3 +223,36 @@ fig.legend((l1, l2, l3), ('Accuracy', 'State 1', 'State 2'), loc='upper right', 
 fig.suptitle('Lineage Length')
 
 plt.savefig('TEST_lineage_length_classification.png')
+
+'''            state_1 = np.argmax(pi)
+            state_2 = np.argmin(pi)
+            
+            trues = []
+        
+            
+            wrong = 0
+            for cell in range(len(lineage)):
+                trues.append(lineage[cell].true_state)
+                if lineage[cell].true_state == 0:
+                    if all_states[lin][cell] == state_1:
+                        pass
+                    else:
+                        wrong += 1
+                elif lineage[cell].true_state == 1:
+                    if all_states[lin][cell] == state_2:
+                        pass
+                    else:
+                        wrong += 1           
+            print('viterbi',all_states[lin])
+            print('trues', trues)
+            
+            print('pi', pi)
+            accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage
+            
+            
+                    newLineage = gpt(75, MASinitCells, MASlocBern, MAScGom, MASscaleGom, switchT, locBern2, cGom2, scaleGom2)
+        while len(newLineage) == 0:
+            newLineage = gpt(experimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom, switchT, locBern2, cGom2, scaleGom2)
+        
+        X = remove_NaNs(newLineage)
+        print(len(newLineage))'''
