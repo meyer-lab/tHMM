@@ -111,8 +111,10 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
                 # assign cell fate
                 if switchT is not None and cell.startT > switchT: # when the cells should abide by the second set of parameters
                     cell.fate = sp.bernoulli.rvs(bern2)
+                    cell.true_state = 1
                 else: # use first set of parameters for non-heterogeneous lineages or before the switch time
                     cell.fate = sp.bernoulli.rvs(locBern) # assign fate
+                    cell.true_state = 0
                 # divide or die based on fate
                 if cell.fate:
                     temp1, temp2 = cell.divide(cell.endT) # cell divides

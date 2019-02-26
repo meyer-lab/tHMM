@@ -22,6 +22,7 @@ T_MAS = 75
 T_2 = 75
 times = range(1,2) 
 reps = 5
+switchT = 25
 
 MASinitCells = [1]
 MASlocBern = [0.99999999999]
@@ -55,6 +56,15 @@ for experimentTime in times: #a pop with num number of lineages
     
     for rep in range(reps):
         print('Rep:', rep)
+        
+        newLineage = gpt(75, MASinitCells, MASlocBern, MAScGom, MASscaleGom, switchT, locBern2, cGom2, scaleGom2)
+        while len(newLineage) == 0:
+            newLineage = gpt(experimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom, switchT, locBern2, cGom2, scaleGom2)
+        
+        X = remove_NaNs(newLineage)
+        print(len(newLineage))
+        
+        '''
         MASexperimentTime = T_MAS
         masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
         masterLineage = remove_NaNs(masterLineage)
@@ -85,7 +95,7 @@ for experimentTime in times: #a pop with num number of lineages
         master_cell.left = sublineage2[0]
         sublineage2[0].parent = master_cell
         newLineage = masterLineage + sublineage2
-        
+        '''
         
         X = remove_NaNs(newLineage)
         print(len(newLineage))
@@ -112,7 +122,7 @@ for experimentTime in times: #a pop with num number of lineages
             E = tHMMobj.paramlist[lin]["E"]
             pi = tHMMobj.paramlist[lin]["pi"] 
 
-            
+            '''
             #assign state 1 and state 2
             T_non_diag = np.zeros(numStates)
             for state_j in range(numStates):
@@ -139,7 +149,33 @@ for experimentTime in times: #a pop with num number of lineages
                         pass
                     else:
                         wrong += 1           
+
+            accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage
+            '''
             
+            state_1 = np.argmax(pi)
+            state_2 = np.argmin(pi)
+            
+            trues = []
+        
+            
+            wrong = 0
+            for cell in range(len(lineage)):
+                trues.append(lineage[cell].true_state)
+                if lineage[cell].true_state == 0:
+                    if all_states[lin][cell] == state_1:
+                        pass
+                    else:
+                        wrong += 1
+                elif lineage[cell].true_state == 1:
+                    if all_states[lin][cell] == state_2:
+                        pass
+                    else:
+                        wrong += 1           
+            print('viterbi',all_states[lin])
+            print('trues', trues)
+            
+            print('pi', pi)
             accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage
 
             
