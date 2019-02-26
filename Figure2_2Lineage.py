@@ -17,8 +17,8 @@ from lineage.CellNode import CellNode
 
 ########################## Number of Lineages in a population
 
-T_MAS = 200
-T_2 = 75
+T_MAS = 50
+T_2 = 50
 
 lineage_start = 1
 lineage_end = 2
@@ -27,11 +27,11 @@ reps = 1
 
 #MASinitCells = [1]
 MASlocBern = [0.99999999999]
-MAScGom = [0.5]
+MAScGom = [2]
 MASscaleGom = [30]
 initCells2 = [1]
 locBern2 = [0.7]
-cGom2 = [1]
+cGom2 = [1.5]
 scaleGom2 = [25]
 
 acc_h1 = [] #list of lists of lists
@@ -67,36 +67,54 @@ for lineage_num in lineages: #a pop with num number of lineages
             masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
             masterLineage = remove_NaNs(masterLineage)
         experimentTime2 = T_2
-        sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
-        sublineage2 = remove_NaNs(sublineage2)
-        while len(sublineage2) == 0:
+        newLineage = []
+        '''
+        for lineage in range(lineage_num):
             sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
             sublineage2 = remove_NaNs(sublineage2)
+            while len(sublineage2) == 0:
+                sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
+                sublineage2 = remove_NaNs(sublineage2)
 
-        cell_endT_holder = []
-        for cell in masterLineage:
-            cell_endT_holder.append(cell.endT)
+            cell_endT_holder = []
+            for cell in masterLineage:
+                cell_endT_holder.append(cell.endT)
 
-        master_cell_endT = max(cell_endT_holder) # get the longest tau in the list
-        master_cell_endT_idx = np.argmax(cell_endT_holder) # get the idx of the longest tau in the lineage
-        master_cell = masterLineage[master_cell_endT_idx] # get the master cell via the longest tau index
+            master_cell_endT = max(cell_endT_holder) # get the longest tau in the list
+            master_cell_endT_idx = np.argmax(cell_endT_holder) # get the idx of the longest tau in the lineage
+            master_cell = masterLineage[master_cell_endT_idx] # get the master cell via the longest tau index
 
-        for cell in sublineage2:
-            cell.linID = master_cell.linID
-            cell.gen += master_cell.gen
-            cell.startT += master_cell_endT
-            cell.endT += master_cell_endT
+            for cell in sublineage2:
+                cell.linID = master_cell.linID
+                cell.gen += master_cell.gen
+                cell.startT += master_cell_endT
+                cell.endT += master_cell_endT
 
-        master_cell.left = sublineage2[0]
-        sublineage2[0].parent = master_cell
-        newLineage = masterLineage + sublineage2
+            master_cell.left = sublineage2[0]
+            sublineage2[0].parent = master_cell
+            newLineage.extend(masterLineage + sublineage2)
+        '''
         
         
-        X = remove_NaNs(newLineage)
+        experimentTime = 125 + 75
+        initCells = []
+        locBern = [0.99999999999]
+        cGom = [1]
+        scaleGom = [75]
+        switchT = 125
+        bern2 = [0.6]
+        cG2 = [2]
+        scaleG2 = [50]
+        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2)
+        while len(LINEAGE) == 0:
+            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2)
+        
+        X = remove_NaNs(LINEAGE)
         print(len(newLineage))
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
         fit(tHMMobj, max_iter=200, verbose=False)
+        
         deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)        
