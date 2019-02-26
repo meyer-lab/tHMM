@@ -1,9 +1,12 @@
 
 test:
-	nosetests3 --with-xunit -s --with-timer --timer-top-n 20
+	nosetests3 --with-xunit -s --with-timer
 
 testcover:
-	nosetests3 --with-xunit --with-cprofile --with-xcoverage --cover-package=lineage -s --with-timer --timer-top-n 20
+	nosetests3 --processes=4 --process-timeout=60 --with-xunit --with-xcoverage --cover-package=lineage
+
+testprofile:
+	nosetests3 --with-cprofile
 	gprof2dot -f pstats stats.dat | dot -Tsvg -o cprofile.svg
 
 clean:
