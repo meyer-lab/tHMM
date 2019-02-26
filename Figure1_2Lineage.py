@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
+from matplotlib.font_manager import FontProperties
 
 
 from lineage.BaumWelch import fit
@@ -17,18 +18,18 @@ from lineage.CellNode import CellNode
 
 ################ Number of cell in a single lineage
 
-T_MAS = 200
+T_MAS = 75
 T_2 = 75
 times = range(1,2) 
 reps = 5
 
 MASinitCells = [1]
 MASlocBern = [0.99999999999]
-MAScGom = [0.5]
+MAScGom = [2]
 MASscaleGom = [30]
 initCells2 = [1]
 locBern2 = [0.7]
-cGom2 = [1]
+cGom2 = [1.5]
 scaleGom2 = [25]
 
 acc_h1 = [] #list of lists of lists
@@ -109,6 +110,7 @@ for experimentTime in times: #a pop with num number of lineages
             lineage = tHMMobj.population[lin]
             T = tHMMobj.paramlist[lin]["T"]
             E = tHMMobj.paramlist[lin]["E"]
+            pi = tHMMobj.paramlist[lin]["pi"] 
 
             
             #assign state 1 and state 2
@@ -118,8 +120,11 @@ for experimentTime in times: #a pop with num number of lineages
                     if state_j != state_k:
                         T_non_diag[state_j] = T[state_j,state_k]
             
-            state_1 = np.argmin(T_non_diag) #state_MAS
-            state_2 = np.argmax(T_non_diag)
+            #state_1 = np.argmin(T_non_diag) #state_MAS
+            #state_2 = np.argmax(T_non_diag)
+            
+            state_1 = np.argmax(pi)
+            state_2 = np.argmin(pi)
             
             
             wrong = 0
@@ -174,35 +179,43 @@ x=cell_h1
 print(max(x))
 fig, axs = plt.subplots(nrows=2, ncols=2, sharex=True)
 ax = axs[0,0]
-ax.errorbar(x, acc_h1, fmt='o', c='b',marker="*",fillstyle='none')
+ax.set_ylim(0,1)
+l1 = ax.errorbar(x, acc_h1, fmt='o', c='b',marker="*",fillstyle='none', label = 'Accuracy')
 ax.axhline(y=1, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b',)
 ax.set_title('Accuracy')
 #ax.locator_params(nbins=4)
 
 ax = axs[0,1]
-ax.errorbar(x, bern_MAS_h1, fmt='o', c='b',marker="^",fillstyle='none')
-ax.errorbar(x, bern_2_h1, fmt='o', c='g',marker="^",fillstyle='none')
-ax.set_title('Bernoulli Parameter')
-ax.axhline(y= MASlocBern, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b')
+l2 = ax.errorbar(x, bern_MAS_h1, fmt='o', c='r',marker="^",fillstyle='none', label = 'State 1')
+l3 = ax.errorbar(x, bern_2_h1, fmt='o', c='g',marker="^",fillstyle='none', label = 'State 2')
+ax.set_title('Bernoulli')
+ax.axhline(y= MASlocBern, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
 ax.axhline(y=locBern2, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
 
 ax = axs[1,0]
 ax.set_xlabel('Cells')
-ax.errorbar(x,cGom_MAS_h1, fmt='o',c='b',marker=(8,2,0))
-ax.errorbar(x,cGom_2_h1, fmt='o',c='g',marker=(8,2,0))
-ax.axhline(y=MAScGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b')
+ax.errorbar(x,cGom_MAS_h1, fmt='o',c='r',marker="^",fillstyle='none', label = 'State 1')
+ax.errorbar(x,cGom_2_h1, fmt='o',c='g',marker="^",fillstyle='none', label = 'State 2')
+ax.axhline(y=MAScGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
 ax.axhline(y=cGom2, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
 ax.set_title('Gompertz C')
 
 
 ax = axs[1,1]
 ax.set_xlabel('Cells')
-ax.errorbar(x,scaleGom_MAS_h1, fmt='o',c='b', marker="1")
-ax.errorbar(x,scaleGom_2_h1, fmt='o',c='g', marker="1")
-ax.axhline(y=MASscaleGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b')
+ax.errorbar(x,scaleGom_MAS_h1, fmt='o',c='r',marker="^",fillstyle='none', label = 'State 1')
+ax.errorbar(x,scaleGom_2_h1, fmt='o',c='g',marker="^",fillstyle='none', label = 'State 2')
+ax.axhline(y=MASscaleGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
 ax.axhline(y=scaleGom2, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
 ax.set_title('Gompertz Scale')
 
-fig.suptitle('Lineage Length effect on tHMM Classification')
+'''
+fontP = FontProperties()
+fontP.set_size('x-large')
+
+fig.legend((l1, l2, l3), ('Accuracy', 'State 1', 'State 2'), loc='upper right', prop=fontP, fancybox=True, shadow=True)
+'''
+
+fig.suptitle('Lineage Length')
 
 plt.savefig('TEST_lineage_length_classification.png')

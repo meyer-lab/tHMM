@@ -29,7 +29,7 @@ reps = 1
 MASlocBern = [0.99999999999]
 MAScGom = [0.5]
 MASscaleGom = [30]
-#initCells2 = [1]
+initCells2 = [1]
 locBern2 = [0.7]
 cGom2 = [1]
 scaleGom2 = [25]
@@ -115,6 +115,7 @@ for lineage_num in lineages: #a pop with num number of lineages
             lineage = tHMMobj.population[lin]
             T = tHMMobj.paramlist[lin]["T"]
             E = tHMMobj.paramlist[lin]["E"]
+            pi = tHMMobj.paramlist[lin]["pi"] 
 
             
             #assign state 1 and state 2
@@ -124,8 +125,11 @@ for lineage_num in lineages: #a pop with num number of lineages
                     if state_j != state_k:
                         T_non_diag[state_j] = T[state_j,state_k]
             
-            state_1 = np.argmin(T_non_diag) #state_MAS
-            state_2 = np.argmax(T_non_diag)
+            #state_1 = np.argmin(T_non_diag) #state_MAS
+            #state_2 = np.argmax(T_non_diag)
+            
+            state_1 = np.argmax(pi)
+            state_2 = np.argmax(pi)
             
             
             wrong = 0

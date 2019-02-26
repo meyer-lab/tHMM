@@ -412,7 +412,7 @@ class TestModel(unittest.TestCase):
             masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
             masterLineage = remove_NaNs(masterLineage)
         print(len(masterLineage))
-        experimentTime2 = 75
+        experimentTime2 = 125
         initCells2 = [1]
         locBern2 = [0.7]
         cGom2 = [2]
