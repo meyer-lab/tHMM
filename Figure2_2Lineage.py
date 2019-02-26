@@ -19,7 +19,7 @@ from lineage.CellNode import CellNode
 ########################## Number of Lineages in a population
 
 lineage_start = 1
-lineage_end = 5
+lineage_end = 10
 lineages = range(lineage_start, lineage_end + 1) 
 reps = 1
 '''
@@ -32,8 +32,8 @@ bern2 = [0.7]
 cG2 = [1.5]
 scaleG2 = [25]
 '''
-T_MAS = 50
-T_2 = 75
+T_MAS = 75
+T_2 = 85
 
 MASinitCells = [1]
 MASlocBern = [0.99999999999]
