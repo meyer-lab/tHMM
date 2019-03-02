@@ -138,7 +138,7 @@ class tHMM:
                     temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
                     temp_g = sp.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
-                    EL_array[current_cell_idx, state_k] = temp_b * temp_g
+                    EL_array[current_cell_idx, state_k] = temp_g
 
             EL.append(EL_array) # append the EL_array for each lineage
         return EL
