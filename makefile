@@ -1,16 +1,18 @@
+.PHONY: clean test testprofile testcover docs
 
 test:
-	nosetests3 --with-xunit -s --with-timer
+	pytest
 
 testcover:
-	nosetests3 --processes=4 --process-timeout=60 --with-xunit --with-xcoverage --cover-package=lineage
+	pytest --junitxml=junit.xml --cov=lineage --cov-report xml:coverage.xml
 
 testprofile:
-	nosetests3 --with-cprofile
-	gprof2dot -f pstats stats.dat | dot -Tsvg -o cprofile.svg
+	pytest --profile-svg
 
 clean:
-	rm -f nosetests.xml coverage.xml .coverage stats.dat cprofile.svg
+	rm -f coverage.xml .coverage .coverage* junit.xml coverage.xml
+	rm -rf prof
 
 docs:
-	doxygen doxygen.cfg
+	sphinx-apidoc -o doc/source lineage
+	sphinx-build doc/source doc/build
