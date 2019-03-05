@@ -7,15 +7,16 @@ pipeline {
         sh 'make clean'
       }
     }
-    stage('Test'){
-      steps {
-        sh 'make testcover'
-        sh 'make docs'
+    stage('Build/Test') {
+      parallel {
+        stage('Test')  { steps { sh 'make testcover' } }
+        stage('Lint')  { steps { sh '(pylint --rcfile=.pylintrc polyfc > pylint.log || echo "pylint exited with $?")' } }
+        stage('Doc')   { steps { sh 'make docs' } }
       }
     }
-    stage('Lint')  { steps { sh '(pylint3 --rcfile=.pylintrc lineage > pylint.log || echo "pylint3 exited with $?")' } }
     stage('Report') {
       steps {
+        junit allowEmptyResults: true, testResults: 'junit.xml'
         step([
           $class: 'CoberturaPublisher',
           autoUpdateHealth: true,
@@ -31,10 +32,12 @@ pipeline {
         step([$class:'WarningsPublisher', parserConfigurations: [[parserName:'PYLint', pattern:'pylint.log']],
           unstableTotalAll:'100', usePreviousBuildAsReference:true])
         publishHTML([
-          allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false,
-          reportDir: 'html',
+          allowMissing: false,
+          alwaysLinkToLastBuild: false,
+          keepAll: true,
+          reportDir: 'doc/build',
           reportFiles: 'index.html',
-          reportName: 'Documentation',
+          reportName: 'Sphinx Documentation',
           reportTitles: ''])
       }
     }
