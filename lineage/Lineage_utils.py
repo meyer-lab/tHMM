@@ -4,7 +4,7 @@ import numpy as np
 from scipy.optimize import minimize, minimize_scalar
 from .CellNode import generateLineageWithTime
 
-def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None):
+def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='G', betaExp=None, betaExp2=None):
     ''' generates a population of lineages that abide by distinct parameters. '''
 
     assert len(initCells) == len(locBern) == len(cGom) == len(scaleGom) # make sure all lists have same length
@@ -13,7 +13,10 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
 
     if switchT is None: # when there is no heterogeneity over time
         for ii in range(numLineages):
-            temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii]) # create a temporary lineage
+            if FOM=='G':
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], FOM='G') # create a temporary lineage
+            elif FOM=='E':
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], FOM='E', betaExp=betaExp[ii]) # create a temporary lineage
             for cell in temp:
                 sum_prev = 0
                 j = 0
@@ -21,10 +24,14 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
                     sum_prev += initCells[j]
                     j += 1
                 cell.linID += sum_prev # shift the lineageID so there's no overlap with populations of different parameters
+                cell.true_state = 0
                 population.append(cell) # append all individual cells into a population
     else: # when the second set of parameters is defined
         for ii in range(numLineages):
-            temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii]) 
+            if FOM=='G':
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii], FOM='G') 
+            elif FOM=='E':
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii], FOM='E', betaExp=[ii], betaExp2=[ii]) 
             # create a temporary lineage
             for cell in temp:
                 sum_prev = 0
@@ -98,11 +105,22 @@ def bernoulliParameterEstimatorAnalytical(X):
     fate_holder = [] # instantiates list to hold cell fates as 1s or 0s
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
-            fate_holder.append(cell.fate*1) # append 1 for dividing, and 0 for dying
-    #result = 0.5 # dummy estimate
-    #if len(fate_holder) != 0:
-    result = (sum(fate_holder)+1.0)/ (len(fate_holder)+2.0) # add up all the 1s and divide by the total length (finding the average)
+            fate_holder.append(cell.fate) # append 1 for dividing, and 0 for dying
+            
+    result = (sum(fate_holder)+1e-10) / (len(fate_holder)+2e-10) # add up all the 1s and divide by the total length (finding the average)
 
+    return result
+
+def exponentialAnalytical(X):
+    '''Estimates the Exponential beta parameter for a given population using MLE analytically'''
+     # create list of all our taus
+    tau_holder = []
+    for cell in X: # go through every cell in the population
+        if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
+            tau_holder.append(cell.tau) # append the cell lifetime
+
+    result = np.mean(tau_holder)
+    
     return result
 
 def gompertzAnalytical(X):

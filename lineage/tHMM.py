@@ -7,13 +7,14 @@ from .tHMM_utils import max_gen, get_gen
 
 class tHMM:
     """ Main tHMM class. """
-    def __init__(self, X, numStates=1):
+    def __init__(self, X, numStates=1, FOM='G'):
         ''' Instantiates a tHMM. '''
         self.X = X # list containing lineage, should be in correct format (contain no NaNs)
         self.numStates = numStates # number of discrete hidden states
         self.numLineages = get_numLineages(self.X) # gets the number of lineages in our population
         self.population = init_Population(self.X, self.numLineages) # arranges the population into a list of lineages (each lineage might have varying length)
         assert self.numLineages == len(self.population)
+        self.FOM=FOM
         self.paramlist = self.init_paramlist() # list that is numLineages long of parameters for each lineage tree in our population
 
         self.MSD = self.get_Marginal_State_Distributions() # full Marginal State Distribution holder
@@ -25,12 +26,21 @@ class tHMM:
         numStates = self.numStates
         numLineages = self.numLineages
         temp_params = {"pi": np.ones((numStates)) / numStates, # inital state distributions [K] initialized to 1/K
-                       "T": np.ones((numStates, numStates)) / numStates, # state transition matrix [KxK] initialized to 1/K
-                       "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
-        for state_j in range(numStates):
-            temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
-            temp_params["E"][state_j,1] = 2.0*(1+np.random.uniform()) # initializing all Gompertz c parameters to 2
-            temp_params["E"][state_j,2] = 50.0*(1+np.random.uniform()) # initializing all Gompoertz s(cale) parameters to 50
+                       "T": np.ones((numStates, numStates)) / numStates} # state transition matrix [KxK] initialized to 1/K
+        if self.FOM=='G':
+            temp_params["E"] = np.ones((numStates, 3)) # sequence of emission likelihood distribution parameters [Kx3]
+                       
+            for state_j in range(numStates):
+                temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
+                temp_params["E"][state_j,1] = 2.0*(1+np.random.uniform()) # initializing all Gompertz c parameters to 2
+                temp_params["E"][state_j,2] = 50.0*(1+np.random.uniform()) # initializing all Gompoertz s(cale) parameters to 50
+        
+        elif self.FOM=='E':
+            temp_params["E"] = np.ones((numStates, 2)) # sequence of emission likelihood distribution parameters [Kx3]
+                       
+            for state_j in range(numStates):
+                temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
+                temp_params["E"][state_j,1] = 50.0*(1+np.random.uniform()) # initializing all exponential beta parameters to be 50
 
         for lineage_num in range(numLineages): # for each lineage in our population
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
@@ -67,12 +77,13 @@ class tHMM:
                 MSD_array[0,state_k] = params["pi"][state_k]
             MSD.append(MSD_array)
         
-        for num in range(numLineages):
-            MSD_0_row_sum = np.sum(MSD[num][0])
+        for num1 in range(numLineages):
+            MSD_0_row_sum = np.sum(MSD[num1][0])
             assert np.isclose(MSD_0_row_sum, 1.)
 
-        for num in range(numLineages):
-            lineage = population[num] # getting the lineage in the Population by lineage index
+        for num2 in range(numLineages):
+            lineage = population[num2] # getting the lineage in the Population by lineage index
+            params = paramlist[num2] # getting the respective params by lineage index
             curr_level = 2
             max_level = max_gen(lineage)
             while curr_level <= max_level:
@@ -84,13 +95,13 @@ class tHMM:
                         temp_sum_holder = [] # for all states k, calculate the sum of temp
 
                         for state_j in range(numStates): # for all states j, calculate temp
-                            temp = params["T"][state_j,state_k] * MSD[num][parent_cell_idx, state_j]
+                            temp = params["T"][state_j,state_k] * MSD[num2][parent_cell_idx, state_j]
                             # temp = T_jk * P(z_parent(n) = j)
                             temp_sum_holder.append(temp)
 
-                        MSD[num][current_cell_idx,state_k] = sum(temp_sum_holder)
+                        MSD[num2][current_cell_idx,state_k] = sum(temp_sum_holder)
                 curr_level += 1
-            MSD_row_sums = np.sum(MSD[num], axis=1)
+            MSD_row_sums = np.sum(MSD[num2], axis=1)
             assert np.allclose(MSD_row_sums, 1.0)
         return MSD
 
