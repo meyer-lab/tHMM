@@ -4,7 +4,7 @@ test:
 	pytest
 
 testcover:
-	pytest --junitxml=junit.xml --cov=lineage --cov-report xml:coverage.xml
+	pytest --workers auto --junitxml=junit.xml --cov=lineage --cov-report xml:coverage.xml
 
 testprofile:
 	pytest --profile-svg
