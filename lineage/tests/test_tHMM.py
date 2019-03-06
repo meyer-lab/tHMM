@@ -398,10 +398,10 @@ class TestModel(unittest.TestCase):
     ############################
 
     def test_Baum_Welch_1(self):
-        '''tests baum welch simply by running it.'''
         # creating a heterogeneous tree
+        numStates = 2
 
-        MASexperimentTime = 125
+        MASexperimentTime = 200
         MASinitCells = [1]
         MASlocBern = [0.99999999999]
         MAScGom = [1]
@@ -412,7 +412,9 @@ class TestModel(unittest.TestCase):
             masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
             masterLineage = remove_NaNs(masterLineage)
         print(len(masterLineage))
-        experimentTime2 = 75
+        for cell in masterLineage:
+            cell.true_state=0
+        experimentTime2 = 100
         initCells2 = [1]
         locBern2 = [0.7]
         cGom2 = [2]
@@ -424,28 +426,42 @@ class TestModel(unittest.TestCase):
             sublineage2 = remove_NaNs(sublineage2)
         print(len(sublineage2))
 
-        cell_endT_holder = []
+        cell_startT_holder = []
         for cell in masterLineage:
-            cell_endT_holder.append(cell.endT)
+            cell_startT_holder.append(cell.startT)
 
-        master_cell_endT = max(cell_endT_holder) # get the longest tau in the list
-        master_cell_endT_idx = np.argmax(cell_endT_holder) # get the idx of the longest tau in the lineage
-        master_cell = masterLineage[master_cell_endT_idx] # get the master cell via the longest tau index
+        master_cell_startT_idx = np.argmax(cell_startT_holder) # get the idx of the longest tau in the lineage
+        master_cell = masterLineage[master_cell_startT_idx] # get the master cell via the longest tau index
 
         for cell in sublineage2:
+            cell.true_state = 1
             cell.linID = master_cell.linID
             cell.gen += master_cell.gen
-            cell.startT += master_cell_endT
-            cell.endT += master_cell_endT
+            cell.startT += master_cell.endT
+            cell.endT += master_cell.endT
 
         master_cell.left = sublineage2[0]
         sublineage2[0].parent = master_cell
         newLineage = masterLineage + sublineage2
+        newLineage = remove_NaNs(newLineage)
         print(len(newLineage))
+        
+        expected_lineage_parameters = []
+        LINEAGE_params = np.zeros((numStates,3))
+        LINEAGE_params[0,0]=MASlocBern[0]
+        LINEAGE_params[1,0]=locBern2[0]
+        LINEAGE_params[0,1]=MAScGom[0]
+        LINEAGE_params[1,1]=cGom2[0]
+        LINEAGE_params[0,2]=MASscaleGom[0]
+        LINEAGE_params[1,2]=scaleGom2[0]
+        expected_lineage_parameters.append(LINEAGE_params)
+        
+        true_state_holder = np.zeros((len(newLineage)), dtype=int)
+        for ii,cell in enumerate(newLineage):
+            true_state_holder[ii]=cell.true_state
 
         X = remove_NaNs(newLineage)
-        numStates = 2
-        tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
+        tHMMobj = tHMM(X, numStates=numStates, FOM='G') # build the tHMM class with X
         fit(tHMMobj, max_iter=500, verbose=True)
         for num in range(tHMMobj.numLineages):
             print("\n")
@@ -453,43 +469,70 @@ class TestModel(unittest.TestCase):
             print(tHMMobj.paramlist[num]["pi"])
             print("Transition State Matrix: ")
             print(tHMMobj.paramlist[num]["T"])
+            print("Emission Parameters: ")
+            print(tHMMobj.paramlist[num]["E"])
+            print("Expected Emissions Parameters: ")
+            print(expected_lineage_parameters[num])
+
         deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         for num in range(tHMMobj.numLineages):
             print(all_states[num])
-            
+            print(true_state_holder)
+            print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
+
             
     def test_Baum_Welch_2(self):
-        '''tests baum welch simply by running it.'''
         # creating a heterogeneous tree
-        experimentTime = 125 + 75
+        numStates = 2
+        
+        switchT = 200
+        experimentTime = switchT + 100
         initCells = [1]
         locBern = [0.99999999999]
         cGom = [1]
         scaleGom = [75]
-        switchT = 125
         bern2 = [0.6]
         cG2 = [2]
         scaleG2 = [50]
+        
+        expected_lineage_parameters = []
+        LINEAGE_params = np.zeros((numStates,3))
+        LINEAGE_params[0,0]=locBern[0]
+        LINEAGE_params[1,0]=bern2[0]
+        LINEAGE_params[0,1]=cGom[0]
+        LINEAGE_params[1,1]=cG2[0]
+        LINEAGE_params[0,2]=scaleGom[0]
+        LINEAGE_params[1,2]=scaleG2[0]
+        expected_lineage_parameters.append(LINEAGE_params)
+        
         LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2)
         while len(LINEAGE) == 0:
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2)
+        LINEAGE = remove_NaNs(LINEAGE)
+            
+        true_state_holder = np.zeros((len(LINEAGE)), dtype=int)
+        for ii,cell in enumerate(LINEAGE):
+            true_state_holder[ii]=cell.true_state
+            
         X = remove_NaNs(LINEAGE)
-        numStates = 2
-        tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
-        fit(tHMMobj, max_iter=500, verbose=True)
+        tHMMobj = tHMM(X, numStates=numStates, FOM='G') # build the tHMM class with X
+        fit(tHMMobj, max_iter=100, verbose=False)
         for num in range(tHMMobj.numLineages):
             print("\n")
             print("Initial Proabablities: ")
             print(tHMMobj.paramlist[num]["pi"])
             print("Transition State Matrix: ")
             print(tHMMobj.paramlist[num]["T"])
+            print("Emission Parameters: ")
+            print(tHMMobj.paramlist[num]["E"])
+            print("Expected Emissions Parameters: ")
+            print(expected_lineage_parameters[num])
         deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         for num in range(tHMMobj.numLineages):
             print(all_states[num])
-
-        
-        
+            print(true_state_holder)  
+            print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
