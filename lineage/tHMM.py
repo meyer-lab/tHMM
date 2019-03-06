@@ -7,10 +7,11 @@ from .tHMM_utils import max_gen, get_gen
 
 class tHMM:
     """ Main tHMM class. """
-    def __init__(self, X, numStates=1):
+    def __init__(self, X, numStates=1, FOM='G'):
         ''' Instantiates a tHMM. '''
         self.X = X # list containing lineage, should be in correct format (contain no NaNs)
         self.numStates = numStates # number of discrete hidden states
+        self.FOM = FOM
         self.numLineages = get_numLineages(self.X) # gets the number of lineages in our population
         self.population = init_Population(self.X, self.numLineages) # arranges the population into a list of lineages (each lineage might have varying length)
         assert self.numLineages == len(self.population)

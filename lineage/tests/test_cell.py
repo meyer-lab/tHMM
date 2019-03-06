@@ -2,7 +2,7 @@
 import unittest
 import math
 import numpy as np
-from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, gompertzAnalytical
+from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, gompertzAnalytical, exponentialAnalytical, remove_NaNs
 from ..CellNode import CellNode as c, generateLineageWithTime, doublingTime
 
 class TestModel(unittest.TestCase):
@@ -10,14 +10,14 @@ class TestModel(unittest.TestCase):
     def setUp(self):
         """ Create populations that are used for all tests. """
         experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
-        locBern = [0.6]
+        locBern = [0.8]
         cGom = [2]
-        scaleGom = [0.5e2]
+        scaleGom = [50.]
+        betaExp = [50.]
         initCells = [100]
-        self.pop1 = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom) # initialize "pop" as of class Population
-        
-        
-    
+        self.pop1 = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G') # initialize "pop" as of class Population
+        self.pop2 = generatePopulationWithTime(168, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp) 
+
     def test_lifetime(self):
         """Make sure the cell isUnfinished before the cell dies and then make sure the cell's lifetime (tau) is calculated properly after it dies."""
         cell1 = c(startT=20)
@@ -78,7 +78,7 @@ class TestModel(unittest.TestCase):
 
         self.assertGreater(count_8, count_5)
 
-    def test_generate_lifetime(self):
+    def test_generate_lifetime_G(self):
         """Make sure generated fake data behaves properly when tuning the Gompertz parameters."""
         # average and stdev are both larger when c = 0.5 compared to c = 3
         out_c05 = generateLineageWithTime(10, 100, 0.8, 0.5, 50)
@@ -94,9 +94,8 @@ class TestModel(unittest.TestCase):
                 tau_c3.append(n.tau)
 
         self.assertGreater(np.mean(tau_c05), np.mean(tau_c3))
-        self.assertGreater(np.std(tau_c05), np.std(tau_c3))
 
-        # average and stdev are both larger when scale = 3 compared to scale = 0.5
+        # average larger when scale = 3 compared to scale = 0.5
         out_scale40 = generateLineageWithTime(10, 100, 0.8, 2, 40)
         out_scale50 = generateLineageWithTime(10, 100, 0.8, 2, 50)
 
@@ -110,21 +109,43 @@ class TestModel(unittest.TestCase):
                 tau_scale50.append(n.tau)
 
         self.assertGreater(np.mean(tau_scale50), np.mean(tau_scale40))
+        
+    def test_generate_lifetime_E(self):
+        """Make sure generated fake data behaves properly when tuning the Exponential parameter."""
+        # average and stdev are both larger when c = 0.5 compared to c = 3
+        out_betaExp20 = generateLineageWithTime(initCells=10, experimentTime=100, locBern=0.8, cGom=None, scaleGom=None, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='E', betaExp=10, betaExp2=None)
+        out_betaExp50 = generateLineageWithTime(initCells=10, experimentTime=100, locBern=0.8, cGom=None, scaleGom=None, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='E', betaExp=50, betaExp2=None)
+        tau_beta20 = [] # create an empty list
+        tau_beta50 = []
+        for n in out_betaExp20:
+            if not n.isUnfinished():  # if cell has died, append tau to list
+                tau_beta20.append(n.tau)
+        for n2 in out_betaExp50:
+            if not n2.isUnfinished():  # if cell has died, append tau to list
+                tau_beta50.append(n2.tau)
+        self.assertGreater(np.mean(tau_beta50), np.mean(tau_beta20))
 
     def test_MLE_bern(self):
         """ Generate multiple lineages and estimate the bernoulli parameter with MLE. Estimators must be within +/- 0.08 of true locBern for popTime. """
-        self.assertTrue(0.52 <= bernoulliParameterEstimatorAnalytical(self.pop1) <= 0.68)
+        self.assertTrue(0.7 <= bernoulliParameterEstimatorAnalytical(self.pop1) <= 9)
 
     def test_MLE_gomp_analytical(self):
         """ Use the analytical shortcut to estimate the gompertz parameters. """
         # test populations w.r.t. time
         c_out, scale_out = gompertzAnalytical(self.pop1)
         self.assertTrue(0 <= c_out <= 5) # +/- 3.0 of true cGom
-        self.assertTrue(35 <= scale_out <= 65) # +/- 15 of scaleGom
+        self.assertTrue(45 <= scale_out <= 55) # +/- 15 of scaleGom
+        
+    def test_MLE_exp_analytical(self):
+        """ Use the analytical shortcut to estimate the gompertz parameters. """
+        # test populations w.r.t. time
+        beta_out = exponentialAnalytical(self.pop2)
+        truther = (45 <= beta_out <= 55)
+        self.assertTrue(truther) # +/- 15 of scaleGom
 
-    def test_doubleT(self):
+    def test_doubleT_G(self):
         """Check for basic functionality of doubleT."""
-        base = doublingTime(100, 0.7, 2, 50)
+        base = doublingTime(100, 0.7, 2, 80)
 
         # doubles quicker when cells divide 90% of the time
         self.assertGreater(base, doublingTime(100, 0.9, 2, 50))
@@ -132,6 +153,16 @@ class TestModel(unittest.TestCase):
         # doubles quicker when cell lifetime is shorter (larger c & lower scale == shorter life)
         self.assertGreater(base, doublingTime(100, 0.7, 3, 50))
         self.assertGreater(base, doublingTime(100, 0.7, 2, 40))
+        
+    def test_doubleT_E(self):
+        """Check for basic functionality of doubleT."""
+        base = doublingTime(100, 0.7, None, None, FOM='E', betaExp=80)
+
+        # doubles quicker when cells divide 90% of the time
+        self.assertGreater(base, doublingTime(100, 0.9, None, None, FOM='E', betaExp=50))
+
+        self.assertGreater(base, doublingTime(100, 0.7, None, None, FOM='E', betaExp=50))
+        self.assertGreater(base, doublingTime(100, 0.7, None, None, FOM='E', betaExp=40))
 
     def test_hetergeneous_pop(self):
         """ Calls generatePopulationWithTime when there is a switch in parameters over the course of the experiment's time. """

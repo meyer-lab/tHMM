@@ -3,8 +3,8 @@ import numpy as np
 
 from .tHMM_utils import max_gen, get_gen, get_daughters
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
-from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, get_beta_parent_child_prod
-from .Lineage_utils import bernoulliParameterEstimatorAnalytical, gompertzAnalytical 
+from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, get_beta_parent_child_prod, beta_parent_child_func
+from .Lineage_utils import bernoulliParameterEstimatorAnalytical, gompertzAnalytical, exponentialAnalytical
 
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
     '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
@@ -20,13 +20,15 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
     also_numStates = gamma_array.shape[1]
     also_also_numStates = beta_array.shape[1]
     assert numStates == also_numStates == also_also_numStates
-    beta_parent_child_state_j = get_beta_parent_child_prod(numStates=numStates,
-                                                           lineage=lineage,
-                                                           beta_array=beta_array,
-                                                           T=T,
-                                                           MSD_array=MSD_array,
-                                                           state_j=state_j,
-                                                           node_parent_m_idx=node_parent_m_idx)
+    beta_parent_child_state_j = beta_parent_child_func(numStates=numStates,
+                                                       lineage=lineage,
+                                                       beta_array=beta_array,
+                                                       T=T,
+                                                       MSD_array=MSD_array,
+                                                       state_j=state_j,
+                                                       node_parent_m_idx=node_parent_m_idx,
+                                                       node_child_n_idx=node_child_n_idx)
+    
     zeta = beta_child_state_k*T[state_j,state_k]*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child_state_j)
     return zeta
 
@@ -38,11 +40,11 @@ def get_all_gammas(lineage, gamma_array_at_state_j):
     while curr_level < max_level: # get all the gammas but not the ones at the last level
         level = get_gen(curr_level, lineage) #get lineage for the gen
         for cell in level:
-            cell_idx = lineage.index(cell)
-            holder.append(gamma_array_at_state_j[cell_idx])
+            if not cell.isLeaf():
+                cell_idx = lineage.index(cell)
+                holder.append(gamma_array_at_state_j[cell_idx])
 
         curr_level += 1
-
     return sum(holder)
 
 def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array, gamma_array, T):
@@ -112,6 +114,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             MSD_array = tHMMobj.MSD[num]
             gamma_array = gammas[num]
             tHMMobj.paramlist[num]["pi"] = gamma_array[0,:]
+            T_holder = np.zeros((numStates,numStates), dtype=float)
             for state_j in range(numStates):
                 gamma_array_at_state_j = gamma_array[:,state_j]
                 denom = get_all_gammas(lineage, gamma_array_at_state_j)
@@ -123,17 +126,17 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                                           MSD_array=MSD_array,
                                           gamma_array=gamma_array,
                                           T=tHMMobj.paramlist[num]["T"])
-                    tHMMobj.paramlist[num]["T"][state_j,state_k] = numer/denom
+                    entry = numer/denom
+                    T_holder[state_j,state_k] = entry
                     
-            T_NN = tHMMobj.paramlist[num]["T"]
-            row_sums = T_NN.sum(axis=1)
-
-            T_new = T_NN / row_sums[:, np.newaxis]
+            row_sums = T_holder.sum(axis=1)
+            T_new = T_holder / row_sums[:, np.newaxis]
             tHMMobj.paramlist[num]["T"] = T_new
 
             max_state_holder = []
-            for cell in range(len(lineage)):
-                max_state_holder.append(np.argmax(gammas[num][cell,:]))
+            for ii,cell in enumerate(lineage):
+                assert lineage[ii] is cell
+                max_state_holder.append(np.argmax(gammas[num][ii,:]))
             state_obs_holder = []
             for state_j in range(numStates):
                 state_obs = []
@@ -145,9 +148,13 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
 
             for state_j in range(numStates):
                 tHMMobj.paramlist[num]["E"][state_j,0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
-                c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[state_j])
-                tHMMobj.paramlist[num]["E"][state_j,1] = c_estimate
-                tHMMobj.paramlist[num]["E"][state_j,2] = scale_estimate
+                if tHMMobj.FOM=='G':
+                    c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[state_j])
+                    tHMMobj.paramlist[num]["E"][state_j,1] = c_estimate
+                    tHMMobj.paramlist[num]["E"][state_j,2] = scale_estimate
+                elif tHMMobj.FOM=='E':
+                    beta_estimate = exponentialAnalytical(state_obs_holder[state_j])
+                    tHMMobj.paramlist[num]["E"][state_j,1] = beta_estimate
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
@@ -162,9 +169,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         new_LL_list = calculate_log_likelihood(tHMMobj, NF)
 
         if verbose:
-            print()
-            print("Average Log-Likelihood across all lineages: ")
-            print(np.mean(new_LL_list))
+            print("Average Log-Likelihood across all lineages: {}".format(np.mean(new_LL_list)))
 
         for lineage_iter in range(len(new_LL_list)):
             calculation = abs(new_LL_list[lineage_iter] - old_LL_list[lineage_iter])
