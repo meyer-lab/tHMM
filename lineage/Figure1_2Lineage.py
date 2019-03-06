@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from matplotlib.font_manager import FontProperties
 
 
-from lineage.BaumWelch import fit
+from BaumWelch import fit
 from lineage.DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from lineage.Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from lineage.UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
@@ -33,6 +33,8 @@ locBern2 = [0.99999999999] #0.7
 cGom2 = [2] #1.5
 scaleGom2 = [30] #25
 
+numStates = 1
+
 acc_h1 = [] #list of lists of lists
 cell_h1 = []
 bern_MAS_h1 = []
@@ -57,46 +59,9 @@ for experimentTime in times: #a pop with num number of lineages
     for rep in range(reps):
         print('Rep:', rep)       
         
-        MASexperimentTime = T_MAS
-        masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
-        masterLineage = remove_NaNs(masterLineage)
-        while len(masterLineage) == 0:
-            masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
-            masterLineage = remove_NaNs(masterLineage)
-        experimentTime2 = T_2
-        sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
-        sublineage2 = remove_NaNs(sublineage2)
-        while len(sublineage2) == 0:
-            sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
-            sublineage2 = remove_NaNs(sublineage2)
-
-        cell_endT_holder = []
-        for cell in masterLineage:
-            cell_endT_holder.append(cell.endT)
-
-        master_cell_endT = max(cell_endT_holder) # get the longest tau in the list
-        master_cell_endT_idx = np.argmax(cell_endT_holder) # get the idx of the longest tau in the lineage
-        master_cell = masterLineage[master_cell_endT_idx] # get the master cell via the longest tau index
-
-        for cell in sublineage2:
-            cell.linID = master_cell.linID
-            cell.gen += master_cell.gen
-            cell.startT += master_cell_endT
-            cell.endT += master_cell_endT
-
-        master_cell.left = sublineage2[0]
-        sublineage2[0].parent = master_cell
-        newLineage = masterLineage + sublineage2
+        Lin_shak(MASinitCells, MASlocBern, MAScGom, MASscaleGom, initCells2, locBern2, cGom2, scaleGom2) 
         
-        
-        X = remove_NaNs(newLineage)
-        print(len(newLineage))
-        numStates = 1
-        tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
-        fit(tHMMobj, max_iter=200, verbose=False)
-        deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
-        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
-        all_states = Viterbi(tHMMobj, deltas, state_ptrs)        
+        deltas, state_ptrs, all_states = analyze(X, numStates)
 
         acc_h3 = []
         cell_h3 = []
@@ -109,41 +74,8 @@ for experimentTime in times: #a pop with num number of lineages
         scaleGom_2_h3 = []        
         
         for lin in range(tHMMobj.numLineages):
-            lineage = tHMMobj.population[lin]
-            T = tHMMobj.paramlist[lin]["T"]
-            E = tHMMobj.paramlist[lin]["E"]
-            pi = tHMMobj.paramlist[lin]["pi"] 
-
-            #assign state 1 and state 2
-            T_non_diag = np.zeros(numStates)
-            for state_j in range(numStates):
-                for state_k in range(numStates):
-                    if state_j != state_k:
-                        T_non_diag[state_j] = T[state_j,state_k]
-            
-            #state_1 = np.argmin(T_non_diag) #state_MAS
-            #state_2 = np.argmax(T_non_diag)
-            
-            state_1 = np.argmax(pi)
-            state_2 = np.argmin(pi)
-            
-            
-            wrong = 0
-            for cell in range(len(lineage)):
-                if cell < len(masterLineage):
-                    if all_states[lin][cell] == state_1:
-                        pass
-                    else:
-                        wrong += 1
-                elif cell >= len(masterLineage) and cell < len(newLineage):
-                    if all_states[lin][cell] == state_2:
-                        pass
-                    else:
-                        wrong += 1           
-
-            accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage           
-
-
+                     
+            T,E,pi,state_1,state_2,accuracy = Accuracy(tHMMobj, lin)
             
             acc_h3.append(accuracy)
             cell_h3.append(len(lineage))
