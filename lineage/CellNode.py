@@ -87,7 +87,7 @@ class CellNode:
             curr_cell = curr_cell.parent
             assert cell_linID == curr_cell.linID
         assert cell_linID == curr_cell.linID
-        return curr_cell
+        return curr_cell    
 
 def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='G', betaExp=None, betaExp2=None):
     ''' generates list given an experimental end time, a Bernoulli parameter for dividing/dying and a Gompertz parameter for cell lifetime'''
@@ -116,6 +116,7 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
             cell.endT = cell.startT + cell.tau
             if cell.endT < experimentTime: # determine fate only if endT is within range
                 # assign cell fate
+                cell.deathObserved=True
                 if switchT is not None and cell.startT > switchT: # when the cells should abide by the second set of parameters
                     cell.fate = sp.bernoulli.rvs(bern2)
                 else: # use first set of parameters for non-heterogeneous lineages or before the switch time
@@ -130,8 +131,7 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
                     cell.die(cell.endT)
             else: # if the endT is past the experimentTime
                 cell.tauFake = experimentTime-cell.startT 
-                cell.fateFake = sp.bernoulli.rvs(locBern) # assign fate
-                cell.endT = experimentTime
+                cell.deathObserved = False
                 cell.setUnfinished() # reset cell to be unfinished and move to next cell
 
     # return the list at end

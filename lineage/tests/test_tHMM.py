@@ -325,8 +325,8 @@ class TestModel(unittest.TestCase):
                        # should always end up in state 1 regardless of previous state
                        "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
 
-        temp_params["pi"][0] = 2/5 # the population is distributed as such 2/5 is of state 0
-        temp_params["pi"][1] = 3/5 # state 1 occurs 3/5 of the time
+        temp_params["pi"][0] = 4/5 # the population is distributed as such 2/5 is of state 0
+        temp_params["pi"][1] = 1/5 # state 1 occurs 3/5 of the time
 
         temp_params["E"][0,0] *= 0.999 # initializing all Bernoulli p parameters to 0.5
         temp_params["E"][0,1] *= 2 # initializing all Gompertz c parameters to 2
@@ -367,7 +367,7 @@ class TestModel(unittest.TestCase):
                 # this should be true since the homogenous lineage is all of state 1
                 num_of_ones+=1
         self.assertGreater(num_of_zeros,num_of_ones)
-        # there should be a greater number of lineages with all ones than all zeros as hidden states
+        # there should be a greater number of lineages with all zeros than all ones as hidden states
 
     ####################################
     # DownwardRecursion.py tests below #
@@ -507,9 +507,9 @@ class TestModel(unittest.TestCase):
         LINEAGE_params[1,2]=scaleG2[0]
         expected_lineage_parameters.append(LINEAGE_params)
         
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2)
+        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
         while len(LINEAGE) == 0:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2)
+            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
         LINEAGE = remove_NaNs(LINEAGE)
             
         true_state_holder = np.zeros((len(LINEAGE)), dtype=int)

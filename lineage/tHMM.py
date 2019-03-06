@@ -150,12 +150,43 @@ class tHMM:
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
                     if self.FOM=='G':
                         temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
-                        temp_g = sp.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood
-                        EL_array[current_cell_idx, state_k] = temp_b * temp_g
+                        try:
+                            temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tau, c=k_gomp_c, scale=k_gomp_s, deathObserved=True) # gompertz likelihood if death is observed
+                        except:
+                            assert not cell.deathObserved 
+                            temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tau, c=k_gomp_c, scale=k_gomp_s, deathObserved=False) # gompertz likelihood if death is observed
+                        EL_array[current_cell_idx, state_k] = temp_g
 
                     elif self.FOM=='E':
                         temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
-                        temp_beta = sp.expon.pdf(x=cell.tau, scale=k_expon_beta) # gompertz likelihood
+                        temp_beta = sp.expon.pdf(x=cell.tau, scale=k_expon_beta) # exponential likelihood
+                        # the right-censored and uncensored exponential pdfs are the same
                         EL_array[current_cell_idx, state_k] = temp_b * temp_beta
             EL.append(EL_array) # append the EL_array for each lineage
         return EL
+    
+def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
+    '''
+    Gives you the likelihood of a right-censored Gompertz distribution.
+    See Pg. 14 of The Gompertz distribution and Maximum Likelihood Estimation of its parameters - a revision
+    by Adam Lenart
+    November 28, 2011
+    '''
+    b = 1. / scale
+    a = c * b
+    
+    firstCoeff = a * np.exp(b*tau_or_tauFake)
+    if deathObserved:
+        pass # this calculation stays as is if the death is observed (delta_i = 1)
+    else:
+        firstCoeff = 1 # this calculation is raised to the power of delta if the death is unobserved (right-censored) (delta_i = 0)
+    
+    secondCoeff = np.exp( (-1*a/b)*(np.exp(b*tau_or_tauFake)-1) )
+    
+    result = firstCoeff*secondCoeff
+    
+    return result
+        
+    
+    
+    
