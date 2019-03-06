@@ -16,7 +16,10 @@ from lineage.Lineage_utils import remove_NaNs, get_numLineages, init_Population
 from lineage.Lineage_utils import generatePopulationWithTime as gpt
 from lineage.CellNode import CellNode
 
-
+from Lin_shak import Lin_shak
+from Analyze import Analyze
+from Accuracy import Accuracy
+from Matplot_gen import Matplot_gen
 
 T_MAS = 60
 T_2 = 60
@@ -25,15 +28,6 @@ state1 = 1
 state2 = 4
 states = range(state1,state2+1) 
 reps = 1
-
-'''MASinitCells = [1]
-MASlocBern = [0.7]
-MAScGom = [0.5]
-MASscaleGom = [30]
-initCells2 = [1]
-locBern2 = [0.7]
-cGom2 = [.5]
-scaleGom2 = [30]'''
 
 MASinitCells = [1]
 MASlocBern = [0.99999999999]
@@ -55,40 +49,9 @@ scaleGom_2_h1 = []
 #LL_h1 = []
 AIC_h1 = []
 
+X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
 
-MASexperimentTime = T_MAS
-masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
-masterLineage = remove_NaNs(masterLineage)
-while len(masterLineage) == 0:
-    masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
-    masterLineage = remove_NaNs(masterLineage)
-experimentTime2 = T_2
-sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
-sublineage2 = remove_NaNs(sublineage2)
-while len(sublineage2) == 0:
-    sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
-    sublineage2 = remove_NaNs(sublineage2)
-
-cell_endT_holder = []
-for cell in masterLineage:
-    cell_endT_holder.append(cell.endT)
-
-master_cell_endT = max(cell_endT_holder) # get the longest tau in the list
-master_cell_endT_idx = np.argmax(cell_endT_holder) # get the idx of the longest tau in the lineage
-master_cell = masterLineage[master_cell_endT_idx] # get the master cell via the longest tau index
-
-for cell in sublineage2:
-    cell.linID = master_cell.linID
-    cell.gen += master_cell.gen
-    cell.startT += master_cell_endT
-    cell.endT += master_cell_endT
-
-master_cell.left = sublineage2[0]
-sublineage2[0].parent = master_cell
-newLineage = masterLineage + sublineage2
-X = remove_NaNs(newLineage)
-print(len(newLineage))
-entropy = entropy()
+print(len(masterLineage), len(newLineage))
 
 for numStates in states: #a pop with num number of lineages
     print('numstates', numStates)
@@ -105,16 +68,7 @@ for numStates in states: #a pop with num number of lineages
     
     for rep in range(reps):
         numStates = numStates
-        tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
-        fit(tHMMobj, max_iter=200, verbose=False)
-        deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
-        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
-        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        
-        NF = get_leaf_Normalizing_Factors(tHMMobj)
-        betas = get_leaf_betas(tHMMobj, NF)
-        get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
-        LL = calculate_log_likelihood(tHMMobj, NF)
+        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X, numStates)
 
         acc_h3 = []
         cell_h3 = []
