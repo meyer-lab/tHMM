@@ -1,7 +1,8 @@
 '''This file contains the methods that completes the downward recursion and evaulates the beta values.'''
 
 import numpy as np
-from .tHMM_utils import max_gen, get_gen, get_parents_for_level
+from .tHMM_utils import max_gen, get_gen, get_parents_for_level 
+import math
 
 def get_leaf_Normalizing_Factors(tHMMobj):
     '''
@@ -50,6 +51,14 @@ def get_leaf_Normalizing_Factors(tHMMobj):
 
                 for state_k in range(numStates): # for each state
                     joint_prob = MSD_array[leaf_cell_idx, state_k] * EL_array[leaf_cell_idx, state_k] # def of conditional prob
+                    if math.isnan(MSD_array[leaf_cell_idx, state_k]):
+                        print("MSD IS NAN IN NF LEAF CALC")
+                        print(MSD_array[leaf_cell_idx, state_k])
+                        assert False
+                    if math.isnan(EL_array[leaf_cell_idx, state_k]):
+                        print("EL IS NAN IN NF LEAF CALC")
+                        print(EL_array[leaf_cell_idx, state_k])
+                        assert False
                     # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
                     # this product is the joint probability
                     temp_sum_holder.append(joint_prob) # append the joint probability to be summed

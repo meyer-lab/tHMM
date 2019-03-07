@@ -58,6 +58,9 @@ def remove_NaNs(X):
             X.pop(ii) # pop the unfinished cell at the current position
         else:
             ii += 1 # only move forward in the list if you don't delete a cell
+    return X
+
+def remove_singleton_lineages(X):
     ii = 0
     while ii in range(len(X)): # for each cell in X
         if X[ii].isRootParent(): # if the cell is a root parent
@@ -67,11 +70,11 @@ def remove_NaNs(X):
                 ii += 1
         else:
             ii += 1 # only move forward in the list if you don't delete a cell
-    return X
+    return(X)
 
-def get_numLineages(Y):
+def get_numLineages(X):
     ''' Outputs total number of cell lineages in given Population. '''
-    X = remove_NaNs(Y)
+    X = remove_singleton_lineages(X)
     root_cell_holder = [] # temp list to hold the root cells in the population
     root_cell_linID_holder = [] # temporary list to hold all the linIDs of the root cells in the population
     for cell in X: # for each cell in the population
@@ -84,7 +87,7 @@ def get_numLineages(Y):
 
 def init_Population(X, numLineages):
     '''Creates a full population list of lists which contain each lineage in the Population.'''
-    X = remove_NaNs(X)
+    X = remove_singleton_lineages(X)
     root_cell_holder = [] # temp list to hold the root cells in the population
     for cell in X: # for each cell in the population
         if cell.isRootParent() and cell.isParent:

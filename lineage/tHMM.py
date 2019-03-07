@@ -4,14 +4,16 @@ import numpy as np
 import scipy.stats as sp
 from .Lineage_utils import get_numLineages, init_Population
 from .tHMM_utils import max_gen, get_gen
+import math
 
 class tHMM:
     """ Main tHMM class. """
-    def __init__(self, X, numStates=1, FOM='G'):
+    def __init__(self, X, numStates=1, FOM='G', keepBern=True):
         ''' Instantiates a tHMM. '''
         self.X = X # list containing lineage, should be in correct format (contain no NaNs)
         self.numStates = numStates # number of discrete hidden states
         self.FOM = FOM
+        self.keepBern=keepBern
         self.numLineages = get_numLineages(self.X) # gets the number of lineages in our population
         self.population = init_Population(self.X, self.numLineages) # arranges the population into a list of lineages (each lineage might have varying length)
         assert self.numLineages == len(self.population)
@@ -26,15 +28,16 @@ class tHMM:
         numStates = self.numStates
         numLineages = self.numLineages
         temp_params = {"pi": np.ones((numStates)) / numStates, # inital state distributions [K] initialized to 1/K
-                       "T": np.ones((numStates, numStates)) / numStates, # state transition matrix [KxK] initialized to 1/K
-                       "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
+                       "T": np.ones((numStates, numStates)) / numStates} # state transition matrix [KxK] initialized to 1/K
         if self.FOM=='G':
+            temp_params["E"] = np.ones((numStates, 3)) # sequence of emission likelihood distribution parameters [Kx3]
             for state_j in range(numStates):
                 temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
                 temp_params["E"][state_j,1] = 2.0*(1+np.random.uniform()) # initializing all Gompertz c parameters to 2
                 temp_params["E"][state_j,2] = 50.0*(1+np.random.uniform()) # initializing all Gompoertz s(cale) parameters to 50
         elif self.FOM=='E':
-             for state_j in range(numStates):
+            temp_params["E"] = np.ones((numStates, 2)) # sequence of emission likelihood distribution parameters [Kx2]
+            for state_j in range(numStates):
                 temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
                 temp_params["E"][state_j,1] = 50.0*(1+np.random.uniform()) # initializing all Exponential beta parameters to 50
 
@@ -149,19 +152,40 @@ class tHMM:
                 for cell in lineage: # for each cell in the lineage
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
                     if self.FOM=='G':
-                        temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
-                        try:
+                        temp_b = 1
+                        if self.keepBern:
+                            temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
+                        if cell.deathObserved:
                             temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tau, c=k_gomp_c, scale=k_gomp_s, deathObserved=True) # gompertz likelihood if death is observed
-                        except:
+                            if math.isnan(temp_g):
+                                print("OBSERVED DEATH IS NAN IN NF LEAF CALC")
+                                print(cell.tau)
+                                print(temp_g)
+                                assert False
+                        elif not cell.deathObserved:
                             assert not cell.deathObserved 
-                            temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tau, c=k_gomp_c, scale=k_gomp_s, deathObserved=False) # gompertz likelihood if death is observed
-                        EL_array[current_cell_idx, state_k] = temp_g
+                            temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tauFake, c=k_gomp_c, scale=k_gomp_s, deathObserved=False) # gompertz likelihood if death is unobserved
+                            if math.isnan(temp_g):
+                                print("UNOBSERVED DEATH IS NAN IN NF LEAF CALC")
+                                print(temp_g)
+                                assert False
+                        EL_array[current_cell_idx, state_k] = temp_g*temp_b
 
                     elif self.FOM=='E':
-                        temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
-                        temp_beta = sp.expon.pdf(x=cell.tau, scale=k_expon_beta) # exponential likelihood
+                        temp_b = 1
+                        if self.keepBern:
+                            temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
+                        if cell.deathObserved:
+                            temp_beta = sp.expon.pdf(x=cell.tau, scale=k_expon_beta) # exponential likelihood
+                        elif not cell.deathObserved:
+                            temp_beta = sp.expon.pdf(x=cell.tauFake, scale=k_expon_beta) # exponential likelihood is the same in the cased of an unobserved death
+                        if math.isnan(temp_beta):
+                            print("EXPO NAN IN NF LEAF CALC")
+                            print(cell.tau)
+                            print(temp_beta)
+                            assert False
                         # the right-censored and uncensored exponential pdfs are the same
-                        EL_array[current_cell_idx, state_k] = temp_b * temp_beta
+                        EL_array[current_cell_idx, state_k] = temp_beta*temp_b
             EL.append(EL_array) # append the EL_array for each lineage
         return EL
     
@@ -179,11 +203,20 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
     if deathObserved:
         pass # this calculation stays as is if the death is observed (delta_i = 1)
     else:
-        firstCoeff = 1 # this calculation is raised to the power of delta if the death is unobserved (right-censored) (delta_i = 0)
+        firstCoeff = 1. # this calculation is raised to the power of delta if the death is unobserved (right-censored) (delta_i = 0)
     
-    secondCoeff = np.exp( (-1*a/b)*(np.exp(b*tau_or_tauFake)-1) )
+    secondCoeff = np.exp( (-1*a/b)*((np.exp(b*tau_or_tauFake))-1) )
+    # the observation of the cell death has no bearing on the calculation of the second coefficient in the pdf
     
     result = firstCoeff*secondCoeff
+    if math.isnan(result):
+        print(tau_or_tauFake)
+        print(c)
+        print(scale)
+        print(b)
+        print(a)
+        print(firstCoeff)
+        print(secondCoeff)
     
     return result
         

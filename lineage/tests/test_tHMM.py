@@ -8,7 +8,7 @@ from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
 from ..tHMM import tHMM
 from ..tHMM_utils import max_gen, get_gen, get_parents_for_level
-from ..Lineage_utils import remove_NaNs, get_numLineages, init_Population, generatePopulationWithTime as gpt
+from ..Lineage_utils import remove_NaNs, get_numLineages, init_Population, generatePopulationWithTime as gpt, gompertzAnalytical, exponentialAnalytical
 from ..CellNode import CellNode
 
 class TestModel(unittest.TestCase):
@@ -414,7 +414,7 @@ class TestModel(unittest.TestCase):
         print(len(masterLineage))
         for cell in masterLineage:
             cell.true_state=0
-        experimentTime2 = 100
+        experimentTime2 = 150
         initCells2 = [1]
         locBern2 = [0.7]
         cGom2 = [2]
@@ -488,7 +488,7 @@ class TestModel(unittest.TestCase):
         numStates = 2
         
         switchT = 200
-        experimentTime = switchT + 100
+        experimentTime = switchT + 150
         initCells = [1]
         locBern = [0.99999999999]
         cGom = [1]
@@ -508,19 +508,22 @@ class TestModel(unittest.TestCase):
         expected_lineage_parameters.append(LINEAGE_params)
         
         LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+        #LINEAGE = remove_NaNs(LINEAGE)
         while len(LINEAGE) == 0:
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
-        LINEAGE = remove_NaNs(LINEAGE)
+            #LINEAGE = remove_NaNs(LINEAGE)
             
         true_state_holder = np.zeros((len(LINEAGE)), dtype=int)
         for ii,cell in enumerate(LINEAGE):
             true_state_holder[ii]=cell.true_state
-            
-        X = remove_NaNs(LINEAGE)
-        tHMMobj = tHMM(X, numStates=numStates, FOM='G') # build the tHMM class with X
+        
+        #X = remove_NaNs(LINEAGE)
+        X=LINEAGE
+        tHMMobj = tHMM(X, numStates=numStates, FOM='G', keepBern=False) # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
         for num in range(tHMMobj.numLineages):
             print("\n")
+            print("Number of cells: {}".format(len(X)))
             print("Initial Proabablities: ")
             print(tHMMobj.paramlist[num]["pi"])
             print("Transition State Matrix: ")
@@ -536,3 +539,172 @@ class TestModel(unittest.TestCase):
             print(all_states[num])
             print(true_state_holder)  
             print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
+            assert False
+            
+    def test_Baum_Welch_3(self):
+        # one state, no bernoulli likelihoods considered, gompertz estimation
+        numStates = 1
+        
+        experimentTime = 250
+        initCells = [1]
+        locBern = [0.99999999999]
+        cGom = [1]
+        scaleGom = [75]
+        
+        expected_lineage_parameters = []
+        LINEAGE_params = np.zeros((numStates,3))
+        LINEAGE_params[0,0]=locBern[0]
+        LINEAGE_params[0,1]=cGom[0]
+        LINEAGE_params[0,2]=scaleGom[0]
+        expected_lineage_parameters.append(LINEAGE_params)
+        
+        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G')
+        #LINEAGE = remove_NaNs(LINEAGE)
+        while len(LINEAGE) == 0:
+            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G')
+            #LINEAGE = remove_NaNs(LINEAGE)
+            
+        true_state_holder = np.zeros((len(LINEAGE)), dtype=int)
+        for ii,cell in enumerate(LINEAGE):
+            true_state_holder[ii]=cell.true_state
+            
+        #X = remove_NaNs(LINEAGE)
+        X=LINEAGE
+        tHMMobj = tHMM(X, numStates=numStates, FOM='G', keepBern=False) # build the tHMM class with X
+        fit(tHMMobj, max_iter=100, verbose=False)
+        for num in range(tHMMobj.numLineages):
+            print("\n")
+            print("Number of cells: {}".format(len(X)))
+            print("Initial Proabablities: ")
+            print(tHMMobj.paramlist[num]["pi"])
+            print("Transition State Matrix: ")
+            print(tHMMobj.paramlist[num]["T"])
+            print("Emission Parameters: ")
+            print(tHMMobj.paramlist[num]["E"])
+            print("MLE Estimate of Emission Parameter: ")
+            print(gompertzAnalytical(X)[0], gompertzAnalytical(X)[1])
+            print("Expected Emissions Parameters: ")
+            print(expected_lineage_parameters[num])
+        deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
+        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
+        for num in range(tHMMobj.numLineages):
+            print(all_states[num])
+            print(true_state_holder)  
+            print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
+            assert False   
+    
+    def test_Baum_Welch_4(self):
+        # one state, no bernoulli likelihoods considered, exponential estimation
+        numStates = 1
+        
+        experimentTime = 250
+        initCells = [1]
+        locBern = [0.99999999999]
+        cGom = [1]
+        scaleGom = [75]
+        betaExp=[75]
+        
+        expected_lineage_parameters = []
+        LINEAGE_params = np.zeros((numStates,2))
+        LINEAGE_params[0,0]=locBern[0]
+        LINEAGE_params[0,1]=betaExp[0]
+        expected_lineage_parameters.append(LINEAGE_params)
+        
+        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+        #LINEAGE = remove_NaNs(LINEAGE)
+        while len(LINEAGE) == 0:
+            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+            #LINEAGE = remove_NaNs(LINEAGE)
+            
+        true_state_holder = np.zeros((len(LINEAGE)), dtype=int)
+        for ii,cell in enumerate(LINEAGE):
+            true_state_holder[ii]=cell.true_state
+
+        
+        #X = remove_NaNs(LINEAGE)
+        X=LINEAGE
+        tHMMobj = tHMM(X, numStates=numStates, FOM='E', keepBern=False) # build the tHMM class with X
+        fit(tHMMobj, max_iter=100, verbose=False)
+        for num in range(tHMMobj.numLineages):
+            print("\n")
+            print("Number of cells: {}".format(len(X)))
+            print("Initial Proabablities: ")
+            print(tHMMobj.paramlist[num]["pi"])
+            print("Transition State Matrix: ")
+            print(tHMMobj.paramlist[num]["T"])
+            print("Emission Parameters: ")
+            print(tHMMobj.paramlist[num]["E"])
+            print("MLE Estimate of Emission Parameter: ")
+            print(exponentialAnalytical(X))
+            print("Expected Emissions Parameters: ")
+            print(expected_lineage_parameters[num])
+        deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
+        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
+        for num in range(tHMMobj.numLineages):
+            print(all_states[num])
+            print(true_state_holder)  
+            print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
+            assert False
+
+    def test_Baum_Welch_5(self):
+        # two state, no bernoulli likelihoods considered, exponential estimation
+        # creating a heterogeneous tree
+        numStates = 2
+        
+        experimentTime = 250
+        initCells = [1]
+        locBern = [0.99999999999]
+        cGom = [1]
+        scaleGom = [75]
+        betaExp=[75]
+        bern2 = [0.6]
+        cG2 = [2]
+        scaleG2 = [50]
+        betaExp2[50]
+        
+        expected_lineage_parameters = []
+        LINEAGE_params = np.zeros((numStates,2))
+        LINEAGE_params[0,0]=locBern[0]
+        LINEAGE_params[0,1]=betaExp[0]
+        LINEAGE_params[1,0]=bern2[0]
+        LINEAGE_params[1,1]=betaExp2[0]
+        expected_lineage_parameters.append(LINEAGE_params)
+        
+        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+        #LINEAGE = remove_NaNs(LINEAGE)
+        while len(LINEAGE) == 0:
+            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+            #LINEAGE = remove_NaNs(LINEAGE)
+            
+        true_state_holder = np.zeros((len(LINEAGE)), dtype=int)
+        for ii,cell in enumerate(LINEAGE):
+            true_state_holder[ii]=cell.true_state
+
+        
+        #X = remove_NaNs(LINEAGE)
+        X=LINEAGE
+        tHMMobj = tHMM(X, numStates=numStates, FOM='E', keepBern=False) # build the tHMM class with X
+        fit(tHMMobj, max_iter=100, verbose=False)
+        for num in range(tHMMobj.numLineages):
+            print("\n")
+            print("Number of cells: {}".format(len(X)))
+            print("Initial Proabablities: ")
+            print(tHMMobj.paramlist[num]["pi"])
+            print("Transition State Matrix: ")
+            print(tHMMobj.paramlist[num]["T"])
+            print("Emission Parameters: ")
+            print(tHMMobj.paramlist[num]["E"])
+            print("MLE Estimate of Emission Parameter: ")
+            print(exponentialAnalytical(X))
+            print("Expected Emissions Parameters: ")
+            print(expected_lineage_parameters[num])
+        deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
+        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
+        for num in range(tHMMobj.numLineages):
+            print(all_states[num])
+            print(true_state_holder)  
+            print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
+            assert False
