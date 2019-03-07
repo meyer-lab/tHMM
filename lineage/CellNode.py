@@ -101,18 +101,21 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
     # have cell divide/die according to distribution
     for cell in lineage:   # for all cells (cap at numCells)
         if cell.isUnfinished():
-            if switchT is not None and cell.startT > switchT: # when the cells should abide by the second set of parameters
+            if switchT and cell.startT > switchT: # when the cells should abide by the second set of parameters
                 cell.true_state=1
                 if FOM=='G':
                     cell.tau = sp.gompertz.rvs(cG2, scale=scaleG2)
                 elif FOM=='E':
-                    cell.tau = np.random.exponential(scale=betaExp2)
+                    print('IM HERE tau 2 exponential')
+                    assert False
+                    cell.tau = sp.expon.rvs(scale=betaExp2)
+
             else: # use first set of parameters for non-heterogeneous lineages or before the switch time
                 cell.true_state=0
                 if FOM=='G':
                     cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
                 elif FOM=='E':
-                    cell.tau = np.random.exponential(scale=betaExp)                
+                    cell.tau = sp.expon.rvs(scale=betaExp)  
             cell.endT = cell.startT + cell.tau
             if cell.endT < experimentTime: # determine fate only if endT is within range
                 # assign cell fate

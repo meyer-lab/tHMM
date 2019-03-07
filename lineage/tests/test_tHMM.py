@@ -479,7 +479,8 @@ class TestModel(unittest.TestCase):
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         for num in range(tHMMobj.numLineages):
             print(all_states[num])
-            print(true_state_holder)
+            print(true_state_holder) 
+            print("Accuracy of state assignment: ")
             print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
 
             
@@ -538,6 +539,7 @@ class TestModel(unittest.TestCase):
         for num in range(tHMMobj.numLineages):
             print(all_states[num])
             print(true_state_holder)  
+            print("Accuracy of state assignment: ")
             print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
             assert False
             
@@ -591,6 +593,7 @@ class TestModel(unittest.TestCase):
         for num in range(tHMMobj.numLineages):
             print(all_states[num])
             print(true_state_holder)  
+            print("Accuracy of state assignment: ")
             print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
             assert False   
     
@@ -645,24 +648,26 @@ class TestModel(unittest.TestCase):
         for num in range(tHMMobj.numLineages):
             print(all_states[num])
             print(true_state_holder)  
+            print("Accuracy of state assignment: ")
             print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
             assert False
-
+    '''
     def test_Baum_Welch_5(self):
         # two state, no bernoulli likelihoods considered, exponential estimation
         # creating a heterogeneous tree
         numStates = 2
         
-        experimentTime = 250
+        switchT = 50
+        experimentTime = switchT + 75
         initCells = [1]
         locBern = [0.99999999999]
         cGom = [1]
         scaleGom = [75]
-        betaExp=[75]
+        betaExp=[110]
         bern2 = [0.6]
         cG2 = [2]
         scaleG2 = [50]
-        betaExp2[50]
+        betaExp2 = [75]
         
         expected_lineage_parameters = []
         LINEAGE_params = np.zeros((numStates,2))
@@ -672,16 +677,18 @@ class TestModel(unittest.TestCase):
         LINEAGE_params[1,1]=betaExp2[0]
         expected_lineage_parameters.append(LINEAGE_params)
         
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2)
+        print("WORKING")
+        assert False
+
         #LINEAGE = remove_NaNs(LINEAGE)
         while len(LINEAGE) == 0:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2)
             #LINEAGE = remove_NaNs(LINEAGE)
             
         true_state_holder = np.zeros((len(LINEAGE)), dtype=int)
         for ii,cell in enumerate(LINEAGE):
             true_state_holder[ii]=cell.true_state
-
         
         #X = remove_NaNs(LINEAGE)
         X=LINEAGE
@@ -705,6 +712,8 @@ class TestModel(unittest.TestCase):
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         for num in range(tHMMobj.numLineages):
             print(all_states[num])
-            print(true_state_holder)  
+            print(true_state_holder) 
+            print("Accuracy of state assignment: ")
             print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
             assert False
+        '''
