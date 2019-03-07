@@ -398,7 +398,6 @@ class TestModel(unittest.TestCase):
     ############################
 
     def test_Baum_Welch_1(self):
-        '''tests baum welch simply by running it.'''
         # creating a heterogeneous tree
         numStates = 2
 
@@ -462,7 +461,11 @@ class TestModel(unittest.TestCase):
             true_state_holder[ii]=cell.true_state
 
         X = remove_NaNs(newLineage)
+<<<<<<< HEAD
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
+=======
+        tHMMobj = tHMM(X, numStates=numStates, FOM='G') # build the tHMM class with X
+>>>>>>> master
         fit(tHMMobj, max_iter=500, verbose=True)
         for num in range(tHMMobj.numLineages):
             print("\n")
@@ -483,10 +486,12 @@ class TestModel(unittest.TestCase):
             print(true_state_holder)
             print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
 
+<<<<<<< HEAD
             
+=======
+>>>>>>> master
             
     def test_Baum_Welch_2(self):
-        '''tests baum welch simply by running it.'''
         # creating a heterogeneous tree
         numStates = 2
         
@@ -520,7 +525,11 @@ class TestModel(unittest.TestCase):
             true_state_holder[ii]=cell.true_state
             
         X = remove_NaNs(LINEAGE)
+<<<<<<< HEAD
         tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
+=======
+        tHMMobj = tHMM(X, numStates=numStates, FOM='G') # build the tHMM class with X
+>>>>>>> master
         fit(tHMMobj, max_iter=100, verbose=False)
         for num in range(tHMMobj.numLineages):
             print("\n")
@@ -539,4 +548,7 @@ class TestModel(unittest.TestCase):
             print(all_states[num])
             print(true_state_holder)  
             print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
+<<<<<<< HEAD
         
+=======
+>>>>>>> master

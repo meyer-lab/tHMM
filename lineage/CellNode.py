@@ -7,7 +7,11 @@ from scipy import optimize, stats as sp
 
 class CellNode:
     """ Each cell in our tree will consist of a node containing these traits. """
+<<<<<<< HEAD
     def __init__(self, gen=1, linID=0, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None):
+=======
+    def __init__(self, gen=1, linID=0, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, trackID=None, true_state=None):
+>>>>>>> master
         ''' Instantiates a cell node.'''
         self.gen = gen # the generation of the cell, root cells are of generation 1, each division adds 1 to the previous generation
         self.linID = linID # the lineage identity of the cell, keeps track of what lineage a cell belongs to
@@ -19,6 +23,11 @@ class CellNode:
         self.left = left # the left daughter of the cell, either returns a CellNode or NoneType object
         self.right = right # the right daughter of the cell, either returns a CellNode or NoneType object
         self.parent = parent # the parent of the cell, returns a CellNode object (except at the root node)
+<<<<<<< HEAD
+=======
+        self.trackID = trackID # ID (integer) of the cell used during image tracking
+        self.true_state = true_state # indicates whether cell is PC9 (0) or H1299 (1)
+>>>>>>> master
 
     def isParent(self):
         """ Return true if the cell has at least one daughter. """
@@ -70,11 +79,19 @@ class CellNode:
         self.calcTau()      # calculate Tau when cell dies
 
         if self.isRootParent():
+<<<<<<< HEAD
             self.left = CellNode(gen=self.gen+1, linID=self.linID, startT=endT, parent=self)
             self.right = CellNode(gen=self.gen+1, linID=self.linID, startT=endT, parent=self)
         else:
             self.left = CellNode(gen=self.gen+1, linID=self.linID, startT=endT, parent=self)
             self.right = CellNode(gen=self.gen+1, linID=self.linID, startT=endT, parent=self)
+=======
+            self.left = CellNode(gen=self.gen+1, trackID=trackID_d1, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
+            self.right = CellNode(gen=self.gen+1, trackID=trackID_d2, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
+        else:
+            self.left = CellNode(gen=self.gen+1, trackID=trackID_d1, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
+            self.right = CellNode(gen=self.gen+1, trackID=trackID_d2, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
+>>>>>>> master
 
         return (self.left, self.right)
 
@@ -128,6 +145,9 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
                 else:
                     cell.die(cell.endT)
             else: # if the endT is past the experimentTime
+                cell.tauFake = experimentTime-cell.startT 
+                cell.fateFake = sp.bernoulli.rvs(locBern) # assign fate
+                cell.endT = experimentTime
                 cell.setUnfinished() # reset cell to be unfinished and move to next cell
 
     # return the list at end
@@ -140,7 +160,11 @@ def doublingTime(initCells, locBern, cGom, scaleGom, FOM='G', betaExp=None):
     experimentTimes = [0] + experimentTimes
 
     for experimentTime in experimentTimes:
-        lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom)
+        lineage = []
+        if FOM=='G':
+            lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom)
+        elif FOM=='E':
+            lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
         count = 0
         for cell in lineage:
             if cell.isUnfinished():

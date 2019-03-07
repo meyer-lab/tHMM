@@ -11,6 +11,7 @@ class tHMM:
         ''' Instantiates a tHMM. '''
         self.X = X # list containing lineage, should be in correct format (contain no NaNs)
         self.numStates = numStates # number of discrete hidden states
+        self.FOM = FOM
         self.numLineages = get_numLineages(self.X) # gets the number of lineages in our population
         self.population = init_Population(self.X, self.numLineages) # arranges the population into a list of lineages (each lineage might have varying length)
         assert self.numLineages == len(self.population)
@@ -26,14 +27,21 @@ class tHMM:
         numStates = self.numStates
         numLineages = self.numLineages
         temp_params = {"pi": np.ones((numStates)) / numStates, # inital state distributions [K] initialized to 1/K
+<<<<<<< HEAD
                        "T": np.ones((numStates, numStates)) / numStates} # state transition matrix [KxK] initialized to 1/K
         if self.FOM=='G':
             temp_params["E"] = np.ones((numStates, 3)) # sequence of emission likelihood distribution parameters [Kx3]
                        
+=======
+                       "T": np.ones((numStates, numStates)) / numStates, # state transition matrix [KxK] initialized to 1/K
+                       "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
+        if self.FOM=='G':
+>>>>>>> master
             for state_j in range(numStates):
                 temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
                 temp_params["E"][state_j,1] = 2.0*(1+np.random.uniform()) # initializing all Gompertz c parameters to 2
                 temp_params["E"][state_j,2] = 50.0*(1+np.random.uniform()) # initializing all Gompoertz s(cale) parameters to 50
+<<<<<<< HEAD
         
         elif self.FOM=='E':
             temp_params["E"] = np.ones((numStates, 2)) # sequence of emission likelihood distribution parameters [Kx3]
@@ -41,6 +49,12 @@ class tHMM:
             for state_j in range(numStates):
                 temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
                 temp_params["E"][state_j,1] = 50.0*(1+np.random.uniform()) # initializing all exponential beta parameters to be 50
+=======
+        elif self.FOM=='E':
+             for state_j in range(numStates):
+                temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
+                temp_params["E"][state_j,1] = 50.0*(1+np.random.uniform()) # initializing all Exponential beta parameters to 50
+>>>>>>> master
 
         for lineage_num in range(numLineages): # for each lineage in our population
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
@@ -142,14 +156,30 @@ class tHMM:
             for state_k in range(numStates): # for each state
                 E_param_k = E_param_array[state_k,:] # get the emission parameters for that state
                 k_bern = E_param_k[0] # bernoulli rate parameter
-                k_gomp_c = E_param_k[1] # gompertz c parameter
-                k_gomp_s = E_param_k[2] # gompertz scale parameter
-
+                k_gomp_c = 0
+                k_gomp_s = 0
+                k_expon_beta = 0
+                if self.FOM=='G':
+                    k_gomp_c = E_param_k[1]
+                    k_gomp_s = E_param_k[2]
+                elif self.FOM=='E':
+                    k_expon_beta = E_param_k[1]
+                
                 for cell in lineage: # for each cell in the lineage
-                    temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
-                    temp_g = sp.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
+<<<<<<< HEAD
                     EL_array[current_cell_idx, state_k] = temp_g *temp_b
 
+=======
+                    if self.FOM=='G':
+                        temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
+                        temp_g = sp.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood
+                        EL_array[current_cell_idx, state_k] = temp_b * temp_g
+
+                    elif self.FOM=='E':
+                        temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
+                        temp_beta = sp.expon.pdf(x=cell.tau, scale=k_expon_beta) # gompertz likelihood
+                        EL_array[current_cell_idx, state_k] = temp_b * temp_beta
+>>>>>>> master
             EL.append(EL_array) # append the EL_array for each lineage
         return EL

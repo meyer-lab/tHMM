@@ -4,7 +4,11 @@ import numpy as np
 from .tHMM_utils import max_gen, get_gen, get_daughters
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, get_beta_parent_child_prod, beta_parent_child_func
+<<<<<<< HEAD
 from .Lineage_utils import bernoulliParameterEstimatorAnalytical, gompertzAnalytical 
+=======
+from .Lineage_utils import bernoulliParameterEstimatorAnalytical, gompertzAnalytical, exponentialAnalytical
+>>>>>>> master
 
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
     '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
@@ -148,9 +152,13 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
 
             for state_j in range(numStates):
                 tHMMobj.paramlist[num]["E"][state_j,0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
-                c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[state_j])
-                tHMMobj.paramlist[num]["E"][state_j,1] = c_estimate
-                tHMMobj.paramlist[num]["E"][state_j,2] = scale_estimate
+                if tHMMobj.FOM=='G':
+                    c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[state_j])
+                    tHMMobj.paramlist[num]["E"][state_j,1] = c_estimate
+                    tHMMobj.paramlist[num]["E"][state_j,2] = scale_estimate
+                elif tHMMobj.FOM=='E':
+                    beta_estimate = exponentialAnalytical(state_obs_holder[state_j])
+                    tHMMobj.paramlist[num]["E"][state_j,1] = beta_estimate
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
