@@ -707,4 +707,3 @@ class TestModel(unittest.TestCase):
             print(true_state_holder) 
             print("Accuracy of state assignment: ")
             print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
-            assert False
