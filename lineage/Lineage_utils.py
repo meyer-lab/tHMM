@@ -1,7 +1,7 @@
 '''utility and helper functions for cleaning up input populations and lineages and other needs in the tHMM class'''
 
 import numpy as np
-from scipy.optimize import minimize, minimize_scalar, root
+from scipy.optimize import root
 from .CellNode import generateLineageWithTime
 
 def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='G', betaExp=None, betaExp2=None):
