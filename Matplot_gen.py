@@ -4,6 +4,7 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from matplotlib.font_manager import FontProperties
+import matplotlib.ticker
 
 
 from lineage.BaumWelch import fit
@@ -22,16 +23,17 @@ def Matplot_gen(x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,c
     print(max(x))
     fig, axs = plt.subplots(nrows=2, ncols=2, sharex=True)
     ax = axs[0,0]
-    ax.set_ylim(0,1.1)
+    ax.set_ylim(0,110)
     l1 = ax.errorbar(x, acc_h1, fmt='o', c='b',marker="*",fillstyle='none', label = 'Accuracy')
-    ax.axhline(y=1, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b',)
-    ax.set_title('Accuracy')
-    #ax.locator_params(nbins=4)
+    ax.axhline(y=100, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b',)
+    ax.set_ylabel('Accuracy (%)',rotation=90)
+    vals = ax.get_yticks()
+    #ax.set_yticklabels([str(int(x)) + '%' for x in vals])
 
     ax = axs[0,1]
     l2 = ax.errorbar(x, bern_MAS_h1, fmt='o', c='r',marker="^",fillstyle='none', label = 'State 1')
     l3 = ax.errorbar(x, bern_2_h1, fmt='o', c='g',marker="^",fillstyle='none', label = 'State 2')
-    ax.set_title('Bernoulli')
+    ax.set_ylabel('Bernoulli', rotation=90)
     ax.axhline(y= MASlocBern, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
     ax.axhline(y=locBern2, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
 
@@ -42,7 +44,9 @@ def Matplot_gen(x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,c
     ax.errorbar(x,cGom_2_h1, fmt='o',c='g',marker="^",fillstyle='none', label = 'State 2')
     ax.axhline(y=MAScGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
     ax.axhline(y=cGom2, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
-    ax.set_title('Gompertz C')
+    ax.set_ylabel('Gompertz C',rotation=90)
+    ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    ax.get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
 
 
     ax = axs[1,1]
@@ -52,9 +56,11 @@ def Matplot_gen(x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,c
     ax.errorbar(x,scaleGom_2_h1, fmt='o',c='g',marker="^",fillstyle='none', label = 'State 2')
     ax.axhline(y=MASscaleGom, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
     ax.axhline(y=scaleGom2, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
-    ax.set_title('Gompertz Scale')
+    ax.set_ylabel('Gompertz Scale',rotation=90)
+    ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    ax.get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
 
-
+    fig.tight_layout(rect=[0, 0.03, 1, 0.95])
     fig.suptitle(title)
     fig.savefig(save_name)
 

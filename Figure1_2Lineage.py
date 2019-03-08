@@ -5,17 +5,6 @@ matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from matplotlib.font_manager import FontProperties
 
-
-from lineage.BaumWelch import fit
-from lineage.DownwardRecursion import get_root_gammas, get_nonroot_gammas
-from lineage.Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
-from lineage.UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
-from lineage.tHMM import tHMM
-from lineage.tHMM_utils import max_gen, get_gen, get_parents_for_level
-from lineage.Lineage_utils import remove_NaNs, get_numLineages, init_Population
-from lineage.Lineage_utils import generatePopulationWithTime as gpt
-from lineage.CellNode import CellNode
-
 from Lin_shak import Lin_shak
 from Analyze import Analyze
 from Accuracy import Accuracy
@@ -23,10 +12,10 @@ from Matplot_gen import Matplot_gen
 
 ################ Number of cell in a single lineage
 
-T_MAS = 65
-T_2 = 40
+T_MAS = 100
+T_2 = 81
 times = range(1,2) 
-reps = 5
+reps = 20
 switchT = 25
 
 MASinitCells = [1]
@@ -34,9 +23,9 @@ MASlocBern = [0.99999999999]
 MAScGom = [2]
 MASscaleGom = [30]
 initCells2 = [1]
-locBern2 = [0.7] #0.7
-cGom2 = [1.5] #1.5
-scaleGom2 = [25] #25
+locBern2 = [0.8] #0.7
+cGom2 = [1.8] #1.5
+scaleGom2 = [27] #25
 
 numStates = 2
 
@@ -65,8 +54,10 @@ for experimentTime in times: #a pop with num number of lineages
         print('Rep:', rep)       
         
         X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2) 
-        
-        deltas, state_ptrs, all_states, tHMMobj = Analyze(X, numStates)
+        while len(newLineage) > 2000:
+            X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
+            
+        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X, numStates)
 
         acc_h3 = []
         cell_h3 = []
@@ -82,7 +73,11 @@ for experimentTime in times: #a pop with num number of lineages
                      
             T,E,pi,state_1,state_2,accuracy,lineage = Accuracy(tHMMobj, lin, numStates, masterLineage, newLineage, all_states)
             
-            acc_h3.append(accuracy)
+            acc_h3.append(accuracy*100)
+            print('pi',pi)
+            print('T',T)
+            print('accuracy:',accuracy)
+            print('MAS, 2nd lin:',len(masterLineage),len(newLineage)-len(masterLineage))
             cell_h3.append(len(lineage))
             print('h3',cell_h3)
             bern_MAS_h3.append(E[state_1,0])
@@ -115,4 +110,5 @@ for experimentTime in times: #a pop with num number of lineages
     scaleGom_2_h1.extend(scaleGom_2_h2)
 
 x=cell_h1
+print(acc_h1)
 Matplot_gen(x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2, xlabel = 'Number of Cells', title = 'Cells in a Lineage', save_name = 'Figure1.png')

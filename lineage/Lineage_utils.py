@@ -111,21 +111,10 @@ def bernoulliParameterEstimatorAnalytical(X):
 
     return result
 
-<<<<<<< HEAD
-=======
-
->>>>>>> master
 def exponentialAnalytical(X):
     '''Estimates the Exponential beta parameter for a given population using MLE analytically'''
      # create list of all our taus
-    tau_holder = []
-<<<<<<< HEAD
-    for cell in X: # go through every cell in the population
-        if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
-            tau_holder.append(cell.tau) # append the cell lifetime
 
-    result = np.mean(tau_holder)
-=======
     tauFake_holder = []
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
@@ -134,7 +123,6 @@ def exponentialAnalytical(X):
             tauFake_holder.append(cell.tauFake)
 
     result =  (sum(tau_holder) + sum(tauFake_holder)) / len(tau_holder)
->>>>>>> master
     
     return result
 

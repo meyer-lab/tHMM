@@ -27,34 +27,19 @@ class tHMM:
         numStates = self.numStates
         numLineages = self.numLineages
         temp_params = {"pi": np.ones((numStates)) / numStates, # inital state distributions [K] initialized to 1/K
-<<<<<<< HEAD
-                       "T": np.ones((numStates, numStates)) / numStates} # state transition matrix [KxK] initialized to 1/K
-        if self.FOM=='G':
-            temp_params["E"] = np.ones((numStates, 3)) # sequence of emission likelihood distribution parameters [Kx3]
-                       
-=======
+
                        "T": np.ones((numStates, numStates)) / numStates, # state transition matrix [KxK] initialized to 1/K
                        "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
         if self.FOM=='G':
->>>>>>> master
             for state_j in range(numStates):
                 temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
                 temp_params["E"][state_j,1] = 2.0*(1+np.random.uniform()) # initializing all Gompertz c parameters to 2
                 temp_params["E"][state_j,2] = 50.0*(1+np.random.uniform()) # initializing all Gompoertz s(cale) parameters to 50
-<<<<<<< HEAD
-        
-        elif self.FOM=='E':
-            temp_params["E"] = np.ones((numStates, 2)) # sequence of emission likelihood distribution parameters [Kx3]
-                       
-            for state_j in range(numStates):
-                temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
-                temp_params["E"][state_j,1] = 50.0*(1+np.random.uniform()) # initializing all exponential beta parameters to be 50
-=======
+
         elif self.FOM=='E':
              for state_j in range(numStates):
                 temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
                 temp_params["E"][state_j,1] = 50.0*(1+np.random.uniform()) # initializing all Exponential beta parameters to 50
->>>>>>> master
 
         for lineage_num in range(numLineages): # for each lineage in our population
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
@@ -167,10 +152,7 @@ class tHMM:
                 
                 for cell in lineage: # for each cell in the lineage
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
-<<<<<<< HEAD
-                    EL_array[current_cell_idx, state_k] = temp_g *temp_b
 
-=======
                     if self.FOM=='G':
                         temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
                         temp_g = sp.gompertz.pdf(x=cell.tau, c=k_gomp_c, scale=k_gomp_s) # gompertz likelihood
@@ -180,6 +162,5 @@ class tHMM:
                         temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
                         temp_beta = sp.expon.pdf(x=cell.tau, scale=k_expon_beta) # gompertz likelihood
                         EL_array[current_cell_idx, state_k] = temp_b * temp_beta
->>>>>>> master
             EL.append(EL_array) # append the EL_array for each lineage
         return EL
