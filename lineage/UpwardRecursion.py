@@ -1,7 +1,7 @@
 '''This file contains the methods that completes the downward recursion and evaulates the beta values.'''
 
 import numpy as np
-from .tHMM_utils import max_gen, get_gen, get_parents_for_level 
+from .tHMM_utils import max_gen, get_gen, get_parents_for_level, get_daughters
 import math
 
 def get_leaf_Normalizing_Factors(tHMMobj):
@@ -191,13 +191,11 @@ def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, sta
     '''
     beta_m_n_holder = [] # list to hold the factors in the product
     node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
-    children_idx_list = [] # list to hold the children
-    if node_parent_m.left is not None:
-        node_child_n_left_idx = lineage.index(node_parent_m.left)
-        children_idx_list.append(node_child_n_left_idx)
-    if node_parent_m.right is not None:
-        node_child_n_right_idx = lineage.index(node_parent_m.right)
-        children_idx_list.append(node_child_n_right_idx)
+    children_list = get_daughters(node_parent_m)
+    children_idx_list = []
+    for daughter in children_list:
+        children_idx_list.append(lineage.index(daughter))
+
     for node_child_n_idx in children_idx_list:
         beta_m_n = beta_parent_child_func(numStates=numStates,
                                           lineage=lineage,

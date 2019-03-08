@@ -483,7 +483,6 @@ class TestModel(unittest.TestCase):
             print("Accuracy of state assignment: ")
             print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
 
-            
     def test_Baum_Welch_2(self):
         # creating a heterogeneous tree
         numStates = 2
@@ -541,7 +540,6 @@ class TestModel(unittest.TestCase):
             print(true_state_holder)  
             print("Accuracy of state assignment: ")
             print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
-            assert False
             
     def test_Baum_Welch_3(self):
         # one state, no bernoulli likelihoods considered, gompertz estimation
@@ -595,7 +593,6 @@ class TestModel(unittest.TestCase):
             print(true_state_holder)  
             print("Accuracy of state assignment: ")
             print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
-            assert False   
     
     def test_Baum_Welch_4(self):
         # one state, no bernoulli likelihoods considered, exponential estimation
@@ -650,24 +647,23 @@ class TestModel(unittest.TestCase):
             print(true_state_holder)  
             print("Accuracy of state assignment: ")
             print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
-            assert False
-    '''
+
     def test_Baum_Welch_5(self):
         # two state, no bernoulli likelihoods considered, exponential estimation
         # creating a heterogeneous tree
         numStates = 2
         
-        switchT = 50
-        experimentTime = switchT + 75
+        switchT = 300
+        experimentTime = switchT + 150
         initCells = [1]
         locBern = [0.99999999999]
         cGom = [1]
         scaleGom = [75]
-        betaExp=[110]
+        betaExp=[75]
         bern2 = [0.6]
         cG2 = [2]
         scaleG2 = [50]
-        betaExp2 = [75]
+        betaExp2 = [25]
         
         expected_lineage_parameters = []
         LINEAGE_params = np.zeros((numStates,2))
@@ -678,8 +674,6 @@ class TestModel(unittest.TestCase):
         expected_lineage_parameters.append(LINEAGE_params)
         
         LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2)
-        print("WORKING")
-        assert False
 
         #LINEAGE = remove_NaNs(LINEAGE)
         while len(LINEAGE) == 0:
@@ -703,8 +697,6 @@ class TestModel(unittest.TestCase):
             print(tHMMobj.paramlist[num]["T"])
             print("Emission Parameters: ")
             print(tHMMobj.paramlist[num]["E"])
-            print("MLE Estimate of Emission Parameter: ")
-            print(exponentialAnalytical(X))
             print("Expected Emissions Parameters: ")
             print(expected_lineage_parameters[num])
         deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
@@ -716,4 +708,3 @@ class TestModel(unittest.TestCase):
             print("Accuracy of state assignment: ")
             print(1 - (sum(np.abs(np.subtract(all_states[num],true_state_holder)))/len(true_state_holder)))
             assert False
-        '''

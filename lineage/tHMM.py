@@ -34,12 +34,12 @@ class tHMM:
             for state_j in range(numStates):
                 temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
                 temp_params["E"][state_j,1] = 2.0*(1+np.random.uniform()) # initializing all Gompertz c parameters to 2
-                temp_params["E"][state_j,2] = 50.0*(1+np.random.uniform()) # initializing all Gompoertz s(cale) parameters to 50
+                temp_params["E"][state_j,2] = 62.5*(1+np.random.uniform()) # initializing all Gompoertz s(cale) parameters to 50
         elif self.FOM=='E':
             temp_params["E"] = np.ones((numStates, 2)) # sequence of emission likelihood distribution parameters [Kx2]
             for state_j in range(numStates):
                 temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
-                temp_params["E"][state_j,1] = 50.0*(1+np.random.uniform()) # initializing all Exponential beta parameters to 50
+                temp_params["E"][state_j,1] = 62.5*(1+np.random.uniform()) # initializing all Exponential beta parameters to 50
 
         for lineage_num in range(numLineages): # for each lineage in our population
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
@@ -217,6 +217,7 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
         print(a)
         print(firstCoeff)
         print(secondCoeff)
+        assert False 
     
     return result
         

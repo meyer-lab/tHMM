@@ -32,7 +32,7 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii], FOM='G') 
             elif FOM=='E':
                 print("making a heterogeneous exponential lineage")
-                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii], FOM='E', betaExp=[ii], betaExp2=[ii]) 
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii], FOM='E', betaExp=betaExp[ii], betaExp2=betaExp2[ii]) 
             # create a temporary lineage
             for cell in temp:
                 sum_prev = 0
@@ -127,7 +127,7 @@ def exponentialAnalytical(X):
         elif cell.isUnfinished():
             tauFake_holder.append(cell.tauFake)
 
-    result =  (sum(tau_holder) + sum(tauFake_holder)) / len(tau_holder)
+    result =  (sum(tau_holder) + sum(tauFake_holder) + 50) / (len(tau_holder) + 1)
     
     return result
 

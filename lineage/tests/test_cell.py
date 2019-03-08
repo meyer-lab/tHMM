@@ -165,16 +165,16 @@ class TestModel(unittest.TestCase):
         self.assertGreater(base, doublingTime(100, 0.7, None, None, FOM='E', betaExp=40))
 
     def test_hetergeneous_pop_G(self):
-        """ Calls generatePopulationWithTime when there is a switch in parameters over the course of the experiment's time. """
+        """ Calls generatePopulationWithTime when there is a switch in parameters over the course of the experiment's time. (Gompertz)"""
         experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
         # first set of parameters (from t=0 to t=100)
         locBern = [0.6]
         cGom = [2]
         scaleGom = [0.5e2]
         initCells = [100]
-        switchT = 100 # switch at t=100
+        switchT = 84 # switch at t=100
         # second set of parameters (from t=100 to t=experimentTime)
-        bern2 = [0.85]
+        bern2 = [0.99]
         cG2 = [2]
         scaleG2 = [40]
         popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G') # initialize "pop" as of class Populations
@@ -182,23 +182,25 @@ class TestModel(unittest.TestCase):
 
         # the Bernoulli parameter estimate should be greater than than locBern since bern2>locBern
         self.assertTrue(bernEstimate > 0.7)
-        
+    
     def test_hetergeneous_pop_E(self):
-        """ Calls generatePopulationWithTime when there is a switch in parameters over the course of the experiment's time. """
+        #""" Calls generatePopulationWithTime when there is a switch in parameters over the course of the experiment's time. (Exponential)"""
         experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
         # first set of parameters (from t=0 to t=100)
-        locBern = [0.6]
+        locBern = [0.7]
         cGom = [2]
         scaleGom = [0.5e2]
-        initCells = [100]
-        betaExp = [0.5e2]
-        switchT = 100 # switch at t=100
+        initCells = [75]
+        betaExp = [100]
+        switchT = 84 # switch at t=100
         # second set of parameters (from t=100 to t=experimentTime)
-        bern2 = [0.85]
+        bern2 = [0.99]
         cG2 = [2]
         scaleG2 = [40]
-        betaExp2 = [40]
+        betaExp2 = [25]
         popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2) # initialize "pop" as of class Populations
+        while len(popTime)==0:
+            popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2) # initialize "pop" as of class Populations
         bernEstimate = bernoulliParameterEstimatorAnalytical(popTime)
 
         # the Bernoulli parameter estimate should be greater than than locBern since bern2>locBern

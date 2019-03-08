@@ -106,8 +106,6 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
                 if FOM=='G':
                     cell.tau = sp.gompertz.rvs(cG2, scale=scaleG2)
                 elif FOM=='E':
-                    print('IM HERE tau 2 exponential')
-                    assert False
                     cell.tau = sp.expon.rvs(scale=betaExp2)
 
             else: # use first set of parameters for non-heterogeneous lineages or before the switch time
