@@ -71,11 +71,11 @@ class tHMM:
         for num in range(numLineages): # for each lineage in our Population
             lineage = population[num] # getting the lineage in the Population by lineage index
             params = paramlist[num] # getting the respective params by lineage index
-            MSD_array = np.zeros((len(lineage),numStates), dtype=float) # instantiating N by K array
+            MSD_array = np.zeros((len(lineage), numStates), dtype=float) # instantiating N by K array
             for state_k in range(numStates):
-                MSD_array[0,state_k] = params["pi"][state_k]
+                MSD_array[0, state_k] = params["pi"][state_k]
             MSD.append(MSD_array)
-        
+
         for num in range(numLineages):
             MSD_0_row_sum = np.sum(MSD[num][0])
             assert np.isclose(MSD_0_row_sum, 1.)
@@ -93,11 +93,11 @@ class tHMM:
                         temp_sum_holder = [] # for all states k, calculate the sum of temp
 
                         for state_j in range(numStates): # for all states j, calculate temp
-                            temp = params["T"][state_j,state_k] * MSD[num][parent_cell_idx, state_j]
+                            temp = params["T"][state_j, state_k] * MSD[num][parent_cell_idx, state_j]
                             # temp = T_jk * P(z_parent(n) = j)
                             temp_sum_holder.append(temp)
 
-                        MSD[num][current_cell_idx,state_k] = sum(temp_sum_holder)
+                        MSD[num][current_cell_idx, state_k] = sum(temp_sum_holder)
                 curr_level += 1
             MSD_row_sums = np.sum(MSD[num], axis=1)
             assert np.allclose(MSD_row_sums, 1.0)
@@ -138,20 +138,20 @@ class tHMM:
             E_param_array = params["E"] # K by 3 array of distribution parameters for each lineage
 
             for state_k in range(numStates): # for each state
-                E_param_k = E_param_array[state_k,:] # get the emission parameters for that state
+                E_param_k = E_param_array[state_k, :] # get the emission parameters for that state
                 k_bern = E_param_k[0] # bernoulli rate parameter
                 k_gomp_c = 0
                 k_gomp_s = 0
                 k_expon_beta = 0
-                if self.FOM=='G':
+                if self.FOM == 'G':
                     k_gomp_c = E_param_k[1]
                     k_gomp_s = E_param_k[2]
-                elif self.FOM=='E':
+                elif self.FOM == 'E':
                     k_expon_beta = E_param_k[1]
-                
+
                 for cell in lineage: # for each cell in the lineage
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
-                    if self.FOM=='G':
+                    if self.FOM == 'G':
                         temp_b = 1
                         if self.keepBern:
                             temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
@@ -163,7 +163,7 @@ class tHMM:
                                 print(temp_g)
                                 assert False
                         elif not cell.deathObserved:
-                            assert not cell.deathObserved 
+                            assert not cell.deathObserved
                             temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tauFake, c=k_gomp_c, scale=k_gomp_s, deathObserved=False) # gompertz likelihood if death is unobserved
                             if math.isnan(temp_g):
                                 print("UNOBSERVED DEATH IS NAN IN NF LEAF CALC")
@@ -171,7 +171,7 @@ class tHMM:
                                 assert False
                         EL_array[current_cell_idx, state_k] = temp_g*temp_b
 
-                    elif self.FOM=='E':
+                    elif self.FOM == 'E':
                         temp_b = 1
                         if self.keepBern:
                             temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
@@ -188,7 +188,7 @@ class tHMM:
                         EL_array[current_cell_idx, state_k] = temp_beta*temp_b
             EL.append(EL_array) # append the EL_array for each lineage
         return EL
-    
+
 def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
     '''
     Gives you the likelihood of a right-censored Gompertz distribution.
@@ -198,16 +198,16 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
     '''
     b = 1. / scale
     a = c * b
-    
+
     firstCoeff = a * np.exp(b*tau_or_tauFake)
     if deathObserved:
         pass # this calculation stays as is if the death is observed (delta_i = 1)
     else:
         firstCoeff = 1. # this calculation is raised to the power of delta if the death is unobserved (right-censored) (delta_i = 0)
-    
-    secondCoeff = np.exp( (-1*a/b)*((np.exp(b*tau_or_tauFake))-1) )
+
+    secondCoeff = np.exp((-1*a/b)*((np.exp(b*tau_or_tauFake))-1))
     # the observation of the cell death has no bearing on the calculation of the second coefficient in the pdf
-    
+
     result = firstCoeff*secondCoeff
     if math.isnan(result):
         print(tau_or_tauFake)
@@ -217,10 +217,6 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
         print(a)
         print(firstCoeff)
         print(secondCoeff)
-        assert False 
-    
+        assert False
+
     return result
-        
-    
-    
-    

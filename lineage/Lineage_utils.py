@@ -183,7 +183,7 @@ def gompertzAnalytical(X):
     def error_b(scale):
         """ Returns the square root of the squared error between left and right terms. """
         error = left_term(1./scale) - right_term(1./scale)
-                
+
         return error
 
     result = [2., 50.] # dummy estimate
