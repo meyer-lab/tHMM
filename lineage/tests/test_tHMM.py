@@ -409,7 +409,7 @@ class TestModel(unittest.TestCase):
         MASscaleGom = [75]
         masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
         masterLineage = remove_NaNs(masterLineage)
-        while len(masterLineage) == 0:
+        while len(masterLineage) <= 0:
             masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
             masterLineage = remove_NaNs(masterLineage)
         print(len(masterLineage))
@@ -422,7 +422,7 @@ class TestModel(unittest.TestCase):
         scaleGom2 = [50]
         sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
         sublineage2 = remove_NaNs(sublineage2)
-        while len(sublineage2) == 0:
+        while len(sublineage2) <= 0:
             sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
             sublineage2 = remove_NaNs(sublineage2)
         print(len(sublineage2))
@@ -510,7 +510,7 @@ class TestModel(unittest.TestCase):
 
         LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
         #LINEAGE = remove_NaNs(LINEAGE)
-        while len(LINEAGE) == 0:
+        while len(LINEAGE) <= 0:
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
             #LINEAGE = remove_NaNs(LINEAGE)
 
@@ -561,7 +561,7 @@ class TestModel(unittest.TestCase):
 
         LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G')
         #LINEAGE = remove_NaNs(LINEAGE)
-        while len(LINEAGE) == 0:
+        while len(LINEAGE) <= 10:
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G')
             #LINEAGE = remove_NaNs(LINEAGE)
 
@@ -614,7 +614,7 @@ class TestModel(unittest.TestCase):
 
         LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
         #LINEAGE = remove_NaNs(LINEAGE)
-        while len(LINEAGE) == 0:
+        while len(LINEAGE) <= 10:
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
             #LINEAGE = remove_NaNs(LINEAGE)
 
@@ -676,7 +676,7 @@ class TestModel(unittest.TestCase):
         LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2)
 
         #LINEAGE = remove_NaNs(LINEAGE)
-        while len(LINEAGE) == 0:
+        while len(LINEAGE) <= 10:
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2)
             #LINEAGE = remove_NaNs(LINEAGE)
 
