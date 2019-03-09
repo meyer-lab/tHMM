@@ -1,10 +1,10 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
+import math
 import numpy as np
 import scipy.stats as sp
 from .Lineage_utils import get_numLineages, init_Population
 from .tHMM_utils import max_gen, get_gen
-import math
 
 class tHMM:
     """ Main tHMM class. """
@@ -13,7 +13,7 @@ class tHMM:
         self.X = X # list containing lineage, should be in correct format (contain no NaNs)
         self.numStates = numStates # number of discrete hidden states
         self.FOM = FOM
-        self.keepBern=keepBern
+        self.keepBern = keepBern
         self.numLineages = get_numLineages(self.X) # gets the number of lineages in our population
         self.population = init_Population(self.X, self.numLineages) # arranges the population into a list of lineages (each lineage might have varying length)
         assert self.numLineages == len(self.population)
@@ -29,17 +29,17 @@ class tHMM:
         numLineages = self.numLineages
         temp_params = {"pi": np.ones((numStates)) / numStates, # inital state distributions [K] initialized to 1/K
                        "T": np.ones((numStates, numStates)) / numStates} # state transition matrix [KxK] initialized to 1/K
-        if self.FOM=='G':
+        if self.FOM == 'G':
             temp_params["E"] = np.ones((numStates, 3)) # sequence of emission likelihood distribution parameters [Kx3]
             for state_j in range(numStates):
-                temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
-                temp_params["E"][state_j,1] = 2.0*(1+np.random.uniform()) # initializing all Gompertz c parameters to 2
-                temp_params["E"][state_j,2] = 62.5*(1+np.random.uniform()) # initializing all Gompoertz s(cale) parameters to 50
-        elif self.FOM=='E':
+                temp_params["E"][state_j, 0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
+                temp_params["E"][state_j, 1] = 2.0*(1+np.random.uniform()) # initializing all Gompertz c parameters to 2
+                temp_params["E"][state_j, 2] = 62.5*(1+np.random.uniform()) # initializing all Gompoertz s(cale) parameters to 50
+        elif self.FOM == 'E':
             temp_params["E"] = np.ones((numStates, 2)) # sequence of emission likelihood distribution parameters [Kx2]
             for state_j in range(numStates):
-                temp_params["E"][state_j,0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
-                temp_params["E"][state_j,1] = 62.5*(1+np.random.uniform()) # initializing all Exponential beta parameters to 50
+                temp_params["E"][state_j, 0] = 1/numStates # initializing all Bernoulli p parameters to 1/numStates
+                temp_params["E"][state_j, 1] = 62.5*(1+np.random.uniform()) # initializing all Exponential beta parameters to 50
 
         for lineage_num in range(numLineages): # for each lineage in our population
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
