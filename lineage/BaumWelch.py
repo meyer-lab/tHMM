@@ -181,5 +181,4 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             if verbose:
                 print("Max iteration of {} steps achieved. Exiting Baum-Welch EM while loop.".format(max_iter))
             break
-            
     return(tHMMobj, NF, betas, gammas)
