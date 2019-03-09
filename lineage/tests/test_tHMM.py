@@ -202,7 +202,7 @@ class TestModel(unittest.TestCase):
             self.assertGreaterEqual(MSD[ii].shape[0], 0) # at least zero cells in each lineage
             self.assertEqual(MSD[ii].shape[1], 2) # there are 2 states for each cell
             for node_n in range(MSD[ii].shape[0]):
-                self.assertEqual(sum(MSD[ii][node_n,:]), 1) # the rows should sum to 1
+                self.assertEqual(sum(MSD[ii][node_n, :]), 1) # the rows should sum to 1
 
     def test_get_EL(self):
         '''
@@ -265,7 +265,7 @@ class TestModel(unittest.TestCase):
         trees.
         '''
         X = remove_NaNs(self.X)
-        numStates=2
+        numStates = 2
         t = tHMM(X, numStates=numStates) # build the tHMM class with X
         fake_param_list = []
         numLineages = t.numLineages
@@ -274,12 +274,12 @@ class TestModel(unittest.TestCase):
                        "E": np.ones((numStates, 3))} # sequence of emission likelihood distribution parameters [Kx3]
         temp_params["pi"][1] = 0 # the hidden state for the second node should always be 1
         to_state_one = np.zeros((numStates, numStates), dtype=int)
-        to_state_one[:,1] = np.ones((numStates), dtype=int)
+        to_state_one[:, 1] = np.ones((numStates), dtype=int)
         temp_params["T"] = to_state_one # should always end up in state 1 regardless of previous state
         # since transition matrix is a dependent matrix (0 is now a trivial state)
-        temp_params["E"][:,0] *= 0.5 # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][:,1] *= 2 # initializing all Gompertz c parameters to 2
-        temp_params["E"][:,2] *= 50 # initializing all Gompoertz s(cale) parameters to 50
+        temp_params["E"][:, 0] *= 0.5 # initializing all Bernoulli p parameters to 0.5
+        temp_params["E"][:, 1] *= 2 # initializing all Gompertz c parameters to 2
+        temp_params["E"][:, 2] *= 50 # initializing all Gompoertz s(cale) parameters to 50
 
         for lineage_num in range(numLineages): # for each lineage in our population
             fake_param_list.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
@@ -315,7 +315,7 @@ class TestModel(unittest.TestCase):
         describe those homogenous populations.
         '''
         X = remove_NaNs(self.X2)
-        numStates=2
+        numStates = 2
         t = tHMM(X, numStates=numStates) # build the tHMM class with X
 
         fake_param_list = []
@@ -328,13 +328,13 @@ class TestModel(unittest.TestCase):
         temp_params["pi"][0] = 4/5 # the population is distributed as such 2/5 is of state 0
         temp_params["pi"][1] = 1/5 # state 1 occurs 3/5 of the time
 
-        temp_params["E"][0,0] *= 0.999 # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][0,1] *= 2 # initializing all Gompertz c parameters to 2
-        temp_params["E"][0,2] *= 40 # initializing all Gompoertz s(cale) parameters to 50
+        temp_params["E"][0, 0] *= 0.999 # initializing all Bernoulli p parameters to 0.5
+        temp_params["E"][0, 1] *= 2 # initializing all Gompertz c parameters to 2
+        temp_params["E"][0, 2] *= 40 # initializing all Gompoertz s(cale) parameters to 50
 
-        temp_params["E"][1,0] *= 0.6 # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][1,1] *= 3 # initializing all Gompertz c parameters to 2
-        temp_params["E"][1,2] *= 50 # initializing all Gompoertz s(cale) parameters to 50
+        temp_params["E"][1, 0] *= 0.6 # initializing all Bernoulli p parameters to 0.5
+        temp_params["E"][1, 1] *= 3 # initializing all Gompertz c parameters to 2
+        temp_params["E"][1, 2] *= 50 # initializing all Gompoertz s(cale) parameters to 50
 
         for lineage_num in range(numLineages): # for each lineage in our population
             fake_param_list.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
@@ -360,13 +360,13 @@ class TestModel(unittest.TestCase):
                 all_zeros = curr_all_states
                 self.assertFalse(all(all_zeros))
                 # this should be true since the homogenous lineage is all of state 0
-                num_of_zeros+=1
+                num_of_zeros += 1
             else:
                 all_ones = curr_all_states
                 self.assertTrue(all(all_ones))
                 # this should be true since the homogenous lineage is all of state 1
-                num_of_ones+=1
-        self.assertGreater(num_of_zeros,num_of_ones)
+                num_of_ones += 1
+        self.assertGreater(num_of_zeros, num_of_ones)
         # there should be a greater number of lineages with all zeros than all ones as hidden states
 
     ####################################
@@ -391,14 +391,15 @@ class TestModel(unittest.TestCase):
         for ii in range(len(gammas)):
             self.assertGreaterEqual(gammas[ii].shape[0], 0) # at least zero cells in each lineage
             for state_k in range(numStates):
-                self.assertEqual(gammas[ii][0,state_k],betas[ii][0,state_k])
+                self.assertEqual(gammas[ii][0, state_k], betas[ii][0, state_k])
 
     ############################
     # BaumWelch.py tests below #
     ############################
 
     def test_Baum_Welch_1(self):
-        # creating a heterogeneous tree
+        '''Creas a heterogeneous tree with a state 1 lineage that links off the final cell of a state 0 lineage. Compares the estimated population parameters with the true ones that were used to create the lineages.'''
+        
         numStates = 2
 
         MASexperimentTime = 200

@@ -16,7 +16,7 @@ class TestModel(unittest.TestCase):
         betaExp = [50.]
         initCells = [100]
         self.pop1 = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G') # initialize "pop" as of class Population
-        self.pop2 = generatePopulationWithTime(168, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp) 
+        self.pop2 = generatePopulationWithTime(168, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
 
     def test_lifetime(self):
         """Make sure the cell isUnfinished before the cell dies and then make sure the cell's lifetime (tau) is calculated properly after it dies."""
@@ -109,7 +109,7 @@ class TestModel(unittest.TestCase):
                 tau_scale50.append(n.tau)
 
         self.assertGreater(np.mean(tau_scale50), np.mean(tau_scale40))
-        
+
     def test_generate_lifetime_E(self):
         """Make sure generated fake data behaves properly when tuning the Exponential parameter."""
         # average and stdev are both larger when c = 0.5 compared to c = 3
@@ -135,7 +135,7 @@ class TestModel(unittest.TestCase):
         c_out, scale_out = gompertzAnalytical(self.pop1)
         self.assertTrue(0 <= c_out <= 5) # +/- 3.0 of true cGom
         self.assertTrue(45 <= scale_out <= 55) # +/- 15 of scaleGom
-        
+
     def test_MLE_exp_analytical(self):
         """ Use the analytical shortcut to estimate the gompertz parameters. """
         # test populations w.r.t. time
@@ -153,7 +153,7 @@ class TestModel(unittest.TestCase):
         # doubles quicker when cell lifetime is shorter (larger c & lower scale == shorter life)
         self.assertGreater(base, doublingTime(100, 0.7, 3, 50))
         self.assertGreater(base, doublingTime(100, 0.7, 2, 40))
-        
+
     def test_doubleT_E(self):
         """Check for basic functionality of doubleT."""
         base = doublingTime(100, 0.7, None, None, FOM='E', betaExp=80)
@@ -182,9 +182,9 @@ class TestModel(unittest.TestCase):
 
         # the Bernoulli parameter estimate should be greater than than locBern since bern2>locBern
         self.assertTrue(bernEstimate > 0.7)
-    
+
     def test_hetergeneous_pop_E(self):
-        #""" Calls generatePopulationWithTime when there is a switch in parameters over the course of the experiment's time. (Exponential)"""
+        """ Calls generatePopulationWithTime when there is a switch in parameters over the course of the experiment's time. (Exponential)"""
         experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
         # first set of parameters (from t=0 to t=100)
         locBern = [0.7]
@@ -199,7 +199,7 @@ class TestModel(unittest.TestCase):
         scaleG2 = [40]
         betaExp2 = [25]
         popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2) # initialize "pop" as of class Populations
-        while len(popTime)==0:
+        while len(popTime) == 0:
             popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2) # initialize "pop" as of class Populations
         bernEstimate = bernoulliParameterEstimatorAnalytical(popTime)
 
