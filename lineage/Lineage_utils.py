@@ -13,9 +13,9 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
 
     if switchT is None: # when there is no heterogeneity over time
         for ii in range(numLineages):
-            if FOM=='G':
+            if FOM == 'G':
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], FOM='G') # create a temporary lineage
-            elif FOM=='E':
+            elif FOM == 'E':
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], FOM='E', betaExp=betaExp[ii]) # create a temporary lineage
             for cell in temp:
                 sum_prev = 0
@@ -28,11 +28,11 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
                 population.append(cell) # append all individual cells into a population
     else: # when the second set of parameters is defined
         for ii in range(numLineages):
-            if FOM=='G':
-                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii], FOM='G') 
-            elif FOM=='E':
+            if FOM == 'G':
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii], FOM='G')
+            elif FOM == 'E':
                 print("making a heterogeneous exponential lineage")
-                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii], FOM='E', betaExp=betaExp[ii], betaExp2=betaExp2[ii]) 
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii], FOM='E', betaExp=betaExp[ii], betaExp2=betaExp2[ii])
             # create a temporary lineage
             for cell in temp:
                 sum_prev = 0
@@ -62,6 +62,7 @@ def remove_NaNs(X):
     return X
 
 def remove_singleton_lineages(X):
+    '''Removes lineages that are only a single root cell that does not divide'''
     ii = 0
     while ii in range(len(X)): # for each cell in X
         if X[ii].isRootParent(): # if the cell is a root parent
@@ -71,7 +72,7 @@ def remove_singleton_lineages(X):
                 ii += 1
         else:
             ii += 1 # only move forward in the list if you don't delete a cell
-    return(X)
+    return X
 
 def get_numLineages(X):
     ''' Outputs total number of cell lineages in given Population. '''
@@ -100,7 +101,7 @@ def init_Population(X, numLineages):
             if cell.get_root_cell() is root_cell_holder[lineage_num]: # if the cell's root cell is the root cell we're on
                 assert cell.linID == cell.get_root_cell().linID
                 temp_lineage.append(cell) # append the cell to that certain lineage
-        if len(temp_lineage)>1: # want to avoid lineages with <= 1 cell
+        if len(temp_lineage) > 1: # want to avoid lineages with <= 1 cell
             population.append(temp_lineage) # append the lineage to the Population holder
     return population
 
@@ -127,8 +128,8 @@ def exponentialAnalytical(X):
         elif cell.isUnfinished():
             tauFake_holder.append(cell.tauFake)
 
-    result =  (sum(tau_holder) + sum(tauFake_holder) + 50) / (len(tau_holder) + 1)
-    
+    result = (sum(tau_holder) + sum(tauFake_holder) + 50) / (len(tau_holder) + 1)
+
     return result
 
 def gompertzAnalytical(X):
@@ -148,8 +149,8 @@ def gompertzAnalytical(X):
             tauFake_holder.append(cell.tauFake)
 
     N = len(tau_holder) + len(tauFake_holder) # number of cells
-    D=0.5
-    if N!=0:
+    D = 0.5
+    if N != 0:
         D = len(tau_holder)/N
     total_tau_holder = tau_holder+tauFake_holder
     delta_holder = [1]*len(tau_holder) + [0]*len(tauFake_holder)
@@ -182,10 +183,10 @@ def gompertzAnalytical(X):
     def error_b(scale):
         """ Returns the square root of the squared error between left and right terms. """
         error = left_term(1./scale) - right_term(1./scale)
-                                                 
+                               
         return error
 
-    result = [2.,50.] # dummy estimate
+    result = [2., 50.] # dummy estimate
     if N != 0:
         #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
         res = root(error_b, x0=result[1])
