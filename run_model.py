@@ -3,7 +3,7 @@ import sys
 from lineage.parse_csv import load_data, process
 
 data = load_data(sys.argv[1]) # i.e. 'data/2019_02_21_true.csv'
-pop1 = process(data, 5.0) # create a population of cells given the data and the imaging frequency
+pop1 = process(data, 10.0) # create a population of cells given the data and the imaging frequency
 print("length of pop: " + str(len(pop1)))
 for cell in pop1:
     print("\n")
