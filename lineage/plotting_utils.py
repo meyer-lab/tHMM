@@ -1,5 +1,6 @@
 ''' Plotting utilities for lineages. Requires matplotlib, networkx, pygraphviz, and dot.'''
 
+import networkx as nx
 
 def lineage2Graph(X):
     '''
