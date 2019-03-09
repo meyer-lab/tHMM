@@ -199,7 +199,7 @@ class TestModel(unittest.TestCase):
         scaleG2 = [40]
         betaExp2 = [25]
         popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2) # initialize "pop" as of class Populations
-        while len(popTime) == 0:
+        while len(popTime) <= 10:
             popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2) # initialize "pop" as of class Populations
         bernEstimate = bernoulliParameterEstimatorAnalytical(popTime)
 
