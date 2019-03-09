@@ -172,7 +172,7 @@ class TestModel(unittest.TestCase):
         cGom = [2]
         scaleGom = [0.5e2]
         initCells = [100]
-        switchT = 84 # switch at t=100
+        switchT = 84 # switch at t=84
         # second set of parameters (from t=100 to t=experimentTime)
         bern2 = [0.99]
         cG2 = [2]
