@@ -31,7 +31,6 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
             if FOM == 'G':
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii], FOM='G')
             elif FOM == 'E':
-                print("making a heterogeneous exponential lineage")
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii], FOM='E', betaExp=betaExp[ii], betaExp2=betaExp2[ii])
             # create a temporary lineage
             for cell in temp:
