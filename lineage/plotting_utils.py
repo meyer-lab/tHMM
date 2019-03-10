@@ -7,7 +7,7 @@ def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
     '''
     Takes in a list of cells, and then outputs a color_map list and a list of cell indices.
     Example Usage:
-    
+
     G, cmap, _ = make_colormap_graph(X)
     M = G.number_of_edges()
     edge_weights = [d for (u,v,d) in G.edges.data('weight')]
@@ -53,7 +53,6 @@ def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
 
         if X_like is None and prob is not None and state is not None:
             node_size_map.append(prob[cell_idx]*scale)
-        
 
         if cell_idx == 0:
             pass
