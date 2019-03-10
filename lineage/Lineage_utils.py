@@ -147,7 +147,7 @@ def gompertzAnalytical(X):
             tauFake_holder.append(cell.tauFake)
 
     N = len(tau_holder) + len(tauFake_holder) # number of cells
-    D = 0.5
+    D = 1
     if N != 0:
         D = len(tau_holder)/N
     total_tau_holder = tau_holder+tauFake_holder

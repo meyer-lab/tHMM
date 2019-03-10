@@ -1,6 +1,5 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
-import math
 import numpy as np
 import scipy.stats as sp
 from .Lineage_utils import get_numLineages, init_Population
