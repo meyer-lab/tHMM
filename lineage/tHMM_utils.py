@@ -46,5 +46,3 @@ def print_Assessment(tHMMobj):
         print(tHMMobj.paramlist[num]["T"])
         print("Emission Parameters: ")
         print(tHMMobj.paramlist[num]["E"])
-        print("Expected Emissions Parameters: ")
-        print(expected_lineage_parameters[num])
