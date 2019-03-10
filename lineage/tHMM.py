@@ -16,7 +16,7 @@ class tHMM:
         self.keepBern = keepBern
         self.numLineages = get_numLineages(self.X) # gets the number of lineages in our population
         self.population = init_Population(self.X, self.numLineages) # arranges the population into a list of lineages (each lineage might have varying length)
-        assert self.numLineages == len(self.population)
+        assert self.numLineages == len(self.population), "Something is wrong with the number of lineages in your population member variable for your tHMM class and the number of lineages member variable for your tHMM class. Check the number of unique root cells and the number of lineages in your data."
         self.paramlist = self.init_paramlist() # list that is numLineages long of parameters for each lineage tree in our population
 
         self.MSD = self.get_Marginal_State_Distributions() # full Marginal State Distribution holder
@@ -43,7 +43,7 @@ class tHMM:
 
         for lineage_num in range(numLineages): # for each lineage in our population
             paramlist.append(temp_params.copy()) # create a new dictionary holding the parameters and append it
-            assert len(paramlist) == lineage_num+1
+            assert len(paramlist) == lineage_num+1, "The number of parameters being estimated is mismatched with the number of lineages in your population. Check the number of unique root cells and the number of lineages in your data."
 
         return paramlist
 
@@ -78,7 +78,7 @@ class tHMM:
 
         for num in range(numLineages):
             MSD_0_row_sum = np.sum(MSD[num][0])
-            assert np.isclose(MSD_0_row_sum, 1.)
+            assert np.isclose(MSD_0_row_sum, 1.), "The Marginal State Distribution for your root cells, P(z_1 = k), for all states k in numStates, are not adding up to 1!"
 
         for num in range(numLineages):
             lineage = population[num] # getting the lineage in the Population by lineage index
@@ -100,7 +100,7 @@ class tHMM:
                         MSD[num][current_cell_idx, state_k] = sum(temp_sum_holder)
                 curr_level += 1
             MSD_row_sums = np.sum(MSD[num], axis=1)
-            assert np.allclose(MSD_row_sums, 1.0)
+            assert np.allclose(MSD_row_sums, 1.0), "The Marginal State Distribution for your cells, P(z_k = k), for all states k in numStates, are not adding up to 1!"
         return MSD
 
     def get_Emission_Likelihoods(self):
@@ -156,19 +156,13 @@ class tHMM:
                         if self.keepBern:
                             temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
                         if cell.deathObserved:
+                            assert cell.deathObserved
                             temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tau, c=k_gomp_c, scale=k_gomp_s, deathObserved=True) # gompertz likelihood if death is observed
-                            if math.isnan(temp_g):
-                                print("OBSERVED DEATH IS NAN IN NF LEAF CALC")
-                                print(cell.tau)
-                                print(temp_g)
-                                assert False
+                            assert not math.isnan(temp_g), "You have a Gompertz right-censored likelihood calculation for an observed death returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
                         elif not cell.deathObserved:
                             assert not cell.deathObserved
                             temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tauFake, c=k_gomp_c, scale=k_gomp_s, deathObserved=False) # gompertz likelihood if death is unobserved
-                            if math.isnan(temp_g):
-                                print("UNOBSERVED DEATH IS NAN IN NF LEAF CALC")
-                                print(temp_g)
-                                assert False
+                            assert not math.isnan(temp_g), "You have a Gompertz right-censored likelihood calculation for an unobserved death returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
                         EL_array[current_cell_idx, state_k] = temp_g*temp_b
 
                     elif self.FOM == 'E':
@@ -179,11 +173,7 @@ class tHMM:
                             temp_beta = sp.expon.pdf(x=cell.tau, scale=k_expon_beta) # exponential likelihood
                         elif not cell.deathObserved:
                             temp_beta = sp.expon.pdf(x=cell.tauFake, scale=k_expon_beta) # exponential likelihood is the same in the cased of an unobserved death
-                        if math.isnan(temp_beta):
-                            print("EXPO NAN IN NF LEAF CALC")
-                            print(cell.tau)
-                            print(temp_beta)
-                            assert False
+                        assert not math.isnan(temp_beta), "You have a Exponential likelihood calculation returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
                         # the right-censored and uncensored exponential pdfs are the same
                         EL_array[current_cell_idx, state_k] = temp_beta*temp_b
             EL.append(EL_array) # append the EL_array for each lineage
@@ -209,14 +199,6 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
     # the observation of the cell death has no bearing on the calculation of the second coefficient in the pdf
 
     result = firstCoeff*secondCoeff
-    if math.isnan(result):
-        print(tau_or_tauFake)
-        print(c)
-        print(scale)
-        print(b)
-        print(a)
-        print(firstCoeff)
-        print(secondCoeff)
-        assert False
+    assert not math.isnan(result), "Your Gompertz right-censored likelihood calculation is returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
 
     return result

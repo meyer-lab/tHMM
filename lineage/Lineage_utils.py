@@ -127,7 +127,7 @@ def exponentialAnalytical(X):
         elif cell.isUnfinished():
             tauFake_holder.append(cell.tauFake)
 
-    result = (sum(tau_holder) + sum(tauFake_holder) + 50) / (len(tau_holder) + 1)
+    result = (sum(tau_holder) + sum(tauFake_holder) + 62.5) / (len(tau_holder) + 1)
 
     return result
 
@@ -185,7 +185,7 @@ def gompertzAnalytical(X):
 
         return error
 
-    result = [2., 62.5] # dummy estimate
+    result = [2, 62.5] # dummy estimate
     if N != 0:
         #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
         res = root(error_b, x0=result[1])
