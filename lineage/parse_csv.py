@@ -1,3 +1,5 @@
+'''Converts an ilastik cell tracking csv file for a population and assigns it parameters in CellNode that can be used to analyze the population with the tHMM'''
+
 from os.path import join, dirname, abspath
 import pandas as pd
 import numpy as np
@@ -11,10 +13,10 @@ def load_data(filename):
     ii = 0
     while ii < data.shape[0]:
         for jj in range(data.shape[1]):
-            if data[ii,jj] == "None": # if entry is the string None
-                data[ii,jj] = None # reassign entry to keyword None
+            if data[ii, jj] == "None": # if entry is the string None
+                data[ii, jj] = None # reassign entry to keyword None
             else:
-                data[ii,jj] = float(data[ii,jj]) # force all strings into floats
+                data[ii, jj] = float(data[ii, jj]) # force all strings into floats
         # delete rows for cells that are seen in the first frame
         if data[ii, 1] == 0:
             data = np.delete(data, ii, 0) # delete row

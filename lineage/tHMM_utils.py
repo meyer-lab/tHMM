@@ -36,3 +36,13 @@ def get_daughters(cell):
     if cell.right:
         temp.append(cell.right)
     return temp
+
+def print_Assessment(tHMMobj):
+    for num in range(tHMMobj.numLineages):
+        print("\n")
+        print("Initial Proabablities: ")
+        print(tHMMobj.paramlist[num]["pi"])
+        print("Transition State Matrix: ")
+        print(tHMMobj.paramlist[num]["T"])
+        print("Emission Parameters: ")
+        print(tHMMobj.paramlist[num]["E"])

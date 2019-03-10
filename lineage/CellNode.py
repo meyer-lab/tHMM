@@ -96,26 +96,28 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
 
     # initialize the list with cells
     for ii in range(initCells):
-        lineage.append(CellNode(startT=0, linID = ii))
+        lineage.append(CellNode(startT=0, linID=ii))
 
     # have cell divide/die according to distribution
     for cell in lineage:   # for all cells (cap at numCells)
         if cell.isUnfinished():
-            if switchT is not None and cell.startT > switchT: # when the cells should abide by the second set of parameters
-                cell.true_state=1
-                if FOM=='G':
+            if switchT and cell.startT > switchT: # when the cells should abide by the second set of parameters
+                cell.true_state = 1
+                if FOM == 'G':
                     cell.tau = sp.gompertz.rvs(cG2, scale=scaleG2)
-                elif FOM=='E':
-                    cell.tau = np.random.exponential(scale=betaExp2)
+                elif FOM == 'E':
+                    cell.tau = sp.expon.rvs(scale=betaExp2)
+
             else: # use first set of parameters for non-heterogeneous lineages or before the switch time
-                cell.true_state=0
-                if FOM=='G':
+                cell.true_state = 0
+                if FOM == 'G':
                     cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
-                elif FOM=='E':
-                    cell.tau = np.random.exponential(scale=betaExp)                
+                elif FOM == 'E':
+                    cell.tau = sp.expon.rvs(scale=betaExp)
             cell.endT = cell.startT + cell.tau
             if cell.endT < experimentTime: # determine fate only if endT is within range
                 # assign cell fate
+                cell.deathObserved = True
                 if switchT is not None and cell.startT > switchT: # when the cells should abide by the second set of parameters
                     cell.fate = sp.bernoulli.rvs(bern2)
                 else: # use first set of parameters for non-heterogeneous lineages or before the switch time
@@ -129,9 +131,8 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
                 else:
                     cell.die(cell.endT)
             else: # if the endT is past the experimentTime
-                cell.tauFake = experimentTime-cell.startT 
-                cell.fateFake = sp.bernoulli.rvs(locBern) # assign fate
-                cell.endT = experimentTime
+                cell.tauFake = experimentTime-cell.startT
+                cell.deathObserved = False
                 cell.setUnfinished() # reset cell to be unfinished and move to next cell
 
     # return the list at end
@@ -145,9 +146,9 @@ def doublingTime(initCells, locBern, cGom, scaleGom, FOM='G', betaExp=None):
 
     for experimentTime in experimentTimes:
         lineage = []
-        if FOM=='G':
+        if FOM == 'G':
             lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom)
-        elif FOM=='E':
+        elif FOM == 'E':
             lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
         count = 0
         for cell in lineage:

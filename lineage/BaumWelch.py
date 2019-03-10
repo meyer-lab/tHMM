@@ -3,14 +3,14 @@ import numpy as np
 
 from .tHMM_utils import max_gen, get_gen, get_daughters
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
-from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, get_beta_parent_child_prod, beta_parent_child_func
+from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, beta_parent_child_func
 from .Lineage_utils import bernoulliParameterEstimatorAnalytical, gompertzAnalytical, exponentialAnalytical
 
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
     '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
 
-    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx] # check the child-parent relationship
-    assert lineage[node_child_n_idx].isChild() # if the child-parent relationship is correct, then the child must
+    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx], "Something wrong with your parent-daughter linkage when trying to use the zeta-related functions... Check again that your lineage is constructed clearly." # check the child-parent relationship
+    assert lineage[node_child_n_idx].isChild(), "Something wrong with your parent-daughter linkage when trying to use the zeta-related functions... Check again that your lineage is constructed clearly." # if the child-parent relationship is correct, then the child must
     # either be the left daughter or the right daughter
 
     beta_child_state_k = beta_array[node_child_n_idx, state_k]
@@ -19,7 +19,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
     numStates = MSD_array.shape[1]
     also_numStates = gamma_array.shape[1]
     also_also_numStates = beta_array.shape[1]
-    assert numStates == also_numStates == also_also_numStates
+    assert numStates == also_numStates == also_also_numStates, "Your numStates (number of states) and the dimensions of your arrays are mistmatched! Please check your instantiation of the tHMM object."
     beta_parent_child_state_j = beta_parent_child_func(numStates=numStates,
                                                        lineage=lineage,
                                                        beta_array=beta_array,
@@ -28,8 +28,8 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
                                                        state_j=state_j,
                                                        node_parent_m_idx=node_parent_m_idx,
                                                        node_child_n_idx=node_child_n_idx)
-    
-    zeta = beta_child_state_k*T[state_j,state_k]*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child_state_j)
+
+    zeta = beta_child_state_k*T[state_j, state_k]*gamma_parent_state_j/(MSD_child_state_k*beta_parent_child_state_j)
     return zeta
 
 def get_all_gammas(lineage, gamma_array_at_state_j):
@@ -101,7 +101,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
 
         if verbose:
             print('\n iter: {}'.format(count))
-        count+=1
+        count += 1
 
         old_LL_list = new_LL_list
 
@@ -113,10 +113,10 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             beta_array = betas[num]
             MSD_array = tHMMobj.MSD[num]
             gamma_array = gammas[num]
-            tHMMobj.paramlist[num]["pi"] = gamma_array[0,:]
-            T_holder = np.zeros((numStates,numStates), dtype=float)
+            tHMMobj.paramlist[num]["pi"] = gamma_array[0, :]
+            T_holder = np.zeros((numStates, numStates), dtype=float)
             for state_j in range(numStates):
-                gamma_array_at_state_j = gamma_array[:,state_j]
+                gamma_array_at_state_j = gamma_array[:, state_j]
                 denom = get_all_gammas(lineage, gamma_array_at_state_j)
                 for state_k in range(numStates):
                     numer = get_all_zetas(parent_state_j=state_j,
@@ -127,16 +127,16 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                                           gamma_array=gamma_array,
                                           T=tHMMobj.paramlist[num]["T"])
                     entry = numer/denom
-                    T_holder[state_j,state_k] = entry
-                    
+                    T_holder[state_j, state_k] = entry
+
             row_sums = T_holder.sum(axis=1)
             T_new = T_holder / row_sums[:, np.newaxis]
             tHMMobj.paramlist[num]["T"] = T_new
 
             max_state_holder = []
-            for ii,cell in enumerate(lineage):
+            for ii, cell in enumerate(lineage):
                 assert lineage[ii] is cell
-                max_state_holder.append(np.argmax(gammas[num][ii,:]))
+                max_state_holder.append(np.argmax(gammas[num][ii, :]))
             state_obs_holder = []
             for state_j in range(numStates):
                 state_obs = []
@@ -147,14 +147,15 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                 state_obs_holder.append(state_obs)
 
             for state_j in range(numStates):
-                tHMMobj.paramlist[num]["E"][state_j,0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
-                if tHMMobj.FOM=='G':
+                if tHMMobj.keepBern:
+                    tHMMobj.paramlist[num]["E"][state_j, 0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
+                if tHMMobj.FOM == 'G':
                     c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[state_j])
-                    tHMMobj.paramlist[num]["E"][state_j,1] = c_estimate
-                    tHMMobj.paramlist[num]["E"][state_j,2] = scale_estimate
-                elif tHMMobj.FOM=='E':
+                    tHMMobj.paramlist[num]["E"][state_j, 1] = c_estimate
+                    tHMMobj.paramlist[num]["E"][state_j, 2] = scale_estimate
+                elif tHMMobj.FOM == 'E':
                     beta_estimate = exponentialAnalytical(state_obs_holder[state_j])
-                    tHMMobj.paramlist[num]["E"][state_j,1] = beta_estimate
+                    tHMMobj.paramlist[num]["E"][state_j, 1] = beta_estimate
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
@@ -180,3 +181,4 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             if verbose:
                 print("Max iteration of {} steps achieved. Exiting Baum-Welch EM while loop.".format(max_iter))
             break
+    return(tHMMobj, NF, betas, gammas)
