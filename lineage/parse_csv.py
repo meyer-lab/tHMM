@@ -30,9 +30,9 @@ def process(data, deltaT):
     linID = 0
     for ii in range(data.shape[0]):
         if is_root_node(data, ii): # if this row represents a root node
+            print("root node ID:", data[ii, 0])
             pop.append(CellNode(linID=linID, trackID=data[ii, 0], startT=(deltaT*data[ii, 1]), true_state=data[ii, 7]))
             linID += 1 # increment lineage by 1 for each root node added
-    print("number of root nodes:", len(pop))
 
     # cycle through to handle divisions and deaths using CellNode functions
     for cell in pop:
@@ -69,7 +69,5 @@ def find_row(data, cell):
         if ID == data[ii, 0]: # if the ID matches the first column of said row
             row = ii
             break
-    if row < 0:
-        print("Row is not found... cell's ID is:", ID)
     assert row >= 0 # make sure the row was actually found
     return row
