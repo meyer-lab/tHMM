@@ -8,7 +8,7 @@ from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
 from ..tHMM import tHMM
 from ..tHMM_utils import max_gen, get_gen, get_parents_for_level, print_Assessment
-from ..Lineage_utils import remove_NaNs, get_numLineages, init_Population, generatePopulationWithTime as gpt, gompertzAnalytical, exponentialAnalytical
+from ..Lineage_utils import remove_NaNs, get_numLineages, init_Population, generatePopulationWithTime as gpt
 from ..CellNode import CellNode
 
 class TestModel(unittest.TestCase):
