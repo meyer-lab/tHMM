@@ -93,7 +93,7 @@ def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_pa
     '''Calculates the delta value for a single parent-child relationship where the parent is in a given state.'''
     assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx] # check the child-parent relationship
     assert lineage[node_child_n_idx].isChild() # if the child-parent relationship is correct, then the child must be either the left daughter or the right daughter
-    max_holder=[] # maxing over the states
+    max_holder = [] # maxing over the states
     for state_k in range(numStates): # for each state k
         num1 = delta_array[node_child_n_idx, state_k] # get the already calculated delta at node n for state k
         num2 = T[state_j, state_k] # get the transition rate for going from state j to state k
@@ -120,7 +120,7 @@ def Viterbi(tHMMobj, deltas, state_ptrs):
         state_ptrs_array = state_ptrs[num]
 
         opt_state_tree = np.zeros((len(lineage)), dtype=int)
-        possible_first_states = np.multiply(delta_array[0,:], pi)
+        possible_first_states = np.multiply(delta_array[0, :], pi)
         opt_state_tree[0] = np.argmax(possible_first_states)
         max_level = max_gen(lineage)
         count = 1 # start at the root nodes
