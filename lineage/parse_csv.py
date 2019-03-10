@@ -1,3 +1,5 @@
+'''Converts an ilastik cell tracking csv file for a population and assigns it parameters in CellNode that can be used to analyze the population with the tHMM'''
+
 from os.path import join, dirname, abspath
 import pandas as pd
 import numpy as np
@@ -11,10 +13,10 @@ def load_data(filename):
     ii = 0
     while ii < data.shape[0]:
         for jj in range(data.shape[1]):
-            if data[ii,jj] == "None": # if entry is the string None
-                data[ii,jj] = None # reassign entry to keyword None
+            if data[ii, jj] == "None": # if entry is the string None
+                data[ii, jj] = None # reassign entry to keyword None
             else:
-                data[ii,jj] = float(data[ii,jj]) # force all strings into floats
+                data[ii, jj] = float(data[ii, jj]) # force all strings into floats
         # delete rows for cells that are seen in the first frame
         if data[ii, 1] == 0:
             data = np.delete(data, ii, 0) # delete row
@@ -30,6 +32,7 @@ def process(data, deltaT):
     linID = 0
     for ii in range(data.shape[0]):
         if is_root_node(data, ii): # if this row represents a root node
+            print("root node ID:", data[ii, 0])
             pop.append(CellNode(linID=linID, trackID=data[ii, 0], startT=(deltaT*data[ii, 1]), true_state=data[ii, 7]))
             linID += 1 # increment lineage by 1 for each root node added
 
@@ -68,5 +71,6 @@ def find_row(data, cell):
         if ID == data[ii, 0]: # if the ID matches the first column of said row
             row = ii
             break
+
     assert row >= 0 # make sure the row was actually found
     return row

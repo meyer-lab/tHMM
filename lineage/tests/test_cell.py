@@ -2,11 +2,8 @@
 import unittest
 import math
 import numpy as np
-<<<<<<< HEAD
+
 from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, gompertzAnalytical, exponentialAnalytical
-=======
-from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, gompertzAnalytical, exponentialAnalytical, remove_NaNs
->>>>>>> master
 from ..CellNode import CellNode as c, generateLineageWithTime, doublingTime
 
 class TestModel(unittest.TestCase):
@@ -16,22 +13,12 @@ class TestModel(unittest.TestCase):
         experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
         locBern = [0.8]
         cGom = [2]
-<<<<<<< HEAD
-        scaleGom = [0.5e2]
-        betaExp = [50]
-        initCells = [100]
-        self.pop1 = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G') # initialize "pop" as of class Population
-        self.pop2 = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp) 
-    
-    
-=======
         scaleGom = [50.]
         betaExp = [50.]
         initCells = [100]
         self.pop1 = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G') # initialize "pop" as of class Population
-        self.pop2 = generatePopulationWithTime(168, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp) 
+        self.pop2 = generatePopulationWithTime(168, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
 
->>>>>>> master
     def test_lifetime(self):
         """Make sure the cell isUnfinished before the cell dies and then make sure the cell's lifetime (tau) is calculated properly after it dies."""
         cell1 = c(startT=20)
@@ -123,7 +110,7 @@ class TestModel(unittest.TestCase):
                 tau_scale50.append(n.tau)
 
         self.assertGreater(np.mean(tau_scale50), np.mean(tau_scale40))
-        
+
     def test_generate_lifetime_E(self):
         """Make sure generated fake data behaves properly when tuning the Exponential parameter."""
         # average and stdev are both larger when c = 0.5 compared to c = 3
@@ -148,22 +135,13 @@ class TestModel(unittest.TestCase):
         # test populations w.r.t. time
         c_out, scale_out = gompertzAnalytical(self.pop1)
         self.assertTrue(0 <= c_out <= 5) # +/- 3.0 of true cGom
-<<<<<<< HEAD
-        self.assertTrue(35 <= scale_out <= 65) # +/- 15 of scaleGom
-=======
-        self.assertTrue(45 <= scale_out <= 55) # +/- 15 of scaleGom
->>>>>>> master
-        
+
     def test_MLE_exp_analytical(self):
         """ Use the analytical shortcut to estimate the gompertz parameters. """
         # test populations w.r.t. time
         beta_out = exponentialAnalytical(self.pop2)
-<<<<<<< HEAD
-        self.assertTrue(35 <= beta_out <= 65) # +/- 15 of scaleGom
-=======
         truther = (45 <= beta_out <= 55)
         self.assertTrue(truther) # +/- 15 of scaleGom
->>>>>>> master
 
     def test_doubleT_G(self):
         """Check for basic functionality of doubleT."""
@@ -175,7 +153,7 @@ class TestModel(unittest.TestCase):
         # doubles quicker when cell lifetime is shorter (larger c & lower scale == shorter life)
         self.assertGreater(base, doublingTime(100, 0.7, 3, 50))
         self.assertGreater(base, doublingTime(100, 0.7, 2, 40))
-        
+
     def test_doubleT_E(self):
         """Check for basic functionality of doubleT."""
         base = doublingTime(100, 0.7, None, None, FOM='E', betaExp=80)
@@ -186,20 +164,43 @@ class TestModel(unittest.TestCase):
         self.assertGreater(base, doublingTime(100, 0.7, None, None, FOM='E', betaExp=50))
         self.assertGreater(base, doublingTime(100, 0.7, None, None, FOM='E', betaExp=40))
 
-    def test_hetergeneous_pop(self):
-        """ Calls generatePopulationWithTime when there is a switch in parameters over the course of the experiment's time. """
+    def test_hetergeneous_pop_G(self):
+        """ Calls generatePopulationWithTime when there is a switch in parameters over the course of the experiment's time. (Gompertz)"""
         experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
         # first set of parameters (from t=0 to t=100)
         locBern = [0.6]
         cGom = [2]
         scaleGom = [0.5e2]
         initCells = [100]
-        switchT = 100 # switch at t=100
+        switchT = 84 # switch at t=84
         # second set of parameters (from t=100 to t=experimentTime)
-        bern2 = [0.85]
+        bern2 = [0.99]
         cG2 = [2]
         scaleG2 = [40]
-        popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2) # initialize "pop" as of class Populations
+        popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G') # initialize "pop" as of class Populations
+        bernEstimate = bernoulliParameterEstimatorAnalytical(popTime)
+
+        # the Bernoulli parameter estimate should be greater than than locBern since bern2>locBern
+        self.assertTrue(bernEstimate > 0.7)
+
+    def test_hetergeneous_pop_E(self):
+        """ Calls generatePopulationWithTime when there is a switch in parameters over the course of the experiment's time. (Exponential)"""
+        experimentTime = 168 # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
+        # first set of parameters (from t=0 to t=100)
+        locBern = [0.7]
+        cGom = [2]
+        scaleGom = [0.5e2]
+        initCells = [75]
+        betaExp = [100]
+        switchT = 84 # switch at t=100
+        # second set of parameters (from t=100 to t=experimentTime)
+        bern2 = [0.99]
+        cG2 = [2]
+        scaleG2 = [40]
+        betaExp2 = [25]
+        popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2) # initialize "pop" as of class Populations
+        while len(popTime) <= 10:
+            popTime = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2) # initialize "pop" as of class Populations
         bernEstimate = bernoulliParameterEstimatorAnalytical(popTime)
 
         # the Bernoulli parameter estimate should be greater than than locBern since bern2>locBern

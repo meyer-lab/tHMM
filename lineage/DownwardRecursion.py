@@ -15,8 +15,8 @@ def get_root_gammas(tHMMobj, betas):
 
     for num in range(numLineages): # for each lineage in our Population
         lineage = population[num]
-        gamma_array = np.zeros((len(lineage),numStates))
-        gamma_array[0,:] = betas[num][0,:]
+        gamma_array = np.zeros((len(lineage), numStates))
+        gamma_array[0, :] = betas[num][0, :]
         gammas.append(gamma_array)
 
     for num in range(numLineages):
@@ -59,7 +59,7 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                         sum_holder = []
 
                         for parent_state_j in range(numStates):
-                            T_fac = T[parent_state_j,child_state_k]
+                            T_fac = T[parent_state_j, child_state_k]
                             gamma_parent = gammas[num][parent_idx, parent_state_j]
                             beta_parent = beta_parent_child_func(numStates=numStates,
                                                                  lineage=lineage,
@@ -73,7 +73,7 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                         gamma_child_state_k = coeff * sum(sum_holder)
                         gammas[num][child_idx, child_state_k] = gamma_child_state_k
                         for state_k in range(numStates):
-                            assert gammas[num][0,state_k] == betas[num][0,state_k]
+                            assert gammas[num][0, state_k] == betas[num][0, state_k]
             curr_level += 1
     for num in range(numLineages):
         gammas_row_sum = np.sum(gammas[num], axis=1)
