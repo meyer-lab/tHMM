@@ -158,11 +158,11 @@ class tHMM:
                         if cell.deathObserved:
                             assert cell.deathObserved
                             temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tau, c=k_gomp_c, scale=k_gomp_s, deathObserved=True) # gompertz likelihood if death is observed
-                            assert not math.isnan(temp_g), "You have a Gompertz right-censored likelihood calculation for an observed death returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
+                            assert np.isfinite(temp_g), "You have a Gompertz right-censored likelihood calculation for an observed death returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
                         elif not cell.deathObserved:
                             assert not cell.deathObserved
                             temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tauFake, c=k_gomp_c, scale=k_gomp_s, deathObserved=False) # gompertz likelihood if death is unobserved
-                            assert not math.isnan(temp_g), "You have a Gompertz right-censored likelihood calculation for an unobserved death returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
+                            assert np.isfinite(temp_g), "You have a Gompertz right-censored likelihood calculation for an unobserved death returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
                         EL_array[current_cell_idx, state_k] = temp_g*temp_b
 
                     elif self.FOM == 'E':
@@ -173,7 +173,7 @@ class tHMM:
                             temp_beta = sp.expon.pdf(x=cell.tau, scale=k_expon_beta) # exponential likelihood
                         elif not cell.deathObserved:
                             temp_beta = sp.expon.pdf(x=cell.tauFake, scale=k_expon_beta) # exponential likelihood is the same in the cased of an unobserved death
-                        assert not math.isnan(temp_beta), "You have a Exponential likelihood calculation returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
+                        assert np.isfinite(temp_beta), "You have a Exponential likelihood calculation returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
                         # the right-censored and uncensored exponential pdfs are the same
                         EL_array[current_cell_idx, state_k] = temp_beta*temp_b
             EL.append(EL_array) # append the EL_array for each lineage
@@ -199,6 +199,6 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
     # the observation of the cell death has no bearing on the calculation of the second coefficient in the pdf
 
     result = firstCoeff*secondCoeff
-    assert not math.isnan(result), "Your Gompertz right-censored likelihood calculation is returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
+    assert np.isfinite(result), "Your Gompertz right-censored likelihood calculation is returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
 
     return result
