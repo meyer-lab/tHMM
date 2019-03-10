@@ -27,7 +27,7 @@ for cell in pop1:
         print("parent.trackID: " + str(cell.parent.trackID))
 '''
 print("length of pop found: " + str(len(pop1)))
-
+num_mult = 0
 true_num = data.shape[0] # the true number of cells
 print(true_num)
 num_IDs = np.zeros((true_num))
@@ -35,5 +35,9 @@ for ID in found_IDs:
     for ii in range(true_num):
         if ID == data[ii, 0]:
             num_IDs[ii] += 1
+            if num_IDs[ii] >= 2:
+                print("position", ii, "has multple matches")
+                print("cell ID:", data[ii, 0])
+                num_mult += 1
 
-print(num_IDs)
+print(num_mult)

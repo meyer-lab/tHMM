@@ -69,5 +69,6 @@ def find_row(data, cell):
         if ID == data[ii, 0]: # if the ID matches the first column of said row
             row = ii
             break
+
     assert row >= 0 # make sure the row was actually found
     return row
