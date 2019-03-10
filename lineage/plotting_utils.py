@@ -6,7 +6,7 @@ def make_colormap_graph(X, X_like, prob, state, scale=300):
     '''Takes in a list of cells, and then outputs a color_map list and a list of cell indices'''
 
     G = nx.Graph()
-    color_map = []
+    node_color_map = []
     node_size_map = []
 
     for cell in X:
@@ -22,9 +22,9 @@ def make_colormap_graph(X, X_like, prob, state, scale=300):
             plotter = state
 
         if plotter:
-            color_map.append('red')
+            node_color_map.append('red')
         else:
-            color_map.append('green')
+            node_color_map.append('green')
 
         if X_like is None and prob is not None and state is not None:
             print(prob[cell_idx])
