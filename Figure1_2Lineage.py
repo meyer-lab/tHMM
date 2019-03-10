@@ -12,20 +12,20 @@ from Matplot_gen import Matplot_gen
 
 ################ Number of cell in a single lineage
 
-T_MAS = 60#100
-T_2 = 60#81
+T_MAS = 130
+T_2 = 61
 times = range(1,2) 
-reps = 10
+reps = 20
 switchT = 25
 
 MASinitCells = [1]
-MASlocBern = [0.99999999999]
-MAScGom = [2]
-MASscaleGom = [20]
+MASlocBern = [0.8]
+MAScGom = [1.6]
+MASscaleGom = [40]
 initCells2 = [1]
-locBern2 = [0.8] #0.7
-cGom2 = [1.8] #1.5
-scaleGom2 = [25] #25
+locBern2 = [0.99]
+cGom2 = [1.6]
+scaleGom2 = [18]
 
 numStates = 2
 
@@ -54,7 +54,7 @@ for experimentTime in times: #a pop with num number of lineages
         print('Rep:', rep)       
         
         X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2) 
-        while len(newLineage) > 2000:
+        while len(newLineage) > 1500 or len(masterLineage) < 100 or (len(newLineage)-len(masterLineage)) < 100:
             X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
             
         deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X, numStates)

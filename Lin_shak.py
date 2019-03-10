@@ -49,7 +49,7 @@ def Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCel
     sublineage2[0].parent = master_cell
     newLineage = masterLineage + sublineage2
     
-        
+    #X = newLineage    
     X = remove_NaNs(newLineage)
     print(len(newLineage))
     return(X, masterLineage, newLineage)

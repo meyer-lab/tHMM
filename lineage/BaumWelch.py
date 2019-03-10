@@ -99,8 +99,8 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     count = 0
     while go: # exit the loop
 
-        if verbose:
-            print('\n iter: {}'.format(count))
+        #if verbose:
+            #print('\n iter: {}'.format(count))
         count += 1
 
         old_LL_list = new_LL_list
@@ -169,8 +169,8 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         # tolerance checking
         new_LL_list = calculate_log_likelihood(tHMMobj, NF)
 
-        if verbose:
-            print("Average Log-Likelihood across all lineages: {}".format(np.mean(new_LL_list)))
+        #if verbose:
+            #print("Average Log-Likelihood across all lineages: {}".format(np.mean(new_LL_list)))
 
         for lineage_iter in range(len(new_LL_list)):
             calculation = abs(new_LL_list[lineage_iter] - old_LL_list[lineage_iter])

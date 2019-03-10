@@ -16,9 +16,13 @@ from lineage.Lineage_utils import remove_NaNs, get_numLineages, init_Population
 from lineage.Lineage_utils import generatePopulationWithTime as gpt
 from lineage.CellNode import CellNode
 
-def Analyze(X, numStates):
-    tHMMobj = tHMM(X, numStates=numStates) # build the tHMM class with X
-    fit(tHMMobj, max_iter=200, verbose=False)
+def Analyze(X, numStates, keepBern=True):
+    run = True
+    while run == True:
+        tHMMobj = tHMM(X, numStates=numStates, keepBern=True) # build the tHMM class with X
+        fit(tHMMobj, max_iter=200, verbose=True)
+        if tHMMobj.paramlist[0]["E"][0,1] < 1000 and tHMMobj.paramlist[0]["E"][1,1] < 1000:
+            run = False
     deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
     all_states = Viterbi(tHMMobj, deltas, state_ptrs)

@@ -21,22 +21,22 @@ from Analyze import Analyze
 from Accuracy import Accuracy
 from Matplot_gen import Matplot_gen
 
-T_MAS = 60
-T_2 = 60
+T_MAS = 130
+T_2 = 61
 
-state1 = 1
+state1 = 2
 state2 = 4
 states = range(state1,state2+1) 
 reps = 1
 
 MASinitCells = [1]
-MASlocBern = [0.99999999999]
-MAScGom = [2]
-MASscaleGom = [30]
+MASlocBern = [0.8]
+MAScGom = [1.6]
+MASscaleGom = [40]
 initCells2 = [1]
-locBern2 = [0.7]
-cGom2 = [1.5]
-scaleGom2 = [25]
+locBern2 = [0.99]
+cGom2 = [1.6]
+scaleGom2 = [18]
 
 acc_h1 = [] #list of lists of lists
 cell_h1 = []
@@ -49,7 +49,9 @@ scaleGom_2_h1 = []
 #LL_h1 = []
 AIC_h1 = []
 
-X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
+X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2) 
+while len(newLineage) > 1000 or len(newLineage) < 600 or len(masterLineage) < 100 or (len(newLineage)-len(masterLineage)) < 100:
+        X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
 
 print(len(masterLineage), len(newLineage))
 
@@ -121,6 +123,8 @@ ax.errorbar(x, AIC_h1, fmt='o', c='b',marker="*",fillstyle='none')
 #ax.axhline(y=1, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b',)
 ax.set_title('AIC')
 ax.set_xlabel('Number of States')
+ax.set_ylabel('Cost function',rotation=90)
+
 #ax.locator_params(nbins=4)
 
 fig.suptitle('Akaike Information Criterion')

@@ -26,43 +26,34 @@ def Accuracy(tHMMobj, lin, numStates, masterLineage, newLineage, all_states):
         for state_k in range(numStates):
             if state_j != state_k:
                 T_non_diag[state_j] = T[state_j,state_k]
-            
-    if E[0,2] > E[1,2]:
+    if E[0,0] > E[1,0]:
         state_1 = 0
         state_0 = 1
-    elif E[1,2] > E[0,2]:
+    elif E[1,0] > E[0,0]:
         state_1 = 1
         state_0 = 0
-    
+        
     wrong = 0  
     
     trues = []
+    viterbi_est = []
     for cell in range(len(lineage)):
-        trues.append(lineage[cell].true_state)
-        if lineage[cell].true_state == 0:
-            if all_states[lin][cell] == state_0:
+        cell_state = lineage[cell].true_state
+        viterbi_state = all_states[lin][cell]
+        trues.append(cell_state)
+        viterbi_est.append(viterbi_state)
+        if cell_state == 0:
+            if viterbi_state == state_0:
                 pass
             else:
                 wrong += 1
-        elif lineage[cell].true_state == 1:
-            if all_states[lin][cell] == state_1:
+        elif cell_state == 1:
+            if viterbi_state == state_1:
                 pass
             else:
                 wrong += 1           
                         
     accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage    
-    
-    ''' for cell in range(len(lineage)):
-        if cell < len(masterLineage):
-            if all_states[lin][cell] == state_1:
-                pass
-            else:
-                wrong += 1
-        elif cell >= len(masterLineage) and cell < len(newLineage):
-            if all_states[lin][cell] == state_2:
-                pass
-            else:
-                wrong += 1           
-    accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage'''
-    
+    print('trues', trues)
+    print('viterbi',viterbi_est)
     return(T,E,pi,state_0,state_1,accuracy,lineage)
