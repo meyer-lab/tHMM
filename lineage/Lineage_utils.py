@@ -62,7 +62,7 @@ def remove_NaNs(X):
     return X
 
 def remove_singleton_lineages(X):
-    '''Removes lineages that are only a single root cell that does not divide'''
+    '''Removes lineages that are only a single root cell that does not divide or just dies'''
     ii = 0
     while ii in range(len(X)): # for each cell in X
         if X[ii].isRootParent(): # if the cell is a root parent
@@ -83,7 +83,7 @@ def get_numLineages(X):
         if cell.isRootParent():
             root_cell_holder.append(cell)
             root_cell_linID_holder.append(cell.linID) # append the linID of each cell
-    assert len(root_cell_holder) == len(root_cell_linID_holder)
+    assert len(root_cell_holder) == len(root_cell_linID_holder), "Something wrong with your unique number of lineages. Check the number of root cells and the number of lineages in your data."
     numLineages = len(root_cell_holder) # the number of lineages is the number of root cells
     return numLineages
 
@@ -99,7 +99,7 @@ def init_Population(X, numLineages):
         temp_lineage = [] # temporary list to hold the cells of a certain lineage with a particular linID
         for cell in X: # for each cell in the population
             if cell.get_root_cell() is root_cell_holder[lineage_num]: # if the cell's root cell is the root cell we're on
-                assert cell.linID == cell.get_root_cell().linID
+                assert cell.linID == cell.get_root_cell().linID, "Your root cells have a different lineage ID than the lineages they are associated with. Check the number of root cells and the number of lineages in your data."
                 temp_lineage.append(cell) # append the cell to that certain lineage
         if len(temp_lineage) > 1: # want to avoid lineages with <= 1 cell
             population.append(temp_lineage) # append the lineage to the Population holder
@@ -115,7 +115,6 @@ def bernoulliParameterEstimatorAnalytical(X):
     result = (sum(fate_holder)+1e-10)/ (len(fate_holder)+2e-10) # add up all the 1s and divide by the total length (finding the average)
 
     return result
-
 
 def exponentialAnalytical(X):
     '''Estimates the Exponential beta parameter for a given population using MLE analytically'''
@@ -186,7 +185,7 @@ def gompertzAnalytical(X):
 
         return error
 
-    result = [2., 50.] # dummy estimate
+    result = [2., 62.5] # dummy estimate
     if N != 0:
         #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
         res = root(error_b, x0=result[1])

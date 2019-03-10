@@ -9,8 +9,8 @@ from .Lineage_utils import bernoulliParameterEstimatorAnalytical, gompertzAnalyt
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
     '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
 
-    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx] # check the child-parent relationship
-    assert lineage[node_child_n_idx].isChild() # if the child-parent relationship is correct, then the child must
+    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx], "Something wrong with your parent-daughter linkage when trying to use the zeta-related functions... Check again that your lineage is constructed clearly." # check the child-parent relationship
+    assert lineage[node_child_n_idx].isChild(), "Something wrong with your parent-daughter linkage when trying to use the zeta-related functions... Check again that your lineage is constructed clearly." # if the child-parent relationship is correct, then the child must
     # either be the left daughter or the right daughter
 
     beta_child_state_k = beta_array[node_child_n_idx, state_k]
@@ -19,7 +19,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
     numStates = MSD_array.shape[1]
     also_numStates = gamma_array.shape[1]
     also_also_numStates = beta_array.shape[1]
-    assert numStates == also_numStates == also_also_numStates
+    assert numStates == also_numStates == also_also_numStates, "Your numStates (number of states) and the dimensions of your arrays are mistmatched! Please check your instantiation of the tHMM object."
     beta_parent_child_state_j = beta_parent_child_func(numStates=numStates,
                                                        lineage=lineage,
                                                        beta_array=beta_array,
