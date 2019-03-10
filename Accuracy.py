@@ -27,22 +27,25 @@ def Accuracy(tHMMobj, lin, numStates, masterLineage, newLineage, all_states):
             if state_j != state_k:
                 T_non_diag[state_j] = T[state_j,state_k]
             
-            
-    state_1 = np.argmax(pi)
-    state_2 = np.argmin(pi) 
+    if E[0,2] > E[1,2]:
+        state_1 = 0
+        state_0 = 1
+    elif E[1,2] > E[0,2]:
+        state_1 = 1
+        state_0 = 0
     
     wrong = 0  
     
     trues = []
     for cell in range(len(lineage)):
         trues.append(lineage[cell].true_state)
-        if lineage[cell].true_state == state_1:
-            if all_states[lin][cell] == state_1:
+        if lineage[cell].true_state == 0:
+            if all_states[lin][cell] == state_0:
                 pass
             else:
                 wrong += 1
-        elif lineage[cell].true_state ==state_2:
-            if all_states[lin][cell] == state_2:
+        elif lineage[cell].true_state == 1:
+            if all_states[lin][cell] == state_1:
                 pass
             else:
                 wrong += 1           
@@ -62,4 +65,4 @@ def Accuracy(tHMMobj, lin, numStates, masterLineage, newLineage, all_states):
                 wrong += 1           
     accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage'''
     
-    return(T,E,pi,state_1,state_2,accuracy,lineage)
+    return(T,E,pi,state_0,state_1,accuracy,lineage)
