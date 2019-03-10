@@ -106,14 +106,15 @@ def get_leaf_betas(tHMMobj, NF):
         for cell in lineage: # for each cell in the lineage
             if cell.isLeaf(): # if it is a leaf
                 leaf_cell_idx = lineage.index(cell) # get the index of the leaf
-                denom = NF_array[leaf_cell_idx] # Normalizing Factor (same regardless of state)
-                # P(x_n = x)
+
                 for state_k in range(numStates): # for each state
                     # see expression in docstring
                     numer1 = EL_array[leaf_cell_idx, state_k] # Emission Likelihood
                     # P(x_n = x | z_n = k)
                     numer2 = MSD_array[leaf_cell_idx, state_k] # Marginal State Distribution
                     # P(z_n = k)
+                    denom = NF_array[leaf_cell_idx] # Normalizing Factor (same regardless of state)
+                    # P(x_n = x)
                     beta_array[leaf_cell_idx, state_k] = numer1 * numer2 / denom
 
         betas.append(beta_array)
@@ -169,9 +170,10 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                 for state_j in range(numStates):
                     betas[num][node_parent_m_idx, state_j] = numer_holder[state_j] / NF[num][node_parent_m_idx]
             curr_gen -= 1
-    for num2 in range(numLineages):
-        betas_row_sum = np.sum(betas[num2], axis=1)
+    for num in range(numLineages):
+        betas_row_sum = np.sum(betas[num], axis=1)
         assert np.allclose(betas_row_sum, 1.)
+
 
 
 def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):

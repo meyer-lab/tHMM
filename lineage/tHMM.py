@@ -17,6 +17,7 @@ class tHMM:
         self.population = init_Population(self.X, self.numLineages) # arranges the population into a list of lineages (each lineage might have varying length)
         assert self.numLineages == len(self.population), "Something is wrong with the number of lineages in your population member variable for your tHMM class and the number of lineages member variable for your tHMM class. Check the number of unique root cells and the number of lineages in your data."
         self.paramlist = self.init_paramlist() # list that is numLineages long of parameters for each lineage tree in our population
+
         self.MSD = self.get_Marginal_State_Distributions() # full Marginal State Distribution holder
         self.EL = self.get_Emission_Likelihoods() # full Emission Likelihood holder
 
@@ -78,9 +79,8 @@ class tHMM:
             MSD_0_row_sum = np.sum(MSD[num][0])
             assert np.isclose(MSD_0_row_sum, 1.), "The Marginal State Distribution for your root cells, P(z_1 = k), for all states k in numStates, are not adding up to 1!"
 
-        for num2 in range(numLineages):
-            lineage = population[num2] # getting the lineage in the Population by lineage index
-            params = paramlist[num2] # getting the respective params by lineage index
+        for num in range(numLineages):
+            lineage = population[num] # getting the lineage in the Population by lineage index
             curr_level = 2
             max_level = max_gen(lineage)
             while curr_level <= max_level:

@@ -24,7 +24,7 @@ from Matplot_gen import Matplot_gen
 T_MAS = 130
 T_2 = 61
 
-state1 = 2
+state1 = 1
 state2 = 4
 states = range(state1,state2+1) 
 reps = 1
