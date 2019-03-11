@@ -1,6 +1,7 @@
 '''utility and helper functions for recursions and other needs in the tHMM class'''
 
 import numpy as np
+import itertools
 
 def max_gen(lineage):
     '''finds the max generation in a lineage'''
@@ -63,54 +64,62 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
 
     return result
 
-def printAssessment(tHMMobj):
-    for num in range(tHMMobj.numLineages):
-        print("\n")
-        print("Lineage Index: {}".format(num))
-        print("Initial Proabablities: ")
-        print(tHMMobj.paramlist[num]["pi"])
-        print("Transition State Matrix: ")
-        print(tHMMobj.paramlist[num]["T"])
-        print("Emission Parameters: ")
-        print(tHMMobj.paramlist[num]["E"])
+def printAssessment(tHMMobj, lin):
+    '''Prints the parameters.'''
+    print("\n")
+    print("Lineage Index: {}".format(lin))
+    print("Initial Proabablities: ")
+    print(tHMMobj.paramlist[lin]["pi"])
+    print("Transition State Matrix: ")
+    print(tHMMobj.paramlist[lin]["T"])
+    print("Emission Parameters: ")
+    print(tHMMobj.paramlist[lin]["E"])
         
-def getAccuracy(tHMMobj, lin, all_states):
-    lineage = tHMMobj.population[lin]
+def getAccuracy(tHMMobj, all_states, verbose=False):
+    '''Gets the accuracy for state assignment per lineage.'''
     numStates = tHMMobj.numStates
-    pi = tHMMobj.paramlist[lin]["pi"] 
-    T = tHMMobj.paramlist[lin]["T"]
-    E = tHMMobj.paramlist[lin]["E"] 
+    tHMMobj.Accuracy = []
+    tHMMobj.stateAssignment = []
     
-    #assign state 1 and state 2   
-    if E[0,0] > E[1,0]:
-        state_1 = 0
-        state_0 = 1
-    elif E[1,0] > E[0,0]:
-        state_1 = 1
-        state_0 = 0
+    for lin in tHMMobj.numLineages:
+        lineage = tHMMobj.population[lin]
+        pi = tHMMobj.paramlist[lin]["pi"] 
+        T = tHMMobj.paramlist[lin]["T"]
+        E = tHMMobj.paramlist[lin]["E"] 
         
-    wrong_counter = 0  
-    
-    trues = []
-    viterbi_est = []
-    for cell in range(len(lineage)):
-        cell_state = lineage[cell].true_state
-        viterbi_state = all_states[lin][cell]
-        trues.append(cell_state)
-        viterbi_est.append(viterbi_state)
+        true_state_holder = np.zeros((len(lineage)), dtype=int)
+        viterbi_est_holder = np.zeros((len(lineage)), dtype=int)
+        for ii, cell in enumerate(lineage):
+            true_state_holder[ii] = cell.true_state
+            viterbi_est_holder[ii] = all_states[lin][ii]
+            
+        permutation_of_states = list(itertools.permutations(range(numStates)))
+        temp_acc_holder = []
+        for possible_state_assignment in permutation_of_states:
+            wrong_counter = 0   
+            if cell.true_state == 0:
+                if all_states[lin][ii] == state_0:
+                    pass
+                 else:
+                    wrong_counter += 1
+
+            elif cell.true_state == 1:
+                if all_states[lin][ii] == state_1:
+                    pass
+                else:
+                    wrong_counter += 1           
+            accuracy = (len(lineage) - wrong)/len(lineage) 
+            temp_acc_holder.append(accuracy)
+            
+        idx_of_max_acc = np.arg_max(temp_acc_holder)
         
-        if cell_state == 0:
-            if viterbi_state == state_0:
-                pass
-            else:
-                wrong_counter += 1
-        elif cell_state == 1:
-            if viterbi_state == state_1:
-                pass
-            else:
-                wrong_counter += 1           
-                        
-    accuracy = (len(lineage) - wrong)/len(lineage) #must be fixed for more than 1 lineage   
-    print('trues', trues)
-    print('viterbi',viterbi_est)
+        tHMMobj.stateAssignment = 
+        tHMMobj.Accuracy.append(accuracy)
+        if verbose:
+            printAssessment(tHMMobj, lin)
+            print("True states: ")
+            print(true_state_holder)
+            print("Viterbi estimated states: ")
+            print(viterbi_est_holder)
+            
     return(T,E,pi,state_0,state_1,accuracy,lineage)

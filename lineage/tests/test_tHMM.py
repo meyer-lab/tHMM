@@ -483,9 +483,6 @@ class TestModel(unittest.TestCase):
         while len(LINEAGE) <= 0:
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
 
-        true_state_holder = np.zeros((len(LINEAGE)), dtype=int)
-        for ii, cell in enumerate(LINEAGE):
-            true_state_holder[ii] = cell.true_state
 
         X = LINEAGE
         tHMMobj = tHMM(X, numStates=numStates, FOM='G', keepBern=False) # build the tHMM class with X
