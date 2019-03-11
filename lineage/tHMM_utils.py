@@ -64,16 +64,22 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
 
     return result
 
-def printAssessment(tHMMobj, lin):
-    '''Prints the parameters.'''
-    print("\n")
-    print("Lineage Index: {}".format(lin))
-    print("Initial Proabablities: ")
-    print(tHMMobj.paramlist[lin]["pi"])
-    print("Transition State Matrix: ")
-    print(tHMMobj.paramlist[lin]["T"])
-    print("Emission Parameters: ")
-    print(tHMMobj.paramlist[lin]["E"])
+def getAIC(tHMMobj, LL):
+    numStates = tHMMobj.numStates
+    
+    number_of_parameters = 0
+    if tHMMobj.keepBern = True:
+        number_of_parameters += 1
+    if tHMMobj.FOM == 'G'
+        number_of_parameters += 2
+    elif tHMM.obj.FOM == 'E':
+        number_of_parameters += 1
+        
+    AIC_degrees_of_freedom = numStates**2 + numStates*number_of_parameters - 1
+    AIC_value = -2 * LL + 2*AIC_degrees_of_freedom
+    
+    return(AIC_value, numStates, AIC_degrees_of_freedom)
+    
         
 def getAccuracy(tHMMobj, all_states, verbose=False):
     '''Gets the accuracy for state assignment per lineage.'''
@@ -97,12 +103,13 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
             
         permutation_of_states = list(itertools.permutations(range(numStates)))
         temp_acc_holder = []
+        print(permutation_of_states)
         for possible_state_assignment in permutation_of_states:
             # gets a list of lists of permutations of state assignments
             print(possible_state_assignment)
             temp_all_states = all_states[lin].copy()
-            for state in range(numStates):
-                for ii, temp_state in enumerate(temp_all_states):
+            for ii, temp_state in enumerate(temp_all_states):
+                for state in range(numStates):
                     if temp_state == state:
                         temp_all_states[ii] = possible_state_assignment[state]
                     
@@ -117,8 +124,8 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
         
         tHMMobj.stateAssignment = permutation_of_states[idx_of_max_acc]
 
-        for state in range(numStates):
-            for ii,cell_viterbi_state in enumerate(viterbi_est_holder):
+        for ii,cell_viterbi_state in enumerate(viterbi_est_holder):
+            for state in range(numStates):
                 if cell_viterbi_state==state:
                     viterbi_est_holder[ii]= tHMMobj.stateAssignment[state]
 
@@ -128,9 +135,22 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
             printAssessment(tHMMobj, lin)
             print("True states: ")
             print(true_state_holder)
+            print("Viterbi estimated raw states (before state assignment switch): ")
+            print(all_states[lin])
             print("State assignment after analysis: ")
             print(tHMMobj.stateAssignment)
-            print("Viterbi estimated states (after state switch): ")
+            print("Viterbi estimated relative states (after state switch): ")
             print(viterbi_est_holder)
             print("Accuracy: ")
-            print(tHMMobj.Accuracy)
+            print(tHMMobj.Accuracy[lin])
+
+def printAssessment(tHMMobj, lin):
+    '''Prints the parameters.'''
+    print("\n")
+    print("Lineage Index: {}".format(lin))
+    print("Initial Proabablities: ")
+    print(tHMMobj.paramlist[lin]["pi"])
+    print("Transition State Matrix: ")
+    print(tHMMobj.paramlist[lin]["T"])
+    print("Emission Parameters: ")
+    print(tHMMobj.paramlist[lin]["E"])

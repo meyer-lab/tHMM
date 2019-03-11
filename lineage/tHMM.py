@@ -166,7 +166,7 @@ class tHMM:
 
                     elif self.FOM == 'E':
                         temp_b = 1
-                        if self.keepBern:
+                        if self.keepBern or not cell.isUnfinished():
                             temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
                         if cell.deathObserved:
                             temp_beta = sp.expon.pdf(x=cell.tau, scale=k_expon_beta) # exponential likelihood

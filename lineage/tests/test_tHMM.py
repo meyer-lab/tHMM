@@ -510,7 +510,6 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
-        assert False
 
     def test_Baum_Welch_4(self):
         ''' one state, no bernoulli likelihoods considered, exponential estimation'''
@@ -536,7 +535,6 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
-        assert False
 
     def test_Baum_Welch_5(self):
         '''two state, no bernoulli likelihoods considered, exponential estimation. creating a heterogeneous tree'''
