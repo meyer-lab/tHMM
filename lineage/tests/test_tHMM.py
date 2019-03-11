@@ -7,7 +7,7 @@ from ..DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
 from ..tHMM import tHMM
-from ..tHMM_utils import max_gen, get_gen, get_parents_for_level, print_Assessment
+from ..tHMM_utils import max_gen, get_gen, get_parents_for_level, getAccuracy
 from ..Lineage_utils import remove_NaNs, get_numLineages, init_Population, generatePopulationWithTime as gpt
 from ..CellNode import CellNode
 
@@ -447,23 +447,15 @@ class TestModel(unittest.TestCase):
         newLineage = remove_NaNs(newLineage)
         print(len(newLineage))
 
-        true_state_holder = np.zeros((len(newLineage)), dtype=int)
-        for ii, cell in enumerate(newLineage):
-            true_state_holder[ii] = cell.true_state
-
         X = remove_NaNs(newLineage)
         tHMMobj = tHMM(X, numStates=numStates, FOM='G') # build the tHMM class with X
         fit(tHMMobj, max_iter=500, verbose=True)
-        printAssessment(tHMMobj)
 
         deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        for num in range(tHMMobj.numLineages):
-            print(all_states[num])
-            print(true_state_holder)
-            print("Accuracy of state assignment: ")
-            print(1 - (sum(np.abs(np.subtract(all_states[num], true_state_holder)))/len(true_state_holder)))
+        getAccuracy(tHMMobj, all_states, verbose=True)
+        assert False
 
     def test_Baum_Welch_2(self):
         '''Creating a heterogeneous tree that is built by swithcing states of all cells at a SwitchT time point'''
@@ -483,19 +475,14 @@ class TestModel(unittest.TestCase):
         while len(LINEAGE) <= 0:
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
 
-
         X = LINEAGE
         tHMMobj = tHMM(X, numStates=numStates, FOM='G', keepBern=False) # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
-        printAssessment(tHMMobj)
         deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        for num in range(tHMMobj.numLineages):
-            print(all_states[num])
-            print(true_state_holder)
-            print("Accuracy of state assignment: ")
-            print(1 - (sum(np.abs(np.subtract(all_states[num], true_state_holder)))/len(true_state_holder)))
+        getAccuracy(tHMMobj, all_states, verbose=True)
+        assert False
 
     def test_Baum_Welch_3(self):
         '''one state, no bernoulli likelihoods considered, gompertz estimation'''
@@ -519,15 +506,11 @@ class TestModel(unittest.TestCase):
         X = LINEAGE
         tHMMobj = tHMM(X, numStates=numStates, FOM='G', keepBern=False) # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
-        printAssessment(tHMMobj)
         deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        for num in range(tHMMobj.numLineages):
-            print(all_states[num])
-            print(true_state_holder)
-            print("Accuracy of state assignment: ")
-            print(1 - (sum(np.abs(np.subtract(all_states[num], true_state_holder)))/len(true_state_holder)))
+        getAccuracy(tHMMobj, all_states, verbose=True)
+        assert False
 
     def test_Baum_Welch_4(self):
         ''' one state, no bernoulli likelihoods considered, exponential estimation'''
@@ -545,23 +528,15 @@ class TestModel(unittest.TestCase):
         while len(LINEAGE) <= 10:
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
 
-        true_state_holder = np.zeros((len(LINEAGE)), dtype=int)
-        for ii, cell in enumerate(LINEAGE):
-            true_state_holder[ii] = cell.true_state
-
         X = LINEAGE
         tHMMobj = tHMM(X, numStates=numStates, FOM='E', keepBern=False) # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
-        printAssessment(tHMMobj)
 
         deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        for num in range(tHMMobj.numLineages):
-            print(all_states[num])
-            print(true_state_holder)
-            print("Accuracy of state assignment: ")
-            print(1 - (sum(np.abs(np.subtract(all_states[num], true_state_holder)))/len(true_state_holder)))
+        getAccuracy(tHMMobj, all_states, verbose=True)
+        assert False
 
     def test_Baum_Welch_5(self):
         '''two state, no bernoulli likelihoods considered, exponential estimation. creating a heterogeneous tree'''
@@ -585,20 +560,12 @@ class TestModel(unittest.TestCase):
         while len(LINEAGE) <= 10:
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2)
 
-        true_state_holder = np.zeros((len(LINEAGE)), dtype=int)
-        for ii, cell in enumerate(LINEAGE):
-            true_state_holder[ii] = cell.true_state
-
         X = LINEAGE
         tHMMobj = tHMM(X, numStates=numStates, FOM='E', keepBern=False) # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
-        printAssessment(tHMMobj)
         
         deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        for num in range(tHMMobj.numLineages):
-            print(all_states[num])
-            print(true_state_holder)
-            print("Accuracy of state assignment: ")
-            print(1 - (sum(np.abs(np.subtract(all_states[num], true_state_holder)))/len(true_state_holder)))
+        getAccuracy(tHMMobj, all_states, verbose=True)
+        assert False

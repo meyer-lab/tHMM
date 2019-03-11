@@ -81,7 +81,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
     tHMMobj.Accuracy = []
     tHMMobj.stateAssignment = []
     
-    for lin in tHMMobj.numLineages:
+    for lin in range(tHMMobj.numLineages):
         lineage = tHMMobj.population[lin]
         pi = tHMMobj.paramlist[lin]["pi"] 
         T = tHMMobj.paramlist[lin]["T"]
@@ -89,6 +89,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
         
         true_state_holder = np.zeros((len(lineage)), dtype=int)
         viterbi_est_holder = np.zeros((len(lineage)), dtype=int)
+
         for ii, cell in enumerate(lineage):
             true_state_holder[ii] = cell.true_state
             viterbi_est_holder[ii] = all_states[lin][ii]
@@ -96,30 +97,37 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
         permutation_of_states = list(itertools.permutations(range(numStates)))
         temp_acc_holder = []
         for possible_state_assignment in permutation_of_states:
-            wrong_counter = 0   
-            if cell.true_state == 0:
-                if all_states[lin][ii] == state_0:
-                    pass
-                 else:
-                    wrong_counter += 1
-
-            elif cell.true_state == 1:
-                if all_states[lin][ii] == state_1:
-                    pass
-                else:
-                    wrong_counter += 1           
-            accuracy = (len(lineage) - wrong)/len(lineage) 
+            # gets a list of lists of permutations of state assignments
+            print(possible_state_assignment)
+            temp_all_states = all_states[lin]
+            for state in range(numStates):
+                for ii, temp_state in enumerate(temp_all_states):
+                    if temp_state == state:
+                        temp_all_states[ii] = possible_state_assignment[state]
+                    
+            common_state_counter = [true_state == temp_vit_state for (true_state,temp_vit_state) in zip(true_state_holder,temp_all_states)]
+            print(sum(common_state_counter))
+            accuracy = sum(common_state_counter)/len(lineage) # gets the accuracies per possible state assignment
+            print(accuracy)
             temp_acc_holder.append(accuracy)
             
-        idx_of_max_acc = np.arg_max(temp_acc_holder)
+        idx_of_max_acc = np.argmax(temp_acc_holder)
+        tHMMobj.Accuracy.append(temp_acc_holder[idx_of_max_acc])
         
-        tHMMobj.stateAssignment = 
-        tHMMobj.Accuracy.append(accuracy)
+        tHMMobj.stateAssignment = permutation_of_states[idx_of_max_acc]
+
+        for state in range(numStates):
+            for ii,cell_viterbi_state in enumerate(viterbi_est_holder):
+                if cell_viterbi_state==state:
+                    viterbi_est_holder[ii]= tHMMobj.stateAssignment[state]
+            
         if verbose:
             printAssessment(tHMMobj, lin)
             print("True states: ")
             print(true_state_holder)
-            print("Viterbi estimated states: ")
+            print("State assignment after analysis: ")
+            print(tHMMobj.stateAssignment)
+            print("Viterbi estimated states (after state switch): ")
             print(viterbi_est_holder)
-            
-    return(T,E,pi,state_0,state_1,accuracy,lineage)
+            print("Accuracy: ")
+            print(tHMMobj.Accuracy)
