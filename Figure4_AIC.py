@@ -16,13 +16,17 @@ from lineage.Lineage_utils import remove_NaNs, get_numLineages, init_Population
 from lineage.Lineage_utils import generatePopulationWithTime as gpt
 from lineage.CellNode import CellNode
 
-from Lin_shak import Lin_shak
+from Lin_adam import Lin_adam
+
 from Analyze import Analyze
 from Accuracy import Accuracy
 from Matplot_gen import Matplot_gen
 
 T_MAS = 130
 T_2 = 61
+switchT = 130
+experimentTime = 130+30
+lineage_num = [1]
 
 state1 = 1
 state2 = 4
@@ -49,11 +53,9 @@ scaleGom_2_h1 = []
 #LL_h1 = []
 AIC_h1 = []
 
-X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2) 
-while len(newLineage) > 1000 or len(newLineage) < 600 or len(masterLineage) < 100 or (len(newLineage)-len(masterLineage)) < 100:
-        X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
-
-print(len(masterLineage), len(newLineage))
+X,lin2 = Lin_adam(experimentTime, lineage_num, MASlocBern, MAScGom, MASscaleGom, switchT, locBern2, cGom2, scaleGom2) 
+while len(X) > 1000 or len(X) < 600 or (len(X)-len(lin2)) < 100 or (len(lin2)) < 100:
+        X,lin2 = Lin_adam(experimentTime, lineage_num, MASlocBern, MAScGom, MASscaleGom, switchT, locBern2, cGom2, scaleGom2)
 
 for numStates in states: #a pop with num number of lineages
     print('numstates', numStates)

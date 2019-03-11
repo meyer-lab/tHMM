@@ -136,7 +136,7 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
                 cell.setUnfinished() # reset cell to be unfinished and move to next cell
 
     # return the list at end
-    return lineage
+    return (lineage)
 
 def doublingTime(initCells, locBern, cGom, scaleGom, FOM='G', betaExp=None):
     ''' calculates the doubling time of a homogeneous cell population given the three parameters and an initial cell count. '''

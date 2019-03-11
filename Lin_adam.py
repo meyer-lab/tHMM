@@ -16,14 +16,22 @@ from lineage.Lineage_utils import remove_NaNs, get_numLineages, init_Population
 from lineage.Lineage_utils import generatePopulationWithTime as gpt
 from lineage.CellNode import CellNode
 
-def Lin_adam():
-    initCells = [lineage_num]
+def Lin_adam(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2):
 
     LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2)
     while len(LINEAGE) == 0:
         LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2)
         
     X = remove_NaNs(LINEAGE)
-    print(len(X))
     
-    return(X)
+    master = []
+    lin2 = []
+    for indx in range(len(X)):
+        cell = X[indx]
+        if cell.true_state == 0:
+            master.append(cell)
+        elif cell.true_state == 1:
+            lin2.append(cell)
+    print('mas',len(master),'lin2',len(lin2))
+    
+    return(X,lin2)
