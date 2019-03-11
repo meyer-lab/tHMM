@@ -80,6 +80,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
     numStates = tHMMobj.numStates
     tHMMobj.Accuracy = []
     tHMMobj.stateAssignment = []
+    tHMMobj.states = []
     
     for lin in range(tHMMobj.numLineages):
         lineage = tHMMobj.population[lin]
@@ -99,7 +100,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
         for possible_state_assignment in permutation_of_states:
             # gets a list of lists of permutations of state assignments
             print(possible_state_assignment)
-            temp_all_states = all_states[lin]
+            temp_all_states = all_states[lin].copy()
             for state in range(numStates):
                 for ii, temp_state in enumerate(temp_all_states):
                     if temp_state == state:
@@ -120,6 +121,8 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
             for ii,cell_viterbi_state in enumerate(viterbi_est_holder):
                 if cell_viterbi_state==state:
                     viterbi_est_holder[ii]= tHMMobj.stateAssignment[state]
+
+        tHMMobj.states.append(viterbi_est_holder)
             
         if verbose:
             printAssessment(tHMMobj, lin)
