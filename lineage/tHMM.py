@@ -152,8 +152,8 @@ class tHMM:
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
                     if self.FOM == 'G':
                         temp_b = 1
-                        if self.keepBern:
-                            temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
+                        if self.keepBern and not cell.isUnfinished(): # only calculate real bernoulli likelihood for finished cells
+                            temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)
                         if cell.deathObserved:
                             assert cell.deathObserved
                             temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tau, c=k_gomp_c, scale=k_gomp_s, deathObserved=True) # gompertz likelihood if death is observed

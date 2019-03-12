@@ -45,6 +45,8 @@ def process(data, deltaT):
             temp1, temp2 = cell.divide(endT=data[row, 2]*deltaT, trackID_d1=data[row, 5], trackID_d2=data[row, 6])
             pop.append(temp1)
             pop.append(temp2)
+        if data[row, 3] == -1: # if the cell neither divides or dies
+            cell.tauFake = (data[row, 2] * deltaT) - cell.startT # the right-censored time
 
     return pop
 
