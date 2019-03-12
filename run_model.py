@@ -4,6 +4,7 @@ from lineage.parse_csv import load_data, process
 from lineage.tHMM import tHMM
 from lineage.BaumWelch import fit
 from lineage.Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
+from lineage.plotting_utils import run_plotting
 
 data = load_data(sys.argv[1]) # i.e. 'data/2019_02_21_true.csv'
 print("true length of pop:", data.shape[0])
@@ -12,6 +13,10 @@ print("found pop length:", len(X))
 
 numStates = 2
 tHMMobj = tHMM(X, numStates=numStates, FOM='G') # build the tHMM class with X
+print("number of lineages =", len(tHMMobj.population))
+for ii, lin in enumerate(tHMMobj.population):
+    run_plotting(lin, "filename.png")
+
 tHMMobj, NF, betas, gammas = fit(tHMMobj, max_iter=100, verbose=False)
 
 deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix

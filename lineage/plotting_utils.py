@@ -2,6 +2,8 @@
 
 import networkx as nx
 import math
+from matplotlib import pyplot as plt
+from networkx.drawing.nx_agraph import write_dot, graphviz_layout
 
 def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
     '''
@@ -64,3 +66,23 @@ def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
                 G.add_edge(parent_cell_idx, cell_idx, weight=cell.startT)
 
     return(G, node_color_map, node_size_map)
+
+def run_plotting(lin, filename):
+    G, cmap, _ = make_colormap_graph(lin)
+    M = G.number_of_edges()
+    edge_weights = [d for (u,v,d) in G.edges.data('weight')]
+    #pos prog options: neato, dot, twopi, circo (don't use), fdp (don't use), nop (don't use), wc (don't use), acyclic (don't use), gvpr (don't use), gvcolor (don't use), ccomps (don't use), sccmap (don't use), tred (don't use), sfdp (don't use), unflatten (don't use)
+    pos = graphviz_layout(G, prog='twopi', root=0)
+    plt.figure(figsize=(35,31))
+    plt.figaspect(1)
+    nodes = nx.draw_networkx_nodes(G, pos, node_size=50, node_color=cmap, alpha=0.65)
+    edges = nx.draw_networkx_edges(G, pos, node_size=100, edge_color=edge_weights, edge_cmap=plt.cm.viridis_r, width=2)
+
+    ax = plt.gca()
+    ax.set_axis_off()
+    cb = plt.colorbar(edges)
+    cb.set_label(label=r'Experiment Time [hrs]')
+    plt.title('Simulated Lineage')
+    plt.rcParams.update({'font.size': 45})
+    plt.savefig(filename)
+    plt.show()
