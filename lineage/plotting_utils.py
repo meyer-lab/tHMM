@@ -5,7 +5,7 @@ import math
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
-from networkx.drawing.nx_agraph import write_dot, graphviz_layout
+from networkx.drawing.nx_agraph import graphviz_layout
 
 def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
     '''
