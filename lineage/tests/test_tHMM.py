@@ -455,7 +455,6 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
-        assert False
 
     def test_Baum_Welch_2(self):
         '''Creating a heterogeneous tree that is built by swithcing states of all cells at a SwitchT time point'''
