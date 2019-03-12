@@ -8,7 +8,6 @@ def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
     Takes in a list of cells, and then outputs a color_map list and a list of cell indices.
     Example Usage:
     
-    getAccuracy(tHMMobj, all_states, verbose=True)
     import matplotlib as mpl
 
     G, cmap, _ = make_colormap_graph(X)
