@@ -107,7 +107,7 @@ def getAIC(tHMMobj, LL):
             number_of_parameters += 1
         if tHMMobj.FOM == 'G':
             number_of_parameters += 2
-        elif tHMM.obj.FOM == 'E':
+        elif tHMMobj.FOM == 'E':
             number_of_parameters += 1
 
         AIC_degrees_of_freedom = numStates**2 + numStates*number_of_parameters - 1
