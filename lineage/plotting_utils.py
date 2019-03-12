@@ -93,11 +93,15 @@ def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
 
     return(G, node_color_map, node_size_map)
 
-def run_plotting(lin, filename):
-    G, cmap, _ = make_colormap_graph(lin)
+def plot_experiments(lin, filename):
+    """ Creates lineage plots for all the experimental data. """
+    state_ID = []
+    for cell in lin:
+        state_ID.append(cell.true_state) # append a 0 or 1 based on the cell's true state
+    G, cmap, _ = make_colormap_graph(lin, state=state_ID)
     M = G.number_of_edges()
     edge_weights = [d for (u,v,d) in G.edges.data('weight')]
-    #pos prog options: neato, dot, twopi, circo (don't use), fdp (don't use), nop (don't use), wc (don't use), acyclic (don't use), gvpr (don't use), gvcolor (don't use), ccomps (don't use), sccmap (don't use), tred (don't use), sfdp (don't use), unflatten (don't use)
+
     pos = graphviz_layout(G, prog='twopi', root=0)
     plt.figure(figsize=(7,6))
     plt.figaspect(1)
@@ -108,7 +112,7 @@ def run_plotting(lin, filename):
     ax.set_axis_off()
     cb = plt.colorbar(edges)
     cb.set_label(label=r'Experiment Time [hrs]')
-    plt.title('Simulated Lineage')
+    plt.title('Experimental Lineage')
     plt.rcParams.update({'font.size': 12})
     plt.savefig(filename)
     plt.show()
