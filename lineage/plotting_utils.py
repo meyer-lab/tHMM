@@ -97,8 +97,8 @@ def plot_experiments(lin, filename):
     """ Creates lineage plots for all the experimental data. """
     state_ID = []
     for cell in lin:
-        state_ID.append(cell.true_state) # append a 0 or 1 based on the cell's true state
-    G, cmap, _ = make_colormap_graph(lin, state=state_ID)
+        state_ID.append(cell.true_state) # append a 0 (PC9 - green) or 1 (H1299 - red) based on the cell's true state
+    G, cmap, _ = make_colormap_graph(lin, X_like=state_ID)
     M = G.number_of_edges()
     edge_weights = [d for (u,v,d) in G.edges.data('weight')]
 
