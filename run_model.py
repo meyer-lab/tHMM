@@ -13,7 +13,7 @@ print("found pop length:", len(X))
 
 numStates = 2
 tHMMobj = tHMM(X, numStates=numStates, FOM='G') # build the tHMM class with X
-fdir = './Figures/'
+fdir = './Experiment_Figs/'
 
 print("number of lineages =", len(tHMMobj.population))
 for ii, lin in enumerate(tHMMobj.population):
