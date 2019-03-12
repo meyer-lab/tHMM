@@ -114,7 +114,8 @@ def getAIC(tHMMobj, LL):
         AIC_degrees_of_freedom_holder.append(AIC_degrees_of_freedom)
         AIC_value = -2 * LL[num] + 2*AIC_degrees_of_freedom
         AIC_value_holder.append(AIC_value)
-    AIC_value_holder_rel_0 = AIC_value_holder-min(AIC_value_holder)
+        
+    AIC_value_holder_rel_0 = AIC_value_holder-min(AIC_value_holder) # this line is to make it so the minimum value is 0
     return(AIC_value_holder_rel_0, [numStates]*len(AIC_value_holder), AIC_degrees_of_freedom_holder)
     
         
@@ -140,10 +141,8 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
             
         permutation_of_states = list(itertools.permutations(range(numStates)))
         temp_acc_holder = []
-        print(permutation_of_states)
         for possible_state_assignment in permutation_of_states:
             # gets a list of lists of permutations of state assignments
-            print(possible_state_assignment)
             temp_all_states = all_states[lin].copy()
             for ii, temp_state in enumerate(temp_all_states):
                 for state in range(numStates):
@@ -151,9 +150,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
                         temp_all_states[ii] = possible_state_assignment[state]
                     
             common_state_counter = [true_state == temp_vit_state for (true_state,temp_vit_state) in zip(true_state_holder,temp_all_states)]
-            print(sum(common_state_counter))
             accuracy = sum(common_state_counter)/len(lineage) # gets the accuracies per possible state assignment
-            print(accuracy)
             temp_acc_holder.append(accuracy)
             
         idx_of_max_acc = np.argmax(temp_acc_holder)
