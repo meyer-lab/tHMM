@@ -104,14 +104,15 @@ def plot_experiments(lin, filename):
 
     pos = graphviz_layout(G, prog='twopi', root=0)
     plt.figure(figsize=(7,6))
-    plt.figaspect(1)
-    nodes = nx.draw_networkx_nodes(G, pos, node_size=50, node_color=cmap, alpha=0.65)
-    edges = nx.draw_networkx_edges(G, pos, node_size=100, edge_color=edge_weights, edge_cmap=plt.cm.viridis_r, width=2)
+    plt.figaspect(1) # maintains that the figure is 1:1 in terms of height to width ratio
+    node_size = 100
+    nodes = nx.draw_networkx_nodes(G, pos, node_size=node_size, node_color=cmap, alpha=0.65)
+    edges = nx.draw_networkx_edges(G, pos, node_size=node_size, edge_color=edge_weights, edge_cmap=plt.cm.inferno_r, width=2)
 
     ax = plt.gca()
     ax.set_axis_off()
     cb = plt.colorbar(edges)
-    cb.set_label(label=r'Experiment Time [hrs]')
+    cb.set_label(label=r'Experiment Time [hrs]', labelpad=10)
     plt.title('Experimental Lineage')
     plt.rcParams.update({'font.size': 12})
     plt.savefig(filename)
