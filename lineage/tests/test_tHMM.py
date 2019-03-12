@@ -482,7 +482,6 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
-        assert False
 
     def test_Baum_Welch_3(self):
         '''one state, no bernoulli likelihoods considered, gompertz estimation'''
@@ -498,10 +497,6 @@ class TestModel(unittest.TestCase):
 
         while len(LINEAGE) <= 10:
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G')
-
-        true_state_holder = np.zeros((len(LINEAGE)), dtype=int)
-        for ii, cell in enumerate(LINEAGE):
-            true_state_holder[ii] = cell.true_state
 
         X = LINEAGE
         tHMMobj = tHMM(X, numStates=numStates, FOM='G', keepBern=False) # build the tHMM class with X
@@ -566,4 +561,3 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
-        assert False

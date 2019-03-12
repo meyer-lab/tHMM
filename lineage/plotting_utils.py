@@ -7,25 +7,50 @@ def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
     '''
     Takes in a list of cells, and then outputs a color_map list and a list of cell indices.
     Example Usage:
+    
+    getAccuracy(tHMMobj, all_states, verbose=True)
+    import matplotlib as mpl
 
     G, cmap, _ = make_colormap_graph(X)
     M = G.number_of_edges()
     edge_weights = [d for (u,v,d) in G.edges.data('weight')]
     #pos prog options: neato, dot, twopi, circo (don't use), fdp (don't use), nop (don't use), wc (don't use), acyclic (don't use), gvpr (don't use), gvcolor (don't use), ccomps (don't use), sccmap (don't use), tred (don't use), sfdp (don't use), unflatten (don't use)
     pos = graphviz_layout(G, prog='twopi', root=0)
-    plt.figure(figsize=(35,31))
+    plt.figure(figsize=(40,31))
     plt.figaspect(1)
-    nodes = nx.draw_networkx_nodes(G, pos, node_size=50, node_color=cmap, alpha=0.65)
-    edges = nx.draw_networkx_edges(G, pos, node_size=100, edge_color=edge_weights, edge_cmap=plt.cm.viridis_r, width=2)
+    node_size = 100
+    nodes = nx.draw_networkx_nodes(G, pos, node_size=node_size, node_color=cmap, alpha=1)
+    edges = nx.draw_networkx_edges(G, pos, node_size=node_size, edge_color=edge_weights, edge_cmap=plt.cm.inferno_r, width=2)
 
     ax = plt.gca()
     ax.set_axis_off()
     cb = plt.colorbar(edges)
-    cb.set_label(label=r'Experiment Time [hrs]')
-    plt.title('Simulated Lineage')
-    plt.rcParams.update({'font.size': 45})
+    cb.set_label(label=r'Experiment Time [hrs]', labelpad=45)
+    plt.title('Simulated Heterogeneous (by Breadth) Lineage')
+    plt.rcParams.update({'font.size': 64})
     plt.show()
     
+    # plotting the fit
+    
+    G, cmap, _ = make_colormap_graph(X, tHMMobj.states[0]) # note additional argument
+    M = G.number_of_edges()
+    edge_weights = [d for (u,v,d) in G.edges.data('weight')]
+    #pos prog options: neato, dot, twopi, circo (don't use), fdp (don't use), nop (don't use), wc (don't use), acyclic (don't use), gvpr (don't use), gvcolor (don't use), ccomps (don't use), sccmap (don't use), tred (don't use), sfdp (don't use), unflatten (don't use)
+    pos = graphviz_layout(G, prog='twopi', root=0)
+    plt.figure(figsize=(40,31))
+    plt.figaspect(1)
+    node_size = 100
+    nodes = nx.draw_networkx_nodes(G, pos, node_size=node_size, node_color=cmap, alpha=1)
+    edges = nx.draw_networkx_edges(G, pos, node_size=node_size, edge_color=edge_weights, edge_cmap=plt.cm.inferno_r, width=2)
+
+    ax = plt.gca()
+    ax.set_axis_off()
+    cb = plt.colorbar(edges)
+    cb.set_label(label=r'Experiment Time [hrs]', labelpad=45)
+    plt.title('Estimated Fit (Breadth)')
+    plt.rcParams.update({'font.size': 64})
+    plt.show()
+
     '''
 
     G = nx.Graph()

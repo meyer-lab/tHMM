@@ -56,7 +56,7 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
     else:
         firstCoeff = 1. # this calculation is raised to the power of delta if the death is unobserved (right-censored) (delta_i = 0)
 
-    secondCoeff = np.exp((-1*a/b)*((np.exp(b*tau_or_tauFake))-1))
+    secondCoeff = np.exp((-1*a/b)*(np.expm1(b*tau_or_tauFake)))
     # the observation of the cell death has no bearing on the calculation of the second coefficient in the pdf
 
     result = firstCoeff*secondCoeff
@@ -65,20 +65,57 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
     return result
 
 def getAIC(tHMMobj, LL):
-    numStates = tHMMobj.numStates
-    
-    number_of_parameters = 0
-    if tHMMobj.keepBern = True:
-        number_of_parameters += 1
-    if tHMMobj.FOM == 'G'
-        number_of_parameters += 2
-    elif tHMM.obj.FOM == 'E':
-        number_of_parameters += 1
+    '''
+        Gets the AIC values.
         
-    AIC_degrees_of_freedom = numStates**2 + numStates*number_of_parameters - 1
-    AIC_value = -2 * LL + 2*AIC_degrees_of_freedom
-    
-    return(AIC_value, numStates, AIC_degrees_of_freedom)
+        Example Usage:
+        
+        from matplotlib.ticker import MaxNLocator
+        
+        for numState in range(3):
+            tHMMobj = tHMM(X, numStates=numState+2, FOM='G') # build the tHMM class with X
+            tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
+            AIC_value, numStates, deg = getAIC(tHMMobj, LL)
+
+        fig = plt.figure(figsize=(10,10))
+        ax1 = fig.add_subplot(111)
+        ax1.scatter(x1val, yval, marker='*', c='b', s=500, label='One state data/model')
+        ax1.xaxis.set_major_locator(MaxNLocator(integer=True))
+        ax1.grid(True, linestyle='--')
+        ax1.set_xlabel('Number of States')
+        ax1.set_ylabel('AIC Cost')
+        title = ax1.set_title('Akaike Information Criterion')
+        title.set_y(1.1)
+        fig.subplots_adjust(top=1.3)
+
+        ax2 = ax1.twiny()
+        ax2.set_xticks([1]+ax1.get_xticks())
+        ax2.set_xbound(ax1.get_xbound())
+        ax2.set_xticklabels(x2val)
+        ax2.set_xlabel('Number of parameters')
+
+        ax1.legend()
+        plt.rcParams.update({'font.size': 28})
+        plt.show()
+    '''
+    numStates = tHMMobj.numStates
+    AIC_value_holder = []
+    AIC_degrees_of_freedom_holder = []
+    for num in range(tHMMobj.numLineages):
+        number_of_parameters = 0
+        if tHMMobj.keepBern:
+            number_of_parameters += 1
+        if tHMMobj.FOM == 'G':
+            number_of_parameters += 2
+        elif tHMM.obj.FOM == 'E':
+            number_of_parameters += 1
+
+        AIC_degrees_of_freedom = numStates**2 + numStates*number_of_parameters - 1
+        AIC_degrees_of_freedom_holder.append(AIC_degrees_of_freedom)
+        AIC_value = -2 * LL[num] + 2*AIC_degrees_of_freedom
+        AIC_value_holder.append(AIC_value)
+    AIC_value_holder_rel_0 = AIC_value_holder-min(AIC_value_holder)
+    return(AIC_value_holder_rel_0, [numStates]*len(AIC_value_holder), AIC_degrees_of_freedom_holder)
     
         
 def getAccuracy(tHMMobj, all_states, verbose=False):
