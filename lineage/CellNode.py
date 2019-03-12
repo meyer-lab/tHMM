@@ -21,6 +21,7 @@ class CellNode:
         self.parent = parent # the parent of the cell, returns a CellNode object (except at the root node)
         self.trackID = trackID # ID (integer) of the cell used during image tracking
         self.true_state = true_state # indicates whether cell is PC9 (0) or H1299 (1)
+        self.deathObserved = False # marks whether the cell reached the true end of its lifetime
 
     def isParent(self):
         """ Return true if the cell has at least one daughter. """
@@ -63,12 +64,14 @@ class CellNode:
         self.fate = False   # no division
         self.endT = endT    # mark endT
         self.calcTau()      # calculate Tau when cell dies
+        self.deathObserved = True # this cell has truly died
 
     def divide(self, endT, trackID_d1=None, trackID_d2=None):
         """ Cell life ends through division. The two optional trackID arguments represents the trackIDs given to the two daughter cells. """
         self.endT = endT
         self.fate = True    # division
         self.calcTau()      # calculate Tau when cell dies
+        self.deathObserved = True # this cell has truly divided
 
         if self.isRootParent():
             self.left = CellNode(gen=self.gen+1, trackID=trackID_d1, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
@@ -117,7 +120,6 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
             cell.endT = cell.startT + cell.tau
             if cell.endT < experimentTime: # determine fate only if endT is within range
                 # assign cell fate
-                cell.deathObserved = True
                 if switchT is not None and cell.startT > switchT: # when the cells should abide by the second set of parameters
                     cell.fate = sp.bernoulli.rvs(bern2)
                 else: # use first set of parameters for non-heterogeneous lineages or before the switch time
@@ -132,7 +134,6 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
                     cell.die(cell.endT)
             else: # if the endT is past the experimentTime
                 cell.tauFake = experimentTime-cell.startT
-                cell.deathObserved = False
                 cell.setUnfinished() # reset cell to be unfinished and move to next cell
 
     # return the list at end
