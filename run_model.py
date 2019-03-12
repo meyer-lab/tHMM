@@ -8,14 +8,15 @@ from lineage.plotting_utils import run_plotting
 
 data = load_data(sys.argv[1]) # i.e. 'data/2019_02_21_true.csv'
 print("true length of pop:", data.shape[0])
-X = process(data, 10.0) # create a population of cells given the data and the imaging frequency
+X = process(data, 1/6) # create a population of cells given the data and the imaging frequency
 print("found pop length:", len(X))
 
 numStates = 2
 tHMMobj = tHMM(X, numStates=numStates, FOM='G') # build the tHMM class with X
+fdir = './Figures/'
 print("number of lineages =", len(tHMMobj.population))
 for ii, lin in enumerate(tHMMobj.population):
-    run_plotting(lin, "filename.png")
+    run_plotting(lin, fdir+"lineage"+str(ii+1)+".png")
 
 tHMMobj, NF, betas, gammas = fit(tHMMobj, max_iter=100, verbose=False)
 

@@ -75,7 +75,7 @@ def run_plotting(lin, filename):
     edge_weights = [d for (u,v,d) in G.edges.data('weight')]
     #pos prog options: neato, dot, twopi, circo (don't use), fdp (don't use), nop (don't use), wc (don't use), acyclic (don't use), gvpr (don't use), gvcolor (don't use), ccomps (don't use), sccmap (don't use), tred (don't use), sfdp (don't use), unflatten (don't use)
     pos = graphviz_layout(G, prog='twopi', root=0)
-    plt.figure(figsize=(35,31))
+    plt.figure(figsize=(7,6))
     plt.figaspect(1)
     nodes = nx.draw_networkx_nodes(G, pos, node_size=50, node_color=cmap, alpha=0.65)
     edges = nx.draw_networkx_edges(G, pos, node_size=100, edge_color=edge_weights, edge_cmap=plt.cm.viridis_r, width=2)
@@ -85,6 +85,6 @@ def run_plotting(lin, filename):
     cb = plt.colorbar(edges)
     cb.set_label(label=r'Experiment Time [hrs]')
     plt.title('Simulated Lineage')
-    plt.rcParams.update({'font.size': 45})
+    plt.rcParams.update({'font.size': 12})
     plt.savefig(filename)
     plt.show()
