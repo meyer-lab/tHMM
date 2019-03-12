@@ -3,7 +3,7 @@
 import numpy as np
 import scipy.stats as sp
 from .Lineage_utils import get_numLineages, init_Population
-from .tHMM_utils import max_gen, get_gen
+from .tHMM_utils import max_gen, get_gen, right_censored_Gomp_pdf
 
 class tHMM:
     """ Main tHMM class. """
@@ -166,7 +166,7 @@ class tHMM:
 
                     elif self.FOM == 'E':
                         temp_b = 1
-                        if self.keepBern:
+                        if self.keepBern and not cell.isUnfinished():
                             temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
                         if cell.deathObserved:
                             temp_beta = sp.expon.pdf(x=cell.tau, scale=k_expon_beta) # exponential likelihood
@@ -177,27 +177,3 @@ class tHMM:
                         EL_array[current_cell_idx, state_k] = temp_beta*temp_b
             EL.append(EL_array) # append the EL_array for each lineage
         return EL
-
-def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
-    '''
-    Gives you the likelihood of a right-censored Gompertz distribution.
-    See Pg. 14 of The Gompertz distribution and Maximum Likelihood Estimation of its parameters - a revision
-    by Adam Lenart
-    November 28, 2011
-    '''
-    b = 1. / scale
-    a = c * b
-
-    firstCoeff = a * np.exp(b*tau_or_tauFake)
-    if deathObserved:
-        pass # this calculation stays as is if the death is observed (delta_i = 1)
-    else:
-        firstCoeff = 1. # this calculation is raised to the power of delta if the death is unobserved (right-censored) (delta_i = 0)
-
-    secondCoeff = np.exp((-1*a/b)*((np.exp(b*tau_or_tauFake))-1))
-    # the observation of the cell death has no bearing on the calculation of the second coefficient in the pdf
-
-    result = firstCoeff*secondCoeff
-    assert np.isfinite(result), "Your Gompertz right-censored likelihood calculation is returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
-
-    return result

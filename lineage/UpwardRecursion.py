@@ -1,6 +1,5 @@
 '''This file contains the methods that completes the downward recursion and evaulates the beta values.'''
 
-import math
 import numpy as np
 from .tHMM_utils import max_gen, get_gen, get_parents_for_level, get_daughters
 
