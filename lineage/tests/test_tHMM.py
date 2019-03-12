@@ -409,7 +409,7 @@ class TestModel(unittest.TestCase):
         MASscaleGom = [75]
         masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
         masterLineage = remove_NaNs(masterLineage)
-        while len(masterLineage) <= 0:
+        while len(masterLineage) <= 5:
             masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
             masterLineage = remove_NaNs(masterLineage)
         print(len(masterLineage))
@@ -422,7 +422,7 @@ class TestModel(unittest.TestCase):
         scaleGom2 = [50]
         sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
         sublineage2 = remove_NaNs(sublineage2)
-        while len(sublineage2) <= 0:
+        while len(sublineage2) <= 5:
             sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
             sublineage2 = remove_NaNs(sublineage2)
         print(len(sublineage2))
@@ -471,7 +471,7 @@ class TestModel(unittest.TestCase):
         scaleG2 = [50]
 
         LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
-        while len(LINEAGE) <= 0:
+        while len(LINEAGE) <= 5:
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
 
         X = LINEAGE
