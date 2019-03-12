@@ -128,9 +128,6 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
     
     for lin in range(tHMMobj.numLineages):
         lineage = tHMMobj.population[lin]
-        pi = tHMMobj.paramlist[lin]["pi"] 
-        T = tHMMobj.paramlist[lin]["T"]
-        E = tHMMobj.paramlist[lin]["E"] 
         
         true_state_holder = np.zeros((len(lineage)), dtype=int)
         viterbi_est_holder = np.zeros((len(lineage)), dtype=int)
