@@ -99,14 +99,14 @@ def plot_experiments(lin, filename):
     for cell in lin:
         state_ID.append(cell.true_state) # append a 0 (PC9 - green) or 1 (H1299 - red) based on the cell's true state
     G, cmap, _ = make_colormap_graph(lin, X_like=state_ID)
-    M = G.number_of_edges()
+    #M = G.number_of_edges()
     edge_weights = [d for (u,v,d) in G.edges.data('weight')]
 
     pos = graphviz_layout(G, prog='twopi', root=0)
     plt.figure(figsize=(7,6))
     plt.figaspect(1) # maintains that the figure is 1:1 in terms of height to width ratio
     node_size = 100
-    nodes = nx.draw_networkx_nodes(G, pos, node_size=node_size, node_color=cmap, alpha=0.65)
+    nx.draw_networkx_nodes(G, pos, node_size=node_size, node_color=cmap, alpha=0.65)
     edges = nx.draw_networkx_edges(G, pos, node_size=node_size, edge_color=edge_weights, edge_cmap=plt.cm.inferno_r, width=2)
 
     ax = plt.gca()
