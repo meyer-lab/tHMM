@@ -1,6 +1,8 @@
 ''' Plotting utilities for lineages. Requires matplotlib, networkx, pygraphviz, and dot.'''
 
 import networkx as nx
+from networkx.drawing.nx_agraph import write_dot, graphviz_layout
+import matplotlib.pyplot as plt
 import math
 
 def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
