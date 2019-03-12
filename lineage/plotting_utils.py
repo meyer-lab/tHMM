@@ -117,32 +117,3 @@ def plot_experiments(lin, filename):
     plt.savefig(filename)
     plt.show()
 
-def plot_population(pop, filename):
-    """ Plots a population of cells (each lineage is a subplot) for all the experimental data. """
-    fig, ax = plt.subplots(nrows=2, ncols=5)
-    #plt.figure(figsize=(7,6))
-    #plt.figaspect(1)
-    for ii, lin in enumerate(pop):
-        state_ID = []
-        for cell in lin:
-            state_ID.append(cell.true_state) # append a 0 (PC9 - green) or 1 (H1299 - red) based on the cell's true state
-        G, cmap, _ = make_colormap_graph(lin, X_like=state_ID)
-        M = G.number_of_edges()
-        edge_weights = [d for (u,v,d) in G.edges.data('weight')]
-
-        pos = graphviz_layout(G, prog='twopi', root=0)
-        nodes = nx.draw_networkx_nodes(G, pos, node_size=50, node_color=cmap, alpha=0.65)
-        edges = nx.draw_networkx_edges(G, pos, node_size=100, edge_color=edge_weights, edge_cmap=plt.cm.viridis_r, width=2)
-        print("ii//5", ii//5)
-        print("ii/2", int(ii/2))
-        print(ii)
-
-        ax[ii//5, int(ii/2)] = plt.gca()
-        ax[ii//5, int(ii/2)].set_axis_off()
-
-    cb = fig.colorbar(edges)
-    cb.set_label(label=r'Experiment Time [hrs]')
-    fig.set_title('Experimental Lineage')
-    plt.rcParams.update({'font.size': 12})
-    plt.savefig(filename)
-    plt.show()

@@ -16,9 +16,6 @@ tHMMobj = tHMM(X, numStates=numStates, FOM='G') # build the tHMM class with X
 fdir = './Figures/'
 
 print("number of lineages =", len(tHMMobj.population))
-
-plot_population(tHMMobj.population, fdir+"exp_pop.png")
-"""
 for ii, lin in enumerate(tHMMobj.population):
     plot_experiments(lin, fdir+"lineage"+str(ii+1)+".png")
 
@@ -28,4 +25,4 @@ deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
 get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
 all_states = Viterbi(tHMMobj, deltas, state_ptrs)
 print(all_states)
-"""
+
