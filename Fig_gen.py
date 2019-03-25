@@ -13,9 +13,9 @@ from .lineage.tHMM_utils.py import getAccuracy
 
 '''Generates 4 types of figures: Lineage Length, Number of Lineages in a Popuation, KL Divergence effects, and AIC Calculation'''
 
-def Lineage_Length(T_MAS = 130, T_2 = 61, reps = 20, switchT = 25, MASinitCells = [1], MASlocBern = [0.8], MAScGom = [1.6], MASscaleGom = [40], initCells2 = [1], locBern2 = [0.99], cGom2 = [1.6], scaleGom2 = [18], numStates = 2, max_lin_length, min_lin_length)
+def Lineage_Length(T_MAS = 130, T_2 = 61, reps = 20, switchT = 25, MASinitCells = [1], MASlocBern = [0.8], MAScGom = [1.6], MASscaleGom = [40], initCells2 = [1], locBern2 = [0.99], cGom2 = [1.6], scaleGom2 = [18], numStates = 2, max_lin_length, min_lin_length):
 
-'''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
+    '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
 
     acc_h1 = [] #list of lists of lists
     cell_h1 = []
@@ -72,8 +72,11 @@ def Lineage_Length(T_MAS = 130, T_2 = 61, reps = 20, switchT = 25, MASinitCells 
         scaleGom_2_h1.extend(scaleGom_2_h2)
     x=cell_h1
     print(acc_h1)
-    Matplot_gen(x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2, xlabel = 'Number of Cells', title = 'Cells in a Lineage', save_name = 'Figure1.png')
+    Matplot_gen(x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2, xlabel = 'Number of Cells', title = 'Cells in a Lineage', save_name = 'Lineage_Length_Figure.png')
+    data = np.array([x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2])
+    
+    return(data)
 
-    a = np.array([x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2])
-    #a = np.vstack(x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2)
-    np.savetxt("Lineage_Length_Simulated_Data.csv", a, delimiter=',', header="x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2", comments="", fmt='%s')
+def Lineages_per_Population_Figure():
+    '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of lineages in a population are varied'''
+    
