@@ -30,4 +30,8 @@ def Analyze(X, numStates, keepBern=True):
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
     LL = calculate_log_likelihood(tHMMobj, NF)
+    lineage = tHMMobj.population[lin]
+    T = tHMMobj.paramlist[lin]["T"]
+    E = tHMMobj.paramlist[lin]["E"]
+    pi = tHMMobj.paramlist[lin]["pi"] 
     return(deltas, state_ptrs, all_states, tHMMobj, NF, LL)

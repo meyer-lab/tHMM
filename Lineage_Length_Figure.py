@@ -7,10 +7,11 @@ from matplotlib.font_manager import FontProperties
 
 from Lin_shak import Lin_shak
 from Analyze import Analyze
-from Accuracy import Accuracy
 from Matplot_gen import Matplot_gen
 
-################ Number of cell in a single lineage
+from .lineage.tHMM_utils.py import getAccuracy
+
+################ Number of cells in a single lineage
 
 T_MAS = 130
 T_2 = 61
@@ -113,4 +114,4 @@ Matplot_gen(x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_
 
 a = np.array([x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2])
 #a = np.vstack(x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2)
-np.savetxt("foo.csv", a, delimiter=',', header="x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2", comments="", fmt='%s')
+np.savetxt("figure simulated data.csv", a, delimiter=',', header="x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2", comments="", fmt='%s')
