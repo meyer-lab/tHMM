@@ -1,7 +1,7 @@
+'''Generates 4 types of figures: Lineage Length, Number of Lineages in a Popuation, KL Divergence effects, and AIC Calculation'''
+
 import unittest
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from matplotlib.font_manager import FontProperties
 
@@ -11,7 +11,6 @@ from Matplot_gen import Matplot_gen
 
 from .lineage.tHMM_utils.py import getAccuracy
 
-'''Generates 4 types of figures: Lineage Length, Number of Lineages in a Popuation, KL Divergence effects, and AIC Calculation'''
 
 def Lineage_Length(T_MAS = 130, T_2 = 61, reps = 20, switchT = 25, MASinitCells = [1], MASlocBern = [0.8], MAScGom = [1.6], MASscaleGom = [40], initCells2 = [1], locBern2 = [0.99], cGom2 = [1.6], scaleGom2 = [18], numStates = 2, max_lin_length = 1500, min_lin_length = 100):
 
@@ -77,9 +76,10 @@ def Lineage_Length(T_MAS = 130, T_2 = 61, reps = 20, switchT = 25, MASinitCells 
     
     return(data)
 
-def Lineages_per_Population_Figure(lineage_start = 1, lineage_end = 2, lineages = range(lineage_start, lineage_end + 1), reps = 1, numStates = 2, T_MAS = 75, T_2 = 85, MASinitCells = [1], MASlocBern = [0.99999999999], MAScGom = [2], MASscaleGom = [30], initCells2 = [1], locBern2 = [0.7], cGom2 = [1.5], scaleGom2 = [25]):
+def Lineages_per_Population_Figure(lineage_start = 1, lineage_end = 2, reps = 1, numStates = 2, T_MAS = 75, T_2 = 85, MASinitCells = [1], MASlocBern = [0.99999999999], MAScGom = [2], MASscaleGom = [30], initCells2 = [1], locBern2 = [0.7], cGom2 = [1.5], scaleGom2 = [25]):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of lineages in a population are varied'''
     
+    lineages = range(lineage_start, lineage_end + 1)
     acc_h1 = [] #list of lists of lists
     cell_h1 = []
     bern_MAS_h1 = []
