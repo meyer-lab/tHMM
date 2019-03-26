@@ -77,6 +77,93 @@ def Lineage_Length(T_MAS = 130, T_2 = 61, reps = 20, switchT = 25, MASinitCells 
     
     return(data)
 
-def Lineages_per_Population_Figure():
+def Lineages_per_Population_Figure(lineage_start = 1, lineage_end = 2, lineages = range(lineage_start, lineage_end + 1), reps = 1, numStates = 2, T_MAS = 75, T_2 = 85, MASinitCells = [1], MASlocBern = [0.99999999999], MAScGom = [2], MASscaleGom = [30], initCells2 = [1], locBern2 = [0.7], cGom2 = [1.5], scaleGom2 = [25]):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of lineages in a population are varied'''
     
+    acc_h1 = [] #list of lists of lists
+    cell_h1 = []
+    bern_MAS_h1 = []
+    bern_2_h1 = []
+    cGom_MAS_h1 = []
+    cGom_2_h1 = []
+    scaleGom_MAS_h1 = []
+    scaleGom_2_h1 = []
+    lineage_h1 = []
+
+    for lineage_num in lineages: #a pop with num number of lineages
+        acc_h2 = []
+        cell_h2 = []
+        bern_h2 = []
+        bern_MAS_h2 = []
+        bern_2_h2 = []
+        cGom_MAS_h2 = []
+        cGom_2_h2 = []
+        scaleGom_MAS_h2 = []
+        scaleGom_2_h2 = []
+
+        for rep in range(reps):
+            print('Rep:', rep)
+            X1 = []
+            
+            for num in range(lineage_num):
+                X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
+                X1.extend(newLineage)
+
+            X = remove_NaNs(X1)
+            print(len(X))
+            deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X, numStates)
+            acc_h3 = []
+            cell_h3 = []
+            bern_h3 = []
+            bern_MAS_h3 = []
+            bern_2_h3 = []
+            cGom_MAS_h3 = []
+            cGom_2_h3 = []
+            scaleGom_MAS_h3 = []
+            scaleGom_2_h3 = []        
+
+            for lin in range(tHMMobj.numLineages):
+                getAccuracy(tHMMobj, all_states, verbose=False)
+                accuracy = tHMM.Accuracy[lin]
+                acc_h3.append(accuracy)
+                cell_h3.append(len(lineage))
+                print('h3',cell_h3)
+                bern_MAS_h3.append(E[state_1,0])
+                print('M',E[state_1,0])
+                bern_2_h3.append(E[state_2,0])
+                print('2',E[state_2,0])
+                cGom_MAS_h3.append(E[state_1,1])
+                cGom_2_h3.append(E[state_2,1])
+                scaleGom_MAS_h3.append(E[state_1,2])
+                scaleGom_2_h3.append(E[state_2,2])
+
+            acc_h2.extend(acc_h3)
+            cell_h2.extend(cell_h3)
+            print('h2', cell_h2)
+            bern_MAS_h2.extend(bern_MAS_h3)
+            bern_2_h2.extend(bern_2_h3)
+            cGom_MAS_h2.extend(cGom_MAS_h3)
+            cGom_2_h2.extend(cGom_2_h3)
+            scaleGom_MAS_h2.extend(scaleGom_MAS_h3)
+            scaleGom_2_h2.extend(scaleGom_2_h3)
+
+        print('h2 acc', acc_h2)
+        acc_h1.append(np.mean(acc_h2))
+        print('accuracy', acc_h1)
+        cell_h1.extend(cell_h2)
+        print('h1',cell_h1)
+        bern_MAS_h1.append(np.mean(bern_MAS_h2))
+        bern_2_h1.append(np.mean(bern_2_h2))
+        cGom_MAS_h1.append(np.mean(cGom_MAS_h2))
+        cGom_2_h1.append(np.mean(cGom_2_h2))
+        scaleGom_MAS_h1.append(np.mean(scaleGom_MAS_h2))
+        scaleGom_2_h1.append(np.mean(scaleGom_2_h2))
+        lineage_h1.append(lineage_num)
+
+    x=lineage_h1
+    Matplot_gen(x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,
+                    cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2, xlabel = 'Number of Lineages', title = 'Lineages in a Population', save_name = 'Figure2.png')
+    #data = np.array([x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2])
+    #how should we output the data for each figure function?
+
+def KL_Divergence()
