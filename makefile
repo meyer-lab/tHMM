@@ -1,5 +1,6 @@
 SHELL := /bin/bash
 fdir = ./manuscript/figures
+tdir = ./manuscript/templates
 pan_common = -F pandoc-crossref -F pandoc-citeproc --filter=$(tdir)/figure-filter.py -f markdown ./manuscript/text/*.md
 
 .PHONY: clean test testprofile testcover docs
