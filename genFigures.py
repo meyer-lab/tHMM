@@ -4,7 +4,7 @@ import sys
 import matplotlib
 matplotlib.use('AGG')
 
-fdir = './Manuscript/Figures/'
+fdir = './manuscript/figures/'
 
 
 if __name__ == '__main__':
