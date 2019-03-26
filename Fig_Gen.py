@@ -13,7 +13,7 @@ from .lineage.tHMM_utils.py import getAccuracy
 
 '''Generates 4 types of figures: Lineage Length, Number of Lineages in a Popuation, KL Divergence effects, and AIC Calculation'''
 
-def Lineage_Length(T_MAS = 130, T_2 = 61, reps = 20, switchT = 25, MASinitCells = [1], MASlocBern = [0.8], MAScGom = [1.6], MASscaleGom = [40], initCells2 = [1], locBern2 = [0.99], cGom2 = [1.6], scaleGom2 = [18], numStates = 2, max_lin_length, min_lin_length):
+def Lineage_Length(T_MAS = 130, T_2 = 61, reps = 20, switchT = 25, MASinitCells = [1], MASlocBern = [0.8], MAScGom = [1.6], MASscaleGom = [40], initCells2 = [1], locBern2 = [0.99], cGom2 = [1.6], scaleGom2 = [18], numStates = 2, max_lin_length = 1500, min_lin_length = 100):
 
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
 
@@ -166,4 +166,74 @@ def Lineages_per_Population_Figure(lineage_start = 1, lineage_end = 2, lineages 
     #data = np.array([x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2])
     #how should we output the data for each figure function?
 
-def KL_Divergence()
+
+def AIC_Figure(T_MAS = 130, T_2 = 61, state1 = 1, state2 = 4, reps = 1, MASinitCells = [1], MASlocBern = [0.8], MAScGom = [1.6], MASscaleGom = [40], initCells2 = [1], locBern2 = [0.99], cGom2 = [1.6], scaleGom2 = [18], max_lin_length = 1500, min_lin_length = 100):
+    '''Calculates and plots an AIC for all inputted states'''
+    
+    states = range(state1,state2+1)
+    acc_h1 = [] #list of lists of lists
+    cell_h1 = []
+    bern_MAS_h1 = []
+    bern_2_h1 = []
+    cGom_MAS_h1 = []
+    cGom_2_h1 = []
+    scaleGom_MAS_h1 = []
+    scaleGom_2_h1 = []
+    AIC_h1 = []
+    X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
+    
+    while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage)-len(masterLineage)) < min_lin_length:
+            X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
+            
+    print(len(masterLineage), len(newLineage))
+
+    for numStates in states: #a pop with num number of lineages
+        print('numstates', numStates)
+        acc_h2 = []
+        cell_h2 = []
+        bern_h2 = []
+        bern_MAS_h2 = []
+        bern_2_h2 = []
+        cGom_MAS_h2 = []
+        cGom_2_h2 = []
+        scaleGom_MAS_h2 = []
+        scaleGom_2_h2 = []
+
+        for rep in range(reps):
+            numStates = numStates
+            deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X, numStates)
+            AIC_value_holder_rel_0, param_num_cost, AIC_degrees_of_freedom_holder = getAIC(tHMMobj, LL)
+            acc_h3 = []
+            cell_h3 = []
+            bern_h3 = []
+            bern_MAS_h3 = []
+            bern_2_h3 = []
+            cGom_MAS_h3 = []
+            cGom_2_h3 = []
+            scaleGom_MAS_h3 = []
+            scaleGom_2_h3 = []
+
+            for lin in range(tHMMobj.numLineages):
+                cell_h3.append(len(lineage))
+                print('h3',cell_h3)
+
+            acc_h2.extend(acc_h3)
+            cell_h2.extend(cell_h3)
+            print('h2', cell_h2)
+
+        acc_h1.extend(acc_h2)
+        cell_h1.extend(cell_h2)
+        print('h1',cell_h1)
+
+        AIC_h2 = []
+        AIC_h1.extend(AIC_h2)
+
+    x=states
+    fig, axs = plt.subplots(nrows=1, ncols=1, sharex=True)
+    ax = axs
+    ax.errorbar(x, AIC_h1, fmt='o', c='b',marker="*",fillstyle='none')
+    ax.set_title('AIC')
+    ax.set_xlabel('Number of States')
+    ax.set_ylabel('Cost function',rotation=90)
+    fig.suptitle('Akaike Information Criterion')
+    plt.savefig('TEST_AIC_classification.png')
