@@ -18,6 +18,8 @@ pipeline {
     stage('Report') {
       steps {
         junit allowEmptyResults: true, testResults: 'junit.xml'
+        archiveArtifacts artifacts: 'Manuscript/Manuscript.pdf', onlyIfSuccessful: true
+        archiveArtifacts artifacts: 'Manuscript/Figures/*.pdf', onlyIfSuccessful: true
         cobertura coberturaReportFile: 'coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
         step([$class:'WarningsPublisher', parserConfigurations: [[parserName:'PYLint', pattern:'pylint.log']],
           unstableTotalAll:'100', usePreviousBuildAsReference:true])
