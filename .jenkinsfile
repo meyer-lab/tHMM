@@ -12,6 +12,7 @@ pipeline {
         stage('Test')  { steps { sh 'make testcover' } }
         stage('Lint')  { steps { sh '(pylint --rcfile=.pylintrc lineage > pylint.log || echo "pylint exited with $?")' } }
         stage('Doc')   { steps { sh 'make docs' } }
+        stage('Build')   { steps { sh 'make manuscript/manuscript.pdf' } }
       }
     }
     stage('Report') {
