@@ -1,9 +1,8 @@
 '''Calls the tHMM functions and outputs the parameters needed to generate the Figures'''
 
-import unittest
 import numpy as np
 
-from lineage.BaumWelch import fit
+from ..BaumWelch import fit
 from lineage.Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from lineage.UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
 from lineage.tHMM import tHMM
