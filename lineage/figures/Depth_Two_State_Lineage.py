@@ -1,13 +1,12 @@
 '''Generates a lineage with depth model ie one new cell state lineage is added to another state homogeneous lineage'''
 
-import unittest
 import numpy as np
 
 from lineage.Lineage_utils import remove_NaNs
 from lineage.Lineage_utils import generatePopulationWithTime as gpt
 from lineage.CellNode import CellNode
 
-def Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2):
+def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2):
     'Shakthis lineage where a second state is appended to first'
     MASexperimentTime = T_MAS
     masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)

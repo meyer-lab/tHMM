@@ -1,6 +1,5 @@
 '''Generates a plot with 4 subplots for accuracy estimation and estimation of a bernoulli and 2 gompertz parameters. Note: this is only used for the Lineage Length and Lineage Number figures, the AIC only requires one figure of accuracy so it has its own maplotlib code  in the Fig_Gen function.'''
 
-import unittest
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -15,7 +14,7 @@ def Matplot_gen(x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,c
     ax = axs[0,0]
     ax.set_ylim(0,110)
     l1 = ax.errorbar(x, acc_h1, fmt='o', c='b',marker="*",fillstyle='none', label = 'Accuracy')
-    ax.axhline(y=100, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b',)
+    ax.axhline(y=100, linestyle = (0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b',) #linestyle is dashdotdotted
     ax.set_ylabel('Accuracy (%)',rotation=90)
     vals = ax.get_yticks()
 

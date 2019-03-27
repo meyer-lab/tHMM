@@ -1,18 +1,17 @@
-'''Generates 4 types of figures: Lineage Length, Number of Lineages in a Popuation, KL Divergence effects, and AIC Calculation'''
+'''Generates 4 types of figures: Lineage Length, Number of Lineages in a Popuation, KL Divergence effects, and AIC Calculation. Currently, only the Depth_Two_State_Lineage is used.'''
 
-import unittest
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.font_manager import FontProperties
 
-from Lin_shak import Lin_shak
+from Depth_Two_State_Lineage import Depth_Two_State_Lineage
 from Analyze import Analyze
 from Matplot_gen import Matplot_gen
 
 from .lineage.tHMM_utils.py import getAccuracy
 
 
-def Lineage_Length(T_MAS = 130, T_2 = 61, reps = 20, switchT = 25, MASinitCells = [1], MASlocBern = [0.8], MAScGom = [1.6], MASscaleGom = [40], initCells2 = [1], locBern2 = [0.99], cGom2 = [1.6], scaleGom2 = [18], numStates = 2, max_lin_length = 1500, min_lin_length = 100):
+def Lineage_Length(T_MAS=130, T_2=61, reps=20, switchT=25, MASinitCells=[1], MASlocBern=[0.8], MAScGom=[1.6], MASscaleGom=[40], initCells2=[1], locBern2=[0.99], cGom2=[1.6], scaleGom2=[18], numStates=2, max_lin_length=1500, min_lin_length=100, verbose=False):
 
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
 
@@ -27,9 +26,9 @@ def Lineage_Length(T_MAS = 130, T_2 = 61, reps = 20, switchT = 25, MASinitCells 
 
     for rep in range(reps):
         print('Rep:', rep)       
-        X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2) 
+        X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2) 
         while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage)-len(masterLineage)) < min_lin_length:
-            X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
+            X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
         deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X, numStates)
         acc_h2 = []
         cell_h2 = []
@@ -56,11 +55,12 @@ def Lineage_Length(T_MAS = 130, T_2 = 61, reps = 20, switchT = 25, MASinitCells 
             cGom_2_h2.append(E[state_2,1])
             scaleGom_MAS_h2.append(E[state_1,2])
             scaleGom_2_h2.append(E[state_2,2])
-            print('pi',pi)
-            print('T',T)
-            print('E',E)
-            print('accuracy:',accuracy)
-            print('MAS length, 2nd lin length:',len(masterLineage),len(newLineage)-len(masterLineage))
+            if verbose = True:
+                print('pi',pi)
+                print('T',T)
+                print('E',E)
+                print('accuracy:',accuracy)
+                print('MAS length, 2nd lin length:',len(masterLineage),len(newLineage)-len(masterLineage))
         acc_h1.extend(acc_h2)
         cell_h1.extend(cell_h2)
         bern_MAS_h1.extend(bern_MAS_h2)
@@ -76,7 +76,7 @@ def Lineage_Length(T_MAS = 130, T_2 = 61, reps = 20, switchT = 25, MASinitCells 
     
     return(data)
 
-def Lineages_per_Population_Figure(lineage_start = 1, lineage_end = 2, reps = 1, numStates = 2, T_MAS = 75, T_2 = 85, MASinitCells = [1], MASlocBern = [0.99999999999], MAScGom = [2], MASscaleGom = [30], initCells2 = [1], locBern2 = [0.7], cGom2 = [1.5], scaleGom2 = [25]):
+def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, reps=1, numStates=2, T_MAS=75, T_2=85, MASinitCells=[1], MASlocBern=[0.99999999999], MAScGom=[2], MASscaleGom=[30], initCells2=[1], locBern2=[0.7], cGom2=[1.5], scaleGom2=[25]):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of lineages in a population are varied'''
     
     lineages = range(lineage_start, lineage_end + 1)
@@ -106,7 +106,7 @@ def Lineages_per_Population_Figure(lineage_start = 1, lineage_end = 2, reps = 1,
             X1 = []
             
             for num in range(lineage_num):
-                X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
+                X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
                 X1.extend(newLineage)
 
             X = remove_NaNs(X1)
@@ -167,7 +167,7 @@ def Lineages_per_Population_Figure(lineage_start = 1, lineage_end = 2, reps = 1,
     #how should we output the data for each figure function?
 
 
-def AIC_Figure(T_MAS = 130, T_2 = 61, state1 = 1, state2 = 4, reps = 1, MASinitCells = [1], MASlocBern = [0.8], MAScGom = [1.6], MASscaleGom = [40], initCells2 = [1], locBern2 = [0.99], cGom2 = [1.6], scaleGom2 = [18], max_lin_length = 1500, min_lin_length = 100):
+def AIC_Figure(T_MAS=130, T_2=61, state1=1, state2=4, reps=1, MASinitCells=[1], MASlocBern=[0.8], MAScGom=[1.6], MASscaleGom=[40], initCells2=[1], locBern2=[0.99], cGom2=[1.6], scaleGom2=[18], max_lin_length=1500, min_lin_length=100):
     '''Calculates and plots an AIC for all inputted states'''
     
     states = range(state1,state2+1)
@@ -180,10 +180,10 @@ def AIC_Figure(T_MAS = 130, T_2 = 61, state1 = 1, state2 = 4, reps = 1, MASinitC
     scaleGom_MAS_h1 = []
     scaleGom_2_h1 = []
     AIC_h1 = []
-    X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
+    X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
     
     while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage)-len(masterLineage)) < min_lin_length:
-            X, masterLineage, newLineage = Lin_shak(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
+            X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
             
     print(len(masterLineage), len(newLineage))
 

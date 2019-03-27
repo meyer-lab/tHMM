@@ -2,10 +2,10 @@
 
 import numpy as np
 
-from ..BaumWelch import fit
-from lineage.Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
-from lineage.UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
-from lineage.tHMM import tHMM
+from BaumWelch import fit
+from Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
+from UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
+from tHMM import tHMM
 
 def Analyze(X, numStates, keepBern=True):
     run = True
@@ -20,9 +20,5 @@ def Analyze(X, numStates, keepBern=True):
     NF = get_leaf_Normalizing_Factors(tHMMobj)
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
-    LL = calculate_log_likelihood(tHMMobj, NF)
-    lineage = tHMMobj.population[lin]
-    T = tHMMobj.paramlist[lin]["T"]
-    E = tHMMobj.paramlist[lin]["E"]
-    pi = tHMMobj.paramlist[lin]["pi"] 
+    LL = calculate_log_likelihood(tHMMobj, NF) 
     return(deltas, state_ptrs, all_states, tHMMobj, NF, LL)
