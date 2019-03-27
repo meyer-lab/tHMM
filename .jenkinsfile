@@ -12,33 +12,21 @@ pipeline {
         stage('Test')  { steps { sh 'make testcover' } }
         stage('Lint')  { steps { sh '(pylint --rcfile=.pylintrc lineage > pylint.log || echo "pylint exited with $?")' } }
         stage('Doc')   { steps { sh 'make docs' } }
+        stage('Build')   { steps { sh 'make manuscript/manuscript.pdf -j 8' } }
       }
     }
     stage('Report') {
       steps {
         junit allowEmptyResults: true, testResults: 'junit.xml'
-        step([
-          $class: 'CoberturaPublisher',
-          autoUpdateHealth: true,
-          autoUpdateStability: true,
-          coberturaReportFile: 'coverage.xml',
-          failNoReports: true,
-          failUnhealthy: true,
-          failUnstable: true,
-          sourceEncoding: 'UTF_8',
-          zoomCoverageChart: true])
-        step([$class:'TasksPublisher', canComputeNew:false, defaultEncoding:'', excludePattern:'',
-          healthy:'', high:'TODO,FIXME,XXX', low:'', normal:'CITE', pattern:'**/*.py, **/*.md **/*.cpp **/*.hpp', unHealthy:''])
+        archiveArtifacts artifacts: 'manuscript/manuscript.pdf', onlyIfSuccessful: true
+        archiveArtifacts artifacts: 'manuscript/figures/*.pdf', onlyIfSuccessful: true
+        cobertura coberturaReportFile: 'coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
         step([$class:'WarningsPublisher', parserConfigurations: [[parserName:'PYLint', pattern:'pylint.log']],
           unstableTotalAll:'100', usePreviousBuildAsReference:true])
         publishHTML([
-          allowMissing: false,
-          alwaysLinkToLastBuild: false,
-          keepAll: true,
-          reportDir: 'doc/build',
-          reportFiles: 'index.html',
-          reportName: 'Sphinx Documentation',
-          reportTitles: ''])
+          allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true,
+          reportDir: 'doc/build', reportFiles: 'index.html',
+          reportName: 'Sphinx Documentation', reportTitles: ''])
       }
     }
   }
