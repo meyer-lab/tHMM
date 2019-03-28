@@ -2,16 +2,15 @@
 
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib.font_manager import FontProperties
 
-from Depth_Two_State_Lineage import Depth_Two_State_Lineage
-from Analyze import Analyze
-from Matplot_gen import Matplot_gen
+from Depth_Two_State_Lineage.py import Depth_Two_State_Lineage
+from Analyze.py import Analyze
+from Matplot_gen.py import Matplot_gen
 
-from .lineage.tHMM_utils.py import getAccuracy
+from ..tHMM_utils.py import getAccuracy
 
 
-def Lineage_Length(T_MAS=130, T_2=61, reps=20, switchT=25, MASinitCells=[1], MASlocBern=[0.8], MAScGom=[1.6], MASscaleGom=[40], initCells2=[1], locBern2=[0.99], cGom2=[1.6], scaleGom2=[18], numStates=2, max_lin_length=1500, min_lin_length=100, verbose=False):
+def Lineage_Length(T_MAS=130, T_2=61, reps=20, MASinitCells=[1], MASlocBern=[0.8], MAScGom=[1.6], MASscaleGom=[40], initCells2=[1], locBern2=[0.99], cGom2=[1.6], scaleGom2=[18], numStates=2, max_lin_length=1500, min_lin_length=100, verbose=False):
 
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
 
@@ -25,23 +24,22 @@ def Lineage_Length(T_MAS=130, T_2=61, reps=20, switchT=25, MASinitCells=[1], MAS
     scaleGom_2_h1 = []
 
     for rep in range(reps):
-        print('Rep:', rep)       
-        X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2) 
+        print('Rep:', rep)  
+        X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
         while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage)-len(masterLineage)) < min_lin_length:
             X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
-        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X, numStates)
+        all_states, tHMMobj = Analyze(X, numStates)
         acc_h2 = []
         cell_h2 = []
-        bern_h2 = []
         bern_MAS_h2 = []
         bern_2_h2 = []
         cGom_MAS_h2 = []
         cGom_2_h2 = []
         scaleGom_MAS_h2 = []
-        scaleGom_2_h2 = []         
+        scaleGom_2_h2 = []
         for lin in range(tHMMobj.numLineages):
             getAccuracy(tHMMobj, all_states, verbose=False)
-            accuracy = tHMM.Accuracy[lin]
+            accuracy = tHMMobj.Accuracy[lin]
             lineage = tHMMobj.population[lin]
             T = tHMMobj.paramlist[lin]["T"]
             E = tHMMobj.paramlist[lin]["E"]
