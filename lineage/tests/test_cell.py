@@ -135,6 +135,7 @@ class TestModel(unittest.TestCase):
         # test populations w.r.t. time
         c_out, scale_out = gompertzAnalytical(self.pop1)
         self.assertTrue(0 <= c_out <= 5) # +/- 3.0 of true cGom
+        self.assertTrue(45 <= scale_out <= 55) # +/- 15 of scaleGom	
 
     def test_MLE_exp_analytical(self):
         """ Use the analytical shortcut to estimate the gompertz parameters. """
