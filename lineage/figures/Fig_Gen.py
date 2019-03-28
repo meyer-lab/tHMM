@@ -55,7 +55,7 @@ def Lineage_Length(T_MAS=130, T_2=61, reps=20, switchT=25, MASinitCells=[1], MAS
             cGom_2_h2.append(E[state_2,1])
             scaleGom_MAS_h2.append(E[state_1,2])
             scaleGom_2_h2.append(E[state_2,2])
-            if verbose = True:
+            if verbose == True:
                 print('pi',pi)
                 print('T',T)
                 print('E',E)

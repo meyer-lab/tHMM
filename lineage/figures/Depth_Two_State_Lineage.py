@@ -19,7 +19,7 @@ def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGo
     experimentTime2 = T_2
     sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
     sublineage2 = remove_NaNs(sublineage2)
-    while len(sublineage2) == 0:
+    while not len(sublineage2):
         sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
         sublineage2 = remove_NaNs(sublineage2)
     cell_endT_holder = []
@@ -38,8 +38,7 @@ def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGo
     master_cell.left = sublineage2[0]
     sublineage2[0].parent = master_cell
     newLineage = masterLineage + sublineage2
-    
-    #X = newLineage    
+
     X = remove_NaNs(newLineage)
     print(len(newLineage))
     return(X, masterLineage, newLineage)
