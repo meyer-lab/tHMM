@@ -4,19 +4,76 @@ import numpy as np
 from scipy.optimize import root
 from .CellNode import generateLineageWithTime
 
+
+#####---------------- Generating population of cells -------------------#######
+
 def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='G', betaExp=None, betaExp2=None):
-    ''' generates a population of lineages that abide by distinct parameters. '''
+    '''
+    Generates a population of lineages that abide by distinct parameters.
+    
+    This function uses the same parameters as "GenerateLineageWithTime", along with
+    experimentTime to create a population of cells including different lineages. 
+    The number of lineages would be the same as the number of initial cells we start with,
+    Every initial cell and its descendants have the same linID
+    
+    Args:
+        ----------
+        experimentTime (int): The duration time of experiment which the cells will 
+        continue growing
+        
+        initCells (int): the number of initial cells to initiate the tree with
+        
+        experimentTime (int) [hours]: the time that the experiment will be running 
+        to allow for the cells to grow
+        
+        locBern (float): the Bernoulli distribution parameter
+        (p = success) for fate assignment (either the cell dies or divides)
+        range = [0, 1]
+        
+        cGom (float): shape parameter of the Gompertz distribution,
+        the normal range: [0.5, 5] outside this boundary simulation
+        time becomes very long
+        
+        scaleGom (float): scale parameter of Gompertz distribution,
+        normal range: [20, 50] outside this boundary simulation
+        time becomes very long 
+        
+        switchT (int): the time (assuming the beginning of experiment is 0) that
+        we want to switch to the new set of parameters of distributions.
+        
+        bern2 (float): second Bernoulli distribution parameter.
+        
+        cG2 (float): second shape parameter of Gompertz distribution
+        
+        scaleG2 (float): second scale parameter of Gompertz distrbution
+        
+        FOM (str): this determines the type of distribution we want to use for 
+        lifetime here it is either "G": Gompertz, or "E": Exponential.
+        
+        betaExp (float): the parameter of Exponential distribution
+        
+        betaExp2 (float): second parameter of Exponential distribution 
+        
+    Returns:
+        ----------
+        population (list): a list of objects that contain cells
+        
+    '''
 
     assert len(initCells) == len(locBern) == len(cGom) == len(scaleGom) # make sure all lists have same length
-    numLineages = len(initCells)
-    population = [] # create empty list
+    numLineages = len(initCells) # the number of lineages is the same as the number of initial cells
+    population = [] 
 
-    if switchT is None: # when there is no heterogeneity over time
+
+    # There is no heterogeneity(first set of parameters)
+    if switchT is None: 
         for ii in range(numLineages):
+            
+            # Creat temporary lineage
             if FOM == 'G':
-                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], FOM='G') # create a temporary lineage
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], FOM='G') 
             elif FOM == 'E':
-                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], FOM='E', betaExp=betaExp[ii]) # create a temporary lineage
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], FOM='E', betaExp=betaExp[ii]) 
             for cell in temp:
                 sum_prev = 0
                 j = 0
@@ -25,14 +82,18 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
                     j += 1
                 cell.linID += sum_prev # shift the lineageID so there's no overlap with populations of different parameters
                 cell.true_state = 0
-                population.append(cell) # append all individual cells into a population
-    else: # when the second set of parameters is defined
+                population.append(cell) 
+     
+    # There is heterogeneity (second set of parameters)           
+    else:
         for ii in range(numLineages):
+            
+            # Creat temporary lineages
             if FOM == 'G':
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii], FOM='G')
             elif FOM == 'E':
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT, bern2[ii], cG2[ii], scaleG2[ii], FOM='E', betaExp=betaExp[ii], betaExp2=betaExp2[ii])
-            # create a temporary lineage
+           
             for cell in temp:
                 sum_prev = 0
                 j = 0
@@ -40,12 +101,30 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
                     sum_prev += initCells[j]
                     j += 1
                 cell.linID += sum_prev # shift the lineageID so there's no overlap with populations of different parameters
-                population.append(cell) # append all individual cells into a population
+                population.append(cell) 
 
     return population
 
+
+#####--------------------------- Removing NaNs -----------------------########
+
 def remove_NaNs(X):
-    '''Removes unfinished cells in Population and root cells with no daughters'''
+    '''
+    Removes unfinished cells in Population and root cells with no daughters.
+    
+    This Function checks every object in the list and if it includes NaN, then
+    it replaces the cell with None which essentially removes the cell, and returns
+    the new list of cells that does not inclue any NaN
+    
+    Args:
+        ----------
+        X (list): list that holds cells as objects.
+        
+    Returns:
+        ----------
+        X (list): a list of objects (cells) in which the NaNs have been removed
+            
+            '''
     ii = 0 # establish a count outside of the loop
     while ii in range(len(X)): # for each cell in X
         if X[ii].isUnfinished(): # if the cell has NaNs in its times
@@ -60,8 +139,23 @@ def remove_NaNs(X):
             ii += 1 # only move forward in the list if you don't delete a cell
     return X
 
+
+#####--------------------- Removing Singleton Lineages -------------------#######
+    
 def remove_singleton_lineages(X):
-    '''Removes lineages that are only a single root cell that does not divide or just dies'''
+    '''
+    Removes lineages that are only a single root cell that does not divide or just dies
+    
+    Args:
+        ----------
+        X (list): list that holds cells as objects.
+        
+    Returns:
+        ----------
+        X (list): a list of objects (cells) in which the root cells that do not 
+        make a lineage, have been removed.
+        
+    '''
     ii = 0
     while ii in range(len(X)): # for each cell in X
         if X[ii].isRootParent(): # if the cell is a root parent
@@ -73,8 +167,24 @@ def remove_singleton_lineages(X):
             ii += 1 # only move forward in the list if you don't delete a cell
     return X
 
+
+#######------------------ Find the number of Lineages --------------------#######
 def get_numLineages(X):
-    ''' Outputs total number of cell lineages in given Population. '''
+    '''
+    Outputs total number of cell lineages in a given Population.
+    
+    This function first removes those initial cells that do no make any lineages,
+    and then keeps track of the cells that are root, and counts the number of them
+    
+    Args:
+        ----------
+        X (list): list of objects (cells) 
+        
+    Returns:
+        ----------
+        numLineages (int): the number of lineages in the given population
+    
+    '''
     X = remove_singleton_lineages(X)
     root_cell_holder = [] # temp list to hold the root cells in the population
     root_cell_linID_holder = [] # temporary list to hold all the linIDs of the root cells in the population
@@ -86,8 +196,20 @@ def get_numLineages(X):
     numLineages = len(root_cell_holder) # the number of lineages is the number of root cells
     return numLineages
 
+######-------------- creating a population out of lineages --------------######
+
 def init_Population(X, numLineages):
-    '''Creates a full population list of lists which contain each lineage in the Population.'''
+    '''Creates a full population list of lists which contain each lineage in the Population.
+    
+    This function first removes the singleton cells, then finds the root cells, 
+    and tracks their lineage, and puts them in a list, then appends the list of 
+    lineages to make the whole population.
+    
+    Args:
+        ---------
+        X (list): a list of objects (cells)
+        numLineages (int): the number of lineages
+        '''
     X = remove_singleton_lineages(X)
     root_cell_holder = [] # temp list to hold the root cells in the population
     for cell in X: # for each cell in the population
