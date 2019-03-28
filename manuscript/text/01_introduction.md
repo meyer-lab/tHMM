@@ -1,5 +1,6 @@
 ---
-title: Lineage
+title: A lineage tree-based Markov random field model to quantify cellular heterogeneity
+
 author:
 - name: Adam Weiner
   affilnum: a
@@ -7,7 +8,7 @@ author:
   affilnum: a
 - name: Aaron S. Meyer
   affilnum: a,b
-keywords: [cancer, heterogeneity]
+keywords: [cancer, heterogeneity, lineage, hidden Markov Model]
 affiliation:
 - name: Department of Bioengineering, Jonsson Comprehensive Cancer Center, Eli and Edythe Broad Center of Regenerative Medicine and Stem Cell Research; University of California, Los Angeles
   key: a
@@ -31,4 +32,4 @@ Cell heterogeneity, such as variability in drug response, arises as cells prolif
 
 # Introduction
 
-In 2018, over 1.7 million new cases of cancer were estimated to be diagnosed with over 609,000 of those cases projected to be fatal.[@SmithCancerScreening] One of the primary treatments of cancer consists of chemotherapy (i.e. cytotoxic and endocrine therapies), whereby patients are given chemicals that destroy highly-prolific cells to stall cancer growth or eliminate the tumor. However, the ability of therapy to impede tumor growth varies significantly due to the vast heterogeneity in intratumor response to therapy.2, 3 Specifically, each tumor consists of cancer cell subpopulations that differ in terms of cell intrinsic and extrinsic factors including genetic plasticity, epigenetic alterations, and micro-environmental stressors.4–7 Complete cancer remission is predicated on delivering therapies that eliminate all malignant cancer subpopulations within a tumor. Current drug-screening protocols involve giving known cancer cell lines different drug doses and evaluating therapy performance based on the percent of cells killed and the dose required to have a half-maximal effect.8, 9 However, these metrics for therapy performance solely provide en bloc averages of overall tumor response to therapy that fail to consider the vast complexity of subpopulation heterogeneity. In addition, the significant proportion of cells acquiring resistance at a time point stochastically after subjection to therapy must be identified with a novel, real-time analytic method.10–12
+In 2018, over 1.7 million new cases of cancer were estimated to be diagnosed with over 609,000 of those cases projected to be fatal.[@SmithCancerScreening] Most primary treatments of cancer consists of chemotherapy (i.e. cytotoxic and endocrine therapies), whereby patients are given chemicals that destroy highly-prolific cells to stall cancer growth or eliminate the tumor. However, the ability of therapy to impede tumor growth varies significantly due to the vast heterogeneity in intratumor response to therapy.[@LungHeterogeneity, @ColorectalHeterogeneity] Specifically, each tumor consists of cancer cell subpopulations that differ in terms of cell intrinsic and extrinsic factors including genetic plasticity, epigenetic alterations, and micro-environmental stressors.4–7 Complete cancer remission is predicated on delivering therapies that eliminate all malignant cancer subpopulations within a tumor. Current drug-screening protocols involve giving known cancer cell lines different drug doses and evaluating therapy performance based on the percent of cells killed and the dose required to have a half-maximal effect.8, 9 However, these metrics for therapy performance solely provide en bloc averages of overall tumor response to therapy that fail to consider the vast complexity of subpopulation heterogeneity. In addition, the significant proportion of cells acquiring resistance at a time point stochastically after subjection to therapy must be identified with a novel, real-time analytic method.10–12
