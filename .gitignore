@@ -1,7 +1,0 @@
-*.sublime-workspace
-**/.ipynb_checkpoints
-**.ipynb
-**/__pycache__/
-lineage-growth/lineage/jupyter-notebooks/
-nosetests.xml
-**.png
