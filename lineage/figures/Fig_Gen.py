@@ -7,7 +7,7 @@ from .Depth_Two_State_Lineage import Depth_Two_State_Lineage
 from ..Analyze import Analyze
 from .Matplot_gen import Matplot_gen
 
-from ..tHMM_utils import getAccuracy
+from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_NaNs
 
 def Lineage_Length(T_MAS=130, T_2=61, reps=20, MASinitCells=[1], MASlocBern=[0.8], MAScGom=[1.6], MASscaleGom=[40], initCells2=[1], locBern2=[0.99], cGom2=[1.6], scaleGom2=[18], numStates=2, max_lin_length=1500, min_lin_length=100, verbose=False):
@@ -186,7 +186,7 @@ def AIC_Figure(T_MAS=130, T_2=61, state1=1, state2=4, reps=1, MASinitCells=[1], 
         print(len(masterLineage), len(newLineage))
 
     for numStates in states: #a pop with num number of lineages
-        all_states, tHMMobj = Analyze(X, numStates)
+        all_states, tHMMobj, LL = Analyze(X, numStates)
         getAccuracy(tHMMobj, all_states, verbose=False)
         acc_h2 = []
         cell_h2 = []
@@ -199,7 +199,7 @@ def AIC_Figure(T_MAS=130, T_2=61, state1=1, state2=4, reps=1, MASinitCells=[1], 
             AIC_h3 = []
 
             for lin in range(tHMMobj.numLineages):
-                cell_h3.append(len(lineage))
+                cell_h3.append(len(tHMMobj.population[lin]))
                 acc_h3.append(tHMMobj.Accuracy[lin])
                 AIC_h3.append(AIC_value_holder_rel_0[lin])
 
@@ -213,8 +213,8 @@ def AIC_Figure(T_MAS=130, T_2=61, state1=1, state2=4, reps=1, MASinitCells=[1], 
         AIC_h1.extend(AIC_h2)
 
         if verbose:
-            print('h1',cell_h1)
-        
+            print('h1', cell_h1)
+
     x = states
     fig, axs = plt.subplots(nrows=1, ncols=1, sharex=True)
     ax = axs
