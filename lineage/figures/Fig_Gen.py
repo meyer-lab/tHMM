@@ -73,7 +73,7 @@ def Lineage_Length(T_MAS=130, T_2=61, reps=20, MASinitCells=[1], MASlocBern=[0.8
 
     x = cell_h1
     Matplot_gen(x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel='Number of Cells', title='Cells in a Lineage', save_name='Lineage_Length_Figure.png')
-    data = np.array([x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2])
+    data = np.array([x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom,            cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2])
 
     return data
 
@@ -181,29 +181,32 @@ def AIC_Figure(T_MAS=130, T_2=61, state1=1, state2=4, reps=1, MASinitCells=[1], 
 
     while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage)-len(masterLineage)) < min_lin_length:
         X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
-    
+
     if verbose:
         print(len(masterLineage), len(newLineage))
 
     for numStates in states: #a pop with num number of lineages
-        print('numstates', numStates)
+        all_states, tHMMobj = Analyze(X, numStates)
+        getAccuracy(tHMMobj, all_states, verbose=False)
         acc_h2 = []
         cell_h2 = []
         AIC_h2 = []
 
         for rep in range(reps):
-            numStates = numStates
-            deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X, numStates)
-            AIC_value_holder_rel_0, param_num_cost, AIC_degrees_of_freedom_holder = getAIC(tHMMobj, LL)
+            AIC_value_holder_rel_0 = getAIC(tHMMobj, LL)
             acc_h3 = []
             cell_h3 = []
+            AIC_h3 = []
 
             for lin in range(tHMMobj.numLineages):
                 cell_h3.append(len(lineage))
-                print('h3',cell_h3)
+                acc_h3.append(tHMMobj.Accuracy[lin])
+                AIC_h3.append(AIC_value_holder_rel_0[lin])
 
-            acc_h2.extend(acc_h3)
             cell_h2.extend(cell_h3)
+            acc_h2.append(acc_h3)
+            AIC_h2.append(AIC_value_holder_rel_0)
+
 
         acc_h1.extend(acc_h2)
         cell_h1.extend(cell_h2)
