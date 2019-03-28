@@ -40,25 +40,28 @@ def Lineage_Length(T_MAS=130, T_2=61, reps=20, MASinitCells=[1], MASlocBern=[0.8
         for lin in range(tHMMobj.numLineages):
             getAccuracy(tHMMobj, all_states, verbose=False)
             accuracy = tHMMobj.Accuracy[lin]
+            state_1 = tHMMobj.stateAssignment[0]
+            state_2 = tHMMobj.stateAssignment[1]
             lineage = tHMMobj.population[lin]
             T = tHMMobj.paramlist[lin]["T"]
             E = tHMMobj.paramlist[lin]["E"]
             pi = tHMMobj.paramlist[lin]["pi"]
-
+                
             acc_h2.append(accuracy*100)
             cell_h2.append(len(lineage))
-            bern_MAS_h2.append(E[state_1,0])
-            bern_2_h2.append(E[state_2,0])
-            cGom_MAS_h2.append(E[state_1,1])
-            cGom_2_h2.append(E[state_2,1])
-            scaleGom_MAS_h2.append(E[state_1,2])
-            scaleGom_2_h2.append(E[state_2,2])
-            if verbose == True:
-                print('pi',pi)
-                print('T',T)
-                print('E',E)
-                print('accuracy:',accuracy)
-                print('MAS length, 2nd lin length:',len(masterLineage),len(newLineage)-len(masterLineage))
+            bern_MAS_h2.append(E[state_1, 0])
+            bern_2_h2.append(E[state_2, 0])
+            cGom_MAS_h2.append(E[state_1, 1])
+            cGom_2_h2.append(E[state_2, 1])
+            scaleGom_MAS_h2.append(E[state_1, 2])
+            scaleGom_2_h2.append(E[state_2, 2])
+
+            if verbose:
+                print('pi', pi)
+                print('T', T)
+                print('E', E)
+                print('accuracy:', accuracy)
+                print('MAS length, 2nd lin length:', len(masterLineage), len(newLineage)-len(masterLineage))
         acc_h1.extend(acc_h2)
         cell_h1.extend(cell_h2)
         bern_MAS_h1.extend(bern_MAS_h2)
@@ -67,12 +70,12 @@ def Lineage_Length(T_MAS=130, T_2=61, reps=20, MASinitCells=[1], MASlocBern=[0.8
         cGom_2_h1.extend(cGom_2_h2)
         scaleGom_MAS_h1.extend(scaleGom_MAS_h2)
         scaleGom_2_h1.extend(scaleGom_2_h2)
+    
     x=cell_h1
-    print(acc_h1)
     Matplot_gen(x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2, xlabel = 'Number of Cells', title = 'Cells in a Lineage', save_name = 'Lineage_Length_Figure.png')
     data = np.array([x,acc_h1,bern_MAS_h1,bern_2_h1,MASlocBern,locBern2,cGom_MAS_h1,cGom_2_h1,MAScGom,           cGom2,scaleGom_MAS_h1,scaleGom_2_h1,MASscaleGom,scaleGom2])
-    
-    return(data)
+
+    return data
 
 def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, reps=1, numStates=2, T_MAS=75, T_2=85, MASinitCells=[1], MASlocBern=[0.99999999999], MAScGom=[2], MASscaleGom=[30], initCells2=[1], locBern2=[0.7], cGom2=[1.5], scaleGom2=[25]):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of lineages in a population are varied'''
