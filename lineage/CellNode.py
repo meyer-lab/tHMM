@@ -23,12 +23,11 @@ class CellNode:
 
         self.trackID = trackID # ID (integer) of the cell used during image tracking
         self.true_state = true_state # indicates whether cell is PC9 (0) or H1299 (1)
-        self.deathObserved = False # marks whether the cell reached the true end of its lifetime
+        self.fateObserved = False # marks whether the cell reached the true end of its lifetime
 
     def isParent(self):
         """ Return true if the cell has at least one daughter. """
         return self.left or self.right
-
 
     def isChild(self):
         """ Returns true if this cell has a known parent. """
@@ -67,14 +66,14 @@ class CellNode:
         self.fate = False   # no division
         self.endT = endT    # mark endT
         self.calcTau()      # calculate Tau when cell dies
-        self.deathObserved = True # this cell has truly died
+        self.fateObserved = True # this cell has truly died
 
     def divide(self, endT, trackID_d1=None, trackID_d2=None):
         """ Cell life ends through division. """
         self.endT = endT
         self.fate = True    # division
         self.calcTau()      # calculate Tau when cell dies
-        self.deathObserved = True # this cell has truly divided
+        self.fateObserved = True # this cell has truly divided
 
         if self.isRootParent():
 
