@@ -153,12 +153,12 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
         idx_of_max_acc = np.argmax(temp_acc_holder)
         tHMMobj.Accuracy.append(temp_acc_holder[idx_of_max_acc])
         
-        tHMMobj.stateAssignment = permutation_of_states[idx_of_max_acc]
+        tHMMobj.stateAssignment.append(permutation_of_states[idx_of_max_acc])
 
         for ii,cell_viterbi_state in enumerate(viterbi_est_holder):
             for state in range(numStates):
                 if cell_viterbi_state==state:
-                    viterbi_est_holder[ii]= tHMMobj.stateAssignment[state]
+                    viterbi_est_holder[ii]= tHMMobj.stateAssignment[lin][state]
             
         if verbose:
             printAssessment(tHMMobj, lin)
@@ -167,7 +167,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
             print("Viterbi estimated raw states (before state assignment switch): ")
             print(all_states[lin])
             print("State assignment after analysis: ")
-            print(tHMMobj.stateAssignment)
+            print(tHMMobj.stateAssignment[lin])
             print("Viterbi estimated relative states (after state switch): ")
             print(viterbi_est_holder)
             print("Accuracy: ")
