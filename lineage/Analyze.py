@@ -20,4 +20,5 @@ def Analyze(X, numStates, keepBern=True):
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
     LL = calculate_log_likelihood(tHMMobj, NF)
+    getAccuracy(tHMMobj, all_states, verbose=False)
     return(deltas, state_ptrs, all_states, tHMMobj, NF, LL)
