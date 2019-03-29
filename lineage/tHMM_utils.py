@@ -159,8 +159,6 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
             for state in range(numStates):
                 if cell_viterbi_state==state:
                     viterbi_est_holder[ii]= tHMMobj.stateAssignment[state]
-
-        tHMMobj.states.append(viterbi_est_holder)
             
         if verbose:
             printAssessment(tHMMobj, lin)
@@ -174,6 +172,8 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
             print(viterbi_est_holder)
             print("Accuracy: ")
             print(tHMMobj.Accuracy[lin])
+            
+    return(tHMMobj.Accuracy, tHMMobj.stateAssignment)
 
 def printAssessment(tHMMobj, lin):
     '''Prints the parameters.'''
