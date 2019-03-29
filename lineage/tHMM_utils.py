@@ -153,12 +153,14 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
         idx_of_max_acc = np.argmax(temp_acc_holder)
         tHMMobj.Accuracy.append(temp_acc_holder[idx_of_max_acc])
         
-        tHMMobj.stateAssignment.append(permutation_of_states[idx_of_max_acc])
+        tHMMobj.stateAssignment.append(permutation_of_states[idx_of_max_acc])  # the correct state assignment
 
         for ii,cell_viterbi_state in enumerate(viterbi_est_holder):
             for state in range(numStates):
                 if cell_viterbi_state==state:
                     viterbi_est_holder[ii]= tHMMobj.stateAssignment[lin][state]
+                    
+        tHMMobj.states.append(viterbi_est_holder) # the correct ordering of the states
             
         if verbose:
             printAssessment(tHMMobj, lin)
@@ -172,8 +174,6 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
             print(viterbi_est_holder)
             print("Accuracy: ")
             print(tHMMobj.Accuracy[lin])
-            
-    return(tHMMobj.Accuracy, tHMMobj.stateAssignment)
 
 def printAssessment(tHMMobj, lin):
     '''Prints the parameters.'''
