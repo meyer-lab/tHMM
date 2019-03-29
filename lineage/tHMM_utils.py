@@ -40,7 +40,7 @@ def get_daughters(cell):
         temp.append(cell.right)
     return temp
 
-def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
+def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, fateObserved=True):
     '''
     Gives you the likelihood of a right-censored Gompertz distribution.
     See Pg. 14 of The Gompertz distribution and Maximum Likelihood Estimation of its parameters - a revision
@@ -51,7 +51,7 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
     a = c * b
 
     firstCoeff = a * np.exp(b*tau_or_tauFake)
-    if deathObserved:
+    if fateObserved:
         pass # this calculation stays as is if the death is observed (delta_i = 1)
     else:
         firstCoeff = 1. # this calculation is raised to the power of delta if the death is unobserved (right-censored) (delta_i = 0)
