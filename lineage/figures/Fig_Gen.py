@@ -38,10 +38,10 @@ def Lineage_Length(T_MAS=130, T_2=61, reps=20, MASinitCells=[1], MASlocBern=[0.8
         scaleGom_MAS_h2 = []
         scaleGom_2_h2 = []
         for lin in range(tHMMobj.numLineages):
-            AccuracyPop, stateAssignmentPop = getAccuracy(tHMMobj, all_states, verbose=False)
-            accuracy = AccuracyPop[lin]
-            state_1 = stateAssignmentPop[lin][0]
-            state_2 = stateAssignmentPop[lin][1]
+            getAccuracy(tHMMobj, all_states, verbose=False)
+            accuracy = tHMMobj.Accuracy[lin]
+            state_1 = tHMMobj.stateAssignment[lin][0]
+            state_2 = tHMMobj.stateAssignment[lin][1]
             lineage = tHMMobj.population[lin]
             T = tHMMobj.paramlist[lin]["T"]
             E = tHMMobj.paramlist[lin]["E"]
@@ -123,10 +123,10 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, reps=1, numSt
             scaleGom_2_h3 = []
 
             for lin in range(tHMMobj.numLineages):
-                AccuracyPop, stateAssignmentPop = getAccuracy(tHMMobj, all_states, verbose=False)
-                accuracy = AccuracyPop[lin]
-                state_1 = stateAssignmentPop[lin][0]
-                state_2 = stateAssignmentPop[lin][1]
+                getAccuracy(tHMMobj, all_states, verbose=False)
+                accuracy = tHMMobj.Accuracy[lin]
+                state_1 = tHMMobj.stateAssignment[lin][0]
+                state_2 = tHMMobj.stateAssignment[lin][1]
                 lineage = tHMMobj.population[lin]
                 T = tHMMobj.paramlist[lin]["T"]
                 E = tHMMobj.paramlist[lin]["E"]
@@ -188,7 +188,7 @@ def AIC_Figure(T_MAS=130, T_2=61, state1=1, state2=4, reps=1, MASinitCells=[1], 
 
     for numStates in states: #a pop with num number of lineages
         deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X, numStates)
-        AccuracyPop, _ = getAccuracy(tHMMobj, all_states, verbose=False)
+        getAccuracy(tHMMobj, all_states, verbose=False)
         acc_h2 = []
         cell_h2 = []
         AIC_h2 = []
@@ -201,7 +201,7 @@ def AIC_Figure(T_MAS=130, T_2=61, state1=1, state2=4, reps=1, MASinitCells=[1], 
 
             for lin in range(tHMMobj.numLineages):
                 cell_h3.append(len(tHMMobj.population[lin]))
-                acc_h3.append(AccuracyPop[lin])
+                acc_h3.append(tHMMobj.Accuracy[lin])
                 AIC_h3.append(AIC_value_holder_rel_0[lin])
 
             cell_h2.extend(cell_h3)
