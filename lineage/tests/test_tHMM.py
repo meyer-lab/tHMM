@@ -198,7 +198,7 @@ class TestModel(unittest.TestCase):
         t = tHMM(X, numStates=2) # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50) # there are <=50 lineages in the population
-        for _, MDSlin in enumerate(MSD):
+        for _, MSDlin in enumerate(MSD):
             self.assertGreaterEqual(MSDlin.shape[0], 0) # at least zero cells in each lineage
             self.assertEqual(MSDlin.shape[1], 2) # there are 2 states for each cell
             for node_n in range(MSDlin.shape[0]):
