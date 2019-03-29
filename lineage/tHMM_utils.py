@@ -1,7 +1,7 @@
 '''utility and helper functions for recursions and other needs in the tHMM class'''
 
-import numpy as np
 import itertools
+import numpy as np
 
 def max_gen(lineage):
     '''finds the max generation in a lineage'''
@@ -151,7 +151,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
                     if temp_state == state:
                         temp_all_states[ii] = possible_state_assignment[state]
 
-            common_state_counter = [true_state == temp_vit_state for (true_state,temp_vit_state) in zip(true_state_holder,temp_all_states)]
+            common_state_counter = [true_state == temp_vit_state for (true_state, temp_vit_state) in zip(true_state_holder, temp_all_states)]
             accuracy = sum(common_state_counter)/len(lineage) # gets the accuracies per possible state assignment
             temp_acc_holder.append(accuracy)
 
@@ -160,10 +160,10 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
 
         tHMMobj.stateAssignment.append(permutation_of_states[idx_of_max_acc])  # the correct state assignment
 
-        for ii,cell_viterbi_state in enumerate(viterbi_est_holder):
+        for ii, cell_viterbi_state in enumerate(viterbi_est_holder):
             for state in range(numStates):
-                if cell_viterbi_state==state:
-                    viterbi_est_holder[ii]= tHMMobj.stateAssignment[lin][state]
+                if cell_viterbi_state == state:
+                    viterbi_est_holder[ii] = tHMMobj.stateAssignment[lin][state]
 
         tHMMobj.states.append(viterbi_est_holder) # the correct ordering of the states
 
