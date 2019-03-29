@@ -199,16 +199,22 @@ def get_numLineages(X):
 ######-------------- creating a population out of lineages --------------######
 
 def init_Population(X, numLineages):
-    '''Creates a full population list of lists which contain each lineage in the Population.
+    '''
+    Creates a full population list of lists which contain each lineage in the Population.
     
     This function first removes the singleton cells, then finds the root cells, 
     and tracks their lineage, and puts them in a list, then appends the list of 
-    lineages to make the whole population.
+    lineages into another list to make the whole population.
     
     Args:
         ---------
         X (list): a list of objects (cells)
-        numLineages (int): the number of lineages
+        numLineages (int): the number of lineages which is essentially the number
+        of initial cells
+        
+    Returns:
+        ---------
+        population (list): a list of lists -- a list of lineages including cells
         '''
     X = remove_singleton_lineages(X)
     root_cell_holder = [] # temp list to hold the root cells in the population
@@ -226,8 +232,29 @@ def init_Population(X, numLineages):
             population.append(temp_lineage) # append the lineage to the Population holder
     return population
 
+##### -------------- Estimating Bernoulli Parameter --------------------#######
+    
 def bernoulliParameterEstimatorAnalytical(X):
-    '''Estimates the Bernoulli parameter for a given population using MLE analytically'''
+    
+    '''
+    Estimates the Bernoulli parameter for a given population using MLE analytically.
+    
+    This function keeps track of the number of cells that have been divided and
+    died by appending 1s and 0s, respectively. Then it calculates the average 
+    number of times that cells have divided. This will be the success rate (p)
+    in Bernoulli distribution in an analytical way.
+
+
+    Args:
+        ---------
+        X (list): a list of objects (cells)
+        
+    Returns:
+        ---------
+        result (float): the success probability or the Bernoulli parameter
+    
+    
+    '''
     fate_holder = [] # instantiates list to hold cell fates as 1s or 0s
     for cell in X: # go through every cell in the population
         if not cell.isUnfinished(): # if the cell has lived a meaningful life and matters
@@ -237,8 +264,25 @@ def bernoulliParameterEstimatorAnalytical(X):
 
     return result
 
+
+#####--------------- Estimating Exponential Parameter -------------------########
+
 def exponentialAnalytical(X):
-    '''Estimates the Exponential beta parameter for a given population using MLE analytically'''
+    
+    '''
+    Estimates the Exponential beta parameter for a given population using MLE analytically
+    
+    Args:
+        ----------
+        X (list): list of objects (cells)
+        
+    Returns:
+        result (float): average of the lifetime of those cells that have been lived and divided
+        
+    *** In this function to avoid getting weird results, 62.5 as an offset has been added
+    to the sum (in averaging), and to avoid getting inf due to zeros at denomenator, 1 has been added.
+    
+            '''
      # create list of all our taus
     tau_holder = []
     tauFake_holder = []
@@ -251,6 +295,9 @@ def exponentialAnalytical(X):
     result = (sum(tau_holder) + sum(tauFake_holder) + 62.5) / (len(tau_holder) + 1)
 
     return result
+
+
+######----------------Estimating Gompertz Parameter -------------------########
 
 def gompertzAnalytical(X):
     """
@@ -274,16 +321,50 @@ def gompertzAnalytical(X):
         D = len(tau_holder)/N
     total_tau_holder = tau_holder+tauFake_holder
     delta_holder = [1]*len(tau_holder) + [0]*len(tauFake_holder)
+    
+    
+    ###########   Helper functions for gompertzAnalytical   ################
 
     def help_exp(b):
-        """ Returns an expression commonly used in the analytical solution. """
+        """ 
+        Returns an expression commonly used in the analytical solution.
+        
+        Here the function is:
+            helper_exp(b) = sum ( exp(b*X_i) )
+        in which X_i is the cell's lifetime (tau)    
+        
+        
+        Args:
+            ---------
+            b (float): the coefficient of X_i s in exponential function
+            
+        Returns:
+            ---------
+            sum(temp): which is a float number and is the sum over all exp(b*X_i) 
+            in which tau == (X_i)
+            
+            """
         temp = []
         for ii in range(N):
             temp.append(np.exp(b*total_tau_holder[ii]))
         return sum(temp)
 
+    
     def left_term(b):
-        """ Returns one of the two expressions used in the MLE for b. """
+        """ Returns one of the two expressions used in the MLE for b. 
+        
+        the expression this function calculates is:
+            left_term(b) = sum[(D * exp(b * X_i) * X_i) / (1/n * sum[exp(b * X_i)]) - 1]
+            
+        Args:
+            ---------
+            b (float): the coefficient of X_i s in exponential function
+            
+        Returns:
+            ---------
+            sum(temp): it returns the expression written above (left_term(b))
+            
+            """
         temp = []
         denom = (help_exp(b) / N) - 1.0 # denominator is not dependent on ii
         for ii in range(N):
@@ -291,8 +372,22 @@ def gompertzAnalytical(X):
             temp.append(numer/denom)
         return sum(temp)
 
+
     def right_term(b):
-        """ Returns the other expression used in the MLE for b. """
+        """ 
+        Returns the other expression used in the MLE for b. 
+        
+        right_term(b) = sum[(D * (exp(b * X_i) - 1))/(b/n * sum(exp(b * X_i)) - b) + delta_i * X_i] 
+        
+        Args:
+            ----------
+            b (float): the coefficient of X_i s in exponential function
+            
+        Returns:
+            ----------
+            sum(temp): it returns the expression written above (right_term(b))
+            
+        """
         temp = []
         denom = ((b/N) * help_exp(b)) - b
         for ii in range(N):
@@ -300,8 +395,24 @@ def gompertzAnalytical(X):
             temp.append((numer/denom) + delta_holder[ii]*total_tau_holder[ii])
         return sum(temp)
 
+
     def error_b(scale):
-        """ Returns the square root of the squared error between left and right terms. """
+        """
+        Returns the difference between right_term(b) and left_term(b).
+        
+        To find the maximum likelihood estimate for b, the error between the two functions
+        left_term(b) and right_term(b) is calculated.
+        In this case b = 1/scale.
+        
+        Args:
+            ---------
+            scale (float): is the scale parameter of teh Gompertz distribution
+            
+        Returns:
+            ---------
+            error (float): is the difference between the two mentioned expressions.
+            
+        """
         error = left_term(1./scale) - right_term(1./scale)
 
         return error
