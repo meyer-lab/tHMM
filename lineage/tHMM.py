@@ -152,7 +152,7 @@ class tHMM:
                     current_cell_idx = lineage.index(cell) # get the index of the current cell
                     if self.FOM == 'G':
                         temp_b = 1
-                        if self.keepBern and not cell.isUnfinished(): # only calculate real bernoulli likelihood for finished cells
+                        if not cell.isUnfinished(): # only calculate real bernoulli likelihood for finished cells
                             temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)
                         if cell.fateObserved:
                             assert cell.fateObserved
@@ -166,7 +166,7 @@ class tHMM:
 
                     elif self.FOM == 'E':
                         temp_b = 1
-                        if self.keepBern and not cell.isUnfinished():
+                        if not cell.isUnfinished():
                             temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern) # bernoulli likelihood
                         if cell.fateObserved:
                             temp_beta = sp.expon.pdf(x=cell.tau, scale=k_expon_beta) # exponential likelihood
