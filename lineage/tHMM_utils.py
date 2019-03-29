@@ -72,14 +72,20 @@ def getAIC(tHMMobj, LL):
         
         from matplotlib.ticker import MaxNLocator
         
+        x1val = []
+        x2val = []
+        yval = []
         for numState in range(3):
-            tHMMobj = tHMM(X, numStates=numState+2, FOM='G') # build the tHMM class with X
+            tHMMobj = tHMM(X, numStates=numState, FOM='G') # build the tHMM class with X
             tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
             AIC_value, numStates, deg = getAIC(tHMMobj, LL)
+            x1val.append(numStates)
+            x2val.append(deg)
+            yval.append(AIC_value)
 
         fig = plt.figure(figsize=(10,10))
         ax1 = fig.add_subplot(111)
-        ax1.scatter(x1val, yval, marker='*', c='b', s=500, label='One state data/model')
+        ax1.scatter(xval, yval, marker='*', c='b', s=500, label='One state data/model')
         ax1.xaxis.set_major_locator(MaxNLocator(integer=True))
         ax1.grid(True, linestyle='--')
         ax1.set_xlabel('Number of States')
@@ -174,6 +180,8 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
             print(viterbi_est_holder)
             print("Accuracy: ")
             print(tHMMobj.Accuracy[lin])
+
+    return(tHMMobj.Accuracy, tHMMobj.states, tHMMobj.stateAssignment)
 
 def printAssessment(tHMMobj, lin):
     '''Prints the parameters.'''
