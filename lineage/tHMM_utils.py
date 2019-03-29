@@ -67,11 +67,11 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
 def getAIC(tHMMobj, LL):
     '''
         Gets the AIC values.
-        
+
         Example Usage:
-        
+
         from matplotlib.ticker import MaxNLocator
-        
+
         x1val = []
         x2val = []
         yval = []
@@ -120,28 +120,27 @@ def getAIC(tHMMobj, LL):
         AIC_degrees_of_freedom_holder.append(AIC_degrees_of_freedom)
         AIC_value = -2 * LL[num] + 2*AIC_degrees_of_freedom
         AIC_value_holder.append(AIC_value)
-        
+
     AIC_value_holder_rel_0 = AIC_value_holder-min(AIC_value_holder) # this line is to make it so the minimum value is 0
     return(AIC_value_holder_rel_0, [numStates]*len(AIC_value_holder), AIC_degrees_of_freedom_holder)
-    
-        
+
 def getAccuracy(tHMMobj, all_states, verbose=False):
     '''Gets the accuracy for state assignment per lineage.'''
     numStates = tHMMobj.numStates
     tHMMobj.Accuracy = []
     tHMMobj.stateAssignment = []
     tHMMobj.states = []
-    
+
     for lin in range(tHMMobj.numLineages):
         lineage = tHMMobj.population[lin]
-        
+
         true_state_holder = np.zeros((len(lineage)), dtype=int)
         viterbi_est_holder = np.zeros((len(lineage)), dtype=int)
 
         for ii, cell in enumerate(lineage):
             true_state_holder[ii] = cell.true_state
             viterbi_est_holder[ii] = all_states[lin][ii]
-            
+
         permutation_of_states = list(itertools.permutations(range(numStates)))
         temp_acc_holder = []
         for possible_state_assignment in permutation_of_states:
@@ -151,23 +150,23 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
                 for state in range(numStates):
                     if temp_state == state:
                         temp_all_states[ii] = possible_state_assignment[state]
-                    
+
             common_state_counter = [true_state == temp_vit_state for (true_state,temp_vit_state) in zip(true_state_holder,temp_all_states)]
             accuracy = sum(common_state_counter)/len(lineage) # gets the accuracies per possible state assignment
             temp_acc_holder.append(accuracy)
-            
+
         idx_of_max_acc = np.argmax(temp_acc_holder)
         tHMMobj.Accuracy.append(temp_acc_holder[idx_of_max_acc])
-        
+
         tHMMobj.stateAssignment.append(permutation_of_states[idx_of_max_acc])  # the correct state assignment
 
         for ii,cell_viterbi_state in enumerate(viterbi_est_holder):
             for state in range(numStates):
                 if cell_viterbi_state==state:
                     viterbi_est_holder[ii]= tHMMobj.stateAssignment[lin][state]
-                    
+
         tHMMobj.states.append(viterbi_est_holder) # the correct ordering of the states
-            
+
         if verbose:
             printAssessment(tHMMobj, lin)
             print("True states: ")
