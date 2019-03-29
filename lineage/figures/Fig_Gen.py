@@ -187,7 +187,7 @@ def AIC_Figure(T_MAS=130, T_2=61, state1=1, state2=4, reps=1, MASinitCells=[1], 
         print(len(masterLineage), len(newLineage))
 
     for numStates in states: #a pop with num number of lineages
-        _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
+        _, _, all_states, tHMMobj, _, LL = Analyze(X, numStates)
         AccuracyPop, _, _ = getAccuracy(tHMMobj, all_states, verbose=False)
         acc_h2 = []
         cell_h2 = []
