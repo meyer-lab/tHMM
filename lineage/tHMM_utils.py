@@ -1,4 +1,4 @@
-'''utility and helper functions for recursions and other needs in the tHMM class'''
+'''Utility and helper functions for recursions and other needs in the tHMM class. This also contains the methods for AIC and accuracy.'''
 
 import itertools
 import numpy as np
