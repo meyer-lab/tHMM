@@ -7,6 +7,7 @@ from scipy import optimize, stats as sp
 
 class CellNode:
     """ Each cell in our tree will consist of a node containing these traits. """
+
     def __init__(self, gen=1, linID=0, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, trackID=None, true_state=None):
         ''' Instantiates a cell node.'''
         self.gen = gen # the generation of the cell, root cells are of generation 1, each division adds 1 to the previous generation
@@ -19,9 +20,10 @@ class CellNode:
         self.left = left # the left daughter of the cell, either returns a CellNode or NoneType object
         self.right = right # the right daughter of the cell, either returns a CellNode or NoneType object
         self.parent = parent # the parent of the cell, returns a CellNode object (except at the root node)
+
         self.trackID = trackID # ID (integer) of the cell used during image tracking
         self.true_state = true_state # indicates whether cell is PC9 (0) or H1299 (1)
-        self.deathObserved = False # marks whether the cell reached the true end of its lifetime
+        self.fateObserved = False # marks whether the cell reached the true end of its lifetime
 
     def isParent(self):
         """ Return true if the cell has at least one daughter. """
@@ -64,16 +66,17 @@ class CellNode:
         self.fate = False   # no division
         self.endT = endT    # mark endT
         self.calcTau()      # calculate Tau when cell dies
-        self.deathObserved = True # this cell has truly died
+        self.fateObserved = True # this cell has truly died
 
     def divide(self, endT, trackID_d1=None, trackID_d2=None):
-        """ Cell life ends through division. The two optional trackID arguments represents the trackIDs given to the two daughter cells. """
+        """ Cell life ends through division. """
         self.endT = endT
         self.fate = True    # division
         self.calcTau()      # calculate Tau when cell dies
-        self.deathObserved = True # this cell has truly divided
+        self.fateObserved = True # this cell has truly divided
 
         if self.isRootParent():
+
             self.left = CellNode(gen=self.gen+1, trackID=trackID_d1, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
             self.right = CellNode(gen=self.gen+1, trackID=trackID_d2, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
         else:
