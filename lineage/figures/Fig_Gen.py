@@ -62,7 +62,7 @@ def Lineage_Length(T_MAS=130, T_2=61, reps=20, MASinitCells=[1], MASlocBern=[0.8
                 print('E', E)
                 print('accuracy:', accuracy)
                 print('MAS length, 2nd lin length:', len(masterLineage), len(newLineage)-len(masterLineage))
-                
+
         acc_h1.extend(acc_h2)
         cell_h1.extend(cell_h2)
         bern_MAS_h1.extend(bern_MAS_h2)
