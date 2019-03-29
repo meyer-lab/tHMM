@@ -28,7 +28,7 @@ def Lineage_Length(T_MAS=130, T_2=61, reps=20, MASinitCells=[1], MASlocBern=[0.8
         X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
         while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage)-len(masterLineage)) < min_lin_length:
             X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
-        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X, numStates)
+        _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
         acc_h2 = []
         cell_h2 = []
         bern_MAS_h2 = []
@@ -112,7 +112,7 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, reps=1, numSt
 
             X = remove_NaNs(X1)
             print(len(X))
-            deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X, numStates)
+            _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
             acc_h3 = []
             cell_h3 = []
             bern_MAS_h3 = []
@@ -187,7 +187,7 @@ def AIC_Figure(T_MAS=130, T_2=61, state1=1, state2=4, reps=1, MASinitCells=[1], 
         print(len(masterLineage), len(newLineage))
 
     for numStates in states: #a pop with num number of lineages
-        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X, numStates)
+        _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
         AccuracyPop, _, _ = getAccuracy(tHMMobj, all_states, verbose=False)
         acc_h2 = []
         cell_h2 = []
