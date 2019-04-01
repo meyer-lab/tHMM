@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import scipy.stats as sp
 import seaborn as ss; ss.set()
 import math
@@ -111,5 +110,3 @@ def check_dist(data, verbose = False):
     best_dist = max(p_val, key = p_val.get)
     
     return(best_dist, p_val[best_dist])
-
->>>>>>> 9f95b1bc89215e3495f29cae36deba823759dcc9
