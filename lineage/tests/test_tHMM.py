@@ -198,11 +198,11 @@ class TestModel(unittest.TestCase):
         t = tHMM(X, numStates=2) # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50) # there are <=50 lineages in the population
-        for ii in range(len(MSD)):
-            self.assertGreaterEqual(MSD[ii].shape[0], 0) # at least zero cells in each lineage
-            self.assertEqual(MSD[ii].shape[1], 2) # there are 2 states for each cell
-            for node_n in range(MSD[ii].shape[0]):
-                self.assertEqual(sum(MSD[ii][node_n, :]), 1) # the rows should sum to 1
+        for _, MSDlin in enumerate(MSD):
+            self.assertGreaterEqual(MSDlin.shape[0], 0) # at least zero cells in each lineage
+            self.assertEqual(MSDlin.shape[1], 2) # there are 2 states for each cell
+            for node_n in range(MSDlin.shape[0]):
+                self.assertEqual(sum(MSDlin[node_n, :]), 1) # the rows should sum to 1
 
     def test_get_EL(self):
         '''
@@ -213,9 +213,9 @@ class TestModel(unittest.TestCase):
         t = tHMM(X, numStates=2) # build the tHMM class with X
         EL = t.get_Emission_Likelihoods()
         self.assertLessEqual(len(EL), 50) # there are <=50 lineages in the population
-        for ii in range(len(EL)):
-            self.assertGreaterEqual(EL[ii].shape[0], 0) # at least zero cells in each lineage
-            self.assertEqual(EL[ii].shape[1], 2) # there are 2 states for each cell
+        for _, ELlin in enumerate(EL):
+            self.assertGreaterEqual(ELlin.shape[0], 0) # at least zero cells in each lineage
+            self.assertEqual(ELlin.shape[1], 2) # there are 2 states for each cell
 
     ##################################
     # UpwardRecursion.py tests below #
@@ -231,8 +231,8 @@ class TestModel(unittest.TestCase):
         t = tHMM(X, numStates=2) # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(t)
         self.assertLessEqual(len(NF), 50) # there are <=50 lineages in the population
-        for ii in range(len(NF)):
-            self.assertGreaterEqual(NF[ii].shape[0], 0) # at least zero cells in each lineage
+        for _, NFlin in enumerate(NF):
+            self.assertGreaterEqual(NFlin.shape[0], 0) # at least zero cells in each lineage
 
     ##########################
     # Viterbi.py tests below #
@@ -388,10 +388,10 @@ class TestModel(unittest.TestCase):
         gammas = get_root_gammas(tHMMobj, betas)
         get_nonroot_gammas(tHMMobj, gammas, betas)
         self.assertLessEqual(len(gammas), 50) # there are <=50 lineages in the population
-        for ii in range(len(gammas)):
-            self.assertGreaterEqual(gammas[ii].shape[0], 0) # at least zero cells in each lineage
+        for ii, gammasLin in enumerate(gammas):
+            self.assertGreaterEqual(gammasLin.shape[0], 0) # at least zero cells in each lineage
             for state_k in range(numStates):
-                self.assertEqual(gammas[ii][0, state_k], betas[ii][0, state_k])
+                self.assertEqual(gammasLin[0, state_k], betas[ii][0, state_k])
 
     ############################
     # BaumWelch.py tests below #
@@ -448,6 +448,7 @@ class TestModel(unittest.TestCase):
         print(len(newLineage))
 
         X = remove_NaNs(newLineage)
+
         tHMMobj = tHMM(X, numStates=numStates, FOM='G') # build the tHMM class with X
         fit(tHMMobj, max_iter=500, verbose=True)
 

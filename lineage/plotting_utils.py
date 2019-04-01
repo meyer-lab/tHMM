@@ -1,17 +1,18 @@
 ''' Plotting utilities for lineages. Requires matplotlib, networkx, pygraphviz, and dot.'''
 
-import networkx as nx
 import math
-import matplotlib
-matplotlib.use('Agg')
-from matplotlib import pyplot as plt
+import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
+import matplotlib
+from matplotlib import pyplot as plt
+
+matplotlib.use('Agg')
 
 def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
     '''
     Takes in a list of cells, and then outputs a color_map list and a list of cell indices.
     Example Usage:
-    
+
     import matplotlib as mpl
 
     G, cmap, _ = make_colormap_graph(X)
@@ -32,9 +33,9 @@ def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
     plt.title('Simulated Heterogeneous (by Breadth) Lineage')
     plt.rcParams.update({'font.size': 64})
     plt.show()
-    
+
     # plotting the fit
-    
+
     G, cmap, _ = make_colormap_graph(X, tHMMobj.states[0]) # note additional argument
     M = G.number_of_edges()
     edge_weights = [d for (u,v,d) in G.edges.data('weight')]
@@ -99,11 +100,11 @@ def plot_experiments(lin, filename):
     for cell in lin:
         state_ID.append(cell.true_state) # append a 0 (PC9 - green) or 1 (H1299 - red) based on the cell's true state
     G, cmap, _ = make_colormap_graph(lin, X_like=state_ID)
-    #M = G.number_of_edges()
-    edge_weights = [d for (u,v,d) in G.edges.data('weight')]
+    # M = G.number_of_edges()
+    edge_weights = [d for (u, v, d) in G.edges.data('weight')]
 
     pos = graphviz_layout(G, prog='twopi', root=0)
-    plt.figure(figsize=(7,6))
+    plt.figure(figsize=(7, 6))
     plt.figaspect(1) # maintains that the figure is 1:1 in terms of height to width ratio
     node_size = 100
     nx.draw_networkx_nodes(G, pos, node_size=node_size, node_color=cmap, alpha=0.65)
@@ -117,4 +118,3 @@ def plot_experiments(lin, filename):
     plt.rcParams.update({'font.size': 12})
     plt.savefig(filename)
     plt.show()
-

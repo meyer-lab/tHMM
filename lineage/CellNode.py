@@ -68,7 +68,6 @@ class CellNode:
         self.true_state = true_state 
         self.deathObserved = False
 
-
     def isParent(self):
         """ Return true if the cell has at least one daughter; i.e., if either 
         of the left or right daughter cells exist, then return True"""
@@ -129,7 +128,7 @@ class CellNode:
         self.fate = False   # no division
         self.endT = endT    # mark endT
         self.calcTau()      # calculate Tau when cell dies
-        self.deathObserved = True # this cell has truly died
+        self.fateObserved = True # this cell has truly died
 
     def divide(self, endT, trackID_d1=None, trackID_d2=None):
         """ 
@@ -150,11 +149,11 @@ class CellNode:
             self.left (obj): left newly born daughter cell object 
             self.right (obj): right newly born daughter cell object
             
-                """
+        """
         self.endT = endT
         self.fate = True    # division
         self.calcTau()      # calculate Tau when cell dies
-        self.deathObserved = True # this cell has truly divided
+        self.fateObserved = True # this cell has truly divided
 
         if self.isRootParent():
             self.left = CellNode(gen=self.gen+1, trackID=trackID_d1, linID=self.linID, 
