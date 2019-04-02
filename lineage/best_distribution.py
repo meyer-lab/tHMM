@@ -1,10 +1,5 @@
 import scipy.stats as sp
 import math
-import pandsa as pd
-import numpy as np
-import warnings
-warnings.filterwarnings('ignore')
-
 
 
 #######------Check the list of distributions and fit to the data --------#######
@@ -53,21 +48,3 @@ def check_dist(data, verbose = False):
     
     return(best_dist, p_val[best_dist])
 
-
-######-------------------- Reading the files ---------------------#########
-    
-# The G1 and G2 durations for control cells
-df = pd.read_excel('./data.xlsx')
-
-# dataframe into numpy array
-a = df.values
-G1 = a[:,0]
-G2 = a[:,1]
-
-# removing nan from the array
-G2 = G2[~np.isnan(G2)]
-
-# converting from unit of [frames] into [hours]
-# every frame is every 30 minutes so we divide the numbers by 2 to have [hours]
-G1_ = G1/2
-G2_ = G2/2

@@ -8,7 +8,8 @@ from scipy import optimize, stats as sp
 
 
 class CellNode:
-    """ Each cell in our tree will consist of a node containing these traits.
+    """ 
+    Each cell in our tree will consist of a node containing these traits.
     
     This class includes many functions that assign the cell its properties, i.e., 
     the cell's generation, lifetime, true_state, etc. 
@@ -69,8 +70,10 @@ class CellNode:
         self.deathObserved = False
 
     def isParent(self):
-        """ Return true if the cell has at least one daughter; i.e., if either 
-        of the left or right daughter cells exist, then return True"""
+        """
+        Return true if the cell has at least one daughter; i.e., if either 
+        of the left or right daughter cells exist, then return True
+        """
         return self.left or self.right
 
     def isChild(self):
@@ -92,8 +95,7 @@ class CellNode:
     def calcTau(self):
         """ 
         Find the cell's lifetime by subtracting its endTime from startTime
-        
-        *** if the lifetime if the cell is NaN, it throws a warning.
+        if the lifetime if the cell is NaN, it throws a warning.
         
         """
         self.tau = self.endT - self.startT   # calculate tau here
@@ -124,7 +126,7 @@ class CellNode:
             endT (float): end time of the cell
             
         This function doesn't return
-            """
+        """
         self.fate = False   # no division
         self.endT = endT    # mark endT
         self.calcTau()      # calculate Tau when cell dies
@@ -235,43 +237,30 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom,
     Args:
         ----------
         initCells (int): the number of initial cells to initiate the tree with
-        
         experimentTime (int) [hours]: the time that the experiment will be running 
         to allow for the cells to grow
-        
         locBern (float): the Bernoulli distribution parameter
         (p = success) for fate assignment (either the cell dies or divides)
         range = [0, 1]
-        
         cGom (float): shape parameter of the Gompertz distribution,
         the normal range: [0.5, 5] outside this boundary simulation
         time becomes very long
-        
         scaleGom (float): scale parameter of Gompertz distribution,
         normal range: [20, 50] outside this boundary simulation
         time becomes very long 
-        
         switchT (int): the time (assuming the beginning of experiment is 0) that
         we want to switch to the new set of parameters of distributions.
-        
         bern2 (float): second Bernoulli distribution parameter.
-        
         cG2 (float): second shape parameter of Gompertz distribution
-        
         scaleG2 (float): second scale parameter of Gompertz distrbution
-        
         FOM (str): this determines the type of distribution we want to use for 
         lifetime here it is either "G": Gompertz, or "E": Exponential.
-        
         betaExp (float): the parameter of Exponential distribution
-        
         betaExp2 (float): second parameter of Exponential distribution 
         
     Returns:
         ----------
         lineage (list): A list of objects (cells) that creates the tree. 
-        
-        
     '''
 
     lineage = []
