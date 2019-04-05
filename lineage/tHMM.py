@@ -264,17 +264,16 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
     by Adam Lenart
     November 28, 2011
     
-    This is needed, because at the end of the experiment time, there will be some
-    cells that are still alive and have not died or divided, so we don't know their
-    end_time, these cells in our data are called right censored.
-    What this function does, is that it checks whether the cell has died or not,
-    if it has not died, the first coefficient of Gompertz distribution is estimated,
-    if the cell has not died yet, it will put the first coefficient == 1.
+    This is a replacement for scipy.gompertz function, because at the end of
+    the experiment time, there will be some cells that are still alive and
+    have not died or divided, so we don't know their end_time, these cells in 
+    our data are called right censored. So this distribution is used instead of 
+    real gompretz distribution, to make the synthesized data more like the distribution.
+
     
     p(tau_i | a, b) = [a * exp(b * tau) ^delta_i] * [exp(-a/b * (exp(b * tau_i -1)))]
     here, `firstCoeff` is [a * exp(b * tau) ^delta_i]  and the `secondCoeff` is [exp(-a/b * (exp(b * tau_i -1)))]
-    This function has broke down the likelihood into two parts just for the ease of
-    calculations.
+
     
     Args:
         ----------
