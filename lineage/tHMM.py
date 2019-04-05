@@ -2,30 +2,30 @@
 
 import numpy as np
 import scipy.stats as sp
-from Lineage_utils import get_numLineages, init_Population
-from tHMM_utils import max_gen, get_gen
+from .Lineage_utils import get_numLineages, init_Population
+from .tHMM_utils import max_gen, get_gen
 
 
 class tHMM:
     """ Main tHMM class. """
-    def __init__(self, X, numStates=2, FOM='E', keepBern=True):
-        ''' Instantiates a tHMM. 
-        
+    def __init__(self, X, numStates=2, FOM='G', keepBern=True):
+        ''' Instantiates a tHMM.
+
         This function uses the following functions and assings them to the cells
         (objects) in the lineage.
-        
+
         Args:
             ----------
             X (list of objects): A list of objects (cells) in a lineage in which
             the NaNs have been removed.
-            
+
             numStates (int): the number of hidden states that we want our model have
-            
+
             FOM (str): For now, it is either "E": Exponential, or "G": Gompertz
             and it determines the type of distribution for lifetime of the cells
-            
+
             keepBern (bool): ?
-            
+  
         '''
         # list containing lineage, should be in correct format (contain no NaNs)
         self.X = X 
@@ -37,8 +37,8 @@ class tHMM:
         self.numLineages = get_numLineages(self.X) 
         # arranges the population into a list of lineages (each lineage might have varying length)
         self.population = init_Population(self.X, self.numLineages) 
-        
-        
+
+
         assert self.numLineages == len(self.population), "Something is wrong with the number of lineages in your population member variable for your tHMM class and the number of lineages member variable for your tHMM class. Check the number of unique root cells and the number of lineages in your data."
         # list that is numLineages long of parameters for each lineage tree in our population
         self.paramlist = self.init_paramlist() 
@@ -50,7 +50,7 @@ class tHMM:
 
 
 #####-------------------- Create list of parameters -------------------------#####
-        
+
     def init_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage.
         In this function, the dictionary is initialized.
@@ -78,11 +78,11 @@ class tHMM:
             the emission matrix will be [K x 3].
             if the Exponential is used, on the whole we will have 2 parameters for emissions, so
             the emission matrix will be [K x 2].
-            
+
         Returns:
             ----------
             paramlist (dictionary): a dictionary holding three matrices mentioned above.
-                
+
         '''
         paramlist = []
         numStates = self.numStates
@@ -113,7 +113,7 @@ class tHMM:
             assert len(paramlist) == lineage_num+1
 
         return paramlist
-    
+
 #####------------------ Marginal State Distribution -----------------------######
 
     def get_Marginal_State_Distributions(self):
@@ -129,12 +129,11 @@ class tHMM:
         and for all k in the total number of discrete states. Each MSD array is
         an [N x K] array (an entry for each cell and an entry for each state),
         and each lineage has its own MSD array.
-        
+
         Every element in MSD matrix is essentially sum over all transitions from any state to
         state j (from parent to daughter):
             P(z_u = k) = sum_on_all_j(T_jk * P(parent_cell_u) = j)
-        
-        
+
         '''
         numStates = self.numStates
         numLineages = self.numLineages
@@ -263,18 +262,17 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
     See Pg. 14 of The Gompertz distribution and Maximum Likelihood Estimation of its parameters - a revision
     by Adam Lenart
     November 28, 2011
-    
+
     This is a replacement for scipy.gompertz function, because at the end of
     the experiment time, there will be some cells that are still alive and
     have not died or divided, so we don't know their end_time, these cells in 
     our data are called right censored. So this distribution is used instead of 
     real gompretz distribution, to make the synthesized data more like the distribution.
 
-    
+
     p(tau_i | a, b) = [a * exp(b * tau) ^delta_i] * [exp(-a/b * (exp(b * tau_i -1)))]
     here, `firstCoeff` is [a * exp(b * tau) ^delta_i]  and the `secondCoeff` is [exp(-a/b * (exp(b * tau_i -1)))]
 
-    
     Args:
         ----------
         tau_or_tauFake (float): the cell's lifetime

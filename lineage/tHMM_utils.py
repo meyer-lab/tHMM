@@ -4,11 +4,11 @@
 def max_gen(lineage):
     '''finds the max generation in a lineage tree, in a given experiment time;
     i.e., the generation of the leaf cells.
-    
+
     Args:
         ----------
         lineage (list): a list of objects (cells) in a lineage.
-        
+
     Returns:
         ----------
         gen_holder (int): the maximum generation in a lineage
@@ -26,12 +26,12 @@ def get_gen(gen, lineage):
         ----------
         gen (int): the generation number that we want to separate from the rest.
         lineage (list of objects): a list holding the objects (cells) in a lineage.
-    
+
     Returns:
         ----------
         first_set (list of objects): a list that holds the cells with the same given 
         generation.
-        
+
     '''
     first_set = []
     for cell in lineage:
@@ -45,13 +45,13 @@ def get_parents_for_level(level, lineage):
     Returns a set of all the parents of all the cells in a
     given level/generation. For example this would give you
     all the non-leaf cells in the generation above the one given.
-        
+
     Args:
         ----------
         level (list of objects): a list that holds objects (cells) in a given level
         (or generation).
         lineage (list of objects): a list hodling objects (cells) in a lineage
-        
+
     Returns:
         ----------
         parent_holder (set): a list that holds objects (cells) which 
@@ -71,12 +71,12 @@ def get_daughters(cell):
         ----------
         cell (obj): an object (the cell) with different instances, including
         the cell's right daughter and cell's left daughter.
-        
+
     Returns:
         ----------
         temp (list): a list of two objects, i.e., two daughter cells of a given cell.
     """
-        
+
     temp = []
     if cell.left: # means if cell.left exists
         temp.append(cell.left)

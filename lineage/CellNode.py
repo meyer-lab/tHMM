@@ -8,54 +8,54 @@ from scipy import optimize, stats as sp
 
 
 class CellNode:
-    """ 
+    """
     Each cell in our tree will consist of a node containing these traits.
-    
+
     This class includes many functions that assign the cell its properties, i.e., 
     the cell's generation, lifetime, true_state, etc. 
     """
-    
+
     def __init__(self, gen=1, linID=0, startT=0, endT=float('nan'), fate=None, 
                  left=None, right=None, parent=None, trackID=None, true_state=None):
         """
-        
+
         Args:
         ----------
             gen (int): the generation of the cell, root cells are of generation 1, 
-                each division adds 1 to the previous generation
-            
+                each division adds 1 to the previous generation.
+
             linID (int): the lineage identity of the cell, keeps track of what
-            lineage a cell belongs to
-        
+            lineage a cell belongs to.
+
             startT (float): the starting time of the cell, the point at which
-            it spawned into existence
-        
+            it spawned into existence.
+
             endT (float): the end time of the cell, the point at which it either
-            divided or died, can be NaN
-        
+            divided or died, can be NaN.
+
             tau (float): [avoiding self.t, since that is a common function
-            (i.e. transposing matrices)] tau is how long the cell lived
-         
-            fate (0/1): the fate at the endT of the cell, 0 is death, 1 is division
-        
+            (i.e. transposing matrices)] tau is how long the cell lived.
+
+            fate (0/1): the fate at the endT of the cell, 0 is death, 1 is division.
+
             left (obj): the left daughter of the cell, either returns a CellNode
-            or NoneType object
-        
+            or NoneType object.
+
             right (obj): the right daughter of the cell, either returns a CellNode
-            or NoneType object
-        
+            or NoneType object.
+
             parent (obj): the parent of the cell, returns a CellNode object 
             (except at the root node)
-        
+
             trackID (int): ID of the cell used during image tracking
-        
+
             true_state (0/1): indicates whether cell is PC9 (0) or H1299 (1)
-        
+
             deathObserved (T/F): marks whether the cell reached the true end 
             of its lifetime (has truely died or divided)
-        
+
         """
-        
+
         self.gen = gen 
         self.linID = linID 
         self.startT = startT 
@@ -93,12 +93,13 @@ class CellNode:
         return self.left is None and self.right is None
 
     def calcTau(self):
-        """ 
+        """
         Find the cell's lifetime by subtracting its endTime from startTime
         if the lifetime if the cell is NaN, it throws a warning.
-        
+
         """
-        self.tau = self.endT - self.startT   # calculate tau here
+        # calculate tau here
+        self.tau = self.endT - self.startT
         if math.isnan(self.tau):
             print("Warning: your cell lifetime {} is a nan".format(self.tau))
 
@@ -116,15 +117,15 @@ class CellNode:
         self.tau = float('nan')
 
     def die(self, endT):
-        """ 
+        """
         Cell dies without dividing.
-        
+
         If the cell dies, the endTime is reached so we calculate the lifetime (tau)
         and the death is observed. 
-        Args: 
+        Args:
             ----------
             endT (float): end time of the cell
-            
+
         This function doesn't return
         """
         self.fate = False   # no division
@@ -133,24 +134,24 @@ class CellNode:
         self.fateObserved = True # this cell has truly died
 
     def divide(self, endT, trackID_d1=None, trackID_d2=None):
-        """ 
+        """
         Cell life ends through division. The two optional trackID arguments 
         represents the trackIDs given to the two daughter cells. 
-        
+
         Args:
             ---------
             endT (float): end time of the cell
-            
-        kwargs: 
+
+        kwargs:
             trackID_d1 & trackID_d2: since trackID is an attribute of experimental data, 
             so when we generate the lineage we need to assing "None" to the trackID
             of the left and right daughter cell
-        
+
         Returns:
             ----------
             self.left (obj): left newly born daughter cell object 
             self.right (obj): right newly born daughter cell object
-            
+
         """
         self.endT = endT
         self.fate = True    # division
@@ -160,13 +161,13 @@ class CellNode:
         if self.isRootParent():
             self.left = CellNode(gen=self.gen+1, trackID=trackID_d1, linID=self.linID, 
                                  startT=endT, parent=self, true_state=self.true_state)
-            
+
             self.right = CellNode(gen=self.gen+1, trackID=trackID_d2, linID=self.linID, 
                                   startT=endT, parent=self, true_state=self.true_state)
         else:
             self.left = CellNode(gen=self.gen+1, trackID=trackID_d1, linID=self.linID,
                                  startT=endT, parent=self, true_state=self.true_state)
-            
+
             self.right = CellNode(gen=self.gen+1, trackID=trackID_d2, linID=self.linID, 
                                   startT=endT, parent=self, true_state=self.true_state)
 
@@ -176,16 +177,16 @@ class CellNode:
     def get_root_cell(self):
         '''
         Gets the root cell associated with the cell.
-        
+
         it keeps going up to the root by jumping from daughter cells to their 
         mother cells by keeping track of their lineage ID (linID) until it reaches
         the first generation and then returns the last hold cell which is the 
         ancestor of the lineage.
-        
+
         Returns:
             ---------
             curr_cell (obj): the ancestor cell if a lineage
-            
+
         '''
         cell_linID = self.linID
         curr_cell = self
@@ -194,46 +195,45 @@ class CellNode:
             assert cell_linID == curr_cell.linID
         assert cell_linID == curr_cell.linID
         return curr_cell
-    
 
 #####--------------------- Generating Lineage Tree ------------------------#####
-        
+
 def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
                             switchT=None, bern2=None, cG2=None, scaleG2=None, 
                             FOM='G', betaExp=None, betaExp2=None):
-    ''' 
+    '''
     generates a list of objects (cells) in a lineage.
-    
+
     Given an experimental end time, a Bernoulli distribution for 
     dividing/dying and a Gompertz/exponential parameter for cell lifetime, 
     it creates objects as cells and puts them in a list. 
     If the switchT is not None, then after a while it will switch
     to the new bernoulli, Gompertz/Exponential parameters and creates lineages
     based on the new distribution.
-     
-    
+ 
+
     Bernoulli distribution: 
         It has one parameter (locBern)
         If locBern = 0.80 then 80% of the times the cells will divide and 20% 
         of the times they die; meaning, for every cell that is generated,
         a random number (either 1:divide, or 0:die) is picked from the
         distribution with this parameter and the fate of the cell is assigned.
-        
+
     Gompertz distribution:
         It has two parameters (cGom, scaleGom)
         Given these two parameters, for every cell, it randomly picks a number
         from the distribution and assigns it to the cell as its lifetime. The unit 
         of the lifetime would be in [hours].
-        
+
     Exponential distribution:
         It has one parameter (betaExp)
         It is a replacement for Gompertz to produce cell's lifetime, given the 
         beta parameter, every time we pick a random number from an exponential 
         distributions with parameter betaExp, and assign it to be the lifetime
         of the cell.
-        
-            
-    
+
+
+
     Args:
         ----------
         initCells (int): the number of initial cells to initiate the tree with
@@ -257,7 +257,7 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom,
         lifetime here it is either "G": Gompertz, or "E": Exponential.
         betaExp (float): the parameter of Exponential distribution
         betaExp2 (float): second parameter of Exponential distribution 
-        
+
     Returns:
         ----------
         lineage (list): A list of objects (cells) that creates the tree. 
@@ -313,18 +313,18 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom,
 
 
 #####------------------- Calculating the Doubling Time -------------------#####
-    
+
 def doublingTime(initCells, locBern, cGom, scaleGom, FOM='G', betaExp=None):
     ''' 
     Calculates the doubling time of a homogeneous cell population, 
     given the three parameters and an initial cell count. 
-    
+
     Using the 'generateLineageWithTime' function, it generates a lineage, 
     and keeps track of the number of alive cells during the experiment time, then
     fits an Exponential curve to it, and finds the parameter of this exponential (lambda).
-    
+
     the doubling time == ln(2)/lambda
-    
+
     Args:
         ----------
         initCells (int): number of initial cells to initiate the tree
@@ -334,14 +334,14 @@ def doublingTime(initCells, locBern, cGom, scaleGom, FOM='G', betaExp=None):
         FOM (str): either 'G': Gompertz, or 'E': Exponential. Decides on the 
         distribution for setting the cell's lifetime
         betExp (float): the parameter of Exponential distribution.
-        
+
     Returns:
         ----------
         doubleT (float): the doubling time of the population of the cells 
         in the lineage.
-        
-        **** This function works for homogeneous population of cells yet.
-    
+
+        This function works for homogeneous population of cells yet.
+
     '''
     numAlive = [] # list that stores the number of alive cells for each experimentTime
     experimentTimes = np.logspace(start=0, stop=2, num=49)
@@ -352,7 +352,7 @@ def doublingTime(initCells, locBern, cGom, scaleGom, FOM='G', betaExp=None):
         if FOM == 'G':
             lineage = generateLineageWithTime(initCells, experimentTime, 
                                               locBern, cGom, scaleGom)
-            
+
         elif FOM == 'E':
             lineage = generateLineageWithTime(initCells, experimentTime, 
                                               locBern, cGom, scaleGom, FOM='E',
