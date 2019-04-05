@@ -54,7 +54,7 @@ def get_parents_for_level(level, lineage):
         
     Returns:
         ----------
-        parent_holder (lis of objects): a list that holds objects (cells) which 
+        parent_holder (set): a list that holds objects (cells) which 
         are the parents of the cells in a given generation 
     """
     parent_holder = set() #set makes sure only one index is put in and no overlap
@@ -86,9 +86,9 @@ def get_daughters(cell):
 
 #####--------------- printing probability matrices of a model---------------######
 def print_Assessment(tHMMobj):
-    """This function just returns three probability matrices of a given model
-    including intial probabilities (pi), transition probabilities (T), emission
-    probabilities (E).
+    """This function just takes in tree-HMM model as an object and returns three 
+    probability matrices of a given model including intial probabilities (pi), 
+    transition probabilities (T), emission probabilities (E).
     """
     for num in range(tHMMobj.numLineages):
         print("\n")

@@ -120,15 +120,21 @@ class tHMM:
         '''
         Marginal State Distribution (MSD) matrix and recursion.
         This is the probability that a hidden state variable z_n is of
-        state k, that is, each value in the N by K MSD array for each lineage is
+        state k, that is, each value in the [N x K] MSD array for each lineage is
         the probability
 
         P(z_n = k),
 
         for all z_n in the hidden state tree
         and for all k in the total number of discrete states. Each MSD array is
-        an N by K array (an entry for each cell and an entry for each state),
+        an [N x K] array (an entry for each cell and an entry for each state),
         and each lineage has its own MSD array.
+        
+        Every element in MSD matrix is essentially sum over all transitions from any state to
+        state j (from parent to daughter):
+            P(z_u = k) = sum_on_all_j(T_jk * P(parent_cell_u) = j)
+        
+        
         '''
         numStates = self.numStates
         numLineages = self.numLineages
@@ -145,16 +151,18 @@ class tHMM:
                 MSD_array[0, state_k] = params["pi"][state_k]
             MSD.append(MSD_array)
 
+        # Making sure the sum of initial probabilities over all states ==1
         for num in range(numLineages):
             MSD_0_row_sum = np.sum(MSD[num][0])
             assert np.isclose(MSD_0_row_sum, 1.), "The Marginal State Distribution for your root cells, P(z_1 = k), for all states k in numStates, are not adding up to 1!"
 
+
         for num in range(numLineages):
             lineage = population[num] # getting the lineage in the Population by lineage index
-            curr_level = 2
+            curr_level = 2 # because we already have filled the first row of the matrix (level1)
             max_level = max_gen(lineage)
             while curr_level <= max_level:
-                level = get_gen(curr_level, lineage) #get lineage for the gen
+                level = get_gen(curr_level, lineage) #get lineage for the generation
                 for cell in level:
                     parent_cell_idx = lineage.index(cell.parent) # get the index of the parent cell
                     current_cell_idx = lineage.index(cell)
@@ -172,6 +180,7 @@ class tHMM:
             assert np.allclose(MSD_row_sums, 1.0), "The Marginal State Distribution for your cells, P(z_k = k), for all states k in numStates, are not adding up to 1!"
         return MSD
 
+#####--------------Calculating the Emission likelihood ----------------------#####
     def get_Emission_Likelihoods(self):
         '''
         Emission Likelihood (EL) matrix.
@@ -254,8 +263,33 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, deathObserved=True):
     See Pg. 14 of The Gompertz distribution and Maximum Likelihood Estimation of its parameters - a revision
     by Adam Lenart
     November 28, 2011
+    
+    This is needed, because at the end of the experiment time, there will be some
+    cells that are still alive and have not died or divided, so we don't know their
+    end_time, these cells in our data are called right censored.
+    What this function does, is that it checks whether the cell has died or not,
+    if it has not died, the first coefficient of Gompertz distribution is estimated,
+    if the cell has not died yet, it will put the first coefficient == 1.
+    
+    p(tau_i | a, b) = [a * exp(b * tau) ^delta_i] * [exp(-a/b * (exp(b * tau_i -1)))]
+    here, `firstCoeff` is [a * exp(b * tau) ^delta_i]  and the `secondCoeff` is [exp(-a/b * (exp(b * tau_i -1)))]
+    This function has broke down the likelihood into two parts just for the ease of
+    calculations.
+    
+    Args:
+        ----------
+        tau_or_tauFake (float): the cell's lifetime
+        c (float): loc of Gompertz (one of the distribution parameters)
+        scale (float): scale parameter of Gompertz disribution
+        deathObserved (bool): if the cell has died already, it is True, otherwise 
+        it is False
+        
+    Return:
+        ----------
+        result (float): the multiplication of two coefficients 
+            
     '''
-    b = 1. / scale
+    b = 1. / scale 
     a = c * b
 
     firstCoeff = a * np.exp(b*tau_or_tauFake)
