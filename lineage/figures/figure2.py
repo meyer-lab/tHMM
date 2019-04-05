@@ -14,9 +14,8 @@ from ..Lineage_utils import remove_NaNs
 def makeFigure():
     # Get list of axis objects
     x, y = 3, 4 #rows and columns
-    ax, f = getSetup((12, 9), (x, y)
+    ax, f = getSetup((12, 9), (x, y))
     
-#udiuewdie
     #subplotLabel(ax[0], 'A')
 
     f.tight_layout()
