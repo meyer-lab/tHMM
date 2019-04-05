@@ -17,7 +17,7 @@ def makeFigure():
     ax, f = getSetup((12, 9), (x, y)
     
 #udiuewdie
-    subplotLabel(ax[0], 'A')
+    #subplotLabel(ax[0], 'A')
 
     f.tight_layout()
     
