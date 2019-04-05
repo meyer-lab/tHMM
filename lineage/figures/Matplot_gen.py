@@ -33,7 +33,7 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
 
     #ax = axs[1, 0]
     ax[2].set_xlabel(xlabel)
-    ax[2].set_xscale("log", nonposx='clip')
+    #ax[2].set_xscale("log", nonposx='clip')
     ax[2].errorbar(x, cGom_MAS_h1, fmt='o', c='g', marker="^", fillstyle='none', label='State 1')
     ax[2].errorbar(x, cGom_2_h1, fmt='o', c='r', marker="^", fillstyle='none', label='State 2')
     ax[2].axhline(y=MAScGom, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
@@ -46,7 +46,7 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
 
     #ax = axs[1, 1]
     ax[3].set_xlabel(xlabel)
-    ax[3].set_xscale("log", nonposx='clip')
+    #ax[3].set_xscale("log", nonposx='clip')
     ax[3].errorbar(x, scaleGom_MAS_h1, fmt='o', c='g', marker="^", fillstyle='none', label='State 1')
     ax[3].errorbar(x, scaleGom_2_h1, fmt='o', c='r', marker="^", fillstyle='none', label='State 2')
     ax[3].axhline(y=MASscaleGom, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
