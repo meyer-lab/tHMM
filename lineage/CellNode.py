@@ -54,7 +54,6 @@ class CellNode:
         self.startT = startT 
         self.endT = endT 
         self.tau = self.endT - self.startT 
-        # tau is how long the cell lived
         self.fate = fate 
         self.left = left 
         self.right = right 
