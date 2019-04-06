@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 
 matplotlib.use('Agg')
 
+
 def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
     '''
     Takes in a list of cells, and then outputs a color_map list and a list of cell indices.
@@ -68,11 +69,11 @@ def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
         G.add_node(cell_idx)
         parent_cell_idx = None
 
-        if prob is None and state is None and X_like is None: #plot cell true state
+        if prob is None and state is None and X_like is None:  # plot cell true state
             plotter = cell.true_state
-        elif X_like is not None: #plot viterbi
+        elif X_like is not None:  # plot viterbi
             plotter = X_like[cell_idx]
-        elif X_like is None and prob is not None and state is not None: #plot likelihoods
+        elif X_like is None and prob is not None and state is not None:  # plot likelihoods
             plotter = state
 
         if plotter:
@@ -81,7 +82,7 @@ def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
             node_color_map.append('green')
 
         if X_like is None and prob is not None and state is not None:
-            node_size_map.append(prob[cell_idx]*scale)
+            node_size_map.append(prob[cell_idx] * scale)
 
         if cell_idx == 0:
             pass
@@ -94,18 +95,19 @@ def make_colormap_graph(X, X_like=None, prob=None, state=None, scale=300):
 
     return(G, node_color_map, node_size_map)
 
+
 def plot_experiments(lin, filename):
     """ Creates lineage plots for all the experimental data. """
     state_ID = []
     for cell in lin:
-        state_ID.append(cell.true_state) # append a 0 (PC9 - green) or 1 (H1299 - red) based on the cell's true state
+        state_ID.append(cell.true_state)  # append a 0 (PC9 - green) or 1 (H1299 - red) based on the cell's true state
     G, cmap, _ = make_colormap_graph(lin, X_like=state_ID)
     # M = G.number_of_edges()
     edge_weights = [d for (u, v, d) in G.edges.data('weight')]
 
     pos = graphviz_layout(G, prog='twopi', root=0)
     plt.figure(figsize=(7, 6))
-    plt.figaspect(1) # maintains that the figure is 1:1 in terms of height to width ratio
+    plt.figaspect(1)  # maintains that the figure is 1:1 in terms of height to width ratio
     node_size = 100
     nx.draw_networkx_nodes(G, pos, node_size=node_size, node_color=cmap, alpha=0.65)
     edges = nx.draw_networkx_edges(G, pos, node_size=node_size, edge_color=edge_weights, edge_cmap=plt.cm.inferno_r, width=2)

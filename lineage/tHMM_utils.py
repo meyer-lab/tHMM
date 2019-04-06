@@ -3,6 +3,7 @@
 import itertools
 import numpy as np
 
+
 def max_gen(lineage):
     '''finds the max generation in a lineage'''
     gen_holder = 1
@@ -10,6 +11,7 @@ def max_gen(lineage):
         if cell.gen > gen_holder:
             gen_holder = cell.gen
     return gen_holder
+
 
 def get_gen(gen, lineage):
     '''creates a list with all cells in the given generation'''
@@ -19,17 +21,19 @@ def get_gen(gen, lineage):
             first_set.append(cell)
     return first_set
 
+
 def get_parents_for_level(level, lineage):
     """
         Returns a set of all the parents of all the cells in a
         given level/generation. For example this would give you
         all the non-leaf cells in the generation above the one given.
     """
-    parent_holder = set() #set makes sure only one index is put in and no overlap
+    parent_holder = set()  # set makes sure only one index is put in and no overlap
     for cell in level:
         parent_cell = cell.parent
         parent_holder.add(lineage.index(parent_cell))
     return parent_holder
+
 
 def get_daughters(cell):
     """ Returns a list of the daughters of a given cell. """
@@ -39,6 +43,7 @@ def get_daughters(cell):
     if cell.right:
         temp.append(cell.right)
     return temp
+
 
 def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, fateObserved=True):
     '''
@@ -50,19 +55,20 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, fateObserved=True):
     b = 1. / scale
     a = c * b
 
-    firstCoeff = a * np.exp(b*tau_or_tauFake)
+    firstCoeff = a * np.exp(b * tau_or_tauFake)
     if fateObserved:
-        pass # this calculation stays as is if the death is observed (delta_i = 1)
+        pass  # this calculation stays as is if the death is observed (delta_i = 1)
     else:
-        firstCoeff = 1. # this calculation is raised to the power of delta if the death is unobserved (right-censored) (delta_i = 0)
+        firstCoeff = 1.  # this calculation is raised to the power of delta if the death is unobserved (right-censored) (delta_i = 0)
 
-    secondCoeff = np.exp((-1*a/b)*(np.expm1(b*tau_or_tauFake)))
+    secondCoeff = np.exp((-1 * a / b) * (np.expm1(b * tau_or_tauFake)))
     # the observation of the cell death has no bearing on the calculation of the second coefficient in the pdf
 
-    result = firstCoeff*secondCoeff
+    result = firstCoeff * secondCoeff
     assert np.isfinite(result), "Your Gompertz right-censored likelihood calculation is returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
 
     return result
+
 
 def getAIC(tHMMobj, LL):
     '''
@@ -116,13 +122,14 @@ def getAIC(tHMMobj, LL):
         elif tHMMobj.FOM == 'E':
             number_of_parameters += 1
 
-        AIC_degrees_of_freedom = numStates**2 + numStates*number_of_parameters - 1
+        AIC_degrees_of_freedom = numStates**2 + numStates * number_of_parameters - 1
         AIC_degrees_of_freedom_holder.append(AIC_degrees_of_freedom)
-        AIC_value = -2 * LL[num] + 2*AIC_degrees_of_freedom
+        AIC_value = -2 * LL[num] + 2 * AIC_degrees_of_freedom
         AIC_value_holder.append(AIC_value)
 
-    AIC_value_holder_rel_0 = AIC_value_holder-min(AIC_value_holder) # this line is to make it so the minimum value is 0
-    return(AIC_value_holder_rel_0, [numStates]*len(AIC_value_holder), AIC_degrees_of_freedom_holder)
+    AIC_value_holder_rel_0 = AIC_value_holder - min(AIC_value_holder)  # this line is to make it so the minimum value is 0
+    return(AIC_value_holder_rel_0, [numStates] * len(AIC_value_holder), AIC_degrees_of_freedom_holder)
+
 
 def getAccuracy(tHMMobj, all_states, verbose=False):
     '''Gets the accuracy for state assignment per lineage.'''
@@ -152,7 +159,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
                         temp_all_states[ii] = possible_state_assignment[state]
 
             common_state_counter = [true_state == temp_vit_state for (true_state, temp_vit_state) in zip(true_state_holder, temp_all_states)]
-            accuracy = sum(common_state_counter)/len(lineage) # gets the accuracies per possible state assignment
+            accuracy = sum(common_state_counter) / len(lineage)  # gets the accuracies per possible state assignment
             temp_acc_holder.append(accuracy)
 
         idx_of_max_acc = np.argmax(temp_acc_holder)
@@ -165,7 +172,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
                 if cell_viterbi_state == state:
                     viterbi_est_holder[ii] = tHMMobj.stateAssignment[lin][state]
 
-        tHMMobj.states.append(viterbi_est_holder) # the correct ordering of the states
+        tHMMobj.states.append(viterbi_est_holder)  # the correct ordering of the states
 
         if verbose:
             printAssessment(tHMMobj, lin)
@@ -181,6 +188,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
             print(tHMMobj.Accuracy[lin])
 
     return(tHMMobj.Accuracy, tHMMobj.states, tHMMobj.stateAssignment)
+
 
 def printAssessment(tHMMobj, lin):
     '''Prints the parameters.'''

@@ -5,6 +5,7 @@ import matplotlib
 import matplotlib.ticker
 matplotlib.use('Agg')
 
+
 def Matplot_gen(x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel, title, save_name):
     '''Creates 4 subpanles for model estimation'''
 
@@ -12,7 +13,7 @@ def Matplot_gen(x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MA
     ax = axs[0, 0]
     ax.set_ylim(0, 110)
     ax.errorbar(x, acc_h1, fmt='o', c='b', marker="*", fillstyle='none', label='Accuracy')
-    ax.axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b') #linestyle is dashdotdotted
+    ax.axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b')  # linestyle is dashdotdotted
     ax.set_ylabel('Accuracy (%)', rotation=90)
     ax.get_yticks()
 
@@ -33,7 +34,6 @@ def Matplot_gen(x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MA
     ax.set_ylabel('Gompertz C', rotation=90)
     ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     ax.get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
-
 
     ax = axs[1, 1]
     ax.set_xlabel(xlabel)
