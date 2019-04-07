@@ -8,7 +8,20 @@ from .tHMM_utils import max_gen, get_gen, right_censored_Gomp_pdf
 class tHMM:
     """ Main tHMM class. """
     def __init__(self, X, numStates=1, FOM='G', keepBern=True):
-        ''' Instantiates a tHMM. '''
+        """ Instantiates a tHMM.
+
+        This function uses the following functions and assings them to the cells
+        (objects) in the lineage.
+
+        Args:
+            ----------
+            X (list of objects): A list of objects (cells) in a lineage in which
+            the NaNs have been removed.
+            numStates (int): the number of hidden states that we want our model have
+            FOM (str): For now, it is either "E": Exponential, or "G": Gompertz
+            and it determines the type of distribution for lifetime of the cells
+            keepBern (bool): ?
+        """
         self.X = X # list containing lineage, should be in correct format (contain no NaNs)
         self.numStates = numStates # number of discrete hidden states
         self.FOM = FOM
@@ -21,8 +34,41 @@ class tHMM:
         self.MSD = self.get_Marginal_State_Distributions() # full Marginal State Distribution holder
         self.EL = self.get_Emission_Likelihoods() # full Emission Likelihood holder
 
+
+##------------------------ Initializing the parameter list --------------------------##
     def init_paramlist(self):
-        ''' Creates a list of dictionaries holding the tHMM parameters for each lineage. '''
+        ''' Creates a list of dictionaries holding the tHMM parameters for each lineage.
+        In this function, the dictionary is initialized.
+
+        There are three matrices in this function:
+            1. "pi" (The initial probability matrix): The matrix holding the probability of
+            being in each state at time = 0. This matrix is a [K x 1] matrix assuming
+            we have K hidden states. The matrix is initialized uniformly.
+
+            2. "T" (Transition probability matrix): The matrix holding the probability of 
+            transitioning between different states. This is a [K x K] matrix assuming 
+            we have K hidden states. The matrix in initialized uniformly.
+
+            3. "E" (Emission probability matrix): The matrix holding the probability of
+            emissions (observations) corresponding to each state. In this case, emissions are
+            1. whether a cell dies or divides (Bernoulli distribution with 1 parameter)
+            2. how long a cell lives:
+                2.1. Gompertz distribution with 2 parameters (loc and scale)
+                    loc initialized to 2
+                    scale initialized to 62.5
+                2.2. Exponential distribution with 1 parameter (beta)
+                    beta intialized to 62.5
+
+            If the Gompertz is used, on the whole we will have 3 parameters for emissions, so
+            the emission matrix will be [K x 3].
+            if the Exponential is used, on the whole we will have 2 parameters for emissions, so
+            the emission matrix will be [K x 2].
+
+        Returns:
+            ----------
+            paramlist (dictionary): a dictionary holding three matrices mentioned above.
+
+        '''
         paramlist = []
         numStates = self.numStates
         numLineages = self.numLineages
@@ -46,6 +92,7 @@ class tHMM:
 
         return paramlist
 
+##---------------------------- Marginal State Distribution ------------------------------##
     def get_Marginal_State_Distributions(self):
         '''
         Marginal State Distribution (MSD) matrix and recursion.
@@ -59,6 +106,10 @@ class tHMM:
         and for all k in the total number of discrete states. Each MSD array is
         an N by K array (an entry for each cell and an entry for each state),
         and each lineage has its own MSD array.
+
+        Every element in MSD matrix is essentially sum over all transitions from any state to
+        state j (from parent to daughter):
+            P(z_u = k) = sum_on_all_j(Transition(from j to k) * P(parent_cell_u) = j)
         '''
         numStates = self.numStates
         numLineages = self.numLineages
@@ -102,6 +153,7 @@ class tHMM:
             assert np.allclose(MSD_row_sums, 1.0), "The Marginal State Distribution for your cells, P(z_k = k), for all states k in numStates, are not adding up to 1!"
         return MSD
 
+##--------------------------- Emission Likelihood --------------------------------##
     def get_Emission_Likelihoods(self):
         '''
         Emission Likelihood (EL) matrix.
@@ -114,14 +166,20 @@ class tHMM:
         and for all possible discrete states k. Since we have a
         multiple observation model, that is
 
-        x_n = {x_B, x_G},
+        x_n = {x_B, x_G}, # in case of Gompertz distribution for lifetime
+        or
+        x_n = {x_B, x_E}, # in case of Exponential distribution for lifetime
 
         consists of more than one observation, x_B = division(1) or
         death(0) (which is one of the observations x_B) and the other
-        being, x_G = lifetime, lifetime >=0, (which is the other observation x_G)
+        being, x_G or x_E = lifetime, lifetime >=0, (which is the other observation x_G or x_E)
         we make the assumption that
 
         P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_G | z_n = k).
+
+        In case of Exponential lifetime in stead of Gompertz, similarly we have:
+        P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_E | z_n = k).
+
         '''
         numStates = self.numStates
         numLineages = self.numLineages
