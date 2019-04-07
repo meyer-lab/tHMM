@@ -4,6 +4,8 @@ import itertools
 import numpy as np
 
 ##------------------- Find maximum generation in a lineage -----------------------##
+
+
 def max_gen(lineage):
     """
     finds the max generation in a lineage tree, in a given experiment time;
@@ -24,8 +26,9 @@ def max_gen(lineage):
     return gen_holder
 
 ##---------------------- Finding the cells in a generation -------------------------##
-def get_gen(gen, lineage):
 
+
+def get_gen(gen, lineage):
     """
     Creates a list with all cells in the given generation
     Args:
@@ -35,7 +38,7 @@ def get_gen(gen, lineage):
 
     Returns:
         ----------
-        first_set (list of objects): a list that holds the cells with the same given 
+        first_set (list of objects): a list that holds the cells with the same given
         generation.
     """
     first_set = []
@@ -45,6 +48,8 @@ def get_gen(gen, lineage):
     return first_set
 
 ##----------------------finding parents of cells in a generation------------------##
+
+
 def get_parents_for_level(level, lineage):
     """
     Returns a set of all the parents of all the cells in a
@@ -59,18 +64,19 @@ def get_parents_for_level(level, lineage):
 
     Returns:
         ----------
-        parent_holder (set): a list that holds objects (cells) which 
-        are the parents of the cells in a given generation 
+        parent_holder (set): a list that holds objects (cells) which
+        are the parents of the cells in a given generation
     """
-    parent_holder = set() #set makes sure only one index is put in and no overlap
+    parent_holder = set()  # set makes sure only one index is put in and no overlap
     for cell in level:
         parent_cell = cell.parent
         parent_holder.add(lineage.index(parent_cell))
     return parent_holder
 
 ##---------------------- finding daughter of a given cell -------------------------##
-def get_daughters(cell):
 
+
+def get_daughters(cell):
     """
     Returns a list of the daughters of a given cell.
     Args:
@@ -97,10 +103,10 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, fateObserved=True):
     by Adam Lenart
     November 28, 2011
 
-    This is a replacement for scipy.gompertz function to find the Emission Likelihood, 
+    This is a replacement for scipy.gompertz function to find the Emission Likelihood,
     because at the end of the experiment time,there will be some cells that are still
-    alive and have not died or divided, so we don't know their end_time, these cells in 
-    our data are called right censored. So this distribution is used instead of 
+    alive and have not died or divided, so we don't know their end_time, these cells in
+    our data are called right censored. So this distribution is used instead of
     real gompretz distribution, to make the synthesized data more like the distribution.
 
 
@@ -112,35 +118,37 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, fateObserved=True):
         tau_or_tauFake (float): the cell's lifetime
         c (float): loc of Gompertz (one of the distribution parameters)
         scale (float): scale parameter of Gompertz disribution
-        deathObserved (bool): if the cell has died already, it is True, otherwise 
+        deathObserved (bool): if the cell has died already, it is True, otherwise
         it is False
 
     Return:
         ----------
-        result (float): the multiplication of two coefficients 
+        result (float): the multiplication of two coefficients
 
     """
     b = 1. / scale
     a = c * b
 
-    firstCoeff = a * np.exp(b*tau_or_tauFake)
+    firstCoeff = a * np.exp(b * tau_or_tauFake)
     if fateObserved:
-        pass # this calculation stays as is if the death is observed (delta_i = 1)
+        pass  # this calculation stays as is if the death is observed (delta_i = 1)
     else:
-        firstCoeff = 1. # this calculation is raised to the power of delta if the death is unobserved (right-censored) (delta_i = 0)
+        firstCoeff = 1.  # this calculation is raised to the power of delta if the death is unobserved (right-censored) (delta_i = 0)
 
-    secondCoeff = np.exp((-1*a/b)*(np.expm1(b*tau_or_tauFake)))
+    secondCoeff = np.exp((-1 * a / b) * (np.expm1(b * tau_or_tauFake)))
     # the observation of the cell death has no bearing on the calculation of the second coefficient in the pdf
 
-    result = firstCoeff*secondCoeff
+    result = firstCoeff * secondCoeff
     assert np.isfinite(result), "Your Gompertz right-censored likelihood calculation is returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
 
     return result
 
 ##------------------------ Akaike Information Criterion -------------------------##
+
+
 def getAIC(tHMMobj, LL):
     '''
-    Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off 
+    Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
     between over-fitting and under-fitting.
     AIC = 2*k - 2 * log(LL) in which k is the number of free parameters and LL is the maximum of likelihood function.
     Minimum of AIC detremines the relatively better model.
@@ -205,15 +213,17 @@ def getAIC(tHMMobj, LL):
         elif tHMMobj.FOM == 'E':
             number_of_parameters += 1
 
-        AIC_degrees_of_freedom = numStates**2 + numStates*number_of_parameters - 1
+        AIC_degrees_of_freedom = numStates**2 + numStates * number_of_parameters - 1
         AIC_degrees_of_freedom_holder.append(AIC_degrees_of_freedom)
-        AIC_value = -2 * LL[num] + 2*AIC_degrees_of_freedom
+        AIC_value = -2 * LL[num] + 2 * AIC_degrees_of_freedom
         AIC_value_holder.append(AIC_value)
 
-    AIC_value_holder_rel_0 = AIC_value_holder-min(AIC_value_holder) # this line is to make it so the minimum value is 0
-    return(AIC_value_holder_rel_0, [numStates]*len(AIC_value_holder), AIC_degrees_of_freedom_holder)
+    AIC_value_holder_rel_0 = AIC_value_holder - min(AIC_value_holder)  # this line is to make it so the minimum value is 0
+    return(AIC_value_holder_rel_0, [numStates] * len(AIC_value_holder), AIC_degrees_of_freedom_holder)
 
 ##------------------------- Calculate accuracy ----------------------------------##
+
+
 def getAccuracy(tHMMobj, all_states, verbose=False):
     '''
     Gets the accuracy for state assignment per lineage.
@@ -230,7 +240,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
     Returns:
         ----------
         tHMMobj.Accuracy (list): accuracy of state assignment
-        tHMMobj.states (list): the correct order of states 
+        tHMMobj.states (list): the correct order of states
         tHMMobj.stateAssignment (list): the correct states assigned by Viterbi
 
     Example usage:
@@ -240,7 +250,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
         deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        
+
         accuracy, states, stateAssignment = getAccuracy(tHMMobj, all_states, verbose = True)
 
     '''
@@ -270,7 +280,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
                         temp_all_states[ii] = possible_state_assignment[state]
 
             common_state_counter = [true_state == temp_vit_state for (true_state, temp_vit_state) in zip(true_state_holder, temp_all_states)]
-            accuracy = sum(common_state_counter)/len(lineage) # gets the accuracies per possible state assignment
+            accuracy = sum(common_state_counter) / len(lineage)  # gets the accuracies per possible state assignment
             temp_acc_holder.append(accuracy)
 
         idx_of_max_acc = np.argmax(temp_acc_holder)
@@ -283,7 +293,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
                 if cell_viterbi_state == state:
                     viterbi_est_holder[ii] = tHMMobj.stateAssignment[lin][state]
 
-        tHMMobj.states.append(viterbi_est_holder) # the correct ordering of the states
+        tHMMobj.states.append(viterbi_est_holder)  # the correct ordering of the states
 
         if verbose:
             printAssessment(tHMMobj, lin)
@@ -301,9 +311,11 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
     return(tHMMobj.Accuracy, tHMMobj.states, tHMMobj.stateAssignment)
 
 ##-------------------- printing probability matrices of a model ---------------------##
+
+
 def printAssessment(tHMMobj, lin):
-    """This function takes in the tree-HMM model as an object and lineage index, and returns three 
-    probability matrices of a given model for every lineage including intial probabilities (pi), 
+    """This function takes in the tree-HMM model as an object and lineage index, and returns three
+    probability matrices of a given model for every lineage including intial probabilities (pi),
     transition probabilities (T), emission probabilities (E).
     """
     print("\n")
