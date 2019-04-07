@@ -45,7 +45,7 @@ class CellNode:
 
             true_state (0/1): indicates whether cell is PC9 (0) or H1299 (1)
 
-            deathObserved (T/F): marks whether the cell reached the true end 
+            fateObserved (T/F): marks whether the cell reached the true end 
             of its lifetime (has truely died or divided)
 
         """
@@ -86,7 +86,7 @@ class CellNode:
     def calcTau(self):
         """
         Find the cell's lifetime by subtracting its endTime from startTime
-        if the lifetime if the cell is NaN, it throws a warning.
+        it makes sure the cell's lifetime is not NaN.
         """
         self.tau = self.endT - self.startT   # calculate tau here
         if math.isnan(self.tau):
