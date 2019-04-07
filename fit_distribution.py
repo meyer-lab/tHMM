@@ -40,8 +40,7 @@ def check_dist(data, verbose = False):
 
     Returns:
     -----------
-    best_dist (str): the best fit distribution found by ks-test
-    p_val[best_dist] (float): the p-value corresponding to the best fit distribution 
+    p_val (dictionary): a dictionary containing the name of distributions with their corresponding p-value
     
     '''
     ### A list of candidate distributions with [0, inf] range:
