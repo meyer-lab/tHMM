@@ -89,8 +89,7 @@ class CellNode:
         it makes sure the cell's lifetime is not NaN.
         """
         self.tau = self.endT - self.startT   # calculate tau here
-        if math.isnan(self.tau):
-            print("Warning: your cell lifetime {} is a nan".format(self.tau))
+        assert np.isfinite(self.tau), "Warning: your cell lifetime, {}, is a nan".format(self.tau)
 
     def isUnfinished(self):
         """ See if the cell is living or has already died/divided. """
