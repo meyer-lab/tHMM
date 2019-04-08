@@ -3,7 +3,7 @@ import pandas as pd
 
 # read data into DataFrame
 
-url1 = 'https://github.com/meyer-lab/lineage-growth/tree/master/lineage/G1_G2_duration_control.xslx'
+url1 = 'https://github.com/meyer-lab/lineage-growth/tree/master/lineage/G1_G2_duration_control.xlsx'
 df = pd.read_excel(url1)
 
 ##----------------------- Preprocessing the data ------------------------##
