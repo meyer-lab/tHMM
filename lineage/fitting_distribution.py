@@ -4,7 +4,7 @@ import math
 
 #######------Check the list of distributions and fit to the data --------#######
 
-def check_dist(data, verbose = False):
+def check_dist(data, verbose=False):
     '''
     The function to check the data against distributions.
 
@@ -16,29 +16,30 @@ def check_dist(data, verbose = False):
     -----------
     data (1D-array): the data we want to find the fit distribution for.
     dist (list of str): a list of strings that are pre-defined distributions in scipy package
-    verbose (bool): if it is True, when we call the function it will print out every distribution 
+    verbose (bool): if it is True, when we call the function it will print out every distribution
     and its p-value that is evaluated.
 
     Returns:
     -----------
     p_val (dictionary): a dictionary containing the name of distributions with their corresponding p-value
-    
+
     '''
-    ### A list of candidate distributions with [0, inf] range:
+    # A list of candidate distributions with [0, inf] range:
     dist = ['betaprime', 'fatiguelife', 'chi', 'expon', 'f', 'foldnorm',
-                 'frechet_r', 'frechet_l', 'gamma', 'erlang', 'invgamma', 'gompertz',
-                'fisk', 'lognorm', 'loggamma', 'nakagami', 'pareto', 'rice', 'rayleigh',
-                'dweibull']
+            'frechet_r', 'frechet_l', 'gamma', 'erlang', 'invgamma', 'gompertz',
+            'fisk', 'lognorm', 'loggamma', 'nakagami', 'pareto', 'rice', 'rayleigh',
+            'dweibull']
 
     p_val = {}
-    for i , val in enumerate(dist):
-        parameters = eval('sp.'+val+'.fit(data, fscale =1)')
-    
-        D, p = sp.kstest(data, val, args = parameters)
+    for i, val in enumerate(dist):
+        parameters = eval('sp.' + val + '.fit(data, fscale =1)')
 
-        if math.isnan(D): D = 0
-        if math.isnan(p): p = 0
+        D, p = sp.kstest(data, val, args=parameters)
 
+        if math.isnan(D):
+            D = 0
+        if math.isnan(p):
+            p = 0
 
         if verbose:
             if p >= 0.01:
