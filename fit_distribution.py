@@ -4,8 +4,17 @@ from lineage.fitting_distribution import check_dist
 
 # read data into DataFrame
 
-url1 = 'https://github.com/meyer-lab/lineage-growth/tree/master/lineage/G1_G2_duration_control.xlsx'
-df = pd.read_excel(url1)
+# Assign spreadsheet filename to `file`
+file = 'lineage/G1_G2_duration_control.xlsx'
+
+# Load spreadsheet
+xl = pd.ExcelFile(file)
+
+# Print the sheet names
+print(xl.sheet_names)
+
+# read data into DataFrame
+df = pd.read_excel(r'./lineage/data/G1_G2_duration_control.xlsx')
 
 ##----------------------- Preprocessing the data ------------------------##
 
@@ -25,20 +34,19 @@ G2 = G2/2
 
 ## --------------------- Check for our data ------------------------ ##
 print('#### For G1 ####\n')
-p_value = check_dist(G1, verbose = True)
+p_value_G1 = check_dist(G1, verbose = True)
 print('\n #### For G2 ####\n')
-p_value = check_dist(G2, verbose = True)
+p_value_G2 = check_dist(G2, verbose = True)
 
 # What we get is:
 
 #### probable distributions for G1: ####
 
 # betaprime :    p-value =  0.9496245807703753
-# gamma :    p-value =  0.7730477413285115
-# erlang :    p-value =  0.7730478543522439
+# gamma :    p-value =  0.8932369599221337
+
 
 #### probable distributions for G2: ####
 
-# betaprime :    p-value =  0.06029922688363665
-# gamma :    p-value =  0.04329344124461376
-# erlang :    p-value =  0.043293992146724136
+# betaprime :    p-value =  0.060294405793795636
+# gamma :    p-value =  0.03292860500419339

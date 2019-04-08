@@ -26,8 +26,8 @@ def check_dist(data, verbose=False):
     '''
     # A list of candidate distributions with [0, inf] range:
     dist = ['betaprime', 'fatiguelife', 'chi', 'expon', 'f', 'foldnorm',
-            'frechet_r', 'frechet_l', 'gamma', 'erlang', 'invgamma', 'gompertz',
-            'fisk', 'lognorm', 'loggamma', 'nakagami', 'pareto', 'rice', 'rayleigh',
+            'frechet_r', 'frechet_l', 'gamma', 'invgamma', 'gompertz',
+            'fisk', 'lognorm', 'loggamma', 'nakagami', 'pareto', 'rayleigh',
             'dweibull']
 
     p_val = {}
@@ -35,11 +35,6 @@ def check_dist(data, verbose=False):
         parameters = eval('sp.' + val + '.fit(data, fscale =1)')
 
         D, p = sp.kstest(data, val, args=parameters)
-
-        if math.isnan(D):
-            D = 0
-        if math.isnan(p):
-            p = 0
 
         if verbose:
             if p >= 0.01:
