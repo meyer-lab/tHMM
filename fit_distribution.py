@@ -3,17 +3,6 @@ import pandas as pd
 from lineage.fitting_distribution import check_dist
 
 # read data into DataFrame
-
-# Assign spreadsheet filename to `file`
-file = 'lineage/G1_G2_duration_control.xlsx'
-
-# Load spreadsheet
-xl = pd.ExcelFile(file)
-
-# Print the sheet names
-print(xl.sheet_names)
-
-# read data into DataFrame
 df = pd.read_excel(r'./lineage/data/G1_G2_duration_control.xlsx')
 
 ##----------------------- Preprocessing the data ------------------------##
