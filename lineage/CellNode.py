@@ -5,6 +5,7 @@ import math
 import numpy as np
 from scipy import optimize, stats as sp
 
+
 class CellNode:
     """Each cell in our tree will consist of a node containing these traits.
 
