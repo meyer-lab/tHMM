@@ -106,6 +106,9 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         old_LL_list = new_LL_list
 
         # update loop
+        
+        all_
+        
         for num in range(numLineages):
             if not truth_list[num]:
                 break
