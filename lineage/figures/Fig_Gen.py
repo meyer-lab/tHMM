@@ -74,9 +74,7 @@ def Lineage_Length(T_MAS=130, T_2=61, reps=20, MASinitCells=[1], MASlocBern=[0.8
         scaleGom_2_h1.extend(scaleGom_2_h2)
 
     x = cell_h1
-    Matplot_gen(x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1,
-                MASscaleGom, scaleGom2, xlabel='Number of Cells', title='Cells in a Lineage', save_name='Lineage_Length_Figure.png')
-    data = np.array([x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2])
+    data = (x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2)
 
     return data
 
@@ -172,8 +170,8 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, reps=1, numSt
         lineage_h1.append(lineage_num)
 
     x = lineage_h1
-    Matplot_gen(x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom,
-                cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel='Number of Lineages', title='Lineages in a Population', save_name='Figure2.png')
+    data = (x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2)
+    return data
 
 
 def AIC_Figure(T_MAS=130, T_2=61, state1=1, state2=4, reps=1, MASinitCells=[1], MASlocBern=[0.8], MAScGom=[1.6], MASscaleGom=[

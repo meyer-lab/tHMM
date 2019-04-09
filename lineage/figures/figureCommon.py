@@ -3,6 +3,7 @@ from matplotlib import gridspec, pyplot as plt
 
 
 def getSetup(figsize, gridd):
+    """Setup figures."""
     sns.set(style="whitegrid", font_scale=0.7, color_codes=True, palette="colorblind")
 
     # Setup plotting space
@@ -18,5 +19,6 @@ def getSetup(figsize, gridd):
 
 
 def subplotLabel(ax, letter, hstretch=1):
+    """Sublot labels"""
     ax.text(-0.2 / hstretch, 1.2, letter, transform=ax.transAxes,
             fontsize=16, fontweight='bold', va='top')
