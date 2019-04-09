@@ -6,6 +6,7 @@ from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_n
 from .tHMM import tHMM
 from .tHMM_utils import getAccuracy
 
+
 def Analyze(X, numStates, keepBern=True):
     '''Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas'''
     run = True
@@ -14,7 +15,7 @@ def Analyze(X, numStates, keepBern=True):
         fit(tHMMobj, max_iter=200, verbose=True)
         if tHMMobj.paramlist[0]["E"][0, 1] < 1000 and tHMMobj.paramlist[0]["E"][1, 1] < 1000:
             run = False
-    deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
+    deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
     all_states = Viterbi(tHMMobj, deltas, state_ptrs)
     NF = get_leaf_Normalizing_Factors(tHMMobj)

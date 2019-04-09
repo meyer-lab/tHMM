@@ -55,7 +55,3 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
     ax[3].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     ax[3].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
     ax[3].set_title('Gompertz Scale')
-
-    #fig.tight_layout(rect=[0, 0.03, 1, 0.95])
-    #fig.suptitle(title)
-    #fig.savefig(save_name)
