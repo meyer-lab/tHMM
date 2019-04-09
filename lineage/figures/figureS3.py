@@ -5,6 +5,7 @@ from .figureCommon import subplotLabel, getSetup
 
 
 def makeFigure():
+    """Make S3."""
     # Get list of axis objects
     ax, f = getSetup((7, 6), (3, 4))
 
