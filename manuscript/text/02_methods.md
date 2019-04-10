@@ -13,3 +13,4 @@ To generate lineage trees from the acquired images, a cell image analysis softwa
 
 ## Single state model
 
+The first measurement is the cell's fate, encoded as $\phi$
