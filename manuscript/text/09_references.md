@@ -1,3 +1,375 @@
 \cleardoublepage
 
 # References
+
+% References in bibtex format.
+
+@article{SmithCancerScreening,
+author = {Smith, Robert A},
+title = {Cancer screening in the United States, 2018: a review of current American Cancer Society guidelines and current issues in cancer screening},
+journal={CA: A Cancer Journal for Clinicians},
+  volume={68},
+  number={4},
+  pages={297-316},
+  year={2018},
+  publisher={Elsevier}
+}
+
+@article{LungHeterogeneity,
+  title={Chemotherapy-induced neutropenia and treatment efficacy in advanced non-small-cell lung cancer: a pooled analysis of three randomised trials},
+  author={Di Maio, Massimo and Gridelli, Cesare and Gallo, Ciro and Shepherd, Frances and Piantedosi, Franco Vito and Cigolari, Silvio and Manzione, Luigi and Illiano, Alfonso and Barbera, Santi and Robbiati, Sergio Federico and others},
+  journal={The lancet oncology},
+  volume={6},
+  number={9},
+  pages={669--677},
+  year={2005},
+  publisher={Elsevier}
+}
+
+@article{ColorectalHeterogeneity,
+  title={Effects of KRAS, BRAF, NRAS, and PIK3CA mutations on the efficacy of cetuximab plus chemotherapy in chemotherapy-refractory metastatic colorectal cancer: a retrospective consortium analysis},
+  author={De Roock, Wendy and Claes, Bart and Bernasconi, David and De Schutter, Jef and Biesmans, Bart and Fountzilas, George and Kalogeras, Konstantine T and Kotoula, Vassiliki and Papamichael, Demetris and Laurent-Puig, Pierre and others},
+  journal={The lancet oncology},
+  volume={11},
+  number={8},
+  pages={753--762},
+  year={2010},
+  publisher={Elsevier}
+}
+
+@article{BreastMicroEnv,
+  title={The hypoxic tumor microenvironment: A driving force for breast cancer progression},
+  author={Semenza, Gregg L},
+  journal={Biochimica et Biophysica Acta (BBA)-Molecular Cell Research},
+  volume={1863},
+  number={3},
+  pages={382--391},
+  year={2016},
+  publisher={Elsevier}
+}
+
+@article{Chemokines,
+  title={Chemokines in the cancer microenvironment and their relevance in cancer immunotherapy},
+  author={Nagarsheth, Nisha and Wicha, Max S and Zou, Weiping},
+  journal={Nature Reviews Immunology},
+  volume={17},
+  number={9},
+  pages={559},
+  year={2017},
+  publisher={Nature Publishing Group}
+}
+
+@article{EpigeneticMod,
+  title={Epigenetic modulators, modifiers and mediators in cancer aetiology and progression},
+  author={Feinberg, Andrew P and Koldobskiy, Michael A and G{\"o}nd{\"o}r, Anita},
+  journal={Nature Reviews Genetics},
+  volume={17},
+  number={5},
+  pages={284},
+  year={2016},
+  publisher={Nature Publishing Group}
+}
+
+@article{HistoneInhibi,
+  title={Histone deacetylases and their inhibitors in cancer, neurological diseases and immune disorders},
+  author={Falkenberg, Katrina J and Johnstone, Ricky W},
+  journal={Nature Reviews Drug discovery},
+  volume={13},
+  number={9},
+  pages={673},
+  year={2014},
+  publisher={Nature Publishing Group}
+}
+
+@article{chauvin2017high,
+  title={High-throughput drug screening Identifies pazopanib and clofilium tosylate as promising treatments for malignant rhabdoid tumors},
+  author={Chauvin, C{\'e}line and Leruste, Amaury and Tauziede-Espariat, Arnault and Andrianteranagna, Mamy and Surdez, Didier and Lescure, Aurianne and Han, Zhi-Yan and Anthony, Elodie and Richer, Wilfrid and Baulande, Sylvain and others},
+  journal={Cell reports},
+  volume={21},
+  number={7},
+  pages={1737--1745},
+  year={2017},
+  publisher={Elsevier}
+}
+##change to lisa zhang
+@article{QuantitativeHistology,
+  title={Quantitative histology analysis of the ovarian tumour microenvironment},
+  author={Lan, Chunyan and Heindl, Andreas and Huang, Xin and Xi, Shaoyan and Banerjee, Susana and Liu, Jihong and Yuan, Yinyin},
+  journal={Scientific reports},
+  volume={5},
+  pages={16317},
+  year={2015},
+  publisher={Nature Publishing Group}
+}
+###idk
+@article{GenotypicEGFR,
+  title={Genotypic and histological evolution of lung cancers acquiring resistance to EGFR inhibitors},
+  author={Sequist, Lecia V and Waltman, Belinda A and Dias-Santagata, Dora and Digumarthy, Subba and Turke, Alexa B and Fidias, Panos and Bergethon, Kristin and Shaw, Alice T and Gettinger, Scott and Cosper, Arjola K and others},
+  journal={Science translational medicine},
+  volume={3},
+  number={75},
+  pages={75ra26--75ra26},
+  year={2011},
+  publisher={American Association for the Advancement of Science}
+}
+
+@article{CGANComprehensiveMolecular,
+  title={Comprehensive molecular portraits of human breast tumours},
+  author={Cancer Genome Atlas Network and others},
+  journal={Nature},
+  volume={490},
+  number={7418},
+  pages={61},
+  year={2012},
+  publisher={Nature Publishing Group}
+}
+
+@article{clonalMutationalEvolution,
+  title={The clonal and mutational evolution spectrum of primary triple-negative breast cancers},
+  author={Shah, Sohrab P and Roth, Andrew and Goya, Rodrigo and Oloumi, Arusha and Ha, Gavin and Zhao, Yongjun and Turashvili, Gulisa and Ding, Jiarui and Tse, Kane and Haffari, Gholamreza and others},
+  journal={Nature},
+  volume={486},
+  number={7403},
+  pages={395},
+  year={2012},
+  publisher={Nature Publishing Group}
+}
+
+@article{TNBpatterns,
+  title={Triple-negative breast cancer: clinical features and patterns of recurrence},
+  author={Dent, Rebecca and Trudeau, Maureen and Pritchard, Kathleen I and Hanna, Wedad M and Kahn, Harriet K and Sawka, Carol A and Lickley, Lavina A and Rawlinson, Ellen and Sun, Ping and Narod, Steven A},
+  journal={Clinical cancer research},
+  volume={13},
+  number={15},
+  pages={4429--4434},
+  year={2007},
+  publisher={AACR}
+}
+#starts here again at 10
+@article{Stochasticstatetransitions,
+  title={Stochastic state transitions give rise to phenotypic equilibrium in populations of cancer cells},
+  author={Gupta, Piyush B and Fillmore, Christine M and Jiang, Guozhi and Shapira, Sagi D and Tao, Kai and Kuperwasser, Charlotte and Lander, Eric S},
+  journal={Cell},
+  volume={146},
+  number={4},
+  pages={633--644},
+  year={2011},
+  publisher={Elsevier}
+}
+
+@article{Cancerstemcells,
+  title={Cancer stem cells: small subpopulation or evolving fraction?},
+  author={Enderling, Heiko},
+  journal={Integrative Biology},
+  volume={7},
+  number={1},
+  pages={14--23},
+  year={2014},
+  publisher={Oxford University Press}
+}
+
+@article{non-geneticheterogeneity,
+  title={The impact of non-genetic heterogeneity on cancer cell death},
+  author={Inde, Zintis and Dixon, Scott J},
+  journal={Critical reviews in biochemistry and molecular biology},
+  volume={53},
+  number={1},
+  pages={99--114},
+  year={2018},
+  publisher={Taylor \& Francis}
+}
+
+@article{Intra-tumorheterogeneity,
+  title={Intra-tumor heterogeneity of cancer cells and its implications for cancer treatment},
+  author={Sun, Xiao-xiao and Yu, Qiang},
+  journal={Acta Pharmacologica Sinica},
+  volume={36},
+  number={10},
+  pages={1219},
+  year={2015},
+  publisher={Nature Publishing Group}
+}
+
+@article{lung_heterogeneity,
+  title={Intratumor heterogeneity in localized lung adenocarcinomas delineated by multiregion sequencing},
+  author={Zhang, Jianjun and Fujimoto, Junya and Zhang, Jianhua and Wedge, David C and Song, Xingzhi and Zhang, Jiexin and Seth, Sahil and Chow, Chi-Wan and Cao, Yu and Gumbs, Curtis and others},
+  journal={Science},
+  volume={346},
+  number={6206},
+  pages={256--259},
+  year={2014},
+  publisher={American Association for the Advancement of Science}
+}
+#new one
+@article{status_of_drug_resistance,
+  title={Current status of methods to assess cancer drug resistance},
+  author={Lippert, Theodor H and Ruoff, Hans-J{\"o}rg and Volm, Manfred},
+  journal={International journal of medical sciences},
+  volume={8},
+  number={3},
+  pages={245},
+  year={2011},
+  publisher={Ivyspring International Publisher}
+}
+#backto 15
+@article{19,
+  title={Intratumor heterogeneity and branched evolution revealed by multiregion sequencing},
+  author={Gerlinger, Marco and Rowan, Andrew J and Horswell, Stuart and Larkin, James and Endesfelder, David and Gronroos, Eva and Martinez, Pierre and Matthews, Nicholas and Stewart, Aengus and Tarpey, Patrick and others},
+  journal={New England journal of medicine},
+  volume={366},
+  number={10},
+  pages={883--892},
+  year={2012},
+  publisher={Mass Medical Soc}
+}
+#19
+@article{22,
+  title={Chemoresistant colorectal cancer cells, the cancer stem cell phenotype, and increased sensitivity to insulin-like growth factor-I receptor inhibition},
+  author={Dallas, Nikolaos A and Xia, Ling and Fan, Fan and Gray, Michael J and Gaur, Puja and Van Buren, George and Samuel, Shaija and Kim, Michael P and Lim, Sherry J and Ellis, Lee M},
+  journal={Cancer research},
+  volume={69},
+  number={5},
+  pages={1951--1957},
+  year={2009},
+  publisher={AACR}
+}
+20
+@article{23,
+  title={Profiling of estrogen up-and down-regulated gene expression in human breast cancer cells: insights into gene networks and pathways underlying estrogenic control of proliferation and cell phenotype},
+  author={Frasor, Jonna and Danes, Jeanne M and Komm, Barry and Chang, Ken CN and Lyttle, C Richard and Katzenellenbogen, Benita S},
+  journal={Endocrinology},
+  volume={144},
+  number={10},
+  pages={4562--4574},
+  year={2003},
+  publisher={Oxford University Press}
+}
+
+@article{24,
+  title={Most early disseminated cancer cells detected in bone marrow of breast cancer patients have a putative breast cancer stem cell phenotype},
+  author={Balic, Marija and Lin, Henry and Young, Lillian and Hawes, Debra and Giuliano, Armando and McNamara, George and Datar, Ram H and Cote, Richard J},
+  journal={Clinical cancer research},
+  volume={12},
+  number={19},
+  pages={5615--5621},
+  year={2006},
+  publisher={AACR}
+}
+
+@article{25,
+  title={Large-scale time-lapse microscopy of Oct4 expression in human embryonic stem cell colonies},
+  author={Bhadriraju, Kiran and Halter, Michael and Amelot, Julien and Bajcsy, Peter and Chalfoun, Joe and Vandecreme, Antoine and Mallon, Barbara S and Park, Kye-yoon and Sista, Subhash and Elliott, John T and others},
+  journal={Stem cell research},
+  volume={17},
+  number={1},
+  pages={122--129},
+  year={2016},
+  publisher={Elsevier}
+}
+
+@article{26,
+  title={Noise and epigenetic inheritance of single-cell division times influence population fitness},
+  author={Cerulus, Bram and New, Aaron M and Pougach, Ksenia and Verstrepen, Kevin J},
+  journal={Current Biology},
+  volume={26},
+  number={9},
+  pages={1138--1147},
+  year={2016},
+  publisher={Elsevier}
+}
+
+@article{27,
+  title={Genetic and non-genetic instability in tumor progression: link between the fitness landscape and the epigenetic landscape of cancer cells},
+  author={Huang, Sui},
+  journal={Cancer and Metastasis Reviews},
+  volume={32},
+  number={3-4},
+  pages={423--448},
+  year={2013},
+  publisher={Springer}
+}
+
+@article{28,
+  title={T cell fitness determined by signal strength},
+  author={Gett, Amanda V and Sallusto, Federica and Lanzavecchia, Antonio and Geginat, Jens},
+  journal={Nature immunology},
+  volume={4},
+  number={4},
+  pages={355},
+  year={2003},
+  publisher={Nature Publishing Group}
+}
+
+@article{29,
+  title={Tumor doubling time and prognosis in lung cancer patients: evaluation from chest films and clinical follow-up study},
+  author={Arai, Takashi and Kuroishi, Tetsuo and Saito, Yasuki and Kurita, Yuzo and Naruke, Tsuguo and Kaneko, Masahiro},
+  journal={Japanese Journal of Clinical Oncology},
+  volume={24},
+  number={4},
+  pages={199--204},
+  year={1994},
+  publisher={Oxford University Press}
+}
+
+@article{30,
+  title={Potential doubling time and clinical outcome in head and neck squamous cell carcinoma treated with 70 GY in 7 weeks},
+  author={Bourhis, Jean and Dendale, R{\'e}mi and Hill, Catherine and Bosq, Jacques and Janot, Fran{\c{c}}ois and Attal, Pierre and Fortin, Andr{\'e} and Marandas, Patrick and Schwaab, Guy and Wibault, Pierre and others},
+  journal={International Journal of Radiation Oncology* Biology* Physics},
+  volume={35},
+  number={3},
+  pages={471--476},
+  year={1996},
+  publisher={Elsevier}
+}
+
+@article{31,
+  title={Distant metastasis occurs late during the genetic evolution of pancreatic cancer},
+  author={Yachida, Shinichi and Jones, Si{\^a}n and Bozic, Ivana and Antal, Tibor and Leary, Rebecca and Fu, Baojin and Kamiyama, Mihoko and Hruban, Ralph H and Eshleman, James R and Nowak, Martin A and others},
+  journal={Nature},
+  volume={467},
+  number={7319},
+  pages={1114},
+  year={2010},
+  publisher={Nature Publishing Group}
+}
+
+@article{32,
+  title={Imaging intratumor heterogeneity: role in therapy response, resistance, and clinical outcome},
+  author={O'Connor, James PB and Rose, Chris J and Waterton, John C and Carano, Richard AD and Parker, Geoff JM and Jackson, Alan},
+  journal={Clinical Cancer Research},
+  volume={21},
+  number={2},
+  pages={249--257},
+  year={2015},
+  publisher={AACR}
+}
+#32, dont have 30 or 31
+@article{33,
+  title={Hidden Markov models for evolution and comparative genomics analysis},
+  author={Bykova, Nadezda A and Favorov, Alexander V and Mironov, Andrey A},
+  journal={PloS one},
+  volume={8},
+  number={6},
+  pages={e65012},
+  year={2013},
+  publisher={Public Library of Science}
+}
+
+@inproceedings{34,
+  title={Discovering and mapping chromatin states using a tree hidden Markov model},
+  author={Biesinger, Jacob and Wang, Yuanfeng and Xie, Xiaohui},
+  booktitle={BMC bioinformatics},
+  volume={14},
+  pages={S4},
+  year={2013},
+  organization={BioMed Central}
+}
+
+@article{35,
+  title={Jaqaman K, Loerke D, Mettlen M, et al. Robust single-particle tracking in live-cell time-lapse sequences},
+  author={Jaqaman, Khuloud, Dinah Loerke, Marcel Mettlen, Hirotaka Kuwata, Sergio Grinstein, Sandra L. Schmid, and Gaudenz Danuser},
+  journal={Nat Methods},
+  pages={695},
+  year={2008},
+  publisher={}
+}
