@@ -1,5 +1,5 @@
 ---
-title: A lineage tree-based Markov random field model to quantify cellular heterogeneity
+title: A lineage-based Markov tree model to quantify cellular heterogeneity
 
 author:
 - name: Adam Weiner
