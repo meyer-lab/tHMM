@@ -108,7 +108,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         # code for grouping all states in cell lineages
         cell_groups = {}
         for state in range(numStates):
-            cell_groups[str(i)] = []
+            cell_groups[str(state)] = []
         state_sequences = []
         
         for num in range(numLineages):
