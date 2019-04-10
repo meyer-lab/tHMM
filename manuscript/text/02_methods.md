@@ -13,4 +13,7 @@ To generate lineage trees from the acquired images, a cell image analysis softwa
 
 ## Single state model
 
-The first measurement is the cell's fate, encoded as $\phi$
+The first measurement is the cell's fate, encoded as $\phi$ ,where $\phi\in\{0,1\}$, a binary event where $\phi=0$ is the cell dying at the end of its lifetime, and $\phi=1$ is the cell dividing into two daughter cells. The second measurement is the cell's lifetime, encoded as $\tau$, where $\tau\in (0, +\infty)$, a positive real number indicating how long the cell lived in hours. For example, a complete observation could be of the form $\bm{x}_{m} = (1, 20)$ where cell $m$ divided into two daughter cells after living for 20 hours. In general, for any observation $\bm{x}_{n}$ for cell $n$, we have a tuple indicating the cell fate and the cell lifetime, $\bm{x}_{n}=(\phi_{n}, \tau_{n})$. To probabilistically model each observation, the cell fate follows a Bernoulli distribution with Bernoulli rate parameter $p_{B}$ where $p_{B}\in[0,1]$ and $p_{B}$ represents the probability of $\phi=1$, the chance that a cell divides. The cell lifetime follows a right-censored Gompertz distribution with Gompertz rate parameter $c_{G}$ and scale parameter $s_{G}$. The Gompertz distribution models the mortality of cells over time. TODO
+ 
+ ## Multiple state model
+
