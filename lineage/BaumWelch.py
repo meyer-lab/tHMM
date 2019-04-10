@@ -158,12 +158,13 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                 state_obs_holder.append(state_obs)
                 
             #create two lists to denote the states according to their correspondence with the population
-            _, tHMMobj.states, tHMMobj.stateAssignment = getAccuracy_BW(tHMMobj, all_states[num], numStates, lineage, verbose=False)
-            state_sequences.append(tHMMobj.stateAssignment)
+            _, tHMMobj.states, tHMMobj.stateAssignment = getAccuracy_BW(tHMMobj, all_states[num], numStates, lineage, verbose=False) #.states are the list of correct state, .stateAssignment is the 'K' length list of state classification
+            state_sequences.append(tHMMobj.stateAssignment[0])
             #iterate through viterbi list of states for this single lineage
-            for ii, state in enumerate(tHMMobj.states): #this can be reassigned right cuz the previous for loop was local
+            for ii, state in enumerate(tHMMobj.states[0]): #this can be reassigned right cuz the previous for loop was local
                 #append the cell to one of the pre made lists for states
-                cell_groups[str(state)].append(lineage.index(ii))
+                cell_groups[str(state)].append(lineage[ii])
+                #
 
             for state_j in range(numStates):
                 if tHMMobj.keepBern:
@@ -177,7 +178,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                     tHMMobj.paramlist[num]["E"][state_j, 1] = beta_estimate
 
         #after iterating through each lineage, do the population wide E calculation
-        global_params = []
+        global_params = {}
         for state_j in range(numStates):
             cells = cell_groups[str(state_j)] #this array has the correct cells classified per group
             global_params['B' + str(state_j)] = bernoulliParameterEstimatorAnalytical(cells) #list of indices
@@ -188,15 +189,16 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         for num in range(numLineages):
             #this code was copied from above for loop, so consider deleting this from above for loop
             state_sequence = state_sequences[num]
-            for i, state_j in eumerate(state_sequence):
+            for original_state, real_state in enumerate(state_sequence):
+                #assigns the global state to the lineage-specific state assignment
                 if tHMMobj.keepBern:
-                    tHMMobj.paramlist[num]["E"][state_j, 0] = global_params['B' + str(state_j)]
+                    tHMMobj.paramlist[num]["E"][original_state, 0] = global_params['B' + str(real_state)]
                 if tHMMobj.FOM == 'G':
-                    c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[state_j])
-                    tHMMobj.paramlist[num]["E"][state_j, 1] = global_params['G_c' + str(state_j)]
-                    tHMMobj.paramlist[num]["E"][state_j, 2] = global_params['G_scale' + str(state_j)]
+                    c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[real_state])
+                    tHMMobj.paramlist[num]["E"][original_state, 1] = global_params['G_c' + str(real_state)]
+                    tHMMobj.paramlist[num]["E"][original_state, 2] = global_params['G_scale' + str(real_state)]
                 elif tHMMobj.FOM == 'E':
-                    tHMMobj.paramlist[num]["E"][state_j, 1] = global_params['E' + str(state_j)]
+                    tHMMobj.paramlist[num]["E"][original_state, 1] = global_params['E' + str(real_state)]
         
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
