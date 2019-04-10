@@ -193,21 +193,23 @@ def printAssessment(tHMMobj, lin):
     print("Emission Parameters: ")
     print(tHMMobj.paramlist[lin]["E"])
 
-def getAccuracy_BW(tHMMobj, all_states, numStates, tHMMobj.Accuracy, tHMMobj.stateAssignment, tHMMobj.states, lineage, verbose=False):
+def getAccuracy_BW(tHMMobj, all_states, numStates, lineage, verbose=False):
     '''Done for BW so doesnt do more for loops than needed. Same as getAccuracy code.'''
-
+        tHMMobj.Accuracy = []
+        tHMMobj.stateAssignment = []
+        tHMMobj.states = []
         true_state_holder = np.zeros((len(lineage)), dtype=int)
         viterbi_est_holder = np.zeros((len(lineage)), dtype=int)
 
         for ii, cell in enumerate(lineage):
             true_state_holder[ii] = cell.true_state
-            viterbi_est_holder[ii] = all_states[lin][ii]
+            viterbi_est_holder[ii] = all_states[ii]
 
         permutation_of_states = list(itertools.permutations(range(numStates)))
         temp_acc_holder = []
         for possible_state_assignment in permutation_of_states:
             # gets a list of lists of permutations of state assignments
-            temp_all_states = all_states[lin].copy()
+            temp_all_states = all_states.copy()
             for ii, temp_state in enumerate(temp_all_states):
                 for state in range(numStates):
                     if temp_state == state:
@@ -225,7 +227,7 @@ def getAccuracy_BW(tHMMobj, all_states, numStates, tHMMobj.Accuracy, tHMMobj.sta
         for ii, cell_viterbi_state in enumerate(viterbi_est_holder):
             for state in range(numStates):
                 if cell_viterbi_state == state:
-                    viterbi_est_holder[ii] = tHMMobj.stateAssignment[lin][state]
+                    viterbi_est_holder[ii] = tHMMobj.stateAssignment[state]
 
         tHMMobj.states.append(viterbi_est_holder) # the correct ordering of the states
 
