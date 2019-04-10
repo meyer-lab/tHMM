@@ -5,6 +5,7 @@ from .tHMM_utils import max_gen, get_gen, get_daughters, getAccuracy_BW
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, beta_parent_child_func
 from .Lineage_utils import bernoulliParameterEstimatorAnalytical, gompertzAnalytical, exponentialAnalytical
+from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
     '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
@@ -111,6 +112,11 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             cell_groups[str(state)] = []
         state_sequences = []
         
+        #need viterbi for lineage pooling process
+        deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
+        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
+        
         for num in range(numLineages):
             if not truth_list[num]:
                 break
@@ -152,7 +158,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                 state_obs_holder.append(state_obs)
                 
             #create two lists to denote the states according to their correspondence with the population
-            _, tHMMobj.states, tHMMobj.stateAssignment = getAccuracy_BW(tHMMobj, all_states, numStates, lineage, verbose=False)
+            _, tHMMobj.states, tHMMobj.stateAssignment = getAccuracy_BW(tHMMobj, all_states[num], numStates, lineage, verbose=False)
             state_sequences.append(tHMMobj.stateAssignment)
             #iterate through viterbi list of states for this single lineage
             for ii, state in enumerate(tHMMobj.states): #this can be reassigned right cuz the previous for loop was local
