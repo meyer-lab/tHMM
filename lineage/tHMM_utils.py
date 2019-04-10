@@ -192,3 +192,54 @@ def printAssessment(tHMMobj, lin):
     print(tHMMobj.paramlist[lin]["T"])
     print("Emission Parameters: ")
     print(tHMMobj.paramlist[lin]["E"])
+
+def getAccuracy_BW(tHMMobj, all_states, numStates, tHMMobj.Accuracy, tHMMobj.stateAssignment, tHMMobj.states, lineage, verbose=False):
+    '''Done for BW so doesnt do more for loops than needed. Same as getAccuracy code.'''
+
+        true_state_holder = np.zeros((len(lineage)), dtype=int)
+        viterbi_est_holder = np.zeros((len(lineage)), dtype=int)
+
+        for ii, cell in enumerate(lineage):
+            true_state_holder[ii] = cell.true_state
+            viterbi_est_holder[ii] = all_states[lin][ii]
+
+        permutation_of_states = list(itertools.permutations(range(numStates)))
+        temp_acc_holder = []
+        for possible_state_assignment in permutation_of_states:
+            # gets a list of lists of permutations of state assignments
+            temp_all_states = all_states[lin].copy()
+            for ii, temp_state in enumerate(temp_all_states):
+                for state in range(numStates):
+                    if temp_state == state:
+                        temp_all_states[ii] = possible_state_assignment[state]
+
+            common_state_counter = [true_state == temp_vit_state for (true_state, temp_vit_state) in zip(true_state_holder, temp_all_states)]
+            accuracy = sum(common_state_counter)/len(lineage) # gets the accuracies per possible state assignment
+            temp_acc_holder.append(accuracy)
+
+        idx_of_max_acc = np.argmax(temp_acc_holder)
+        tHMMobj.Accuracy.append(temp_acc_holder[idx_of_max_acc])
+
+        tHMMobj.stateAssignment.append(permutation_of_states[idx_of_max_acc])  # the correct state assignment
+
+        for ii, cell_viterbi_state in enumerate(viterbi_est_holder):
+            for state in range(numStates):
+                if cell_viterbi_state == state:
+                    viterbi_est_holder[ii] = tHMMobj.stateAssignment[lin][state]
+
+        tHMMobj.states.append(viterbi_est_holder) # the correct ordering of the states
+
+        if verbose:
+            printAssessment(tHMMobj, lin)
+            print("True states: ")
+            print(true_state_holder)
+            print("Viterbi estimated raw states (before state assignment switch): ")
+            print(all_states[lin])
+            print("State assignment after analysis: ")
+            print(tHMMobj.stateAssignment[lin])
+            print("Viterbi estimated relative states (after state switch): ")
+            print(viterbi_est_holder)
+            print("Accuracy: ")
+            print(tHMMobj.Accuracy[lin])
+
+    return(tHMMobj.Accuracy, tHMMobj.states, tHMMobj.stateAssignment)
