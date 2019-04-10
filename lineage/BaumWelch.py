@@ -1,7 +1,7 @@
 '''Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch'''
 import numpy as np
 
-from .tHMM_utils import max_gen, get_gen, get_daughters
+from .tHMM_utils import max_gen, get_gen, get_daughters, getAccuracy_BW
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, beta_parent_child_func
 from .Lineage_utils import bernoulliParameterEstimatorAnalytical, gompertzAnalytical, exponentialAnalytical
