@@ -152,7 +152,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                 state_obs_holder.append(state_obs)
                 
             #create two lists to denote the states according to their correspondence with the population
-            _, tHMMobj.states, tHMMobj.stateAssignment = getAccuracy_BW(tHMMobj, all_states, numStates, tHMMobj.Accuracy, tHMMobj.stateAssignment, tHMMobj.states, lineage, verbose=False)
+            _, tHMMobj.states, tHMMobj.stateAssignment = getAccuracy_BW(tHMMobj, all_states, numStates, lineage, verbose=False)
             state_sequences.append(tHMMobj.stateAssignment)
             #iterate through viterbi list of states for this single lineage
             for ii, state in enumerate(tHMMobj.states): #this can be reassigned right cuz the previous for loop was local
