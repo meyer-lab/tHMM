@@ -227,7 +227,7 @@ def getAccuracy_BW(tHMMobj, all_states, numStates, lineage, verbose=False):
     for ii, cell_viterbi_state in enumerate(viterbi_est_holder):
         for state in range(numStates):
             if cell_viterbi_state == state:
-                viterbi_est_holder[ii] = tHMMobj.stateAssignment[state]
+                viterbi_est_holder[ii] = tHMMobj.stateAssignment[0][state]
 
     tHMMobj.states.append(viterbi_est_holder) # the correct ordering of the states
 
