@@ -176,7 +176,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             cells = cell_groups[str(state_j)] #this array has the correct cells classified per group
             global_params['B' + str(state_j)] = bernoulliParameterEstimatorAnalytical(cells) #list of indices
             global_params['G_c' + str(state_j)], global_params['G_scale' + str(state_j)] = gompertzAnalytical(cells)
-            global_params['E' + str(state_j)] = exponentialAnalytical
+            global_params['E' + str(state_j)] = exponentialAnalytical(cells)
             
         #now go through each lineage and replace with the new E
         for num in range(numLineages):
@@ -184,14 +184,13 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             state_sequence = state_sequences[num]
             for i, state_j in eumerate(state_sequence):
                 if tHMMobj.keepBern:
-                    tHMMobj.paramlist[num]["E"][state_j, 0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
+                    tHMMobj.paramlist[num]["E"][state_j, 0] = global_params['B' + str(state_j)]
                 if tHMMobj.FOM == 'G':
                     c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[state_j])
-                    tHMMobj.paramlist[num]["E"][state_j, 1] = c_estimate
-                    tHMMobj.paramlist[num]["E"][state_j, 2] = scale_estimate
+                    tHMMobj.paramlist[num]["E"][state_j, 1] = global_params['G_c' + str(state_j)]
+                    tHMMobj.paramlist[num]["E"][state_j, 2] = global_params['G_scale' + str(state_j)]
                 elif tHMMobj.FOM == 'E':
-                    beta_estimate = exponentialAnalytical(state_obs_holder[state_j])
-                    tHMMobj.paramlist[num]["E"][state_j, 1] = beta_estimate
+                    tHMMobj.paramlist[num]["E"][state_j, 1] = global_params['E' + str(state_j)]
         
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
