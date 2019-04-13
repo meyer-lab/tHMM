@@ -2,6 +2,8 @@
 
 import itertools
 import numpy as np
+from sklearn.metrics.cluster import normalized_mutual_info_score
+
 
 ##------------------- Find maximum generation in a lineage -----------------------##
 
@@ -310,8 +312,40 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
 
     return(tHMMobj.Accuracy, tHMMobj.states, tHMMobj.stateAssignment)
 
-##-------------------- printing probability matrices of a model ---------------------##
 
+##--------------------getting the accuracy using mutual information ----------------##
+
+def get_mutual_info(tHMMobj, all_states, verbose = True):
+    
+    numStates = tHMMobj.numStates
+    tHMMobj.Accuracy2 = []
+    tHMMobj.stateAssignment = []
+    tHMMobj.states = []
+
+    for lin in range(tHMMobj.numLineages):
+        lineage = tHMMobj.population[lin]
+
+        true_state_holder = np.zeros((len(lineage)), dtype=int)
+        viterbi_est_holder = np.zeros((len(lineage)), dtype=int)
+
+        for ii, cell in enumerate(lineage):
+            true_state_holder[ii] = cell.true_state
+            viterbi_est_holder[ii] = all_states[lin][ii]
+
+        tHMMobj.Accuracy2.append(normalized_mutual_info_score(true_state_holder, viterbi_est_holder))
+
+        if verbose:
+            printAssessment(tHMMobj, lin)
+            print("True states: ")
+            print(true_state_holder)
+            print("Viterbi estimated states: ")
+            print(viterbi_est_holder)
+            print("Accuracy: ")
+            print(tHMMobj.Accuracy2)
+    return tHMMobj.Accuracy2
+
+
+##-------------------- printing probability matrices of a model ---------------------##
 
 def printAssessment(tHMMobj, lin):
     """This function takes in the tree-HMM model as an object and lineage index, and returns three
