@@ -2,6 +2,8 @@
 
 import itertools
 import numpy as np
+from sklearn.metrics.cluster import normalized_mutual_info_score
+
 
 ##------------------- Find maximum generation in a lineage -----------------------##
 
