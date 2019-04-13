@@ -347,7 +347,6 @@ def get_mutual_info(tHMMobj, all_states, verbose = True):
 
 ##-------------------- printing probability matrices of a model ---------------------##
 
-
 def printAssessment(tHMMobj, lin):
     """This function takes in the tree-HMM model as an object and lineage index, and returns three
     probability matrices of a given model for every lineage including intial probabilities (pi),
