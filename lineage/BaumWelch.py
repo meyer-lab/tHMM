@@ -115,7 +115,6 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         cell_groups = {}
         for state in range(numStates):
             cell_groups[str(state)] = []
-        state_sequences = []
         
         for num in range(numLineages):
             if not truth_list[num]:
@@ -160,7 +159,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             #this bins the cells by lineage to the population cell lists
             for ii, state in enumerate(max_state_holder):
                 cell_groups[str(state)].append(lineage[ii])
-                
+ 
             for state_j in range(numStates):
                 if tHMMobj.keepBern:
                     tHMMobj.paramlist[num]["E"][state_j, 0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
@@ -179,7 +178,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             global_params['B' + str(state_j)] = bernoulliParameterEstimatorAnalytical(cells) #list of indices
             global_params['G_c' + str(state_j)], global_params['G_scale' + str(state_j)] = gompertzAnalytical(cells)
             global_params['E' + str(state_j)] = exponentialAnalytical(cells)
-            
+ 
         #now go through each lineage and replace with the new E
         for num in range(numLineages):
             #this code was copied from above for loop, so consider deleting this from above for loop
@@ -193,7 +192,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                     tHMMobj.paramlist[num]["E"][state, 2] = global_params['G_scale' + str(state)]
                 elif tHMMobj.FOM == 'E':
                     tHMMobj.paramlist[num]["E"][state, 1] = global_params['E' + str(state)]
-        
+
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
 

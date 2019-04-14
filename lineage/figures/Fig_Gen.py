@@ -12,7 +12,7 @@ from ..Lineage_utils import remove_NaNs
 
 
 def Lineage_Length(T_MAS=130, T_2=61, reps=5, MASinitCells=[1], MASlocBern=[0.8], MAScGom=[1.6], MASscaleGom=[40], initCells2=[1],
-                   locBern2=[0.99], cGom2=[1.6], scaleGom2=[18], numStates=2, max_lin_length=500, min_lin_length=100, verbose=False):
+                   locBern2=[0.99], cGom2=[1.6], scaleGom2=[18], numStates=2, max_lin_length=1400, min_lin_length=100, verbose=False):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
 
     acc_h1 = []  # list of lists of lists
@@ -79,8 +79,7 @@ def Lineage_Length(T_MAS=130, T_2=61, reps=5, MASinitCells=[1], MASlocBern=[0.8]
     return data
 
 
-def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, reps=1, numStates=2, T_MAS=75, T_2=85, MASinitCells=[1], MASlocBern=[
-                                   0.99999999999], MAScGom=[2], MASscaleGom=[30], initCells2=[1], locBern2=[0.7], cGom2=[1.5], scaleGom2=[25], verbose=False):
+def Lineages_per_Population_Figure(lineage_start=1, lineage_end=4, reps=1, numStates=2, T_MAS=75, T_2=85, MASinitCells=[1], MASlocBern=[0.99999999999], MAScGom=[2], MASscaleGom=[30], initCells2=[1], locBern2=[0.7], cGom2=[1.5], scaleGom2=[25], max_lin_length=100, min_lin_length=50, verbose=False):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of lineages in a population are varied'''
 
     lineages = range(lineage_start, lineage_end + 1)
@@ -110,6 +109,8 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, reps=1, numSt
 
             for num in range(lineage_num):
                 X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
+                while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
+                    X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
                 X1.extend(newLineage)
 
             X = remove_NaNs(X1)
