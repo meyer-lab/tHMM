@@ -8,7 +8,7 @@ from ..Analyze import Analyze
 from .Matplot_gen import Matplot_gen
 
 from ..tHMM_utils import getAccuracy, getAIC
-from ..Lineage_utils import remove_NaNs
+from ..Lineage_utils import remove_singleton_lineages
 
 
 def Lineage_Length(T_MAS=130, T_2=61, reps=20, MASinitCells=[1], MASlocBern=[0.8], MAScGom=[1.6], MASscaleGom=[40], initCells2=[1],
@@ -112,7 +112,7 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, reps=1, numSt
                 X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
                 X1.extend(newLineage)
 
-            X = remove_NaNs(X1)
+            X = remove_singleton_lineages(X1)
             print(len(X))
             _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
             acc_h3 = []
