@@ -9,6 +9,7 @@ from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_
 from ..tHMM import tHMM
 from ..tHMM_utils import max_gen, get_gen, get_parents_for_level, getAccuracy
 from ..Lineage_utils import remove_singleton_lineages, get_numLineages, init_Population, generatePopulationWithTime as gpt
+
 from ..CellNode import CellNode
 
 
@@ -438,6 +439,7 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
+        get_mutual_info(tHMMobj, all_states, verbose = True)
 
     def test_Baum_Welch_2(self):
         '''Creating a heterogeneous tree that is built by swithcing states of all cells at a SwitchT time point'''
@@ -464,6 +466,7 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
+        get_mutual_info(tHMMobj, all_states, verbose = True)
 
     def test_Baum_Welch_3(self):
         '''one state, no bernoulli likelihoods considered, gompertz estimation'''
@@ -487,6 +490,7 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
+        get_mutual_info(tHMMobj, all_states, verbose = True)
 
     def test_Baum_Welch_4(self):
         ''' one state, no bernoulli likelihoods considered, exponential estimation'''
@@ -512,6 +516,7 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
+        get_mutual_info(tHMMobj, all_states, verbose = True)
 
     def test_Baum_Welch_5(self):
         '''two state, no bernoulli likelihoods considered, exponential estimation. creating a heterogeneous tree'''
@@ -543,3 +548,4 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
+        get_mutual_info(tHMMobj, all_states, verbose = True)
