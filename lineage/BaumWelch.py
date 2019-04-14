@@ -118,11 +118,6 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             cell_groups[str(state)] = []
         state_sequences = []
         
-        #need viterbi for lineage pooling process
-        deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
-        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
-        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        
         for num in range(numLineages):
             if not truth_list[num]:
                 break
@@ -150,11 +145,11 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             T_new = T_holder / row_sums[:, np.newaxis]
             tHMMobj.paramlist[num]["T"] = T_new
 
-            max_state_holder = []
+            max_state_holder = [] #a list the size of lineage, that contains max state for each cell
             for ii, cell in enumerate(lineage):
                 assert lineage[ii] is cell
-                max_state_holder.append(np.argmax(gammas[num][ii, :]))
-            state_obs_holder = []
+                max_state_holder.append(np.argmax(gammas[num][ii, :])) #says which state is maximal
+            state_obs_holder = [] # list of lists, each which are a list of cells corresponding to each state
             for state_j in range(numStates):
                 state_obs = []
                 for cell in lineage:
@@ -162,16 +157,11 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                     if max_state_holder[cell_idx] == state_j:
                         state_obs.append(cell)
                 state_obs_holder.append(state_obs)
-                
-            #create two lists to denote the states according to their correspondence with the population
-            _, tHMMobj.states, tHMMobj.stateAssignment = getAccuracy_BW(tHMMobj, all_states[num], numStates, lineage, verbose=False) #.states are the list of correct state, .stateAssignment is the 'K' length list of state classification
-            state_sequences.append(tHMMobj.stateAssignment[0])
-            #iterate through viterbi list of states for this single lineage
-            for ii, state in enumerate(tHMMobj.states[0]): #this can be reassigned right cuz the previous for loop was local
-                #append the cell to one of the pre made lists for states
-                cell_groups[str(state)].append(lineage[ii])
-                #
 
+            #this bins the cells by lineage to the population cell lists
+            for ii, state in enumerate(max_state_holder):
+                cell_groups[str(state)].append(lineage[ii])
+                
             for state_j in range(numStates):
                 if tHMMobj.keepBern:
                     tHMMobj.paramlist[num]["E"][state_j, 0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
@@ -194,17 +184,16 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         #now go through each lineage and replace with the new E
         for num in range(numLineages):
             #this code was copied from above for loop, so consider deleting this from above for loop
-            state_sequence = state_sequences[num]
-            for original_state, real_state in enumerate(state_sequence):
+            for state in range(numStates):
                 #assigns the global state to the lineage-specific state assignment
                 if tHMMobj.keepBern:
-                    tHMMobj.paramlist[num]["E"][original_state, 0] = global_params['B' + str(real_state)]
+                    tHMMobj.paramlist[num]["E"][state, 0] = global_params['B' + str(state)]
                 if tHMMobj.FOM == 'G':
-                    c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[real_state])
-                    tHMMobj.paramlist[num]["E"][original_state, 1] = global_params['G_c' + str(real_state)]
-                    tHMMobj.paramlist[num]["E"][original_state, 2] = global_params['G_scale' + str(real_state)]
+                    c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[state])
+                    tHMMobj.paramlist[num]["E"][state, 1] = global_params['G_c' + str(state)]
+                    tHMMobj.paramlist[num]["E"][state, 2] = global_params['G_scale' + str(state)]
                 elif tHMMobj.FOM == 'E':
-                    tHMMobj.paramlist[num]["E"][original_state, 1] = global_params['E' + str(real_state)]
+                    tHMMobj.paramlist[num]["E"][state, 1] = global_params['E' + str(state)]
         
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
