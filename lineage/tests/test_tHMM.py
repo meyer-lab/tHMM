@@ -8,7 +8,7 @@ from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
 from ..tHMM import tHMM
 from ..tHMM_utils import max_gen, get_gen, get_parents_for_level, getAccuracy
-from ..Lineage_utils import remove_NaNs, get_numLineages, init_Population, generatePopulationWithTime as gpt
+from ..Lineage_utils import remove_singleton_lineages, get_numLineages, init_Population, generatePopulationWithTime as gpt
 from ..CellNode import CellNode
 
 
@@ -62,24 +62,6 @@ class TestModel(unittest.TestCase):
     ################################
     # Lineage_utils.py tests below #
     ################################
-    def test_remove_NaNs(self):
-        '''
-        Checks to see that cells with a NaN of tau
-        are eliminated from a population list.
-        '''
-        experimentTime = 100.
-        initCells = [50, 50]
-        locBern = [0.6, 0.8]
-        cGom = [2, 0.5]
-        scaleGom = [40, 50]
-        X = gpt(experimentTime, initCells, locBern, cGom, scaleGom)  # generate a population
-        X = remove_NaNs(X)  # remove unfinished cells
-        num_NAN = 0
-        for cell in X:
-            if cell.isUnfinished():
-                num_NAN += 1
-
-        self.assertEqual(num_NAN, 0)  # there should be no unfinished cells left
 
     def test_get_numLineages(self):
         '''
@@ -183,7 +165,7 @@ class TestModel(unittest.TestCase):
         Make sure paramlist has proper
         labels and sizes.
         '''
-        X = remove_NaNs(self.X)
+        X = remove_singleton_lineages(self.X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         self.assertEqual(t.paramlist[0]["pi"].shape[0], 2)  # make sure shape is numStates
         self.assertEqual(t.paramlist[0]["T"].shape[0], 2)  # make sure shape is numStates
@@ -196,7 +178,7 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
-        X = remove_NaNs(self.X)
+        X = remove_singleton_lineages(self.X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
@@ -211,7 +193,7 @@ class TestModel(unittest.TestCase):
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         '''
-        X = remove_NaNs(self.X)
+        X = remove_singleton_lineages(self.X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         EL = t.get_Emission_Likelihoods()
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
@@ -229,7 +211,7 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
-        X = remove_NaNs(self.X)
+        X = remove_singleton_lineages(self.X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(t)
         self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population
@@ -246,7 +228,7 @@ class TestModel(unittest.TestCase):
         the Viterbi function to find
         the optimal hidden states.
         '''
-        X = remove_NaNs(self.X)
+        X = remove_singleton_lineages(self.X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
         self.assertLessEqual(len(deltas), 50)  # there are <=50 lineages in X
@@ -266,7 +248,7 @@ class TestModel(unittest.TestCase):
         gives one different optimal state
         trees.
         '''
-        X = remove_NaNs(self.X)
+        X = remove_singleton_lineages(self.X)
         numStates = 2
         t = tHMM(X, numStates=numStates)  # build the tHMM class with X
         fake_param_list = []
@@ -316,7 +298,7 @@ class TestModel(unittest.TestCase):
         homogeneous populations. Using parameter sets that
         describe those homogenous populations.
         '''
-        X = remove_NaNs(self.X2)
+        X = remove_singleton_lineages(self.X2)
         numStates = 2
         t = tHMM(X, numStates=numStates)  # build the tHMM class with X
 
@@ -381,7 +363,7 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
-        X = remove_NaNs(self.X)
+        X = remove_singleton_lineages(self.X)
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(tHMMobj)
@@ -410,10 +392,10 @@ class TestModel(unittest.TestCase):
         MAScGom = [1]
         MASscaleGom = [75]
         masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
-        masterLineage = remove_NaNs(masterLineage)
+        masterLineage = remove_singleton_lineages(masterLineage)
         while len(masterLineage) <= 5:
             masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
-            masterLineage = remove_NaNs(masterLineage)
+            masterLineage = remove_singleton_lineages(masterLineage)
         print(len(masterLineage))
         for cell in masterLineage:
             cell.true_state = 0
@@ -423,10 +405,10 @@ class TestModel(unittest.TestCase):
         cGom2 = [2]
         scaleGom2 = [50]
         sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
-        sublineage2 = remove_NaNs(sublineage2)
+        sublineage2 = remove_singleton_lineages(sublineage2)
         while len(sublineage2) <= 5:
             sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
-            sublineage2 = remove_NaNs(sublineage2)
+            sublineage2 = remove_singleton_lineages(sublineage2)
         print(len(sublineage2))
 
         cell_startT_holder = []
@@ -446,12 +428,10 @@ class TestModel(unittest.TestCase):
         master_cell.left = sublineage2[0]
         sublineage2[0].parent = master_cell
         newLineage = masterLineage + sublineage2
-        newLineage = remove_NaNs(newLineage)
+        newLineage = remove_singleton_lineages(newLineage)
         print(len(newLineage))
 
-        X = remove_NaNs(newLineage)
-
-        tHMMobj = tHMM(X, numStates=numStates, FOM='G')  # build the tHMM class with X
+        tHMMobj = tHMM(newLineage, numStates=numStates, FOM='G')  # build the tHMM class with X
         fit(tHMMobj, max_iter=500, verbose=True)
 
         deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
