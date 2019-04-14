@@ -273,10 +273,11 @@ def gompertzAnalytical(X):
             tau_holder.append(cell.tau)  # append the cell lifetime
         elif cell.isUnfinished():
             tauFake_holder.append(cell.tauFake)
-    
+            
+    result = [2, 62.5]  # dummy estimate
     if not tau_holder and not tauFake_holder:
         print("The list of taus the Gompertz estimator can work with is empty.")
-        return 62.5
+        return result
 
     N = len(tau_holder) + len(tauFake_holder)  # number of cells
     D = len(tau_holder) / N
@@ -372,7 +373,7 @@ def gompertzAnalytical(X):
 
         return error
 
-    result = [2, 62.5]  # dummy estimate
+    
     if N != 0:
         #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
         res = root(error_b, x0=result[1])
