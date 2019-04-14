@@ -7,7 +7,7 @@ from ..DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
 from ..tHMM import tHMM
-from ..tHMM_utils import max_gen, get_gen, get_parents_for_level, getAccuracy
+from ..tHMM_utils import max_gen, get_gen, get_parents_for_level, getAccuracy, get_mutual_info
 from ..Lineage_utils import remove_singleton_lineages, get_numLineages, init_Population, generatePopulationWithTime as gpt
 
 from ..CellNode import CellNode
