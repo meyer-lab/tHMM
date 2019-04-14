@@ -305,7 +305,7 @@ def gompertzAnalytical(X):
         """
         temp = []
         for ii in range(N):
-            temp.append(np.exp(b * total_tau_holder[ii], dtype=np.float128))
+            temp.append(np.exp(b * total_tau_holder[ii]))
         return sum(temp)
 
     def left_term(b):
