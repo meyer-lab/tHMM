@@ -374,16 +374,15 @@ def gompertzAnalytical(X):
         return error
 
     
-    if N != 0:
-        #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
-        res = root(error_b, x0=result[1])
-        b = 1. / (res.x)
-        # solve for a in terms of b
-        a = D * b / ((help_exp(b) / N) - 1.0)
+    #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
+    res = root(error_b, x0=result[1])
+    b = 1. / (res.x)
+    # solve for a in terms of b
+    a = D * b / ((help_exp(b) / N) - 1.0)
 
-        # convert from their a and b to our cGom and scale
-        c = a / b
-        scale = res.x
-        result = [c, scale]  # true estimate with non-empty sequence of data
+    # convert from their a and b to our cGom and scale
+    c = a / b
+    scale = res.x
+    result = [c, scale]  # true estimate with non-empty sequence of data
 
     return result
