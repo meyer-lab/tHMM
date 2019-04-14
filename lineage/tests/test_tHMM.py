@@ -478,7 +478,7 @@ class TestModel(unittest.TestCase):
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
 
         X = LINEAGE
-        tHMMobj = tHMM(X, numStates=numStates, FOM='G', keepBern=False)  # build the tHMM class with X
+        tHMMobj = tHMM(X, numStates=numStates, FOM='G')  # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
         deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
@@ -501,7 +501,7 @@ class TestModel(unittest.TestCase):
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G')
 
         X = LINEAGE
-        tHMMobj = tHMM(X, numStates=numStates, FOM='G', keepBern=False)  # build the tHMM class with X
+        tHMMobj = tHMM(X, numStates=numStates, FOM='G')  # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
         deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
@@ -525,7 +525,7 @@ class TestModel(unittest.TestCase):
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
 
         X = LINEAGE
-        tHMMobj = tHMM(X, numStates=numStates, FOM='E', keepBern=False)  # build the tHMM class with X
+        tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
 
         deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
@@ -556,7 +556,7 @@ class TestModel(unittest.TestCase):
             LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2)
 
         X = LINEAGE
-        tHMMobj = tHMM(X, numStates=numStates, FOM='E', keepBern=False)  # build the tHMM class with X
+        tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
 
         deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
