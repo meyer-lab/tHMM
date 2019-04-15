@@ -315,8 +315,8 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
 
 ##--------------------getting the accuracy using mutual information ----------------##
 
-def get_mutual_info(tHMMobj, all_states, verbose = True):
-    
+def get_mutual_info(tHMMobj, all_states, verbose=True):
+
     numStates = tHMMobj.numStates
     tHMMobj.Accuracy2 = []
     tHMMobj.stateAssignment = []
