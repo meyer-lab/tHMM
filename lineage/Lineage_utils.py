@@ -2,6 +2,7 @@
 
 import numpy as np
 from scipy.optimize import root
+from scipy.special import logsumexp
 from .CellNode import generateLineageWithTime
 
 ##------------------------ Generating population of cells ---------------------------##
@@ -303,10 +304,8 @@ def gompertzAnalytical(X):
             in which tau == (X_i)
 
         """
-        temp = []
-        for ii in range(N):
-            temp.append(np.exp(b * total_tau_holder[ii]))
-        return sum(temp)
+        ans = logsumexp(b * total_tau_holder)
+        return np.exp(ans)
 
     def left_term(b):
         """ Returns one of the two expressions used in the MLE for b.
