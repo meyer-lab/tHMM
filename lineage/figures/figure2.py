@@ -9,7 +9,7 @@ from ..Analyze import Analyze
 from .Matplot_gen import Matplot_gen
 from .Fig_Gen import Lineage_Length, Lineages_per_Population_Figure
 from ..tHMM_utils import getAccuracy, getAIC
-from ..Lineage_utils import remove_NaNs
+from ..Lineage_utils import remove_singleton_lineages
 
 
 def makeFigure():

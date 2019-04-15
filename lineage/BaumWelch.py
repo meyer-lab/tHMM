@@ -161,8 +161,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                 cell_groups[str(state)].append(lineage[ii])
  
             for state_j in range(numStates):
-                if tHMMobj.keepBern:
-                    tHMMobj.paramlist[num]["E"][state_j, 0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
+                tHMMobj.paramlist[num]["E"][state_j, 0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
                 if tHMMobj.FOM == 'G':
                     c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[state_j])
                     tHMMobj.paramlist[num]["E"][state_j, 1] = c_estimate
