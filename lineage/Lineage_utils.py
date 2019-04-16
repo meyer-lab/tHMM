@@ -2,6 +2,7 @@
 
 import numpy as np
 from scipy.optimize import root
+from scipy.special import logsumexp
 from .CellNode import generateLineageWithTime
 
 ##------------------------ Generating population of cells ---------------------------##
@@ -97,40 +98,6 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
                 population.append(cell)  # append all individual cells into a population
 
     return population
-
-##-------------------------------- Removing NaNs -----------------------------------##
-
-
-def remove_NaNs(X):
-    """
-    Removes unfinished cells in Population and root cells with no daughters.
-
-    This Function checks every object in the list and if it includes NaN, then
-    it replaces the cell with None which essentially removes the cell, and returns
-    the new list of cells that does not inclue any NaN.
-
-    Args:
-        ----------
-        X (list): list that holds cells as objects.
-
-    Returns:
-        ----------
-        X (list): a list of objects (cells) in which the NaNs have been removed.
-
-    """
-    ii = 0  # establish a count outside of the loop
-    while ii in range(len(X)):  # for each cell in X
-        if X[ii].isUnfinished():  # if the cell has NaNs in its times
-            if X[ii].parent is None:  # do nothing if the parent pointer doesn't point to a cell
-                pass
-            elif X[ii].parent.left is X[ii]:  # if it is the left daughter of the parent cell
-                X[ii].parent.left = None  # replace the cell with None
-            elif X[ii].parent.right is X[ii]:  # or if it is the right daughter of the parent cell
-                X[ii].parent.right = None  # replace the cell with None
-            X.pop(ii)  # pop the unfinished cell at the current position
-        else:
-            ii += 1  # only move forward in the list if you don't delete a cell
-    return X
 
 ##------------------------- Removing Singleton Lineages ---------------------------##
 
@@ -308,10 +275,13 @@ def gompertzAnalytical(X):
         elif cell.isUnfinished():
             tauFake_holder.append(cell.tauFake)
 
+    result = [2, 62.5]  # dummy estimate
+    if not tau_holder and not tauFake_holder:
+        print("The list of taus the Gompertz estimator can work with is empty.")
+        return result
+
     N = len(tau_holder) + len(tauFake_holder)  # number of cells
-    D = 1
-    if N != 0:
-        D = len(tau_holder) / N
+    D = len(tau_holder) / N
     total_tau_holder = tau_holder + tauFake_holder
     delta_holder = [1] * len(tau_holder) + [0] * len(tauFake_holder)
 
@@ -334,10 +304,8 @@ def gompertzAnalytical(X):
             in which tau == (X_i)
 
         """
-        temp = []
-        for ii in range(N):
-            temp.append(np.exp(b * total_tau_holder[ii]))
-        return sum(temp)
+        ans = logsumexp(b * total_tau_holder)
+        return np.exp(ans)
 
     def left_term(b):
         """ Returns one of the two expressions used in the MLE for b.
@@ -379,7 +347,7 @@ def gompertzAnalytical(X):
         temp = []
         denom = ((b / N) * help_exp(b)) - b
         for ii in range(N):
-            numer = D * (np.exp(b * total_tau_holder[ii]) - 1.0)
+            numer = D * (np.expm1(b * total_tau_holder[ii]))
             temp.append((numer / denom) + delta_holder[ii] * total_tau_holder[ii])
         return sum(temp)
 
@@ -404,17 +372,15 @@ def gompertzAnalytical(X):
 
         return error
 
-    result = [2, 62.5]  # dummy estimate
-    if N != 0:
-        #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
-        res = root(error_b, x0=result[1])
-        b = 1. / (res.x)
-        # solve for a in terms of b
-        a = D * b / ((help_exp(b) / N) - 1.0)
+    #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
+    res = root(error_b, x0=result[1])
+    b = 1. / (res.x)
+    # solve for a in terms of b
+    a = D * b / ((help_exp(b) / N) - 1.0)
 
-        # convert from their a and b to our cGom and scale
-        c = a / b
-        scale = res.x
-        result = [c, scale]  # true estimate with non-empty sequence of data
+    # convert from their a and b to our cGom and scale
+    c = a / b
+    scale = res.x
+    result = [c, scale]  # true estimate with non-empty sequence of data
 
     return result
