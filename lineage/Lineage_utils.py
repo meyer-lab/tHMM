@@ -2,6 +2,7 @@
 
 import numpy as np
 from scipy.optimize import root
+from scipy.special import logsumexp
 from .CellNode import generateLineageWithTime
 
 ##------------------------ Generating population of cells ---------------------------##
@@ -273,7 +274,7 @@ def gompertzAnalytical(X):
             tau_holder.append(cell.tau)  # append the cell lifetime
         elif cell.isUnfinished():
             tauFake_holder.append(cell.tauFake)
-            
+
     result = [2, 62.5]  # dummy estimate
     if not tau_holder and not tauFake_holder:
         print("The list of taus the Gompertz estimator can work with is empty.")
@@ -303,10 +304,8 @@ def gompertzAnalytical(X):
             in which tau == (X_i)
 
         """
-        temp = []
-        for ii in range(N):
-            temp.append(np.exp(b * total_tau_holder[ii]))
-        return sum(temp)
+        ans = logsumexp(b * total_tau_holder)
+        return np.exp(ans)
 
     def left_term(b):
         """ Returns one of the two expressions used in the MLE for b.
@@ -373,7 +372,6 @@ def gompertzAnalytical(X):
 
         return error
 
-    
     #res = minimize(error_b, x0=[(45.)], method="Nelder-Mead", options={'maxiter': 1e10})
     res = root(error_b, x0=result[1])
     b = 1. / (res.x)

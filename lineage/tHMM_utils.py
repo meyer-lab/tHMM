@@ -141,7 +141,7 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, fateObserved=True):
     # the observation of the cell death has no bearing on the calculation of the second coefficient in the pdf
 
     result = firstCoeff * secondCoeff
-    assert np.isfinite(result), "Your Gompertz right-censored likelihood calculation is returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
+    assert np.isfinite(result), "Your Gompertz right-censored likelihood calculation is returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations with the following values: \n tau_or_tauFake: {} \n c: {} \n scale: {} b: {} \n a: {} \n fateObserved: {}.".format(tau_or_tauFake, c, scale, b, a, fateObserved)
 
     return result
 
@@ -315,8 +315,8 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
 
 ##--------------------getting the accuracy using mutual information ----------------##
 
-def get_mutual_info(tHMMobj, all_states, verbose = True):
-    
+def get_mutual_info(tHMMobj, all_states, verbose=True):
+
     numStates = tHMMobj.numStates
     tHMMobj.Accuracy2 = []
     tHMMobj.stateAssignment = []
