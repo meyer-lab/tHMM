@@ -158,12 +158,68 @@ class TestModel(unittest.TestCase):
         self.assertEqual(temp1, {1, 2})
 
     def test_getAccuracy(self):
+        """
+        checks whether the accuracy is in the range
+        """
+        numStates = 2
 
+        switchT = 200
+        experimentTime = switchT + 150
+        initCells = [1]
+        locBern = [0.99999999999]
+        cGom = [1]
+        scaleGom = [75]
+        bern2 = [0.6]
+        cG2 = [2]
+        scaleG2 = [50]
 
-        tHMMobj.Accuracy, tHMMobj.states, tHMMobj.stateAssignment = getAccuracy(tHMMobj, all_states, verbose=False)
-        check_acc = (0 <= tHMMobj.Accuracy <= 1)
+        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+        while len(LINEAGE) <= 5:
+            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+
+        X = LINEAGE
+        t = tHMM(X, numStates = 2)
+        fit(t, max_iter=500, verbose=True)
+
+        deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
+        get_nonleaf_deltas(t, deltas, state_ptrs)
+        all_states = Viterbi(t, deltas, state_ptrs)
+
+        t.Accuracy, t.states, t.stateAssignment = getAccuracy(t, all_states, verbose=False)
+        check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy)
         self.assertTrue(check_acc)
-        
+
+    def test_get_mutual_info(self):
+        """
+        checks whether the normalized mutual information is in the range
+        """
+        numStates = 2
+
+        switchT = 200
+        experimentTime = switchT + 150
+        initCells = [1]
+        locBern = [0.99999999999]
+        cGom = [1]
+        scaleGom = [75]
+        bern2 = [0.6]
+        cG2 = [2]
+        scaleG2 = [50]
+
+        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+        while len(LINEAGE) <= 5:
+            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+
+        X = LINEAGE
+        t = tHMM(X, numStates = 2)
+        fit(t, max_iter=500, verbose=True)
+
+        deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
+        get_nonleaf_deltas(t, deltas, state_ptrs)
+        all_states = Viterbi(t, deltas, state_ptrs)
+
+        accuracy = get_mutual_info(t, all_states, verbose=False)
+        check_acc = all(1.0 >= x >= 0.0 for x in accuracy)
+        self.assertTrue(check_acc)
 
     #######################
     # tHMM.py tests below #
