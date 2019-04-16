@@ -2,6 +2,7 @@
 
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.stats import entropy
 
 from .Depth_Two_State_Lineage import Depth_Two_State_Lineage
 from ..Analyze import Analyze
@@ -10,7 +11,125 @@ from .Matplot_gen import Matplot_gen
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
 
+def KL_per_lineage(ax, T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=2, numStates=2, verbose=False):
+    """Run the KL divergence on emmission likelihoods."""
+    
+    MASlocBern, locBern2 = np.random.uniform(0.6,1.0, size = reps), np.random.uniform(0.6,1.0, size = reps)
+    MAScGom,cGom2 = np.random.uniform(1.0,2.5, size = reps), np.random.uniform(1.0,2.5, size = reps)
+    MASscaleGom, scaleGom2 = np.random.randint(2,50, size = reps), np.random.randint(2,50, size = reps)
 
+    
+    #lineages = range(lineage_start, lineage_end + 1)
+    acc_h1 = []  # list of lists of lists
+    cell_h1 = []
+    bern_MAS_h1 = []
+    bern_2_h1 = []
+    cGom_MAS_h1 = []
+    cGom_2_h1 = []
+    scaleGom_MAS_h1 = []
+    scaleGom_2_h1 = []
+    lineage_h1 = []
+
+    #for lineage_num in lineages:  # a pop with num number of lineages
+        acc_h2 = []
+        cell_h2 = []
+        bern_MAS_h2 = []
+        bern_2_h2 = []
+        cGom_MAS_h2 = []
+        cGom_2_h2 = []
+        scaleGom_MAS_h2 = []
+        scaleGom_2_h2 = []
+
+        for rep in range(reps):
+            print('Rep:', rep)
+            X1 = []
+
+            for num in range(lineage_num):
+                X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern[rep], MAScGom[rep], MASscaleGom[rep], T_2, initCells2, locBern2[rep], cGom2[rep], scaleGom2[rep])
+                X1.extend(newLineage)
+
+            X = remove_singleton_lineages(X1)
+            print(len(X))
+            _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
+            acc_h3 = []
+            cell_h3 = []
+            bern_MAS_h3 = []
+            bern_2_h3 = []
+            cGom_MAS_h3 = []
+            cGom_2_h3 = []
+            scaleGom_MAS_h3 = []
+            scaleGom_2_h3 = []
+
+            for lin in range(tHMMobj.numLineages):
+                AccuracyPop, _, stateAssignmentPop = getAccuracy(tHMMobj, all_states, verbose=False)
+                accuracy = AccuracyPop[lin]
+                state_1 = stateAssignmentPop[lin][0]
+                state_2 = stateAssignmentPop[lin][1]
+                lineage = tHMMobj.population[lin]
+                T = tHMMobj.paramlist[lin]["T"]
+                E = tHMMobj.paramlist[lin]["E"]
+                pi = tHMMobj.paramlist[lin]["pi"]
+                
+                
+                
+                EL = tHMMobj.EL[lin]
+                for state in range(numStates):
+                    for ii, EL in enumerate(EL):
+                        
+                        
+                        entropy = 
+                    
+                    
+                
+                
+                
+                
+
+                acc_h3.append(100 * accuracy)
+                cell_h3.append(len(lineage))
+                bern_MAS_h3.append(E[state_1, 0])
+                bern_2_h3.append(E[state_2, 0])
+                cGom_MAS_h3.append(E[state_1, 1])
+                cGom_2_h3.append(E[state_2, 1])
+                scaleGom_MAS_h3.append(E[state_1, 2])
+                scaleGom_2_h3.append(E[state_2, 2])
+
+                if verbose:
+                    print('pi', pi)
+                    print('T', T)
+                    print('E', E)
+                    print('accuracy:', accuracy)
+                    print('MAS length, 2nd lin length:', len(masterLineage), len(newLineage) - len(masterLineage))
+
+            acc_h2.extend(acc_h3)
+            cell_h2.extend(cell_h3)
+            bern_MAS_h2.extend(bern_MAS_h3)
+            bern_2_h2.extend(bern_2_h3)
+            cGom_MAS_h2.extend(cGom_MAS_h3)
+            cGom_2_h2.extend(cGom_2_h3)
+            scaleGom_MAS_h2.extend(scaleGom_MAS_h3)
+            scaleGom_2_h2.extend(scaleGom_2_h3)
+
+        acc_h1.append(np.mean(acc_h2))
+        cell_h1.extend(cell_h2)
+        bern_MAS_h1.append(np.mean(bern_MAS_h2))
+        bern_2_h1.append(np.mean(bern_2_h2))
+        cGom_MAS_h1.append(np.mean(cGom_MAS_h2))
+        cGom_2_h1.append(np.mean(cGom_2_h2))
+        scaleGom_MAS_h1.append(np.mean(scaleGom_MAS_h2))
+        scaleGom_2_h1.append(np.mean(scaleGom_2_h2))
+        lineage_h1.append(lineage_num)
+
+    x = lineage_h1
+    data = (x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2)
+    return data
+    
+    
+    
+    
+    
+    
+    
 def Lineage_Length(T_MAS=130, T_2=61, reps=3, MASinitCells=[1], MASlocBern=[0.8], MAScGom=[1.6], MASscaleGom=[40], initCells2=[1],
                    locBern2=[0.99], cGom2=[1.6], scaleGom2=[18], numStates=2, max_lin_length=1500, min_lin_length=100, verbose=False):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
@@ -41,6 +160,7 @@ def Lineage_Length(T_MAS=130, T_2=61, reps=3, MASinitCells=[1], MASlocBern=[0.8]
         for lin in range(tHMMobj.numLineages):
             AccuracyPop, _, stateAssignmentPop = getAccuracy(tHMMobj, all_states, verbose=False)
             accuracy = AccuracyPop[lin]
+            
             state_1 = stateAssignmentPop[lin][0]
             state_2 = stateAssignmentPop[lin][1]
             lineage = tHMMobj.population[lin]
