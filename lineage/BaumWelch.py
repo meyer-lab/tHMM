@@ -183,8 +183,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             #this code was copied from above for loop, so consider deleting this from above for loop
             for state in range(numStates):
                 #assigns the global state to the lineage-specific state assignment
-                if tHMMobj.keepBern:
-                    tHMMobj.paramlist[num]["E"][state, 0] = global_params['B' + str(state)]
+                tHMMobj.paramlist[num]["E"][state, 0] = global_params['B' + str(state)]
                 if tHMMobj.FOM == 'G':
                     c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[state])
                     tHMMobj.paramlist[num]["E"][state, 1] = global_params['G_c' + str(state)]

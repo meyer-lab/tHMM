@@ -7,7 +7,7 @@ from .tHMM import tHMM
 from .tHMM_utils import getAccuracy
 
 
-def Analyze(X, numStates, keepBern=True):
+def Analyze(X, numStates):
     '''Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas'''
     run = True
     while run:
