@@ -316,6 +316,33 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
 ##--------------------getting the accuracy using mutual information ----------------##
 
 def get_mutual_info(tHMMobj, all_states, verbose = True):
+    """This fuction calculates the nutual information score between the sequence of 
+    true states and the sequence that the Viterbi estimates.
+
+    Here a normalized_mutual_info_score function from sklearn.metrics.cluster has been used
+    which is commonly used for evaluating clustering accuracy. Using this function helps with
+    calculating accuracy regardless of the order and name of labels that the true states and the
+    Viterbi outcome have.
+
+    Agrs:
+        ---------
+        tHMMobj (obj): tree-HMM model as an object
+        all_states (matrix): a matrix holding the states assigned by viterbi algorithm as the most likely states.
+
+    Returns:
+        ----------
+        tHMMobj.Accuracy2 (list): an atribute to tHMMobj which holds the accuracy for each lineage.
+
+    Example usage:
+
+        tHMMobj = tHMM(X, numStates=2, FOM='G') # build the tHMM class with X
+        fit(tHMMobj, max_iter=500, verbose=True)
+        deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
+        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
+
+        mutual_info = get_mutual_info(tHMMobj, all_states, verbose = True)
+    """
     
     numStates = tHMMobj.numStates
     tHMMobj.Accuracy2 = []

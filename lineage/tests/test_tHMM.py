@@ -174,6 +174,14 @@ class TestModel(unittest.TestCase):
         temp1 = get_parents_for_level(level, self.lineage1)
         self.assertEqual(temp1, {1, 2})
 
+    def test_getAccuracy(self):
+
+
+        tHMMobj.Accuracy, tHMMobj.states, tHMMobj.stateAssignment = getAccuracy(tHMMobj, all_states, verbose=False)
+        check_acc = (0 <= tHMMobj.Accuracy <= 1)
+        self.assertTrue(check_acc)
+        
+
     #######################
     # tHMM.py tests below #
     #######################
@@ -394,6 +402,7 @@ class TestModel(unittest.TestCase):
             self.assertGreaterEqual(gammasLin.shape[0], 0)  # at least zero cells in each lineage
             for state_k in range(numStates):
                 self.assertEqual(gammasLin[0, state_k], betas[ii][0, state_k])
+
 
     ############################
     # BaumWelch.py tests below #
