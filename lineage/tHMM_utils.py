@@ -315,7 +315,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
 
 ##--------------------getting the accuracy using mutual information ----------------##
 
-def get_mutual_info(tHMMobj, all_states, verbose = True):
+def get_mutual_info(tHMMobj, all_states, verbose=True):
     """This fuction calculates the nutual information score between the sequence of 
     true states and the sequence that the Viterbi estimates.
 
