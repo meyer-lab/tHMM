@@ -31,6 +31,7 @@ def KL_per_lineage(ax, T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=
     lineage_h1 = []
 
     #for lineage_num in lineages:  # a pop with num number of lineages
+        KL_h2 = []
         acc_h2 = []
         cell_h2 = []
         bern_MAS_h2 = []
@@ -41,7 +42,7 @@ def KL_per_lineage(ax, T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=
         scaleGom_2_h2 = []
 
         for rep in range(reps):
-            print('Rep:', rep)
+            print('Rep: {}'.format(rep))
             X1 = []
 
             for num in range(lineage_num):
@@ -51,6 +52,8 @@ def KL_per_lineage(ax, T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=
             X = remove_singleton_lineages(X1)
             print(len(X))
             _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
+            
+            KL_h3 = []
             acc_h3 = []
             cell_h3 = []
             bern_MAS_h3 = []
@@ -69,22 +72,22 @@ def KL_per_lineage(ax, T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=
                 T = tHMMobj.paramlist[lin]["T"]
                 E = tHMMobj.paramlist[lin]["E"]
                 pi = tHMMobj.paramlist[lin]["pi"]
-                
-                
-                
                 EL = tHMMobj.EL[lin]
-                for state in range(numStates):
-                    for ii, EL in enumerate(EL):
-                        
-                        
-                        entropy = 
-                    
-                    
-                
-                
-                
-                
 
+                #go through each row of the EL array and choose the highest probability state and put it in its corresponding state list
+                
+                ELs = {}
+                for state in range(numStates):
+                    ELs["state"+str(state)] = []
+                    for ii in range EL.shape[0]:
+                        cell_ELs = EL[ii, :]
+                        max_EL = np.argmax(cell_ELs)
+                        idx_max_EL = np.index(max_EL)
+                        #use idx to append max_EL to proper list
+   
+                entropy = #scipy.entropy             
+            
+                KL_h3.append(entropy)
                 acc_h3.append(100 * accuracy)
                 cell_h3.append(len(lineage))
                 bern_MAS_h3.append(E[state_1, 0])
@@ -99,8 +102,10 @@ def KL_per_lineage(ax, T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=
                     print('T', T)
                     print('E', E)
                     print('accuracy:', accuracy)
+                    print('KL:', entropy)
                     print('MAS length, 2nd lin length:', len(masterLineage), len(newLineage) - len(masterLineage))
 
+            KL_h2.extend(entropy)
             acc_h2.extend(acc_h3)
             cell_h2.extend(cell_h3)
             bern_MAS_h2.extend(bern_MAS_h3)
@@ -110,6 +115,8 @@ def KL_per_lineage(ax, T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=
             scaleGom_MAS_h2.extend(scaleGom_MAS_h3)
             scaleGom_2_h2.extend(scaleGom_2_h3)
 
+        #take the average of KL and accuracy because we want mean value across all lineages in a single pop
+        KL_h2.append(np.mean(KL_h2))
         acc_h1.append(np.mean(acc_h2))
         cell_h1.extend(cell_h2)
         bern_MAS_h1.append(np.mean(bern_MAS_h2))
