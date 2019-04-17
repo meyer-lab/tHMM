@@ -20,6 +20,7 @@ def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=2, n
 
     
     #arrays to hold for each rep
+    KL_h1 = []
     acc_h1 = []  # list of lists of lists
     cell_h1 = []
     bern_MAS_h1 = []
@@ -65,18 +66,7 @@ def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=2, n
             pi = tHMMobj.paramlist[lin]["pi"]
             EL = tHMMobj.EL[lin]
 
-            #go through each row of the EL array and choose the highest probability state and put it in its corresponding state list
-                
-            ELs = {}
-            for state in range(numStates):
-                ELs["state"+str(state)] = []
-                
-            max_ELs = np.argmax(EL, axis=1) #list of index for max EL of each cell
-            for ii in range(EL.shape[0]):
-                max_state = max_ELs[ii]
-                ELs["state"+str(max_state)] = EL[ii, max_state]   
-                
-            KL = entropy(ELs['state0'], ELs['state1']) #this must be made for more than 1 state, such that all state other than the one of interest (ie p) are binned into the q distribution           
+            KL = entropy(EL[0,:], EL[1,:]) #this must be made for more than 1 state, such that all state other than the one of interest (ie p) are binned into the q distribution           
             
             KL_h2.append(KL)
             acc_h2.append(100 * accuracy)
@@ -93,10 +83,10 @@ def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=2, n
                 print('T', T)
                 print('E', E)
                 print('accuracy:', accuracy)
-                print('KL:', entropy)
+                print('KL:', KL)
                 print('MAS length, 2nd lin length:', len(masterLineage), len(newLineage) - len(masterLineage))
 
-        KL_h1.extend(entropy)
+        KL_h1.extend([KL])
         acc_h1.extend(acc_h2)
         cell_h1.extend(cell_h2)
         bern_MAS_h1.extend(bern_MAS_h2)
