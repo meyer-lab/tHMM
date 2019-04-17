@@ -18,12 +18,13 @@ def makeFigure():
     ax, f = getSetup((12, 9), (x, y))
 
     x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2 = Lineage_Length()
-    Matplot_gen(ax[0:4], x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1,
-                scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel='Cells per Lineage')  # Figure plots scale vs lineage length
+    Matplot_gen(ax[0:4], x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel='Cells per Lineage')  # Figure plots scale vs lineage length
 
     x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2 = Lineages_per_Population_Figure()
-    Matplot_gen(ax[4:8], x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1,
-                scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel='Lineages per Population')  # Figure plots scale vs number of lineages
+    Matplot_gen(ax[4:8], x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel='Lineages per Population')  # Figure plots scale vs number of lineages
+    
+    x, KL_h1, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2 = KL_per_lineage()
+    Matplot_gen(ax[8:12], KL_h1, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel='Lineages per Population')  # Figure plots scale vs KL
 
     f.tight_layout()
 
