@@ -11,13 +11,12 @@ from .Matplot_gen import Matplot_gen
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
 
-def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=5, numStates=2, max_lin_length=100, min_lin_length=10, verbose=False): #add ax
+def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=20, numStates=2, max_lin_length=1000, min_lin_length=200, verbose=False): #add ax
     """Run the KL divergence on emmission likelihoods."""
     
     MASlocBern, locBern2 = np.random.uniform(0.6,1.0, size = reps), np.random.uniform(0.6,1.0, size = reps)
     MAScGom,cGom2 = np.random.uniform(1.6, 1.62, size = reps), np.random.uniform(1.6, 1.62, size = reps)
     MASscaleGom, scaleGom2 = np.random.randint(30, 40, size = reps), np.random.randint(30, 40, size = reps)
-
     
     #arrays to hold for each rep
     KL_h1 = []
@@ -37,17 +36,16 @@ def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=5, n
         X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern[rep]], [MAScGom[rep]], [MASscaleGom[rep]], T_2, initCells2, [locBern2[rep]], [cGom2[rep]], [scaleGom2[rep]])
         
         while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
-            X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern[rep]], [MAScGom[rep]], [MASscaleGom[rep]], T_2, initCells2, [locBern2[rep]], [cGom2[rep]], [scaleGom2[rep]])
-            print("old type: {} and shape: {}".format([MASlocBern[rep]], len([MASlocBern[rep]])))
-            
-            if len(newLineage) > max_lin_length:
+            #re calculate distributions if they are too large, or else model wont run
+            if len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
                 MASlocBern[rep], locBern2[rep] = np.random.uniform(0.6,1.0, size = 1), np.random.uniform(0.6,1.0, size = 1)
                 MAScGom[rep], cGom2[rep] = np.random.uniform(1.6, 1.62, size = 1), np.random.uniform(1.6, 1.62, size = 1)
                 MASscaleGom[rep], scaleGom2[rep] = np.random.randint(30, 40, size = 1), np.random.randint(30, 40, size = 1)
-                print("new type: {} and shape: {}".format([MASlocBern[rep]], len([MASlocBern[rep]])))
-
+            
+            #generate new lineage
+            X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern[rep]], [MAScGom[rep]], [MASscaleGom[rep]], T_2, initCells2, [locBern2[rep]], [cGom2[rep]], [scaleGom2[rep]])
+            
         X = remove_singleton_lineages(newLineage)
-        print(len(X))
         _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
         
         #arrays to hold values for each lineage within the population that the rep made
@@ -103,7 +101,7 @@ def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=5, n
         scaleGom_2_h1.extend(scaleGom_2_h2)
 
     #take the average of KL and accuracy because we want mean value across all lineages in a single pop
-    KL_h2.append(np.mean(KL_h2))
+    KL_h1.append(np.mean(KL_h2))
     acc_h1.append(np.mean(acc_h2))
     cell_h1.extend(cell_h2)
     bern_MAS_h1.append(np.mean(bern_MAS_h2))
@@ -114,6 +112,7 @@ def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=5, n
     scaleGom_2_h1.append(np.mean(scaleGom_2_h2))
 
     x = KL_h1
+    print("x shape: {} and acc_h1 shape: {}".format(x, acc_h1))
     data = (x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2)
     return data
 
