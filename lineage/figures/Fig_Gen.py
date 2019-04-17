@@ -11,12 +11,12 @@ from .Matplot_gen import Matplot_gen
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
 
-def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=2, numStates=2, max_lin_length=100, min_lin_length=10, verbose=False): #add ax
+def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=5, numStates=2, max_lin_length=100, min_lin_length=10, verbose=False): #add ax
     """Run the KL divergence on emmission likelihoods."""
     
     MASlocBern, locBern2 = np.random.uniform(0.6,1.0, size = reps), np.random.uniform(0.6,1.0, size = reps)
-    MAScGom,cGom2 = np.random.uniform(1.6, 1.8, size = reps), np.random.uniform(1.6, 1.8, size = reps)
-    MASscaleGom, scaleGom2 = np.random.randint(20, 40, size = reps), np.random.randint(2, 40, size = reps)
+    MAScGom,cGom2 = np.random.uniform(1.6, 1.62, size = reps), np.random.uniform(1.6, 1.62, size = reps)
+    MASscaleGom, scaleGom2 = np.random.randint(30, 40, size = reps), np.random.randint(30, 40, size = reps)
 
     
     #arrays to hold for each rep
@@ -33,12 +33,18 @@ def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=2, n
 
     for rep in range(reps):
         print('Rep: {}'.format(rep))
-        print(len([MASlocBern[rep]]), len([MASlocBern[rep]]))
         
         X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern[rep]], [MAScGom[rep]], [MASscaleGom[rep]], T_2, initCells2, [locBern2[rep]], [cGom2[rep]], [scaleGom2[rep]])
         
         while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
             X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern[rep]], [MAScGom[rep]], [MASscaleGom[rep]], T_2, initCells2, [locBern2[rep]], [cGom2[rep]], [scaleGom2[rep]])
+            print("old type: {} and shape: {}".format([MASlocBern[rep]], len([MASlocBern[rep]])))
+            
+            if len(newLineage) > max_lin_length:
+                MASlocBern[rep], locBern2[rep] = np.random.uniform(0.6,1.0, size = 1), np.random.uniform(0.6,1.0, size = 1)
+                MAScGom[rep], cGom2[rep] = np.random.uniform(1.6, 1.62, size = 1), np.random.uniform(1.6, 1.62, size = 1)
+                MASscaleGom[rep], scaleGom2[rep] = np.random.randint(30, 40, size = 1), np.random.randint(30, 40, size = 1)
+                print("new type: {} and shape: {}".format([MASlocBern[rep]], len([MASlocBern[rep]])))
 
         X = remove_singleton_lineages(newLineage)
         print(len(X))
@@ -106,7 +112,6 @@ def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=2, n
     cGom_2_h1.append(np.mean(cGom_2_h2))
     scaleGom_MAS_h1.append(np.mean(scaleGom_MAS_h2))
     scaleGom_2_h1.append(np.mean(scaleGom_2_h2))
-    lineage_h1.append(lineage_num)
 
     x = KL_h1
     data = (x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2)
