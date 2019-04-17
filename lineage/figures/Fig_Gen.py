@@ -11,7 +11,7 @@ from .Matplot_gen import Matplot_gen
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
 
-def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=20, numStates=2, max_lin_length=1000, min_lin_length=200, verbose=False): #add ax
+def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=3, numStates=2, max_lin_length=1000, min_lin_length=300, verbose=False): #add ax
     """Run the KL divergence on emmission likelihoods."""
     
     MASlocBern, locBern2 = np.random.uniform(0.6,1.0, size = reps), np.random.uniform(0.6,1.0, size = reps)

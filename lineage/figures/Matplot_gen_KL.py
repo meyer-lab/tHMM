@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 import matplotlib
 import matplotlib.ticker
 matplotlib.use('Agg')
+import matplotlib.ticker as ticker
 
 
 def Matplot_gen_KL(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel):
@@ -12,6 +13,11 @@ def Matplot_gen_KL(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, 
     #fig, axs = plt.subplots(nrows=2, ncols=2, sharex=True)
     #ax = axs[0, 0]
     ax.set_xlabel(xlabel)
+    ax.set_xscale('log')
+    ax.set_xlim(x.min(), x.max())
+    ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: '{0:g}'.format(x-1)))
+    ax.xaxis.set_major_locator(ticker.FixedLocator(x))
+    
     ax.set_ylim(0, 110)
     ax.errorbar(x, acc_h1, fmt='o', c='b', marker="*", fillstyle='none', label='Accuracy')
     ax.axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b')  # linestyle is dashdotdotted
