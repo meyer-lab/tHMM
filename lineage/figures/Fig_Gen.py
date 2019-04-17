@@ -79,13 +79,13 @@ def KL_per_lineage(ax, T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=
                 ELs = {}
                 for state in range(numStates):
                     ELs["state"+str(state)] = []
-                    for ii in range EL.shape[0]:
-                        cell_ELs = EL[ii, :]
-                        max_EL = np.argmax(cell_ELs)
-                        idx_max_EL = np.index(max_EL)
-                        #use idx to append max_EL to proper list
-   
-                entropy = #scipy.entropy             
+                
+                max_ELs = np.argmax(EL, axis=1) #list of index for max EL of each cell
+                for ii in range EL.shape[0]:
+                    max_state = max_ELs[ii]
+                    ELs{"state"+str(max_state)} = EL[ii, max_state]   
+                
+                entropy = scipy.stats.entropy(ELs{'state0'}, ELs{'state1'}) #this must be made for more than 1 state, such that all state other than the one of interest (i.e. p) are binned into the q distribution           
             
                 KL_h3.append(entropy)
                 acc_h3.append(100 * accuracy)
@@ -128,15 +128,10 @@ def KL_per_lineage(ax, T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=
         lineage_h1.append(lineage_num)
 
     x = lineage_h1
-    data = (x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2)
+    data = (x, KL_h1, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2)
     return data
-    
-    
-    
-    
-    
-    
-    
+
+
 def Lineage_Length(T_MAS=130, T_2=61, reps=3, MASinitCells=[1], MASlocBern=[0.8], MAScGom=[1.6], MASscaleGom=[40], initCells2=[1],
                    locBern2=[0.99], cGom2=[1.6], scaleGom2=[18], numStates=2, max_lin_length=1500, min_lin_length=100, verbose=False):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
