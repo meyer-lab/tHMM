@@ -28,10 +28,10 @@ manuscript/index.html: manuscript/text/*.md $(patsubst %, $(fdir)/figure%.svg, $
 	pandoc -s $(pan_common) -t html5 --mathjax -c ./templates/kultiad.css --template=$(tdir)/html.template -o $@
 
 test:
-	pytest
+	pytest -s
 
 testcover:
-	pytest --workers auto --junitxml=junit.xml --cov=lineage --cov-report xml:coverage.xml
+	pytest -s --junitxml=junit.xml --cov=lineage --cov-report xml:coverage.xml
 
 testprofile:
 	pytest --profile-svg
