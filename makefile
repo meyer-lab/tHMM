@@ -34,11 +34,12 @@ testcover:
 	pytest -s --junitxml=junit.xml --cov=lineage --cov-report xml:coverage.xml
 
 testprofile:
-	pytest --profile-svg
+	python3 -m cProfile -o profile /usr/local/bin/pytest
+	gprof2dot -f pstats profile | dot -Tsvg -o profile.svg
 
 clean:
-	rm -f coverage.xml .coverage .coverage* junit.xml coverage.xml
-	rm -rf prof manuscript/figures
+	rm -f coverage.xml .coverage .coverage* junit.xml coverage.xml profile profile.svg
+	rm -rf prof manuscript/genFigures
 
 docs:
 	sphinx-apidoc -o doc/source lineage
