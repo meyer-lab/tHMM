@@ -177,7 +177,7 @@ class CellNode:
         return curr_cell
 
 
-def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='G', betaExp=None, betaExp2=None):
+def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, shape_gamma1 = None, scale_gamma1 = None, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='G', betaExp=None, betaExp2=None, shape_gamma2 = None, scale_gamma2 = None):
     """
     generates a list of objects (cells) in a lineage.
 
@@ -229,10 +229,15 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
         bern2 (float): second Bernoulli distribution parameter.
         cG2 (float): second shape parameter of Gompertz distribution
         scaleG2 (float): second scale parameter of Gompertz distrbution
+        shape_gamma1 (float): shape parameter of Gamma distribution
+        scale_gamma1 (float): scale parameter of Gamma distribution
         FOM (str): this determines the type of distribution we want to use for
         lifetime here it is either "G": Gompertz, or "E": Exponential.
         betaExp (float): the parameter of Exponential distribution
         betaExp2 (float): second parameter of Exponential distribution
+        shape_gamma2 (float): second shape parameter for Gamma distribution
+        scale_gamma2 (float): second scale parameter for Gamma distribution
+
 
     Returns:
         ----------
@@ -255,6 +260,8 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
                     cell.tau = sp.gompertz.rvs(cG2, scale=scaleG2)
                 elif FOM == 'E':
                     cell.tau = sp.expon.rvs(scale=betaExp2)
+                elif FOM == 'Ga':
+                    cell.tau = sp.gamma.rvs(shape_gamma2, loc = 0, scale_gamma2)
 
             else:  # use first set of parameters for non-heterogeneous lineages or before the switch time
                 cell.true_state = 0
@@ -262,6 +269,9 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
                     cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
                 elif FOM == 'E':
                     cell.tau = sp.expon.rvs(scale=betaExp)
+                elif FOM == 'Ga':
+                    cell.tau = sp.gamma.rvs(shape_gamma, loc = 0, scale_gamma)
+
             cell.endT = cell.startT + cell.tau
             if cell.endT < experimentTime:  # determine fate only if endT is within range
                 # assign cell fate

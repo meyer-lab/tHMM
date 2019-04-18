@@ -1,6 +1,7 @@
 '''utility and helper functions for cleaning up input populations and lineages and other needs in the tHMM class'''
 
 import numpy as np
+import scipy as cp
 from scipy.optimize import root
 from scipy.special import logsumexp
 from .CellNode import generateLineageWithTime
@@ -256,8 +257,57 @@ def exponentialAnalytical(X):
 
     return result
 
-##-------------------------Estimating Gompertz Parameter -------------------------##
+##------------------ Estimating Gamma Distribution Parameters --------------------##
 
+def GammaAnalytical(X):
+    """
+    An analytical estimator for both parameters of the Gamma distribution, NOT CENSORED.
+
+    The likelihood function for Gamma distribution is:
+    p(x | a, b) = Gamma(x; a, b) = x^(a-1)/(Gamma(a) * b^a) * exp(-x/b)
+    Here we intend to find "a" and "b" given x as a sequence of data -- in this case
+    the data is the cells' lifetime.
+    To find the best estimate we find the value that maximizes the likelihood function.
+
+    b_hat = x_bar / a
+    using Newton's method to find the second parameter:
+    a_hat =~ 0.5 / (log(x_bar) - log(x)_bar)
+
+    Here x_bar means the average of x.
+
+    Args:
+        ----------
+        X (obj): The object holding cell's attributes, including lifetime, to be used as data.
+
+    Returns:
+        ----------
+        a_hat (float): The estimated value for shape parameter of the Gamma distribution
+        b_hat (float): The estimated value for scale parameter of the Gamma distribution
+    """
+
+    tau1 = []
+
+    # store the lifetime of every cell in a list, only if it is finished by the end of the experiment
+    for cell in X:
+        if not cell.isUnfinished():
+            tau1.append(cell.tau)
+
+    result = [12.0, 3.0]  # dummy estimate
+
+    if not tau1:
+        print('The list of taus the Gamma estimator can work with is empty.')
+
+    tau_mean = np.mean(tau1)
+    data_logmean = np.log(data_mean)
+    data_meanlog = np.mean(np.log(tau1))
+
+    a_hat = 0.5 / (data_logmean - data_meanlog)  # shape
+    b_hat = data_mean / a_hat  # scale
+
+    result = [a_hat, b_hat]
+    return result
+
+##-------------------------Estimating Gompertz Parameter -------------------------##
 
 def gompertzAnalytical(X):
     """
@@ -286,6 +336,7 @@ def gompertzAnalytical(X):
     delta_holder = [1] * len(tau_holder) + [0] * len(tauFake_holder)
 
 ##------------------Helper functions for gompertzAnalytical---------------------##
+
     def help_exp(b):
         """
         Returns an expression commonly used in the analytical solution.
@@ -319,7 +370,7 @@ def gompertzAnalytical(X):
 
         Returns:
             ---------
-            sum(temp): it returns the expression written above (left_term(b))
+            sum(temp) {list}: it returns the expression written above (left_term(b))
 
         """
         temp = []
@@ -341,7 +392,7 @@ def gompertzAnalytical(X):
 
         Returns:
             ----------
-            sum(temp): it returns the expression written above (right_term(b))
+            sum(temp) {list}: it returns the expression written above (right_term(b))
 
         """
         temp = []
