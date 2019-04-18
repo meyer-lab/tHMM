@@ -39,7 +39,7 @@ testprofile:
 
 clean:
 	rm -f coverage.xml .coverage .coverage* junit.xml coverage.xml profile profile.svg
-	rm -rf prof manuscript/genFigures
+	rm -rf prof manuscript/figures
 
 docs:
 	sphinx-apidoc -o doc/source lineage
