@@ -28,16 +28,17 @@ manuscript/index.html: manuscript/text/*.md $(patsubst %, $(fdir)/figure%.svg, $
 	pandoc -s $(pan_common) -t html5 --mathjax -c ./templates/kultiad.css --template=$(tdir)/html.template -o $@
 
 test:
-	pytest
+	pytest -s
 
 testcover:
-	pytest --workers auto --junitxml=junit.xml --cov=lineage --cov-report xml:coverage.xml
+	pytest -s --junitxml=junit.xml --cov=lineage --cov-report xml:coverage.xml
 
 testprofile:
-	pytest --profile-svg
+	python3 -m cProfile -o profile /usr/local/bin/pytest
+	gprof2dot -f pstats profile | dot -Tsvg -o profile.svg
 
 clean:
-	rm -f coverage.xml .coverage .coverage* junit.xml coverage.xml
+	rm -f coverage.xml .coverage .coverage* junit.xml coverage.xml profile profile.svg
 	rm -rf prof manuscript/figures
 
 docs:
