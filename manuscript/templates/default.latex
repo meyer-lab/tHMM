@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 
 \usepackage{amssymb, amsmath, mathtools, color, fontspec}
-\usepackage{ifxetex, ifluatex, microtype, bm}
+\usepackage{ifxetex, ifluatex, microtype, bm} % bm package for bolding random variables
 
 \setsansfont{Roboto}
 \setmainfont{Roboto}
