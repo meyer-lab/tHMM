@@ -215,12 +215,10 @@ class tHMM:
                         if not cell.isUnfinished():  # only calculate real bernoulli likelihood for finished cells
                             temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)
                         if cell.fateObserved:
-                            assert cell.fateObserved
                             temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tau, c=k_gomp_c, scale=k_gomp_s, fateObserved=True)  # gompertz likelihood if death is observed
                             assert np.isfinite(
                                 temp_g), "You have a Gompertz right-censored likelihood calculation for an observed death returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
                         elif not cell.fateObserved:
-                            assert not cell.fateObserved
                             temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tauFake, c=k_gomp_c, scale=k_gomp_s, fateObserved=False)  # gompertz likelihood if death is unobserved
                             assert np.isfinite(
                                 temp_g), "You have a Gompertz right-censored likelihood calculation for an unobserved death returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
