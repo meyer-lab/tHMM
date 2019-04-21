@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 
 \usepackage{amssymb, amsmath, mathtools, color, fontspec}
-\usepackage{ifxetex, ifluatex, microtype}
+\usepackage{ifxetex, ifluatex, microtype, bm}
 
 \setsansfont{Roboto}
 \setmainfont{Roboto}
