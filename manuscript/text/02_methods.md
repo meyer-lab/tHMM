@@ -34,10 +34,3 @@ The second parameter is a matrix of state transition probabilities stored as a s
     
 The third parameter is $K$-long dictionary of parameters for the distributions each state uniquely describes. We call this dictionary $\bm{E}=\{E_{1},E_{2},\ldots,E_{K}\}$ where for some $k\in\{1,2,\ldots,K\}$, the parameters describing the distributions of state $k$ are stored as $E_{k}=\{p_{B}^{(k)},c_{G}^{(k)},s_{G}^{(k)}\}$. This parameter describes the final remaining factor in the tree hidden Markov property, the emission likelihoods ${P}(\bm{x}_{n}\mid\bm{z}_{n})$. More explicitly, for some state $k\in\{1,2,\ldots,K\}$ and for some observation $(\phi_{n}, \tau_{n})$, we are trying to describe the probability ${P}(\bm{x}_{n}=(\phi_{n}, \tau_{n})\mid\bm{z}_{n}=k)$. Here we assume the observations are conditionally independent given then respective state variable or we assume a Naive Bayes condition on the emissions (each feature or observation $\phi_{n},\tau_{n}$ is conditionally independent of the other given the category or state $k$):
     
-$$\begin{align} {P}(\bm{x}_{n}\mid\bm{z}_{n}) &= {P}(\bm{x}_{n}=(\phi_{n}, \tau_{n})\mid\bm{z}_{n}=k), \nonumber \\ &=  {P}(\bm{x}_{n,1}=\phi_{n}\mid\bm{z}_{n}=k)\times {P}(\bm{x}_{n,2}=\tau_{n}\mid\bm{z}_{n}=k), \label{eq:2} \\ &=  {P}(\bm{x}_{n,1}=\phi_{n}\mid p_{B}^{(k)})\times {P}(\bm{x}_{n,2}=\tau_{n}\mid c_{G}^{(k)}, s_{G}^{(k)}), \label{eq:3} \\ &= E_{k}(\phi_{n}, \tau_{n}). \label{eq:4}\end{align}$$
-    
- 
-    
-Ultimately, using the parameters we can elaborate on the hidden Markov tree property as the following:
-    
-$$\begin{align} {P}(\bm{\bm{Z}},\bm{\bm{X}}; \bm{\pi},\bm{T},\bm{E}) &= {P}(\bm{z}_{1},\bm{z}_{2},\ldots,\bm{z}_{N},\bm{x}_{1},\bm{x}_{2},\ldots,\bm{x}_{N};\bm{\pi},\bm{T},\bm{E}), \nonumber \\  &=  {P}(\bm{z}_{1}; \bm{\pi})\prod_{n=2}^{N}{P}(\bm{z}_{n}\mid\bm{z}_{\bm{P}(n)}; \bm{T})\prod_{n=1}^{N}{P}(\bm{x}_{n}\mid\bm{z}_{n}; \bm{E})\label{eq:5}. \end{align}$$
