@@ -9,7 +9,6 @@ from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_
 from ..tHMM import tHMM
 from ..tHMM_utils import max_gen, get_gen, get_parents_for_level, getAccuracy, get_mutual_info
 from ..Lineage_utils import remove_singleton_lineages, get_numLineages, init_Population, generatePopulationWithTime as gpt
-from ..figures.Fig_Gen import Lineages_per_Population_Figure
 
 from ..CellNode import CellNode
 
