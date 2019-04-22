@@ -641,5 +641,3 @@ class TestModel(unittest.TestCase):
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
         get_mutual_info(tHMMobj, all_states, verbose=True)
-        print(tHMMobj.paramlist)
-        assert False
