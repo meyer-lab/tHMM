@@ -15,7 +15,7 @@ from ..Lineage_utils import remove_singleton_lineages
 
 def makeFigure():
     # Get list of axis objects
-    x, y = 3, 4  # rows and columns
+    x, y = 1, 2  # rows and columns
     ax, f = getSetup((12, 9), (x, y))
 
     '''x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2 = Lineage_Length()
@@ -25,7 +25,7 @@ def makeFigure():
     Matplot_gen(ax[4:8], x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel='Lineages per Population')  # Figure plots scale vs number of lineages'''
     
     x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2 = KL_per_lineage()
-    Matplot_gen_KL(ax[8], x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel='KL Divergence')  # Figure plots scale vs KL
+    Matplot_gen_KL(ax[0:2], x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel='KL Divergence')  # Figure plots scale vs KL
 
     f.tight_layout()
 

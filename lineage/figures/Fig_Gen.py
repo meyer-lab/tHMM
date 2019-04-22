@@ -11,12 +11,14 @@ from .Matplot_gen import Matplot_gen
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
 
-def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=3, numStates=2, max_lin_length=1000, min_lin_length=300, verbose=False): #add ax
+def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=10, numStates=2, max_lin_length=1000, min_lin_length=300, verbose=False): #add ax
     """Run the KL divergence on emmission likelihoods."""
+    MASlocBern, MAScGom, MASscaleGom = np.zeros(reps), np.zeros(reps), np.zeros(reps)
+    for i in range(reps): MASlocBern[i], MAScGom[i], MASscaleGom[i] = 0.8, 1.6, 40
     
-    MASlocBern, locBern2 = np.random.uniform(0.6,1.0, size = reps), np.random.uniform(0.6,1.0, size = reps)
-    MAScGom,cGom2 = np.random.uniform(1.6, 1.62, size = reps), np.random.uniform(1.6, 1.62, size = reps)
-    MASscaleGom, scaleGom2 = np.random.randint(30, 40, size = reps), np.random.randint(30, 40, size = reps)
+    locBern2 = np.random.uniform(0.7, 0.9, size = reps)
+    cGom2 = np.random.uniform(1.58, 1.62, size = reps)
+    scaleGom2 = np.random.randint(35, 45, size = reps)
     
     #arrays to hold for each rep
     KL_h1 = []
@@ -30,9 +32,7 @@ def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=3, n
     scaleGom_2_h1 = []
     lineage_h1 = []
 
-    for rep in range(reps):
-        print('Rep: {}'.format(rep))
-        
+    for rep in range(reps):        
         X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern[rep]], [MAScGom[rep]], [MASscaleGom[rep]], T_2, initCells2, [locBern2[rep]], [cGom2[rep]], [scaleGom2[rep]])
         
         while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
@@ -44,7 +44,9 @@ def KL_per_lineage(T_MAS=75, T_2=85, MASinitCells=[1], initCells2=[1], reps=3, n
             
             #generate new lineage
             X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern[rep]], [MAScGom[rep]], [MASscaleGom[rep]], T_2, initCells2, [locBern2[rep]], [cGom2[rep]], [scaleGom2[rep]])
-            
+        
+        print('Repetition Number: {}'.format(rep+1))
+        
         X = remove_singleton_lineages(newLineage)
         _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
         
