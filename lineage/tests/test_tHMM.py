@@ -614,7 +614,3 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
-
-    def test_mult_lin(self):
-        Lineages_per_Population_Figure()
-        assert False

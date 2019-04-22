@@ -147,14 +147,6 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             for ii, cell in enumerate(lineage):
                 assert lineage[ii] is cell
                 max_state_holder.append(np.argmax(gammas[num][ii, :])) #says which state is maximal
-            state_obs_holder = [] # list of lists, each which are a list of cells corresponding to each state
-            for state_j in range(numStates):
-                state_obs = []
-                for cell in lineage:
-                    cell_idx = lineage.index(cell)
-                    if max_state_holder[cell_idx] == state_j:
-                        state_obs.append(cell)
-                state_obs_holder.append(state_obs)
 
             #this bins the cells by lineage to the population cell lists
             for ii, state in enumerate(max_state_holder):
@@ -167,7 +159,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             global_params['B' + str(state_j)] = bernoulliParameterEstimatorAnalytical(cells) #list of cells
             global_params['G_c' + str(state_j)], global_params['G_scale' + str(state_j)] = gompertzAnalytical(cells)
             global_params['E' + str(state_j)] = exponentialAnalytical(cells)
- 
+            
         #now go through each lineage and replace with the new E
         for num in range(numLineages):
             for state in range(numStates):
