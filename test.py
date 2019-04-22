@@ -1,3 +1,0 @@
-from lineage.figures.Fig_Gen import Lineages_per_Population_Figure
-
-Lineages_per_Population_Figure()
