@@ -12,14 +12,14 @@ class TestModel(unittest.TestCase):
 
     def setUp(self):
         """ Create populations that are used for all tests. """
-        experimentTime = 168  # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
+        experimentTime = 168.  # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
         locBern = [0.8]
         cGom = [2]
         scaleGom = [50.]
         betaExp = [50.]
         initCells = [100]
         self.pop1 = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G')  # initialize "pop" as of class Population
-        self.pop2 = generatePopulationWithTime(168, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+        self.pop2 = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
 
     def test_lifetime(self):
         """Make sure the cell isUnfinished before the cell dies and then make sure the cell's lifetime (tau) is calculated properly after it dies."""

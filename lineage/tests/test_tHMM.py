@@ -499,7 +499,7 @@ class TestModel(unittest.TestCase):
         print(len(newLineage))
 
         tHMMobj = tHMM(newLineage, numStates=numStates, FOM='G')  # build the tHMM class with X
-        fit(tHMMobj, max_iter=500, verbose=True)
+        fit(tHMMobj, max_iter=500, verbose=False)
 
         deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
@@ -533,6 +533,7 @@ class TestModel(unittest.TestCase):
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
         get_mutual_info(tHMMobj, all_states, verbose=True)
+        assert False
 
     def test_Baum_Welch_3(self):
         '''one state, no bernoulli likelihoods considered, gompertz estimation'''
