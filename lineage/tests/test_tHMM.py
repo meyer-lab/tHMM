@@ -613,3 +613,4 @@ class TestModel(unittest.TestCase):
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
+        get_mutual_info(tHMMobj, all_states, verbose=True)
