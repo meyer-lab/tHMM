@@ -159,33 +159,21 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             #this bins the cells by lineage to the population cell lists
             for ii, state in enumerate(max_state_holder):
                 cell_groups[str(state)].append(lineage[ii])
- 
-            for state_j in range(numStates):
-                tHMMobj.paramlist[num]["E"][state_j, 0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
-                if tHMMobj.FOM == 'G':
-                    c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[state_j])
-                    tHMMobj.paramlist[num]["E"][state_j, 1] = c_estimate
-                    tHMMobj.paramlist[num]["E"][state_j, 2] = scale_estimate
-                elif tHMMobj.FOM == 'E':
-                    beta_estimate = exponentialAnalytical(state_obs_holder[state_j])
-                    tHMMobj.paramlist[num]["E"][state_j, 1] = beta_estimate
 
         #after iterating through each lineage, do the population wide E calculation
         global_params = {}
         for state_j in range(numStates):
             cells = cell_groups[str(state_j)] #this array has the correct cells classified per group
-            global_params['B' + str(state_j)] = bernoulliParameterEstimatorAnalytical(cells) #list of indices
+            global_params['B' + str(state_j)] = bernoulliParameterEstimatorAnalytical(cells) #list of cells
             global_params['G_c' + str(state_j)], global_params['G_scale' + str(state_j)] = gompertzAnalytical(cells)
             global_params['E' + str(state_j)] = exponentialAnalytical(cells)
  
         #now go through each lineage and replace with the new E
         for num in range(numLineages):
-            #this code was copied from above for loop, so consider deleting this from above for loop
             for state in range(numStates):
                 #assigns the global state to the lineage-specific state assignment
                 tHMMobj.paramlist[num]["E"][state, 0] = global_params['B' + str(state)]
                 if tHMMobj.FOM == 'G':
-                    c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[state])
                     tHMMobj.paramlist[num]["E"][state, 1] = global_params['G_c' + str(state)]
                     tHMMobj.paramlist[num]["E"][state, 2] = global_params['G_scale' + str(state)]
                 elif tHMMobj.FOM == 'E':
