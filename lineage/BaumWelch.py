@@ -105,8 +105,6 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     count = 0
     while go:  # exit the loop
 
-        if verbose:
-            print('\n iter: {}'.format(count))
         count += 1
 
         old_LL_list = new_LL_list
