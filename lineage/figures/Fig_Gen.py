@@ -11,8 +11,8 @@ from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
 
 
-def Lineage_Length(T_MAS=130, T_2=61, reps=3, MASinitCells=[1], MASlocBern=[0.8], MAScGom=[1.6], MASscaleGom=[40], initCells2=[1],
-                   locBern2=[0.99], cGom2=[1.6], scaleGom2=[18], numStates=2, max_lin_length=1500, min_lin_length=100, verbose=False):
+def Lineage_Length(T_MAS=130, T_2=61, reps=1, MASinitCells=[1], MASlocBern=[0.8], MAScGom=[1.6], MASscaleGom=[40], initCells2=[1],
+                   locBern2=[0.99], cGom2=[1.6], scaleGom2=[18], numStates=2, max_lin_length=500, min_lin_length=5, verbose=False):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
 
     acc_h1 = []  # list of lists of lists
