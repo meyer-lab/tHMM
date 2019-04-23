@@ -534,7 +534,7 @@ class TestModel(unittest.TestCase):
         get_mutual_info(tHMMobj, all_states, verbose=True)
 
     def test_Baum_Welch_3(self):
-        '''one state, no bernoulli likelihoods considered, gompertz estimation'''
+        '''one state Gompertz estimation'''
         numStates = 1
 
         experimentTime = 250
@@ -616,7 +616,7 @@ class TestModel(unittest.TestCase):
         get_mutual_info(tHMMobj, all_states, verbose=True)
         
     def test_Baum_Welch_6(self):
-        '''Creating multiple heterogeneous trees that is built by swithcing states of all cells at a SwitchT time point'''
+        '''Creating multiple heterogeneous trees that is built by switching states of all cells at a SwitchT time point'''
         numStates = 2
 
         switchT = 200
