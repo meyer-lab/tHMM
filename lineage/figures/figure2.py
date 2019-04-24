@@ -12,7 +12,6 @@ from .Fig_Gen import Lineage_Length, Lineages_per_Population_Figure
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
 
-
 def makeFigure():
     # Get list of axis objects
     x, y = 2, 2  # rows and columns
