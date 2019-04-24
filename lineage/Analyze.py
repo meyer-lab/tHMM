@@ -10,8 +10,8 @@ from .tHMM_utils import getAccuracy
 def Analyze(X, numStates, keepBern=True):
     '''Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas'''
     run = True
+    X = remove_singleton_lineages(X)
     while run:
-        X = remove_singleton_lineages(X)
         tHMMobj = tHMM(X, numStates=numStates, FOM='G')  # build the tHMM class with X
         fit(tHMMobj, max_iter=200, verbose=True)
         if tHMMobj.paramlist[0]["E"][0, 1] < 1000 and tHMMobj.paramlist[0]["E"][1, 1] < 1000:
