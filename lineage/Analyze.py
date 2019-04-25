@@ -17,7 +17,7 @@ def Analyze(X, numStates, FOM='E'):
         fit(tHMMobj, max_iter=200, verbose=True)
         
         #make sure you dont get blown up gompertz params, or in the case of exponential, just pass
-        if FOM == 'G' tHMMobj.paramlist[0]["E"][0, 1] < 1000 and tHMMobj.paramlist[0]["E"][1, 1] < 1000:
+        if FOM == 'G' and tHMMobj.paramlist[0]["E"][0, 1] < 1000 and tHMMobj.paramlist[0]["E"][1, 1] < 1000:
             run = False
         elif FOM == 'E':
             run = False
