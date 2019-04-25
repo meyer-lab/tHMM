@@ -39,7 +39,7 @@ def Lineage_Length(T_MAS=130, T_2=61, reps=1, MASinitCells=[1], MASlocBern=[0.8]
         scaleGom_MAS_h2 = []
         scaleGom_2_h2 = []
         for lin in range(tHMMobj.numLineages):
-            AccuracyPop, _, stateAssignmentPop = getAccuracy(tHMMobj, all_states, verbose=False)
+            AccuracyPop, _, stateAssignmentPop = getAccuracy(tHMMobj, all_states, FOM='E' verbose=False)
             accuracy = AccuracyPop[lin]
             state_1 = stateAssignmentPop[lin][0]
             state_2 = stateAssignmentPop[lin][1]
