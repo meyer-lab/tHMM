@@ -277,7 +277,6 @@ def gompertzAnalytical(X):
 
     result = [2, 62.5]  # dummy estimate
     if not tau_holder and not tauFake_holder:
-        print("The list of taus the Gompertz estimator can work with is empty.")
         return result
 
     N = len(tau_holder) + len(tauFake_holder)  # number of cells

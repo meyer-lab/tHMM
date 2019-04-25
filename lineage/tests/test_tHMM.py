@@ -498,7 +498,7 @@ class TestModel(unittest.TestCase):
         print(len(newLineage))
 
         tHMMobj = tHMM(newLineage, numStates=numStates, FOM='G')  # build the tHMM class with X
-        fit(tHMMobj, max_iter=500, verbose=True)
+        fit(tHMMobj, max_iter=500, verbose=False)
 
         deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
@@ -510,7 +510,7 @@ class TestModel(unittest.TestCase):
         '''Creating a heterogeneous tree that is built by swithcing states of all cells at a SwitchT time point'''
         numStates = 2
 
-        switchT = 200
+        switchT = 300
         experimentTime = switchT + 150
         initCells = [1]
         locBern = [0.99999999999]
@@ -534,7 +534,7 @@ class TestModel(unittest.TestCase):
         get_mutual_info(tHMMobj, all_states, verbose=True)
 
     def test_Baum_Welch_3(self):
-        '''one state, no bernoulli likelihoods considered, gompertz estimation'''
+        '''one state Gompertz estimation'''
         numStates = 1
 
         experimentTime = 250
@@ -609,6 +609,33 @@ class TestModel(unittest.TestCase):
         tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
 
+        deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
+        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
+        getAccuracy(tHMMobj, all_states, verbose=True)
+        get_mutual_info(tHMMobj, all_states, verbose=True)
+        
+    def test_Baum_Welch_6(self):
+        '''Creating multiple heterogeneous trees that is built by switching states of all cells at a SwitchT time point'''
+        numStates = 2
+
+        switchT = 200
+        experimentTime = switchT + 100
+        initCells = [5]
+        locBern = [0.99999999999]
+        cGom = [1]
+        scaleGom = [75]
+        bern2 = [0.6]
+        cG2 = [2]
+        scaleG2 = [50]
+
+        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+        while len(LINEAGE) <= 5:
+            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+
+        X = remove_singleton_lineages(LINEAGE)
+        tHMMobj = tHMM(X, numStates=numStates, FOM='G')  # build the tHMM class with X
+        fit(tHMMobj, max_iter=100, verbose=False)
         deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
