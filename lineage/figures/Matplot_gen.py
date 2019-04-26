@@ -6,9 +6,14 @@ import matplotlib.ticker
 matplotlib.use('Agg')
 
 
-def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel):
+def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel, FOM='G'):
     '''Creates 4 subpanles for model estimation'''
 
+    if FOM == 'G':
+        panel_3 = 'Gompertz C'
+    elif FOM == 'E':
+        panel_3 = 'Exponential lambda'        
+    
     #fig, axs = plt.subplots(nrows=2, ncols=2, sharex=True)
     #ax = axs[0, 0]
     ax[0].set_xlabel(xlabel)
@@ -44,16 +49,15 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
     ax[2].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
     ax[2].set_title('Gompertz C')
 
-    #delete scale axis
-    '''
-    #ax = axs[1, 1]
-    ax[3].set_xlabel(xlabel)
-    #ax[3].set_xscale("log", nonposx='clip')
-    ax[3].errorbar(x, scaleGom_MAS_h1, fmt='o', c='g', marker="^", fillstyle='none', label='State 1')
-    ax[3].errorbar(x, scaleGom_2_h1, fmt='o', c='r', marker="^", fillstyle='none', label='State 2')
-    ax[3].axhline(y=MASscaleGom, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
-    ax[3].axhline(y=scaleGom2, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
-    ax[3].set_ylabel('Gompertz Scale', rotation=90)
-    ax[3].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-    ax[3].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
-    ax[3].set_title('Gompertz Scale')'''
+    if FOM == 'G':
+        #ax = axs[1, 1]
+        ax[3].set_xlabel(xlabel)
+        #ax[3].set_xscale("log", nonposx='clip')
+        ax[3].errorbar(x, scaleGom_MAS_h1, fmt='o', c='g', marker="^", fillstyle='none', label='State 1')
+        ax[3].errorbar(x, scaleGom_2_h1, fmt='o', c='r', marker="^", fillstyle='none', label='State 2')
+        ax[3].axhline(y=MASscaleGom, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
+        ax[3].axhline(y=scaleGom2, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
+        ax[3].set_ylabel('Gompertz Scale', rotation=90)
+        ax[3].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+        ax[3].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
+        ax[3].set_title('Gompertz Scale')

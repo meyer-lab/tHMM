@@ -6,7 +6,7 @@ from lineage.Lineage_utils import remove_singleton_lineages
 from lineage.Lineage_utils import generatePopulationWithTime as gpt
 
 
-def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2, FOM='G', betaExp=None, betaExp2=None):
+def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2, FOM='E', betaExp=None, betaExp2=None):
     'Shakthis lineage where a second state is appended to first'
     MASexperimentTime = T_MAS
     masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom, FOM=FOM, betaExp=betaExp)
