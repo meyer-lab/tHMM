@@ -177,7 +177,7 @@ class CellNode:
         return curr_cell
 
 
-def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='G', betaExp=None, betaExp2=None):
+def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='E', betaExp=None, betaExp2=None):
     """
     generates a list of objects (cells) in a lineage.
 

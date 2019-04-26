@@ -12,7 +12,7 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
     if FOM == 'G':
         panel_3 = 'Gompertz C'
     elif FOM == 'E':
-        panel_3 = 'Exponential lambda'        
+        panel_3 = 'Exponential Lambda'        
     
     #fig, axs = plt.subplots(nrows=2, ncols=2, sharex=True)
     #ax = axs[0, 0]
@@ -44,10 +44,10 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
     ax[2].errorbar(x, cGom_2_h1, fmt='o', c='r', marker="^", fillstyle='none', label='State 2')
     ax[2].axhline(y=MAScGom, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
     ax[2].axhline(y=cGom2, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
-    ax[2].set_ylabel('Gompertz C', rotation=90)
+    ax[2].set_ylabel(panel_3, rotation=90)
     ax[2].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     ax[2].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
-    ax[2].set_title('Gompertz C')
+    ax[2].set_title(panel_3)
 
     if FOM == 'G':
         #ax = axs[1, 1]
@@ -57,7 +57,7 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
         ax[3].errorbar(x, scaleGom_2_h1, fmt='o', c='r', marker="^", fillstyle='none', label='State 2')
         ax[3].axhline(y=MASscaleGom, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
         ax[3].axhline(y=scaleGom2, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
-        ax[3].set_ylabel('Gompertz Scale', rotation=90)
+        ax[3].set_ylabel(panel_3, rotation=90)
         ax[3].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
         ax[3].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
-        ax[3].set_title('Gompertz Scale')
+        ax[3].set_title(panel_3)
