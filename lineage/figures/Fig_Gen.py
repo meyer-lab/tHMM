@@ -11,7 +11,7 @@ from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
 
 
-def Lineage_Length(T_MAS=130, T_2=61, reps=1, MASinitCells=[1], MASlocBern=[0.8], MAScGom=[1.6], MASscaleGom=[40], initCells2=[1], locBern2=[0.99], cGom2=[1.6], scaleGom2=[18], numStates=2, max_lin_length=300, min_lin_length=50, verbose=True):
+def Lineage_Length(T_MAS=130, T_2=61, reps=5, MASinitCells=[1], MASlocBern=[0.7], MAScGom=[1.6], MASscaleGom=[25], initCells2=[1], locBern2=[0.99], cGom2=[2], scaleGom2=[30], numStates=2, max_lin_length=100, min_lin_length=2, verbose=False):
     '''This has been modified for an exonential distribution'''
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
 
@@ -26,7 +26,7 @@ def Lineage_Length(T_MAS=130, T_2=61, reps=1, MASinitCells=[1], MASlocBern=[0.8]
 
     for rep in range(reps):
         print('Rep:', rep)
-        X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
+        X, masterLineage, newLineage = Depth_Two_State_Lineage_Exp(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
         while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
             X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2)
         _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
@@ -39,7 +39,7 @@ def Lineage_Length(T_MAS=130, T_2=61, reps=1, MASinitCells=[1], MASlocBern=[0.8]
         scaleGom_MAS_h2 = []
         scaleGom_2_h2 = []
         for lin in range(tHMMobj.numLineages):
-            AccuracyPop, _, stateAssignmentPop = getAccuracy(tHMMobj, all_states, FOM='E' verbose=False)
+            AccuracyPop, _, stateAssignmentPop = getAccuracy(tHMMobj, all_states, verbose=False)
             accuracy = AccuracyPop[lin]
             state_1 = stateAssignmentPop[lin][0]
             state_2 = stateAssignmentPop[lin][1]

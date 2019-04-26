@@ -44,6 +44,8 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
     ax[2].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
     ax[2].set_title('Gompertz C')
 
+    #delete scale axis
+    '''
     #ax = axs[1, 1]
     ax[3].set_xlabel(xlabel)
     #ax[3].set_xscale("log", nonposx='clip')
@@ -54,4 +56,4 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
     ax[3].set_ylabel('Gompertz Scale', rotation=90)
     ax[3].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     ax[3].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
-    ax[3].set_title('Gompertz Scale')
+    ax[3].set_title('Gompertz Scale')'''
