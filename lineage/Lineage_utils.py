@@ -9,7 +9,7 @@ from .CellNode import generateLineageWithTime
 ##------------------------ Generating population of cells ---------------------------##
 
 
-def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='G', betaExp=None, betaExp2=None):
+def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='G', betaExp=None, betaExp2=None, shape_gamma1=None, scale_gamma1=None, shape_gamma2=None, scale_gamma2=None):
     """
     Generates a population of lineages that abide by distinct parameters.
 
@@ -62,7 +62,7 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
 
     """
 
-    assert len(initCells) == len(locBern) == len(cGom) == len(scaleGom)  # make sure all lists have same length
+    assert len(initCells) == len(locBern) == len(cGom) == len(scaleGom)   # make sure all lists have same length
     numLineages = len(initCells)
     population = []
 
@@ -72,6 +72,8 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], FOM='G')
             elif FOM == 'E':
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], FOM='E', betaExp=betaExp[ii])
+            elif FOM =='Ga':
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], FOM='Ga', shape_gamma1=shape_gamma1[ii], scale_gamma1=scale_gamma1[ii])
             for cell in temp:
                 sum_prev = 0
                 j = 0
@@ -88,6 +90,9 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
             elif FOM == 'E':
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT,
                                                bern2[ii], cG2[ii], scaleG2[ii], FOM='E', betaExp=betaExp[ii], betaExp2=betaExp2[ii])
+            elif FOM =='Ga':
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT,
+                                               bern2[ii], cG2[ii], scaleG2[ii], FOM='Ga', shape_gamma1=shape_gamma1[ii], scale_gamma1=scale_gamma1[ii],shape_gamma2=shape_gamma2[ii], scale_gamma2=scale_gamma2[ii])
             # create a temporary lineage
             for cell in temp:
                 sum_prev = 0
@@ -292,19 +297,32 @@ def GammaAnalytical(X):
         if not cell.isUnfinished():
             tau1.append(cell.tau)
 
-    result = [12.0, 3.0]  # dummy estimate
-
-    if not tau1:
-        print('The list of taus the Gamma estimator can work with is empty.')
 
     tau_mean = np.mean(tau1)
-    data_logmean = np.log(data_mean)
-    data_meanlog = np.mean(np.log(tau1))
+    tau_logmean = np.log(tau_mean)
+    tau_meanlog = np.mean(np.log(tau1))
 
-    a_hat = 0.5 / (data_logmean - data_meanlog)  # shape
-    b_hat = data_mean / a_hat  # scale
 
-    result = [a_hat, b_hat]
+    # initialization step
+    a_hat0 = 0.5 / (tau_logmean - tau_meanlog)  # shape
+    b_hat0 = tau_mean / a_hat0  # scale
+    psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)
+    psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
+    assert (a_hat0 != 0), "the first parameter has been set to zero!"
+    tolerance = 0.01
+    diff = 10
+
+    # iteration step
+    while diff >= tolerance:
+        a_hat_new = (a_hat0 * (1 - a_hat0 * psi_prime0)) / (1 - a_hat0 * psi_prime0 + tau_meanlog - tau_logmean + np.log(a_hat0) - psi_0)
+        diff = np.abs(a_hat_new - a_hat0)
+        a_hat0 = a_hat_new
+        psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
+        psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)
+        psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
+        b_hat_new = tau_mean / a_hat0
+
+    result = [a_hat_new, b_hat_new]
     return result
 
 ##-------------------------Estimating Gompertz Parameter -------------------------##
