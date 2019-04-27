@@ -177,7 +177,7 @@ class CellNode:
         return curr_cell
 
 
-def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, shape_gamma1 = None, scale_gamma1 = None, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='G', betaExp=None, betaExp2=None, shape_gamma2 = None, scale_gamma2 = None):
+def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='G', betaExp=None, betaExp2=None, shape_gamma1=None, scale_gamma1=None, shape_gamma2=None, scale_gamma2=None):
     """
     generates a list of objects (cells) in a lineage.
 
@@ -209,6 +209,13 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
         distributions with parameter betaExp, and assign it to be the lifetime
         of the cell.
 
+    Gamma distribution:
+        It has two parameters(shape_gamma, scale_gamma)
+        Used as alifetime generator for cells. In the range of parameter we work, 
+        its pdf looks like a slightly skewed bell-shaped distribution. This happens
+        when the shape parameter is >= scale parameter. Here to generate the cells we
+        specify the two parameters and it will return a number that we assign to cell's 
+        lifetime. 
 
     Args:
         ----------
@@ -229,15 +236,14 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
         bern2 (float): second Bernoulli distribution parameter.
         cG2 (float): second shape parameter of Gompertz distribution
         scaleG2 (float): second scale parameter of Gompertz distrbution
-        shape_gamma1 (float): shape parameter of Gamma distribution
-        scale_gamma1 (float): scale parameter of Gamma distribution
         FOM (str): this determines the type of distribution we want to use for
         lifetime here it is either "G": Gompertz, or "E": Exponential.
         betaExp (float): the parameter of Exponential distribution
         betaExp2 (float): second parameter of Exponential distribution
+        shape_gamma1 (float): shape parameter of Gamma distribution
+        scale_gamma1 (float): scale parameter of Gamma distribution
         shape_gamma2 (float): second shape parameter for Gamma distribution
         scale_gamma2 (float): second scale parameter for Gamma distribution
-
 
     Returns:
         ----------
@@ -261,7 +267,7 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
                 elif FOM == 'E':
                     cell.tau = sp.expon.rvs(scale=betaExp2)
                 elif FOM == 'Ga':
-                    cell.tau = sp.gamma.rvs(shape_gamma2, loc = 0, scale_gamma2)
+                    cell.tau = sp.gamma.rvs(shape_gamma2, scale=scale_gamma2)
 
             else:  # use first set of parameters for non-heterogeneous lineages or before the switch time
                 cell.true_state = 0
@@ -270,7 +276,7 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
                 elif FOM == 'E':
                     cell.tau = sp.expon.rvs(scale=betaExp)
                 elif FOM == 'Ga':
-                    cell.tau = sp.gamma.rvs(shape_gamma, loc = 0, scale_gamma)
+                    cell.tau = sp.gamma.rvs(shape_gamma1, scale=scale_gamma1)
 
             cell.endT = cell.startT + cell.tau
             if cell.endT < experimentTime:  # determine fate only if endT is within range
@@ -295,7 +301,7 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
     return lineage
 
 
-def doublingTime(initCells, locBern, cGom, scaleGom, FOM='G', betaExp=None):
+def doublingTime(initCells, locBern, cGom, scaleGom, FOM='G', betaExp=None, shape_gamma = None, scale_gamma = None):
     """
     Calculates the doubling time of a homogeneous cell population,
     given the three parameters and an initial cell count.
@@ -334,6 +340,8 @@ def doublingTime(initCells, locBern, cGom, scaleGom, FOM='G', betaExp=None):
             lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom)
         elif FOM == 'E':
             lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+        elif FOM =='Ga':
+            lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, FOM = 'Ga', shape_gamma1=shape_gamma, scale_gamma1=scale_gamma)
         count = 0
         for cell in lineage:
             if cell.isUnfinished():

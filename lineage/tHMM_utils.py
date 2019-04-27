@@ -145,23 +145,7 @@ def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, fateObserved=True):
     assert np.isfinite(result), "Your Gompertz right-censored likelihood calculation is returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations with the following values: \n tau_or_tauFake: {} \n c: {} \n scale: {} b: {} \n a: {} \n fateObserved: {}.".format(tau_or_tauFake, c, scale, b, a, fateObserved)
 
     return result
-
-##----------------------------- Gamma-censored PDF-------------------------------##
-
-def Gamma_censored_pdf(tau, fake_tau, a, b, fateObserved=True):
-    first_coeff = (b ** a * tau ** (a-1) * np.exp(-b * tau)) / gamma(a)
-    second_coeff = gammaincc(a, fake_tau)
-    
-    if fateObserved:
-        second_coeff = 1.
-    else:
-        pass
-
-    result = first_coeff * second_coeff
-    assert np.isfinite(result), "Your Gamma right_censored likelihood calculation is returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations with the following values: \n fake_tau: {} \n tau: {} \n a: {} b: {} \n fateObserved: {}.".format(fake_tau, tau, a, b, fateObserved)
-
-    return result
-        
+   
     
 ##------------------------ Akaike Information Criterion -------------------------##
 

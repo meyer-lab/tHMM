@@ -1,7 +1,7 @@
 '''utility and helper functions for cleaning up input populations and lineages and other needs in the tHMM class'''
 
 import numpy as np
-import scipy as cp
+import scipy as sp
 from scipy.optimize import root
 from scipy.special import logsumexp
 from .CellNode import generateLineageWithTime
@@ -266,7 +266,7 @@ def exponentialAnalytical(X):
 
 def GammaAnalytical(X):
     """
-    An analytical estimator for both parameters of the Gamma distribution, NOT CENSORED.
+    An analytical estimator for two parameters of the Gamma distribution. Based on Thomas P. Minka, 2002 "Estimating a Gamma distribution".
 
     The likelihood function for Gamma distribution is:
     p(x | a, b) = Gamma(x; a, b) = x^(a-1)/(Gamma(a) * b^a) * exp(-x/b)
@@ -290,13 +290,11 @@ def GammaAnalytical(X):
         b_hat (float): The estimated value for scale parameter of the Gamma distribution
     """
 
-    tau1 = []
-
     # store the lifetime of every cell in a list, only if it is finished by the end of the experiment
+    tau1=[]
     for cell in X:
         if not cell.isUnfinished():
             tau1.append(cell.tau)
-
 
     tau_mean = np.mean(tau1)
     tau_logmean = np.log(tau_mean)
@@ -306,22 +304,26 @@ def GammaAnalytical(X):
     # initialization step
     a_hat0 = 0.5 / (tau_logmean - tau_meanlog)  # shape
     b_hat0 = tau_mean / a_hat0  # scale
-    psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)
-    psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
-    assert (a_hat0 != 0), "the first parameter has been set to zero!"
-    tolerance = 0.01
-    diff = 10
+    psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)  # psi is the derivative of log of gamma function, which has been approximated as this term
+    psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)  # this is the derivative of psi
+    assert a_hat0 != 0, "the first parameter has been set to zero!"
 
-    # iteration step
-    while diff >= tolerance:
+    # updating the parameters
+    for i in range(100):
         a_hat_new = (a_hat0 * (1 - a_hat0 * psi_prime0)) / (1 - a_hat0 * psi_prime0 + tau_meanlog - tau_logmean + np.log(a_hat0) - psi_0)
-        diff = np.abs(a_hat_new - a_hat0)
+        b_hat_new = tau_mean / a_hat_new
+
         a_hat0 = a_hat_new
         psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
         psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)
         psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
-        b_hat_new = tau_mean / a_hat0
 
+        if np.abs(a_hat_new - a_hat0) <= 0.01:
+            return [a_hat_new, b_hat_new]
+        else:
+            pass
+    assert np.abs(a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new - a_hat0 = {}".format(np.abs(a_hat_new - a_hat0))
+    
     result = [a_hat_new, b_hat_new]
     return result
 
