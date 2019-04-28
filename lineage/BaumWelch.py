@@ -105,13 +105,15 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     count = 0
     while go:  # exit the loop
 
-        # if verbose:
-            #print('\n iter: {}'.format(count))
         count += 1
 
         old_LL_list = new_LL_list
 
-        # update loop
+        # code for grouping all states in cell lineages
+        cell_groups = {}
+        for state in range(numStates):
+            cell_groups[str(state)] = []
+        
         for num in range(numLineages):
             if not truth_list[num]:
                 break
@@ -139,28 +141,33 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             T_new = T_holder / row_sums[:, np.newaxis]
             tHMMobj.paramlist[num]["T"] = T_new
 
-            max_state_holder = []
+            max_state_holder = [] #a list the size of lineage, that contains max state for each cell
             for ii, cell in enumerate(lineage):
                 assert lineage[ii] is cell
-                max_state_holder.append(np.argmax(gammas[num][ii, :]))
-            state_obs_holder = []
-            for state_j in range(numStates):
-                state_obs = []
-                for cell in lineage:
-                    cell_idx = lineage.index(cell)
-                    if max_state_holder[cell_idx] == state_j:
-                        state_obs.append(cell)
-                state_obs_holder.append(state_obs)
+                max_state_holder.append(np.argmax(gammas[num][ii, :])) #says which state is maximal
 
-            for state_j in range(numStates):
-                tHMMobj.paramlist[num]["E"][state_j, 0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
+            #this bins the cells by lineage to the population cell lists
+            for ii, state in enumerate(max_state_holder):
+                cell_groups[str(state)].append(lineage[ii])
+
+        #after iterating through each lineage, do the population wide E calculation
+        global_params = {}
+        for state_j in range(numStates):
+            cells = cell_groups[str(state_j)] #this array has the correct cells classified per group
+            global_params['B' + str(state_j)] = bernoulliParameterEstimatorAnalytical(cells) #list of cells
+            global_params['G_c' + str(state_j)], global_params['G_scale' + str(state_j)] = gompertzAnalytical(cells)
+            global_params['E' + str(state_j)] = exponentialAnalytical(cells)
+            
+        #now go through each lineage and replace with the new E
+        for num in range(numLineages):
+            for state in range(numStates):
+                #assigns the global state to the lineage-specific state assignment
+                tHMMobj.paramlist[num]["E"][state, 0] = global_params['B' + str(state)]
                 if tHMMobj.FOM == 'G':
-                    c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[state_j])
-                    tHMMobj.paramlist[num]["E"][state_j, 1] = c_estimate
-                    tHMMobj.paramlist[num]["E"][state_j, 2] = scale_estimate
+                    tHMMobj.paramlist[num]["E"][state, 1] = global_params['G_c' + str(state)]
+                    tHMMobj.paramlist[num]["E"][state, 2] = global_params['G_scale' + str(state)]
                 elif tHMMobj.FOM == 'E':
-                    beta_estimate = exponentialAnalytical(state_obs_holder[state_j])
-                    tHMMobj.paramlist[num]["E"][state_j, 1] = beta_estimate
+                    tHMMobj.paramlist[num]["E"][state, 1] = global_params['E' + str(state)]
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()

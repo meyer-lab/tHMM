@@ -40,5 +40,4 @@ def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGo
     newLineage = masterLineage + sublineage2
 
     X = remove_singleton_lineages(newLineage)
-    print(len(newLineage))
     return(X, masterLineage, newLineage)

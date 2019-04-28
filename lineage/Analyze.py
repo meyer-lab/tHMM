@@ -5,10 +5,12 @@ from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
 from .tHMM import tHMM
 from .tHMM_utils import getAccuracy
+from .Lineage_utils import remove_singleton_lineages
 
 
-def Analyze(X, numStates, keepBern=True):
+def Analyze(X, numStates):
     '''Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas'''
+    X = remove_singleton_lineages(X)
     run = True
     while run:
         tHMMobj = tHMM(X, numStates=numStates, FOM='G')  # build the tHMM class with X
