@@ -184,8 +184,8 @@ class TestModel(unittest.TestCase):
         result = GammaAnalytical(self.pop3)
         shape = result[0]
         scale = result[1]
-        assert (12 <= shape <= 14), "estimated shape is {}.format(shape)"  # +/- 1 of shape_gamma
-        assert (2 <= scale <= 3), "estimated scale is {}.format(scale)"  # +/- 1 of scale_gamma
+        self.assertTrue(12 <= shape <= 14)
+        self.assertTrue(2 <= scale <= 3)
 
     def test_doubleT_G(self):
         """Check for basic functionality of doubleT."""
