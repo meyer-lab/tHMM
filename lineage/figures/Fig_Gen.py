@@ -2,16 +2,16 @@
 
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy import stats
 
 from .Depth_Two_State_Lineage import Depth_Two_State_Lineage
 from ..Analyze import Analyze
 from .Matplot_gen import Matplot_gen
-
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
 
 
-def Lineage_Length(T_MAS=5, T_2=5, reps=20, MASinitCells=[1], MASlocBern=[0.99], MAScGom=[1.6], MASscaleGom=[25], MASbeta=[1.5], initCells2=[1], locBern2=[0.8], cGom2=[2], scaleGom2=[30], beta2=[1], numStates=2, max_lin_length=100, min_lin_length=2, FOM='E', verbose=False):
+def Lineage_Length(T_MAS=200, T_2=200, reps=10, MASinitCells=[1], MASlocBern=[0.99], MAScGom=[1.6], MASscaleGom=[25], MASbeta=[50], initCells2=[1], locBern2=[0.8], cGom2=[2], scaleGom2=[40], beta2=[25], numStates=2, max_lin_length=100, min_lin_length=10, FOM='E', verbose=False):
     '''This has been modified for an exonential distribution'''
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
 
@@ -27,7 +27,21 @@ def Lineage_Length(T_MAS=5, T_2=5, reps=20, MASinitCells=[1], MASlocBern=[0.99],
     for rep in range(reps):
         print('Rep:', rep)
         X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
-        while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
+        
+        lives = np.zeros(len(masterLineage))
+        for ii, cell in enumerate(masterLineage):
+            lives[ii]=cell.tau
+            
+        lives2 = np.zeros(len(newLineage))
+        for ii, cell in enumerate(newLineage):
+            lives2[ii] = cell.tau
+            
+        lives = lives[~np.isnan(lives)]
+        lives2 = lives2[~np.isnan(lives2)]
+
+        (KL, p_val) = stats.ks_2samp(lives, lives2)
+        
+        while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length or p_val > 0.9:
             X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
         _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
         acc_h2 = []
@@ -54,8 +68,9 @@ def Lineage_Length(T_MAS=5, T_2=5, reps=20, MASinitCells=[1], MASlocBern=[0.99],
             bern_2_h2.append(E[state_2, 0])
             cGom_MAS_h2.append(E[state_1, 1])
             cGom_2_h2.append(E[state_2, 1])
-            #scaleGom_MAS_h2.append(E[state_1, 2])
-            #scaleGom_2_h2.append(E[state_2, 2])
+            if FOM == 'G':
+                scaleGom_MAS_h2.append(E[state_1, 2])
+                scaleGom_2_h2.append(E[state_2, 2])
 
             if verbose:
                 print('pi', pi)
@@ -74,7 +89,10 @@ def Lineage_Length(T_MAS=5, T_2=5, reps=20, MASinitCells=[1], MASlocBern=[0.99],
         scaleGom_2_h1.extend(scaleGom_2_h2)
 
     x = cell_h1
-    data = (x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2)
+    if FOM == 'G':
+        data = (x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2)
+    elif FOM == 'E':
+        data = (x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MASbeta, beta2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2)
 
     return data
 
