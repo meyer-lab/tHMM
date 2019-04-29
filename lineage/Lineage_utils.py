@@ -1,6 +1,7 @@
 '''utility and helper functions for cleaning up input populations and lineages and other needs in the tHMM class'''
 
 import numpy as np
+import scipy as sp
 from scipy.optimize import root
 from scipy.special import logsumexp
 from .CellNode import generateLineageWithTime
@@ -8,7 +9,8 @@ from .CellNode import generateLineageWithTime
 ##------------------------ Generating population of cells ---------------------------##
 
 
-def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='E', betaExp=None, betaExp2=None):
+
+def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='G', betaExp=None, betaExp2=None, shape_gamma1=None, scale_gamma1=None, shape_gamma2=None, scale_gamma2=None):
     """
     Generates a population of lineages that abide by distinct parameters.
 
@@ -61,7 +63,7 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
 
     """
 
-    assert len(initCells) == len(locBern) == len(cGom) == len(scaleGom)  # make sure all lists have same length
+    assert len(initCells) == len(locBern) == len(cGom) == len(scaleGom)   # make sure all lists have same length
     numLineages = len(initCells)
     population = []
 
@@ -71,6 +73,8 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], FOM='G')
             elif FOM == 'E':
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], FOM='E', betaExp=betaExp[ii])
+            elif FOM =='Ga':
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], FOM='Ga', shape_gamma1=shape_gamma1[ii], scale_gamma1=scale_gamma1[ii])
             for cell in temp:
                 sum_prev = 0
                 j = 0
@@ -87,6 +91,9 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGo
             elif FOM == 'E':
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT,
                                                bern2[ii], cG2[ii], scaleG2[ii], FOM='E', betaExp=betaExp[ii], betaExp2=betaExp2[ii])
+            elif FOM =='Ga':
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT,
+                                               bern2[ii], cG2[ii], scaleG2[ii], FOM='Ga', shape_gamma1=shape_gamma1[ii], scale_gamma1=scale_gamma1[ii],shape_gamma2=shape_gamma2[ii], scale_gamma2=scale_gamma2[ii])
             # create a temporary lineage
             for cell in temp:
                 sum_prev = 0
@@ -256,8 +263,72 @@ def exponentialAnalytical(X):
 
     return result
 
-##-------------------------Estimating Gompertz Parameter -------------------------##
+##------------------ Estimating Gamma Distribution Parameters --------------------##
 
+def GammaAnalytical(X):
+    """
+    An analytical estimator for two parameters of the Gamma distribution. Based on Thomas P. Minka, 2002 "Estimating a Gamma distribution".
+
+    The likelihood function for Gamma distribution is:
+    p(x | a, b) = Gamma(x; a, b) = x^(a-1)/(Gamma(a) * b^a) * exp(-x/b)
+    Here we intend to find "a" and "b" given x as a sequence of data -- in this case
+    the data is the cells' lifetime.
+    To find the best estimate we find the value that maximizes the likelihood function.
+
+    b_hat = x_bar / a
+    using Newton's method to find the second parameter:
+    a_hat =~ 0.5 / (log(x_bar) - log(x)_bar)
+
+    Here x_bar means the average of x.
+
+    Args:
+        ----------
+        X (obj): The object holding cell's attributes, including lifetime, to be used as data.
+
+    Returns:
+        ----------
+        a_hat (float): The estimated value for shape parameter of the Gamma distribution
+        b_hat (float): The estimated value for scale parameter of the Gamma distribution
+    """
+
+    # store the lifetime of every cell in a list, only if it is finished by the end of the experiment
+    tau1=[]
+    for cell in X:
+        if not cell.isUnfinished():
+            tau1.append(cell.tau)
+
+    tau_mean = np.mean(tau1)
+    tau_logmean = np.log(tau_mean)
+    tau_meanlog = np.mean(np.log(tau1))
+
+
+    # initialization step
+    a_hat0 = 0.5 / (tau_logmean - tau_meanlog)  # shape
+    b_hat0 = tau_mean / a_hat0  # scale
+    psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)  # psi is the derivative of log of gamma function, which has been approximated as this term
+    psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)  # this is the derivative of psi
+    assert a_hat0 != 0, "the first parameter has been set to zero!"
+
+    # updating the parameters
+    for i in range(100):
+        a_hat_new = (a_hat0 * (1 - a_hat0 * psi_prime0)) / (1 - a_hat0 * psi_prime0 + tau_meanlog - tau_logmean + np.log(a_hat0) - psi_0)
+        b_hat_new = tau_mean / a_hat_new
+
+        a_hat0 = a_hat_new
+        psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
+        psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)
+        psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
+
+        if np.abs(a_hat_new - a_hat0) <= 0.01:
+            return [a_hat_new, b_hat_new]
+        else:
+            pass
+    assert np.abs(a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new - a_hat0 = {}".format(np.abs(a_hat_new - a_hat0))
+    
+    result = [a_hat_new, b_hat_new]
+    return result
+
+##-------------------------Estimating Gompertz Parameter -------------------------##
 
 def gompertzAnalytical(X):
     """
@@ -285,6 +356,7 @@ def gompertzAnalytical(X):
     delta_holder = [1] * len(tau_holder) + [0] * len(tauFake_holder)
 
 ##------------------Helper functions for gompertzAnalytical---------------------##
+
     def help_exp(b):
         """
         Returns an expression commonly used in the analytical solution.
@@ -318,7 +390,7 @@ def gompertzAnalytical(X):
 
         Returns:
             ---------
-            sum(temp): it returns the expression written above (left_term(b))
+            sum(temp) {list}: it returns the expression written above (left_term(b))
 
         """
         temp = []
@@ -340,7 +412,7 @@ def gompertzAnalytical(X):
 
         Returns:
             ----------
-            sum(temp): it returns the expression written above (right_term(b))
+            sum(temp) {list}: it returns the expression written above (right_term(b))
 
         """
         temp = []
