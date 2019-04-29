@@ -2,8 +2,9 @@
 import unittest
 import math
 import numpy as np
+import scipy.stats as sp
 
-from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, gompertzAnalytical, exponentialAnalytical
+from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, gompertzAnalytical, exponentialAnalytical, GammaAnalytical
 from ..CellNode import CellNode as c, generateLineageWithTime, doublingTime
 
 
@@ -12,15 +13,18 @@ class TestModel(unittest.TestCase):
 
     def setUp(self):
         """ Create populations that are used for all tests. """
-        experimentTime = 168.  # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
-        locBern = [0.8]
+        experimentTime = 168  # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
+        locBern = [0.999]
         cGom = [2]
         scaleGom = [50.]
         betaExp = [50.]
         initCells = [100]
+        shape_gamma1 = [13.]
+        scale_gamma1 = [3.]
         self.pop1 = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G')  # initialize "pop" as of class Population
-        self.pop2 = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
-
+        self.pop2 = generatePopulationWithTime(168, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+        self.pop3 = generatePopulationWithTime(experimentTime, initCells, locBern, cGom, scaleGom, FOM = 'Ga', shape_gamma1 = shape_gamma1, scale_gamma1 = scale_gamma1)
+        
     def test_lifetime(self):
         """Make sure the cell isUnfinished before the cell dies and then make sure the cell's lifetime (tau) is calculated properly after it dies."""
         cell1 = c(startT=20)
@@ -160,15 +164,28 @@ class TestModel(unittest.TestCase):
         """ Use the analytical shortcut to estimate the gompertz parameters. """
         # test populations w.r.t. time
         c_out, scale_out = gompertzAnalytical(self.pop1)
+        print(pop1)
+        assert False
         self.assertTrue(0 <= c_out <= 5)  # +/- 3.0 of true cGom
         self.assertTrue(45 <= scale_out <= 55)  # +/- 15 of scaleGom
 
     def test_MLE_exp_analytical(self):
-        """ Use the analytical shortcut to estimate the gompertz parameters. """
+        """ Use the analytical shortcut to estimate the exponential parameters. """
         # test populations w.r.t. time
         beta_out = exponentialAnalytical(self.pop2)
         truther = (45 <= beta_out <= 55)
         self.assertTrue(truther)  # +/- 15 of scaleGom
+
+        
+    def test_MLE_gamma_analytical(self):
+        """ Use the analytical shortcut to estimate the Gamma parameters. """
+        # test populations w.r.t. time
+        #data = sp.gamma.rvs(a = 13, loc = 0 , scale = 3, size = 1000)
+        result = GammaAnalytical(self.pop3)
+        shape = result[0]
+        scale = result[1]
+        self.assertTrue(12 <= shape <= 14)
+        self.assertTrue(2 <= scale <= 3)
 
     def test_doubleT_G(self):
         """Check for basic functionality of doubleT."""
