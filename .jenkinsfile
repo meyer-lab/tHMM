@@ -9,7 +9,13 @@ pipeline {
     }
     stage('Build/Test') {
       parallel {
-        stage('Test')  { steps { sh 'make testcover' } }
+        stage('Test')  {
+          steps {
+            sh 'make testcover'
+            junit testResults: 'junit.xml', healthScaleFactor: 100.0
+            cobertura coberturaReportFile: 'coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+          }
+        }
         stage('Lint')  { steps { sh '(pylint --rcfile=.pylintrc lineage > pylint.log || echo "pylint exited with $?")' } }
         stage('Doc')   { steps { sh 'make docs' } }
         stage('Build')   { steps { sh 'make manuscript/manuscript.pdf -j 8' } }
@@ -17,10 +23,8 @@ pipeline {
     }
     stage('Report') {
       steps {
-        junit allowEmptyResults: true, testResults: 'junit.xml'
         archiveArtifacts artifacts: 'manuscript/manuscript.pdf', onlyIfSuccessful: true
         archiveArtifacts artifacts: 'manuscript/figures/*.pdf', onlyIfSuccessful: true
-        cobertura coberturaReportFile: 'coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
         step([$class:'WarningsPublisher', parserConfigurations: [[parserName:'PYLint', pattern:'pylint.log']],
           unstableTotalAll:'100', usePreviousBuildAsReference:true])
         publishHTML([
