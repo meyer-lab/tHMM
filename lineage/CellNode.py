@@ -272,8 +272,10 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
             else:  # use first set of parameters for non-heterogeneous lineages or before the switch time
                 cell.true_state = 0
                 if FOM == 'G':
+                    print('g')
                     cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
                 elif FOM == 'E':
+                    print('e')
                     cell.tau = sp.expon.rvs(scale=betaExp)
                 elif FOM == 'Ga':
                     cell.tau = sp.gamma.rvs(shape_gamma1, scale=scale_gamma1)

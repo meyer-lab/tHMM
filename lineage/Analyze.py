@@ -19,8 +19,10 @@ def Analyze(X, numStates, FOM='E'):
         #make sure you dont get blown up gompertz params, or in the case of exponential, just pass
         if FOM == 'G' and tHMMobj.paramlist[0]["E"][0, 1] < 1000 and tHMMobj.paramlist[0]["E"][1, 1] < 1000:
             run = False
+            print('g')
         elif FOM == 'E':
             run = False
+            print('e')
             
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)

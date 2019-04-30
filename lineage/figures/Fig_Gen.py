@@ -11,7 +11,7 @@ from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
 
 
-def Lineage_Length(T_MAS=200, T_2=200, reps=2, MASinitCells=[1], MASlocBern=[0.99], MAScGom=[1.6], MASscaleGom=[25], MASbeta=[50], initCells2=[1], locBern2=[0.8], cGom2=[2], scaleGom2=[40], beta2=[25], numStates=2, max_lin_length=100, min_lin_length=10, FOM='E', verbose=False):
+def Lineage_Length(T_MAS=100, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.99], MAScGom=[None], MASscaleGom=[None], MASbeta=[50], initCells2=[1], locBern2=[0.8], cGom2=[None], scaleGom2=[None], beta2=[25], numStates=2, max_lin_length=1000, min_lin_length=2, FOM='E', verbose=False):
     '''This has been modified for an exonential distribution'''
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
 
@@ -26,6 +26,7 @@ def Lineage_Length(T_MAS=200, T_2=200, reps=2, MASinitCells=[1], MASlocBern=[0.9
 
     for rep in range(reps):
         print('Rep:', rep)
+        print(FOM)
         X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
         
         lives = np.zeros(len(masterLineage))
@@ -40,10 +41,13 @@ def Lineage_Length(T_MAS=200, T_2=200, reps=2, MASinitCells=[1], MASlocBern=[0.9
         lives2 = lives2[~np.isnan(lives2)]
 
         (KL, p_val) = stats.ks_2samp(lives, lives2)
-        
-        while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length or p_val > 0.05:
+        print('KL')
+        while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
             X, masterLineage, newLineage = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
+            print(len(masterLineage), len(newLineage))
+        print('X')
         _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
+        print('analyzed')
         acc_h2 = []
         cell_h2 = []
         bern_MAS_h2 = []
