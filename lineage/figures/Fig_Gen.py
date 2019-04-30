@@ -11,7 +11,7 @@ from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
 
 
-def Lineage_Length(T_MAS=100, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.99], MAScGom=[None], MASscaleGom=[None], MASbeta=[50], initCells2=[1], locBern2=[0.8], cGom2=[None], scaleGom2=[None], beta2=[25], numStates=2, max_lin_length=1000, min_lin_length=10, FOM='E', verbose=False):
+def Lineage_Length(T_MAS=150, T_2=150, reps=50, MASinitCells=[1], MASlocBern=[0.99], MAScGom=[None], MASscaleGom=[None], MASbeta=[50], initCells2=[1], locBern2=[0.8], cGom2=[None], scaleGom2=[None], beta2=[25], numStates=2, max_lin_length=1000, min_lin_length=5, FOM='E', verbose=False):
     '''This has been modified for an exonential distribution'''
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
 

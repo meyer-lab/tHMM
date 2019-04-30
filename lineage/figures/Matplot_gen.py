@@ -20,7 +20,7 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
     
     #fig, axs = plt.subplots(nrows=2, ncols=2, sharex=True)
     #ax = axs[0, 0]
-    ax[0] = plt.gca().set_xlim(left=0)
+    ax[0].set_xlim((0, int(round(1.1*max(x)))))
     ax[0].set_ylim(0, 110)
     ax[0].errorbar(x, acc_h1, fmt='o', c='b', marker="*", fillstyle='none', label='Accuracy')
     ax[0].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b')  # linestyle is dashdotdotted
@@ -33,7 +33,7 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
 
 
     #ax = axs[0, 1]
-    ax[1] = plt.gca().set_xlim(left=0)
+    ax[1].set_xlim((0, int(round(1.1*max(x)))))
     ax[1].errorbar(x, bern_MAS_h1, fmt='o', c='g', marker="^", fillstyle='none', label='State 1')
     ax[1].errorbar(x, bern_2_h1, fmt='o', c='r', marker="^", fillstyle='none', label='State 2')
     ax[1].set_ylabel('Theta', rotation=90, fontsize = font2)
@@ -46,7 +46,7 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
 
 
     #ax = axs[1, 0]
-    ax[2] = plt.gca().set_xlim(left=0)
+    ax[2].set_xlim((0, int(round(1.1*max(x)))))
     ax[2].set_xlabel(xlabel, fontsize = font2)
     #ax[2].set_xscale("log", nonposx='clip')
     ax[2].errorbar(x, cGom_MAS_h1, fmt='o', c='g', marker="^", fillstyle='none', label='State 1')
