@@ -4,7 +4,7 @@ import math
 import numpy as np
 import scipy.stats as sp
 
-from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, gompertzAnalytical, exponentialAnalytical, GammaAnalytical
+from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, exponentialAnalytical, GammaAnalytical
 from ..CellNode import CellNode as c, generateLineageWithTime, doublingTime
 
 
@@ -139,7 +139,7 @@ class TestModel(unittest.TestCase):
         base = doublingTime(100, 0.7, None, None, FOM='E', betaExp=80)
 
         # doubles quicker when cells divide 90% of the time
-        self.assertGreater(base, doublingTime(100, 0.9, , betaExp=50, FOM='E'))
+        self.assertGreater(base, doublingTime(100, 0.9, betaExp=50, FOM='E'))
 
         self.assertGreater(base, doublingTime(100, 0.7, betaExp=50, FOM='E'))
         self.assertGreater(base, doublingTime(100, 0.7, betaExp=40, FOM='E'))
@@ -155,9 +155,9 @@ class TestModel(unittest.TestCase):
         # second set of parameters (from t=100 to t=experimentTime)
         bern2 = [0.99]
         betaExp2 = [25]
-        popTime = generatePopulationWithTime(experimentTime, initCells, locBern,  betaExp=betaExp, switchT, bern2, FOM='E', betaExp2=betaExp2)  # initialize "pop" as of class Populations
+        popTime = generatePopulationWithTime(experimentTime, initCells, locBern,  betaExp, switchT, bern2, FOM='E', betaExp2=betaExp2)  # initialize "pop" as of class Populations
         while len(popTime) <= 10:
-            popTime = generatePopulationWithTime(experimentTime, initCells, locBern,  betaExp=betaExp, switchT, bern2, FOM='E', betaExp2=betaExp2)  # initialize "pop" as of class Populations
+            popTime = generatePopulationWithTime(experimentTime, initCells, locBern,  betaExp, switchT, bern2, FOM='E', betaExp2=betaExp2)  # initialize "pop" as of class Populations
 
         bernEstimate = bernoulliParameterEstimatorAnalytical(popTime)
 
