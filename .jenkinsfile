@@ -24,7 +24,7 @@ pipeline {
         stage('Doc') {
           steps {
             sh 'make docs'
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, reportDir: 'doc/build', reportFiles: 'index.html', reportName: 'Sphinx Docs'])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'doc/build', reportFiles: 'index.html', reportName: 'Sphinx Docs'])
           }
         }
         stage('Build') {
