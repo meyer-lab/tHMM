@@ -155,7 +155,6 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         for state_j in range(numStates):
             cells = cell_groups[str(state_j)] #this array has the correct cells classified per group
             global_params['B' + str(state_j)] = bernoulliParameterEstimatorAnalytical(cells) #list of cells
-            global_params['G_c' + str(state_j)], global_params['G_scale' + str(state_j)] = gompertzAnalytical(cells)
             global_params['E' + str(state_j)] = exponentialAnalytical(cells)
             
         #now go through each lineage and replace with the new E
@@ -163,10 +162,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             for state in range(numStates):
                 #assigns the global state to the lineage-specific state assignment
                 tHMMobj.paramlist[num]["E"][state, 0] = global_params['B' + str(state)]
-                if tHMMobj.FOM == 'G':
-                    tHMMobj.paramlist[num]["E"][state, 1] = global_params['G_c' + str(state)]
-                    tHMMobj.paramlist[num]["E"][state, 2] = global_params['G_scale' + str(state)]
-                elif tHMMobj.FOM == 'E':
+                if tHMMobj.FOM == 'E':
                     tHMMobj.paramlist[num]["E"][state, 1] = global_params['E' + str(state)]
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()

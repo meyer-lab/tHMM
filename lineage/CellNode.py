@@ -182,10 +182,10 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
     generates a list of objects (cells) in a lineage.
 
     Given an experimental end time, a Bernoulli distribution for
-    dividing/dying and a Gompertz/exponential parameter for cell lifetime,
+    dividing/dying and a Exponential parameter for cell lifetime,
     it creates objects as cells and puts them in a list.
     If the switchT is not None, then after a while it will switch
-    to the new bernoulli, Gompertz/Exponential parameters and creates lineages
+    to the new bernoulli, Exponential parameters and creates lineages
     based on the new distribution.
 
 
@@ -196,16 +196,9 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
         a random number (either 1:divide, or 0:die) is picked from the
         distribution with this parameter and the fate of the cell is assigned.
 
-    Gompertz distribution:
-        It has two parameters (cGom, scaleGom)
-        Given these two parameters, for every cell, it randomly picks a number
-        from the distribution and assigns it to the cell as its lifetime. The unit
-        of the lifetime would be in [hours].
-
     Exponential distribution:
         It has one parameter (betaExp)
-        It is a replacement for Gompertz to produce cell's lifetime, given the
-        beta parameter, every time we pick a random number from an exponential
+        Given the beta parameter, every time we pick a random number from an exponential
         distributions with parameter betaExp, and assign it to be the lifetime
         of the cell.
 
@@ -225,17 +218,9 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
         locBern (float): the Bernoulli distribution parameter
         (p = success) for fate assignment (either the cell dies or divides)
         range = [0, 1]
-        cGom (float): shape parameter of the Gompertz distribution,
-        the normal range: [0.5, 5] outside this boundary simulation
-        time becomes very long
-        scaleGom (float): scale parameter of Gompertz distribution,
-        normal range: [20, 50] outside this boundary simulation
-        time becomes very long
         switchT (int): the time (assuming the beginning of experiment is 0) that
         we want to switch to the new set of parameters of distributions.
         bern2 (float): second Bernoulli distribution parameter.
-        cG2 (float): second shape parameter of Gompertz distribution
-        scaleG2 (float): second scale parameter of Gompertz distrbution
         FOM (str): this determines the type of distribution we want to use for
         lifetime here it is either "G": Gompertz, or "E": Exponential.
         betaExp (float): the parameter of Exponential distribution
@@ -262,18 +247,14 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
         if cell.isUnfinished():
             if switchT and cell.startT > switchT:  # when the cells should abide by the second set of parameters
                 cell.true_state = 1
-                if FOM == 'G':
-                    cell.tau = sp.gompertz.rvs(cG2, scale=scaleG2)
-                elif FOM == 'E':
+                if FOM == 'E':
                     cell.tau = sp.expon.rvs(scale=betaExp2)
                 elif FOM == 'Ga':
                     cell.tau = sp.gamma.rvs(shape_gamma2, scale=scale_gamma2)
 
             else:  # use first set of parameters for non-heterogeneous lineages or before the switch time
                 cell.true_state = 0
-                if FOM == 'G':
-                    cell.tau = sp.gompertz.rvs(cGom, scale=scaleGom)
-                elif FOM == 'E':
+                if FOM == 'E':
                     cell.tau = sp.expon.rvs(scale=betaExp)
                 elif FOM == 'Ga':
                     cell.tau = sp.gamma.rvs(shape_gamma1, scale=scale_gamma1)
@@ -316,9 +297,7 @@ def doublingTime(initCells, locBern, cGom, scaleGom, FOM='G', betaExp=None, shap
         ----------
         initCells (int): number of initial cells to initiate the tree
         locBern (float): parameter of Bernoulli distribution
-        cGom (float): shape parameter of Gompertz distribution
-        scaleGom (float): scale parameter of Gompertz distribution
-        FOM (str): either 'G': Gompertz, or 'E': Exponential. Decides on the
+        FOM (str): 'E': Exponential. Decides on the
         distribution for setting the cell's lifetime
         betExp (float): the parameter of Exponential distribution.
 
@@ -336,9 +315,7 @@ def doublingTime(initCells, locBern, cGom, scaleGom, FOM='G', betaExp=None, shap
 
     for experimentTime in experimentTimes:
         lineage = []
-        if FOM == 'G':
-            lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom)
-        elif FOM == 'E':
+        if FOM == 'E':
             lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
         elif FOM =='Ga':
             lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, FOM = 'Ga', shape_gamma1=shape_gamma, scale_gamma1=scale_gamma)
