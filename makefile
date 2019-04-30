@@ -31,7 +31,7 @@ test:
 	pytest -s
 
 testcover:
-	pytest -s --junitxml=junit.xml --cov=lineage --cov-report xml:coverage.xml
+	pytest -j 8 --junitxml=junit.xml --cov=lineage --cov-report xml:coverage.xml
 
 testprofile:
 	python3 -m cProfile -o profile /usr/local/bin/pytest
