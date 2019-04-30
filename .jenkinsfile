@@ -1,15 +1,11 @@
 pipeline {
   agent any
   options {
-    timeout(time: 1, unit: 'HOURS') 
+    timeout(time: 1, unit: 'HOURS')
+    parallelsAlwaysFailFast()
   }
   stages {
-    stage('Clean') {
-      steps {
-        sh 'git clean -ffdx'
-        sh 'make clean'
-      }
-    }
+    stage('Clean') { steps { sh 'git clean -ffdx && make clean' } }
     stage('Build/Test') {
       parallel {
         stage('Test')  { steps { sh 'make testcover' } }
