@@ -177,7 +177,7 @@ class CellNode:
         return curr_cell
 
 
-def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, switchT=None, bern2=None, cG2=None, scaleG2=None, FOM='G', betaExp=None, betaExp2=None, shape_gamma1=None, scale_gamma1=None, shape_gamma2=None, scale_gamma2=None):
+def generateLineageWithTime(initCells, experimentTime, locBern, betaExp, switchT=None, bern2=None, betaExp2=None, FOM='E', shape_gamma1=None, scale_gamma1=None, shape_gamma2=None, scale_gamma2=None):
     """
     generates a list of objects (cells) in a lineage.
 
@@ -282,7 +282,7 @@ def generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, 
     return lineage
 
 
-def doublingTime(initCells, locBern, cGom, scaleGom, FOM='G', betaExp=None, shape_gamma = None, scale_gamma = None):
+def doublingTime(initCells, locBern, betaExp, FOM='E', shape_gamma = None, scale_gamma = None):
     """
     Calculates the doubling time of a homogeneous cell population,
     given the three parameters and an initial cell count.
