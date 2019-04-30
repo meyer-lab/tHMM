@@ -10,8 +10,8 @@ from .Lineage_utils import remove_singleton_lineages, remove_NaNs
 
 def Analyze(X, numStates, FOM='E'):
     '''Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas'''
-    X = remove_singleton_lineages(X)
     X = remove_NaNs(X)
+    X = remove_singleton_lineages(X)
     run = True
     while run:
         tHMMobj = tHMM(X, numStates=numStates, FOM=FOM)  # build the tHMM class with X
