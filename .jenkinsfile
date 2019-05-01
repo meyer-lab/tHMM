@@ -21,8 +21,7 @@ pipeline {
         archiveArtifacts artifacts: 'manuscript/manuscript.pdf', onlyIfSuccessful: true
         archiveArtifacts artifacts: 'manuscript/figures/*.pdf', onlyIfSuccessful: true
         cobertura coberturaReportFile: 'coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
-        step([$class:'WarningsPublisher', parserConfigurations: [[parserName:'PYLint', pattern:'pylint.log']],
-          unstableTotalAll:'100', usePreviousBuildAsReference:true])
+        recordIssues tools: [pyLint(pattern: 'pylint.log')], unhealthy: 100
         publishHTML([
           allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true,
           reportDir: 'doc/build', reportFiles: 'index.html',
