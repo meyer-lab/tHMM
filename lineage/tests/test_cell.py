@@ -19,7 +19,7 @@ class TestModel(unittest.TestCase):
         initCells = [100]
         shape_gamma1 = [13.]
         scale_gamma1 = [3.]
-        self.pop2 = generatePopulationWithTime(168, initCells, locBern, betaExp=betaExp, FOM='E')
+        self.pop1 = generatePopulationWithTime(168, initCells, locBern, betaExp=betaExp, FOM='E')
         self.pop3 = generatePopulationWithTime(experimentTime, initCells, locBern, betaExp=betaExp, FOM='Ga', shape_gamma1=shape_gamma1, scale_gamma1=scale_gamma1)
         
     def test_lifetime(self):
@@ -54,7 +54,7 @@ class TestModel(unittest.TestCase):
 
     def test_generate_endT(self):
         """Make sure experiment ends at proper time when using generateLineageWithTime."""
-        out = generateLineageWithTime(100, 100, 0.5, 2, 50)
+        out = generateLineageWithTime(100, 100, 0.5, 50)
         for cell in out:
             if cell.isUnfinished():  # if cell is alive
                 self.assertTrue(math.isnan(cell.endT))  # don't know final lifetime
@@ -115,14 +115,15 @@ class TestModel(unittest.TestCase):
 
     def test_MLE_bern(self):
         """ Generate multiple lineages and estimate the bernoulli parameter with MLE. Estimators must be within +/- 0.08 of true locBern for popTime. """
-        self.assertTrue(0.7 <= bernoulliParameterEstimatorAnalytical(self.pop1) <= 9)
+        asdas = (bernoulliParameterEstimatorAnalytical(self.pop1))
+        self.assertTrue(0.998 <= bernoulliParameterEstimatorAnalytical(self.pop1) <= 1.001)
 
     def test_MLE_exp_analytical(self):
         """ Use the analytical shortcut to estimate the exponential parameters. """
         # test populations w.r.t. time
-        beta_out = exponentialAnalytical(self.pop2)
+        beta_out = exponentialAnalytical(self.pop1)
         truther = (45 <= beta_out <= 55)
-        self.assertTrue(truther)  # +/- 15 of scaleGom
+        self.assertTrue(truther)  # +/- 5 of beta
 
     def test_MLE_gamma_analytical(self):
         """ Use the analytical shortcut to estimate the Gamma parameters. """
@@ -132,11 +133,11 @@ class TestModel(unittest.TestCase):
         shape = result[0]
         scale = result[1]
         self.assertTrue(12 <= shape <= 14)
-        self.assertTrue(2 <= scale <= 3)
+        self.assertTrue(2 <= scale <= 4)
 
     def test_doubleT_E(self):
         """Check for basic functionality of doubleT."""
-        base = doublingTime(100, 0.7, None, None, FOM='E', betaExp=80)
+        base = doublingTime(100, 0.7, betaExp=80, FOM='E')
 
         # doubles quicker when cells divide 90% of the time
         self.assertGreater(base, doublingTime(100, 0.9, betaExp=50, FOM='E'))
@@ -155,9 +156,9 @@ class TestModel(unittest.TestCase):
         # second set of parameters (from t=100 to t=experimentTime)
         bern2 = [0.99]
         betaExp2 = [25]
-        popTime = generatePopulationWithTime(experimentTime, initCells, locBern,  betaExp, switchT, bern2, FOM='E', betaExp2=betaExp2)  # initialize "pop" as of class Populations
+        popTime = generatePopulationWithTime(experimentTime, initCells, locBern,  betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')  # initialize "pop" as of class Populations
         while len(popTime) <= 10:
-            popTime = generatePopulationWithTime(experimentTime, initCells, locBern,  betaExp, switchT, bern2, FOM='E', betaExp2=betaExp2)  # initialize "pop" as of class Populations
+            popTime = generatePopulationWithTime(experimentTime, initCells, locBern,  betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')  # initialize "pop" as of class Populations
 
         bernEstimate = bernoulliParameterEstimatorAnalytical(popTime)
 

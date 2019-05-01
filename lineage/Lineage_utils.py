@@ -60,7 +60,7 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, swit
             if FOM == 'E':
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], betaExp=betaExp[ii], FOM='E')
             elif FOM =='Ga':
-                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], FOM='Ga', shape_gamma1=shape_gamma1[ii], scale_gamma1=scale_gamma1[ii])
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], betaExp=betaExp[ii], FOM='Ga', shape_gamma1=shape_gamma1[ii], scale_gamma1=scale_gamma1[ii])
             for cell in temp:
                 sum_prev = 0
                 j = 0
@@ -73,11 +73,9 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, swit
     else:  # when the second set of parameters is defined
         for ii in range(numLineages):
             if FOM == 'E':
-                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT,
-                                               bern2[ii], cG2[ii], scaleG2[ii], FOM='E', betaExp=betaExp[ii], betaExp2=betaExp2[ii])
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], betaExp=betaExp[ii], switchT=switchT, bern2=bern2[ii], betaExp2=betaExp2[ii], FOM='E')
             elif FOM =='Ga':
-                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT,
-                                               bern2[ii], cG2[ii], scaleG2[ii], FOM='Ga', shape_gamma1=shape_gamma1[ii], scale_gamma1=scale_gamma1[ii],shape_gamma2=shape_gamma2[ii], scale_gamma2=scale_gamma2[ii])
+                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], betaExp=betaExp[ii], switchT=switchT, bern2=bern2[ii], betaExp2=betaExp2[ii], FOM='Ga', shape_gamma1=shape_gamma1[ii], scale_gamma1=scale_gamma1[ii], shape_gamma2=shape_gamma2[ii], scale_gamma2=scale_gamma2[ii])
             # create a temporary lineage
             for cell in temp:
                 sum_prev = 0
@@ -89,6 +87,36 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, swit
                 population.append(cell)  # append all individual cells into a population
 
     return population
+
+##-------------------------------- Removing Unfinished Cells -------------------------##	
+
+
+ def remove_unfinished_cells(X):	
+    """	
+    Removes unfinished cells in Population and root cells with no daughters.	
+     This Function checks every object in the list and if it includes NaN, then	
+    it replaces the cell with None which essentially removes the cell, and returns	
+    the new list of cells that does not inclue any NaN.	
+     Args:	
+        ----------	
+        X (list): list that holds cells as objects.	
+     Returns:	
+        ----------	
+        X (list): a list of objects (cells) in which the NaNs have been removed.	
+     """	
+    ii = 0  # establish a count outside of the loop	
+    while ii in range(len(X)):  # for each cell in X	
+        if X[ii].isUnfinished():  # if the cell has NaNs in its times	
+            if X[ii].parent is None:  # do nothing if the parent pointer doesn't point to a cell	
+                pass	
+            elif X[ii].parent.left is X[ii]:  # if it is the left daughter of the parent cell	
+                X[ii].parent.left = None  # replace the cell with None	
+            elif X[ii].parent.right is X[ii]:  # or if it is the right daughter of the parent cell	
+                X[ii].parent.right = None  # replace the cell with None	
+            X.pop(ii)  # pop the unfinished cell at the current position	
+        else:	
+            ii += 1  # only move forward in the list if you don't delete a cell	
+    return X
 
 ##------------------------- Removing Singleton Lineages ---------------------------##
 

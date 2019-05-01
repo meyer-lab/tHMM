@@ -316,9 +316,9 @@ def doublingTime(initCells, locBern, betaExp, FOM='E', shape_gamma = None, scale
     for experimentTime in experimentTimes:
         lineage = []
         if FOM == 'E':
-            lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+            lineage = generateLineageWithTime(initCells, experimentTime, locBern, betaExp=betaExp, FOM='E')
         elif FOM =='Ga':
-            lineage = generateLineageWithTime(initCells, experimentTime, locBern, cGom, scaleGom, FOM = 'Ga', shape_gamma1=shape_gamma, scale_gamma1=scale_gamma)
+            lineage = generateLineageWithTime(initCells, experimentTime, locBern, betaExp=betaExp, FOM = 'Ga', shape_gamma1=shape_gamma, scale_gamma1=scale_gamma)
         count = 0
         for cell in lineage:
             if cell.isUnfinished():
