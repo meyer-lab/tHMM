@@ -4,7 +4,7 @@ import math
 import numpy as np
 import scipy.stats as sp
 
-from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, exponentialAnalytical, GammaAnalytical
+from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, exponentialAnalytical, gammaAnalytical
 from ..CellNode import CellNode as c, generateLineageWithTime, doublingTime
 
 

@@ -50,15 +50,13 @@ class TestModel(unittest.TestCase):
         experimentTime = 50.
         initCells = [50]  # there should be 50 lineages b/c there are 50 initial cells
         locBern = [0.8]
-        cGom = [2]
-        scaleGom = [40]
-        self.X = gpt(experimentTime, initCells, locBern, cGom, scaleGom)  # generate a population
+        betaExp = [40]
+        self.X = gpt(experimentTime, initCells, locBern,betaExp)  # generate a population
 
         initCells = [40, 10]  # there should be around 50 lineages b/c there are 50 initial cells
         locBern = [0.999, 0.8]
-        cGom = [2, 3]
-        scaleGom = [40, 50]
-        self.X2 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
+        betaExp = [40, 50]
+        self.X2 = gpt(experimentTime, initCells, locBern, betaExp)
 
     ################################
     # Lineage_utils.py tests below #
@@ -167,15 +165,13 @@ class TestModel(unittest.TestCase):
         experimentTime = switchT + 150
         initCells = [1]
         locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
+        betaExp1 = [75]
         bern2 = [0.6]
-        cG2 = [2]
-        scaleG2 = [50]
+        betaExp2 = [50]
 
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
         while len(LINEAGE) <= 5:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
 
         X = LINEAGE
         t = tHMM(X, numStates = 2)

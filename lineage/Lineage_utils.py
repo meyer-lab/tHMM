@@ -91,7 +91,7 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, swit
 ##-------------------------------- Removing Unfinished Cells -------------------------##	
 
 
- def remove_unfinished_cells(X):	
+def remove_unfinished_cells(X):	
     """	
     Removes unfinished cells in Population and root cells with no daughters.	
      This Function checks every object in the list and if it includes NaN, then	
@@ -277,7 +277,7 @@ def exponentialAnalytical(X):
 
 ##------------------ Estimating Gamma Distribution Parameters --------------------##
 
-def GammaAnalytical(X):
+def gammaAnalytical(X):
     """
     An analytical estimator for two parameters of the Gamma distribution. Based on Thomas P. Minka, 2002 "Estimating a Gamma distribution".
 
