@@ -204,11 +204,11 @@ def generateLineageWithTime(initCells, experimentTime, locBern, betaExp, switchT
 
     Gamma distribution:
         It has two parameters(shape_gamma, scale_gamma)
-        Used as alifetime generator for cells. In the range of parameter we work, 
+        Used as alifetime generator for cells. In the range of parameter we work,
         its pdf looks like a slightly skewed bell-shaped distribution. This happens
         when the shape parameter is >= scale parameter. Here to generate the cells we
-        specify the two parameters and it will return a number that we assign to cell's 
-        lifetime. 
+        specify the two parameters and it will return a number that we assign to cell's
+        lifetime.
 
     Args:
         ----------
@@ -282,7 +282,7 @@ def generateLineageWithTime(initCells, experimentTime, locBern, betaExp, switchT
     return lineage
 
 
-def doublingTime(initCells, locBern, betaExp, FOM='E', shape_gamma = None, scale_gamma = None):
+def doublingTime(initCells, locBern, betaExp, FOM='E', shape_gamma=None, scale_gamma=None):
     """
     Calculates the doubling time of a homogeneous cell population,
     given the three parameters and an initial cell count.
@@ -317,8 +317,8 @@ def doublingTime(initCells, locBern, betaExp, FOM='E', shape_gamma = None, scale
         lineage = []
         if FOM == 'E':
             lineage = generateLineageWithTime(initCells, experimentTime, locBern, betaExp=betaExp, FOM='E')
-        elif FOM =='Ga':
-            lineage = generateLineageWithTime(initCells, experimentTime, locBern, betaExp=betaExp, FOM = 'Ga', shape_gamma1=shape_gamma, scale_gamma1=scale_gamma)
+        elif FOM == 'Ga':
+            lineage = generateLineageWithTime(initCells, experimentTime, locBern, betaExp=betaExp, FOM='Ga', shape_gamma1=shape_gamma, scale_gamma1=scale_gamma)
         count = 0
         for cell in lineage:
             if cell.isUnfinished():

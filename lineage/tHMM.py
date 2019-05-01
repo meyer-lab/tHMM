@@ -28,7 +28,8 @@ class tHMM:
         self.FOM = FOM
         self.numLineages = get_numLineages(self.X)  # gets the number of lineages in our population
         self.population = init_Population(self.X, self.numLineages)  # arranges the population into a list of lineages (each lineage might have varying length)
-        assert self.numLineages == len(self.population), "Something is wrong with the number of lineages in your population member variable for your tHMM class and the number of lineages member variable for your tHMM class. Check the number of unique root cells and the number of lineages in your data."
+        assert self.numLineages == len(
+            self.population), "Something is wrong with the number of lineages in your population member variable for your tHMM class and the number of lineages member variable for your tHMM class. Check the number of unique root cells and the number of lineages in your data."
         self.paramlist = self.init_paramlist()  # list that is numLineages long of parameters for each lineage tree in our population
 
         self.MSD = self.get_Marginal_State_Distributions()  # full Marginal State Distribution holder

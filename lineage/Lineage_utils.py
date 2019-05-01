@@ -9,7 +9,8 @@ from .CellNode import generateLineageWithTime
 ##------------------------ Generating population of cells ---------------------------##
 
 
-def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, switchT=None, bern2=None, betaExp2=None, FOM='E', shape_gamma1=None, scale_gamma1=None, shape_gamma2=None, scale_gamma2=None):
+def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, switchT=None, bern2=None, betaExp2=None,
+                               FOM='E', shape_gamma1=None, scale_gamma1=None, shape_gamma2=None, scale_gamma2=None):
     """
     Generates a population of lineages that abide by distinct parameters.
 
@@ -31,7 +32,7 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, swit
         locBern (float): the Bernoulli distribution parameter
         (p = success) for fate assignment (either the cell dies or divides)
         range = [0, 1]
-        
+
         betaExp (float): the parameter of Exponential distribution.
 
         switchT (int): the time (assuming the beginning of experiment is 0) that
@@ -59,7 +60,7 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, swit
         for ii in range(numLineages):
             if FOM == 'E':
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], betaExp=betaExp[ii], FOM='E')
-            elif FOM =='Ga':
+            elif FOM == 'Ga':
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], betaExp=betaExp[ii], FOM='Ga', shape_gamma1=shape_gamma1[ii], scale_gamma1=scale_gamma1[ii])
             for cell in temp:
                 sum_prev = 0
@@ -74,8 +75,20 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, swit
         for ii in range(numLineages):
             if FOM == 'E':
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], betaExp=betaExp[ii], switchT=switchT, bern2=bern2[ii], betaExp2=betaExp2[ii], FOM='E')
-            elif FOM =='Ga':
-                temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], betaExp=betaExp[ii], switchT=switchT, bern2=bern2[ii], betaExp2=betaExp2[ii], FOM='Ga', shape_gamma1=shape_gamma1[ii], scale_gamma1=scale_gamma1[ii], shape_gamma2=shape_gamma2[ii], scale_gamma2=scale_gamma2[ii])
+            elif FOM == 'Ga':
+                temp = generateLineageWithTime(
+                    initCells[ii],
+                    experimentTime,
+                    locBern[ii],
+                    betaExp=betaExp[ii],
+                    switchT=switchT,
+                    bern2=bern2[ii],
+                    betaExp2=betaExp2[ii],
+                    FOM='Ga',
+                    shape_gamma1=shape_gamma1[ii],
+                    scale_gamma1=scale_gamma1[ii],
+                    shape_gamma2=shape_gamma2[ii],
+                    scale_gamma2=scale_gamma2[ii])
             # create a temporary lineage
             for cell in temp:
                 sum_prev = 0
@@ -88,34 +101,34 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, swit
 
     return population
 
-##-------------------------------- Removing Unfinished Cells -------------------------##	
+##-------------------------------- Removing Unfinished Cells -------------------------##
 
 
-def remove_unfinished_cells(X):	
-    """	
-    Removes unfinished cells in Population and root cells with no daughters.	
-     This Function checks every object in the list and if it includes NaN, then	
-    it replaces the cell with None which essentially removes the cell, and returns	
-    the new list of cells that does not inclue any NaN.	
-     Args:	
-        ----------	
-        X (list): list that holds cells as objects.	
-     Returns:	
-        ----------	
-        X (list): a list of objects (cells) in which the NaNs have been removed.	
-     """	
-    ii = 0  # establish a count outside of the loop	
-    while ii in range(len(X)):  # for each cell in X	
-        if X[ii].isUnfinished():  # if the cell has NaNs in its times	
-            if X[ii].parent is None:  # do nothing if the parent pointer doesn't point to a cell	
-                pass	
-            elif X[ii].parent.left is X[ii]:  # if it is the left daughter of the parent cell	
-                X[ii].parent.left = None  # replace the cell with None	
-            elif X[ii].parent.right is X[ii]:  # or if it is the right daughter of the parent cell	
-                X[ii].parent.right = None  # replace the cell with None	
-            X.pop(ii)  # pop the unfinished cell at the current position	
-        else:	
-            ii += 1  # only move forward in the list if you don't delete a cell	
+def remove_unfinished_cells(X):
+    """
+    Removes unfinished cells in Population and root cells with no daughters.
+     This Function checks every object in the list and if it includes NaN, then
+    it replaces the cell with None which essentially removes the cell, and returns
+    the new list of cells that does not inclue any NaN.
+     Args:
+        ----------
+        X (list): list that holds cells as objects.
+     Returns:
+        ----------
+        X (list): a list of objects (cells) in which the NaNs have been removed.
+     """
+    ii = 0  # establish a count outside of the loop
+    while ii in range(len(X)):  # for each cell in X
+        if X[ii].isUnfinished():  # if the cell has NaNs in its times
+            if X[ii].parent is None:  # do nothing if the parent pointer doesn't point to a cell
+                pass
+            elif X[ii].parent.left is X[ii]:  # if it is the left daughter of the parent cell
+                X[ii].parent.left = None  # replace the cell with None
+            elif X[ii].parent.right is X[ii]:  # or if it is the right daughter of the parent cell
+                X[ii].parent.right = None  # replace the cell with None
+            X.pop(ii)  # pop the unfinished cell at the current position
+        else:
+            ii += 1  # only move forward in the list if you don't delete a cell
     return X
 
 ##------------------------- Removing Singleton Lineages ---------------------------##
@@ -277,6 +290,7 @@ def exponentialAnalytical(X):
 
 ##------------------ Estimating Gamma Distribution Parameters --------------------##
 
+
 def gammaAnalytical(X):
     """
     An analytical estimator for two parameters of the Gamma distribution. Based on Thomas P. Minka, 2002 "Estimating a Gamma distribution".
@@ -304,7 +318,7 @@ def gammaAnalytical(X):
     """
 
     # store the lifetime of every cell in a list, only if it is finished by the end of the experiment
-    tau1=[]
+    tau1 = []
     for cell in X:
         if not cell.isUnfinished():
             tau1.append(cell.tau)
@@ -312,7 +326,6 @@ def gammaAnalytical(X):
     tau_mean = np.mean(tau1)
     tau_logmean = np.log(tau_mean)
     tau_meanlog = np.mean(np.log(tau1))
-
 
     # initialization step
     a_hat0 = 0.5 / (tau_logmean - tau_meanlog)  # shape
@@ -336,7 +349,6 @@ def gammaAnalytical(X):
         else:
             pass
     assert np.abs(a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new - a_hat0 = {}".format(np.abs(a_hat_new - a_hat0))
-    
+
     result = [a_hat_new, b_hat_new]
     return result
-

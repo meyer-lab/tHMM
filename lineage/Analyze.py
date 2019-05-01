@@ -10,7 +10,11 @@ from .Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 
 def Analyze(X, numStates):
     '''Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas'''
-    X = remove_unfinished_cells(X)
+    
+    #--------------------------------##
+    # putting remove_unfinished_cells here breaks the code X = remove_unfinished_cells(X)
+    #--------------------------------##
+
     X = remove_singleton_lineages(X)
     run = True
     while run:

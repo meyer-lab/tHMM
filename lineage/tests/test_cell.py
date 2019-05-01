@@ -21,7 +21,7 @@ class TestModel(unittest.TestCase):
         scale_gamma1 = [3.]
         self.pop1 = generatePopulationWithTime(168, initCells, locBern, betaExp=betaExp, FOM='E')
         self.pop3 = generatePopulationWithTime(experimentTime, initCells, locBern, betaExp=betaExp, FOM='Ga', shape_gamma1=shape_gamma1, scale_gamma1=scale_gamma1)
-        
+
     def test_lifetime(self):
         """Make sure the cell isUnfinished before the cell dies and then make sure the cell's lifetime (tau) is calculated properly after it dies."""
         cell1 = c(startT=20)
@@ -152,9 +152,9 @@ class TestModel(unittest.TestCase):
         # second set of parameters (from t=100 to t=experimentTime)
         bern2 = [0.99]
         betaExp2 = [25]
-        popTime = generatePopulationWithTime(experimentTime, initCells, locBern,  betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')  # initialize "pop" as of class Populations
+        popTime = generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')  # initialize "pop" as of class Populations
         while len(popTime) <= 10:
-            popTime = generatePopulationWithTime(experimentTime, initCells, locBern,  betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')  # initialize "pop" as of class Populations
+            popTime = generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')  # initialize "pop" as of class Populations
 
         bernEstimate = bernoulliParameterEstimatorAnalytical(popTime)
 

@@ -96,8 +96,8 @@ def get_daughters(cell):
         temp.append(cell.left)
     if cell.right:
         temp.append(cell.right)
-    return temp   
-    
+    return temp
+
 ##------------------------ Akaike Information Criterion -------------------------##
 
 
@@ -269,7 +269,7 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
 ##--------------------getting the accuracy using mutual information ----------------##
 
 def get_mutual_info(tHMMobj, all_states, verbose=True):
-    """This fuction calculates the nutual information score between the sequence of 
+    """This fuction calculates the nutual information score between the sequence of
     true states and the sequence that the Viterbi estimates.
 
     Here a normalized_mutual_info_score function from sklearn.metrics.cluster has been used
@@ -296,7 +296,7 @@ def get_mutual_info(tHMMobj, all_states, verbose=True):
 
         mutual_info = get_mutual_info(tHMMobj, all_states, verbose = True)
     """
-    
+
     numStates = tHMMobj.numStates
     tHMMobj.Accuracy2 = []
     tHMMobj.stateAssignment = []

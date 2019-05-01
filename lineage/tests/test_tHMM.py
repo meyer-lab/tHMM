@@ -51,7 +51,7 @@ class TestModel(unittest.TestCase):
         initCells = [50]  # there should be 50 lineages b/c there are 50 initial cells
         locBern = [0.8]
         betaExp = [40]
-        self.X = gpt(experimentTime, initCells, locBern,betaExp)  # generate a population
+        self.X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
 
         initCells = [40, 10]  # there should be around 50 lineages b/c there are 50 initial cells
         locBern = [0.999, 0.8]
@@ -173,7 +173,7 @@ class TestModel(unittest.TestCase):
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
 
         X = LINEAGE
-        t = tHMM(X, numStates = 2)
+        t = tHMM(X, numStates=2)
         fit(t, max_iter=500, verbose=True)
 
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
@@ -203,7 +203,7 @@ class TestModel(unittest.TestCase):
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
 
         X = LINEAGE
-        t = tHMM(X, numStates = 2)
+        t = tHMM(X, numStates=2)
         fit(t, max_iter=500, verbose=True)
 
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
@@ -431,7 +431,6 @@ class TestModel(unittest.TestCase):
             self.assertGreaterEqual(gammasLin.shape[0], 0)  # at least zero cells in each lineage
             for state_k in range(numStates):
                 self.assertEqual(gammasLin[0, state_k], betas[ii][0, state_k])
-
 
     ############################
     # BaumWelch.py tests below #
