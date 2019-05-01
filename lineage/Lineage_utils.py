@@ -72,7 +72,7 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, swit
                 population.append(cell)  # append all individual cells into a population
     else:  # when the second set of parameters is defined
         for ii in range(numLineages):
-            elif FOM == 'E':
+            if FOM == 'E':
                 temp = generateLineageWithTime(initCells[ii], experimentTime, locBern[ii], cGom[ii], scaleGom[ii], switchT,
                                                bern2[ii], cG2[ii], scaleG2[ii], FOM='E', betaExp=betaExp[ii], betaExp2=betaExp2[ii])
             elif FOM =='Ga':
