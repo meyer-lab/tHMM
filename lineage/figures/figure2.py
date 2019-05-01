@@ -28,5 +28,5 @@ def makeFigure():
     '''
 
     f.tight_layout()
-    plt.savefig('foo.png')
+
     return f
