@@ -1,0 +1,9 @@
+# excluding everything in the manuscript folder
+*
+
+# exceptions to the manuscript folder rule
+# things that Shakthi thinks is important (might need to add or take away from the following)
+!references.bib
+!manuscript.tex
+!text/*
+!templates/*
