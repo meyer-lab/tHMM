@@ -1,4 +1,4 @@
-# need to tell it not ignore this file which I think is super ironic
+# need to tell it not to ignore this file which I think is super ironic
 !.gitignore
 
 # files related to building the manuscript 
