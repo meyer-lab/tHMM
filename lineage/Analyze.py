@@ -12,7 +12,7 @@ def Analyze(X, numStates):
     '''Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas'''
     
     #--------------------------------##
-    # putting remove_unfinished_cells here breaks the code X = remove_unfinished_cells(X)
+    # TODO: putting remove_unfinished_cells here breaks the code X = remove_unfinished_cells(X)
     #--------------------------------##
 
     X = remove_singleton_lineages(X)
