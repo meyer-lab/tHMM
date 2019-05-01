@@ -2,8 +2,21 @@
 **/.ipynb_checkpoints
 **.ipynb
 **/__pycache__/
+
 lineage-growth/lineage/jupyter-notebooks/
-nosetests.xml
+
 **.png
 **.pdf
 **.svg
+
+
+
+# excluding everything in the manuscript folder
+lineage-growth/*
+
+# exceptions to the manuscript folder rule
+# things that Shakthi thinks is important (might need to add or take away from the following)
+!lineage-growth/references.bib
+!lineage-growth/manuscript.tex
+!lineage-growth/text/
+!lineage-growth/templates
