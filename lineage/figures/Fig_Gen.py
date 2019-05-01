@@ -11,7 +11,7 @@ from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
 
 
-def Lineage_Length(T_MAS=255, T_2=175, reps=20, MASinitCells=[1], MASlocBern=[0.99], MASbeta=[50], initCells2=[1], locBern2=[0.8], beta2=[25], numStates=2, max_lin_length=1000, min_lin_length=5, FOM='E', verbose=False):
+def Lineage_Length(T_MAS=255, T_2=175, reps=2, MASinitCells=[1], MASlocBern=[0.99], MASbeta=[50], initCells2=[1], locBern2=[0.8], beta2=[25], numStates=2, max_lin_length=100, min_lin_length=5, FOM='E', verbose=False):
     '''This has been modified for an exonential distribution'''
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
 
@@ -27,7 +27,7 @@ def Lineage_Length(T_MAS=255, T_2=175, reps=20, MASinitCells=[1], MASlocBern=[0.
     for rep in range(reps):
         print('Rep:', rep)
         print(FOM)
-        X, masterLineage, newLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
+        X, masterLineage, newLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
         
         lives = np.zeros(len(masterLineage))
         for ii, cell in enumerate(masterLineage):
@@ -43,7 +43,7 @@ def Lineage_Length(T_MAS=255, T_2=175, reps=20, MASinitCells=[1], MASlocBern=[0.
         (KL, p_val) = stats.ks_2samp(lives, lives2)
         print('KL')
         while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length or p_val > 0.05:
-            X, masterLineage, newLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
+            X, masterLineage, newLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
             '''MUST be made a function'''
             lives = np.zeros(len(masterLineage))
             for ii, cell in enumerate(masterLineage):
