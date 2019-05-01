@@ -14,15 +14,18 @@ from ..Lineage_utils import remove_singleton_lineages
 
 def makeFigure():
     # Get list of axis objects
-    x, y = 3, 4  # rows and columns
-    ax, f = getSetup((12, 9), (x, y))
+    x, y = 3, 1  # rows and columns
+    ax, f = getSetup((3, 6), (x, y))
 
-    x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, betaExp_MAS_h1, betaExp_2_h1, MASbetaExp, betaExp2 = Lineage_Length()
-    Matplot_gen(ax[0:4], x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, betaExp_MAS_h1, betaExp_2_h1, MASbetaExp, betaExp2, xlabel='Cells per Lineage')  # Figure plots scale vs lineage length
+    x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MASbeta, beta2, scaleGom_MAS_h1, scaleGom_2_h1 = Lineage_Length()
+    Matplot_gen(ax[0:3], x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MASbeta, beta2, scaleGom_MAS_h1, scaleGom_2_h1, xlabel='Cells per Lineage', FOM='E')  # Figure plots scale vs lineage length
 
-    x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, betaExp_MAS_h1, betaExp_2_h1, MASbetaExp, betaExp2 = Lineages_per_Population_Figure()
-    Matplot_gen(ax[4:8], x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, betaExp_MAS_h1, betaExp_2_h1, MASbetaExp, betaExp2, xlabel='Lineages per Population')  # Figure plots scale vs number of lineages
+    '''
+    x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1, scaleGom_2_h1, MASscaleGom, scaleGom2 = Lineages_per_Population_Figure()
+    Matplot_gen(ax[4:8], x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MAScGom, cGom2, scaleGom_MAS_h1,
+                scaleGom_2_h1, MASscaleGom, scaleGom2, xlabel='Lineages per Population')  # Figure plots scale vs number of lineages
+    '''
 
     f.tight_layout()
-
+    plt.savefig('foo.png')
     return f

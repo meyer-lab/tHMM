@@ -13,7 +13,7 @@ def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, lo
     masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, FOM=FOM, betaExp=betaExp)
     masterLineage = remove_singleton_lineages(masterLineage)
     while not masterLineage:
-        masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom, FOM=FOM, betaExp=betaExp)
+        masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, FOM=FOM, betaExp=betaExp)
         masterLineage = remove_singleton_lineages(masterLineage)
     for cell in masterLineage:
         cell.true_state = 0
