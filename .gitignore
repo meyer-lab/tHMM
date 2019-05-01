@@ -3,6 +3,8 @@
 **.ipynb
 **/__pycache__/
 
+nosetests.xml
+
 lineage-growth/lineage/jupyter-notebooks/
 
 **.png
