@@ -195,7 +195,7 @@ class TestModel(unittest.TestCase):
         initCells = [1]
         locBern = [0.99999999999]
         betaExp1 = [75]
-        bern2 = [0.6]
+        bern2 = [0.8]
         betaExp2 = [50]
 
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
