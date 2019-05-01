@@ -1,2 +1,9 @@
 # need to tell it not ignore this file which I think is super ironic
 !.gitignore
+
+# files related to building the manuscript 
+manuscript.xdv
+manuscript.log
+manuscript.fdb_latexmk
+manuscript.out
+manuscript.run.xml
