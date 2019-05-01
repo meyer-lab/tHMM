@@ -50,15 +50,13 @@ class TestModel(unittest.TestCase):
         experimentTime = 50.
         initCells = [50]  # there should be 50 lineages b/c there are 50 initial cells
         locBern = [0.8]
-        cGom = [2]
-        scaleGom = [40]
-        self.X = gpt(experimentTime, initCells, locBern, cGom, scaleGom)  # generate a population
+        betaExp = [40]
+        self.X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
 
         initCells = [40, 10]  # there should be around 50 lineages b/c there are 50 initial cells
         locBern = [0.999, 0.8]
-        cGom = [2, 3]
-        scaleGom = [40, 50]
-        self.X2 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
+        betaExp = [40, 50]
+        self.X2 = gpt(experimentTime, initCells, locBern, betaExp)
 
     ################################
     # Lineage_utils.py tests below #
@@ -76,9 +74,8 @@ class TestModel(unittest.TestCase):
         experimentTime = 50.
         initCells = [50, 42, 8]  # there should be 100 lineages b/c there are 100 initial cells
         locBern = [0.6, 0.8, 0.7]
-        cGom = [2, 0.5, 1]
-        scaleGom = [40, 50, 45]
-        X = gpt(experimentTime, initCells, locBern, cGom, scaleGom)  # generate a population
+        betaExp = [40, 50, 45]
+        X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
         numLin = get_numLineages(X)
         self.assertLessEqual(numLin, 100)  # call func
 
@@ -167,18 +164,16 @@ class TestModel(unittest.TestCase):
         experimentTime = switchT + 150
         initCells = [1]
         locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
+        betaExp1 = [75]
         bern2 = [0.6]
-        cG2 = [2]
-        scaleG2 = [50]
+        betaExp2 = [50]
 
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
         while len(LINEAGE) <= 5:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
 
         X = LINEAGE
-        t = tHMM(X, numStates = 2)
+        t = tHMM(X, numStates=2)
         fit(t, max_iter=500, verbose=True)
 
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
@@ -199,18 +194,16 @@ class TestModel(unittest.TestCase):
         experimentTime = switchT + 150
         initCells = [1]
         locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
-        bern2 = [0.6]
-        cG2 = [2]
-        scaleG2 = [50]
+        betaExp1 = [75]
+        bern2 = [0.8]
+        betaExp2 = [50]
 
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
         while len(LINEAGE) <= 5:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
 
         X = LINEAGE
-        t = tHMM(X, numStates = 2)
+        t = tHMM(X, numStates=2)
         fit(t, max_iter=500, verbose=True)
 
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
@@ -320,15 +313,14 @@ class TestModel(unittest.TestCase):
         numLineages = t.numLineages
         temp_params = {"pi": np.ones((numStates), dtype=int),  # inital state distributions [K] initialized to 1/K
                        "T": np.ones((numStates, numStates), dtype=int) / (numStates),  # state transition matrix [KxK] initialized to 1/K
-                       "E": np.ones((numStates, 3))}  # sequence of emission likelihood distribution parameters [Kx3]
+                       "E": np.ones((numStates, 2))}  # sequence of emission likelihood distribution parameters [Kx2]
         temp_params["pi"][1] = 0  # the hidden state for the second node should always be 1
         to_state_one = np.zeros((numStates, numStates), dtype=int)
         to_state_one[:, 1] = np.ones((numStates), dtype=int)
         temp_params["T"] = to_state_one  # should always end up in state 1 regardless of previous state
         # since transition matrix is a dependent matrix (0 is now a trivial state)
         temp_params["E"][:, 0] *= 0.5  # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][:, 1] *= 2  # initializing all Gompertz c parameters to 2
-        temp_params["E"][:, 2] *= 50  # initializing all Gompoertz s(cale) parameters to 50
+        temp_params["E"][:, 1] *= 50  # initializing all Gompoertz s(cale) parameters to 50
 
         for lineage_num in range(numLineages):  # for each lineage in our population
             fake_param_list.append(temp_params.copy())  # create a new dictionary holding the parameters and append it
@@ -365,25 +357,23 @@ class TestModel(unittest.TestCase):
         '''
         X = remove_singleton_lineages(self.X2)
         numStates = 2
-        t = tHMM(X, numStates=numStates)  # build the tHMM class with X
+        t = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
 
         fake_param_list = []
         numLineages = t.numLineages
         temp_params = {"pi": np.ones((numStates), dtype=float) / (numStates),  # inital state distributions [K] initialized to 1/K
                        "T": np.eye(2, dtype=int),  # state transition matrix [KxK] initialized to identity (no transitions)
                        # should always end up in state 1 regardless of previous state
-                       "E": np.ones((numStates, 3))}  # sequence of emission likelihood distribution parameters [Kx3]
+                       "E": np.ones((numStates, 3))}  # sequence of emission likelihood distribution parameters [Kx2]
 
         temp_params["pi"][0] = 4 / 5  # the population is distributed as such 2/5 is of state 0
         temp_params["pi"][1] = 1 / 5  # state 1 occurs 3/5 of the time
 
         temp_params["E"][0, 0] *= 0.999  # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][0, 1] *= 2  # initializing all Gompertz c parameters to 2
-        temp_params["E"][0, 2] *= 40  # initializing all Gompoertz s(cale) parameters to 50
+        temp_params["E"][0, 1] *= 40  # initializing all Gompoertz s(cale) parameters to 50
 
         temp_params["E"][1, 0] *= 0.6  # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][1, 1] *= 3  # initializing all Gompertz c parameters to 2
-        temp_params["E"][1, 2] *= 50  # initializing all Gompoertz s(cale) parameters to 50
+        temp_params["E"][1, 1] *= 50  # initializing all Gompoertz s(cale) parameters to 50
 
         for lineage_num in range(numLineages):  # for each lineage in our population
             fake_param_list.append(temp_params.copy())  # create a new dictionary holding the parameters and append it
@@ -442,136 +432,23 @@ class TestModel(unittest.TestCase):
             for state_k in range(numStates):
                 self.assertEqual(gammasLin[0, state_k], betas[ii][0, state_k])
 
-
     ############################
     # BaumWelch.py tests below #
     ############################
 
-    def test_Baum_Welch_1(self):
-        '''Creas a heterogeneous tree with a state 1 lineage that links off the final cell of a state 0 lineage. Compares the estimated population parameters with the true ones that were used to create the lineages.'''
-
-        numStates = 2
-
-        MASexperimentTime = 200
-        MASinitCells = [1]
-        MASlocBern = [0.99999999999]
-        MAScGom = [1]
-        MASscaleGom = [75]
-        masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
-        masterLineage = remove_singleton_lineages(masterLineage)
-        while len(masterLineage) <= 5:
-            masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
-            masterLineage = remove_singleton_lineages(masterLineage)
-        print(len(masterLineage))
-        for cell in masterLineage:
-            cell.true_state = 0
-        experimentTime2 = 150
-        initCells2 = [1]
-        locBern2 = [0.7]
-        cGom2 = [2]
-        scaleGom2 = [50]
-        sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
-        sublineage2 = remove_singleton_lineages(sublineage2)
-        while len(sublineage2) <= 5:
-            sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
-            sublineage2 = remove_singleton_lineages(sublineage2)
-        print(len(sublineage2))
-
-        cell_startT_holder = []
-        for cell in masterLineage:
-            cell_startT_holder.append(cell.startT)
-
-        master_cell_startT_idx = np.argmax(cell_startT_holder)  # get the idx of the longest tau in the lineage
-        master_cell = masterLineage[master_cell_startT_idx]  # get the master cell via the longest tau index
-
-        for cell in sublineage2:
-            cell.true_state = 1
-            cell.linID = master_cell.linID
-            cell.gen += master_cell.gen
-            cell.startT += master_cell.endT
-            cell.endT += master_cell.endT
-
-        master_cell.left = sublineage2[0]
-        sublineage2[0].parent = master_cell
-        newLineage = masterLineage + sublineage2
-        newLineage = remove_singleton_lineages(newLineage)
-        print(len(newLineage))
-
-        tHMMobj = tHMM(newLineage, numStates=numStates, FOM='G')  # build the tHMM class with X
-        fit(tHMMobj, max_iter=500, verbose=False)
-
-        deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
-        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
-        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        getAccuracy(tHMMobj, all_states, verbose=True)
-        get_mutual_info(tHMMobj, all_states, verbose=True)
-
-    def test_Baum_Welch_2(self):
-        '''Creating a heterogeneous tree that is built by swithcing states of all cells at a SwitchT time point'''
-        numStates = 2
-
-        switchT = 300
-        experimentTime = switchT + 150
-        initCells = [1]
-        locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
-        bern2 = [0.6]
-        cG2 = [2]
-        scaleG2 = [50]
-
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
-        while len(LINEAGE) <= 5:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
-
-        X = LINEAGE
-        tHMMobj = tHMM(X, numStates=numStates, FOM='G')  # build the tHMM class with X
-        fit(tHMMobj, max_iter=100, verbose=False)
-        deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
-        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
-        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        getAccuracy(tHMMobj, all_states, verbose=True)
-        get_mutual_info(tHMMobj, all_states, verbose=True)
-
-    def test_Baum_Welch_3(self):
-        '''one state Gompertz estimation'''
-        numStates = 1
-
-        experimentTime = 250
-        initCells = [1]
-        locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
-
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G')
-
-        while len(LINEAGE) <= 10:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G')
-
-        X = LINEAGE
-        tHMMobj = tHMM(X, numStates=numStates, FOM='G')  # build the tHMM class with X
-        fit(tHMMobj, max_iter=100, verbose=False)
-        deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
-        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
-        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        getAccuracy(tHMMobj, all_states, verbose=True)
-        get_mutual_info(tHMMobj, all_states, verbose=True)
-
     def test_Baum_Welch_4(self):
-        ''' one state, no bernoulli likelihoods considered, exponential estimation'''
+        ''' one state exponential estimation'''
         numStates = 1
 
         experimentTime = 250
         initCells = [1]
         locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
         betaExp = [75]
 
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp=betaExp, FOM='E')
 
         while len(LINEAGE) <= 10:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp=betaExp, FOM='E')
 
         X = LINEAGE
         tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
@@ -584,7 +461,7 @@ class TestModel(unittest.TestCase):
         get_mutual_info(tHMMobj, all_states, verbose=True)
 
     def test_Baum_Welch_5(self):
-        '''two state, no bernoulli likelihoods considered, exponential estimation. creating a heterogeneous tree'''
+        '''two state exponential estimation. creating a heterogeneous tree'''
 
         numStates = 2
 
@@ -592,50 +469,19 @@ class TestModel(unittest.TestCase):
         experimentTime = switchT + 150
         initCells = [1]
         locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
         betaExp = [75]
         bern2 = [0.6]
-        cG2 = [2]
-        scaleG2 = [50]
         betaExp2 = [25]
 
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2)
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')
 
         while len(LINEAGE) <= 10:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2)
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')
 
         X = LINEAGE
         tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
 
-        deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
-        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
-        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        getAccuracy(tHMMobj, all_states, verbose=True)
-        get_mutual_info(tHMMobj, all_states, verbose=True)
-        
-    def test_Baum_Welch_6(self):
-        '''Creating multiple heterogeneous trees that is built by switching states of all cells at a SwitchT time point'''
-        numStates = 2
-
-        switchT = 200
-        experimentTime = switchT + 100
-        initCells = [5]
-        locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
-        bern2 = [0.6]
-        cG2 = [2]
-        scaleG2 = [50]
-
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
-        while len(LINEAGE) <= 5:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
-
-        X = remove_singleton_lineages(LINEAGE)
-        tHMMobj = tHMM(X, numStates=numStates, FOM='G')  # build the tHMM class with X
-        fit(tHMMobj, max_iter=100, verbose=False)
         deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)

@@ -11,7 +11,6 @@ pipeline {
         stage('Test') {
           steps {
             sh 'make testcover'
-            junit testResults: 'junit.xml'
             cobertura coberturaReportFile: 'coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
           }
         }
@@ -34,6 +33,11 @@ pipeline {
           }
         }
       }
+    }
+  }
+  post {
+    always {
+      junit allowEmptyResults: true, testResults: 'junit.xml'
     }
   }
 }
