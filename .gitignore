@@ -14,11 +14,11 @@ lineage-growth/lineage/jupyter-notebooks/
 
 
 # excluding everything in the manuscript folder
-lineage-growth/*
+lineage-growth/manuscript/*
 
 # exceptions to the manuscript folder rule
 # things that Shakthi thinks is important (might need to add or take away from the following)
 !lineage-growth/references.bib
 !lineage-growth/manuscript.tex
-!lineage-growth/text/
+!lineage-growth/text/*
 !lineage-growth/templates
