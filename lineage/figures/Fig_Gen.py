@@ -73,6 +73,7 @@ def Lineage_Length(T_MAS=255, T_2=175, reps=20, MASinitCells=[1], MASlocBern=[0.
         for lin in range(tHMMobj.numLineages):
             AccuracyPop, _, stateAssignmentPop = getAccuracy(tHMMobj, all_states, verbose=False)
             accuracy = AccuracyPop[lin]
+            print('accuracy:{}'.format(accuracy))
             state_1 = stateAssignmentPop[lin][0]
             state_2 = stateAssignmentPop[lin][1]
             lineage = tHMMobj.population[lin]
