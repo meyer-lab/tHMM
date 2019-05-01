@@ -74,9 +74,8 @@ class TestModel(unittest.TestCase):
         experimentTime = 50.
         initCells = [50, 42, 8]  # there should be 100 lineages b/c there are 100 initial cells
         locBern = [0.6, 0.8, 0.7]
-        cGom = [2, 0.5, 1]
-        scaleGom = [40, 50, 45]
-        X = gpt(experimentTime, initCells, locBern, cGom, scaleGom)  # generate a population
+        betaExp = [40, 50, 45]
+        X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
         numLin = get_numLineages(X)
         self.assertLessEqual(numLin, 100)  # call func
 
@@ -195,15 +194,13 @@ class TestModel(unittest.TestCase):
         experimentTime = switchT + 150
         initCells = [1]
         locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
+        betaExp1 = [75]
         bern2 = [0.6]
-        cG2 = [2]
-        scaleG2 = [50]
+        betaExp2 = [50]
 
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
         while len(LINEAGE) <= 5:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
 
         X = LINEAGE
         t = tHMM(X, numStates = 2)
@@ -447,14 +444,12 @@ class TestModel(unittest.TestCase):
         experimentTime = 250
         initCells = [1]
         locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
         betaExp = [75]
 
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp=betaExp, FOM='E')
 
         while len(LINEAGE) <= 10:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp=betaExp, FOM='E')
 
         X = LINEAGE
         tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
@@ -475,18 +470,14 @@ class TestModel(unittest.TestCase):
         experimentTime = switchT + 150
         initCells = [1]
         locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
         betaExp = [75]
         bern2 = [0.6]
-        cG2 = [2]
-        scaleG2 = [50]
         betaExp2 = [25]
 
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2)
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')
 
         while len(LINEAGE) <= 10:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2)
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')
 
         X = LINEAGE
         tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X

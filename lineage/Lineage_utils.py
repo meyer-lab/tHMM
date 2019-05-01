@@ -9,7 +9,7 @@ from .CellNode import generateLineageWithTime
 ##------------------------ Generating population of cells ---------------------------##
 
 
-def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, switchT=None, bern2=None, FOM='E', betaExp2=None, shape_gamma1=None, scale_gamma1=None, shape_gamma2=None, scale_gamma2=None):
+def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, switchT=None, bern2=None, betaExp2=None, FOM='E', shape_gamma1=None, scale_gamma1=None, shape_gamma2=None, scale_gamma2=None):
     """
     Generates a population of lineages that abide by distinct parameters.
 

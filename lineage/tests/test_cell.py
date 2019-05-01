@@ -90,8 +90,6 @@ class TestModel(unittest.TestCase):
             experimentTime=100,
             locBern=0.8,
             betaExp=10,
-            switchT=None,
-            bern2=None,
             FOM='E',
             betaExp2=None)
         out_betaExp50 = generateLineageWithTime(
@@ -99,8 +97,6 @@ class TestModel(unittest.TestCase):
             experimentTime=100,
             locBern=0.8,
             betaExp=50,
-            switchT=None,
-            bern2=None,
             FOM='E',
             betaExp2=None)
         tau_beta20 = []  # create an empty list
@@ -116,7 +112,7 @@ class TestModel(unittest.TestCase):
     def test_MLE_bern(self):
         """ Generate multiple lineages and estimate the bernoulli parameter with MLE. Estimators must be within +/- 0.08 of true locBern for popTime. """
         asdas = (bernoulliParameterEstimatorAnalytical(self.pop1))
-        self.assertTrue(0.998 <= bernoulliParameterEstimatorAnalytical(self.pop1) <= 1.001)
+        self.assertTrue(0.899 <= bernoulliParameterEstimatorAnalytical(self.pop1) <= 1.0)
 
     def test_MLE_exp_analytical(self):
         """ Use the analytical shortcut to estimate the exponential parameters. """
@@ -129,7 +125,7 @@ class TestModel(unittest.TestCase):
         """ Use the analytical shortcut to estimate the Gamma parameters. """
         # test populations w.r.t. time
         #data = sp.gamma.rvs(a = 13, loc = 0 , scale = 3, size = 1000)
-        result = GammaAnalytical(self.pop3)
+        result = gammaAnalytical(self.pop3)
         shape = result[0]
         scale = result[1]
         self.assertTrue(12 <= shape <= 14)

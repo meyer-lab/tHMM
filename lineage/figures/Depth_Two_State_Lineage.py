@@ -6,21 +6,21 @@ from lineage.Lineage_utils import remove_singleton_lineages
 from lineage.Lineage_utils import generatePopulationWithTime as gpt
 
 
-def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MAScGom, MASscaleGom, T_2, initCells2, locBern2, cGom2, scaleGom2):
+def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, MASbetaExp, T_2, initCells2, locBern2, betaExp2):
     'Shakthis lineage where a second state is appended to first'
     MASexperimentTime = T_MAS
-    masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
+    masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MASbetaExp)
     masterLineage = remove_singleton_lineages(masterLineage)
     while not masterLineage:
-        masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
+        masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MASbetaExp)
         masterLineage = remove_singleton_lineages(masterLineage)
     for cell in masterLineage:
         cell.true_state = 0
     experimentTime2 = T_2
-    sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
+    sublineage2 = gpt(experimentTime2, initCells2, locBern2, betaExp2)
     sublineage2 = remove_singleton_lineages(sublineage2)
     while not sublineage2:
-        sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
+        sublineage2 = gpt(experimentTime2, initCells2, locBern2, betaExp2)
         sublineage2 = remove_singleton_lineages(sublineage2)
     cell_endT_holder = []
     for cell in masterLineage:
