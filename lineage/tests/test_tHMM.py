@@ -184,36 +184,6 @@ class TestModel(unittest.TestCase):
         check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy)
         self.assertTrue(check_acc)
 
-    def test_get_mutual_info(self):
-        """
-        checks whether the normalized mutual information is in the range
-        """
-        numStates = 2
-
-        switchT = 200
-        experimentTime = switchT + 150
-        initCells = [1]
-        locBern = [0.99999999999]
-        betaExp1 = [75]
-        bern2 = [0.8]
-        betaExp2 = [50]
-
-        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
-        while len(LINEAGE) <= 5:
-            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
-
-        X = LINEAGE
-        t = tHMM(X, numStates=2)
-        fit(t, max_iter=500, verbose=True)
-
-        deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
-        get_nonleaf_deltas(t, deltas, state_ptrs)
-        all_states = Viterbi(t, deltas, state_ptrs)
-
-        accuracy = get_mutual_info(t, all_states, verbose=False)
-        check_acc = all(1.0 >= x >= 0.0 for x in accuracy)
-        self.assertTrue(check_acc)
-
     #######################
     # tHMM.py tests below #
     #######################
