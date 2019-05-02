@@ -1,33 +1,43 @@
 pipeline {
   agent any
+  options {
+    timeout(time: 1, unit: 'HOURS')
+    parallelsAlwaysFailFast()
+  }
   stages {
-    stage('Clean') {
-      steps {
-        sh 'git clean -ffdx'
-        sh 'make clean'
-      }
-    }
+    stage('Clean') { steps { sh 'git clean -ffdx && make clean' } }
     stage('Build/Test') {
       parallel {
-        stage('Test')  { steps { sh 'make testcover' } }
-        stage('Lint')  { steps { sh '(pylint --rcfile=.pylintrc lineage > pylint.log || echo "pylint exited with $?")' } }
-        stage('Doc')   { steps { sh 'make docs' } }
-        stage('Build')   { steps { sh 'make manuscript/manuscript.pdf -j 8' } }
+        stage('Test') {
+          steps {
+            sh 'make testcover'
+            cobertura coberturaReportFile: 'coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+          }
+        }
+        stage('Lint') {
+          steps {
+            sh '(pylint --rcfile=.pylintrc lineage > pylint.log || echo "pylint exited with $?")'
+            recordIssues(tools: [pyLint(pattern: 'pylint.log')])
+          }
+        }
+        stage('Doc') {
+          steps {
+            sh 'make docs'
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'doc/build', reportFiles: 'index.html', reportName: 'Sphinx Docs'])
+          }
+        }
+        stage('Build') {
+          steps {
+            sh 'make manuscript/manuscript.pdf -j 8'
+            archiveArtifacts artifacts: 'manuscript/manuscript.pdf, manuscript/figures/*.pdf', onlyIfSuccessful: true
+          }
+        }
       }
     }
-    stage('Report') {
-      steps {
-        junit allowEmptyResults: true, testResults: 'junit.xml'
-        archiveArtifacts artifacts: 'manuscript/manuscript.pdf', onlyIfSuccessful: true
-        archiveArtifacts artifacts: 'manuscript/figures/*.pdf', onlyIfSuccessful: true
-        cobertura coberturaReportFile: 'coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
-        step([$class:'WarningsPublisher', parserConfigurations: [[parserName:'PYLint', pattern:'pylint.log']],
-          unstableTotalAll:'100', usePreviousBuildAsReference:true])
-        publishHTML([
-          allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true,
-          reportDir: 'doc/build', reportFiles: 'index.html',
-          reportName: 'Sphinx Documentation', reportTitles: ''])
-      }
+  }
+  post {
+    always {
+      junit allowEmptyResults: true, testResults: 'junit.xml'
     }
   }
 }
