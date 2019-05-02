@@ -2,9 +2,15 @@
 title: A lineage-based Markov tree model to quantify cellular heterogeneity
 
 author:
-- name: Adam Weiner
+- name: Spongebob Squarepants
   affilnum: a
-- name: Ali Farhat
+- name: Patrick Star
+  affilnum: a
+- name: Squidward Tentacles
+  affilnum: a
+- name: Gary
+  affilnum: a
+- name: Mr. Krabs
   affilnum: a
 - name: Aaron S. Meyer
   affilnum: a,b
