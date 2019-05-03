@@ -6,15 +6,13 @@ import matplotlib.ticker
 matplotlib.use('Agg')
 
 
-def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MASbeta, beta2, scaleGom_MAS_h1, scaleGom_2_h1, xlabel, FOM='G'):
+def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MASbeta, beta2, scaleGom_MAS_h1, scaleGom_2_h1, xlabel, FOM='E'):
     '''Creates 4 subpanles for model estimation'''
 
     font = 11
     font2 = 10
 
-    if FOM == 'G':
-        panel_3 = 'Gompertz C'
-    elif FOM == 'E':
+    if FOM == 'E':
         panel_3_title = 'Exponential'
         panel_3_ylabel = 'Labmda'
 
@@ -56,16 +54,3 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
     ax[2].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
     ax[2].set_title(panel_3_title, fontsize=font)
     ax[2].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.4)
-
-    if FOM == 'G':
-        #ax = axs[1, 1]
-        ax[3].set_xlabel(xlabel)
-        #ax[3].set_xscale("log", nonposx='clip')
-        ax[3].errorbar(x, scaleGom_MAS_h1, fmt='o', c='g', marker="^", fillstyle='none', label='State 1')
-        ax[3].errorbar(x, scaleGom_2_h1, fmt='o', c='r', marker="^", fillstyle='none', label='State 2')
-        ax[3].axhline(y=MASscaleGom, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
-        ax[3].axhline(y=scaleGom2, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
-        ax[3].set_ylabel(panel_3, rotation=90)
-        ax[3].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-        ax[3].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
-        ax[3].set_title(panel_3)
