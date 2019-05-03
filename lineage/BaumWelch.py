@@ -158,8 +158,8 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             if FOM == 'E':
                 global_params['E' + str(state_j)] = exponentialAnalytical(cells)
             if FOM == 'Ga':
-            global_params['Ga_shape' + str(state_j)] = gammaAnalytical(cells)[0]
-            global_params['Ga_scale' + str(state_j)] = gammaAnalytical(cells)[1]
+                global_params['Ga_shape' + str(state_j)] = gammaAnalytical(cells)[0]
+                global_params['Ga_scale' + str(state_j)] = gammaAnalytical(cells)[1]
 
         # now go through each lineage and replace with the new E
         for num in range(numLineages):
