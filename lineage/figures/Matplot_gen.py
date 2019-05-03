@@ -3,27 +3,36 @@
 from matplotlib import pyplot as plt
 import matplotlib
 import matplotlib.ticker
+import numpy as np
 matplotlib.use('Agg')
 
+def moving_average(a, n=4) :
+    ret = np.cumsum(a, dtype=float)
+    ret[n:] = ret[n:] - ret[:-n]
+    return ret[n - 1:] / n
 
-def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MASbeta, beta2, scaleGom_MAS_h1, scaleGom_2_h1, xlabel, FOM='G'):
-    '''Creates 4 subpanles for model estimation'''
 
+def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, betaExp_MAS_h1, betaExp_2_h1, xlabel, FOM='E'):
+    '''Creates 4 subpanels for model estimation'''
+    print("length of ax: {}".format(len(ax)))
     font = 11
     font2 = 10
 
-    if FOM == 'G':
-        panel_3 = 'Gompertz C'
-    elif FOM == 'E':
+    if FOM == 'E':
         panel_3_title = 'Exponential'
         panel_3_ylabel = 'Labmda'
+        
+    x_vs_acc = np.column_stack((x, acc_h1))
+    sorted_x_vs_acc=x_vs_acc[np.argsort(x_vs_acc[:,0])]
 
     #fig, axs = plt.subplots(nrows=2, ncols=2, sharex=True)
     #ax = axs[0, 0]
     ax[0].set_xlim((0, int(round(1.1 * max(x)))))
+    ax[0].set_xlabel(xlabel, fontsize=font2)
     ax[0].set_ylim(0, 110)
-    ax[0].errorbar(x, acc_h1, fmt='o', c='b', marker="*", fillstyle='none', label='Accuracy')
-    ax[0].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b')  # linestyle is dashdotdotted
+    ax[0].errorbar(x, acc_h1, fmt='o', c='k', marker="o", label='Accuracy', alpha=0.5)
+    ax[0].plot(sorted_x_vs_acc[:,0][3:], moving_average(sorted_x_vs_acc[:,1]), c='k', label='Moving Average')
+    ax[0].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k')  # linestyle is dashdotdotted
     ax[0].set_ylabel('Accuracy (%)', rotation=90, fontsize=font2)
     ax[0].get_yticks()
     ax[0].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
@@ -33,11 +42,12 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
 
     #ax = axs[0, 1]
     ax[1].set_xlim((0, int(round(1.1 * max(x)))))
-    ax[1].errorbar(x, bern_MAS_h1, fmt='o', c='g', marker="^", fillstyle='none', label='State 1')
-    ax[1].errorbar(x, bern_2_h1, fmt='o', c='r', marker="^", fillstyle='none', label='State 2')
+    ax[1].set_xlabel(xlabel, fontsize=font2)
+    ax[1].errorbar(x, bern_MAS_h1, fmt='o', c='b', marker="o", label='State 1', alpha=0.5)
+    ax[1].errorbar(x, bern_2_h1, fmt='o', c='r', marker="o", label='State 2', alpha=0.5)
     ax[1].set_ylabel('Theta', rotation=90, fontsize=font2)
-    ax[1].axhline(y=MASlocBern, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
-    ax[1].axhline(y=locBern2, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
+    ax[1].axhline(y=MASlocBern, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b')
+    ax[1].axhline(y=locBern2, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r')
     ax[1].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     ax[1].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
     ax[1].set_title('Bernoulli', fontsize=font)
@@ -47,25 +57,12 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
     ax[2].set_xlim((0, int(round(1.1 * max(x)))))
     ax[2].set_xlabel(xlabel, fontsize=font2)
     #ax[2].set_xscale("log", nonposx='clip')
-    ax[2].errorbar(x, cGom_MAS_h1, fmt='o', c='g', marker="^", fillstyle='none', label='State 1')
-    ax[2].errorbar(x, cGom_2_h1, fmt='o', c='r', marker="^", fillstyle='none', label='State 2')
-    ax[2].axhline(y=MASbeta, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
-    ax[2].axhline(y=beta2, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
+    ax[2].errorbar(x, betaExp_MAS_h1, fmt='o', c='b', marker="o", label='State 1', alpha=0.5)
+    ax[2].errorbar(x, betaExp_2_h1, fmt='o', c='r', marker="o", label='State 2', alpha=0.75)
+    ax[2].axhline(y=MASbeta, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b')
+    ax[2].axhline(y=beta2, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r')
     ax[2].set_ylabel(panel_3_ylabel, rotation=90, fontsize=font2)
     ax[2].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     ax[2].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
     ax[2].set_title(panel_3_title, fontsize=font)
     ax[2].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.4)
-
-    if FOM == 'G':
-        #ax = axs[1, 1]
-        ax[3].set_xlabel(xlabel)
-        #ax[3].set_xscale("log", nonposx='clip')
-        ax[3].errorbar(x, scaleGom_MAS_h1, fmt='o', c='g', marker="^", fillstyle='none', label='State 1')
-        ax[3].errorbar(x, scaleGom_2_h1, fmt='o', c='r', marker="^", fillstyle='none', label='State 2')
-        ax[3].axhline(y=MASscaleGom, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
-        ax[3].axhline(y=scaleGom2, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
-        ax[3].set_ylabel(panel_3, rotation=90)
-        ax[3].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-        ax[3].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
-        ax[3].set_title(panel_3)

@@ -8,7 +8,7 @@ from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
 from ..tHMM import tHMM
 from ..tHMM_utils import max_gen, get_gen, get_parents_for_level, getAccuracy, get_mutual_info
-from ..Lineage_utils import remove_singleton_lineages, get_numLineages, init_Population, generatePopulationWithTime as gpt
+from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells, get_numLineages, init_Population, generatePopulationWithTime as gpt
 
 from ..CellNode import CellNode
 
@@ -61,6 +61,24 @@ class TestModel(unittest.TestCase):
     ################################
     # Lineage_utils.py tests below #
     ################################
+    
+    def test_remove_unfinished_cells(self):
+        '''
+        Checks to see that cells with a NaN of tau
+        are eliminated from a population list.
+        '''
+        experimentTime = 100.
+        initCells = [50, 50]
+        locBern = [0.6, 0.8]
+        betaExp = [40, 50]
+        X = gpt(experimentTime, initCells, locBern, betaExp) # generate a population
+        X = remove_unfinished_cells(X) # remove unfinished cells
+        num_NAN = 0
+        for cell in X:
+            if cell.isUnfinished():
+                num_NAN += 1
+
+        self.assertEqual(num_NAN, 0) # there should be no unfinished cells left
 
     def test_get_numLineages(self):
         '''
@@ -169,8 +187,12 @@ class TestModel(unittest.TestCase):
         betaExp2 = [50]
 
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
+        LINEAGE = remove_unfinished_cells(LINEAGE)
+        LINEAGE = remove_singleton_lineages(LINEAGE)
         while len(LINEAGE) <= 5:
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
+            LINEAGE = remove_unfinished_cells(LINEAGE)
+            LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
         t = tHMM(X, numStates=2)
@@ -193,7 +215,8 @@ class TestModel(unittest.TestCase):
         Make sure paramlist has proper
         labels and sizes.
         '''
-        X = remove_singleton_lineages(self.X)
+        X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         self.assertEqual(t.paramlist[0]["pi"].shape[0], 2)  # make sure shape is numStates
         self.assertEqual(t.paramlist[0]["T"].shape[0], 2)  # make sure shape is numStates
@@ -206,7 +229,8 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
-        X = remove_singleton_lineages(self.X)
+        X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
@@ -221,7 +245,8 @@ class TestModel(unittest.TestCase):
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         '''
-        X = remove_singleton_lineages(self.X)
+        X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         EL = t.get_Emission_Likelihoods()
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
@@ -239,7 +264,8 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
-        X = remove_singleton_lineages(self.X)
+        X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(t)
         self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population
@@ -256,7 +282,8 @@ class TestModel(unittest.TestCase):
         the Viterbi function to find
         the optimal hidden states.
         '''
-        X = remove_singleton_lineages(self.X)
+        X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
         self.assertLessEqual(len(deltas), 50)  # there are <=50 lineages in X
@@ -276,7 +303,8 @@ class TestModel(unittest.TestCase):
         gives one different optimal state
         trees.
         '''
-        X = remove_singleton_lineages(self.X)
+        X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(X)
         numStates = 2
         t = tHMM(X, numStates=numStates)  # build the tHMM class with X
         fake_param_list = []
@@ -325,7 +353,8 @@ class TestModel(unittest.TestCase):
         homogeneous populations. Using parameter sets that
         describe those homogenous populations.
         '''
-        X = remove_singleton_lineages(self.X2)
+        X = remove_unfinished_cells(self.X2)
+        X = remove_singleton_lineages(X)
         numStates = 2
         t = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
 
@@ -388,6 +417,7 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
+        X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
@@ -416,9 +446,12 @@ class TestModel(unittest.TestCase):
         betaExp = [75]
 
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp=betaExp, FOM='E')
-
+        LINEAGE = remove_unfinished_cells(LINEAGE)
+        LINEAGE = remove_singleton_lineages(LINEAGE)
         while len(LINEAGE) <= 10:
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp=betaExp, FOM='E')
+            LINEAGE = remove_unfinished_cells(LINEAGE)
+            LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
         tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
@@ -449,6 +482,8 @@ class TestModel(unittest.TestCase):
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')
 
         X = LINEAGE
+        X = remove_unfinished_cells(X)
+        X = remove_singleton_lineages(X)
         tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
 
