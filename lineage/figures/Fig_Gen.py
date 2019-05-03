@@ -11,7 +11,8 @@ from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 
 
-def Lineage_Length(T_MAS=500, T_2=100, reps=32, MASinitCells=[1], MASlocBern=[0.999], MASbeta=[80], initCells2=[1], locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False):
+def Lineage_Length(T_MAS=500, T_2=100, reps=32, MASinitCells=[1], MASlocBern=[0.999], MASbeta=[80], initCells2=[1],
+                   locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False):
     '''This has been modified for an exponential distribution'''
 
     accuracy_h1 = []  # list of lists of lists
@@ -54,7 +55,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=32, MASinitCells=[1], MASlocBern=[0.
             (KS, p_val) = stats.ks_2samp(lives, lives2)
         #---------------------------------------------------#
 
-        print('X size: {}, masterLineage size: {}, subLineage2 size: {}'.format(len(X),len(masterLineage),len(subLineage2)))
+        print('X size: {}, masterLineage size: {}, subLineage2 size: {}'.format(len(X), len(masterLineage), len(subLineage2)))
         X = remove_unfinished_cells(X)
         X = remove_singleton_lineages(X)
         _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
@@ -65,7 +66,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=32, MASinitCells=[1], MASlocBern=[0.
         bern_2_h2 = []
         betaExp_MAS_h2 = []
         betaExp_2_h2 = []
-        
+
         for lin in range(tHMMobj.numLineages):
             AccuracyPop, _, stateAssignmentPop = getAccuracy(tHMMobj, all_states, verbose=False)
             accuracy = AccuracyPop[lin]
@@ -89,7 +90,6 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=32, MASinitCells=[1], MASlocBern=[0.
         bern_2_h1.extend(bern_2_h2)
         betaExp_MAS_h1.extend(betaExp_MAS_h2)
         betaExp_2_h1.extend(betaExp_2_h2)
-        
 
     if FOM == 'E':
         data = (number_of_cells_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, betaExp_MAS_h1, betaExp_2_h1)
@@ -97,7 +97,8 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=32, MASinitCells=[1], MASlocBern=[0.
     return data
 
 
-def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbetaExp=[80], initCells2=[1], locBern2=[0.999], betaExp2=[20], max_lin_length=300, min_lin_length=5, FOM='E', verbose=True):
+def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbetaExp=[
+                                   80], initCells2=[1], locBern2=[0.999], betaExp2=[20], max_lin_length=300, min_lin_length=5, FOM='E', verbose=True):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of lineages in a population are varied'''
     if verbose:
         print('starting')
@@ -128,7 +129,7 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
                 while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
                     X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM, MASbetaExp, betaExp2)
                 X1.extend(newLineage)
-                
+
             X1 = remove_unfinished_cells(X1)
             X1 = remove_singleton_lineages(X1)  # this is one single list with a number of lineages equal to what is inputted
             print(len(X1))
@@ -157,7 +158,6 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
                 betaExp_MAS_h3.append(E[state_1, 1])
                 betaExp_2_h3.append(E[state_2, 1])
 
-
             accuracy_h2.extend(accuracy_h3)
             number_of_cells_h2.extend(number_of_cells_h3)
             bern_MAS_h2.extend(bern_MAS_h3)
@@ -178,4 +178,3 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
 
     data = (numb_of_lineage_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, betaExp_MAS_h1, betaExp_2_h1, MASbetaExp, betaExp2)
     return data
-
