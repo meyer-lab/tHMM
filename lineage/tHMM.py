@@ -38,6 +38,7 @@ class tHMM:
 
 ##------------------------ Initializing the parameter list --------------------------##
 
+
     def init_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage.
         In this function, the dictionary is initialized.
@@ -203,9 +204,7 @@ class tHMM:
                 for cell in lineage:  # for each cell in the lineage
                     current_cell_idx = lineage.index(cell)  # get the index of the current cell
                     if self.FOM == 'E':
-                        temp_b = 1
-                        if not cell.isUnfinished():
-                            temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)  # bernoulli likelihood
+                        temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)  # bernoulli likelihood
                         if cell.fateObserved:
                             temp_beta = sp.expon.pdf(x=cell.tau, scale=k_expon_beta)  # exponential likelihood
                         elif not cell.fateObserved:
