@@ -191,8 +191,8 @@ class TestModel(unittest.TestCase):
         LINEAGE = remove_singleton_lineages(LINEAGE)
         while len(LINEAGE) <= 5:
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
-            LINEAGE = remove_unfinished_cells(X)
-            LINEAGE = remove_singleton_lineages(X)
+            LINEAGE = remove_unfinished_cells(LINEAGE)
+            LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
         t = tHMM(X, numStates=2)
