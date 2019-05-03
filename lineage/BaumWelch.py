@@ -155,9 +155,9 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         for state_j in range(numStates):
             cells = cell_groups[str(state_j)]  # this array has the correct cells classified per group
             global_params['B' + str(state_j)] = bernoulliParameterEstimatorAnalytical(cells)  # list of cells
-            if FOM == 'E':
+            if tHMMobj.FOM == 'E':
                 global_params['E' + str(state_j)] = exponentialAnalytical(cells)
-            if FOM == 'Ga':
+            if tHMMobj.FOM == 'Ga':
                 global_params['Ga_shape' + str(state_j)] = gammaAnalytical(cells)[0]
                 global_params['Ga_scale' + str(state_j)] = gammaAnalytical(cells)[1]
 
