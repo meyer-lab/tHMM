@@ -11,7 +11,7 @@ from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 
 
-def Lineage_Length(T_MAS=500, T_2=200, reps=5, MASinitCells=[1], MASlocBern=[0.999], MASbeta=[80], initCells2=[1], locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False):
+def Lineage_Length(T_MAS=500, T_2=200, reps=100, MASinitCells=[1], MASlocBern=[0.999], MASbeta=[80], initCells2=[1], locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False):
     '''This has been modified for an exonential distribution'''
 
     accuracy_h1 = []  # list of lists of lists
@@ -97,7 +97,7 @@ def Lineage_Length(T_MAS=500, T_2=200, reps=5, MASinitCells=[1], MASlocBern=[0.9
     return data
 
 
-def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, T_MAS=125, T_2=25, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbetaExp=[80], initCells2=[1], locBern2=[0.99], betaExp2=[20], max_lin_length=300, min_lin_length=5, FOM='E', verbose=True):
+def Lineages_per_Population_Figure(lineage_start=1, lineage_end=10, numStates=2, T_MAS=400, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8], MASbetaExp=[80], initCells2=[1], locBern2=[0.99], betaExp2=[20], max_lin_length=300, min_lin_length=5, FOM='E', verbose=True):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of lineages in a population are varied'''
     if verbose:
         print('starting')
