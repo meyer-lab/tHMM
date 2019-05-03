@@ -155,7 +155,9 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         for state_j in range(numStates):
             cells = cell_groups[str(state_j)]  # this array has the correct cells classified per group
             global_params['B' + str(state_j)] = bernoulliParameterEstimatorAnalytical(cells)  # list of cells
-            global_params['E' + str(state_j)] = exponentialAnalytical(cells)
+            if FOM == 'E':
+                global_params['E' + str(state_j)] = exponentialAnalytical(cells)
+            if FOM == 'Ga':
             global_params['Ga_shape' + str(state_j)] = gammaAnalytical(cells)[0]
             global_params['Ga_scale' + str(state_j)] = gammaAnalytical(cells)[1]
 
@@ -167,7 +169,8 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                 if tHMMobj.FOM == 'E':
                     tHMMobj.paramlist[num]["E"][state, 1] = global_params['E' + str(state)]
                 if tHMMobj.FOM == 'Ga':
-                    tHMMobj.paramlist[num]["E"][state, 1] = global_params['Ga_scale' + str(state)]
+                    tHMMobj.paramlist[num]["E"][state, 1] = global_params['Ga_shape' + str(state)]
+                    tHMMobj.paramlist[num]["E"][state_j, 2] = global_params['Ga_scale' + str(state)]
 
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
