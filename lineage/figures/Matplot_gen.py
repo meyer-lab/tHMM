@@ -6,7 +6,7 @@ import matplotlib.ticker
 matplotlib.use('Agg')
 
 
-def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MASbeta, beta2, scaleGom_MAS_h1, scaleGom_2_h1, xlabel, FOM='E'):
+def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, xlabel, FOM='E'):
     '''Creates 4 subpanles for model estimation'''
 
     font = 11
@@ -45,8 +45,8 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGo
     ax[2].set_xlim((0, int(round(1.1 * max(x)))))
     ax[2].set_xlabel(xlabel, fontsize=font2)
     #ax[2].set_xscale("log", nonposx='clip')
-    ax[2].errorbar(x, cGom_MAS_h1, fmt='o', c='g', marker="^", fillstyle='none', label='State 1')
-    ax[2].errorbar(x, cGom_2_h1, fmt='o', c='r', marker="^", fillstyle='none', label='State 2')
+    ax[2].errorbar(x, betaExp_MAS_h1, fmt='o', c='g', marker="^", fillstyle='none', label='State 1')
+    ax[2].errorbar(x, betaExp_2_h1, fmt='o', c='r', marker="^", fillstyle='none', label='State 2')
     ax[2].axhline(y=MASbeta, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='g')
     ax[2].axhline(y=beta2, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
     ax[2].set_ylabel(panel_3_ylabel, rotation=90, fontsize=font2)

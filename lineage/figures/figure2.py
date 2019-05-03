@@ -17,9 +17,8 @@ def makeFigure():
     x, y = 3, 1  # rows and columns
     ax, f = getSetup((3, 6), (x, y))
 
-    x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MASbeta, beta2, scaleGom_MAS_h1, scaleGom_2_h1 = Lineage_Length()
-    Matplot_gen(ax[0:3], x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, cGom_MAS_h1, cGom_2_h1, MASbeta, beta2,
-                scaleGom_MAS_h1, scaleGom_2_h1, xlabel='Cells per Lineage', FOM='E')  # Figure plots scale vs lineage length
+    x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, betaExp_MAS_h1, betaExp_2_h1 = Lineage_Length()
+    Matplot_gen(ax[0:3], x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, xlabel='Cells per Lineage', FOM='E')  # Figure plots scale vs lineage length
 
     f.tight_layout()
 
