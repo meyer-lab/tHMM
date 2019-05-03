@@ -7,7 +7,7 @@ import numpy as np
 matplotlib.use('Agg')
 
 
-def moving_average(a, n=4):
+def moving_average(a, n=10):
     ret = np.cumsum(a, dtype=float)
     ret[n:] = ret[n:] - ret[:-n]
     return ret[n - 1:] / n
@@ -32,7 +32,7 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MAS
     ax[0].set_xlabel(xlabel, fontsize=font2)
     ax[0].set_ylim(0, 110)
     ax[0].errorbar(x, acc_h1, fmt='o', c='k', marker="o", label='Accuracy', alpha=0.5)
-    ax[0].plot(sorted_x_vs_acc[:, 0][3:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
+    ax[0].plot(sorted_x_vs_acc[:, 0][9:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
     ax[0].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k')  # linestyle is dashdotdotted
     ax[0].set_ylabel('Accuracy (%)', rotation=90, fontsize=font2)
     ax[0].get_yticks()

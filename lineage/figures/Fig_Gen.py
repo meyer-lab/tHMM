@@ -11,7 +11,7 @@ from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 
 
-def Lineage_Length(T_MAS=500, T_2=100, reps=32, MASinitCells=[1], MASlocBern=[0.999], MASbeta=[80], initCells2=[1],
+def Lineage_Length(T_MAS=500, T_2=100, reps=100, MASinitCells=[1], MASlocBern=[0.999], MASbeta=[80], initCells2=[1],
                    locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False):
     '''This has been modified for an exponential distribution'''
 
