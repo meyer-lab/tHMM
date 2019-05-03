@@ -46,7 +46,7 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MAS
     ax[2].set_xlabel(xlabel, fontsize=font2)
     #ax[2].set_xscale("log", nonposx='clip')
     ax[2].errorbar(x, betaExp_MAS_h1, fmt='o', c='b', marker=".", label='State 1', alpha=0.5)
-    ax[2].errorbar(x, betaExp_2_h1, fmt='o', c='r', marker=".", label='State 2', alpha=0.75)
+    ax[2].errorbar(x, betaExp_2_h1, fmt='o', c='r', marker="o", label='State 2', alpha=0.75)
     ax[2].axhline(y=MASbeta, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b')
     ax[2].axhline(y=beta2, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='r')
     ax[2].set_ylabel(panel_3_ylabel, rotation=90, fontsize=font2)
