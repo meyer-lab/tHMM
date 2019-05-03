@@ -214,7 +214,6 @@ class tHMM:
                         EL_array[current_cell_idx, state_k] = temp_beta * temp_b
                     if self.FOM == 'Ga':
                         temp_b = 1
-                        if not cell.isUnfinished():
                   temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)  # bernoulli likelihood
                         if cell.fateObserved:
                             temp_g = sp.gamma.pdf(x=cell.tau, a=k_gamma_shape, scale=k_gamma_scale)
