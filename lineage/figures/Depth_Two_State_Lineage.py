@@ -28,7 +28,7 @@ def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, lo
     while not sublineage2:
         sublineage2 = gpt(experimentTime2, initCells2, locBern2, FOM=FOM, betaExp=betaExp2)
         sublineage2 = remove_unfinished_cells(sublineage2)
-        sublineage2 = remove_singleton_lineages(sublineage2)    
+        sublineage2 = remove_singleton_lineages(sublineage2)
     cell_endT_holder = []
     for cell in masterLineage:
         cell_endT_holder.append(cell.endT)
@@ -36,7 +36,7 @@ def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, lo
     master_cell_endT = max(cell_endT_holder)  # get the longest tau in the list
     master_cell_endT_idx = np.argmax(cell_endT_holder)  # get the idx of the longest tau in the lineage
     master_cell = masterLineage[master_cell_endT_idx]  # get the master cell via the longest tau index
-    
+
     for cell in sublineage2:
         cell.true_state = 1
         cell.linID = master_cell.linID

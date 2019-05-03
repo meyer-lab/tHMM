@@ -61,7 +61,7 @@ class TestModel(unittest.TestCase):
     ################################
     # Lineage_utils.py tests below #
     ################################
-    
+
     def test_remove_unfinished_cells(self):
         '''
         Checks to see that cells with a NaN of tau
@@ -71,14 +71,14 @@ class TestModel(unittest.TestCase):
         initCells = [50, 50]
         locBern = [0.6, 0.8]
         betaExp = [40, 50]
-        X = gpt(experimentTime, initCells, locBern, betaExp) # generate a population
-        X = remove_unfinished_cells(X) # remove unfinished cells
+        X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
+        X = remove_unfinished_cells(X)  # remove unfinished cells
         num_NAN = 0
         for cell in X:
             if cell.isUnfinished():
                 num_NAN += 1
 
-        self.assertEqual(num_NAN, 0) # there should be no unfinished cells left
+        self.assertEqual(num_NAN, 0)  # there should be no unfinished cells left
 
     def test_get_numLineages(self):
         '''
