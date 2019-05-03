@@ -5,14 +5,15 @@ from matplotlib import pyplot as plt
 from scipy import stats
 
 from .Depth_Two_State_Lineage import Depth_Two_State_Lineage
+from .Breadth_Two_State_Lineage import Breadth_Two_State_Lineage
 from ..Analyze import Analyze
 from .Matplot_gen import Matplot_gen
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
 
 
-def Lineage_Length(T_MAS=255, T_2=175, reps=2, MASinitCells=[1], MASlocBern=[0.99], MASbeta=[50], initCells2=[1],
-                   locBern2=[0.8], beta2=[25], numStates=2, max_lin_length=100, min_lin_length=5, FOM='E', verbose=False):
+def Lineage_Length(T_MAS=975, T_2=175, reps=2, MASinitCells=[1], MASlocBern=[0.99], MASbeta=[200], initCells2=[1],
+                   locBern2=[0.8], beta2=[25], numStates=2, max_lin_length=500, min_lin_length=200, FOM='E', verbose=False):
     '''This has been modified for an exonential distribution'''
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of cells in a single lineage is varied'''
 
@@ -28,39 +29,13 @@ def Lineage_Length(T_MAS=255, T_2=175, reps=2, MASinitCells=[1], MASlocBern=[0.9
     for rep in range(reps):
         print('Rep:', rep)
         print(FOM)
-        X, masterLineage, newLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
+        X = Breadth_Two_State_Lineage(experimentTime=T_MAS+T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_2, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
 
-        lives = np.zeros(len(masterLineage))
-        for ii, cell in enumerate(masterLineage):
-            lives[ii] = cell.tau
-
-        lives2 = np.zeros(len(subLineage2))
-        for ii, cell in enumerate(subLineage2):
-            lives2[ii] = cell.tau
-
-        lives = lives[~np.isnan(lives)]
-        lives2 = lives2[~np.isnan(lives2)]
-
-        (KL, p_val) = stats.ks_2samp(lives, lives2)
-        print('KL')
-        while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length or p_val > 0.05:
-            X, masterLineage, newLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
+        while len(X) > max_lin_length or len(X) < min_lin_length:
+            X = Breadth_Two_State_Lineage(experimentTime=T_MAS+T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_2, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
             '''MUST be made a function'''
-            lives = np.zeros(len(masterLineage))
-            for ii, cell in enumerate(masterLineage):
-                lives[ii] = cell.tau
 
-            lives2 = np.zeros(len(subLineage2))
-            for ii, cell in enumerate(subLineage2):
-                lives2[ii] = cell.tau
-
-            lives = lives[~np.isnan(lives)]
-            lives2 = lives2[~np.isnan(lives2)]
-
-            (KL, p_val) = stats.ks_2samp(lives, lives2)
-        #---------------------------------------------------#
-            print(len(masterLineage), len(newLineage), p_val)
-        print('X')
+        print('X', len(X))
         _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
         print('analyzed')
         acc_h2 = []
