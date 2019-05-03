@@ -157,7 +157,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             global_params['B' + str(state_j)] = bernoulliParameterEstimatorAnalytical(cells)  # list of cells
             if tHMMobj.FOM == 'E':
                 global_params['E' + str(state_j)] = exponentialAnalytical(cells)
-            if tHMMobj.FOM == 'Ga':
+            elif tHMMobj.FOM == 'Ga':
                 global_params['Ga_shape' + str(state_j)] = gammaAnalytical(cells)[0]
                 global_params['Ga_scale' + str(state_j)] = gammaAnalytical(cells)[1]
 
@@ -170,7 +170,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                     tHMMobj.paramlist[num]["E"][state, 1] = global_params['E' + str(state)]
                 if tHMMobj.FOM == 'Ga':
                     tHMMobj.paramlist[num]["E"][state, 1] = global_params['Ga_shape' + str(state)]
-                    tHMMobj.paramlist[num]["E"][state_j, 2] = global_params['Ga_scale' + str(state)]
+                    tHMMobj.paramlist[num]["E"][state, 2] = global_params['Ga_scale' + str(state)]
 
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
