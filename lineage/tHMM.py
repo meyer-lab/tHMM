@@ -215,7 +215,7 @@ class tHMM:
                     if self.FOM == 'Ga':
                         temp_b = 1
                         if not cell.isUnfinished():
-                            temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)  # bernoulli likelihood
+                  temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)  # bernoulli likelihood
                         if cell.fateObserved:
                             temp_g = sp.gamma.pdf(x=cell.tau, a=k_gamma_shape, scale=k_gamma_scale)
                         assert np.isfinite(temp_g),"Gamma likelihood is returning NaN"
