@@ -1,6 +1,6 @@
 \documentclass[11pt]{article}
 
-\usepackage{amssymb, amsmath, mathtools, color, fontspec}
+\usepackage{amssymb, amsmath, mathtools, color, fontspec, bm}
 \usepackage{ifxetex, ifluatex, microtype}
 
 \setsansfont{Roboto}
