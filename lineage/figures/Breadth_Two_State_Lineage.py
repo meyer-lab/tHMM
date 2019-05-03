@@ -9,11 +9,29 @@ def Breadth_Two_State_Lineage(experimentTime, initCells, locBern, betaExp, switc
 
     LINEAGE = gpt(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2, FOM)
 
+    LINEAGE = remove_singleton_lineages(LINEAGE)
+        
     while not LINEAGE:  # determines if lineage is empty, so can regenerate a new one
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2, FOM)
+        LINEAGE = remove_singleton_lineages(LINEAGE)
 
-    X = remove_singleton_lineages(LINEAGE)
+
+
+    X = LINEAGE
+        
+        
+    masterLineage = []
+    sublineage2 = []
+    for ii, cell in enumerate(X):
+        if cell.true_state == 0:
+            masterLineage.append(cell)
+        elif cell.true_state == 1:
+            sublineage2.append(cell)
+        else:
+            raise print('more than 2 true states error')
+            
+
     if verbose:
-        print(len(X))
-
-    return X
+        print(len(masterLineage), len(sublineage2), len(X))
+        
+    return X, masterLineage, sublineage2
