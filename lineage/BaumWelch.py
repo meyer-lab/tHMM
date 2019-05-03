@@ -4,7 +4,7 @@ import numpy as np
 from .tHMM_utils import max_gen, get_gen, get_daughters
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, beta_parent_child_func
-from .Lineage_utils import bernoulliParameterEstimatorAnalytical, exponentialAnalytical
+from .Lineage_utils import bernoulliParameterEstimatorAnalytical, exponentialAnalytical, gammaAnalytical
 
 
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
@@ -155,7 +155,11 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         for state_j in range(numStates):
             cells = cell_groups[str(state_j)]  # this array has the correct cells classified per group
             global_params['B' + str(state_j)] = bernoulliParameterEstimatorAnalytical(cells)  # list of cells
-            global_params['E' + str(state_j)] = exponentialAnalytical(cells)
+            if tHMMobj.FOM == 'E':
+                global_params['E' + str(state_j)] = exponentialAnalytical(cells)
+            elif tHMMobj.FOM == 'Ga':
+                global_params['Ga_shape' + str(state_j)] = gammaAnalytical(cells)[0]
+                global_params['Ga_scale' + str(state_j)] = gammaAnalytical(cells)[1]
 
         # now go through each lineage and replace with the new E
         for num in range(numLineages):
@@ -164,6 +168,10 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                 tHMMobj.paramlist[num]["E"][state, 0] = global_params['B' + str(state)]
                 if tHMMobj.FOM == 'E':
                     tHMMobj.paramlist[num]["E"][state, 1] = global_params['E' + str(state)]
+                if tHMMobj.FOM == 'Ga':
+                    tHMMobj.paramlist[num]["E"][state, 1] = global_params['Ga_shape' + str(state)]
+                    tHMMobj.paramlist[num]["E"][state, 2] = global_params['Ga_scale' + str(state)]
+
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
