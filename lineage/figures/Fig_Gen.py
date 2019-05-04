@@ -11,7 +11,7 @@ from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 
 
-def Lineage_Length(T_MAS=500, T_2=100, reps=3, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1],
+def Lineage_Length(T_MAS=500, T_2=100, reps=20, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1],
                    locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False):
     '''This has been modified for an exponential distribution'''
 
@@ -38,7 +38,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=3, MASinitCells=[1], MASlocBern=[0.8
         lives2 = lives2[~np.isnan(lives2)]
 
         (KS, p_val) = stats.ks_2samp(lives, lives2)
-        while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
+        while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length or p_val>0.02:
             X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
 
             lives = np.zeros(len(masterLineage))
