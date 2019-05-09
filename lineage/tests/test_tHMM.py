@@ -205,6 +205,37 @@ class TestModel(unittest.TestCase):
         t.Accuracy, t.states, t.stateAssignment = getAccuracy(t, all_states, verbose=False)
         check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy)
         self.assertTrue(check_acc)
+        
+    def test_mutual_info(self):
+        numStates = 2
+
+        switchT = 200
+        experimentTime = switchT + 150
+        initCells = [1]
+        locBern = [0.99999999999]
+        betaExp1 = [75]
+        bern2 = [0.6]
+        betaExp2 = [50]
+
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
+        LINEAGE = remove_unfinished_cells(LINEAGE)
+        LINEAGE = remove_singleton_lineages(LINEAGE)
+        while len(LINEAGE) <= 5:
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
+            LINEAGE = remove_unfinished_cells(LINEAGE)
+            LINEAGE = remove_singleton_lineages(LINEAGE)
+
+        X = LINEAGE
+        t = tHMM(X, numStates=2)
+        fit(t, max_iter=500, verbose=True)
+
+        deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
+        get_nonleaf_deltas(t, deltas, state_ptrs)
+        all_states = Viterbi(t, deltas, state_ptrs)
+
+        t.Accuracy2 = get_mutual_info(tHMMobj, all_states, verbose=True)
+        check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy)
+        self.assertTrue(check_acc)
 
     #######################
     # tHMM.py tests below #
