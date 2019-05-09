@@ -232,9 +232,10 @@ class TestModel(unittest.TestCase):
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
         get_nonleaf_deltas(t, deltas, state_ptrs)
         all_states = Viterbi(t, deltas, state_ptrs)
+        print(all_states)
 
-        t.Accuracy2 = get_mutual_info(tHMMobj, all_states, verbose=True)
-        check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy)
+        t.Accuracy2 = get_mutual_info(t, all_states, verbose=True)
+        check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy2)
         self.assertTrue(check_acc)
 
     #######################
