@@ -1,10 +1,10 @@
 """ Unit test file. """
 import unittest
+import logging
 import math
 import numpy as np
 import scipy.stats as sp
-import logging
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+
 
 from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, exponentialAnalytical, gammaAnalytical
 from ..CellNode import CellNode as c, generateLineageWithTime, doublingTime
