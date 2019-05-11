@@ -1,8 +1,8 @@
 ''' Unit test file. Contains tests for the functions in Lineage_utils.py, tHMM_utils.py, UpwardRecursion.py, DownwardRecursion.py, BaumWelch.py'''
 import unittest
-import numpy as np
 import logging
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+import numpy as np
+
 
 from ..BaumWelch import fit
 from ..DownwardRecursion import get_root_gammas, get_nonroot_gammas
