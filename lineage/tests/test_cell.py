@@ -3,6 +3,7 @@ import unittest
 import math
 import numpy as np
 import scipy.stats as sp
+import pysnooper
 
 from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, exponentialAnalytical, gammaAnalytical
 from ..CellNode import CellNode as c, generateLineageWithTime, doublingTime
@@ -121,6 +122,7 @@ class TestModel(unittest.TestCase):
         truther = (45 <= beta_out <= 55)
         self.assertTrue(truther)  # +/- 5 of beta
 
+    @pysnooper.snoop()
     def test_MLE_gamma_analytical(self):
         """ Use the analytical shortcut to estimate the Gamma parameters. """
         # test populations w.r.t. time
@@ -128,8 +130,7 @@ class TestModel(unittest.TestCase):
         result = gammaAnalytical(self.pop3)
         shape = result[0]
         scale = result[1]
-        print('this is estimated shape', shape)
-        print('thisis estimated scale', scale)
+
         self.assertTrue(12 <= shape <= 14)
         self.assertTrue(2 <= scale <= 4)
 

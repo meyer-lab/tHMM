@@ -1,6 +1,7 @@
 ''' Unit test file. Contains tests for the functions in Lineage_utils.py, tHMM_utils.py, UpwardRecursion.py, DownwardRecursion.py, BaumWelch.py'''
 import unittest
 import numpy as np
+import pysnooper
 
 from ..BaumWelch import fit
 from ..DownwardRecursion import get_root_gammas, get_nonroot_gammas
@@ -205,8 +206,15 @@ class TestModel(unittest.TestCase):
         t.Accuracy, t.states, t.stateAssignment = getAccuracy(t, all_states, verbose=False)
         check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy)
         self.assertTrue(check_acc)
-        
+
+
+    @pysnooper.snoop()
     def test_mutual_info(self):
+        """This function tests the accuracy of the Viterbi state assignment by getting the
+    mutual information between the true states of the cells in a lineage and the 
+    states that Viterbi has assigned to the cells. It makes sure the accuracy is
+    between 0 and 1."""
+
         numStates = 2
 
         switchT = 200
@@ -234,21 +242,21 @@ class TestModel(unittest.TestCase):
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
         get_nonleaf_deltas(t, deltas, state_ptrs)
         all_states = Viterbi(t, deltas, state_ptrs)
-        print('these are viterbi states', all_states)
 
         for lin in range(t.numLineages):
             lineage = t.population[lin]
 
             true_state_holder = np.zeros((len(lineage)), dtype=int)
+            
 
             for ii, cell in enumerate(lineage):
                 true_state_holder[ii] = cell.true_state
 
-        print('these are true states', true_state_holder)
 
         t.Accuracy2 = get_mutual_info(t, all_states, verbose=True)
         check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy2)
         self.assertTrue(check_acc)
+        
 
     #######################
     # tHMM.py tests below #
