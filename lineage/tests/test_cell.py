@@ -134,7 +134,7 @@ class TestModel(unittest.TestCase):
         scale = result[1]
         logging.info('%f : scale estimated.', scale)
 
-        self.assertTrue(12 <= shape <= 14)
+        self.assertTrue(11 <= shape <= 15)
         self.assertTrue(2 <= scale <= 4)
 
     def test_doubleT_E(self):
