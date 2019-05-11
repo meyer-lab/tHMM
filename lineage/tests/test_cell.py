@@ -128,6 +128,8 @@ class TestModel(unittest.TestCase):
         result = gammaAnalytical(self.pop3)
         shape = result[0]
         scale = result[1]
+        print('this is estimated shape', shape)
+        print('thisis estimated scale', scale)
         self.assertTrue(12 <= shape <= 14)
         self.assertTrue(2 <= scale <= 4)
 

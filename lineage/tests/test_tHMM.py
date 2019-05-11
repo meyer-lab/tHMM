@@ -213,9 +213,9 @@ class TestModel(unittest.TestCase):
         experimentTime = switchT + 150
         initCells = [1]
         locBern = [0.99999999999]
-        betaExp1 = [75]
+        betaExp1 = [75.]
         bern2 = [0.6]
-        betaExp2 = [50]
+        betaExp2 = [50.]
 
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
         LINEAGE = remove_unfinished_cells(LINEAGE)
@@ -226,13 +226,25 @@ class TestModel(unittest.TestCase):
             LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
+        
+        
         t = tHMM(X, numStates=2)
         fit(t, max_iter=500, verbose=True)
 
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
         get_nonleaf_deltas(t, deltas, state_ptrs)
         all_states = Viterbi(t, deltas, state_ptrs)
-        print(all_states)
+        print('these are viterbi states', all_states)
+
+        for lin in range(t.numLineages):
+            lineage = t.population[lin]
+
+            true_state_holder = np.zeros((len(lineage)), dtype=int)
+
+            for ii, cell in enumerate(lineage):
+                true_state_holder[ii] = cell.true_state
+
+        print('these are true states', true_state_holder)
 
         t.Accuracy2 = get_mutual_info(t, all_states, verbose=True)
         check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy2)
