@@ -97,7 +97,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=200, MASinitCells=[1], MASlocBern=[0
     return data
 
 
-def Lineages_per_Population_Figure(lineage_start=1, lineage_end=3, numStates=2, T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbetaExp=[80], initCells2=[1], locBern2=[0.99], betaExp2=[20], max_lin_length=10, min_lin_length=2, FOM='E', verbose=True):
+def Lineages_per_Population_Figure(lineage_start=1, lineage_end=20, numStates=2, T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbetaExp=[80], initCells2=[1], locBern2=[0.99], betaExp2=[20], max_lin_length=5, min_lin_length=2, FOM='E', verbose=True):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of lineages in a population are varied'''
     if verbose:
         print('starting')
