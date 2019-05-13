@@ -97,7 +97,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=200, MASinitCells=[1], MASlocBern=[0
     return data
 
 
-def Lineages_per_Population_Figure(lineage_start=1, lineage_end=20, numStates=2, T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbetaExp=[80], initCells2=[1], locBern2=[0.99], betaExp2=[20], max_lin_length=10, min_lin_length=2, FOM='E', verbose=True):
+def Lineages_per_Population_Figure(lineage_start=1, lineage_end=3, numStates=2, T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbetaExp=[80], initCells2=[1], locBern2=[0.99], betaExp2=[20], max_lin_length=10, min_lin_length=2, FOM='E', verbose=True):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of lineages in a population are varied'''
     if verbose:
         print('starting')
@@ -109,7 +109,8 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=20, numStates=2,
     betaExp_MAS_h1 = []
     betaExp_2_h1 = []
     numb_of_lineage_h1 = []
-
+    
+    X1 = []
     for lineage_num in lineages:  # a pop with num number of lineages
         accuracy_h2 = []
         number_of_cells_h2 = []
@@ -119,15 +120,15 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=20, numStates=2,
         betaExp_2_h2 = []
 
         for rep in range(reps):
-            X1 = []
+            
             if verbose:
                 print('making lineage')
 
-            for num in range(lineage_num):
+
+            X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM, MASbetaExp, betaExp2)
+            while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
                 X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM, MASbetaExp, betaExp2)
-                while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
-                    X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM, MASbetaExp, betaExp2)
-                X1.extend(newLineage)
+            X1.extend(newLineage)
 
             X1 = remove_unfinished_cells(X1)
             X1 = remove_singleton_lineages(X1)  # this is one single list with a number of lineages equal to what is inputted
