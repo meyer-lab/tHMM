@@ -1,8 +1,10 @@
 """ Unit test file. """
 import unittest
+import logging
 import math
 import numpy as np
 import scipy.stats as sp
+
 
 from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, exponentialAnalytical, gammaAnalytical
 from ..CellNode import CellNode as c, generateLineageWithTime, doublingTime
@@ -121,14 +123,18 @@ class TestModel(unittest.TestCase):
         truther = (45 <= beta_out <= 55)
         self.assertTrue(truther)  # +/- 5 of beta
 
+
     def test_MLE_gamma_analytical(self):
         """ Use the analytical shortcut to estimate the Gamma parameters. """
         # test populations w.r.t. time
         #data = sp.gamma.rvs(a = 13, loc = 0 , scale = 3, size = 1000)
         result = gammaAnalytical(self.pop3)
         shape = result[0]
+        logging.info('%f : shape estimated.', shape)
         scale = result[1]
-        self.assertTrue(12 <= shape <= 14)
+        logging.info('%f : scale estimated.', scale)
+
+        self.assertTrue(11 <= shape <= 15)
         self.assertTrue(2 <= scale <= 4)
 
     def test_doubleT_E(self):
