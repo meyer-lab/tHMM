@@ -28,7 +28,7 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MAS
 
     #fig, axs = plt.subplots(nrows=2, ncols=2, sharex=True)
     #ax = axs[0, 0]
-    ax[0].set_xlim((0, int(round(1.1 * max(x)))))
+    ax[0].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[0].set_xlabel(xlabel, fontsize=font2)
     ax[0].set_ylim(0, 110)
     ax[0].errorbar(x, acc_h1, fmt='o', c='k', marker="o", label='Accuracy', alpha=0.3)
@@ -42,7 +42,7 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MAS
     ax[0].set_title('Accuracy', fontsize=font)
 
     #ax = axs[0, 1]
-    ax[1].set_xlim((0, int(round(1.1 * max(x)))))
+    ax[1].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[1].set_xlabel(xlabel, fontsize=font2)
     ax[1].errorbar(x, bern_MAS_h1, fmt='o', c='b', marker="o", label='Susceptible', alpha=0.2)
     ax[1].errorbar(x, bern_2_h1, fmt='o', c='r', marker="o", label='Resistant', alpha=0.2)
@@ -56,7 +56,7 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MAS
     ax[1].legend(loc='best', framealpha=0.3)
 
     #ax = axs[1, 0]
-    ax[2].set_xlim((0, int(round(1.1 * max(x)))))
+    ax[2].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[2].set_xlabel(xlabel, fontsize=font2)
     #ax[2].set_xscale("log", nonposx='clip')
     ax[2].errorbar(x, betaExp_MAS_h1, fmt='o', c='b', marker="o", label='Susceptible', alpha=0.2)
