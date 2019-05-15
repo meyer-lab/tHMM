@@ -4,7 +4,7 @@ import numpy as np
 from .tHMM_utils import max_gen, get_gen, get_daughters
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, beta_parent_child_func
-from .Lineage_utils import bernoulliParameterEstimatorAnalytical, gompertzAnalytical, exponentialAnalytical
+from .Lineage_utils import bernoulliParameterEstimatorAnalytical, exponentialAnalytical, gammaAnalytical
 
 
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
@@ -105,13 +105,15 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     count = 0
     while go:  # exit the loop
 
-        # if verbose:
-            #print('\n iter: {}'.format(count))
         count += 1
 
         old_LL_list = new_LL_list
 
-        # update loop
+        # code for grouping all states in cell lineages
+        cell_groups = {}
+        for state in range(numStates):
+            cell_groups[str(state)] = []
+
         for num in range(numLineages):
             if not truth_list[num]:
                 break
@@ -139,28 +141,37 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             T_new = T_holder / row_sums[:, np.newaxis]
             tHMMobj.paramlist[num]["T"] = T_new
 
-            max_state_holder = []
+            max_state_holder = []  # a list the size of lineage, that contains max state for each cell
             for ii, cell in enumerate(lineage):
                 assert lineage[ii] is cell
-                max_state_holder.append(np.argmax(gammas[num][ii, :]))
-            state_obs_holder = []
-            for state_j in range(numStates):
-                state_obs = []
-                for cell in lineage:
-                    cell_idx = lineage.index(cell)
-                    if max_state_holder[cell_idx] == state_j:
-                        state_obs.append(cell)
-                state_obs_holder.append(state_obs)
+                max_state_holder.append(np.argmax(gammas[num][ii, :]))  # says which state is maximal
 
-            for state_j in range(numStates):
-                tHMMobj.paramlist[num]["E"][state_j, 0] = bernoulliParameterEstimatorAnalytical(state_obs_holder[state_j])
-                if tHMMobj.FOM == 'G':
-                    c_estimate, scale_estimate = gompertzAnalytical(state_obs_holder[state_j])
-                    tHMMobj.paramlist[num]["E"][state_j, 1] = c_estimate
-                    tHMMobj.paramlist[num]["E"][state_j, 2] = scale_estimate
-                elif tHMMobj.FOM == 'E':
-                    beta_estimate = exponentialAnalytical(state_obs_holder[state_j])
-                    tHMMobj.paramlist[num]["E"][state_j, 1] = beta_estimate
+            # this bins the cells by lineage to the population cell lists
+            for ii, state in enumerate(max_state_holder):
+                cell_groups[str(state)].append(lineage[ii])
+
+        # after iterating through each lineage, do the population wide E calculation
+        global_params = {}
+        for state_j in range(numStates):
+            cells = cell_groups[str(state_j)]  # this array has the correct cells classified per group
+            global_params['B' + str(state_j)] = bernoulliParameterEstimatorAnalytical(cells)  # list of cells
+            if tHMMobj.FOM == 'E':
+                global_params['E' + str(state_j)] = exponentialAnalytical(cells)
+            elif tHMMobj.FOM == 'Ga':
+                global_params['Ga_shape' + str(state_j)] = gammaAnalytical(cells)[0]
+                global_params['Ga_scale' + str(state_j)] = gammaAnalytical(cells)[1]
+
+        # now go through each lineage and replace with the new E
+        for num in range(numLineages):
+            for state in range(numStates):
+                # assigns the global state to the lineage-specific state assignment
+                tHMMobj.paramlist[num]["E"][state, 0] = global_params['B' + str(state)]
+                if tHMMobj.FOM == 'E':
+                    tHMMobj.paramlist[num]["E"][state, 1] = global_params['E' + str(state)]
+                if tHMMobj.FOM == 'Ga':
+                    tHMMobj.paramlist[num]["E"][state, 1] = global_params['Ga_shape' + str(state)]
+                    tHMMobj.paramlist[num]["E"][state, 2] = global_params['Ga_scale' + str(state)]
+
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()

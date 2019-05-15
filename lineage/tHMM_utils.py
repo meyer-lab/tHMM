@@ -3,6 +3,7 @@
 import itertools
 import numpy as np
 from sklearn.metrics.cluster import normalized_mutual_info_score
+from scipy.special import gamma, gammaincc
 
 
 ##------------------- Find maximum generation in a lineage -----------------------##
@@ -96,54 +97,6 @@ def get_daughters(cell):
     if cell.right:
         temp.append(cell.right)
     return temp
-
-
-def right_censored_Gomp_pdf(tau_or_tauFake, c, scale, fateObserved=True):
-    """
-    Gives you the likelihood of a right-censored Gompertz distribution.
-    See Pg. 14 of The Gompertz distribution and Maximum Likelihood Estimation of its parameters - a revision
-    by Adam Lenart
-    November 28, 2011
-
-    This is a replacement for scipy.gompertz function to find the Emission Likelihood,
-    because at the end of the experiment time,there will be some cells that are still
-    alive and have not died or divided, so we don't know their end_time, these cells in
-    our data are called right censored. So this distribution is used instead of
-    real gompretz distribution, to make the synthesized data more like the distribution.
-
-
-    p(tau_i | a, b) = [a * exp(b * tau) ^delta_i] * [exp(-a/b * (exp(b * tau_i -1)))]
-    here, `firstCoeff` is [a * exp(b * tau) ^delta_i]  and the `secondCoeff` is [exp(-a/b * (exp(b * tau_i -1)))]
-
-    Args:
-        ----------
-        tau_or_tauFake (float): the cell's lifetime
-        c (float): loc of Gompertz (one of the distribution parameters)
-        scale (float): scale parameter of Gompertz disribution
-        deathObserved (bool): if the cell has died already, it is True, otherwise
-        it is False
-
-    Return:
-        ----------
-        result (float): the multiplication of two coefficients
-
-    """
-    b = 1. / scale
-    a = c * b
-
-    firstCoeff = a * np.exp(b * tau_or_tauFake)
-    if fateObserved:
-        pass  # this calculation stays as is if the death is observed (delta_i = 1)
-    else:
-        firstCoeff = 1.  # this calculation is raised to the power of delta if the death is unobserved (right-censored) (delta_i = 0)
-
-    secondCoeff = np.exp((-1 * a / b) * (np.expm1(b * tau_or_tauFake)))
-    # the observation of the cell death has no bearing on the calculation of the second coefficient in the pdf
-
-    result = firstCoeff * secondCoeff
-    assert np.isfinite(result), "Your Gompertz right-censored likelihood calculation is returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations with the following values: \n tau_or_tauFake: {} \n c: {} \n scale: {} b: {} \n a: {} \n fateObserved: {}.".format(tau_or_tauFake, c, scale, b, a, fateObserved)
-
-    return result
 
 ##------------------------ Akaike Information Criterion -------------------------##
 
@@ -316,6 +269,33 @@ def getAccuracy(tHMMobj, all_states, verbose=False):
 ##--------------------getting the accuracy using mutual information ----------------##
 
 def get_mutual_info(tHMMobj, all_states, verbose=True):
+    """This fuction calculates the nutual information score between the sequence of
+    true states and the sequence that the Viterbi estimates.
+
+    Here a normalized_mutual_info_score function from sklearn.metrics.cluster has been used
+    which is commonly used for evaluating clustering accuracy. Using this function helps with
+    calculating accuracy regardless of the order and name of labels that the true states and the
+    Viterbi outcome have.
+
+    Agrs:
+        ---------
+        tHMMobj (obj): tree-HMM model as an object
+        all_states (matrix): a matrix holding the states assigned by viterbi algorithm as the most likely states.
+
+    Returns:
+        ----------
+        tHMMobj.Accuracy2 (list): an atribute to tHMMobj which holds the accuracy for each lineage.
+
+    Example usage:
+
+        tHMMobj = tHMM(X, numStates=2, FOM='G') # build the tHMM class with X
+        fit(tHMMobj, max_iter=500, verbose=True)
+        deltas, state_ptrs = get_leaf_deltas(tHMMobj) # gets the deltas matrix
+        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
+
+        mutual_info = get_mutual_info(tHMMobj, all_states, verbose = True)
+    """
 
     numStates = tHMMobj.numStates
     tHMMobj.Accuracy2 = []

@@ -1,6 +1,8 @@
 ''' Unit test file. Contains tests for the functions in Lineage_utils.py, tHMM_utils.py, UpwardRecursion.py, DownwardRecursion.py, BaumWelch.py'''
 import unittest
+import logging
 import numpy as np
+
 
 from ..BaumWelch import fit
 from ..DownwardRecursion import get_root_gammas, get_nonroot_gammas
@@ -8,7 +10,7 @@ from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
 from ..tHMM import tHMM
 from ..tHMM_utils import max_gen, get_gen, get_parents_for_level, getAccuracy, get_mutual_info
-from ..Lineage_utils import remove_singleton_lineages, get_numLineages, init_Population, generatePopulationWithTime as gpt
+from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells, get_numLineages, init_Population, generatePopulationWithTime as gpt
 
 from ..CellNode import CellNode
 
@@ -50,19 +52,35 @@ class TestModel(unittest.TestCase):
         experimentTime = 50.
         initCells = [50]  # there should be 50 lineages b/c there are 50 initial cells
         locBern = [0.8]
-        cGom = [2]
-        scaleGom = [40]
-        self.X = gpt(experimentTime, initCells, locBern, cGom, scaleGom)  # generate a population
+        betaExp = [40]
+        self.X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
 
         initCells = [40, 10]  # there should be around 50 lineages b/c there are 50 initial cells
         locBern = [0.999, 0.8]
-        cGom = [2, 3]
-        scaleGom = [40, 50]
-        self.X2 = gpt(experimentTime, initCells, locBern, cGom, scaleGom)
+        betaExp = [40, 50]
+        self.X2 = gpt(experimentTime, initCells, locBern, betaExp)
 
     ################################
     # Lineage_utils.py tests below #
     ################################
+
+    def test_remove_unfinished_cells(self):
+        '''
+        Checks to see that cells with a NaN of tau
+        are eliminated from a population list.
+        '''
+        experimentTime = 100.
+        initCells = [50, 50]
+        locBern = [0.6, 0.8]
+        betaExp = [40, 50]
+        X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
+        X = remove_unfinished_cells(X)  # remove unfinished cells
+        num_NAN = 0
+        for cell in X:
+            if cell.isUnfinished():
+                num_NAN += 1
+
+        self.assertEqual(num_NAN, 0)  # there should be no unfinished cells left
 
     def test_get_numLineages(self):
         '''
@@ -76,9 +94,8 @@ class TestModel(unittest.TestCase):
         experimentTime = 50.
         initCells = [50, 42, 8]  # there should be 100 lineages b/c there are 100 initial cells
         locBern = [0.6, 0.8, 0.7]
-        cGom = [2, 0.5, 1]
-        scaleGom = [40, 50, 45]
-        X = gpt(experimentTime, initCells, locBern, cGom, scaleGom)  # generate a population
+        betaExp = [40, 50, 45]
+        X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
         numLin = get_numLineages(X)
         self.assertLessEqual(numLin, 100)  # call func
 
@@ -157,6 +174,88 @@ class TestModel(unittest.TestCase):
         temp1 = get_parents_for_level(level, self.lineage1)
         self.assertEqual(temp1, {1, 2})
 
+    def test_getAccuracy(self):
+        """
+        checks whether the accuracy is in the range
+        """
+        numStates = 2
+
+        switchT = 200
+        experimentTime = switchT + 150
+        initCells = [1]
+        locBern = [0.99999999999]
+        betaExp1 = [75]
+        bern2 = [0.6]
+        betaExp2 = [50]
+
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
+        LINEAGE = remove_unfinished_cells(LINEAGE)
+        LINEAGE = remove_singleton_lineages(LINEAGE)
+        while len(LINEAGE) <= 5:
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
+            LINEAGE = remove_unfinished_cells(LINEAGE)
+            LINEAGE = remove_singleton_lineages(LINEAGE)
+
+        X = LINEAGE
+        t = tHMM(X, numStates=2)
+        fit(t, max_iter=500, verbose=True)
+
+        deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
+        get_nonleaf_deltas(t, deltas, state_ptrs)
+        all_states = Viterbi(t, deltas, state_ptrs)
+
+        t.Accuracy, t.states, t.stateAssignment = getAccuracy(t, all_states, verbose=False)
+        check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy)
+        self.assertTrue(check_acc)
+
+
+    def test_mutual_info(self):
+        """This function tests the accuracy of the Viterbi state assignment by getting the
+    mutual information between the true states of the cells in a lineage and the 
+    states that Viterbi has assigned to the cells. It makes sure the accuracy is
+    between 0 and 1."""
+
+        numStates = 2
+
+        switchT = 200
+        experimentTime = switchT + 150
+        initCells = [1]
+        locBern = [0.99999999999]
+        betaExp1 = [75.]
+        bern2 = [0.6]
+        betaExp2 = [50.]
+
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
+        LINEAGE = remove_unfinished_cells(LINEAGE)
+        LINEAGE = remove_singleton_lineages(LINEAGE)
+        while len(LINEAGE) <= 5:
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
+            LINEAGE = remove_unfinished_cells(LINEAGE)
+            LINEAGE = remove_singleton_lineages(LINEAGE)
+
+        X = LINEAGE
+
+        t = tHMM(X, numStates=2)
+        fit(t, max_iter=500, verbose=True)
+
+        deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
+        get_nonleaf_deltas(t, deltas, state_ptrs)
+        all_states = Viterbi(t, deltas, state_ptrs)
+        logging.info('Viterbi states assigned.')
+
+        for lin in range(t.numLineages):
+            lineage = t.population[lin]
+
+            true_state_holder = np.zeros((len(lineage)), dtype=int)
+
+            for ii, cell in enumerate(lineage):
+                true_state_holder[ii] = cell.true_state
+        logging.info('True states assigned.')
+
+        t.Accuracy2 = get_mutual_info(t, all_states, verbose=True)
+        check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy2)
+        self.assertTrue(check_acc)
+
     #######################
     # tHMM.py tests below #
     #######################
@@ -166,7 +265,8 @@ class TestModel(unittest.TestCase):
         Make sure paramlist has proper
         labels and sizes.
         '''
-        X = remove_singleton_lineages(self.X)
+        X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         self.assertEqual(t.paramlist[0]["pi"].shape[0], 2)  # make sure shape is numStates
         self.assertEqual(t.paramlist[0]["T"].shape[0], 2)  # make sure shape is numStates
@@ -179,7 +279,8 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
-        X = remove_singleton_lineages(self.X)
+        X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
@@ -194,7 +295,8 @@ class TestModel(unittest.TestCase):
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         '''
-        X = remove_singleton_lineages(self.X)
+        X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         EL = t.get_Emission_Likelihoods()
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
@@ -212,7 +314,8 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
-        X = remove_singleton_lineages(self.X)
+        X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(t)
         self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population
@@ -229,7 +332,8 @@ class TestModel(unittest.TestCase):
         the Viterbi function to find
         the optimal hidden states.
         '''
-        X = remove_singleton_lineages(self.X)
+        X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(X)
         t = tHMM(X, numStates=2)  # build the tHMM class with X
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
         self.assertLessEqual(len(deltas), 50)  # there are <=50 lineages in X
@@ -249,22 +353,22 @@ class TestModel(unittest.TestCase):
         gives one different optimal state
         trees.
         '''
-        X = remove_singleton_lineages(self.X)
+        X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(X)
         numStates = 2
         t = tHMM(X, numStates=numStates)  # build the tHMM class with X
         fake_param_list = []
         numLineages = t.numLineages
         temp_params = {"pi": np.ones((numStates), dtype=int),  # inital state distributions [K] initialized to 1/K
                        "T": np.ones((numStates, numStates), dtype=int) / (numStates),  # state transition matrix [KxK] initialized to 1/K
-                       "E": np.ones((numStates, 3))}  # sequence of emission likelihood distribution parameters [Kx3]
+                       "E": np.ones((numStates, 2))}  # sequence of emission likelihood distribution parameters [Kx2]
         temp_params["pi"][1] = 0  # the hidden state for the second node should always be 1
         to_state_one = np.zeros((numStates, numStates), dtype=int)
         to_state_one[:, 1] = np.ones((numStates), dtype=int)
         temp_params["T"] = to_state_one  # should always end up in state 1 regardless of previous state
         # since transition matrix is a dependent matrix (0 is now a trivial state)
         temp_params["E"][:, 0] *= 0.5  # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][:, 1] *= 2  # initializing all Gompertz c parameters to 2
-        temp_params["E"][:, 2] *= 50  # initializing all Gompoertz s(cale) parameters to 50
+        temp_params["E"][:, 1] *= 50  # initializing all Gompoertz s(cale) parameters to 50
 
         for lineage_num in range(numLineages):  # for each lineage in our population
             fake_param_list.append(temp_params.copy())  # create a new dictionary holding the parameters and append it
@@ -299,27 +403,26 @@ class TestModel(unittest.TestCase):
         homogeneous populations. Using parameter sets that
         describe those homogenous populations.
         '''
-        X = remove_singleton_lineages(self.X2)
+        X = remove_unfinished_cells(self.X2)
+        X = remove_singleton_lineages(X)
         numStates = 2
-        t = tHMM(X, numStates=numStates)  # build the tHMM class with X
+        t = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
 
         fake_param_list = []
         numLineages = t.numLineages
         temp_params = {"pi": np.ones((numStates), dtype=float) / (numStates),  # inital state distributions [K] initialized to 1/K
                        "T": np.eye(2, dtype=int),  # state transition matrix [KxK] initialized to identity (no transitions)
                        # should always end up in state 1 regardless of previous state
-                       "E": np.ones((numStates, 3))}  # sequence of emission likelihood distribution parameters [Kx3]
+                       "E": np.ones((numStates, 3))}  # sequence of emission likelihood distribution parameters [Kx2]
 
         temp_params["pi"][0] = 4 / 5  # the population is distributed as such 2/5 is of state 0
         temp_params["pi"][1] = 1 / 5  # state 1 occurs 3/5 of the time
 
         temp_params["E"][0, 0] *= 0.999  # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][0, 1] *= 2  # initializing all Gompertz c parameters to 2
-        temp_params["E"][0, 2] *= 40  # initializing all Gompoertz s(cale) parameters to 50
+        temp_params["E"][0, 1] *= 40  # initializing all Gompoertz s(cale) parameters to 50
 
         temp_params["E"][1, 0] *= 0.6  # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][1, 1] *= 3  # initializing all Gompertz c parameters to 2
-        temp_params["E"][1, 2] *= 50  # initializing all Gompoertz s(cale) parameters to 50
+        temp_params["E"][1, 1] *= 50  # initializing all Gompoertz s(cale) parameters to 50
 
         for lineage_num in range(numLineages):  # for each lineage in our population
             fake_param_list.append(temp_params.copy())  # create a new dictionary holding the parameters and append it
@@ -364,6 +467,7 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
+        X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
         numStates = 2
         tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
@@ -382,131 +486,22 @@ class TestModel(unittest.TestCase):
     # BaumWelch.py tests below #
     ############################
 
-    def test_Baum_Welch_1(self):
-        '''Creas a heterogeneous tree with a state 1 lineage that links off the final cell of a state 0 lineage. Compares the estimated population parameters with the true ones that were used to create the lineages.'''
-
-        numStates = 2
-
-        MASexperimentTime = 200
-        MASinitCells = [1]
-        MASlocBern = [0.99999999999]
-        MAScGom = [1]
-        MASscaleGom = [75]
-        masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
-        masterLineage = remove_singleton_lineages(masterLineage)
-        while len(masterLineage) <= 5:
-            masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, MAScGom, MASscaleGom)
-            masterLineage = remove_singleton_lineages(masterLineage)
-        print(len(masterLineage))
-        for cell in masterLineage:
-            cell.true_state = 0
-        experimentTime2 = 150
-        initCells2 = [1]
-        locBern2 = [0.7]
-        cGom2 = [2]
-        scaleGom2 = [50]
-        sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
-        sublineage2 = remove_singleton_lineages(sublineage2)
-        while len(sublineage2) <= 5:
-            sublineage2 = gpt(experimentTime2, initCells2, locBern2, cGom2, scaleGom2)
-            sublineage2 = remove_singleton_lineages(sublineage2)
-        print(len(sublineage2))
-
-        cell_startT_holder = []
-        for cell in masterLineage:
-            cell_startT_holder.append(cell.startT)
-
-        master_cell_startT_idx = np.argmax(cell_startT_holder)  # get the idx of the longest tau in the lineage
-        master_cell = masterLineage[master_cell_startT_idx]  # get the master cell via the longest tau index
-
-        for cell in sublineage2:
-            cell.true_state = 1
-            cell.linID = master_cell.linID
-            cell.gen += master_cell.gen
-            cell.startT += master_cell.endT
-            cell.endT += master_cell.endT
-
-        master_cell.left = sublineage2[0]
-        sublineage2[0].parent = master_cell
-        newLineage = masterLineage + sublineage2
-        newLineage = remove_singleton_lineages(newLineage)
-        print(len(newLineage))
-
-        tHMMobj = tHMM(newLineage, numStates=numStates, FOM='G')  # build the tHMM class with X
-        fit(tHMMobj, max_iter=500, verbose=True)
-
-        deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
-        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
-        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        getAccuracy(tHMMobj, all_states, verbose=True)
-        get_mutual_info(tHMMobj, all_states, verbose=True)
-
-    def test_Baum_Welch_2(self):
-        '''Creating a heterogeneous tree that is built by swithcing states of all cells at a SwitchT time point'''
-        numStates = 2
-
-        switchT = 200
-        experimentTime = switchT + 150
-        initCells = [1]
-        locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
-        bern2 = [0.6]
-        cG2 = [2]
-        scaleG2 = [50]
-
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
-        while len(LINEAGE) <= 5:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='G')
-
-        X = LINEAGE
-        tHMMobj = tHMM(X, numStates=numStates, FOM='G')  # build the tHMM class with X
-        fit(tHMMobj, max_iter=100, verbose=False)
-        deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
-        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
-        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        getAccuracy(tHMMobj, all_states, verbose=True)
-        get_mutual_info(tHMMobj, all_states, verbose=True)
-
-    def test_Baum_Welch_3(self):
-        '''one state, no bernoulli likelihoods considered, gompertz estimation'''
-        numStates = 1
-
-        experimentTime = 250
-        initCells = [1]
-        locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
-
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G')
-
-        while len(LINEAGE) <= 10:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='G')
-
-        X = LINEAGE
-        tHMMobj = tHMM(X, numStates=numStates, FOM='G')  # build the tHMM class with X
-        fit(tHMMobj, max_iter=100, verbose=False)
-        deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
-        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
-        all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        getAccuracy(tHMMobj, all_states, verbose=True)
-        get_mutual_info(tHMMobj, all_states, verbose=True)
-
     def test_Baum_Welch_4(self):
-        ''' one state, no bernoulli likelihoods considered, exponential estimation'''
+        ''' one state exponential estimation'''
         numStates = 1
 
         experimentTime = 250
         initCells = [1]
         locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
         betaExp = [75]
 
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
-
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp=betaExp, FOM='E')
+        LINEAGE = remove_unfinished_cells(LINEAGE)
+        LINEAGE = remove_singleton_lineages(LINEAGE)
         while len(LINEAGE) <= 10:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, FOM='E', betaExp=betaExp)
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp=betaExp, FOM='E')
+            LINEAGE = remove_unfinished_cells(LINEAGE)
+            LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
         tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
@@ -519,7 +514,7 @@ class TestModel(unittest.TestCase):
         get_mutual_info(tHMMobj, all_states, verbose=True)
 
     def test_Baum_Welch_5(self):
-        '''two state, no bernoulli likelihoods considered, exponential estimation. creating a heterogeneous tree'''
+        '''two state exponential estimation. creating a heterogeneous tree'''
 
         numStates = 2
 
@@ -527,20 +522,18 @@ class TestModel(unittest.TestCase):
         experimentTime = switchT + 150
         initCells = [1]
         locBern = [0.99999999999]
-        cGom = [1]
-        scaleGom = [75]
         betaExp = [75]
         bern2 = [0.6]
-        cG2 = [2]
-        scaleG2 = [50]
         betaExp2 = [25]
 
-        LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2)
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')
 
         while len(LINEAGE) <= 10:
-            LINEAGE = gpt(experimentTime, initCells, locBern, cGom, scaleGom, switchT, bern2, cG2, scaleG2, FOM='E', betaExp=betaExp, betaExp2=betaExp2)
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')
 
         X = LINEAGE
+        X = remove_unfinished_cells(X)
+        X = remove_singleton_lineages(X)
         tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
 

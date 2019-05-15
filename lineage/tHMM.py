@@ -3,13 +3,13 @@
 import numpy as np
 import scipy.stats as sp
 from .Lineage_utils import get_numLineages, init_Population
-from .tHMM_utils import max_gen, get_gen, right_censored_Gomp_pdf
+from .tHMM_utils import max_gen, get_gen
 
 
 class tHMM:
     """ Main tHMM class. """
 
-    def __init__(self, X, numStates=1, FOM='G'):
+    def __init__(self, X, numStates=1, FOM='E'):
         """ Instantiates a tHMM.
 
         This function uses the following functions and assings them to the cells
@@ -38,6 +38,7 @@ class tHMM:
 
 ##------------------------ Initializing the parameter list --------------------------##
 
+
     def init_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage.
         In this function, the dictionary is initialized.
@@ -55,15 +56,10 @@ class tHMM:
             emissions (observations) corresponding to each state. In this case, emissions are
             1. whether a cell dies or divides (Bernoulli distribution with 1 parameter)
             2. how long a cell lives:
-                2.1. Gompertz distribution with 2 parameters (loc and scale)
-                    loc initialized to 2
-                    scale initialized to 62.5
-                2.2. Exponential distribution with 1 parameter (beta)
+                2.1. Exponential distribution with 1 parameter (beta)
                     beta intialized to 62.5
 
-            If the Gompertz is used, on the whole we will have 3 parameters for emissions, so
-            the emission matrix will be [K x 3].
-            if the Exponential is used, on the whole we will have 2 parameters for emissions, so
+            If the Exponential is used, on the whole we will have 2 parameters for emissions, so
             the emission matrix will be [K x 2].
 
         Returns:
@@ -76,18 +72,18 @@ class tHMM:
         numLineages = self.numLineages
         temp_params = {"pi": np.ones((numStates)) / numStates,  # inital state distributions [K] initialized to 1/K
                        "T": np.ones((numStates, numStates)) / numStates}  # state transition matrix [KxK] initialized to 1/K
-        if self.FOM == 'G':
-            temp_params["E"] = np.ones((numStates, 3))  # sequence of emission likelihood distribution parameters [Kx3]
-            for state_j in range(numStates):
-                temp_params["E"][state_j, 0] = 1 / numStates  # initializing all Bernoulli p parameters to 1/numStates
-                temp_params["E"][state_j, 1] = 2.0 * (1 + np.random.uniform())  # initializing all Gompertz c parameters to 2
-                temp_params["E"][state_j, 2] = 62.5 * (1 + np.random.uniform())  # initializing all Gompoertz s(cale) parameters to 62.5
-        elif self.FOM == 'E':
+        if self.FOM == 'E':
             temp_params["E"] = np.ones((numStates, 2))  # sequence of emission likelihood distribution parameters [Kx2]
             for state_j in range(numStates):
                 temp_params["E"][state_j, 0] = 1 / numStates  # initializing all Bernoulli p parameters to 1/numStates
                 temp_params["E"][state_j, 1] = 62.5 * (1 + np.random.uniform())  # initializing all Exponential beta parameters to 62.5
-
+        elif self.FOM == 'Ga':
+            temp_params["E"] = np.ones((numStates, 3))
+            for state_j in range(numStates):
+                temp_params["E"][state_j, 0] = 1 / numStates  # initializing all Bernoulli p parameters to 1/numStates
+                temp_params["E"][state_j, 1] = 10 * (1 + np.random.uniform())  # Gamma shape parameter
+                temp_params["E"][state_j, 2] = 5 * (1 + np.random.uniform())  # Gamma scale parameter
+ 
         for lineage_num in range(numLineages):  # for each lineage in our population
             paramlist.append(temp_params.copy())  # create a new dictionary holding the parameters and append it
             assert len(paramlist) == lineage_num + 1, "The number of parameters being estimated is mismatched with the number of lineages in your population. Check the number of unique root cells and the number of lineages in your data."
@@ -168,18 +164,14 @@ class tHMM:
         and for all possible discrete states k. Since we have a
         multiple observation model, that is
 
-        x_n = {x_B, x_G}, # in case of Gompertz distribution for lifetime
-        or
         x_n = {x_B, x_E}, # in case of Exponential distribution for lifetime
 
         consists of more than one observation, x_B = division(1) or
         death(0) (which is one of the observations x_B) and the other
-        being, x_G or x_E = lifetime, lifetime >=0, (which is the other observation x_G or x_E)
+        being,x_E = lifetime, lifetime >=0, (which is the other observation x_E)
         we make the assumption that
 
-        P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_G | z_n = k).
-
-        In case of Exponential lifetime in stead of Gompertz, similarly we have:
+        In case of Exponential lifetime in stead of Gompertz, we have:
         P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_E | z_n = k).
 
         '''
@@ -199,37 +191,20 @@ class tHMM:
             for state_k in range(numStates):  # for each state
                 E_param_k = E_param_array[state_k, :]  # get the emission parameters for that state
                 k_bern = E_param_k[0]  # bernoulli rate parameter
-                k_gomp_c = 0
-                k_gomp_s = 0
                 k_expon_beta = 0
-                if self.FOM == 'G':
-                    k_gomp_c = E_param_k[1]
-                    k_gomp_s = E_param_k[2]
-                elif self.FOM == 'E':
+                k_shape_gamma = 0
+                k_scale_gamma = 0
+
+                if self.FOM == 'E':
                     k_expon_beta = E_param_k[1]
+                elif self.FOM == 'Ga':
+                    k_shape_gamma = E_param_k[1]
+                    k_scale_gamma = E_param_k[2]
 
                 for cell in lineage:  # for each cell in the lineage
                     current_cell_idx = lineage.index(cell)  # get the index of the current cell
-                    if self.FOM == 'G':
-                        temp_b = 1
-                        if not cell.isUnfinished():  # only calculate real bernoulli likelihood for finished cells
-                            temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)
-                        if cell.fateObserved:
-                            assert cell.fateObserved
-                            temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tau, c=k_gomp_c, scale=k_gomp_s, fateObserved=True)  # gompertz likelihood if death is observed
-                            assert np.isfinite(
-                                temp_g), "You have a Gompertz right-censored likelihood calculation for an observed death returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
-                        elif not cell.fateObserved:
-                            assert not cell.fateObserved
-                            temp_g = right_censored_Gomp_pdf(tau_or_tauFake=cell.tauFake, c=k_gomp_c, scale=k_gomp_s, fateObserved=False)  # gompertz likelihood if death is unobserved
-                            assert np.isfinite(
-                                temp_g), "You have a Gompertz right-censored likelihood calculation for an unobserved death returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
-                        EL_array[current_cell_idx, state_k] = temp_g * temp_b
-
-                    elif self.FOM == 'E':
-                        temp_b = 1
-                        if not cell.isUnfinished():
-                            temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)  # bernoulli likelihood
+                    if self.FOM == 'E':
+                        temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)  # bernoulli likelihood
                         if cell.fateObserved:
                             temp_beta = sp.expon.pdf(x=cell.tau, scale=k_expon_beta)  # exponential likelihood
                         elif not cell.fateObserved:
@@ -237,5 +212,11 @@ class tHMM:
                         assert np.isfinite(temp_beta), "You have a Exponential likelihood calculation returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
                         # the right-censored and uncensored exponential pdfs are the same
                         EL_array[current_cell_idx, state_k] = temp_beta * temp_b
+                    if self.FOM == 'Ga':
+                        temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)  # bernoulli likelihood
+                        if cell.fateObserved:
+                            temp_g = sp.gamma.pdf(x=cell.tau, a=k_gamma_shape, scale=k_gamma_scale)
+                        assert np.isfinite(temp_g),"Gamma likelihood is returning NaN"
+                        EL_array[current_cell_idx, state_k] = temp_g * temp_b
             EL.append(EL_array)  # append the EL_array for each lineage
         return EL
