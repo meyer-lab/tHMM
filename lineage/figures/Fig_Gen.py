@@ -11,15 +11,15 @@ from .Matplot_gen import Matplot_gen
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 
-def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False):
+def KL_per_lineage(T_MAS=500, T_2=500, reps=100, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[20], initCells2=[1], locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=100, min_lin_length=50, FOM='E', verbose=False):
     """Run the KL divergence on emmission likelihoods."""
     # Make the master cells equal to the same thing
-    MASlocBern, MASbeta= np.zeros(reps), np.zeros(reps)
-    for i in range(reps): MASlocBern[i], MASbeta[i] = 0.8, 80
+    MASlocBern_array, MASbeta_array= [], []
+    for i in range(reps): MASlocBern_array.append(MASlocBern), MASbeta_array.append(MASbeta)
     
     # Make the downstream subpopulation a random distribution
     locBern2 = np.random.uniform(0.8, 0.99, size = reps)
-    beta2 = np.random.randint(10, 60, size = reps)
+    beta2 = np.random.randint(20, 40, size = reps)
     
     #arrays to hold for each rep
     KL_h1 = []
@@ -32,16 +32,17 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
     lineage_h1 = []
 
     for rep in range(reps):        
-        X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta[rep]], [beta2[rep]])
+        X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern_array[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta_array[rep]], [beta2[rep]])
 
         
         while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
+            print(len(newLineage), len(masterLineage), len(sublineage2))
             #re calculate distributions if they are too large, or else model wont run
             if len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
-                locBern2[rep] = np.random.uniform(0.8, 0.99, size = 1)
-                beta2[rep] = np.random.randint(10, 60, size = 1)
+                locBern2[rep] = [np.random.uniform(0.8, 0.99, size = 1)]
+                beta2[rep] = [np.random.randint(20, 40, size = 1)]
             #generate new lineage
-            X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta[rep]], [beta2[rep]])
+            X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern_array[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta_array[rep]], [beta2[rep]])
         
         print('Repetition Number: {}'.format(rep+1))
         
