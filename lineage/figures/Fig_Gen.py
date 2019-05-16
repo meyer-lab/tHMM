@@ -11,7 +11,7 @@ from .Matplot_gen import Matplot_gen
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 
-def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False):
+def KL_per_lineage(T_MAS=500, T_2=100, reps=200, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False):
     """Run the KL divergence on emmission likelihoods."""
     # Make the master cells equal to the same thing
     MASlocBern, MASbeta= np.zeros(reps), np.zeros(reps)
@@ -85,24 +85,13 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
                 print('KL:', KL)
                 print('MAS length, 2nd lin length:', len(masterLineage), len(newLineage) - len(masterLineage))
 
-        KL_h1.extend([KL])
+        KL_h1.extend(KL_h2)
         acc_h1.extend(acc_h2)
         cell_h1.extend(cell_h2)
         bern_MAS_h1.extend(bern_MAS_h2)
         bern_2_h1.extend(bern_2_h2)
         betaExp_MAS_h1.extend(betaExp_MAS_h2)
         betaExp_2_h1.extend(betaExp_2_h2)
-
-
-    #take the average of KL and accuracy because we want mean value across all lineages in a single pop
-    KL_h1.append(np.mean(KL_h2))
-    acc_h1.append(np.mean(acc_h2))
-    cell_h1.extend(cell_h2)
-    bern_MAS_h1.append(np.mean(bern_MAS_h2))
-    bern_2_h1.append(np.mean(bern_2_h2))
-    betaExp_MAS_h1.append(np.mean(betaExp_MAS_h2))
-    betaExp_2_h1.append(np.mean(betaExp_2_h2))
-
 
     print("x shape: {} and acc_h1 shape: {}".format(KL_h1, acc_h1))
     data = (KL_h1, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, betaExp_MAS_h1, betaExp_2_h1)

@@ -11,7 +11,7 @@ def Matplot_gen_KL(ax, KL_h1, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBer
     '''Creates 4 subpanles for model estimation'''
 
     ax[0].set_xlabel(xlabel)
-    ax[0].set_xlim(0.00000000000000000000000000000000000001, 100000)
+    #ax[0].set_xlim(10**(-100), 10**(10))
     ax[0].set_xscale('log')
     ax[0].set_ylim(0, 110)
     ax[0].errorbar(KL_h1, acc_h1, fmt='o', c='b', marker="*", fillstyle='none', label='Accuracy')
