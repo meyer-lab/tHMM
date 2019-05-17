@@ -1,4 +1,5 @@
 """ author : shakthi visagan (shak360), adam weiner (adamcweiner)
+some changes: Farnaz Mohammadi
 description: a file to hold the cell class
 """
 import math
@@ -12,10 +13,10 @@ class CellNode:
     This class includes many functions that assign the cell its properties, i.e.,
     the cell's generation, lifetime, true_state, etc."""
 
-    def __init__(self, gen=1, linID=0, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, trackID=None, true_state=None):
+    def __init__(self, gen=1, linID=0, startT=0, endT=float('nan'), fate=None, left=None, right=None, parent=None, true_state=None, g1=float('nan'), g2=float('nan')):
         """
         Args:
-        ----------
+        -----
             gen (int): the generation of the cell, root cells are of generation 1,
                 each division adds 1 to the previous generation.
 
@@ -42,7 +43,6 @@ class CellNode:
             parent (obj): the parent of the cell, returns a CellNode object
             (except at the root node)
 
-            trackID (int): ID of the cell used during image tracking
 
             true_state (0/1): indicates whether cell is PC9 (0) or H1299 (1)
 
@@ -60,9 +60,10 @@ class CellNode:
         self.right = right
         self.parent = parent
 
-        self.trackID = trackID
         self.true_state = true_state
         self.fateObserved = False
+        self.g1 = g1
+        self.g2 = g2
 
     def isParent(self):
         """ Returns true if the cell has at least one daughter; i.e., if either of the left or right daughter cells exist, it returns True. """
@@ -102,6 +103,12 @@ class CellNode:
         self.fate = None
         self.tau = float('nan')
 
+    def start_G2(self):
+        """
+        Returns the start time point of cell's G2 phase by adding the start time and the duration of G1.
+        """
+        return self.startT + self.g1
+
     def die(self, endT):
         """
         Cell dies without dividing.
@@ -109,7 +116,7 @@ class CellNode:
         If the cell dies, the endTime is reached so we calculate the lifetime (tau)
         and the death is observed.
         Args:
-            ----------
+        -----
             endT (float): end time of the cell.
 
         This function doesn't return
@@ -119,13 +126,13 @@ class CellNode:
         self.calcTau()      # calculate Tau when cell dies
         self.fateObserved = True  # this cell has truly died
 
-    def divide(self, endT, trackID_d1=None, trackID_d2=None):
+    def divide(self, endT):
         """
         Cell life ends through division. The two optional trackID arguments
         represents the trackIDs given to the two daughter cells.
 
         Args:
-            ---------
+        -----
             endT (float): end time of the cell
 
         kwargs:
@@ -134,7 +141,7 @@ class CellNode:
             of the left and right daughter cell
 
         Returns:
-            ----------
+        --------
             self.left (obj): left new born daughter cell
             self.right (obj): right new born daughter cell
 
@@ -146,11 +153,11 @@ class CellNode:
 
         if self.isRootParent():
 
-            self.left = CellNode(gen=self.gen + 1, trackID=trackID_d1, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
-            self.right = CellNode(gen=self.gen + 1, trackID=trackID_d2, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
+            self.left = CellNode(gen=self.gen + 1, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
+            self.right = CellNode(gen=self.gen + 1, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
         else:
-            self.left = CellNode(gen=self.gen + 1, trackID=trackID_d1, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
-            self.right = CellNode(gen=self.gen + 1, trackID=trackID_d2, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
+            self.left = CellNode(gen=self.gen + 1, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
+            self.right = CellNode(gen=self.gen + 1, linID=self.linID, startT=endT, parent=self, true_state=self.true_state)
 
         return (self.left, self.right)
 
@@ -164,7 +171,7 @@ class CellNode:
         ancestor of the lineage.
 
         Returns:
-            ---------
+        --------
             curr_cell (obj): the ancestor cell if a lineage
 
         """
@@ -177,16 +184,15 @@ class CellNode:
         return curr_cell
 
 
-def generateLineageWithTime(initCells, experimentTime, locBern, betaExp, switchT=None, bern2=None, betaExp2=None, FOM='E', shape_gamma1=None, scale_gamma1=None, shape_gamma2=None, scale_gamma2=None):
+##----------------------------------- Create Lineage ------------------------------------##
+
+def generateLineageWithTime(initCells, experimentTime, locBern, g1_a=None, g1_b=None, g2_a=None, g2_b=None):
     """
     generates a list of objects (cells) in a lineage.
 
     Given an experimental end time, a Bernoulli distribution for
-    dividing/dying and a Exponential parameter for cell lifetime,
+    dividing/dying and two Gamma parameters for cell lifetime,
     it creates objects as cells and puts them in a list.
-    If the switchT is not None, then after a while it will switch
-    to the new bernoulli, Exponential parameters and creates lineages
-    based on the new distribution.
 
 
     Bernoulli distribution:
@@ -196,42 +202,26 @@ def generateLineageWithTime(initCells, experimentTime, locBern, betaExp, switchT
         a random number (either 1:divide, or 0:die) is picked from the
         distribution with this parameter and the fate of the cell is assigned.
 
-    Exponential distribution:
-        It has one parameter (betaExp)
-        Given the beta parameter, every time we pick a random number from an exponential
-        distributions with parameter betaExp, and assign it to be the lifetime
-        of the cell.
 
     Gamma distribution:
-        It has two parameters(shape_gamma, scale_gamma)
-        Used as alifetime generator for cells. In the range of parameter we work,
-        its pdf looks like a slightly skewed bell-shaped distribution. This happens
-        when the shape parameter is >= scale parameter. Here to generate the cells we
+        It has two parameters(shape , scale) {here are a and b}
+        Used as alifetime generator for cells. Here to generate the cells we
         specify the two parameters and it will return a number that we assign to cell's
-        lifetime.
+        lifetime, as G1 phase and G2 phase of the cell cycle.
 
     Args:
-        ----------
+    -----
         initCells (int): the number of initial cells to initiate the tree with
         experimentTime (int) [hours]: the time that the experiment will be running
         to allow for the cells to grow
         locBern (float): the Bernoulli distribution parameter
         (p = success) for fate assignment (either the cell dies or divides)
         range = [0, 1]
-        switchT (int): the time (assuming the beginning of experiment is 0) that
-        we want to switch to the new set of parameters of distributions.
-        bern2 (float): second Bernoulli distribution parameter.
-        FOM (str): this determines the type of distribution we want to use for
-        lifetime here it is either "G": Gompertz, or "E": Exponential.
-        betaExp (float): the parameter of Exponential distribution
-        betaExp2 (float): second parameter of Exponential distribution
-        shape_gamma1 (float): shape parameter of Gamma distribution
-        scale_gamma1 (float): scale parameter of Gamma distribution
-        shape_gamma2 (float): second shape parameter for Gamma distribution
-        scale_gamma2 (float): second scale parameter for Gamma distribution
+        g1_a, g2_a: shape parameters of Gamma for G1 and G2 phase of the cell cycle.
+        g1_b, g2_b: scale parameters of Gamma for G1 and G2 phase of the cell cycle.
 
     Returns:
-        ----------
+    --------
         lineage (list): A list of objects (cells) that creates the tree.
     """
 
@@ -243,95 +233,151 @@ def generateLineageWithTime(initCells, experimentTime, locBern, betaExp, switchT
         lineage.append(CellNode(startT=0, linID=ii))
 
     # have cell divide/die according to distribution
-    for cell in lineage:   # for all cells (cap at numCells)
+    for cell in lineage:
+        cell.g1 = sp.gamma.rvs(g1_a, scale = g1_b)
+        cell.g2 = sp.gamma.rvs(g2_a, scale = g2_b)
+        
         if cell.isUnfinished():
-            if switchT and cell.startT > switchT:  # when the cells should abide by the second set of parameters
-                cell.true_state = 1
-                if FOM == 'E':
-                    cell.tau = sp.expon.rvs(scale=betaExp2)
-                elif FOM == 'Ga':
-                    cell.tau = sp.gamma.rvs(shape_gamma2, scale=scale_gamma2)
-
-            else:  # use first set of parameters for non-heterogeneous lineages or before the switch time
-                cell.true_state = 0
-                if FOM == 'E':
-                    cell.tau = sp.expon.rvs(scale=betaExp)
-                elif FOM == 'Ga':
-                    cell.tau = sp.gamma.rvs(shape_gamma1, scale=scale_gamma1)
-
+            cell.tau = cell.g1 + cell.g2
             cell.endT = cell.startT + cell.tau
-            if cell.endT < experimentTime:  # determine fate only if endT is within range
+            
+            if cell.endT < experimentTime:   # determine fate only if endT is within range
                 # assign cell fate
-                if switchT is not None and cell.startT > switchT:  # when the cells should abide by the second set of parameters
-                    cell.fate = sp.bernoulli.rvs(bern2)
-                else:  # use first set of parameters for non-heterogeneous lineages or before the switch time
-                    cell.fate = sp.bernoulli.rvs(locBern)  # assign fate
+                cell.fate = sp.bernoulli.rvs(locBern)  # assign fate
+                
                 # divide or die based on fate
                 if cell.fate:
                     temp1, temp2 = cell.divide(cell.endT)  # cell divides
-                    # append to list
+                    # append the children to the list
                     lineage.append(temp1)
                     lineage.append(temp2)
                 else:
                     cell.die(cell.endT)
-            else:  # if the endT is past the experimentTime
-                cell.tauFake = experimentTime - cell.startT
-                cell.setUnfinished()  # reset cell to be unfinished and move to next cell
 
-    # return the list at end
     return lineage
 
+##------------------------- How many cells are in G1 or G2? --------------------------------##
 
-def doublingTime(initCells, locBern, betaExp, FOM='E', shape_gamma=None, scale_gamma=None):
+def inG1_or_G2(X, time):
     """
-    Calculates the doubling time of a homogeneous cell population,
-    given the three parameters and an initial cell count.
-
-    Using the 'generateLineageWithTime' function, it generates a lineage,
-    and keeps track of the number of alive cells during the experiment time, then
-    fits an Exponential curve to it, and finds the parameter of this exponential (lambda).
-
-    the doubling time == ln(2)/lambda
-
+    This function determines whether the cell is in G1 phase or in G2 phase.
+    
     Args:
-        ----------
-        initCells (int): number of initial cells to initiate the tree
-        locBern (float): parameter of Bernoulli distribution
-        FOM (str): 'E': Exponential. Decides on the
-        distribution for setting the cell's lifetime
-        betExp (float): the parameter of Exponential distribution.
+    -----
+        X (list): is the lineage, a list of objects representing cells.
+        time (list): a list -- could be np.linspace() -- including time points of 
+        duration of the time experiment is being conducted. 
 
     Returns:
-        ----------
-        doubleT (float): the doubling time of the population of the cells
-        in the lineage.
-
-        This function works for homogeneous population of cells yet.
-
+    --------
+        num_G1 (list):  a list of # of cells in G1 at each time point
+        num_G2 (list):  a list of # of cells in G2 at each time point
+        num_cell (list):  a list of total # of cells at each time point
     """
-    numAlive = []  # list that stores the number of alive cells for each experimentTime
-    experimentTimes = np.logspace(start=0, stop=2, num=49)
-    experimentTimes = [0] + experimentTimes
+    
+    num_G1=[]
+    num_G2=[]
+    num_cell=[]
+    
+    for t in time:
+        count_G1 = 0
+        count_G2 = 0
+        count_numCell = 0
+        
+        for cell in X:
+            g2=cell.start_G2()
+            
+            # if the time point is between the cell's start time and the end of G1 phase, then count it as being in G1.
+            if cell.startT <= t <= g2:
+                count_G1+=1
 
-    for experimentTime in experimentTimes:
-        lineage = []
-        if FOM == 'E':
-            lineage = generateLineageWithTime(initCells, experimentTime, locBern, betaExp=betaExp, FOM='E')
-        elif FOM == 'Ga':
-            lineage = generateLineageWithTime(initCells, experimentTime, locBern, betaExp=betaExp, FOM='Ga', shape_gamma1=shape_gamma, scale_gamma1=scale_gamma)
-        count = 0
-        for cell in lineage:
-            if cell.isUnfinished():
-                count += 1
-        numAlive.append(count)
+            # if the time point is between the start of the cell's G1 phase and the end time, then count it as being in G2.
+            if g2 <= t <= cell.endT:
+                count_G2+=1
+    
+            # if the time point is within the cell's lifetime, count it as being alive.
+            if cell.startT <= t <= cell.endT:
+                count_numCell+=1
+                
+        num_G1.append(count_G1)
+        num_G2.append(count_G2)
+        num_cell.append(count_numCell)
+        
+    return num_G1, num_G2, num_cell
 
-    # Fit to exponential curve and find exponential coefficient.
-    def expFunc(experimentTimes, *expParam):
-        """ Calculates the exponential."""
-        return initCells * np.exp(expParam[0] * experimentTimes)
 
-    fitExpParam, _ = optimize.curve_fit(expFunc, experimentTimes, numAlive, p0=[0])  # fit an exponential curve to generated data
+##--------------------- Separate different lineages by their root parent -------------------------##
 
-    doubleT = np.log(2) / fitExpParam[0]  # relationship between doubling time and exponential function
+def separate_pop(numLineages, X):
+    """
+    This function separates each lineage by their root parent, using their linID.
 
-    return doubleT
+    Args:
+    -----
+        numLineages (int): the number of lineages, which here basically is the number of initial cells.
+        X (list): is the lineage, a list of objects representing cells.
+
+    Returns:
+    --------
+        population (list of lists): a list that holds lists of cells that belong tothe same parent.
+    """
+    
+
+    population = []
+    for i in range(numLineages):
+        list_cell = []
+
+        for cell in X:
+            if cell.linID == i:
+                list_cell.append(cell)
+        population.append(list_cell)
+            
+    return population
+
+##------------------------------- Estimate parameters analytically ----------------------------------##
+
+def GAnalytical(g):  # for G1 and G2
+    """
+    This function estimates two parameters of Gamma distribution 'a' and 'b' analytically, given data.
+
+    Args:
+    -----
+        g (1D np.array): an array holding the data points
+
+    Returns:
+    --------
+        a_hat_new (float): estimated shape parameter of Gamma distribution.
+        b_hat_new (float): estimated shape parameter of Gamma distriubtion.
+    """
+
+    # calculate required mean and log_mean of data
+    tau_mean = np.mean(g)
+    tau_logmean = np.log(tau_mean)
+    tau_meanlog = np.mean(np.log(g))
+
+    # initialization step
+    a_hat0 = 0.5 / (tau_logmean - tau_meanlog)  # shape
+    b_hat0 = tau_mean / a_hat0  # scale
+    psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)  # psi is the derivative of log of gamma function, which has been approximated as this term
+    psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)  # this is the derivative of psi
+    assert a_hat0 != 0, "the first parameter has been set to zero!"
+
+    # updating the parameters
+    for i in range(100):
+        a_hat_new = (a_hat0 * (1 - a_hat0 * psi_prime0)) / (1 - a_hat0 * psi_prime0 + tau_meanlog - tau_logmean + np.log(a_hat0) - psi_0)
+        b_hat_new = tau_mean / a_hat_new
+
+        a_hat0 = a_hat_new
+        psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
+        psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)
+        psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
+
+        if np.abs(a_hat_new - a_hat0) <= 0.01:
+            return [a_hat_new, b_hat_new]
+        else:
+            pass
+
+    assert np.abs(a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new - a_hat0 = {}".format(np.abs(a_hat_new - a_hat0))
+
+    result = [a_hat_new, b_hat_new]
+    return result
