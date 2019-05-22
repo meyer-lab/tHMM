@@ -352,3 +352,30 @@ def gammaAnalytical(X):
 
     result = [a_hat_new, b_hat_new]
     return result
+
+
+##------------------------------ Select the population up to some time point -----------------------------------##
+
+def select_population(lineage, experimentTime):
+    
+    leaf_taus = []
+    new_population = []
+
+    for cell in lineage:
+        if cell.isLeaf():
+            leaf_taus.append(cell.tau)
+
+    intended_interval = max(leaf_taus) + 1
+    intended_end_time = experimentTime - intended_interval
+
+    for cell in lineage:
+        if cell.startT <= intended_end_time:
+            new_population.append(cell)
+
+    for cell in new_population:
+        assert cell.startT <= intended_end_time, "Something is wrong in aquiring cells for intended end time"
+
+    return new_population
+
+
+
