@@ -10,7 +10,7 @@ from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
 from ..tHMM import tHMM
 from ..tHMM_utils import max_gen, get_gen, get_parents_for_level, getAccuracy, get_mutual_info
-from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells, get_numLineages, init_Population, generatePopulationWithTime as gpt
+from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells, get_numLineages, init_Population, select_population, generatePopulationWithTime as gpt
 
 from ..CellNode import CellNode
 
@@ -48,7 +48,7 @@ class TestModel(unittest.TestCase):
         self.cell30 = CellNode(startT=0, linID=4)
         self.lineage4 = [self.cell30]
 
-        # create a common population to use in all tests
+        # create a common population for Exponential distribution to use in all tests
         experimentTime = 50.
         initCells = [50]  # there should be 50 lineages b/c there are 50 initial cells
         locBern = [0.8]
@@ -59,6 +59,10 @@ class TestModel(unittest.TestCase):
         locBern = [0.999, 0.8]
         betaExp = [40, 50]
         self.X2 = gpt(experimentTime, initCells, locBern, betaExp)
+
+        # create a common population for Gamma distribution to use in some tests
+        experimentTime = 200.
+        
 
     ################################
     # Lineage_utils.py tests below #
@@ -180,12 +184,12 @@ class TestModel(unittest.TestCase):
         """
         numStates = 2
 
-        switchT = 200
+        switchT = 150
         experimentTime = switchT + 150
         initCells = [1]
-        locBern = [0.99999999999]
-        betaExp1 = [75]
-        bern2 = [0.6]
+        locBern = [0.9999]
+        betaExp1 = [50]
+        bern2 = [0.75]
         betaExp2 = [50]
 
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
@@ -197,7 +201,12 @@ class TestModel(unittest.TestCase):
             LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
-        t = tHMM(X, numStates=2)
+        X_new = select_population(X, experimentTime)
+
+        for cell in X_new:
+            print('new times', cell.tau, 'true state', cell.true_state)
+
+        t = tHMM(X_new, numStates=2)
         fit(t, max_iter=500, verbose=True)
 
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
