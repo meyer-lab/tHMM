@@ -35,9 +35,9 @@ csl: ./manuscript/templates/nature.csl
 
 # Summary points
 
-- One
-- Two
-- Three
+- Current targeted therapies to stall cancer cell growth are population-based and yet to achieve single cell speficity, due to significant intratumor heterogeneity
+- A tree-based hidden Markov model (tHMM) was developed to identify, and monitor over time, the pathogenic state changes of single cells in heterogenous populations
+- The tHMM achieves >80% classification accuracy for lineages >50 cells. Increasing a population's number of lineages has a less noticeable effect on model accuracy, but this must be further explored for population with >20 lineages. 
 
 # Author Summary
 
