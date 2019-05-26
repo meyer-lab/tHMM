@@ -11,8 +11,12 @@ This lineage was inputted into the tHMM, fitted with our adapted Baum-Welch algo
 
 ## Lineage Length Scaling
 
-Thus, the lineage was recreated 200 times with varying lengths, and the results of the accuracy prediction and distribution parameters $(\theta<sub>B</sub>, \lambda<sub>E</sub>)$ are seen in Figure 4. The accuracy of the model in assigning states improves with increased number of cells within a lineage. Additionally, the parameter estimation approaches that of the true value for each subpopulation. In particular, the model is more accurate in assigning correct parameter estimates for resistant cells. This is attributed to robustness of the tHMM in identifying cell transitions and performing maximum likelihood estimation to generate an accurate $\bm{E}$ matrix (Eq(3))
+Thus, the lineage was recreated 200 times with varying lengths, and the results of the accuracy prediction and distribution parameters $(\theta<sub>B</sub>, \lambda<sub>E</sub>)$ are seen in Figure 4. The accuracy of the model in assigning states improves with increased number of cells within a lineage. Additionally, the parameter estimation approaches that of the true value for each subpopulation. In particular, the model is more accurate in assigning correct parameter estimates for resistant cells. This is attributed to robustness of the tHMM in identifying cell transitions and performing maximum likelihood estimation to generate an accurate $\bm{E}$ matrix (Eq(3)).
 
 ## Lineage Number Scaling
 
-Although the tHMM accuracy improves as lineage length increases, obtaining large single lineages is dependent on the growth properties of the cells of interest. Thus, we experimented with lineages of length less than 10 in order to see if increasing number of lineages improve population predictions (Figure 5). This is analogous to increasing the number of initially seeded cells, which divide and form lineages
+Although the tHMM accuracy improves as lineage length increases, obtaining large single lineages is dependent on the growth properties of the cells of interest. Thus, we experimented with lineages of length less than 10 in order to see if increasing number of lineages improve population predictions (Figure 5). This is analogous to increasing the number of initially seeded cells, which divide and form lineages.
+
+## KL Divergence Scaling
+
+## AIC Figure

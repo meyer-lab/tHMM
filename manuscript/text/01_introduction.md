@@ -33,13 +33,13 @@ csl: ./manuscript/templates/nature.csl
 
 ---
 
-# Summary points
+# Summary points -  this may or may not be neede depending on the journal we apply to
 
 - One
 - Two
 - Three
 
-# Author Summary
+# Author Summary - this may or may not be neede depending on the journal we apply to
 
 Cell heterogeneity, such as variability in drug response, arises as cells proliferate. _Shared_ heterogeneous traits, such as a response to drug like resistance or susceptibility within a subpopulation, are correlated across a lineage because resistant subpopulations most likely diverged from a common progenitor or a set of common progenitors that were _also_ resistant or had acquired traits leading to resistance. These acquired traits of resistance may be the result of responses to cellular microenvironments, epigenetics, and/or mutations. Using lineage tree information, we hope to capture these dynamic transitions between heterogeneous latent states of cells and arrive with a more accurate identification of cell heterogeneity in a tumor. Our computational approach employing Markov random field theory provides higher specificity through identifying intratumor resistance on an individual cell level based on lineage histories and enables real-time identification of changes in resistance throughout therapy.
 
