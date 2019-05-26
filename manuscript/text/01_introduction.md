@@ -33,13 +33,13 @@ csl: ./manuscript/templates/nature.csl
 
 ---
 
-# Summary points -  this may or may not be neede depending on the journal we apply to
+# Summary points
 
 - One
 - Two
 - Three
 
-# Author Summary - this may or may not be neede depending on the journal we apply to
+# Author Summary
 
 Cell heterogeneity, such as variability in drug response, arises as cells proliferate. _Shared_ heterogeneous traits, such as a response to drug like resistance or susceptibility within a subpopulation, are correlated across a lineage because resistant subpopulations most likely diverged from a common progenitor or a set of common progenitors that were _also_ resistant or had acquired traits leading to resistance. These acquired traits of resistance may be the result of responses to cellular microenvironments, epigenetics, and/or mutations. Using lineage tree information, we hope to capture these dynamic transitions between heterogeneous latent states of cells and arrive with a more accurate identification of cell heterogeneity in a tumor. Our computational approach employing Markov random field theory provides higher specificity through identifying intratumor resistance on an individual cell level based on lineage histories and enables real-time identification of changes in resistance throughout therapy.
 
@@ -61,7 +61,7 @@ Other computational models for cell lineages have yet to incorporate a tHMM that
 
 Specifically, the tHMM expands data extrapolation for both bedside and bench use through the following functions: (1) learning to find the parameters for the tHMM given observations of lineage trees and a number of hidden states; (2) evaluating the data by finding the probability that the model generates lineage trees given some probabilistic parameters (i.e. likelihood); (3) decoding the data to find the most probable sequence of hidden states given a population; (4) predicting by discovering the next observation or sequence of observations given an initial set of lineage trees. An example protocol for sequential phenotype measurements and tHMM extrapolation are shown in Figure 1. 
 
-The phenotypic measurements and tHMM extrapolation are able to be conducted in real-time and do not require extensive laboratory resources characteristic of ‘omics’ techniques. Identification of cell resistance can be achieved relatively early within the growth of a cell mass or onset of a therapy, depending on the growth characteristics of the cell lineages, which are explored in Section 6. The tHMM pipeline in its current version is provided as an open source toolkit in Python (https://github.com/meyer-lab/lineage-growth), enabling other investigators to understand the identities of heterogeneous subpopulations in both basic research settings and clinical analysis. This computational tool is equipped with class modules and functions that can be easily edited to serve a user’s specific purpose but can also be used immediately. We also provide tools for lineage data preprocessing, lineage data input and output, and lineage data visualization, apart from the main methods involving tHMM analysis.
+The phenotypic measurements and tHMM extrapolation are able to be conducted in real-time and do not require extensive laboratory resources characteristic of ‘omics’ techniques. Identification of cell resistance can be achieved relatively early within the growth of a cell mass or onset of a therapy, depending on the growth characteristics of the cell lineages, which are explored in Section 6. The tHMM pipeline in its current version is provided as an open source toolkit in Python (<https://github.com/meyer-lab/lineage-growth>), enabling other investigators to understand the identities of heterogeneous subpopulations in both basic research settings and clinical analysis. This computational tool is equipped with class modules and functions that can be easily edited to serve a user’s specific purpose but can also be used immediately. We also provide tools for lineage data preprocessing, lineage data input and output, and lineage data visualization, apart from the main methods involving tHMM analysis.
 
 
 
