@@ -1,6 +1,8 @@
 ''' Unit test file. Contains tests for the functions in Lineage_utils.py, tHMM_utils.py, UpwardRecursion.py, DownwardRecursion.py, BaumWelch.py'''
 import unittest
+import logging
 import numpy as np
+
 
 from ..BaumWelch import fit
 from ..DownwardRecursion import get_root_gammas, get_nonroot_gammas
@@ -204,6 +206,54 @@ class TestModel(unittest.TestCase):
 
         t.Accuracy, t.states, t.stateAssignment = getAccuracy(t, all_states, verbose=False)
         check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy)
+        self.assertTrue(check_acc)
+
+
+    def test_mutual_info(self):
+        """This function tests the accuracy of the Viterbi state assignment by getting the
+    mutual information between the true states of the cells in a lineage and the 
+    states that Viterbi has assigned to the cells. It makes sure the accuracy is
+    between 0 and 1."""
+
+        numStates = 2
+
+        switchT = 200
+        experimentTime = switchT + 150
+        initCells = [1]
+        locBern = [0.99999999999]
+        betaExp1 = [75.]
+        bern2 = [0.6]
+        betaExp2 = [50.]
+
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
+        LINEAGE = remove_unfinished_cells(LINEAGE)
+        LINEAGE = remove_singleton_lineages(LINEAGE)
+        while len(LINEAGE) <= 5:
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
+            LINEAGE = remove_unfinished_cells(LINEAGE)
+            LINEAGE = remove_singleton_lineages(LINEAGE)
+
+        X = LINEAGE
+
+        t = tHMM(X, numStates=2)
+        fit(t, max_iter=500, verbose=True)
+
+        deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
+        get_nonleaf_deltas(t, deltas, state_ptrs)
+        all_states = Viterbi(t, deltas, state_ptrs)
+        logging.info('Viterbi states assigned.')
+
+        for lin in range(t.numLineages):
+            lineage = t.population[lin]
+
+            true_state_holder = np.zeros((len(lineage)), dtype=int)
+
+            for ii, cell in enumerate(lineage):
+                true_state_holder[ii] = cell.true_state
+        logging.info('True states assigned.')
+
+        t.Accuracy2 = get_mutual_info(t, all_states, verbose=True)
+        check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy2)
         self.assertTrue(check_acc)
 
     #######################
