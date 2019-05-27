@@ -16,7 +16,7 @@ from ..Lineage_utils import remove_singleton_lineages
 def makeFigure():
     # Get list of axis objects
 
-    ax, f = getSetup((5, 5), (1, 1))
+    ax, f = getSetup((7, 7), (1, 1))
 
     KL_h1, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, betaExp_MAS_h1, betaExp_2_h1 = KL_per_lineage()
     
@@ -25,7 +25,7 @@ def makeFigure():
     ax[0].set_xlabel('KL Divergence')
     ax[0].set_xscale('log')
     ax[0].set_ylim(0, 110)
-    ax[0].errorbar(KL_h1, acc_h1, fmt='o', c='b', marker="*", fillstyle='none', label='Accuracy')
+    ax[0].errorbar(KL_h1, acc_h1, fmt='o', c='b', marker="*", fillstyle='none', label='Accuracy', alpha=0.5)
     ax[0].plot(sorted_x_vs_acc[:, 0][9:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
     ax[0].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=1, color='b')  # linestyle is dashdotdotted
     ax[0].set_ylabel('Accuracy (%)', rotation=90)
