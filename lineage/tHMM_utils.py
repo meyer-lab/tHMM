@@ -161,12 +161,7 @@ def getAIC(tHMMobj, LL):
     AIC_degrees_of_freedom_holder = []
     for num in range(tHMMobj.numLineages):
         number_of_parameters = 0
-        if tHMMobj.keepBern:
-            number_of_parameters += 1
-        if tHMMobj.FOM == 'G':
-            number_of_parameters += 2
-        elif tHMMobj.FOM == 'E':
-            number_of_parameters += 1
+        number_of_parameters += 1
 
         AIC_degrees_of_freedom = numStates**2 + numStates * number_of_parameters - 1
         AIC_degrees_of_freedom_holder.append(AIC_degrees_of_freedom)

@@ -1,5 +1,5 @@
 """
-This creates Figure 2.
+This creates Figure 7. AIC Figure.
 """
 from .figureCommon import subplotLabel, getSetup
 import numpy as np
@@ -10,22 +10,47 @@ from .Matplot_gen import Matplot_gen
 from .Fig_Gen import Lineage_Length, Lineages_per_Population_Figure, AIC
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
+from matplotlib.ticker import MaxNLocator
 
 
 def makeFigure():
     # Get list of axis objects
-    ax, f = getSetup((12, 9), (2, 3))
+    ax, f = getSetup((10, 10), (1, 2))
 
     #Call function for AIC 
     
-    number_of_cells_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, betaExp_MAS_h1, betaExp_2_h1 = Lineage_Length()
-    Matplot_gen(ax[0:3], number_of_cells_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2,
-                betaExp_MAS_h1, betaExp_2_h1, xlabel='Cells per Lineage', FOM='E')  # Figure plots scale vs lineage length
+    x1val = []
+    x2val = []
+    yval = []
+    
+    #need to generate X, and do this for 
+    for numState in range(3):
+        tHMMobj = tHMM(X, numStates=numState, FOM='G') # build the tHMM class with X
+        tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
+        AIC_value, numStates, deg = getAIC(tHMMobj, LL)
+        x1val.append(numStates)
+        x2val.append(deg)
+        yval.append(AIC_value)
 
-    numb_of_lineage_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, betaExp_MAS_h1, betaExp_2_h1, MASbetaExp, betaExp2 = Lineages_per_Population_Figure()
-    Matplot_gen(ax[3:6], numb_of_lineage_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2,
-                betaExp_MAS_h1, betaExp_2_h1, xlabel='Lineages per Population')  # Figure plots scale vs number of lineages
+    ax[0].scatter(xval, yval, marker='*', c='b', s=500, label='One state data/model')
+    ax[0].xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax[0].grid(True, linestyle='--')
+    ax[0].set_xlabel('Number of States')
+    ax[0].set_ylabel('AIC Cost')
+    ax[0].set_title('Akaike Information Criterion')
+    ax[0].set_y(1.1)
+    ax[0].subplots_adjust(top=1.3)
 
+    ax[1] = ax[0].twiny()
+    ax[1].set_xticks([1]+ax1.get_xticks())
+    ax[1].set_xbound(ax1.get_xbound())
+    ax[1].set_xticklabels(x2val)
+    ax[1].set_xlabel('Number of parameters')
+
+    ax[0].legend()
+    rcParams.update({'font.size': 28})
+    
+    
     f.tight_layout()
 
     return f
