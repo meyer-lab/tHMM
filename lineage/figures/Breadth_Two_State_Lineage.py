@@ -27,4 +27,5 @@ def Breadth_Two_State_Lineage(experimentTime, initCells, locBern, betaExp, switc
             sublineage2.append(cell)
         else:
             raise print('more than 2 true states error')
-    return X, masterLineage, sublineage2
+    newLineage = masterLineage + sublineage2
+    return X, newLineage, masterLineage, sublineage2
