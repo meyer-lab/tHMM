@@ -14,6 +14,7 @@ def Breadth_Two_State_Lineage(experimentTime, initCells, locBern, betaExp, switc
         
     while not LINEAGE:  # determines if lineage is empty, so can regenerate a new one
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2, FOM)
+        LINEAGE = remove_unfinished_cells(LINEAGE)
         LINEAGE = remove_singleton_lineages(LINEAGE)
 
 
