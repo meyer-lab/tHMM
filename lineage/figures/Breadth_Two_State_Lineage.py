@@ -1,6 +1,6 @@
 '''Generates a lineage with breadth model ie cells all switch state at a single time point'''
 
-from lineage.Lineage_utils import remove_singleton_lineages
+from lineage.Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 from lineage.Lineage_utils import generatePopulationWithTime as gpt
 
 
@@ -28,4 +28,5 @@ def Breadth_Two_State_Lineage(experimentTime, initCells, locBern, betaExp, switc
         else:
             print('more than 2 true states error')
     newLineage = masterLineage + sublineage2
+    print('X size: {}, masterLineage size: {}, subLineage2 size: {}'.format(len(X), len(masterLineage), len(sublineage2)))
     return X, newLineage, masterLineage, sublineage2

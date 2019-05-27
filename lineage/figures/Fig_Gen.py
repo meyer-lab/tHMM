@@ -15,8 +15,8 @@ from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 def AIC():
     return 
 
-def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.999], MASbeta=[80], initCells2=[1],
-                   locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, switchT=False):
+def Lineage_Length(T_MAS=500, T_2=100, reps=3, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1],
+                   locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=True, switchT=True):
     '''This has been modified for an exponential distribution'''
 
     accuracy_h1 = []  # list of lists of lists
@@ -33,17 +33,17 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
         # Make the lineage type
         if not switchT:
             X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
-            while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length or p_val>0.02:
+            while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
                 X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
         
         elif switchT:
             X, newLineage, masterLineage, sublineage2 = Breadth_Two_State_Lineage(experimentTime=T_MAS+T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
             while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
                 X, newLineage, masterLineage, sublineage2 = Breadth_Two_State_Lineage(experimentTime=T_MAS+T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
-            
+        
         X = remove_unfinished_cells(X)
         X = remove_singleton_lineages(X)
-        print('X size: {}, masterLineage size: {}, subLineage2 size: {}'.format(len(X), len(masterLineage), len(subLineage2)))
+        print('X size: {}, masterLineage size: {}, subLineage2 size: {}'.format(len(X), len(masterLineage), len(sublineage2)))
         
         _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
         print('analyzed')
@@ -84,7 +84,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
     return data
 
 
-def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbetaExp=[80], initCells2=[1], locBern2=[0.999], betaExp2=[20], max_lin_length=300, min_lin_length=5, FOM='E', verbose=True, switchT=False):
+def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.999], beta2=[20], max_lin_length=300, min_lin_length=5, FOM='E', verbose=True, switchT=True):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of lineages in a population are varied'''
     if verbose:
         print('starting')
@@ -114,7 +114,7 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
                 
                 if not switchT:
                     X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
-                    while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length or p_val>0.02:
+                    while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
                         X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
 
                 elif switchT:
@@ -172,5 +172,5 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
         if verbose:
             print('Accuracy of', lineage_num, 'is', np.mean(accuracy_h2))
 
-    data = (numb_of_lineage_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, betaExp_MAS_h1, betaExp_2_h1, MASbetaExp, betaExp2)
+    data = (numb_of_lineage_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, betaExp_MAS_h1, betaExp_2_h1, MASbeta, beta2)
     return data
