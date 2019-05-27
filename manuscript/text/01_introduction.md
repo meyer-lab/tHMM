@@ -2,15 +2,15 @@
 title: A lineage-based Markov tree model to quantify cellular heterogeneity
 
 author:
-- name: Spongebob Squarepants
+- name: Shakthi Visagan
   affilnum: a
-- name: Patrick Star
+- name: Nikan K. Namiri
   affilnum: a
-- name: Squidward Tentacles
+- name: Ali Farhat
   affilnum: a
-- name: Gary
+- name: Adam Weiner
   affilnum: a
-- name: Mr. Krabs
+- name: Farnaz Mohammadi
   affilnum: a
 - name: Aaron S. Meyer
   affilnum: a,b
