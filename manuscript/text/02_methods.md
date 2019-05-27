@@ -47,9 +47,9 @@ The third parameter is $K$-long list of parameters for the distributions each st
 
 This parameter can inform the user how likely each cell is going to be of a certain state. Ultimately, using the parameters we can elaborate on the hidden Markov tree property in Eq(1) as the following:
 
-$${P}(\bm{\bm{Z}},\bm{\bm{X}}; \bm{\pi},\bm{T},\bm{E}) = {P}(\bm{z}_{1},\bm{z}_{2},\ldots,\bm{z}_{N},\bm{x}_{1},\bm{x}_{2},\ldots,\bm{x}_{N};\bm{\pi},\bm{T},\bm{E})$$
+$${P}(\bm{\bm{Z}},\bm{\bm{X}}; \bm{\pi},\bm{T},\bm{E}) = {P}(\bm{z}_{1},\bm{z}_{2},\ldots,\bm{z}_{N},\bm{x}_{1},\bm{x}_{2},\ldots,\bm{x}_{N};\bm{\pi},\bm{T},\bm{E})
 
-$${P}(\bm{z}_{1}; \bm{\pi})\prod_{n=2}^{N}{P}(\bm{z}_{n}\mid\bm{z}_{\bm{P}(n)}; \bm{T})\prod_{n=1}^{N}{P}(\bm{x}_{n}\mid\bm{z}_{n}; \bm{E})$$
+{P}(\bm{z}_{1}; \bm{\pi})\prod_{n=2}^{N}{P}(\bm{z}_{n}\mid\bm{z}_{\bm{P}(n)}; \bm{T})\prod_{n=1}^{N}{P}(\bm{x}_{n}\mid\bm{z}_{n}; \bm{E})$$
         
         
     
