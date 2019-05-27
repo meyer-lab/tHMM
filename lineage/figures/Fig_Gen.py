@@ -6,6 +6,7 @@ from scipy import stats
 
 from .Depth_Two_State_Lineage import Depth_Two_State_Lineage
 from ..Analyze import Analyze
+from ..BaumWelch import fit
 from .Matplot_gen import Matplot_gen
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
@@ -15,7 +16,7 @@ def AIC():
     return 
 
 def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.999], MASbeta=[80], initCells2=[1],
-                   locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False):
+                   locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, AIC=False):
     '''This has been modified for an exponential distribution'''
 
     accuracy_h1 = []  # list of lists of lists
@@ -58,45 +59,68 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
             (KS, p_val) = stats.ks_2samp(lives, lives2)
         #---------------------------------------------------#
 
+
+                
+        
         print('X size: {}, masterLineage size: {}, subLineage2 size: {}'.format(len(X), len(masterLineage), len(subLineage2)))
         X = remove_unfinished_cells(X)
         X = remove_singleton_lineages(X)
-        _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
         print('analyzed')
-        accuracy_h2 = []
-        number_of_cells_h2 = []
-        bern_MAS_h2 = []
-        bern_2_h2 = []
-        betaExp_MAS_h2 = []
-        betaExp_2_h2 = []
+        
+        
+        #Call function for AIC 
+        if AIC:
+            x1val = []
+            x2val = []
+            yval = []
 
-        for lin in range(tHMMobj.numLineages):
-            AccuracyPop, _, stateAssignmentPop = getAccuracy(tHMMobj, all_states, verbose=False)
-            accuracy = AccuracyPop[lin]
-            state_1 = stateAssignmentPop[lin][0]
-            state_2 = stateAssignmentPop[lin][1]
-            lineage = tHMMobj.population[lin]
-            E = tHMMobj.paramlist[lin]["E"]
-            print('accuracy: {}'.format(accuracy))
+            #need to generate X, and do this for 
+            for numState in [2,3,4]:
+                _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates=numState)
+                tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
+                AIC_value, numStates, deg = getAIC(tHMMobj, LL)
+                x1val.append(numStates)
+                x2val.append(deg)
+                yval.append(AIC_value)
+        
+        else:
+            _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
+            accuracy_h2 = []
+            number_of_cells_h2 = []
+            bern_MAS_h2 = []
+            bern_2_h2 = []
+            betaExp_MAS_h2 = []
+            betaExp_2_h2 = []
 
-            accuracy_h2.append(accuracy * 100)
-            number_of_cells_h2.append(len(lineage))
-            bern_MAS_h2.append(E[state_1, 0])
-            bern_2_h2.append(E[state_2, 0])
-            if FOM == 'E':
-                betaExp_MAS_h2.append(E[state_1, 1])
-                betaExp_2_h2.append(E[state_2, 1])
+            for lin in range(tHMMobj.numLineages):
+                AccuracyPop, _, stateAssignmentPop = getAccuracy(tHMMobj, all_states, verbose=False)
+                accuracy = AccuracyPop[lin]
+                state_1 = stateAssignmentPop[lin][0]
+                state_2 = stateAssignmentPop[lin][1]
+                lineage = tHMMobj.population[lin]
+                E = tHMMobj.paramlist[lin]["E"]
+                print('accuracy: {}'.format(accuracy))
 
-        accuracy_h1.extend(accuracy_h2)
-        number_of_cells_h1.extend(number_of_cells_h2)
-        bern_MAS_h1.extend(bern_MAS_h2)
-        bern_2_h1.extend(bern_2_h2)
-        betaExp_MAS_h1.extend(betaExp_MAS_h2)
-        betaExp_2_h1.extend(betaExp_2_h2)
+                accuracy_h2.append(accuracy * 100)
+                number_of_cells_h2.append(len(lineage))
+                bern_MAS_h2.append(E[state_1, 0])
+                bern_2_h2.append(E[state_2, 0])
+                if FOM == 'E':
+                    betaExp_MAS_h2.append(E[state_1, 1])
+                    betaExp_2_h2.append(E[state_2, 1])
 
-    if FOM == 'E':
+            accuracy_h1.extend(accuracy_h2)
+            number_of_cells_h1.extend(number_of_cells_h2)
+            bern_MAS_h1.extend(bern_MAS_h2)
+            bern_2_h1.extend(bern_2_h2)
+            betaExp_MAS_h1.extend(betaExp_MAS_h2)
+            betaExp_2_h1.extend(betaExp_2_h2)
+
+    if AIC:
+        data = (x1val, x2val, yval)
+    else:
         data = (number_of_cells_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, betaExp_MAS_h1, betaExp_2_h1)
-
+    
     return data
 
 

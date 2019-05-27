@@ -11,28 +11,17 @@ from .Fig_Gen import Lineage_Length, Lineages_per_Population_Figure, AIC
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages
 from matplotlib.ticker import MaxNLocator
+import pdb
 
 
 def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((10, 10), (1, 2))
-
-    #Call function for AIC 
-    
-    x1val = []
-    x2val = []
-    yval = []
-    
-    #need to generate X, and do this for 
-    for numState in range(3):
-        tHMMobj = tHMM(X, numStates=numState, FOM='G') # build the tHMM class with X
-        tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
-        AIC_value, numStates, deg = getAIC(tHMMobj, LL)
-        x1val.append(numStates)
-        x2val.append(deg)
-        yval.append(AIC_value)
-
-    ax[0].scatter(xval, yval, marker='*', c='b', s=500, label='One state data/model')
+    # x1val, x2val, yval
+    x1val, x2val, yval = Lineage_Length(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.999], MASbeta=[80], initCells2=[1],
+                   locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, AIC=True)
+    pdb.set_trace()
+    ax[0].scatter(x1val, y1val, marker='*', c='b', s=500, label='One state data/model')
     ax[0].xaxis.set_major_locator(MaxNLocator(integer=True))
     ax[0].grid(True, linestyle='--')
     ax[0].set_xlabel('Number of States')
