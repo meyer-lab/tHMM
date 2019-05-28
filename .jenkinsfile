@@ -38,7 +38,6 @@ pipeline {
   post {
     always {
       junit allowEmptyResults: true, testResults: 'junit.xml'
-      archiveArtifacts artifacts: 'manuscript/manuscript.log', onlyIfSuccessful: false
     }
   }
 }
