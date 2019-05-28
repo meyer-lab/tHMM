@@ -1,5 +1,7 @@
 # Results
 
+![** tHMM influence diagram for $𝑵$ cells with $𝑲$ states.] The latent states ($\bm{z}$) represent subpopulation classification of each cell. The observed states ($\bm{x}$) in blue/orange denote measured phenotypes, particularly fitness (i.e. end-of-life fate by binary outcome variable $\phi$, and lifetime by variable $\tau$ in hours). The tHMM is robust to cells that die, such as cell $6$.. ...(./Figures/figure2.svg){#fig:tfac}
+
 ## Simulated Lineage
 
 To provide a better understanding of the accuracy and parameterization of the states by the tHMM, lineages of cells were simulated by starting with an initial cell and sampling the Bernoulli and exponential distributions for its respective fate and lifetime. If a cell divided, it then produced two new simulated cells that underwent the same process sampling from the same Bernoulli and exponential distributions. 
