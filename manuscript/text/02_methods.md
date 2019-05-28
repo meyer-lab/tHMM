@@ -3,13 +3,21 @@
 ## Cell Culture
 
 ### Extracting Phenotypic Parameters
+
 ?
+
 #### End-of-Life Fate and Lifetime
+
 ?
+
 #### Cell Cycle Markers
+
 ?
+
 ### Cell Culture Set-up and Tracking for Lineage Generation
+
 ?
+
 ## Single state model
 
 Our group first built a synthetic model of cell growth based on phenotypic measurements of cells. The first measurement is the cell's fate, encoded as $\phi$ ,where $\phi\in\{0,1\}$, a binary outcome where $\phi=0$ defines cell death at the end of its lifetime, and $\phi=1$ is the cell dividing into two daughter cells. The second measurement is the cell's lifetime, encoded as $\tau$, where $\tau\in (0, +\infty)$, a positive real number indicating how long the cell lived in hours. For example, a complete observation could be of the form $\bm{x}_{m} = (1,3)$ where cell $m$ divided into two daughter cells after living for 3 hours. In general, for any observation $\bm{x}_{n}$ for cell $n$, we have a tuple indicating the cell fate and the cell lifetime, $\bm{x}_{n}=(\phi_{n}, \tau_{n})$. The observations or emissions can be expanded and manipulated to fit any type of phenotypic observation, such as measurements from live-cell reporters. For example, to probabilistically model the observations mentioned earlier, the cell fate follows a Bernoulli distribution with Bernoulli rate parameter $\theta_{B}$ where $\theta_{B}\in[0,1]$ and $\theta_{B}$ represents the probability of $\phi=1$, the chance that a cell will divide. The cell lifetime follows an exponential distribution with growth rate parameter $\lambda_{E}$. The exponential distribution models the mortality of cells over time. These underlying parameters also describe the states in the multiple state model discussed later.
