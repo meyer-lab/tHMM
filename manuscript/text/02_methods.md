@@ -36,6 +36,8 @@ $${{P}(\bm{Z},\bm{X}) = P}(\bm{z}_{1},\bm{z}_{2},\ldots,\bm{z}_{N},\bm{x}_{1},\b
 
 This factorization of the joint distribution follows from the conditional independence properties of our emissions (i.e. observations) and the Markov tree dependence of the latent variables. These can be derived from the Bayesian network diagram in Figure 2 which graphically shows the influence of each variable on the other. The similarity to the factorization of hidden Markov chains (HMCs) is also evident, the main difference being that the transition probabilities for tHMMs are ${P}(\bm{z}_{n}\mid\bm{z}_{\bm{P}(n)})$ and the transition probabilities for HMCs are ${P}(\bm{z}_{n}\mid\bm{z}_{(n-1)})$. Each factor in the tree hidden Markov property represents a key parameter in the tHMM. Fully describing the tree Hidden Markov property with known values specifies the entire model. The following parameters are similar to those used in HMCs.
 
+![** tHMM influence diagram for $\bm{N}$ cells with $\bm{K}$ states.** The latent states ($\bm{z}$) represent subpopulation classification of each cell. The observed states ($\bm{x}$) in blue/orange denote measured phenotypes, particularly fitness (i.e. end-of-life fate by binary outcome variable $\phi$, and lifetime by variable $\tau$ in hours). The tHMM is robust to cells that die, such as cell $6$. ...](./figures/figure2.svg){#fig:tfac}
+
 ### Parameters
 
 Each factor in the tree hidden Markov property in represents a key parameter in the tHMM. Fully describing it with known values specifies the entire model. The following parameters are similar to those used in describing HMCs.
