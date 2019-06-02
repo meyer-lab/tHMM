@@ -12,9 +12,6 @@ from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 
 
-def AIC():
-    return 
-
 def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.999], MASbeta=[80], initCells2=[1],
                    locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, AIC=False):
     '''This has been modified for an exponential distribution'''
@@ -75,7 +72,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
             yval = []
 
             #need to generate X, and do this for 
-            for numState in [2,3,4]:
+            for numState in [1,2,3,4]:
                 _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates=numState)
                 tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
                 AIC_value, numStates, deg = getAIC(tHMMobj, LL)

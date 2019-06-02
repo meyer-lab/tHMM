@@ -33,6 +33,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
                                                        node_child_n_idx=node_child_n_idx)
 
     zeta = beta_child_state_k * T[state_j, state_k] * gamma_parent_state_j / (MSD_child_state_k * beta_parent_child_state_j)
+    print(beta_child_state_k, T, gamma_parent_state_j, MSD_child_state_k, beta_parent_child_state_j)
     return zeta
 
 

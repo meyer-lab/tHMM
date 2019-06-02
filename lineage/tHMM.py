@@ -148,6 +148,15 @@ class tHMM:
                         MSD[num][current_cell_idx, state_k] = sum(temp_sum_holder)
                 curr_level += 1
             MSD_row_sums = np.sum(MSD[num], axis=1)
+            print(MSD_row_sums[-1])
+            if not np.allclose(MSD_row_sums, 1.0):
+                try:
+                    np.allclose(MSD_row_sums, 1.0)
+                except:
+                    extype, value, tb = sys.exc_info()
+                    traceback.print_exc()
+                    pdb.post_mortem(tb)
+            
             assert np.allclose(MSD_row_sums, 1.0), "The Marginal State Distribution for your cells, P(z_k = k), for all states k in numStates, are not adding up to 1!"
         return MSD
 
