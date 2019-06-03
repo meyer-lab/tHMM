@@ -2,6 +2,7 @@
 
 import numpy as np
 from .tHMM_utils import max_gen, get_gen, get_parents_for_level, get_daughters
+import pdb
 
 
 def get_leaf_Normalizing_Factors(tHMMobj):
@@ -118,7 +119,14 @@ def get_leaf_betas(tHMMobj, NF):
                     # P(x_n = x)
                     beta_array[leaf_cell_idx, state_k] = numer1 * numer2 / denom
                     print('3 beta values', numer1, numer2, denom)
+                    #print(numer1, numer2, denom)
+                    #import pdb; pdb.set_trace()
+                    print('idx specific', leaf_cell_idx, beta_array[leaf_cell_idx, state_k])
+                    if np.isnan(beta_array[leaf_cell_idx, state_k]):
+                        import pdb; pdb.set_trace()
         betas.append(beta_array)
+    #print('leaf betas', betas[0])
+    import pdb; pdb.set_trace()
     for num in range(numLineages):
         betas_last_row_sum = np.sum(betas[num][-1])
         assert np.isclose(betas_last_row_sum, 1.)
@@ -135,6 +143,8 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
     of the betas. The recursion is upwards from the leaves to
     the roots.
     '''
+    print('BETAS',betas)
+    import pdb; pdb.set_trace()
     numStates = tHMMobj.numStates
     numLineages = tHMMobj.numLineages
     population = tHMMobj.population
@@ -204,6 +214,7 @@ def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, sta
                                           node_parent_m_idx=node_parent_m_idx,
                                           node_child_n_idx=node_child_n_idx)
         beta_m_n_holder.append(beta_m_n)
+        # doesnt matter which node, but one of them is NAn ing print(beta_m_n, node_child_n_idx)
     result = np.prod(beta_m_n_holder)  # calculates the product of items in a list
     return result
 
@@ -230,6 +241,8 @@ def beta_parent_child_func(numStates, lineage, beta_array, T, MSD_array, state_j
         denom = MSD_array[node_child_n_idx, state_k]  # get the MSD for node n at state k
         # P(z_n = k)
         summand_holder.append(numer1 * numer2 / denom)
+        
+        print('beta parent child ufnc', numer1, numer2, denom, state_k)
 
     return sum(summand_holder)
 
