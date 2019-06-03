@@ -122,8 +122,7 @@ def get_leaf_betas(tHMMobj, NF):
                     #print(numer1, numer2, denom)
                     #import pdb; pdb.set_trace()
                     print('idx specific', leaf_cell_idx, beta_array[leaf_cell_idx, state_k])
-                    if np.isnan(beta_array[leaf_cell_idx, state_k]):
-                        import pdb; pdb.set_trace()
+                    #pdb; pdb.set_trace()
         betas.append(beta_array)
     #print('leaf betas', betas[0])
     import pdb; pdb.set_trace()

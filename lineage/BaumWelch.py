@@ -93,7 +93,8 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
     gammas = get_root_gammas(tHMMobj, betas)
     get_nonroot_gammas(tHMMobj, gammas, betas)
-
+    
+    print('fit has been undergone')
     # first stopping condition check
 
     old_LL_list = [-np.inf] * numLineages
@@ -107,7 +108,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     while go:  # exit the loop
 
         count += 1
-
+        print('BW COUNT', count)
         old_LL_list = new_LL_list
 
         # code for grouping all states in cell lineages
