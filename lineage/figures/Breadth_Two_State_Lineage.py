@@ -2,6 +2,7 @@
 
 from lineage.Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 from lineage.Lineage_utils import generatePopulationWithTime as gpt
+import logging
 
 
 def Breadth_Two_State_Lineage(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2, FOM, verbose=False):
@@ -26,7 +27,7 @@ def Breadth_Two_State_Lineage(experimentTime, initCells, locBern, betaExp, switc
         elif cell.true_state == 1:
             sublineage2.append(cell)
         else:
-            print('more than 2 true states error')
+            logging.info('more than 2 true states error.')
     newLineage = masterLineage + sublineage2
     print('X size: {}, masterLineage size: {}, subLineage2 size: {}'.format(len(X), len(masterLineage), len(sublineage2)))
     return X, newLineage, masterLineage, sublineage2
