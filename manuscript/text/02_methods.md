@@ -54,6 +54,12 @@ The second parameter is a matrix of state transition probabilities stored as a $
 
 The third parameter is $K$-long list of parameters for the distributions each state uniquely describes. We call this list $\bm{E}=\{E_{1},E_{2},\ldots,E_{K}\}$ where for some $k\in\{1,2,\ldots,K\}$, the parameters describing the distributions of state $k$ are stored as $E_{k}=\{{\theta_{B}}^{(k)},{\lambda_{E}}^{(k)}\}$. This parameter describes the final remaining factor in the tree hidden Markov property, the emission likelihoods ${P}(\bm{x}_{n}\mid\bm{z}_{n})$. More explicitly, for some state $k\in\{1,2,\ldots,K\}$ and for some observation of cell fate and lifetime $(\phi_{n}, \tau_{n})$, we are trying to describe the probability ${P}(\bm{x}_{n}=(\phi_{n}, \tau_{n})\mid\bm{z}_{n}=k)$. Here we assume the observations are conditionally independent given their respective state variable which is essentially a Naive Bayes assumption on the emissions (each feature or observation $\phi_{n},\tau_{n}$ is conditionally independent of the other given the category or state $k$):
 
+$$
+\begin{align}
+        {P}(\bm{x}_{n}\mid\bm{z}_{n}) &= {P}(\bm{x}_{n}=(\phi_{n}, \tau_{n})\mid\bm{z}_{n}=k), \nonumber \\ &=  {P}(\bm{x}_{n,1}=\phi_{n}\mid\bm{z}_{n}=k)\times {P}(\bm{x}_{n,2}=\tau_{n}\mid\bm{z}_{n}=k), \label{eq:2} \\ &=  {P}(\bm{x}_{n,1}=\phi_{n}\mid p_{B}^{(k)})\times {P}(\bm{x}_{n,2}=\tau_{n}\mid c_{G}^{(k)}, s_{G}^{(k)}), \label{eq:3} \\ &= E_{k}(\phi_{n}, \tau_{n}). \label{eq:4}
+\end{align}
+$$
+
 
 This parameter can inform the user how likely each cell is going to be of a certain state. Ultimately, using the parameters we can elaborate on the hidden Markov tree property in Eq(1) as the following:
 
