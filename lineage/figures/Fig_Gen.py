@@ -38,7 +38,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
         lives2 = lives2[~np.isnan(lives2)]
 
         (KS, p_val) = stats.ks_2samp(lives, lives2)
-        while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length or p_val>0.02:
+        while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length or p_val > 0.02:
             X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
 
             lives = np.zeros(len(masterLineage))
@@ -109,7 +109,7 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
     betaExp_MAS_h1 = []
     betaExp_2_h1 = []
     numb_of_lineage_h1 = []
-    
+
     X1 = []
     for lineage_num in lineages:  # a pop with num number of lineages
         accuracy_h2 = []
@@ -120,10 +120,9 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
         betaExp_2_h2 = []
 
         for rep in range(reps):
-            
+
             if verbose:
                 print('making lineage')
-
 
             X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM, MASbetaExp, betaExp2)
             while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
