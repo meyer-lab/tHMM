@@ -1,6 +1,5 @@
 ---
 title: A lineage-based Markov tree model to quantify cellular heterogeneity
-
 author:
 - name: Shakthi Visagan
   affilnum: a
@@ -14,23 +13,16 @@ author:
   affilnum: a
 - name: Aaron S. Meyer
   affilnum: a,b
-  
 keywords: [cancer, heterogeneity, lineage, hidden Markov Model]
-
 affiliation:
 - name: Department of Bioengineering, Jonsson Comprehensive Cancer Center, Eli and Edythe Broad Center of Regenerative Medicine and Stem Cell Research; University of California, Los Angeles
   key: a
 - name: Contact info
   key: b
-  
 bibliography: ./manuscript/references.bib
-
 abstract: Targeted therapies, such as erlotinib, operate by antagonizing dysregulated signaling nodes in tumor cells. While responses to targeted agents can be remarkable, they are rarely curative. Furthermore, cell-to-cell heterogeneity stemming from genetic mutations, variation in signaling, and epigenetic state can contribute to resistance development. Current methods of quantifying tumor-drug response are population-level measurements and lack evolutionary dynamics. We present a novel computational method, the tree-based hidden Markov model (tHMM), which utilizes cell lineages to learn characteristic patterns of single cell heterogeneity and transitions between underlying latent states for dynamic tumor cell classification. A conventional hidden Markov model was adapted to a branching binary Markov tree of dividing cells with observed emissions to classify cells based on phenotypic observations, particularly cell end-of-life fate (division or death) and lifetime. The model can, therefore, fit observations from related cells and classify subpopulations. An adapted Viterbi algorithm was built to identify the states of each cell utilizing the parameters found from the modified Baum-Welch fitting and the inheritance information from the cell linkages in the lineage tree. To probabilistically model each observation, the cell fate and lifetime follow Bernoulli ($\theta_{B}$) and exponential ($\lambda_{E}$) distributions, respectively. Synthetic lineages were constructed consisting of parent cells susceptible to drug ($\theta_{B}=0.99$, $\lambda_{E}=80$), and a later transition forming a new state distribution of resistant cells ($\theta_{B}=0.8$, $\lambda_{E}=20$). 200 such lineages of various length were constructed and analyzed, and we observed improved state assignment accuracy of the tHMM as the number of cells in a lineage increased. Parameter estimation for the Bernoulli distribution governing cell fate was precise and accurate. The exponential distribution parameter was precise but slightly biased due to systematic errors stemming from excluding cells that continued past the experiment end, as well as removing seed cells that were unable to create a lineage. The tHMM cell classification pipeline can analyze cell lineages and assign cells to phenotypically distinct subpopulations (i.e. therapy-sensitive and therapy-resistant) for a wide range of lineage lengths and population sizes. The model quantifies the probabilistic distributions governing each subpopulation and may be used in conjunction with live-cell imaging for real-time drug screening and therapy evaluation. 
-
 link-citations: true
-
-csl: ./manuscript/templates/nature.csl
-
+csl: ./common/templates/nature.csl
 ---
 
 # Summary points
