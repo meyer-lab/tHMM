@@ -6,7 +6,6 @@ from .Matplot_gen import Matplot_gen
 from .Fig_Gen import Lineages_per_Population_Figure
 
 
-
 def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((9, 3), (1, 3))
@@ -21,4 +20,3 @@ def makeFigure():
     f.tight_layout()
 
     return f
-

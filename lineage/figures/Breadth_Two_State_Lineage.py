@@ -17,7 +17,7 @@ def Breadth_Two_State_Lineage(experimentTime, initCells, locBern, betaExp, switc
         LINEAGE = remove_unfinished_cells(LINEAGE)
         LINEAGE = remove_singleton_lineages(LINEAGE)
     X = LINEAGE
-    
+
     # Put cells in their respective true lineages based on their true states
     masterLineage = []
     sublineage2 = []
