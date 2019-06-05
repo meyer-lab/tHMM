@@ -24,9 +24,6 @@ manuscript/manuscript.pdf: manuscript/manuscript.tex $(patsubst %, $(fdir)/figur
 manuscript/manuscript.tex: manuscript/text/*.md
 	pandoc -s $(pan_common) --template=$(tdir)/default.latex --pdf-engine=xelatex -o $@
 
-manuscript/index.html: manuscript/text/*.md $(patsubst %, $(fdir)/figure%.svg, $(flist))
-	pandoc -s $(pan_common) -t html5 --mathjax -c ./templates/kultiad.css --template=$(tdir)/html.template -o $@
-
 test:
 	pytest -s
 
