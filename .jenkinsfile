@@ -5,7 +5,12 @@ pipeline {
     parallelsAlwaysFailFast()
   }
   stages {
-    stage('Clean') { steps { sh 'git clean -ffdx && make clean' } }
+    stage('Clean') {
+			steps {
+				sh 'git clean -ffdx && make clean'
+				sh 'git submodule update --init --recursive'
+			}
+	}
     stage('Build/Test') {
       parallel {
         stage('Test') {
