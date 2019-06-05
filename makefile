@@ -20,7 +20,7 @@ manuscript/manuscript.pdf: manuscript/manuscript.tex $(patsubst %, $(fdir)/figur
 	(cd ./manuscript && latexmk -xelatex -f -quiet)
 	rm -f ./manuscript/manuscript.b* ./manuscript/manuscript.aux ./manuscript/manuscript.fls
 
-manuscript/manuscript.tex: manuscript/text/*.md
+manuscript/manuscript.tex: manuscript/*.md
 	pandoc -s $(pan_common) --template=./common/templates/default.latex --pdf-engine=xelatex -o $@
 
 test:
