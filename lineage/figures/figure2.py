@@ -2,6 +2,9 @@
 This creates Figure 2.
 """
 from .figureCommon import subplotLabel, getSetup
+from .Matplot_gen import Matplot_gen
+from .Fig_Gen import Lineages_per_Population_Figure
+
 
 
 def makeFigure():
