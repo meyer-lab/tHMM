@@ -2,14 +2,6 @@
 This creates Figure 2.
 """
 from .figureCommon import subplotLabel, getSetup
-import numpy as np
-from matplotlib import pyplot as plt
-from .Depth_Two_State_Lineage import Depth_Two_State_Lineage
-from ..Analyze import Analyze
-from .Matplot_gen import Matplot_gen
-from .Fig_Gen import Lineage_Length, Lineages_per_Population_Figure
-from ..tHMM_utils import getAccuracy, getAIC
-from ..Lineage_utils import remove_singleton_lineages
 
 
 def makeFigure():
@@ -26,3 +18,4 @@ def makeFigure():
     f.tight_layout()
 
     return f
+
