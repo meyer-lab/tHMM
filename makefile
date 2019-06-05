@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 fdir = ./manuscript/figures
-pan_common = -F pandoc-crossref -F pandoc-citeproc -f markdown ./manuscript/text/*.md
+pan_common = -F pandoc-crossref -F pandoc-citeproc -f markdown ./manuscript/*.md
 
 .PHONY: clean test testprofile testcover docs
 
