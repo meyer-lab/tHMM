@@ -1,7 +1,6 @@
 SHELL := /bin/bash
 fdir = ./manuscript/figures
-tdir = ./manuscript/templates
-pan_common = -F pandoc-crossref -F pandoc-citeproc --filter=$(tdir)/figure-filter.py -f markdown ./manuscript/text/*.md
+pan_common = -F pandoc-crossref -F pandoc-citeproc -f markdown ./manuscript/text/*.md
 
 .PHONY: clean test testprofile testcover docs
 
@@ -22,7 +21,7 @@ manuscript/manuscript.pdf: manuscript/manuscript.tex $(patsubst %, $(fdir)/figur
 	rm -f ./manuscript/manuscript.b* ./manuscript/manuscript.aux ./manuscript/manuscript.fls
 
 manuscript/manuscript.tex: manuscript/text/*.md
-	pandoc -s $(pan_common) --template=$(tdir)/default.latex --pdf-engine=xelatex -o $@
+	pandoc -s $(pan_common) --template=./common/templates/default.latex --pdf-engine=xelatex -o $@
 
 test:
 	pytest -s
