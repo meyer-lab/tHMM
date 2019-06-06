@@ -1,7 +1,7 @@
 '''Generates a lineage with depth model ie one new cell state lineage is added to another state homogeneous lineage'''
 
 import numpy as np
-
+import logging
 from lineage.Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 from lineage.Lineage_utils import generatePopulationWithTime as gpt
 
