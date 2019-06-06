@@ -9,6 +9,7 @@ from .Depth_Two_State_Lineage import Depth_Two_State_Lineage
 from ..Analyze import Analyze
 from .Fig_Gen import KL_per_lineage
 from .Matplot_gen import moving_average
+import logging
 
 
 def makeFigure():
