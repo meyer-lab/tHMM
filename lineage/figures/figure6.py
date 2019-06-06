@@ -1,5 +1,5 @@
 """
-REPLAC WITH AIC
+This creates Figure 6.
 """
 from .figureCommon import subplotLabel, getSetup
 import numpy as np
