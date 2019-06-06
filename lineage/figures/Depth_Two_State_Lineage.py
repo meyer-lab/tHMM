@@ -1,7 +1,7 @@
 '''Generates a lineage with depth model ie one new cell state lineage is added to another state homogeneous lineage'''
 
 import numpy as np
-
+import logging
 from lineage.Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 from lineage.Lineage_utils import generatePopulationWithTime as gpt
 
@@ -49,4 +49,5 @@ def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, lo
 
     X = remove_unfinished_cells(newLineage)
     X = remove_singleton_lineages(newLineage)
+    logging.info('length of entire lineage:', len(newLineage), 'length master:',  len(masterLineage), 'length sublineage:', len(sublineage2))
     return(X, newLineage, masterLineage, sublineage2)

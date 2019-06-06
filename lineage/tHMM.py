@@ -38,7 +38,6 @@ class tHMM:
 
 ##------------------------ Initializing the parameter list --------------------------##
 
-
     def init_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage.
         In this function, the dictionary is initialized.
@@ -75,7 +74,7 @@ class tHMM:
         if self.FOM == 'E':
             temp_params["E"] = np.ones((numStates, 2))  # sequence of emission likelihood distribution parameters [Kx2]
             for state_j in range(numStates):
-                temp_params["E"][state_j, 0] = 1 / 2  # initializing all Bernoulli p parameters to 1/numStates
+                temp_params["E"][state_j, 0] = np.random.uniform(0.01, 0.99)  # initializing all Bernoulli p parameters to 1/numStates
                 temp_params["E"][state_j, 1] = 62.5 * (1 + np.random.uniform())  # initializing all Exponential beta parameters to 62.5
         elif self.FOM == 'Ga':
             temp_params["E"] = np.ones((numStates, 3))
@@ -83,7 +82,7 @@ class tHMM:
                 temp_params["E"][state_j, 0] = 1 / numStates  # initializing all Bernoulli p parameters to 1/numStates
                 temp_params["E"][state_j, 1] = 10 * (1 + np.random.uniform())  # Gamma shape parameter
                 temp_params["E"][state_j, 2] = 5 * (1 + np.random.uniform())  # Gamma scale parameter
- 
+
         for lineage_num in range(numLineages):  # for each lineage in our population
             paramlist.append(temp_params.copy())  # create a new dictionary holding the parameters and append it
             assert len(paramlist) == lineage_num + 1, "The number of parameters being estimated is mismatched with the number of lineages in your population. Check the number of unique root cells and the number of lineages in your data."
@@ -200,8 +199,8 @@ class tHMM:
                 if self.FOM == 'E':
                     k_expon_beta = E_param_k[1]
                 elif self.FOM == 'Ga':
-                    k_shape_gamma = E_param_k[1]
-                    k_scale_gamma = E_param_k[2]
+                    k_gamma_shape = E_param_k[1]
+                    k_gamma_scale = E_param_k[2]
 
                 for cell in lineage:  # for each cell in the lineage
                     current_cell_idx = lineage.index(cell)  # get the index of the current cell
@@ -221,7 +220,7 @@ class tHMM:
                         temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)  # bernoulli likelihood
                         if cell.fateObserved:
                             temp_g = sp.gamma.pdf(x=cell.tau, a=k_gamma_shape, scale=k_gamma_scale)
-                        assert np.isfinite(temp_g),"Gamma likelihood is returning NaN"
+                        assert np.isfinite(temp_g), "Gamma likelihood is returning NaN"
                         EL_array[current_cell_idx, state_k] = temp_g * temp_b
             EL.append(EL_array)  # append the EL_array for each lineage
         return EL
