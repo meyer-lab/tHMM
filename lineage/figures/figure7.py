@@ -1,5 +1,5 @@
 """
-This creates Figure 6.
+fake figure 7 - just a copy of figure 6
 """
 from .figureCommon import subplotLabel, getSetup
 import numpy as np
