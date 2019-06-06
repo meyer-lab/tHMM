@@ -7,10 +7,8 @@ from matplotlib import pyplot as plt
 from matplotlib import ticker as ticker
 from .Depth_Two_State_Lineage import Depth_Two_State_Lineage
 from ..Analyze import Analyze
-from .Fig_Gen import Lineage_Length, Lineages_per_Population_Figure, KL_per_lineage
+from .Fig_Gen import KL_per_lineage
 from .Matplot_gen import moving_average
-from ..tHMM_utils import getAccuracy, getAIC
-from ..Lineage_utils import remove_singleton_lineages
 
 
 def makeFigure():
