@@ -208,10 +208,9 @@ class TestModel(unittest.TestCase):
         check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy)
         self.assertTrue(check_acc)
 
-
     def test_mutual_info(self):
         """This function tests the accuracy of the Viterbi state assignment by getting the
-    mutual information between the true states of the cells in a lineage and the 
+    mutual information between the true states of the cells in a lineage and the
     states that Viterbi has assigned to the cells. It makes sure the accuracy is
     between 0 and 1."""
 

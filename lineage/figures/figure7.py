@@ -7,17 +7,15 @@ from matplotlib import pyplot as plt
 from .Depth_Two_State_Lineage import Depth_Two_State_Lineage
 from ..Analyze import Analyze
 from .Matplot_gen import Matplot_gen
-from .Fig_Gen import Lineage_Length, Lineages_per_Population_Figure, AIC
-from ..tHMM_utils import getAccuracy, getAIC
-from ..Lineage_utils import remove_singleton_lineages
+from .Fig_Gen import Lineage_Length, Lineages_per_Population_Figure
 
 
 def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((12, 9), (2, 3))
 
-    #Call function for AIC 
-    
+    # Call function for AIC
+
     number_of_cells_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, betaExp_MAS_h1, betaExp_2_h1 = Lineage_Length()
     Matplot_gen(ax[0:3], number_of_cells_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2,
                 betaExp_MAS_h1, betaExp_2_h1, xlabel='Cells per Lineage', FOM='E')  # Figure plots scale vs lineage length
