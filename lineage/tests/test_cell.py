@@ -123,7 +123,6 @@ class TestModel(unittest.TestCase):
         truther = (45 <= beta_out <= 55)
         self.assertTrue(truther)  # +/- 5 of beta
 
-
     def test_MLE_gamma_analytical(self):
         """ Use the analytical shortcut to estimate the Gamma parameters. """
         # test populations w.r.t. time

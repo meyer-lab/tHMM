@@ -1,7 +1,9 @@
 """
 This creates Figure 2.
+Should be the model figure.
 """
 from .figureCommon import subplotLabel, getSetup
+
 
 
 def makeFigure():
@@ -9,6 +11,7 @@ def makeFigure():
     ax, f = getSetup((7, 6), (3, 4))
 
     subplotLabel(ax[0], 'A')
+
 
     f.tight_layout()
 

@@ -28,7 +28,6 @@ def makeFigure():
 
     numb_of_lineage_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, betaExp_MAS_h1, betaExp_2_h1, MASbetaExp, betaExp2 = Lineages_per_Population_Figure()
     
-    
     x_vs_acc = np.column_stack((KL_h1, acc_h1))
     sorted_x_vs_acc = x_vs_acc[np.argsort(x_vs_acc[:, 0])]
     ax.set_xlabel(xlabel)
