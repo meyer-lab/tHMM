@@ -20,9 +20,9 @@ def Analyze(X, numStates):
     while run:
         tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
         fit(tHMMobj, max_iter=200, verbose=True)
-        for lineage in range(num)
-        if tHMMobj.paramlist[0]["E"][0, 1] < 1000 and tHMMobj.paramlist[0]["E"][1, 1] < 1000:
-            run = False
+        for lineage in range(num):
+            if tHMMobj.paramlist[0]["E"][0, 1] < 1000 and tHMMobj.paramlist[0]["E"][1, 1] < 1000:
+                run = False
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
     all_states = Viterbi(tHMMobj, deltas, state_ptrs)
