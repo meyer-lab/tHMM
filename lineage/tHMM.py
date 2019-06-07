@@ -197,8 +197,8 @@ class tHMM:
                 if self.FOM == 'E':
                     k_expon_beta = E_param_k[1]
                 elif self.FOM == 'Ga':
-                    k_shape_gamma = E_param_k[1]
-                    k_scale_gamma = E_param_k[2]
+                    k_gamma_shape = E_param_k[1]
+                    k_gamma_scale = E_param_k[2]
 
                 for cell in lineage:  # for each cell in the lineage
                     current_cell_idx = lineage.index(cell)  # get the index of the current cell

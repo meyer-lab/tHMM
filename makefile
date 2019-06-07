@@ -4,7 +4,7 @@ pan_common = -F pandoc-crossref -F pandoc-citeproc --filter=./common/templates/f
 
 .PHONY: clean test testprofile testcover docs
 
-flist = 1 2 3 4 5 S1 S2 S3 S4 S5
+flist = 1 2 3 4 5 6 7 S1 S2 S3 S4 S5
 
 venv: venv/bin/activate
 
