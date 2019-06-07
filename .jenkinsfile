@@ -6,12 +6,12 @@ pipeline {
   }
   stages {
     stage('Clean/Setup') {
-			steps {
-				sh 'git clean -ffdx && make clean'
-				sh 'git submodule update --init --recursive'
-				sh 'make venv'
-			}
-	}
+      steps {
+        sh 'git clean -ffdx && make clean'
+        sh 'git submodule update --init --recursive'
+        sh 'make venv'
+      }
+    }
     stage('Build/Test') {
       parallel {
         stage('Test') {
