@@ -33,7 +33,6 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
                                                        node_child_n_idx=node_child_n_idx)
 
     zeta = beta_child_state_k * T[state_j, state_k] * gamma_parent_state_j / (MSD_child_state_k * beta_parent_child_state_j)
-    print(beta_child_state_k, T, gamma_parent_state_j, MSD_child_state_k, beta_parent_child_state_j)
     return zeta
 
 
@@ -94,7 +93,6 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     gammas = get_root_gammas(tHMMobj, betas)
     get_nonroot_gammas(tHMMobj, gammas, betas)
     
-    print('fit has been undergone')
     # first stopping condition check
 
     old_LL_list = [-np.inf] * numLineages
@@ -108,7 +106,6 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     while go:  # exit the loop
 
         count += 1
-        print('BW COUNT', count)
         old_LL_list = new_LL_list
 
         # code for grouping all states in cell lineages

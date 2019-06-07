@@ -196,7 +196,6 @@ def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, sta
                                           node_parent_m_idx=node_parent_m_idx,
                                           node_child_n_idx=node_child_n_idx)
         beta_m_n_holder.append(beta_m_n)
-        # doesnt matter which node, but one of them is NAn ing print(beta_m_n, node_child_n_idx)
     result = np.prod(beta_m_n_holder)  # calculates the product of items in a list
     return result
 
