@@ -101,7 +101,7 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
 
 
 def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.999], MASbeta=[80], initCells2=[1],
-                   locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, switchT=False, AIC=False):
+                   locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, switchT=False, AIC=False, numState_start=1, numState_end=4):
     '''This has been modified for an exponential distribution'''
 
     accuracy_h1 = []  # list of lists of lists
@@ -139,7 +139,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
             yval = []
 
             #need to generate X, and do this for 
-            for numState in [1,2,3,4]:
+            for numState in range(numState_start, numState_end+1):
                 _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates=numState)
                 tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
                 AIC_value, numStates, deg = getAIC(tHMMobj, LL)
