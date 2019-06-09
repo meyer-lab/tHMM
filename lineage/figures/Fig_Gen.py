@@ -100,8 +100,8 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
     return data
 
 
-def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.999], MASbeta=[80], initCells2=[1],
-                   locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, switchT=False, AIC=False, numState_start=1, numState_end=3):
+def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1],
+                   locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, switchT=False, AIC=False, numState_start=1, numState_end=3):
     '''This has been modified for an exponential distribution'''
 
     accuracy_h1 = []  # list of lists of lists
@@ -110,7 +110,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
     bern_2_h1 = []
     betaExp_MAS_h1 = []
     betaExp_2_h1 = []
-
+    AIC_h1 = {str(numState): [] for numState in range(numState_start, numState_end+1)} 
     for rep in range(reps):
         logging.info('Rep:', rep)
 
@@ -137,17 +137,18 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
             x1val = []
             x2val = []
             yval = []
-
-            #need to generate X, and do this for 
             for numState in range(numState_start, numState_end+1):
                 _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates=numState)
                 tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
                 AIC_value, numStates, deg = getAIC(tHMMobj, LL)
                 print('3 values', AIC_value, numStates, deg)
-                x1val.append(numStates)
-                x2val.append(deg)
+                x1val.append(numStates[0]) # make numstate be a single value not an array of a value
+                x2val.append(deg[0]) # make deg be a single value not an array of a value
                 yval.append(AIC_value)
-        
+            flat_yval = [item for sublist in yval for item in sublist]
+            AIC_rel_0 = flat_yval - min(flat_yval) #make aic plot to be relative to the lowest value  
+            for ii, numState in enumerate(range(numState_start, numState_end+1)):
+                AIC_h1[str(numState)].append(AIC_rel_0[ii])
         else:
             _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
             accuracy_h2 = []
@@ -184,9 +185,11 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
             betaExp_2_h1.extend(betaExp_2_h2)
 
     if AIC:
-        flat_yval = [item for sublist in yval for item in sublist]
-        AIC_rel_0 = flat_yval - min(flat_yval) #make aic plot to be relative to the lowest value  
-        data = (x1val, x2val, AIC_rel_0)
+        AIC_mean, AIC_std = [], []
+        for ii, numState in enumerate(range(numState_start, numState_end+1)):
+            AIC_mean.append(np.mean(AIC_h1[str(numState)]))
+            AIC_std.append(np.std(AIC_h1[str(numState)]))
+        data = (x1val, x2val, AIC_mean, AIC_std)
     else:
         data = (number_of_cells_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, betaExp_MAS_h1, betaExp_2_h1)
     

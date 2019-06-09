@@ -20,10 +20,8 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((10, 10), (1, 1))
     # x1val, x2val, yval
-    x1val, x2val, yval = Lineage_Length(T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.999], MASbeta=[80], initCells2=[1],
-                   locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, AIC=True)
-    print(x1val, yval)
-    ax[0].scatter(x1val, yval, marker='*', c='b', s=500)
+    x1val, x2val, AIC_mean, AIC_std = Lineage_Length(T_MAS=500, T_2=100, reps=20, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, AIC=True, numState_start=1, numState_end=3)
+    ax[0].errorbar(x1val, AIC_mean, yerr=AIC_std, marker='*', c='b', fmt= 'o')
     ax[0].xaxis.set_major_locator(MaxNLocator(integer=True))
     ax[0].grid(True, linestyle='--')
     ax[0].set_xlabel('Number of States')
