@@ -169,7 +169,7 @@ def getAIC(tHMMobj, LL):
         AIC_value_holder.append(AIC_value)
 
     AIC_value_holder_rel_0 = AIC_value_holder - min(AIC_value_holder)  # this line is to make it so the minimum value is 0
-    return(AIC_value_holder_rel_0, [numStates] * len(AIC_value_holder), AIC_degrees_of_freedom_holder)
+    return(AIC_value_holder, [numStates] * len(AIC_value_holder), AIC_degrees_of_freedom_holder) # no longer returning relative to zero
 
 ##------------------------- Calculate accuracy ----------------------------------##
 

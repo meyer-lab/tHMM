@@ -143,6 +143,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
                 _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates=numState)
                 tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
                 AIC_value, numStates, deg = getAIC(tHMMobj, LL)
+                print('3 values', AIC_value, numStates, deg)
                 x1val.append(numStates)
                 x2val.append(deg)
                 yval.append(AIC_value)
@@ -183,7 +184,9 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
             betaExp_2_h1.extend(betaExp_2_h2)
 
     if AIC:
-        data = (x1val, x2val, yval)
+        flat_yval = [item for sublist in yval for item in sublist]
+        AIC_rel_0 = flat_yval - min(flat_yval) #make aic plot to be relative to the lowest value  
+        data = (x1val, x2val, AIC_rel_0)
     else:
         data = (number_of_cells_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, betaExp_MAS_h1, betaExp_2_h1)
     
