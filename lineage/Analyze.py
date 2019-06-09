@@ -20,7 +20,6 @@ def Analyze(X, numStates):
     while run:
         tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
         fit(tHMMobj, max_iter=200, verbose=True)
-        print(tHMMobj.paramlist[0]["E"])
         for state_i in range(numStates):
             if tHMMobj.paramlist[0]["E"][state_i, 0] < 1000 and tHMMobj.paramlist[0]["E"][state_i, 1] < 1000:
                 run = False

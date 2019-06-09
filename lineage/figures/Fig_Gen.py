@@ -101,7 +101,7 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
 
 
 def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.999], MASbeta=[80], initCells2=[1],
-                   locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, switchT=False, AIC=False, numState_start=1, numState_end=4):
+                   locBern2=[0.8], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, switchT=False, AIC=False, numState_start=1, numState_end=3):
     '''This has been modified for an exponential distribution'''
 
     accuracy_h1 = []  # list of lists of lists
@@ -193,8 +193,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
     return data
 
 
-def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[
-                                   80], initCells2=[1], locBern2=[0.999], beta2=[20], max_lin_length=300, min_lin_length=5, FOM='E', verbose=True, switchT=True):
+def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.999], beta2=[20], max_lin_length=300, min_lin_length=5, FOM='E', verbose=True, switchT=True):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of lineages in a population are varied'''
     if verbose:
         logging.info('starting')
