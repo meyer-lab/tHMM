@@ -118,18 +118,18 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
         if not switchT:
             X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
             while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
-                X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
+                X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
 
         elif switchT:
-            X, newLineage, masterLineage, sublineage2 = Breadth_Two_State_Lineage(
+            X, newLineage, masterLineage, subLineage2 = Breadth_Two_State_Lineage(
                 experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
             while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
-                X, newLineage, masterLineage, sublineage2 = Breadth_Two_State_Lineage(
+                X, newLineage, masterLineage, subLineage2 = Breadth_Two_State_Lineage(
                     experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
     
         X = remove_unfinished_cells(X)
         X = remove_singleton_lineages(X)
-        logging.info('X size: {}, masterLineage size: {}, subLineage2 size: {}'.format(len(X), len(masterLineage), len(sublineage2)))
+        logging.info('X size: {}, masterLineage size: {}, subLineage2 size: {}'.format(len(X), len(masterLineage), len(subLineage2)))
         
         #Call function for AIC 
         if AIC:
@@ -229,10 +229,10 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
                         X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
 
                 elif switchT:
-                    X, newLineage, masterLineage, sublineage2 = Breadth_Two_State_Lineage(
+                    X, newLineage, masterLineage, subLineage2 = Breadth_Two_State_Lineage(
                         experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
                     while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
-                        X, newLineage, masterLineage, sublineage2 = Breadth_Two_State_Lineage(
+                        X, newLineage, masterLineage, subLineage2 = Breadth_Two_State_Lineage(
                             experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
 
                 X = remove_unfinished_cells(X)
