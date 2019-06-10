@@ -44,7 +44,6 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
                 beta2[rep] = [np.random.randint(20, 40, size = 1)][0][0]
             #generate new lineage
             X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern_array[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta_array[rep]], [beta2[rep]])
-        
         logging.info('Repetition Number: {}'.format(rep+1))
         
         X = remove_singleton_lineages(newLineage)
@@ -113,7 +112,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
     AIC_h1 = {str(numState): [] for numState in range(numState_start, numState_end+1)} 
     for rep in range(reps):
         logging.info('Rep:', rep)
-
+        print(rep)
         # Make the lineage type
         if not switchT:
             X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
@@ -140,7 +139,6 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
                 _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates=numState)
                 tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
                 AIC_value, numStates, deg = getAIC(tHMMobj, LL)
-                print('3 values', AIC_value, numStates, deg)
                 x1val.append(numStates[0]) # make numstate be a single value not an array of a value
                 x2val.append(deg[0]) # make deg be a single value not an array of a value
                 yval.append(AIC_value)
