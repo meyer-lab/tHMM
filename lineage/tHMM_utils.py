@@ -159,14 +159,14 @@ def getAIC(tHMMobj, LL):
     numStates = tHMMobj.numStates
     AIC_value_holder = []
     AIC_degrees_of_freedom_holder = []
+    number_of_parameters = 0
     for num in range(tHMMobj.numLineages):
-        number_of_parameters = 0
         number_of_parameters += 1
 
-        AIC_degrees_of_freedom = numStates**2 + numStates * number_of_parameters - 1
-        AIC_degrees_of_freedom_holder.append(AIC_degrees_of_freedom)
-        AIC_value = -2 * LL[num] + 2 * AIC_degrees_of_freedom
-        AIC_value_holder.append(AIC_value)
+    AIC_degrees_of_freedom = numStates**2 + numStates * number_of_parameters - 1
+    AIC_degrees_of_freedom_holder.append(AIC_degrees_of_freedom)
+    AIC_value = -2 * LL[num] + 2 * AIC_degrees_of_freedom
+    AIC_value_holder.append(AIC_value)
 
     AIC_value_holder_rel_0 = AIC_value_holder - min(AIC_value_holder)  # this line is to make it so the minimum value is 0
     return(AIC_value_holder, [numStates] * len(AIC_value_holder), AIC_degrees_of_freedom_holder) # no longer returning relative to zero

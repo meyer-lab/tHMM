@@ -112,7 +112,6 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
     AIC_h1 = {str(numState): [] for numState in range(numState_start, numState_end+1)} 
     for rep in range(reps):
         logging.info('Rep:', rep)
-        print(f'rep:{rep}')
         # Make the lineage type
         if not switchT:
             X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
@@ -136,7 +135,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
             x2val = []
             yval = []
             for numState in range(numState_start, numState_end+1):
-                print(f'numState:{numState}')
+                logging.info(f'numState:{numState}')
                 _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates=numState)
                 tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
                 AIC_value, numStates, deg = getAIC(tHMMobj, LL)
