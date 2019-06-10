@@ -20,7 +20,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((10, 10), (1, 1))
     # x1val, x2val, yval
-    x1val, x2val, AIC_mean, AIC_std = Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=200, min_lin_length=80, FOM='E', verbose=False, AIC=True, numState_start=1, numState_end=3)
+    x1val, x2val, AIC_mean, AIC_std = Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=200, min_lin_length=80, FOM='E', verbose=False, AIC=True, numState_start=1, numState_end=5)
     ax[0].errorbar(x1val, AIC_mean, yerr=AIC_std, marker='*', c='b', fmt= 'o')
     ax[0].xaxis.set_major_locator(MaxNLocator(integer=True))
     ax[0].grid(True, linestyle='--')
