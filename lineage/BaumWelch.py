@@ -172,7 +172,6 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                     tHMMobj.paramlist[num]["E"][state, 1] = global_params['Ga_shape' + str(state)]
                     tHMMobj.paramlist[num]["E"][state, 2] = global_params['Ga_scale' + str(state)]
 
-
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
 
