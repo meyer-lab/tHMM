@@ -44,7 +44,7 @@ pipeline {
   post {
     always {
       junit allowEmptyResults: true, testResults: 'junit.xml'
-      cleanWs disableDeferredWipeout: true, deleteDirs: true
+      cleanWs cleanWhenFailure: false, cleanWhenNotBuilt: false, cleanWhenUnstable: false
     }
   }
 }
