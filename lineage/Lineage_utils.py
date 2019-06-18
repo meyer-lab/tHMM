@@ -404,7 +404,7 @@ def select_population(X, experimentTime):
                 elif cell.left.startT > intended_end_time:
                     # if the cell's start time is before the intended end time
                     # and has daughter cells whose start times are after the intended
-                    # end time, then that parent cell is a leaf
+                    # end time, then that parent cell is a leaf in our new population
                     assert cell.endT > intended_end_time
                     assert cell.left.startT == cell.right.startT
                     cell.left = None
@@ -413,7 +413,7 @@ def select_population(X, experimentTime):
 
                 new_population.append(cell)
 
-            assert ~math.isnan(cell.endT), "There still exists NaN in your population after removing undetermined cells"
+            assert not math.isnan(cell.endT), "There still exists NaN in your population after removing undetermined cells"
 
     return new_population
 
