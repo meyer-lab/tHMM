@@ -194,7 +194,6 @@ class TestModel(unittest.TestCase):
         temp1 = get_parents_for_level(level, self.lineage1)
         self.assertEqual(temp1, {1, 2})
 
-'''
 #     def test_getAccuracy(self):
 #         """
 #         checks whether the accuracy is in the range
@@ -233,7 +232,6 @@ class TestModel(unittest.TestCase):
 #        t.Accuracy, t.states, t.stateAssignment = getAccuracy(t, all_states, verbose=False)
 #        check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy)
 #        self.assertTrue(check_acc)
-'''
 
     def test_mutual_info(self):
         """This function tests the accuracy of the Viterbi state assignment by getting the

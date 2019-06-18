@@ -402,6 +402,7 @@ def select_population(X, experimentTime):
                     assert cell.left.startT == cell.right.startT
                     cell.left = None
                     cell.right = None
+                    assert cell.isLeaf() # new leaf being made 
 
                 new_population.append(cell)
 
