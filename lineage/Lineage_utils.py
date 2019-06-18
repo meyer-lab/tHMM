@@ -399,6 +399,7 @@ def select_population(X, experimentTime):
                 if cell.left:
                     pass
                 elif cell.left.startT > intended_end_time:
+                    assert cell.left.startT == cell.right.startT
                     cell.left = None
                     cell.right = None
 
