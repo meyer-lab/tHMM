@@ -2,6 +2,7 @@
 
 import numpy as np
 import scipy as sp
+import math
 from scipy.optimize import root
 from scipy.special import logsumexp
 from .CellNode import generateLineageWithTime
@@ -404,7 +405,7 @@ def modify_population(X, experimentTime):
             cell.right = None
 
         # make sure we don't have NaN in the population
-        assert ~np.isnan(cell.endT), "There still exists NaN in your population after removing undetermined cells"
+        assert ~math.isnan(cell.endT), "There still exists NaN in your population after removing undetermined cells"
 
     return new_population
 

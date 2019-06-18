@@ -165,3 +165,8 @@ class TestModel(unittest.TestCase):
 
         # the Bernoulli parameter estimate should be greater than than locBern since bern2>locBern
         self.assertTrue(bernEstimate > 0.7)
+
+    def test_modify_pop(self):
+        """ calls modify population to see if it is correctly removing unfinished cells or not"""
+
+        

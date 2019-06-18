@@ -86,6 +86,22 @@ class TestModel(unittest.TestCase):
 
         self.assertEqual(num_NAN, 0)  # there should be no unfinished cells left
 
+    def test_modify_population(self):
+        '''
+        Checks to see if all NaNs are removed from the lineages.
+        '''
+        experimentTime = 200.
+        initCells = [50, 50]
+        locBern = [0.6, 0.9]
+        betaExp = [40, 50]
+        X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
+        X = modify_population(X)
+        nm_NAN = 0
+        for cell in X:
+            if cell.isUnfinished():
+                num_NAN +=1
+        self.assertEqual(num_NAN, 0)
+
     def test_get_numLineages(self):
         '''
         Checks to see that the initial number
