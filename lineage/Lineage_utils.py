@@ -356,24 +356,55 @@ def gammaAnalytical(X):
 
 ##------------------------------ Select the population up to some time point -----------------------------------##
 
-def select_population(lineage, experimentTime):
+def modify_population(X, experimentTime):
+    """
+    In this function we remove the cells that are unfinished at the end and restrict our end-time analysis and build the model 
+    up to some time-point, which is intended_end_time. 
+    Here we first loop over the leaf cells and get the maximum tau of those, then to make sure we avoid unfinished cells in the
+    new population, we add it to 1 [hour] and then this will be the time-interval from the right (end of the experiment). In this
+    way we find the suitable end-time so that for all the cells in the lineage we have the tau and fate of all cells.
+    
+    Args:
+    -----
+        X (list of objects): a list holding the cells of the population as objects.
+        experimentTime (int/float): experiment time for simulation -- the same as before.
+    Returns:
+    --------
+        new_population (list of objects): after removing those cells at the end that we don't know their fate and end time.
+    *** Make sure you run the experiment long enough, experimentTime >>1 to have a reasonable number of cells at the end
+    """
     
     leaf_taus = []
     new_population = []
+    cell_index = []
 
-    for cell in lineage:
+    # first remove singleton lineages
+    X = remove_singleton_lineages(X)
+    
+    # get the lifetime of leaf cells and append them to a list
+    for cell in X:
         if cell.isLeaf():
+            cell_index.append(X.index(cell))
             leaf_taus.append(cell.tau)
 
-    intended_interval = max(leaf_taus) + 1
+    # find the intended end of experiment time by maximum tau of leaaf cells
+    intended_interval = max(leaf_taus) + 0.01
     intended_end_time = experimentTime - intended_interval
 
-    for cell in lineage:
+    # lose the cells that were born `after` intended experiment end time
+    for cell in X:
         if cell.startT <= intended_end_time:
             new_population.append(cell)
 
+    # put the latest cells to be leaf cells
     for cell in new_population:
-        assert cell.startT <= intended_end_time, "Something is wrong in aquiring cells for intended end time"
+        temp1 = cell.left
+        if temp1.startT > intended_end_time:
+            cell.left = None
+            cell.right = None
+
+        # make sure we don't have NaN in the population
+        assert ~np.isnan(cell.endT), "There still exists NaN in your population after removing undetermined cells"
 
     return new_population
 
