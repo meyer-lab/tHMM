@@ -402,7 +402,6 @@ def select_population(X, experimentTime):
                     # we don't have to do anything to it.
                     # If the cell is a leaf, then it must be that 
                     # its end time is before the intended end time.
-                    assert cell.endT < intended_end_time
                     pass 
                 elif cell.left.startT > intended_end_time:
                     # if the cell's start time is before the intended end time
