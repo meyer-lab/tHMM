@@ -86,7 +86,7 @@ class TestModel(unittest.TestCase):
 
         self.assertEqual(num_NAN, 0)  # there should be no unfinished cells left
 
-    def test_modify_population(self):
+    def test_select_population(self):
         '''
         Checks to see if all NaNs are removed from the lineages.
         '''
@@ -194,30 +194,30 @@ class TestModel(unittest.TestCase):
         temp1 = get_parents_for_level(level, self.lineage1)
         self.assertEqual(temp1, {1, 2})
 
-    def test_getAccuracy(self):
-        """
-        checks whether the accuracy is in the range
-        """
-        numStates = 2
+#     def test_getAccuracy(self):
+#         """
+#         checks whether the accuracy is in the range
+#         """
+#         numStates = 2
 
-        switchT = 150
-        experimentTime = switchT + 150
-        initCells = [1]
-        locBern = [0.9999]
-        betaExp1 = [50]
-        bern2 = [0.75]
-        betaExp2 = [50]
+#         switchT = 150
+#         experimentTime = switchT + 150
+#         initCells = [1]
+#         locBern = [0.9999]
+#         betaExp1 = [50]
+#         bern2 = [0.75]
+#         betaExp2 = [50]
 
-        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
-        LINEAGE = remove_unfinished_cells(LINEAGE)
-        LINEAGE = remove_singleton_lineages(LINEAGE)
-        while len(LINEAGE) <= 5:
-            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
-            LINEAGE = remove_unfinished_cells(LINEAGE)
-            LINEAGE = remove_singleton_lineages(LINEAGE)
+#         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
+#         LINEAGE = remove_unfinished_cells(LINEAGE)
+#         LINEAGE = remove_singleton_lineages(LINEAGE)
+#         while len(LINEAGE) <= 5:
+#             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
+#             LINEAGE = remove_unfinished_cells(LINEAGE)
+#             LINEAGE = remove_singleton_lineages(LINEAGE)
 
-        X = LINEAGE
-        X_new = select_population(X, experimentTime)
+#         X = LINEAGE
+#         X_new = select_population(X, experimentTime)
 
         for cell in X_new:
             print('new times', cell.tau, 'true state', cell.true_state)

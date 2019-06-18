@@ -357,7 +357,7 @@ def gammaAnalytical(X):
 
 ##------------------------------ Select the population up to some time point -----------------------------------##
 
-def modify_population(X, experimentTime):
+def select_population(X, experimentTime):
     """
     In this function we remove the cells that are unfinished at the end and restrict our end-time analysis and build the model 
     up to some time-point, which is intended_end_time. 
