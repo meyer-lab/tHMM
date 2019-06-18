@@ -376,7 +376,6 @@ def select_population(X, experimentTime):
     """
     
     new_population = []
-    leaf_cell_indices = []
     leaf_cell_taus = []
 
     # first remove singleton lineages
@@ -385,7 +384,6 @@ def select_population(X, experimentTime):
     # get the lifetime of leaf cells and append them to a list
     for cell in X:
         if cell.isLeaf():
-            leaf_cell_indices.append(X.index(cell))
             leaf_cell_taus.append(cell.tau)
 
     # find the intended end of experiment time by maximum tau of leaf cells
