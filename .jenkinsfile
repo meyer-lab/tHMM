@@ -5,7 +5,13 @@ pipeline {
     parallelsAlwaysFailFast()
   }
   stages {
-    stage('Clean') { steps { sh 'git clean -ffdx && make clean' } }
+    stage('Clean/Setup') {
+      steps {
+        sh 'git clean -ffdx && make clean'
+        sh 'git submodule update --init --recursive'
+        sh 'make venv'
+      }
+    }
     stage('Build/Test') {
       parallel {
         stage('Test') {
@@ -16,7 +22,7 @@ pipeline {
         }
         stage('Lint') {
           steps {
-            sh '(pylint --rcfile=.pylintrc lineage > pylint.log || echo "pylint exited with $?")'
+            sh '(pylint --rcfile=./common/pylintrc lineage > pylint.log || echo "pylint exited with $?")'
             recordIssues(tools: [pyLint(pattern: 'pylint.log')])
           }
         }
@@ -38,6 +44,7 @@ pipeline {
   post {
     always {
       junit allowEmptyResults: true, testResults: 'junit.xml'
+      cleanWs cleanWhenFailure: false, cleanWhenNotBuilt: false, cleanWhenUnstable: false
     }
   }
 }
