@@ -388,7 +388,7 @@ def select_population(X, experimentTime):
             cell_index.append(X.index(cell))
             leaf_taus.append(cell.tau)
 
-    # find the intended end of experiment time by maximum tau of leaaf cells
+    # find the intended end of experiment time by maximum tau of leaf cells
     intended_interval = max(leaf_taus) + 1.0
     intended_end_time = experimentTime - intended_interval
 
