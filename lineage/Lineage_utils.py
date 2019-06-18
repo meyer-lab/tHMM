@@ -394,9 +394,9 @@ def select_population(X, experimentTime):
 
     # lose the cells that were born after intended experiment end time
     for cell in X:
-        if cell != None:
+        if not cell:
             if cell.startT <= intended_end_time:
-                if cell.left == None:
+                if cell.left:
                     pass
                 elif cell.left.startT > intended_end_time:
                     cell.left = None
