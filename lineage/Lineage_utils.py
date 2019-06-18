@@ -389,23 +389,22 @@ def select_population(X, experimentTime):
             leaf_taus.append(cell.tau)
 
     # find the intended end of experiment time by maximum tau of leaaf cells
-    intended_interval = max(leaf_taus) + 0.01
+    intended_interval = max(leaf_taus) + 1.0
     intended_end_time = experimentTime - intended_interval
 
-    # lose the cells that were born `after` intended experiment end time
+    # lose the cells that were born after intended experiment end time
     for cell in X:
-        if cell.startT <= intended_end_time:
-            new_population.append(cell)
+        if cell != None:
+            if cell.startT <= intended_end_time:
+                if cell.left == None:
+                    pass
+                elif cell.left.startT > intended_end_time:
+                    cell.left = None
+                    cell.right = None
 
-    # put the latest cells to be leaf cells
-    for cell in new_population:
-        temp1 = cell.left
-        if temp1.startT > intended_end_time:
-            cell.left = None
-            cell.right = None
+                new_population.append(cell)
 
-        # make sure we don't have NaN in the population
-        assert ~math.isnan(cell.endT), "There still exists NaN in your population after removing undetermined cells"
+            assert ~math.isnan(cell.endT), "There still exists NaN in your population after removing undetermined cells"
 
     return new_population
 

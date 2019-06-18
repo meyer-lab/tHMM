@@ -95,8 +95,8 @@ class TestModel(unittest.TestCase):
         locBern = [0.6, 0.9]
         betaExp = [40, 50]
         X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
-        X = select_population(X)
-        nm_NAN = 0
+        X = select_population(X, experimentTime)
+        num_NAN = 0
         for cell in X:
             if cell.isUnfinished():
                 num_NAN +=1
