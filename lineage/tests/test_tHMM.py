@@ -194,50 +194,49 @@ class TestModel(unittest.TestCase):
         temp1 = get_parents_for_level(level, self.lineage1)
         self.assertEqual(temp1, {1, 2})
 
-#     def test_getAccuracy(self):
-#         """
-#         checks whether the accuracy is in the range
-#         """
-#         numStates = 2
+    def test_getAccuracy(self):
+        """
+        checks whether the accuracy is in the range
+        """
+        numStates = 2
+        switchT = 150
+        experimentTime = switchT + 150
+        initCells = [1]
+        locBern = [0.9999]
+        betaExp1 = [50]
+        bern2 = [0.75]
+        betaExp2 = [50]
 
-#         switchT = 150
-#         experimentTime = switchT + 150
-#         initCells = [1]
-#         locBern = [0.9999]
-#         betaExp1 = [50]
-#         bern2 = [0.75]
-#         betaExp2 = [50]
+        LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
+        LINEAGE = remove_unfinished_cells(LINEAGE)
+        LINEAGE = remove_singleton_lineages(LINEAGE)
+        while len(LINEAGE) <= 5:
+            LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
+            LINEAGE = remove_unfinished_cells(LINEAGE)
+            LINEAGE = remove_singleton_lineages(LINEAGE)
 
-#         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
-#         LINEAGE = remove_unfinished_cells(LINEAGE)
-#         LINEAGE = remove_singleton_lineages(LINEAGE)
-#         while len(LINEAGE) <= 5:
-#             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
-#             LINEAGE = remove_unfinished_cells(LINEAGE)
-#             LINEAGE = remove_singleton_lineages(LINEAGE)
+        X = LINEAGE
+        X_new = select_population(X, experimentTime)
 
-#         X = LINEAGE
-#         X_new = select_population(X, experimentTime)
+        for cell in X_new:
+            print('new times', cell.tau, 'true state', cell.true_state)
 
-#        for cell in X_new:
-#            print('new times', cell.tau, 'true state', cell.true_state)
+        t = tHMM(X_new, numStates=2)
+        fit(t, max_iter=500, verbose=True)
 
-#        t = tHMM(X_new, numStates=2)
-#        fit(t, max_iter=500, verbose=True)
+        deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
+        get_nonleaf_deltas(t, deltas, state_ptrs)
+        all_states = Viterbi(t, deltas, state_ptrs)
 
-#       deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
-#        get_nonleaf_deltas(t, deltas, state_ptrs)
-#        all_states = Viterbi(t, deltas, state_ptrs)
+        t.Accuracy, t.states, t.stateAssignment = getAccuracy(t, all_states, verbose=False)
+        check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy)
+        self.assertTrue(check_acc)
 
-#        t.Accuracy, t.states, t.stateAssignment = getAccuracy(t, all_states, verbose=False)
-#        check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy)
-#        self.assertTrue(check_acc)
-
-    def test_mutual_info(self):
-        """This function tests the accuracy of the Viterbi state assignment by getting the
+    '''def test_mutual_info(self):
+        This function tests the accuracy of the Viterbi state assignment by getting the
     mutual information between the true states of the cells in a lineage and the
     states that Viterbi has assigned to the cells. It makes sure the accuracy is
-    between 0 and 1."""
+    between 0 and 1.
 
         numStates = 2
 
@@ -278,7 +277,7 @@ class TestModel(unittest.TestCase):
 
         t.Accuracy2 = get_mutual_info(t, all_states, verbose=True)
         check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy2)
-        self.assertTrue(check_acc)
+        self.assertTrue(check_acc)'''
 
     #######################
     # tHMM.py tests below #

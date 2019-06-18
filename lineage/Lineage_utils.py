@@ -393,17 +393,15 @@ def select_population(X, experimentTime):
     # lose the cells that were born after intended experiment end time
     for cell in X:
         if cell:
-            if cell.startT <= intended_end_time:
+            if cell.startT <= intended_end_time and not cell.isUnfinished():
                 # only if the cell is born before the intended experiment time 
                 # do we think about keeping the cell
                 if cell.isLeaf():
                     # If the cell's start time is before our intended end time
                     # and if the cell is a leaf
                     # we don't have to do anything to it.
-                    # If the cell is a leaf, then it must be that 
-                    # its end time is before the intended end time.
                     pass 
-                elif cell.left.startT > intended_end_time:
+                elif not cell.isLeaf() and cell.left.startT > intended_end_time:
                     # if the cell's start time is before the intended end time
                     # and has daughter cells whose start times are after the intended
                     # end time, then that parent cell is a leaf in our new population
@@ -412,11 +410,11 @@ def select_population(X, experimentTime):
                     cell.left = None
                     cell.right = None
                     assert cell.isLeaf() # new leaf being made 
-
+                
+                assert not math.isnan(cell.endT), "There still exists NaN in your population after removing undetermined cells"
                 new_population.append(cell)
-
-            assert not math.isnan(cell.endT), "There still exists NaN in your population after removing undetermined cells"
-
+    
+    assert len(new_population) <= len(X)
     return new_population
 
 
