@@ -387,16 +387,25 @@ def select_population(X, experimentTime):
             leaf_cell_taus.append(cell.tau)
 
     # find the intended end of experiment time by maximum tau of leaf cells
-    intended_interval = max(leaf_taus) + 1.0
+    intended_interval = max(leaf_cell_taus) + 1.0
     intended_end_time = experimentTime - intended_interval
 
     # lose the cells that were born after intended experiment end time
     for cell in X:
-        if not cell:
+        if cell:
             if cell.startT <= intended_end_time:
-                if cell.left:
-                    pass
+                # only if the cell is born before the intended experiment time 
+                # do we think about keeping the cell
+                if cell.isLeaf():
+                    # if the cell's start time is before our intended end time
+                    # and if the cell is a leaf
+                    # we don't have to do anything to it
+                    pass 
                 elif cell.left.startT > intended_end_time:
+                    # if the cell's start time is before the intended end time
+                    # and has daughter cells whose start times are after the intended
+                    # end time, then that parent cell is a leaf
+                    assert cell.endT > intended_end_time
                     assert cell.left.startT == cell.right.startT
                     cell.left = None
                     cell.right = None
