@@ -208,18 +208,15 @@ class TestModel(unittest.TestCase):
         betaExp2 = [50]
 
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
-        LINEAGE = remove_unfinished_cells(LINEAGE)
+        #LINEAGE = remove_unfinished_cells(LINEAGE)
         LINEAGE = remove_singleton_lineages(LINEAGE)
         while len(LINEAGE) <= 5:
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
-            LINEAGE = remove_unfinished_cells(LINEAGE)
+            #LINEAGE = remove_unfinished_cells(LINEAGE)
             LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
         X_new = select_population(X, experimentTime)
-
-        for cell in X_new:
-            print('new times', cell.tau, 'true state', cell.true_state)
 
         t = tHMM(X_new, numStates=2)
         fit(t, max_iter=500, verbose=True)
