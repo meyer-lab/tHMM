@@ -1,6 +1,10 @@
 *.sublime-workspace
+
 **/.ipynb_checkpoints
 **.ipynb
+# Exception to the rule
+!Guide_to_tHMM.ipynb
+
 **/__pycache__/
 nosetests.xml
 **.png
