@@ -34,7 +34,7 @@ def makeFigure():
     ax1.set_xbound(ax1.get_xbound())
     ax1.set_xticklabels(x2val)
     ax1.set_xlabel('Number of parameters')
-    matplotlib.rcParams.update({'font.size': 28})
+    #matplotlib.rcParams.update({'font.size': 28}) #globally
     
     
     f.tight_layout()

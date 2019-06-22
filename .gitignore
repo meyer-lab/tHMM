@@ -6,3 +6,5 @@ nosetests.xml
 **.png
 **.pdf
 **.svg
+*venv
+venv

@@ -131,18 +131,18 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
         
         #Call function for AIC 
         if AIC:
-            x1val = []
-            x2val = []
-            yval = []
+            numstateval = []
+            AICval = []
+            LLval = []
             for numState in range(numState_start, numState_end+1):
                 logging.info(f'numState:{numState}')
                 _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates=numState)
                 tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
-                AIC_value, numStates, deg = getAIC(tHMMobj, LL)
-                x1val.append(numStates[0]) # make numstate be a single value not an array of a value
-                x2val.append(deg[0]) # make deg be a single value not an array of a value
-                yval.append(AIC_value)
-            flat_yval = [item for sublist in yval for item in sublist]
+                AIC_ls_rel_0, LL_ls_rel_0, AIC_degrees_of_freedom = getAIC(tHMMobj, LL)
+                numstateval.append(numStates[0]) # make numstate be a single value not an array of a value
+                AICval.append(sum(AIC_ls_rel_0)) # take total AIC across all lineages for this numstate
+                LLval.append(sum(LL_ls_rel_0)) # take total AIC across all lineages for this numstate
+            flat_yval = [item for sublist in AICval for item in sublist]
             AIC_rel_0 = flat_yval - min(flat_yval) #make aic plot to be relative to the lowest value  
             for ii, numState in enumerate(range(numState_start, numState_end+1)):
                 AIC_h1[str(numState)].append(AIC_rel_0[ii])

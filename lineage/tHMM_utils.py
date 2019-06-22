@@ -115,9 +115,9 @@ def getAIC(tHMMobj, LL):
 
     Returns:
         ----------
-        AIC_value_holder_rel_0 (list): containing AIC values relative to 0 for each lineage.
-        [numStates]*len(AIC_value_holder) (list): a list containing the # of states, repeated # of lineage times.
-        AIC_degrees_of_freedom_holder (list): Contains all of the parameters for each of the lineages.
+        AIC_ls_rel_0 (list): containing AIC values relative to 0 for each lineage.
+        LL_ls_rel_0 (list): containing LL values relative to 0 for each lineage.
+        AIC_degrees_of_freedom : the degrees of freedom in AIC calculation (numStates**2 + numStates * number_of_parameters - 1) - same for each lineage
 
 
     Example Usage:
@@ -157,19 +157,20 @@ def getAIC(tHMMobj, LL):
         plt.show()
     '''
     numStates = tHMMobj.numStates
-    AIC_value_holder = []
-    AIC_degrees_of_freedom_holder = []
+    AIC_ls = []
+    LL_ls = []
     number_of_parameters = 0
-    for num in range(tHMMobj.numLineages):
+    for param in range(tHMMobj.paramlist[0]['E'].shape[1]): #obtain the paramlist for one lineage which serves as same for all lineages because they all have the same E values
         number_of_parameters += 1
-
     AIC_degrees_of_freedom = numStates**2 + numStates * number_of_parameters - 1
-    AIC_degrees_of_freedom_holder.append(AIC_degrees_of_freedom)
-    AIC_value = -2 * LL[num] + 2 * AIC_degrees_of_freedom
-    AIC_value_holder.append(AIC_value)
+    for num in range(tHMM.numlineages):
+        AIC_value = -2 * LL[num] + 2 * AIC_degrees_of_freedom
+        AIC_ls.append(AIC_value)
+        LL_ls.append(LL[num])
 
-    AIC_value_holder_rel_0 = AIC_value_holder - min(AIC_value_holder)  # this line is to make it so the minimum value is 0
-    return(AIC_value_holder, [numStates] * len(AIC_value_holder), AIC_degrees_of_freedom_holder) # no longer returning relative to zero
+    AIC_ls_rel_0 = AIC_value_holder - min(AIC_value_holder)  # this line is to make it so the minimum value is 0
+    LL_ls_rel_0 =  LL_ls - min(LL_ls)  # this line is to make it so the minimum value is 0
+    return(AIC_ls_rel_0, LL_ls_rel_0, AIC_degrees_of_freedom) # no longer returning relative to zero
 
 ##------------------------- Calculate accuracy ----------------------------------##
 
