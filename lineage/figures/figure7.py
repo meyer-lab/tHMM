@@ -5,7 +5,7 @@ from .figureCommon import subplotLabel, getSetup
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import ticker as ticker
-from .Depth_Two_State_Lineage import Depth_Two_State_Lineage
+from ..Depth_Two_State_Lineage import Depth_Two_State_Lineage
 from ..Analyze import Analyze
 from .Matplot_gen import Matplot_gen
 from .Fig_Gen import Lineage_Length, Lineages_per_Population_Figure

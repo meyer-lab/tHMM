@@ -5,8 +5,8 @@ from matplotlib import pyplot as plt
 import scipy
 import scipy.stats
 import logging
-from .Depth_Two_State_Lineage import Depth_Two_State_Lineage
-from .Breadth_Two_State_Lineage import Breadth_Two_State_Lineage
+from ..Depth_Two_State_Lineage import Depth_Two_State_Lineage
+from ..Breadth_Two_State_Lineage import Breadth_Two_State_Lineage
 from ..Analyze import Analyze
 from ..BaumWelch import fit
 from .Matplot_gen import Matplot_gen
