@@ -33,7 +33,7 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
     betaExp_2_h1 = []
     lineage_h1 = []
 
-    for rep in range(reps):        
+    for rep in range(reps):  
         X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern_array[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta_array[rep]], [beta2[rep]])
 
         
@@ -110,7 +110,9 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
     betaExp_MAS_h1 = []
     betaExp_2_h1 = []
     AIC_h1 = {str(numState): [] for numState in range(numState_start, numState_end+1)} 
+    LL_h1 = {str(numState): [] for numState in range(numState_start, numState_end+1)}
     for rep in range(reps):
+        print(rep)
         logging.info('Rep:', rep)
         # Make the lineage type
         if not switchT:
@@ -138,14 +140,10 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
                 logging.info(f'numState:{numState}')
                 _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates=numState)
                 tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
-                AIC_ls_rel_0, LL_ls_rel_0, AIC_degrees_of_freedom = getAIC(tHMMobj, LL)
-                numstateval.append(numStates[0]) # make numstate be a single value not an array of a value
-                AICval.append(sum(AIC_ls_rel_0)) # take total AIC across all lineages for this numstate
-                LLval.append(sum(LL_ls_rel_0)) # take total AIC across all lineages for this numstate
-            flat_yval = [item for sublist in AICval for item in sublist]
-            AIC_rel_0 = flat_yval - min(flat_yval) #make aic plot to be relative to the lowest value  
-            for ii, numState in enumerate(range(numState_start, numState_end+1)):
-                AIC_h1[str(numState)].append(AIC_rel_0[ii])
+                AIC_ls, LL_ls, AIC_degrees_of_freedom = getAIC(tHMMobj, LL)
+                numstateval.append(numState) # make numstate be a single value not an array of a value
+                AIC_h1[str(numState)].append(sum(AIC_ls)) # take total AIC across all lineages for this numstate
+                LL_h1[str(numState)].append(sum(LL_ls)) # take total AIC across all lineages for this numstate  
         else:
             _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
             accuracy_h2 = []
@@ -182,11 +180,20 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
             betaExp_2_h1.extend(betaExp_2_h2)
 
     if AIC:
+        min_AIC_key = min(AIC_h1, key=AIC_h1.get)
+        min_AIC = AIC_h1[min_AIC_key]
+        min_LL_key = min(LL_h1, key=LL_h1.get)
+        min_LL = LL_h1[min_LL_key]
         AIC_mean, AIC_std = [], []
+        LL_mean, LL_std = [], []
         for ii, numState in enumerate(range(numState_start, numState_end+1)):
-            AIC_mean.append(np.mean(AIC_h1[str(numState)]))
-            AIC_std.append(np.std(AIC_h1[str(numState)]))
-        data = (x1val, x2val, AIC_mean, AIC_std)
+            AIC_normalized = np.array(AIC_h1[str(numState)]) - min_AIC
+            LL_normalized = np.array(LL_h1[str(numState)]) - min_LL
+            AIC_mean.append(np.mean(AIC_normalized))
+            AIC_std.append(np.std(AIC_normalized))
+            LL_mean.append(np.mean(LL_normalized))
+            LL_std.append(np.std(LL_normalized))
+        data = (numstateval, AIC_mean, AIC_std, LL_mean, LL_std)
     else:
         data = (number_of_cells_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, betaExp_MAS_h1, betaExp_2_h1)
     
