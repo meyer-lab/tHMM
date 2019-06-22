@@ -1,0 +1,11 @@
+*.sublime-workspace
+**/.ipynb_checkpoints
+**/__pycache__/
+nosetests.xml
+**.png
+**.pdf
+**.svg
+**.ipynb
+# Exception to the rule
+!Guide_to_tHMM.ipynb
+venv/
