@@ -5,9 +5,10 @@ from matplotlib import pyplot as plt
 import scipy
 import scipy.stats
 import logging
-from .Depth_Two_State_Lineage import Depth_Two_State_Lineage
-from .Breadth_Two_State_Lineage import Breadth_Two_State_Lineage
+from ..Depth_Two_State_Lineage import Depth_Two_State_Lineage
+from ..Breadth_Two_State_Lineage import Breadth_Two_State_Lineage
 from ..Analyze import Analyze
+from ..BaumWelch import fit
 from .Matplot_gen import Matplot_gen
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
@@ -32,7 +33,7 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
     betaExp_2_h1 = []
     lineage_h1 = []
 
-    for rep in range(reps):        
+    for rep in range(reps):  
         X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern_array[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta_array[rep]], [beta2[rep]])
 
         
@@ -43,7 +44,6 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
                 beta2[rep] = [np.random.randint(20, 40, size = 1)][0][0]
             #generate new lineage
             X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern_array[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta_array[rep]], [beta2[rep]])
-        
         logging.info('Repetition Number: {}'.format(rep+1))
         
         X = remove_singleton_lineages(newLineage)
@@ -99,10 +99,8 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
     return data
 
 
-def AIC():
-
-def Lineage_Length(T_MAS=500, T_2=100, reps=3, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1],
-                   locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=True, switchT=True):
+def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1],
+                   locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, switchT=False, AIC=False, numState_start=1, numState_end=3):
     '''This has been modified for an exponential distribution'''
 
     accuracy_h1 = []  # list of lists of lists
@@ -111,10 +109,11 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=3, MASinitCells=[1], MASlocBern=[0.8
     bern_2_h1 = []
     betaExp_MAS_h1 = []
     betaExp_2_h1 = []
-
+    AIC_h1 = {str(numState): [] for numState in range(numState_start, numState_end+1)} 
+    LL_h1 = {str(numState): [] for numState in range(numState_start, numState_end+1)}
     for rep in range(reps):
+        print(rep)
         logging.info('Rep:', rep)
-
         # Make the lineage type
         if not switchT:
             X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
@@ -122,58 +121,85 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=3, MASinitCells=[1], MASlocBern=[0.8
                 X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
 
         elif switchT:
-            X, newLineage, masterLineage, sublineage2 = Breadth_Two_State_Lineage(
+            X, newLineage, masterLineage, subLineage2 = Breadth_Two_State_Lineage(
                 experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
             while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
-                X, newLineage, masterLineage, sublineage2 = Breadth_Two_State_Lineage(
+                X, newLineage, masterLineage, subLineage2 = Breadth_Two_State_Lineage(
                     experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
-
+    
         X = remove_unfinished_cells(X)
         X = remove_singleton_lineages(X)
-        logging.info('X size: {}, masterLineage size: {}, subLineage2 size: {}'.format(len(X), len(masterLineage), len(sublineage2)))
+        logging.info('X size: {}, masterLineage size: {}, subLineage2 size: {}'.format(len(X), len(masterLineage), len(subLineage2)))
+        
+        #Call function for AIC 
+        if AIC:
+            AICval = []
+            LLval = []
+            for numState in range(numState_start, numState_end+1):
+                logging.info(f'numState:{numState}')
+                _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates=numState)
+                tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
+                AIC_ls, LL_ls, AIC_degrees_of_freedom = getAIC(tHMMobj, LL)
+                AICval.append(sum(AIC_ls)) # make numstate be a single value not an array of a value
+                LLval.append(sum(LL_ls))
+            AIC_rel_0 = AICval #make aic plot to be relative to the lowest value 
+            LL_rel_0 = LLval #make aic plot to be relative to the lowest value 
+            for ii, numState in enumerate(range(numState_start, numState_end+1)):
+                AIC_h1[str(numState)].append(AIC_rel_0[ii])
+                LL_h1[str(numState)].append(LL_rel_0[ii]) # take total AIC across all lineages for this numstate
+        else:
+            _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
+            accuracy_h2 = []
+            number_of_cells_h2 = []
+            bern_MAS_h2 = []
+            bern_2_h2 = []
+            betaExp_MAS_h2 = []
+            betaExp_2_h2 = []
 
-        _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
-        logging.info('analyzed')
-        accuracy_h2 = []
-        number_of_cells_h2 = []
-        bern_MAS_h2 = []
-        bern_2_h2 = []
-        betaExp_MAS_h2 = []
-        betaExp_2_h2 = []
 
-        for lin in range(tHMMobj.numLineages):
-            AccuracyPop, _, stateAssignmentPop = getAccuracy(tHMMobj, all_states, verbose=False)
-            accuracy = AccuracyPop[lin]
-            
-            state_1 = stateAssignmentPop[lin][0]
-            state_2 = stateAssignmentPop[lin][1]
-            lineage = tHMMobj.population[lin]
-            E = tHMMobj.paramlist[lin]["E"]
-            logging.info('accuracy: {}'.format(accuracy))
+            for lin in range(tHMMobj.numLineages):
+                AccuracyPop, _, stateAssignmentPop = getAccuracy(tHMMobj, all_states, verbose=False)
+                accuracy = AccuracyPop[lin]
 
-            accuracy_h2.append(accuracy * 100)
-            number_of_cells_h2.append(len(lineage))
-            bern_MAS_h2.append(E[state_1, 0])
-            bern_2_h2.append(E[state_2, 0])
-            if FOM == 'E':
-                betaExp_MAS_h2.append(E[state_1, 1])
-                betaExp_2_h2.append(E[state_2, 1])
+                state_1 = stateAssignmentPop[lin][0]
+                state_2 = stateAssignmentPop[lin][1]
+                lineage = tHMMobj.population[lin]
+                E = tHMMobj.paramlist[lin]["E"]
+                logging.info('accuracy: {}'.format(accuracy))
 
-        accuracy_h1.extend(accuracy_h2)
-        number_of_cells_h1.extend(number_of_cells_h2)
-        bern_MAS_h1.extend(bern_MAS_h2)
-        bern_2_h1.extend(bern_2_h2)
-        betaExp_MAS_h1.extend(betaExp_MAS_h2)
-        betaExp_2_h1.extend(betaExp_2_h2)
+                accuracy_h2.append(accuracy * 100)
+                number_of_cells_h2.append(len(lineage))
+                bern_MAS_h2.append(E[state_1, 0])
+                bern_2_h2.append(E[state_2, 0])
+                if FOM == 'E':
+                    betaExp_MAS_h2.append(E[state_1, 1])
+                    betaExp_2_h2.append(E[state_2, 1])
 
-    if FOM == 'E':
+            accuracy_h1.extend(accuracy_h2)
+            number_of_cells_h1.extend(number_of_cells_h2)
+            bern_MAS_h1.extend(bern_MAS_h2)
+            bern_2_h1.extend(bern_2_h2)
+            betaExp_MAS_h1.extend(betaExp_MAS_h2)
+            betaExp_2_h1.extend(betaExp_2_h2)
+
+    if AIC:
+        numstates_ls = []
+        AIC_mean, AIC_std = [], []
+        LL_mean, LL_std = [], []
+        for ii, numState in enumerate(range(numState_start, numState_end+1)):
+            numstates_ls.append(numState)
+            AIC_mean.append(np.mean(AIC_h1[str(numState)]))
+            AIC_std.append(np.std(AIC_h1[str(numState)]))
+            LL_mean.append(np.mean(LL_h1[str(numState)]))
+            LL_std.append(np.std(LL_h1[str(numState)]))
+        data = (numstates_ls, AIC_mean, AIC_std, LL_mean, LL_std)
+    else:
         data = (number_of_cells_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, betaExp_MAS_h1, betaExp_2_h1)
-
+    
     return data
 
 
-def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[
-                                   80], initCells2=[1], locBern2=[0.999], beta2=[20], max_lin_length=300, min_lin_length=5, FOM='E', verbose=True, switchT=True):
+def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.999], beta2=[20], max_lin_length=300, min_lin_length=5, FOM='E', verbose=True, switchT=True):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of lineages in a population are varied'''
     if verbose:
         logging.info('starting')
@@ -207,10 +233,10 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
                         X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
 
                 elif switchT:
-                    X, newLineage, masterLineage, sublineage2 = Breadth_Two_State_Lineage(
+                    X, newLineage, masterLineage, subLineage2 = Breadth_Two_State_Lineage(
                         experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
                     while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
-                        X, newLineage, masterLineage, sublineage2 = Breadth_Two_State_Lineage(
+                        X, newLineage, masterLineage, subLineage2 = Breadth_Two_State_Lineage(
                             experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
 
                 X = remove_unfinished_cells(X)

@@ -1,8 +1,0 @@
-*.sublime-workspace
-**/.ipynb_checkpoints
-**.ipynb
-**/__pycache__/
-nosetests.xml
-**.png
-**.pdf
-**.svg
