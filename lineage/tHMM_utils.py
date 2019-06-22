@@ -166,7 +166,7 @@ def getAIC(tHMMobj, LL):
     for num in range(tHMMobj.numLineages):
         AIC_value = -2 * LL[num] + 2 * AIC_degrees_of_freedom
         AIC_ls.append(AIC_value)
-        LL_ls.append(LL[num])
+        LL_ls.append(-LL[num]) #append negative log likelihood
 
     return(AIC_ls, LL_ls, AIC_degrees_of_freedom) # no longer returning relative to zero
 
