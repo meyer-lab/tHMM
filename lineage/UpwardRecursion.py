@@ -117,7 +117,6 @@ def get_leaf_betas(tHMMobj, NF):
                     denom = NF_array[leaf_cell_idx]  # Normalizing Factor (same regardless of state)
                     # P(x_n = x)
                     beta_array[leaf_cell_idx, state_k] = numer1 * numer2 / denom
-
         betas.append(beta_array)
     for num in range(numLineages):
         betas_last_row_sum = np.sum(betas[num][-1])
