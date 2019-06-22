@@ -147,6 +147,7 @@ class tHMM:
                         MSD[num][current_cell_idx, state_k] = sum(temp_sum_holder)
                 curr_level += 1
             MSD_row_sums = np.sum(MSD[num], axis=1)
+            
             assert np.allclose(MSD_row_sums, 1.0), "The Marginal State Distribution for your cells, P(z_k = k), for all states k in numStates, are not adding up to 1!"
         return MSD
 
@@ -209,8 +210,9 @@ class tHMM:
                         elif not cell.fateObserved:
                             temp_beta = sp.expon.pdf(x=cell.tauFake, scale=k_expon_beta)  # exponential likelihood is the same in the cased of an unobserved death
                         assert np.isfinite(temp_beta), "You have a Exponential likelihood calculation returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
-                        # the right-censored and uncensored exponential pdfs are the same
+                        # the right-censored and uncensored exponential pdfs are the 
                         EL_array[current_cell_idx, state_k] = temp_beta * temp_b
+                        #import pdb; pdb.set_trace()
                     if self.FOM == 'Ga':
                         temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)  # bernoulli likelihood
                         if cell.fateObserved:
