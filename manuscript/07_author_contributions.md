@@ -1,11 +1,5 @@
 # Author contributions statement
 
-S.V.; Conceived and designed model, designed and performed computational experiments, analysed data, and co-wrote the paper. 
-N.K.N.; Designed model, designed and performed computational experiments, analysed data, and co-wrote the paper.
-A.W.; Designed model, designed and performed computational experiments.
-A.F.; Designed and performed biological experiments.
-A.L.; Designed and performed biological experiments.
-F.M; Designed and performed computational experiments.
-A.S.M.; Conceived of the study, supervised the research, designed model, designed experiments, and co-wrote the paper.
+A.S.M. conceived of the study; S.V. conceived of the model; A.S.M, A.W., N.K.N., S.V. designed model; A.W., F.M., N.K.N., S.V. performed computational experiments; A.F., A.L. performed biological experiments; N.K.N., S.V. conducted data analysis; A.S.M. supervised the research; A.S.M, N.K.N., S.V. co-wrote the paper.
 
 \beginsupplement
