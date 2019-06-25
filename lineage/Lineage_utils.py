@@ -387,7 +387,7 @@ def select_population(X, experimentTime):
             leaf_cell_taus.append(cell.tau)
 
     # find the intended end of experiment time by maximum tau of leaf cells
-    intended_interval = max(leaf_cell_taus) + 1.0
+    intended_interval = max(leaf_cell_taus) + 0.01
     intended_end_time = experimentTime - intended_interval
 
     # lose the cells that were born after intended experiment end time

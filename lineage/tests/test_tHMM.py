@@ -199,8 +199,8 @@ class TestModel(unittest.TestCase):
         checks whether the accuracy is in the range
         """
         numStates = 2
-        switchT = 150
-        experimentTime = switchT + 150
+        switchT = 150.
+        experimentTime = switchT + 150.
         initCells = [1]
         locBern = [0.9999]
         betaExp1 = [50]
@@ -229,11 +229,12 @@ class TestModel(unittest.TestCase):
         check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy)
         self.assertTrue(check_acc)
 
-    '''def test_mutual_info(self):
+    def test_mutual_info(self):
+        '''
         This function tests the accuracy of the Viterbi state assignment by getting the
-    mutual information between the true states of the cells in a lineage and the
-    states that Viterbi has assigned to the cells. It makes sure the accuracy is
-    between 0 and 1.
+        mutual information between the true states of the cells in a lineage and the
+        states that Viterbi has assigned to the cells. It makes sure the accuracy is
+        between 0 and 1.'''
 
         numStates = 2
 
@@ -274,7 +275,7 @@ class TestModel(unittest.TestCase):
 
         t.Accuracy2 = get_mutual_info(t, all_states, verbose=True)
         check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy2)
-        self.assertTrue(check_acc)'''
+        self.assertTrue(check_acc)
 
     #######################
     # tHMM.py tests below #
