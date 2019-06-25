@@ -384,7 +384,10 @@ def select_population(X, experimentTime):
     # get the lifetime of leaf cells and append them to a list
     for cell in X:
         if cell.isLeaf():
-            leaf_cell_taus.append(cell.tau)
+            if cell.isUnfinished():
+                leaf_cell_taus.append(cell.tauFake)
+            else:
+                leaf_cell_taus.append(cell.tau)
 
     # find the intended end of experiment time by maximum tau of leaf cells
     intended_interval = max(leaf_cell_taus) + 0.01
@@ -410,13 +413,21 @@ def select_population(X, experimentTime):
                     assert cell.left.startT == cell.right.startT
                     cell.left = None
                     cell.right = None
+
                     assert cell.isLeaf() # new leaf being made 
-                
+                elif not cell.isLeaf() and cell.endT <= intended_end_time:
+                    # if the cell's start time is before the intended end time
+                    # and their end time was before intended experiment end time, 
+                    # put them to be leaf cells
+                    assert cell.endT <= intended_end_time
+                    cell.left = None
+                    cell.right = None
+
                 assert not math.isnan(cell.endT), "There still exists NaN in your population after removing undetermined cells"
                 new_population.append(cell)
     
     assert len(new_population) <= len(X)
-    return new_population
+    return new_population, intended_end_time
 
 
 

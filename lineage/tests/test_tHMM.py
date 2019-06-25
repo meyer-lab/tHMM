@@ -95,12 +95,14 @@ class TestModel(unittest.TestCase):
         locBern = [0.6, 0.9]
         betaExp = [40, 50]
         X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
-        X = select_population(X, experimentTime)
+        X, time = select_population(X, experimentTime)
         num_NAN = 0
         for cell in X:
             if cell.isUnfinished():
                 num_NAN +=1
         self.assertEqual(num_NAN, 0)
+        self.assertGreater(time, 1)
+        self.assertGreater(len(X), 10)
 
     def test_get_numLineages(self):
         '''
@@ -200,7 +202,7 @@ class TestModel(unittest.TestCase):
         """
         numStates = 2
         switchT = 150.
-        experimentTime = switchT + 150.
+        experimentTime = switchT + 250.
         initCells = [1]
         locBern = [0.9999]
         betaExp1 = [50]
@@ -210,15 +212,16 @@ class TestModel(unittest.TestCase):
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
         #LINEAGE = remove_unfinished_cells(LINEAGE)
         LINEAGE = remove_singleton_lineages(LINEAGE)
-        while len(LINEAGE) <= 5:
+        while len(LINEAGE) <= 25:
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
             #LINEAGE = remove_unfinished_cells(LINEAGE)
             LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
-        X_new = select_population(X, experimentTime)
+        X_new, time = select_population(X, experimentTime)
+        print("new experiment end time", time)
 
-        t = tHMM(X_new, numStates=2)
+        t = tHMM(X, numStates=2)
         fit(t, max_iter=500, verbose=True)
 
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
