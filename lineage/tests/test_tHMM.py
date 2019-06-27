@@ -49,7 +49,7 @@ class TestModel(unittest.TestCase):
         self.lineage4 = [self.cell30]
 
         # create a common population for Exponential distribution to use in all tests
-        experimentTime = 50.
+        experimentTime = 350.
         initCells = [50]  # there should be 50 lineages b/c there are 50 initial cells
         locBern = [0.8]
         betaExp = [40]
@@ -61,7 +61,7 @@ class TestModel(unittest.TestCase):
         self.X2 = gpt(experimentTime, initCells, locBern, betaExp)
 
         # create a common population for Gamma distribution to use in some tests
-        experimentTime = 200.
+#         experimentTime = 200.
         
 
     ################################
@@ -221,7 +221,7 @@ class TestModel(unittest.TestCase):
         X_new, time = select_population(X, experimentTime)
         print("new experiment end time", time)
 
-        t = tHMM(X, numStates=2)
+        t = tHMM(X_new, numStates=2)
         fit(t, max_iter=500, verbose=True)
 
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
@@ -241,8 +241,8 @@ class TestModel(unittest.TestCase):
 
         numStates = 2
 
-        switchT = 200
-        experimentTime = switchT + 150
+        switchT = 200.
+        experimentTime = switchT + 250.
         initCells = [1]
         locBern = [0.99999999999]
         betaExp1 = [75.]
@@ -252,12 +252,13 @@ class TestModel(unittest.TestCase):
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
         LINEAGE = remove_unfinished_cells(LINEAGE)
         LINEAGE = remove_singleton_lineages(LINEAGE)
-        while len(LINEAGE) <= 5:
+        while len(LINEAGE) <= 25:
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
             LINEAGE = remove_unfinished_cells(LINEAGE)
             LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
+#         X_new, time = select_population(X, experimentTime)
 
         t = tHMM(X, numStates=2)
         fit(t, max_iter=500, verbose=True)
@@ -291,7 +292,10 @@ class TestModel(unittest.TestCase):
         '''
         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(X)
+#         x_new, new_time = select_population(X, 150.)
+        
         t = tHMM(X, numStates=2)  # build the tHMM class with X
+
         self.assertEqual(t.paramlist[0]["pi"].shape[0], 2)  # make sure shape is numStates
         self.assertEqual(t.paramlist[0]["T"].shape[0], 2)  # make sure shape is numStates
         self.assertEqual(t.paramlist[0]["T"].shape[1], 2)  # make sure shape is numStates
@@ -303,9 +307,10 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
-        X = remove_unfinished_cells(self.X)
-        X = remove_singleton_lineages(X)
-        t = tHMM(X, numStates=2)  # build the tHMM class with X
+#         X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(self.X)
+        x_new , ti = select_population(X, 150.)
+        t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
         for _, MSDlin in enumerate(MSD):
@@ -319,9 +324,10 @@ class TestModel(unittest.TestCase):
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         '''
-        X = remove_unfinished_cells(self.X)
-        X = remove_singleton_lineages(X)
-        t = tHMM(X, numStates=2)  # build the tHMM class with X
+#         X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(self.X)
+        x_new, ti = select_population(X, 150.)
+        t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         EL = t.get_Emission_Likelihoods()
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
         for _, ELlin in enumerate(EL):
