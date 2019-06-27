@@ -556,8 +556,8 @@ class TestModel(unittest.TestCase):
 
         numStates = 2
 
-        switchT = 300
-        experimentTime = switchT + 150
+        switchT = 300.
+        experimentTime = switchT + 150.
         initCells = [1]
         locBern = [0.99999999999]
         betaExp = [75]
@@ -566,13 +566,14 @@ class TestModel(unittest.TestCase):
 
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')
 
-        while len(LINEAGE) <= 10:
+        while len(LINEAGE) <= 20:
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')
 
         X = LINEAGE
-        X = remove_unfinished_cells(X)
+#         X = remove_unfinished_cells(X)
         X = remove_singleton_lineages(X)
-        tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
+        x_new, ti = select_population(X, experimentTime)
+        tHMMobj = tHMM(x_new, numStates=numStates, FOM='E')  # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
 
         deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
