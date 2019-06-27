@@ -436,14 +436,15 @@ class TestModel(unittest.TestCase):
         homogeneous populations. Using parameter sets that
         describe those homogenous populations.
         '''
-        X = remove_unfinished_cells(self.X2)
-        X = remove_singleton_lineages(X)
+#         X = remove_unfinished_cells(self.X2)
+        X = remove_singleton_lineages(self.X)
         x_new, ti = select_population(X, 150.)
         numStates = 2
         t = tHMM(x_new, numStates=numStates, FOM='E')  # build the tHMM class with X
 
         fake_param_list = []
         numLineages = t.numLineages
+
         temp_params = {"pi": np.ones((numStates), dtype=float) / (numStates),  # inital state distributions [K] initialized to 1/K
                        "T": np.eye(2, dtype=int),  # state transition matrix [KxK] initialized to identity (no transitions)
                        # should always end up in state 1 regardless of previous state
@@ -525,28 +526,30 @@ class TestModel(unittest.TestCase):
         ''' one state exponential estimation'''
         numStates = 1
 
-        experimentTime = 250
+        experimentTime = 300.
         initCells = [1]
         locBern = [0.99999999999]
         betaExp = [75]
 
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp=betaExp, FOM='E')
-        LINEAGE = remove_unfinished_cells(LINEAGE)
+#         LINEAGE = remove_unfinished_cells(LINEAGE)
         LINEAGE = remove_singleton_lineages(LINEAGE)
-        while len(LINEAGE) <= 10:
+        while len(LINEAGE) <= 20:
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp=betaExp, FOM='E')
-            LINEAGE = remove_unfinished_cells(LINEAGE)
+#             LINEAGE = remove_unfinished_cells(LINEAGE)
             LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
-        tHMMobj = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
+        x_new, ti = select_population(X, experimentTime)
+        print(x_new)
+        tHMMobj = tHMM(x_new, numStates=numStates, FOM='E')  # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
 
         deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
         getAccuracy(tHMMobj, all_states, verbose=True)
-        get_mutual_info(tHMMobj, all_states, verbose=True)
+#         get_mutual_info(tHMMobj, all_states, verbose=True)
 
     def test_Baum_Welch_5(self):
         '''two state exponential estimation. creating a heterogeneous tree'''
