@@ -258,7 +258,7 @@ class TestModel(unittest.TestCase):
             LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
-#         X_new, time = select_population(X, experimentTime)
+#         x_new, time = select_population(X, experimentTime)
 
         t = tHMM(X, numStates=2)
         fit(t, max_iter=500, verbose=True)
@@ -363,9 +363,10 @@ class TestModel(unittest.TestCase):
         the Viterbi function to find
         the optimal hidden states.
         '''
-        X = remove_unfinished_cells(self.X)
-        X = remove_singleton_lineages(X)
-        t = tHMM(X, numStates=2)  # build the tHMM class with X
+#         X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(self.X)
+        x_new, ti = select_population(X, 150.)
+        t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
         self.assertLessEqual(len(deltas), 50)  # there are <=50 lineages in X
         self.assertLessEqual(len(state_ptrs), 50)  # there are <=50 lineages in X
@@ -384,10 +385,11 @@ class TestModel(unittest.TestCase):
         gives one different optimal state
         trees.
         '''
-        X = remove_unfinished_cells(self.X)
-        X = remove_singleton_lineages(X)
+#         X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(self.X)
+        x_new, ti = select_population(X, 150.)
         numStates = 2
-        t = tHMM(X, numStates=numStates)  # build the tHMM class with X
+        t = tHMM(x_new, numStates=numStates)  # build the tHMM class with X
         fake_param_list = []
         numLineages = t.numLineages
         temp_params = {"pi": np.ones((numStates), dtype=int),  # inital state distributions [K] initialized to 1/K
@@ -436,8 +438,9 @@ class TestModel(unittest.TestCase):
         '''
         X = remove_unfinished_cells(self.X2)
         X = remove_singleton_lineages(X)
+        x_new, ti = select_population(X, 150.)
         numStates = 2
-        t = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
+        t = tHMM(x_new, numStates=numStates, FOM='E')  # build the tHMM class with X
 
         fake_param_list = []
         numLineages = t.numLineages
@@ -498,10 +501,11 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
-        X = remove_unfinished_cells(self.X)
+#         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
+        x_new, ti = select_population(X, 150.)
         numStates = 2
-        tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
+        tHMMobj = tHMM(x_new, numStates=numStates)  # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(tHMMobj)
         betas = get_leaf_betas(tHMMobj, NF)
         get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
