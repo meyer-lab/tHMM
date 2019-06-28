@@ -112,10 +112,10 @@ def remove_unfinished_cells(X):
     it replaces the cell with None which essentially removes the cell, and returns
     the new list of cells that does not inclue any NaN.
      Args:
-        ----------
+    ------
         X (list): list that holds cells as objects.
      Returns:
-        ----------
+    ---------
         X (list): a list of objects (cells) in which the NaNs have been removed.
      """
     ii = 0  # establish a count outside of the loop
@@ -140,11 +140,11 @@ def remove_singleton_lineages(X):
     Removes lineages that are only a single root cell that does not divide or just dies
 
     Args:
-        ----------
+    -----
         X (list): list that holds cells as objects.
 
     Returns:
-        ----------
+    --------
         X (list): a list of objects (cells) in which the root cells that do not
         make a lineage, have been removed.
 
@@ -171,11 +171,11 @@ def get_numLineages(X):
     and then keeps track of the cells that are root, and counts the number of them
 
     Args:
-        ----------
+    -----
         X (list): list of objects (cells)
 
     Returns:
-        ----------
+    --------
         numLineages (int): the number of lineages in the given population
 
     """

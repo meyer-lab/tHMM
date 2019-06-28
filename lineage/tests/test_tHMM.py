@@ -49,7 +49,7 @@ class TestModel(unittest.TestCase):
         self.lineage4 = [self.cell30]
 
         # create a common population for Exponential distribution to use in all tests
-        experimentTime = 350.
+        experimentTime = 150.
         initCells = [50]  # there should be 50 lineages b/c there are 50 initial cells
         locBern = [0.8]
         betaExp = [40]
@@ -85,7 +85,20 @@ class TestModel(unittest.TestCase):
                 num_NAN += 1
 
         self.assertEqual(num_NAN, 0)  # there should be no unfinished cells left
-
+    """
+    def test_remove_singleton_lineages(self):
+        '''
+        Checks whether there will be no singleton lineages left after using this 
+        function.
+        '''
+        experimentTime = 100.
+        initCells = [50, 50]
+        locBern = [0.6, 0.8]
+        betaExp = [40, 50]
+        X = gpt(experimentTime, initCells, locBern, betaExp)
+        X = remove_singleton_lineages(X)
+#         self.assert
+    """       
     def test_select_population(self):
         '''
         Checks to see if all NaNs are removed from the lineages.
@@ -252,7 +265,7 @@ class TestModel(unittest.TestCase):
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
         LINEAGE = remove_unfinished_cells(LINEAGE)
         LINEAGE = remove_singleton_lineages(LINEAGE)
-        while len(LINEAGE) <= 25:
+        while len(LINEAGE) <= 20:
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
             LINEAGE = remove_unfinished_cells(LINEAGE)
             LINEAGE = remove_singleton_lineages(LINEAGE)
@@ -290,11 +303,11 @@ class TestModel(unittest.TestCase):
         Make sure paramlist has proper
         labels and sizes.
         '''
-        X = remove_unfinished_cells(self.X)
-        X = remove_singleton_lineages(X)
-#         x_new, new_time = select_population(X, 150.)
+#         X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(self.X)
+        x_new, ti = select_population(X, 150.)
         
-        t = tHMM(X, numStates=2)  # build the tHMM class with X
+        t = tHMM(x_new, numStates=2)  # build the tHMM class with X
 
         self.assertEqual(t.paramlist[0]["pi"].shape[0], 2)  # make sure shape is numStates
         self.assertEqual(t.paramlist[0]["T"].shape[0], 2)  # make sure shape is numStates
@@ -436,11 +449,11 @@ class TestModel(unittest.TestCase):
         homogeneous populations. Using parameter sets that
         describe those homogenous populations.
         '''
-#         X = remove_unfinished_cells(self.X2)
-        X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        X = remove_unfinished_cells(self.X2)
+        X = remove_singleton_lineages(X)
+#         x_new, ti = select_population(X, 150.)
         numStates = 2
-        t = tHMM(x_new, numStates=numStates, FOM='E')  # build the tHMM class with X
+        t = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
 
         fake_param_list = []
         numLineages = t.numLineages
@@ -454,10 +467,10 @@ class TestModel(unittest.TestCase):
         temp_params["pi"][1] = 1 / 5  # state 1 occurs 3/5 of the time
 
         temp_params["E"][0, 0] *= 0.999  # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][0, 1] *= 40  # initializing all Gompoertz s(cale) parameters to 50
+        temp_params["E"][0, 1] *= 40  # initializing all Exponential parameters to 50
 
         temp_params["E"][1, 0] *= 0.6  # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][1, 1] *= 50  # initializing all Gompoertz s(cale) parameters to 50
+        temp_params["E"][1, 1] *= 50  # initializing all exponential parameters to 50
 
         for lineage_num in range(numLineages):  # for each lineage in our population
             fake_param_list.append(temp_params.copy())  # create a new dictionary holding the parameters and append it
@@ -548,7 +561,9 @@ class TestModel(unittest.TestCase):
         deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        getAccuracy(tHMMobj, all_states, verbose=True)
+        ac,_,_ = getAccuracy(tHMMobj, all_states, verbose=True)
+        check_acc = all(1.0 >= x >= 0.0 for x in ac)
+        self.assertTrue(check_acc)
 #         get_mutual_info(tHMMobj, all_states, verbose=True)
 
     def test_Baum_Welch_5(self):
