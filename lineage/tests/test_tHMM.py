@@ -85,7 +85,7 @@ class TestModel(unittest.TestCase):
                 num_NAN += 1
 
         self.assertEqual(num_NAN, 0)  # there should be no unfinished cells left
-    """
+    
     def test_remove_singleton_lineages(self):
         '''
         Checks whether there will be no singleton lineages left after using this 
@@ -97,8 +97,11 @@ class TestModel(unittest.TestCase):
         betaExp = [40, 50]
         X = gpt(experimentTime, initCells, locBern, betaExp)
         X = remove_singleton_lineages(X)
-#         self.assert
-    """       
+        for cell in X:
+            if cell.isRootParent():
+                self.assertTrue(not cell.isUnfinished())
+
+           
     def test_select_population(self):
         '''
         Checks to see if all NaNs are removed from the lineages.
