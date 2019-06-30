@@ -10,7 +10,7 @@ venv: venv/bin/activate
 
 venv/bin/activate: requirements.txt
 	test -d venv || virtualenv venv
-	. venv/bin/activate; pip install --prefer-binary -Ur requirements.txt
+	. venv/bin/activate; pip install --only-binary -Ur requirements.txt
 	touch venv/bin/activate
 
 $(fdir)/figure%.svg: venv genFigures.py 
