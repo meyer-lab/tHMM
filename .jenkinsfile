@@ -11,7 +11,7 @@ pipeline {
       steps {
         sh 'git clean -ffdx && make clean'
         sh 'git submodule update --init --recursive'
-        sh 'pip3 install Cython'
+        sh 'pip3 install --user Cython'
         sh 'make venv'
       }
     }
