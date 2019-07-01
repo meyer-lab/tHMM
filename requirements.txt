@@ -1,5 +1,5 @@
-numpy
 Cython
+numpy==1.16.4
 graphviz==0.10.1
 matplotlib==3.1.0
 networkx==2.2
