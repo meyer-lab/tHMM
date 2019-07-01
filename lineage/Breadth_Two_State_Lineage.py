@@ -1,7 +1,7 @@
 '''Generates a lineage with breadth model ie cells all switch state at a single time point'''
 
-from lineage.Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
-from lineage.Lineage_utils import generatePopulationWithTime as gpt
+from .Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
+from .Lineage_utils import generatePopulationWithTime as gpt
 import logging
 
 

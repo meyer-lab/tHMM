@@ -2,8 +2,8 @@
 
 import numpy as np
 import logging
-from lineage.Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
-from lineage.Lineage_utils import generatePopulationWithTime as gpt
+from .Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
+from .Lineage_utils import generatePopulationWithTime as gpt
 
 
 def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM='E', betaExp=None, betaExp2=None):
