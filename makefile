@@ -10,7 +10,6 @@ venv: venv/bin/activate
 
 venv/bin/activate: requirements.txt
 	test -d venv || virtualenv venv
-	. venv/bin/activate; pip3 install --only-binary Cython numpy scipy
 	. venv/bin/activate; pip3 install --prefer-binary -Ur requirements.txt
 	touch venv/bin/activate
 
