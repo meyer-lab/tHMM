@@ -45,5 +45,5 @@ clean:
 	rm -rf prof manuscript/figures
 
 docs:
-	python3 -m sphinx-apidoc -o doc/source lineage
-	python3 -m sphinx-build doc/source doc/build
+	. venv/bin/activate; sphinx-apidoc -o doc/source lineage
+	. venv/bin/activate; sphinx-build doc/source doc/build
