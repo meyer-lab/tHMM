@@ -1,3 +1,5 @@
+numpy
+Cython
 graphviz==0.10.1
 matplotlib
 networkx==2.2
