@@ -10,3 +10,4 @@ Sphinx
 pytest
 sphinx-autoapi
 pytest-cov
+pylint
