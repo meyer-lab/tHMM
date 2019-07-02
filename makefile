@@ -40,10 +40,13 @@ testprofile: venv
 	. venv/bin/activate; python3 -m cProfile -o profile /usr/local/bin/pytest
 	gprof2dot -f pstats profile | dot -Tsvg -o profile.svg
 
+pylint.log: venv
+	. venv/bin/activate; (pylint --rcfile=./common/pylintrc lineage > pylint.log || echo "pylint exited with $?")'
+
 clean:
 	rm -f coverage.xml .coverage .coverage* junit.xml coverage.xml profile profile.svg
 	rm -rf prof manuscript/figures
 
-docs:
+docs: venv
 	. venv/bin/activate; sphinx-apidoc -o doc/source lineage
 	. venv/bin/activate; sphinx-build doc/source doc/build
