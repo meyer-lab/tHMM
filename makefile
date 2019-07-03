@@ -9,7 +9,7 @@ flist = 1 2 3 4 5 6 7 S1 S2 S3 S4 S5
 venv: venv/bin/activate
 
 venv/bin/activate: requirements.txt
-	test -d venv || virtualenv --system-site-packages venv
+	test -d venv || virtualenv venv
 	. venv/bin/activate && pip install -Ur requirements.txt
 	touch venv/bin/activate
 
