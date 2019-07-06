@@ -1,19 +1,8 @@
 """
 This creates Figure 7. AIC Figure.
 """
-from .figureCommon import subplotLabel, getSetup
-import numpy as np
-from matplotlib import pyplot as plt
-from matplotlib import ticker as ticker
-from ..Depth_Two_State_Lineage import Depth_Two_State_Lineage
-from ..Analyze import Analyze
-from .Matplot_gen import Matplot_gen
-from .Fig_Gen import Lineage_Length, Lineages_per_Population_Figure
-from ..tHMM_utils import getAccuracy, getAIC
-from ..Lineage_utils import remove_singleton_lineages
-from matplotlib.ticker import MaxNLocator
-import matplotlib
-import pdb
+from .figureCommon import getSetup
+from .Fig_Gen import Lineage_Length
 
 
 def makeFigure():

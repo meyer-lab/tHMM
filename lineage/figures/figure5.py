@@ -1,7 +1,7 @@
 """
 This creates Figure 5.
 """
-from .figureCommon import subplotLabel, getSetup
+from .figureCommon import getSetup
 from .Matplot_gen import Matplot_gen
 from .Fig_Gen import Lineages_per_Population_Figure
 

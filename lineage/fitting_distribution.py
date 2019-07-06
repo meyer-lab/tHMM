@@ -1,5 +1,4 @@
 import scipy.stats as sp
-import math
 
 
 #######------Check the list of distributions and fit to the data --------#######

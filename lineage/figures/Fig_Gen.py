@@ -1,7 +1,6 @@
 '''Generates 4 types of figures: Lineage Length, Number of Lineages in a Popuation, KL Divergence effects, and AIC Calculation. Currently, only the Depth_Two_State_Lineage is used.'''
 
 import numpy as np
-from matplotlib import pyplot as plt
 import scipy
 import scipy.stats
 import logging
@@ -9,7 +8,6 @@ from ..Depth_Two_State_Lineage import Depth_Two_State_Lineage
 from ..Breadth_Two_State_Lineage import Breadth_Two_State_Lineage
 from ..Analyze import Analyze
 from ..BaumWelch import fit
-from .Matplot_gen import Matplot_gen
 from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 
@@ -31,7 +29,6 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
     bern_2_h1 = []
     betaExp_MAS_h1 = []
     betaExp_2_h1 = []
-    lineage_h1 = []
 
     for rep in range(reps):  
         X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern_array[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta_array[rep]], [beta2[rep]])
