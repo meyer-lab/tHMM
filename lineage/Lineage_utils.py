@@ -1,10 +1,6 @@
 '''utility and helper functions for cleaning up input populations and lineages and other needs in the tHMM class'''
 
 import numpy as np
-import scipy as sp
-import math
-from scipy.optimize import root
-from scipy.special import logsumexp
 from .CellNode import generateLineageWithTime
 
 ##------------------------ Generating population of cells ---------------------------##
@@ -330,7 +326,6 @@ def gammaAnalytical(X):
 
     # initialization step
     a_hat0 = 0.5 / (tau_logmean - tau_meanlog)  # shape
-    b_hat0 = tau_mean / a_hat0  # scale
     psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)  # psi is the derivative of log of gamma function, which has been approximated as this term
     psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)  # this is the derivative of psi
     assert a_hat0 != 0, "the first parameter has been set to zero!"

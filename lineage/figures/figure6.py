@@ -1,12 +1,9 @@
 """
 This creates Figure 6.
 """
-from .figureCommon import subplotLabel, getSetup
+from .figureCommon import getSetup
 import numpy as np
-from matplotlib import pyplot as plt
 from matplotlib import ticker as ticker
-from ..Depth_Two_State_Lineage import Depth_Two_State_Lineage
-from ..Analyze import Analyze
 from .Fig_Gen import KL_per_lineage
 from .Matplot_gen import moving_average
 
@@ -17,7 +14,7 @@ def makeFigure():
     ax, f = getSetup((7, 7), (1, 1))
 
     KL_h1, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, betaExp_MAS_h1, betaExp_2_h1 = KL_per_lineage()
-    
+
     x_vs_acc = np.column_stack((KL_h1, acc_h1))
     sorted_x_vs_acc = x_vs_acc[np.argsort(x_vs_acc[:, 0])]
     ax[0].set_xlabel('KL Divergence')
