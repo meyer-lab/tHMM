@@ -1,6 +1,5 @@
 '''Generates a plot with 4 subplots for accuracy estimation and estimation of a bernoulli and 2 gompertz parameters. Note: this is only used for the Lineage Length and Lineage Number figures, the AIC only requires one figure of accuracy so it has its own maplotlib code in the Fig_Gen function.'''
 
-from matplotlib import pyplot as plt
 import matplotlib
 import matplotlib.ticker
 import numpy as np

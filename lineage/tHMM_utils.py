@@ -160,15 +160,15 @@ def getAIC(tHMMobj, LL):
     AIC_ls = []
     LL_ls = []
     number_of_parameters = 0
-    for param in range(tHMMobj.paramlist[0]['E'].shape[1]): #obtain the paramlist for one lineage which serves as same for all lineages because they all have the same E values
+    for param in range(tHMMobj.paramlist[0]['E'].shape[1]):  # obtain the paramlist for one lineage which serves as same for all lineages because they all have the same E values
         number_of_parameters += 1
     AIC_degrees_of_freedom = numStates**2 + numStates * number_of_parameters - 1
     for num in range(tHMMobj.numLineages):
         AIC_value = -2 * LL[num] + 2 * AIC_degrees_of_freedom
         AIC_ls.append(AIC_value)
-        LL_ls.append(-LL[num]) #append negative log likelihood
+        LL_ls.append(-LL[num])  # append negative log likelihood
 
-    return(AIC_ls, LL_ls, AIC_degrees_of_freedom) # no longer returning relative to zero
+    return(AIC_ls, LL_ls, AIC_degrees_of_freedom)  # no longer returning relative to zero
 
 ##------------------------- Calculate accuracy ----------------------------------##
 
