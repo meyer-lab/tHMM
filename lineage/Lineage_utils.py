@@ -1,5 +1,6 @@
 '''utility and helper functions for cleaning up input populations and lineages and other needs in the tHMM class'''
 
+import math
 import numpy as np
 from .CellNode import generateLineageWithTime
 
