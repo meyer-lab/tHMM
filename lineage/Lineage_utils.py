@@ -412,12 +412,7 @@ def select_population(X, experimentTime):
 
                     assert cell.isLeaf() # new leaf being made 
                 elif not cell.isLeaf() and cell.endT <= intended_end_time:
-                    # if the cell's start time is before the intended end time
-                    # and their end time was before intended experiment end time, 
-                    # put them to be leaf cells
-                    assert cell.endT <= intended_end_time
-                    cell.left = None
-                    cell.right = None
+                    pass
 
                 assert not math.isnan(cell.endT), "There still exists NaN in your population after removing undetermined cells"
                 new_population.append(cell)

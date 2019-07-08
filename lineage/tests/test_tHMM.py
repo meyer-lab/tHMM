@@ -99,7 +99,7 @@ class TestModel(unittest.TestCase):
         X = remove_singleton_lineages(X)
         for cell in X:
             if cell.isRootParent():
-                self.assertTrue(not cell.isUnfinished())
+                self.assertTrue(not cell.isUnfinished()) # If the cell is rootparent, it souldn't be unfinished.
 
            
     def test_select_population(self):
@@ -306,11 +306,11 @@ class TestModel(unittest.TestCase):
         Make sure paramlist has proper
         labels and sizes.
         '''
-        X = remove_unfinished_cells(self.X)
-        X = remove_singleton_lineages(X)
-#         x_new, ti = select_population(X, 150.)
+#         X = remove_unfinished_cells(self.X)
+        X = remove_singleton_lineages(self.X)
+        x_new, ti = select_population(X, 150.)
         
-        t = tHMM(X, numStates=2)  # build the tHMM class with X
+        t = tHMM(x_new, numStates=2)  # build the tHMM class with X
 
         self.assertEqual(t.paramlist[0]["pi"].shape[0], 2)  # make sure shape is numStates
         self.assertEqual(t.paramlist[0]["T"].shape[0], 2)  # make sure shape is numStates
