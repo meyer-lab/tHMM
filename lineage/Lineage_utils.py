@@ -1,5 +1,6 @@
 '''utility and helper functions for cleaning up input populations and lineages and other needs in the tHMM class'''
 
+import math
 import numpy as np
 from .CellNode import generateLineageWithTime
 
@@ -108,10 +109,10 @@ def remove_unfinished_cells(X):
     it replaces the cell with None which essentially removes the cell, and returns
     the new list of cells that does not inclue any NaN.
      Args:
-        ----------
+    ------
         X (list): list that holds cells as objects.
      Returns:
-        ----------
+    ---------
         X (list): a list of objects (cells) in which the NaNs have been removed.
      """
     ii = 0  # establish a count outside of the loop
@@ -136,11 +137,11 @@ def remove_singleton_lineages(X):
     Removes lineages that are only a single root cell that does not divide or just dies
 
     Args:
-        ----------
+    -----
         X (list): list that holds cells as objects.
 
     Returns:
-        ----------
+    --------
         X (list): a list of objects (cells) in which the root cells that do not
         make a lineage, have been removed.
 
@@ -167,11 +168,11 @@ def get_numLineages(X):
     and then keeps track of the cells that are root, and counts the number of them
 
     Args:
-        ----------
+    -----
         X (list): list of objects (cells)
 
     Returns:
-        ----------
+    --------
         numLineages (int): the number of lineages in the given population
 
     """
@@ -348,3 +349,78 @@ def gammaAnalytical(X):
 
     result = [a_hat_new, b_hat_new]
     return result
+
+
+##------------------------------ Select the population up to some time point -----------------------------------##
+
+def select_population(X, experimentTime):
+    """
+    In this function we remove the cells that are unfinished at the end and restrict our end-time analysis and build the model 
+    up to some time-point, which is intended_end_time. 
+    Here we first loop over the leaf cells and get the maximum tau of those, then to make sure we avoid unfinished cells in the
+    new population, we add it to 1 [hour] and then this will be the time-interval from the right (end of the experiment). In this
+    way we find the suitable end-time so that for all the cells in the lineage we have the tau and fate of all cells.
+    
+    Args:
+    -----
+        X (list of objects): a list holding the cells of the population as objects.
+        experimentTime (int/float): experiment time for simulation -- the same as before.
+    Returns:
+    --------
+        new_population (list of objects): after removing those cells at the end that we don't know their fate and end time.
+    *** Make sure you run the experiment long enough, experimentTime >>1 to have a reasonable number of cells at the end
+    """
+    
+    new_population = []
+    leaf_cell_taus = []
+
+    # first remove singleton lineages
+    X = remove_singleton_lineages(X)
+    
+    # get the lifetime of leaf cells and append them to a list
+    for cell in X:
+        if cell.isLeaf():
+            if cell.isUnfinished():
+                leaf_cell_taus.append(cell.tauFake)
+            else:
+                leaf_cell_taus.append(cell.tau)
+
+    # find the intended end of experiment time by maximum tau of leaf cells
+    intended_interval = max(leaf_cell_taus) + 0.01
+    intended_end_time = experimentTime - intended_interval
+
+    # lose the cells that were born after intended experiment end time
+    for cell in X:
+        if cell:
+            if cell.startT <= intended_end_time and not cell.isUnfinished():
+                # only if the cell is born before the intended experiment time 
+                # do we think about keeping the cell
+                if cell.isLeaf():
+                    # If the cell's start time is before our intended end time
+                    # and if the cell is a leaf
+                    # we don't have to do anything to it.
+                    pass
+                elif not cell.isLeaf() and cell.endT > intended_end_time:
+                    # if the cell's start time is before the intended end time
+                    # and has daughter cells whose start times are after the intended
+                    # end time, then that parent cell is a leaf in our new population
+                    if cell.left:
+                        assert cell.left.startT > intended_end_time
+                    elif cell.right:
+                        assert cell.right.startT > intended_end_time
+#                     assert cell.left.startT == cell.right.startT
+                    cell.left = None
+                    cell.right = None
+
+                    assert cell.isLeaf() # new leaf being made 
+                elif not cell.isLeaf() and cell.endT <= intended_end_time:
+                    pass
+
+                assert not math.isnan(cell.endT), "There still exists NaN in your population after removing undetermined cells"
+                new_population.append(cell)
+    
+    assert len(new_population) <= len(X)
+    return new_population, intended_end_time
+
+
+
