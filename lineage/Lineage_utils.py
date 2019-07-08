@@ -399,14 +399,16 @@ def select_population(X, experimentTime):
                     # If the cell's start time is before our intended end time
                     # and if the cell is a leaf
                     # we don't have to do anything to it.
-                    pass 
+                    pass
                 elif not cell.isLeaf() and cell.endT > intended_end_time:
                     # if the cell's start time is before the intended end time
                     # and has daughter cells whose start times are after the intended
                     # end time, then that parent cell is a leaf in our new population
-                    assert cell.left.startT > intended_end_time
-                    assert cell.right.startT > intended_end_time
-                    assert cell.left.startT == cell.right.startT
+                    if cell.left:
+                        assert cell.left.startT > intended_end_time
+                    elif cell.right:
+                        assert cell.right.startT > intended_end_time
+#                     assert cell.left.startT == cell.right.startT
                     cell.left = None
                     cell.right = None
 
