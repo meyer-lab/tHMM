@@ -165,3 +165,4 @@ class TestModel(unittest.TestCase):
 
         # the Bernoulli parameter estimate should be greater than than locBern since bern2>locBern
         self.assertTrue(bernEstimate > 0.7)
+
