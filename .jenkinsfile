@@ -23,7 +23,7 @@ pipeline {
         stage('Lint') {
           steps {
             sh 'make pylint.log'
-            recordIssues(tools: [pyLint(pattern: 'pylint.log')])
+            recordIssues qualityGates: [[threshold: 100, type: 'TOTAL', unstable: true]], tools: [pyLint(pattern: 'pylint.log')]
           }
         }
         stage('Doc') {

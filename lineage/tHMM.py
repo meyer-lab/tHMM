@@ -38,7 +38,6 @@ class tHMM:
 
 ##------------------------ Initializing the parameter list --------------------------##
 
-
     def init_paramlist(self):
         ''' Creates a list of dictionaries holding the tHMM parameters for each lineage.
         In this function, the dictionary is initialized.

@@ -355,12 +355,12 @@ def gammaAnalytical(X):
 
 def select_population(X, experimentTime):
     """
-    In this function we remove the cells that are unfinished at the end and restrict our end-time analysis and build the model 
-    up to some time-point, which is intended_end_time. 
+    In this function we remove the cells that are unfinished at the end and restrict our end-time analysis and build the model
+    up to some time-point, which is intended_end_time.
     Here we first loop over the leaf cells and get the maximum tau of those, then to make sure we avoid unfinished cells in the
     new population, we add it to 1 [hour] and then this will be the time-interval from the right (end of the experiment). In this
     way we find the suitable end-time so that for all the cells in the lineage we have the tau and fate of all cells.
-    
+
     Args:
     -----
         X (list of objects): a list holding the cells of the population as objects.
@@ -370,13 +370,13 @@ def select_population(X, experimentTime):
         new_population (list of objects): after removing those cells at the end that we don't know their fate and end time.
     *** Make sure you run the experiment long enough, experimentTime >>1 to have a reasonable number of cells at the end
     """
-    
+
     new_population = []
     leaf_cell_taus = []
 
     # first remove singleton lineages
     X = remove_singleton_lineages(X)
-    
+
     # get the lifetime of leaf cells and append them to a list
     for cell in X:
         if cell.isLeaf():
@@ -393,7 +393,7 @@ def select_population(X, experimentTime):
     for cell in X:
         if cell:
             if cell.startT <= intended_end_time and not cell.isUnfinished():
-                # only if the cell is born before the intended experiment time 
+                # only if the cell is born before the intended experiment time
                 # do we think about keeping the cell
                 if cell.isLeaf():
                     # If the cell's start time is before our intended end time
@@ -412,15 +412,12 @@ def select_population(X, experimentTime):
                     cell.left = None
                     cell.right = None
 
-                    assert cell.isLeaf() # new leaf being made 
+                    assert cell.isLeaf()  # new leaf being made
                 elif not cell.isLeaf() and cell.endT <= intended_end_time:
                     pass
 
                 assert not math.isnan(cell.endT), "There still exists NaN in your population after removing undetermined cells"
                 new_population.append(cell)
-    
+
     assert len(new_population) <= len(X)
     return new_population, intended_end_time
-
-
-

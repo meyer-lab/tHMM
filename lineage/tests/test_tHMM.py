@@ -62,7 +62,6 @@ class TestModel(unittest.TestCase):
 
         # create a common population for Gamma distribution to use in some tests
 #         experimentTime = 200.
-        
 
     ################################
     # Lineage_utils.py tests below #
@@ -85,10 +84,10 @@ class TestModel(unittest.TestCase):
                 num_NAN += 1
 
         self.assertEqual(num_NAN, 0)  # there should be no unfinished cells left
-    
+
     def test_remove_singleton_lineages(self):
         '''
-        Checks whether there will be no singleton lineages left after using this 
+        Checks whether there will be no singleton lineages left after using this
         function.
         '''
         experimentTime = 100.
@@ -99,9 +98,8 @@ class TestModel(unittest.TestCase):
         X = remove_singleton_lineages(X)
         for cell in X:
             if cell.isRootParent():
-                self.assertTrue(not cell.isUnfinished()) # If the cell is rootparent, it souldn't be unfinished.
+                self.assertTrue(not cell.isUnfinished())  # If the cell is rootparent, it souldn't be unfinished.
 
-           
     def test_select_population(self):
         '''
         Checks to see if all NaNs are removed from the lineages.
@@ -115,7 +113,7 @@ class TestModel(unittest.TestCase):
         num_NAN = 0
         for cell in X:
             if cell.isUnfinished():
-                num_NAN +=1
+                num_NAN += 1
         self.assertEqual(num_NAN, 0)
         self.assertGreater(time, 1)
         self.assertGreater(len(X), 10)
@@ -309,7 +307,7 @@ class TestModel(unittest.TestCase):
 #         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
         x_new, ti = select_population(X, 150.)
-        
+
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
 
         self.assertEqual(t.paramlist[0]["pi"].shape[0], 2)  # make sure shape is numStates
@@ -325,7 +323,7 @@ class TestModel(unittest.TestCase):
         '''
 #         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
-        x_new , ti = select_population(X, 150.)
+        x_new, ti = select_population(X, 150.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
@@ -564,7 +562,7 @@ class TestModel(unittest.TestCase):
         deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        ac,_,_ = getAccuracy(tHMMobj, all_states, verbose=True)
+        ac, _, _ = getAccuracy(tHMMobj, all_states, verbose=True)
         check_acc = all(1.0 >= x >= 0.0 for x in ac)
         self.assertTrue(check_acc)
 #         get_mutual_info(tHMMobj, all_states, verbose=True)
