@@ -248,14 +248,14 @@ def generateLineageWithTime(initCells, experimentTime, locBern, betaExp, switchT
             if switchT and cell.startT > switchT:  # when the cells should abide by the second set of parameters
                 cell.true_state = 1
                 if FOM == 'E':
-                    cell.tau = sp.expon.rvs(loc = 1.0, scale=betaExp2)
+                    cell.tau = sp.expon.rvs(scale=betaExp2)
                 elif FOM == 'Ga':
                     cell.tau = sp.gamma.rvs(shape_gamma2, scale=scale_gamma2)
 
             else:  # use first set of parameters for non-heterogeneous lineages or before the switch time
                 cell.true_state = 0
                 if FOM == 'E':
-                    cell.tau = sp.expon.rvs(loc = 1.0, scale=betaExp)
+                    cell.tau = sp.expon.rvs(scale=betaExp)
                 elif FOM == 'Ga':
                     cell.tau = sp.gamma.rvs(shape_gamma1, scale=scale_gamma1)
 
