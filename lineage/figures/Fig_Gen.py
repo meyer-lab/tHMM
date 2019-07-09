@@ -76,8 +76,8 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
             betaExp_2_h2.append(E[state_2, 1])
 
             if verbose:
-                logging.info('pi', pi)
-                logging.info('T', T)
+                logging.info('pi: {}'.format(pi))
+                logging.info('T: {}'.format(T))
                 logging.info('E', E)
                 logging.info('accuracy:', accuracy)
                 logging.info('KL:', KL)
