@@ -243,6 +243,7 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
 #                 X = remove_unfinished_cells(X)
                 X = remove_singleton_lineages(X)
                 X, end_time = select_population(X, experimentTime)
+                newLineag, end = select_population(newLineage, experimentTime)
                 X1.extend(newLineage)
 
 #             X1 = remove_unfinished_cells(X1)
