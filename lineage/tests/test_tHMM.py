@@ -57,7 +57,7 @@ class TestModel(unittest.TestCase):
 
         initCells = [40, 10]  # there should be around 50 lineages because there are 50 initial cells
         locBern = [0.999, 0.8]
-        betaExp = [40, 50]
+        betaExp = [20, 30]
         self.X2 = gpt(experimentTime, initCells, locBern, betaExp)
 
         # create a common population for Gamma distribution to use in some tests
@@ -76,7 +76,7 @@ class TestModel(unittest.TestCase):
         experimentTime = 100.
         initCells = [50, 50]
         locBern = [0.6, 0.8]
-        betaExp = [40, 50]
+        betaExp = [20, 30]
         X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
         X = remove_unfinished_cells(X)  # remove unfinished cells
         num_NAN = 0
@@ -94,7 +94,7 @@ class TestModel(unittest.TestCase):
         experimentTime = 100.
         initCells = [50, 50]
         locBern = [0.6, 0.8]
-        betaExp = [40, 50]
+        betaExp = [20, 30]
         X = gpt(experimentTime, initCells, locBern, betaExp)
         X = remove_singleton_lineages(X)
         for cell in X:
@@ -106,10 +106,10 @@ class TestModel(unittest.TestCase):
         '''
         Checks to see if all NaNs are removed from the lineages.
         '''
-        experimentTime = 200.
+        experimentTime = 250.
         initCells = [50, 50]
-        locBern = [0.6, 0.9]
-        betaExp = [40, 50]
+        locBern = [0.65, 0.99]
+        betaExp = [20, 30]
         X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
         X, time = select_population(X, experimentTime)
         num_NAN = 0
@@ -132,7 +132,7 @@ class TestModel(unittest.TestCase):
         experimentTime = 50.
         initCells = [50, 42, 8]  # there should be 100 lineages b/c there are 100 initial cells
         locBern = [0.6, 0.8, 0.7]
-        betaExp = [40, 50, 45]
+        betaExp = [20, 30, 25]
         X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
         numLin = get_numLineages(X)
         self.assertLessEqual(numLin, 100)  # call func
@@ -221,9 +221,9 @@ class TestModel(unittest.TestCase):
         experimentTime = switchT + 250.
         initCells = [1]
         locBern = [0.9999]
-        betaExp1 = [50]
+        betaExp1 = [20]
         bern2 = [0.75]
-        betaExp2 = [50]
+        betaExp2 = [20]
 
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
         LINEAGE = remove_singleton_lineages(LINEAGE)
@@ -259,9 +259,9 @@ class TestModel(unittest.TestCase):
         experimentTime = switchT + 250.
         initCells = [1]
         locBern = [0.99999999999]
-        betaExp1 = [75.]
+        betaExp1 = [45.]
         bern2 = [0.6]
-        betaExp2 = [50.]
+        betaExp2 = [30.]
 
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
         LINEAGE = remove_unfinished_cells(LINEAGE)
@@ -461,10 +461,10 @@ class TestModel(unittest.TestCase):
         temp_params["pi"][1] = 1 / 5  # state 1 occurs 1/5 of the time
 
         temp_params["E"][0, 0] *= 0.999  # initializing Bernoulli p parameters to 0.999 for state 0
-        temp_params["E"][0, 1] *= 40  # initializing Exponential lambda parameters to 40 for state 0
+        temp_params["E"][0, 1] *= 20  # initializing Exponential lambda parameters to 40 for state 0
 
         temp_params["E"][1, 0] *= 0.7  # initializing Bernoulli p parameters to 0.7 for state 1
-        temp_params["E"][1, 1] *= 50  # initializing exponential lambda parameters to 50 for state 1
+        temp_params["E"][1, 1] *= 30  # initializing exponential lambda parameters to 50 for state 1
 
         for lineage_num in range(numLineages):  # for each lineage in our population
             fake_param_list.append(temp_params.copy())  # create a new dictionary holding the parameters and append it
@@ -535,7 +535,7 @@ class TestModel(unittest.TestCase):
         experimentTime = 300.
         initCells = [1]
         locBern = [0.99999999999]
-        betaExp = [75]
+        betaExp = [45]
 
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp=betaExp, FOM='E')
         LINEAGE = remove_singleton_lineages(LINEAGE)
@@ -566,9 +566,9 @@ class TestModel(unittest.TestCase):
         experimentTime = switchT + 150.
         initCells = [1]
         locBern = [0.99999999999]
-        betaExp = [75]
+        betaExp = [45]
         bern2 = [0.6]
-        betaExp2 = [25]
+        betaExp2 = [15]
 
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')
 
