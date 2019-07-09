@@ -49,13 +49,13 @@ class TestModel(unittest.TestCase):
         self.lineage4 = [self.cell30]
 
         # create a common population for Exponential distribution to use in all tests
-        experimentTime = 150.
-        initCells = [50]  # there should be 50 lineages b/c there are 50 initial cells
+        experimentTime = 250.
+        initCells = [50]  # there should be 50 lineages because there are 50 initial cells
         locBern = [0.8]
         betaExp = [40]
         self.X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
 
-        initCells = [40, 10]  # there should be around 50 lineages b/c there are 50 initial cells
+        initCells = [40, 10]  # there should be around 50 lineages because there are 50 initial cells
         locBern = [0.999, 0.8]
         betaExp = [40, 50]
         self.X2 = gpt(experimentTime, initCells, locBern, betaExp)
@@ -305,7 +305,7 @@ class TestModel(unittest.TestCase):
         labels and sizes.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new, ti = select_population(X, 250.)
         
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
 
@@ -321,7 +321,7 @@ class TestModel(unittest.TestCase):
         structure.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new , ti = select_population(X, 150.)
+        x_new , ti = select_population(X, 250.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
@@ -337,7 +337,7 @@ class TestModel(unittest.TestCase):
         the output is of correct data type and structure.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new, ti = select_population(X, 250.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         EL = t.get_Emission_Likelihoods()
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
@@ -356,7 +356,7 @@ class TestModel(unittest.TestCase):
         structure.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new, ti = select_population(X, 250.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(t)
         self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population
@@ -374,7 +374,7 @@ class TestModel(unittest.TestCase):
         the optimal hidden states.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new, ti = select_population(X, 250.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
         self.assertLessEqual(len(deltas), 50)  # there are <=50 lineages in X
@@ -395,7 +395,7 @@ class TestModel(unittest.TestCase):
         trees.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, end_time = select_population(X, 150.)
+        x_new, end_time = select_population(X, 250.)
         numStates = 2
         t = tHMM(x_new, numStates=numStates)  # build the tHMM class with X
         fake_param_list = []
@@ -445,7 +445,7 @@ class TestModel(unittest.TestCase):
         describe those homogenous populations.
         '''
         X = remove_singleton_lineages(self.X2)
-        x_new, end_time = select_population(X, 150.)
+        x_new, end_time = select_population(X, 250.)
         numStates = 2
         t = tHMM(x_new, numStates=numStates, FOM='E')  # build the tHMM class with X
 
@@ -455,16 +455,16 @@ class TestModel(unittest.TestCase):
         temp_params = {"pi": np.ones((numStates), dtype=float) / (numStates),  # inital state distributions [K] initialized to 1/K
                        "T": np.eye(2, dtype=int),  # state transition matrix [KxK] initialized to identity (no transitions)
                        # should always end up in state 1 regardless of previous state
-                       "E": np.ones((numStates, 3))}  # sequence of emission likelihood distribution parameters [Kx2]
+                       "E": np.ones((numStates, 2))}  # sequence of emission likelihood distribution parameters [Kx2]
 
-        temp_params["pi"][0] = 4 / 5  # the population is distributed as such 2/5 is of state 0
-        temp_params["pi"][1] = 1 / 5  # state 1 occurs 3/5 of the time
+        temp_params["pi"][0] = 4 / 5  # the population is initialized as such 4/5 is of state 0
+        temp_params["pi"][1] = 1 / 5  # state 1 occurs 1/5 of the time
 
-        temp_params["E"][0, 0] *= 0.999  # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][0, 1] *= 40  # initializing all Exponential parameters to 50
+        temp_params["E"][0, 0] *= 0.999  # initializing Bernoulli p parameters to 0.999 for state 0
+        temp_params["E"][0, 1] *= 40  # initializing Exponential lambda parameters to 40 for state 0
 
-        temp_params["E"][1, 0] *= 0.6  # initializing all Bernoulli p parameters to 0.5
-        temp_params["E"][1, 1] *= 50  # initializing all exponential parameters to 50
+        temp_params["E"][1, 0] *= 0.7  # initializing Bernoulli p parameters to 0.7 for state 1
+        temp_params["E"][1, 1] *= 50  # initializing exponential lambda parameters to 50 for state 1
 
         for lineage_num in range(numLineages):  # for each lineage in our population
             fake_param_list.append(temp_params.copy())  # create a new dictionary holding the parameters and append it
@@ -472,7 +472,7 @@ class TestModel(unittest.TestCase):
         t.paramlist = fake_param_list
 
         t.MSD = t.get_Marginal_State_Distributions()  # rerun these with new parameters
-        t.EL = t.get_Emission_Likelihoods()  # rerun these with new parameters
+        t.EL = t.get_Emission_Likelihoods()  # retrun these with new parameters
         # run Viterbi with new parameter list
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
         self.assertLessEqual(len(deltas), 50)  # there are <=50 lineages in X
