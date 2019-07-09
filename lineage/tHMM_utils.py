@@ -3,7 +3,6 @@
 import itertools
 import numpy as np
 from sklearn.metrics.cluster import normalized_mutual_info_score
-from scipy.special import gamma, gammaincc
 
 
 ##------------------- Find maximum generation in a lineage -----------------------##

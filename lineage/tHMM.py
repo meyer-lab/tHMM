@@ -192,8 +192,6 @@ class tHMM:
                 E_param_k = E_param_array[state_k, :]  # get the emission parameters for that state
                 k_bern = E_param_k[0]  # bernoulli rate parameter
                 k_expon_beta = 0
-                k_shape_gamma = 0
-                k_scale_gamma = 0
 
                 if self.FOM == 'E':
                     k_expon_beta = E_param_k[1]
@@ -212,7 +210,6 @@ class tHMM:
                         assert np.isfinite(temp_beta), "You have a Exponential likelihood calculation returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
                         # the right-censored and uncensored exponential pdfs are the
                         EL_array[current_cell_idx, state_k] = temp_beta * temp_b
-                        #import pdb; pdb.set_trace()
                     if self.FOM == 'Ga':
                         temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)  # bernoulli likelihood
                         if cell.fateObserved:
