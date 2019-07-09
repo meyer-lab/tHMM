@@ -253,8 +253,6 @@ class TestModel(unittest.TestCase):
         states that Viterbi has assigned to the cells. It makes sure the accuracy is
         between 0 and 1.'''
 
-        numStates = 2
-
         switchT = 200.
         experimentTime = switchT + 250.
         initCells = [1]
@@ -340,7 +338,7 @@ class TestModel(unittest.TestCase):
         '''
 #         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new, _ = select_population(X, 150.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         EL = t.get_Emission_Likelihoods()
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
@@ -360,7 +358,7 @@ class TestModel(unittest.TestCase):
         '''
 #         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new, _ = select_population(X, 150.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(t)
         self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population
@@ -379,7 +377,7 @@ class TestModel(unittest.TestCase):
         '''
 #         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new, _ = select_population(X, 150.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
         self.assertLessEqual(len(deltas), 50)  # there are <=50 lineages in X
@@ -401,7 +399,7 @@ class TestModel(unittest.TestCase):
         '''
 #         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new, _ = select_population(X, 150.)
         numStates = 2
         t = tHMM(x_new, numStates=numStates)  # build the tHMM class with X
         fake_param_list = []
