@@ -4,7 +4,7 @@ from lineage.parse_csv import load_data, process
 from lineage.tHMM import tHMM
 from lineage.BaumWelch import fit
 from lineage.Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
-from lineage.plotting_utils import plot_experiments, plot_population
+from lineage.plotting_utils import plot_experiments
 
 data = load_data(sys.argv[1])  # i.e. 'data/2019_02_21_true.csv'
 print("true length of pop:", data.shape[0])

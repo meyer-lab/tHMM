@@ -214,7 +214,6 @@ class TestModel(unittest.TestCase):
         """
         checks whether the accuracy is in the range
         """
-        numStates = 2
         switchT = 150.
         experimentTime = switchT + 250.
         initCells = [1]

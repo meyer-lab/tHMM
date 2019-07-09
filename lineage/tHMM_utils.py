@@ -290,7 +290,6 @@ def get_mutual_info(tHMMobj, all_states, verbose=True):
         mutual_info = get_mutual_info(tHMMobj, all_states, verbose = True)
     """
 
-    numStates = tHMMobj.numStates
     tHMMobj.Accuracy2 = []
     tHMMobj.stateAssignment = []
     tHMMobj.states = []
