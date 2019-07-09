@@ -135,8 +135,8 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.
             for numState in range(numState_start, numState_end + 1):
                 logging.info(f'numState:{numState}')
                 _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates=numState)
-                tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
-                AIC_ls, LL_ls, AIC_degrees_of_freedom = getAIC(tHMMobj, LL)
+                tHMMobj, _, _, _, LL = fit(tHMMobj, max_iter=100, verbose=False)
+                AIC_ls, LL_ls, _ = getAIC(tHMMobj, LL)
                 AICval.append(sum(AIC_ls))  # make numstate be a single value not an array of a value
                 LLval.append(sum(LL_ls))
             AIC_rel_0 = AICval  # make aic plot to be relative to the lowest value
