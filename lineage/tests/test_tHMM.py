@@ -226,11 +226,9 @@ class TestModel(unittest.TestCase):
         betaExp2 = [50]
 
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
-        #LINEAGE = remove_unfinished_cells(LINEAGE)
         LINEAGE = remove_singleton_lineages(LINEAGE)
         while len(LINEAGE) <= 25:
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp1, switchT, bern2, betaExp2, FOM='E')
-            #LINEAGE = remove_unfinished_cells(LINEAGE)
             LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
@@ -306,7 +304,6 @@ class TestModel(unittest.TestCase):
         Make sure paramlist has proper
         labels and sizes.
         '''
-#         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
         x_new, ti = select_population(X, 150.)
         
@@ -323,7 +320,6 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
-#         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
         x_new , ti = select_population(X, 150.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
@@ -340,7 +336,6 @@ class TestModel(unittest.TestCase):
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         '''
-#         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
         x_new, ti = select_population(X, 150.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
@@ -360,7 +355,6 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
-#         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
         x_new, ti = select_population(X, 150.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
@@ -379,7 +373,6 @@ class TestModel(unittest.TestCase):
         the Viterbi function to find
         the optimal hidden states.
         '''
-#         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
         x_new, ti = select_population(X, 150.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
@@ -401,9 +394,8 @@ class TestModel(unittest.TestCase):
         gives one different optimal state
         trees.
         '''
-#         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new, end_time = select_population(X, 150.)
         numStates = 2
         t = tHMM(x_new, numStates=numStates)  # build the tHMM class with X
         fake_param_list = []
@@ -452,11 +444,10 @@ class TestModel(unittest.TestCase):
         homogeneous populations. Using parameter sets that
         describe those homogenous populations.
         '''
-        X = remove_unfinished_cells(self.X2)
-        X = remove_singleton_lineages(X)
-#         x_new, ti = select_population(X, 150.)
+        X = remove_singleton_lineages(self.X2)
+        x_new, end_time = select_population(X, 150.)
         numStates = 2
-        t = tHMM(X, numStates=numStates, FOM='E')  # build the tHMM class with X
+        t = tHMM(x_new, numStates=numStates, FOM='E')  # build the tHMM class with X
 
         fake_param_list = []
         numLineages = t.numLineages
@@ -518,7 +509,6 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
-#         X = remove_unfinished_cells(self.X)
         X = remove_singleton_lineages(self.X)
         x_new, ti = select_population(X, 150.)
         numStates = 2
@@ -548,11 +538,9 @@ class TestModel(unittest.TestCase):
         betaExp = [75]
 
         LINEAGE = gpt(experimentTime, initCells, locBern, betaExp=betaExp, FOM='E')
-#         LINEAGE = remove_unfinished_cells(LINEAGE)
         LINEAGE = remove_singleton_lineages(LINEAGE)
         while len(LINEAGE) <= 20:
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp=betaExp, FOM='E')
-#             LINEAGE = remove_unfinished_cells(LINEAGE)
             LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
@@ -588,7 +576,6 @@ class TestModel(unittest.TestCase):
             LINEAGE = gpt(experimentTime, initCells, locBern, betaExp, switchT, bern2, betaExp2=betaExp2, FOM='E')
 
         X = LINEAGE
-#         X = remove_unfinished_cells(X)
         X = remove_singleton_lineages(X)
         x_new, ti = select_population(X, experimentTime)
         tHMMobj = tHMM(x_new, numStates=numStates, FOM='E')  # build the tHMM class with X
