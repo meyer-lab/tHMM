@@ -49,7 +49,7 @@ class TestModel(unittest.TestCase):
         self.lineage4 = [self.cell30]
 
         # create a common population for Exponential distribution to use in all tests
-        experimentTime = 250.
+        experimentTime = 100.
         initCells = [50]  # there should be 50 lineages because there are 50 initial cells
         locBern = [0.8]
         betaExp = [40]
@@ -106,7 +106,7 @@ class TestModel(unittest.TestCase):
         '''
         Checks to see if all NaNs are removed from the lineages.
         '''
-        experimentTime = 250.
+        experimentTime = 100.
         initCells = [50, 50]
         locBern = [0.65, 0.99]
         betaExp = [20, 30]
@@ -217,8 +217,8 @@ class TestModel(unittest.TestCase):
         checks whether the accuracy is in the range
         """
         numStates = 2
-        switchT = 150.
-        experimentTime = switchT + 250.
+        switchT = 50.
+        experimentTime = switchT + 150.
         initCells = [1]
         locBern = [0.9999]
         betaExp1 = [20]
@@ -255,8 +255,8 @@ class TestModel(unittest.TestCase):
 
         numStates = 2
 
-        switchT = 200.
-        experimentTime = switchT + 250.
+        switchT = 100.
+        experimentTime = switchT + 150.
         initCells = [1]
         locBern = [0.99999999999]
         betaExp1 = [45.]
@@ -305,7 +305,7 @@ class TestModel(unittest.TestCase):
         labels and sizes.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 250.)
+        x_new, ti = select_population(X, 100.)
         
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
 
@@ -321,7 +321,7 @@ class TestModel(unittest.TestCase):
         structure.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new , ti = select_population(X, 250.)
+        x_new , ti = select_population(X, 100.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
@@ -337,7 +337,7 @@ class TestModel(unittest.TestCase):
         the output is of correct data type and structure.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 250.)
+        x_new, ti = select_population(X, 100.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         EL = t.get_Emission_Likelihoods()
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
@@ -356,7 +356,7 @@ class TestModel(unittest.TestCase):
         structure.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 250.)
+        x_new, ti = select_population(X, 100.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(t)
         self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population
@@ -374,7 +374,7 @@ class TestModel(unittest.TestCase):
         the optimal hidden states.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 250.)
+        x_new, ti = select_population(X, 100.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
         self.assertLessEqual(len(deltas), 50)  # there are <=50 lineages in X
@@ -395,7 +395,7 @@ class TestModel(unittest.TestCase):
         trees.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, end_time = select_population(X, 250.)
+        x_new, end_time = select_population(X, 100.)
         numStates = 2
         t = tHMM(x_new, numStates=numStates)  # build the tHMM class with X
         fake_param_list = []
@@ -445,7 +445,7 @@ class TestModel(unittest.TestCase):
         describe those homogenous populations.
         '''
         X = remove_singleton_lineages(self.X2)
-        x_new, end_time = select_population(X, 250.)
+        x_new, end_time = select_population(X, 100.)
         numStates = 2
         t = tHMM(x_new, numStates=numStates, FOM='E')  # build the tHMM class with X
 
@@ -510,7 +510,7 @@ class TestModel(unittest.TestCase):
         structure.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new, ti = select_population(X, 100.)
         numStates = 2
         tHMMobj = tHMM(x_new, numStates=numStates)  # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(tHMMobj)
@@ -532,7 +532,7 @@ class TestModel(unittest.TestCase):
         ''' one state exponential estimation'''
         numStates = 1
 
-        experimentTime = 300.
+        experimentTime = 150.
         initCells = [1]
         locBern = [0.99999999999]
         betaExp = [45]
@@ -562,8 +562,8 @@ class TestModel(unittest.TestCase):
 
         numStates = 2
 
-        switchT = 300.
-        experimentTime = switchT + 150.
+        switchT = 150.
+        experimentTime = switchT + 100.
         initCells = [1]
         locBern = [0.99999999999]
         betaExp = [45]
