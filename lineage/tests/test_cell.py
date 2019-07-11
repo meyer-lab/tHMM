@@ -3,7 +3,6 @@ import unittest
 import logging
 import math
 import numpy as np
-import scipy.stats as sp
 
 
 from ..Lineage_utils import generatePopulationWithTime, bernoulliParameterEstimatorAnalytical, exponentialAnalytical, gammaAnalytical
@@ -113,7 +112,6 @@ class TestModel(unittest.TestCase):
 
     def test_MLE_bern(self):
         """ Generate multiple lineages and estimate the bernoulli parameter with MLE. Estimators must be within +/- 0.08 of true locBern for popTime. """
-        asdas = (bernoulliParameterEstimatorAnalytical(self.pop1))
         self.assertTrue(0.899 <= bernoulliParameterEstimatorAnalytical(self.pop1) <= 1.0)
 
     def test_MLE_exp_analytical(self):
@@ -165,4 +163,3 @@ class TestModel(unittest.TestCase):
 
         # the Bernoulli parameter estimate should be greater than than locBern since bern2>locBern
         self.assertTrue(bernEstimate > 0.7)
-

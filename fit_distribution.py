@@ -17,15 +17,15 @@ G2 = G2[~np.isnan(G2)]
 
 # converting from unit of [frames] into [hours]
 # every frame is every 30 minutes, so dividing the numbers by 2 gives unit of [hours]
-G1 = G1/2
-G2 = G2/2
+G1 = G1 / 2
+G2 = G2 / 2
 
 
 ## --------------------- Check for our data ------------------------ ##
 print('#### For G1 ####\n')
-p_value_G1 = check_dist(G1, verbose = True)
+p_value_G1 = check_dist(G1, verbose=True)
 print('\n #### For G2 ####\n')
-p_value_G2 = check_dist(G2, verbose = True)
+p_value_G2 = check_dist(G2, verbose=True)
 
 # What we get is:
 
