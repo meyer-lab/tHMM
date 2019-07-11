@@ -3,7 +3,7 @@
 import numpy as np
 import logging
 from .Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
-from .Lineage_utils import generatePopulationWithTime as gpt, select_population
+from .Lineage_utils import generatePopulationWithTime as gpt
 
 
 def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM='E', betaExp=None, betaExp2=None):
@@ -12,23 +12,27 @@ def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, lo
     # Making the first lineage
     MASexperimentTime = T_MAS
     masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, FOM=FOM, betaExp=betaExp)
-    masterLineage, _ = select_population(masterLineage, MASexperimentTime)
     masterLineage = remove_singleton_lineages(masterLineage)
+    masterLineage, _ = select_population(masterLineage, MASexperimentTime)
+
     while not masterLineage:
         masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, FOM=FOM, betaExp=betaExp)
-        masterLineage, _ = select_population(masterLineage, MASexperimentTime)
         masterLineage = remove_singleton_lineages(masterLineage)
+        masterLineage, _ = select_population(masterLineage, MASexperimentTime)
+    
     for cell in masterLineage:
         cell.true_state = 0
     # Making the second lineage
     experimentTime2 = T_2
     sublineage2 = gpt(experimentTime2, initCells2, locBern2, FOM=FOM, betaExp=betaExp2)
-    sublineage2, _ = select_population(sublineage2, experimentTime2)
     sublineage2 = remove_singleton_lineages(sublineage2)
+    sublineage2, _ = select_population(sublineage2, experimentTime2)
+
     while not sublineage2:
         sublineage2 = gpt(experimentTime2, initCells2, locBern2, FOM=FOM, betaExp=betaExp2)
-        sublineage2, _ = select_population(sublineage2, experimentTime2)
         sublineage2 = remove_singleton_lineages(sublineage2)
+        sublineage2, _ = select_population(sublineage2, experimentTime2)
+    
     cell_endT_holder = []
     for cell in masterLineage:
         cell_endT_holder.append(cell.endT)
