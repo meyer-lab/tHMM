@@ -9,7 +9,7 @@ from ..Breadth_Two_State_Lineage import Breadth_Two_State_Lineage
 from ..Analyze import Analyze
 from ..BaumWelch import fit
 from ..tHMM_utils import getAccuracy, getAIC
-from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells, select_population
+from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 
 
 def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=200, min_lin_length=80, FOM='E', verbose=False):
@@ -46,7 +46,7 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
         logging.info('Repetition Number: {}'.format(rep + 1))
 
         X = remove_singleton_lineages(newLineage)
-        X, new_endtime = select_population(X, experimentTime)
+        X = remove_unfinished_cells(X)
         _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates)
 
         # arrays to hold values for each lineage within the population that the rep made
@@ -102,7 +102,6 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=50, MASinitCells=[1], MASlocBern=[0.
                    locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, switchT=False, AIC=False, numState_start=1, numState_end=3):
     '''This has been modified for an exponential distribution'''
 
-    experimentTime = T_MAS + T_2
     accuracy_h1 = []  # list of lists of lists
     number_of_cells_h1 = []
     bern_MAS_h1 = []
@@ -128,7 +127,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=50, MASinitCells=[1], MASlocBern=[0.
                     experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
 
         X = remove_singleton_lineages(X)
-        X, end_time = select_population(X, experimentTime)
+        X = remove_unfinished_cells(X)
         logging.info('X size: {}, masterLineage size: {}, subLineage2 size: {}'.format(len(X), len(masterLineage), len(subLineage2)))
 
         # Call function for AIC
