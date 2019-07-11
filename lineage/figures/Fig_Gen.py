@@ -128,7 +128,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=50, MASinitCells=[1], MASlocBern=[0.
                     experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
 
         X = remove_singleton_lineages(X)
-        X, end_time = select_population(X, experimentTime)
+        #X, end_time = select_population(X, experimentTime)
         logging.info('X size: {}, masterLineage size: {}, subLineage2 size: {}'.format(len(X), len(masterLineage), len(subLineage2)))
 
         # Call function for AIC
