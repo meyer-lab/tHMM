@@ -371,7 +371,7 @@ class TestModel(unittest.TestCase):
         trees.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new = rmeove_unfinished_cells(X)
+        x_new = remeove_unfinished_cells(X)
 
         numStates = 2
         t = tHMM(x_new, numStates=numStates)  # build the tHMM class with X
