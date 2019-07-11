@@ -98,7 +98,7 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
     return data
 
 
-def Lineage_Length(T_MAS=500, T_2=100, reps=10, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1],
+def Lineage_Length(T_MAS=500, T_2=100, reps=50, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1],
                    locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, switchT=False, AIC=False, numState_start=1, numState_end=3):
     '''This has been modified for an exponential distribution'''
 
