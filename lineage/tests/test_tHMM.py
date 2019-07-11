@@ -62,7 +62,6 @@ class TestModel(unittest.TestCase):
 
         # create a common population for Gamma distribution to use in some tests
 #         experimentTime = 200.
-        
 
     ################################
     # Lineage_utils.py tests below #
@@ -85,10 +84,10 @@ class TestModel(unittest.TestCase):
                 num_NAN += 1
 
         self.assertEqual(num_NAN, 0)  # there should be no unfinished cells left
-    
+
     def test_remove_singleton_lineages(self):
         '''
-        Checks whether there will be no singleton lineages left after using this 
+        Checks whether there will be no singleton lineages left after using this
         function.
         '''
         experimentTime = 100.
@@ -99,9 +98,8 @@ class TestModel(unittest.TestCase):
         X = remove_singleton_lineages(X)
         for cell in X:
             if cell.isRootParent():
-                self.assertTrue(not cell.isUnfinished()) # If the cell is rootparent, it souldn't be unfinished.
+                self.assertTrue(not cell.isUnfinished())  # If the cell is rootparent, it souldn't be unfinished.
 
-           
     def test_select_population(self):
         '''
         Checks to see if all NaNs are removed from the lineages.
@@ -115,7 +113,7 @@ class TestModel(unittest.TestCase):
         num_NAN = 0
         for cell in X:
             if cell.isUnfinished():
-                num_NAN +=1
+                num_NAN += 1
         self.assertEqual(num_NAN, 0)
         self.assertGreater(time, 1)
         self.assertGreater(len(X), 10)
@@ -216,7 +214,6 @@ class TestModel(unittest.TestCase):
         """
         checks whether the accuracy is in the range
         """
-        numStates = 2
         switchT = 150.
         experimentTime = switchT + 250.
         initCells = [1]
@@ -252,8 +249,6 @@ class TestModel(unittest.TestCase):
         mutual information between the true states of the cells in a lineage and the
         states that Viterbi has assigned to the cells. It makes sure the accuracy is
         between 0 and 1.'''
-
-        numStates = 2
 
         switchT = 200.
         experimentTime = switchT + 250.
@@ -306,7 +301,7 @@ class TestModel(unittest.TestCase):
         '''
         X = remove_singleton_lineages(self.X)
         x_new, ti = select_population(X, 150.)
-        
+
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
 
         self.assertEqual(t.paramlist[0]["pi"].shape[0], 2)  # make sure shape is numStates
@@ -321,7 +316,7 @@ class TestModel(unittest.TestCase):
         structure.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new , ti = select_population(X, 150.)
+        x_new, ti = select_population(X, 150.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
@@ -337,7 +332,7 @@ class TestModel(unittest.TestCase):
         the output is of correct data type and structure.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new, _ = select_population(X, 150.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         EL = t.get_Emission_Likelihoods()
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
@@ -356,7 +351,7 @@ class TestModel(unittest.TestCase):
         structure.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new, _ = select_population(X, 150.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(t)
         self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population
@@ -374,7 +369,7 @@ class TestModel(unittest.TestCase):
         the optimal hidden states.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new, _ = select_population(X, 150.)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
         self.assertLessEqual(len(deltas), 50)  # there are <=50 lineages in X
@@ -395,7 +390,8 @@ class TestModel(unittest.TestCase):
         trees.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, end_time = select_population(X, 150.)
+        x_new, _ = select_population(X, 150.)
+
         numStates = 2
         t = tHMM(x_new, numStates=numStates)  # build the tHMM class with X
         fake_param_list = []
@@ -552,7 +548,7 @@ class TestModel(unittest.TestCase):
         deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
         get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
         all_states = Viterbi(tHMMobj, deltas, state_ptrs)
-        ac,_,_ = getAccuracy(tHMMobj, all_states, verbose=True)
+        ac, _, _ = getAccuracy(tHMMobj, all_states, verbose=True)
         check_acc = all(1.0 >= x >= 0.0 for x in ac)
         self.assertTrue(check_acc)
 #         get_mutual_info(tHMMobj, all_states, verbose=True)
