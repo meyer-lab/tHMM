@@ -51,6 +51,8 @@ def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, lo
     sublineage2[0].parent = master_cell
     newLineage = masterLineage + sublineage2
 
+    total_time = TMAS + T_2
     X = remove_singleton_lineages(newLineage)
+    X, _ = select_population(X, total_time)
     logging.info('length of entire lineage:', len(newLineage), 'length master:', len(masterLineage), 'length sublineage:', len(sublineage2))
     return(X, newLineage, masterLineage, sublineage2)
