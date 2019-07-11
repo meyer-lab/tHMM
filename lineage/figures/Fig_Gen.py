@@ -239,8 +239,7 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
                             experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
 
                 X = remove_singleton_lineages(X)
-                X = remove_unfinished_cells(X)
-                newLineag, end = select_population(newLineage, experimentTime)
+                newLineage = remove_unfinished_cells(X)
                 X1.extend(newLineage)
 
             X1 = remove_singleton_lineages(X1)  # this is one single list with a number of lineages equal to what is inputted
