@@ -249,7 +249,7 @@ def bernoulliParameterEstimatorAnalytical(X):
     fate_holder = []  # instantiates list to hold cell fates as 1s or 0s
     for cell in X:  # go through every cell in the population
         if not cell.isUnfinished():  # if the cell has lived a meaningful life and matters
-            fate_holder.append(cell.fate * 1)  # append 1 for dividing, and 0 for dying
+            fate_holder.append(cell.fate * 1.)  # append 1 for dividing, and 0 for dying
 
     result = (sum(fate_holder) + 1e-10) / (len(fate_holder) + 2e-10)  # add up all the 1s and divide by the total length (finding the average)
 
