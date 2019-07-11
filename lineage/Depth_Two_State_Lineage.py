@@ -2,7 +2,7 @@
 
 import numpy as np
 import logging
-from .Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
+from .Lineage_utils import remove_singleton_lineages, select_population
 from .Lineage_utils import generatePopulationWithTime as gpt
 
 
