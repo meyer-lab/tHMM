@@ -243,7 +243,7 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
                 X1.extend(newLineage)
 
             X1 = remove_singleton_lineages(X1)  # this is one single list with a number of lineages equal to what is inputted
-            X1 = removed_unfinished_cells(X1)
+            X1 = remove_unfinished_cells(X1)
             logging.info(len(X1))
             _, _, all_states, tHMMobj, _, _ = Analyze(X1, numStates)
             accuracy_h3 = []
