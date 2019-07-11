@@ -10,6 +10,7 @@ def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, lo
     '''X is the complete lineage with removed singletons. newLineage is X wihtout the removed singletons. Master Lineage and sublineage2 are the lineages corresponding to state1 and state2'''
     'Shakthis lineage where a second state is appended to first'
     # Making the first lineage
+    MASexperimentTime = T_MAS
     masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, FOM=FOM, betaExp=betaExp)
     masterLineage = remove_singleton_lineages(masterLineage)
     masterLineage = remove_unfinished_cells(masterLineage)
@@ -22,6 +23,7 @@ def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, lo
     for cell in masterLineage:
         cell.true_state = 0
     # Making the second lineage
+    experimentTime2 = T_2
     sublineage2 = gpt(experimentTime2, initCells2, locBern2, FOM=FOM, betaExp=betaExp2)
     sublineage2 = remove_singleton_lineages(sublineage2)
     sublineage2 = remove_unfinished_cells(sublineage2)
