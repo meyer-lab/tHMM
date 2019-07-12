@@ -10,7 +10,7 @@ from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas
 from ..tHMM import tHMM
 from ..tHMM_utils import max_gen, get_gen, get_parents_for_level, getAccuracy, get_mutual_info
-from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells, get_numLineages, init_Population, select_population, generatePopulationWithTime as gpt
+from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells, get_numLineages, init_Population, generatePopulationWithTime as gpt
 
 from ..CellNode import CellNode
 
@@ -100,23 +100,6 @@ class TestModel(unittest.TestCase):
             if cell.isRootParent():
                 self.assertTrue(not cell.isUnfinished())  # If the cell is rootparent, it souldn't be unfinished.
 
-    def test_select_population(self):
-        '''
-        Checks to see if all NaNs are removed from the lineages.
-        '''
-        experimentTime = 200.
-        initCells = [50, 50]
-        locBern = [0.6, 0.9]
-        betaExp = [40, 50]
-        X = gpt(experimentTime, initCells, locBern, betaExp)  # generate a population
-        X, time = select_population(X, experimentTime)
-        num_NAN = 0
-        for cell in X:
-            if cell.isUnfinished():
-                num_NAN += 1
-        self.assertEqual(num_NAN, 0)
-        self.assertGreater(time, 1)
-        self.assertGreater(len(X), 10)
 
     def test_get_numLineages(self):
         '''
@@ -229,8 +212,7 @@ class TestModel(unittest.TestCase):
             LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
-        X_new, time = select_population(X, experimentTime)
-        print("new experiment end time", time)
+        X_new = remove_unfinished_cells(X)
 
         t = tHMM(X_new, numStates=2)
         fit(t, max_iter=500, verbose=True)
@@ -267,7 +249,6 @@ class TestModel(unittest.TestCase):
             LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
-#         x_new, time = select_population(X, experimentTime)
 
         t = tHMM(X, numStates=2)
         fit(t, max_iter=500, verbose=True)
@@ -300,7 +281,7 @@ class TestModel(unittest.TestCase):
         labels and sizes.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new = remove_unfinished_cells(X)
 
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
 
@@ -316,7 +297,7 @@ class TestModel(unittest.TestCase):
         structure.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new = remove_unfinished_cells(X)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
@@ -332,7 +313,7 @@ class TestModel(unittest.TestCase):
         the output is of correct data type and structure.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, _ = select_population(X, 150.)
+        x_new = remove_unfinished_cells(X)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         EL = t.get_Emission_Likelihoods()
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
@@ -351,7 +332,7 @@ class TestModel(unittest.TestCase):
         structure.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, _ = select_population(X, 150.)
+        x_new = remove_unfinished_cells(X)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(t)
         self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population
@@ -369,7 +350,7 @@ class TestModel(unittest.TestCase):
         the optimal hidden states.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, _ = select_population(X, 150.)
+        x_new = remove_unfinished_cells(X)
         t = tHMM(x_new, numStates=2)  # build the tHMM class with X
         deltas, state_ptrs = get_leaf_deltas(t)  # gets the deltas matrix
         self.assertLessEqual(len(deltas), 50)  # there are <=50 lineages in X
@@ -390,7 +371,7 @@ class TestModel(unittest.TestCase):
         trees.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, _ = select_population(X, 150.)
+        x_new = remove_unfinished_cells(X)
 
         numStates = 2
         t = tHMM(x_new, numStates=numStates)  # build the tHMM class with X
@@ -441,7 +422,7 @@ class TestModel(unittest.TestCase):
         describe those homogenous populations.
         '''
         X = remove_singleton_lineages(self.X2)
-        x_new, end_time = select_population(X, 150.)
+        x_new = remove_unfinished_cells(X)
         numStates = 2
         t = tHMM(x_new, numStates=numStates, FOM='E')  # build the tHMM class with X
 
@@ -506,7 +487,7 @@ class TestModel(unittest.TestCase):
         structure.
         '''
         X = remove_singleton_lineages(self.X)
-        x_new, ti = select_population(X, 150.)
+        x_new = remove_unfinished_cells(X)
         numStates = 2
         tHMMobj = tHMM(x_new, numStates=numStates)  # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(tHMMobj)
@@ -540,8 +521,7 @@ class TestModel(unittest.TestCase):
             LINEAGE = remove_singleton_lineages(LINEAGE)
 
         X = LINEAGE
-        x_new, ti = select_population(X, experimentTime)
-        print(x_new)
+        x_new = remove_unfinished_cells(X)
         tHMMobj = tHMM(x_new, numStates=numStates, FOM='E')  # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
 
@@ -573,7 +553,7 @@ class TestModel(unittest.TestCase):
 
         X = LINEAGE
         X = remove_singleton_lineages(X)
-        x_new, ti = select_population(X, experimentTime)
+        x_new = remove_unfinished_cells(X)
         tHMMobj = tHMM(x_new, numStates=numStates, FOM='E')  # build the tHMM class with X
         fit(tHMMobj, max_iter=100, verbose=False)
 
