@@ -12,23 +12,27 @@ def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, lo
     # Making the first lineage
     MASexperimentTime = T_MAS
     masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, FOM=FOM, betaExp=betaExp)
-    masterLineage = remove_unfinished_cells(masterLineage)
     masterLineage = remove_singleton_lineages(masterLineage)
+    masterLineage = remove_unfinished_cells(masterLineage)
+
     while not masterLineage:
         masterLineage = gpt(MASexperimentTime, MASinitCells, MASlocBern, FOM=FOM, betaExp=betaExp)
-        masterLineage = remove_unfinished_cells(masterLineage)
         masterLineage = remove_singleton_lineages(masterLineage)
+        masterLineage = remove_unfinished_cells(masterLineage)
+    
     for cell in masterLineage:
         cell.true_state = 0
     # Making the second lineage
     experimentTime2 = T_2
     sublineage2 = gpt(experimentTime2, initCells2, locBern2, FOM=FOM, betaExp=betaExp2)
-    sublineage2 = remove_unfinished_cells(sublineage2)
     sublineage2 = remove_singleton_lineages(sublineage2)
+    sublineage2 = remove_unfinished_cells(sublineage2)
+
     while not sublineage2:
         sublineage2 = gpt(experimentTime2, initCells2, locBern2, FOM=FOM, betaExp=betaExp2)
-        sublineage2 = remove_unfinished_cells(sublineage2)
         sublineage2 = remove_singleton_lineages(sublineage2)
+        sublineage2 = remove_unfinished_cells(sublineage2)
+    
     cell_endT_holder = []
     for cell in masterLineage:
         cell_endT_holder.append(cell.endT)
@@ -47,7 +51,7 @@ def Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, lo
     sublineage2[0].parent = master_cell
     newLineage = masterLineage + sublineage2
 
-    X = remove_unfinished_cells(newLineage)
     X = remove_singleton_lineages(newLineage)
+    X = remove_unfinished_cells(X)
     logging.info('length of entire lineage:', len(newLineage), 'length master:', len(masterLineage), 'length sublineage:', len(sublineage2))
     return(X, newLineage, masterLineage, sublineage2)

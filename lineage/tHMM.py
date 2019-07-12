@@ -74,12 +74,12 @@ class tHMM:
         if self.FOM == 'E':
             temp_params["E"] = np.ones((numStates, 2))  # sequence of emission likelihood distribution parameters [Kx2]
             for state_j in range(numStates):
-                temp_params["E"][state_j, 0] = np.random.uniform(0.01, 0.99)  # initializing all Bernoulli p parameters to 1/numStates
+                temp_params["E"][state_j, 0] = 0.5 # initializing all Bernoulli p parameters to 0.5
                 temp_params["E"][state_j, 1] = 62.5 * (1 + np.random.uniform())  # initializing all Exponential beta parameters to 62.5
         elif self.FOM == 'Ga':
             temp_params["E"] = np.ones((numStates, 3))
             for state_j in range(numStates):
-                temp_params["E"][state_j, 0] = 1 / numStates  # initializing all Bernoulli p parameters to 1/numStates
+                temp_params["E"][state_j, 0] = 0.5  # initializing all Bernoulli p parameters to 0.5
                 temp_params["E"][state_j, 1] = 10 * (1 + np.random.uniform())  # Gamma shape parameter
                 temp_params["E"][state_j, 2] = 5 * (1 + np.random.uniform())  # Gamma scale parameter
 
