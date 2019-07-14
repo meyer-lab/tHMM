@@ -263,8 +263,8 @@ class TestModel(unittest.TestCase):
             lineage = t.population[lin]
 
             true_state_holder = np.zeros((len(lineage)), dtype=int)
-
-           for ii, cell in enumerate(lineage):
+            
+            for ii, cell in enumerate(lineage):
                 true_state_holder[ii] = cell.true_state
         logging.info('True states assigned.')
 
