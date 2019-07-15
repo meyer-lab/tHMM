@@ -86,9 +86,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
 
     old_LL_list = [-np.inf] * numLineages
     new_LL_list = calculate_log_likelihood(tHMMobj, NF)
-    truth_list = []
-    for lineage_iter in range(len(new_LL_list)):
-        truth_list.append(abs(new_LL_list[lineage_iter] - old_LL_list[lineage_iter]) > tolerance)
+    truth_list = np.isclose(np.array(old_LL_list), np.array(new_LL_list), atol=tolerance)
     go = any(truth_list)
 
     count = 0
@@ -175,9 +173,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         # if verbose:
         #print("Average Log-Likelihood across all lineages: {}".format(np.mean(new_LL_list)))
 
-        for lineage_iter in range(len(new_LL_list)):
-            calculation = abs(new_LL_list[lineage_iter] - old_LL_list[lineage_iter])
-            truth_list[lineage_iter] = (calculation > tolerance)
+        truth_list = np.isclose(np.array(old_LL_list), np.array(new_LL_list), atol=tolerance)
         go = any(truth_list)
 
         if count > max_iter:
