@@ -263,7 +263,7 @@ class TestModel(unittest.TestCase):
             lineage = t.population[lin]
 
             true_state_holder = np.zeros((len(lineage)), dtype=int)
-            
+
             for ii, cell in enumerate(lineage):
                 true_state_holder[ii] = cell.true_state
         logging.info('True states assigned.')
@@ -271,6 +271,7 @@ class TestModel(unittest.TestCase):
         t.Accuracy2 = get_mutual_info(t, all_states, verbose=True)
         check_acc = all(1.0 >= x >= 0.0 for x in t.Accuracy2)
         self.assertTrue(check_acc)
+
     #######################
     # tHMM.py tests below #
     #######################
