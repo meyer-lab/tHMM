@@ -186,20 +186,17 @@ def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, sta
     children_list = get_daughters(node_parent_m)
     children_idx_list = [lineage.index(daughter) for daughter in children_list]
     for node_child_n_idx in children_idx_list:
-        beta_m_n = beta_parent_child_func(numStates=numStates,
-                                          lineage=lineage,
-                                          beta_array=beta_array,
+        beta_m_n = beta_parent_child_func(beta_array=beta_array,
                                           T=T,
                                           MSD_array=MSD_array,
                                           state_j=state_j,
-                                          node_parent_m_idx=node_parent_m_idx,
                                           node_child_n_idx=node_child_n_idx)
         beta_m_n_holder.append(beta_m_n)
     result = np.prod(beta_m_n_holder)  # calculates the product of items in a list
     return result
 
 
-def beta_parent_child_func(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx, node_child_n_idx):
+def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
     '''
     This "helper" function calculates the probability
     described as a 'beta-link' between parent and child
@@ -209,31 +206,22 @@ def beta_parent_child_func(numStates, lineage, beta_array, T, MSD_array, state_j
     to the root node) node beta and Normalizing Factor
     values.
     '''
-    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
-    assert lineage[node_child_n_idx].isChild()  # if the child-parent relationship is correct, then the child must
-    # either be the left daughter or the right daughter
-    summand_holder = []  # summing over the states
+    numer1 = beta_array[node_child_n_idx, :]  # get the already calculated beta at node n for state k
+    numer2 = T[state_j, :]  # get the transition rate for going from state j to state k
+    # P( z_n = k | z_m = j)
+    denom = MSD_array[node_child_n_idx, :]  # get the MSD for node n at state k
+    # P(z_n = k)
 
-    for state_k in range(numStates):  # for each state k
-        numer1 = beta_array[node_child_n_idx, state_k]  # get the already calculated beta at node n for state k
-        numer2 = T[state_j, state_k]  # get the transition rate for going from state j to state k
-        # P( z_n = k | z_m = j)
-        denom = MSD_array[node_child_n_idx, state_k]  # get the MSD for node n at state k
-        # P(z_n = k)
-        summand_holder.append(numer1 * numer2 / denom)
-
-    return sum(summand_holder)
+    return np.sum(numer1 * numer2 / denom)
 
 
 def calculate_log_likelihood(tHMMobj, NF):
     '''
     Calculates log likelihood of NF for each lineage.
     '''
-    numLineages = tHMMobj.numLineages
-
     LL = []
 
-    for num in range(numLineages):  # for each lineage in our Population
+    for num in range(tHMMobj.numLineages):  # for each lineage in our Population
         NF_array = NF[num]  # getting the NF of the respective lineage
         log_NF_array = np.log(NF_array)
         ll_per_num = sum(log_NF_array)

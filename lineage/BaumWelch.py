@@ -19,14 +19,10 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, 
     beta_child_state_k = beta_array[node_child_n_idx, child_state_k]
     gamma_parent_state_j = gamma_array[node_parent_m_idx, parent_state_j]
     MSD_child_state_k = MSD_array[node_child_n_idx, child_state_k]
-    numStates = MSD_array.shape[1]
-    beta_parent_child_state_j = beta_parent_child_func(numStates=numStates,
-                                                       lineage=lineage,
-                                                       beta_array=beta_array,
+    beta_parent_child_state_j = beta_parent_child_func(beta_array=beta_array,
                                                        T=T,
                                                        MSD_array=MSD_array,
                                                        state_j=parent_state_j,
-                                                       node_parent_m_idx=node_parent_m_idx,
                                                        node_child_n_idx=node_child_n_idx)
 
     zeta = beta_child_state_k * T[parent_state_j, child_state_k] * gamma_parent_state_j / (MSD_child_state_k * beta_parent_child_state_j)
@@ -51,7 +47,7 @@ def get_all_gammas(lineage, gamma_array_at_state_j):
 
 def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array, gamma_array, T):
     '''sum of the list of all the zeta parent child for all the parent cells for a given state transition pair'''
-    assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Your numStates (number of states) and the dimensions of your arrays are mistmatched! Please check your instantiation of the tHMM object."
+    assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
 
     holder = 0.0
     for curr_level in range(1, max_gen(lineage)):
