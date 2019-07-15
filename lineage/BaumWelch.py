@@ -1,4 +1,4 @@
-'''Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch'''
+''' Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch. '''
 import logging
 import numpy as np
 
