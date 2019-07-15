@@ -33,7 +33,7 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
     betaExp_2_h1 = []
 
     for rep in range(reps):
-        X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern_array[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta_array[rep]], [beta2[rep]])
+        X, newLineage, masterLineage, _ = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern_array[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta_array[rep]], [beta2[rep]])
 
         while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
             # re calculate distributions if they are too large, or else model wont run
@@ -41,7 +41,7 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
                 locBern2[rep] = [np.random.uniform(0.8, 0.99, size=1)][0][0]
                 beta2[rep] = [np.random.randint(20, 40, size=1)][0][0]
             # generate new lineage
-            X, newLineage, masterLineage, sublineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern_array[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta_array[rep]], [beta2[rep]])
+            X, newLineage, masterLineage, _ = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern_array[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta_array[rep]], [beta2[rep]])
         logging.info('Repetition Number: {}'.format(rep + 1))
 
         X = remove_singleton_lineages(newLineage)
@@ -95,7 +95,7 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
 
 
 def Lineage_Length(T_MAS=500, T_2=100, reps=50, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1],
-                   locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', verbose=False, switchT=False, AIC=False, numState_start=1, numState_end=3):
+                   locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=300, min_lin_length=5, FOM='E', switchT=False, AIC=False, numState_start=1, numState_end=3):
     '''This has been modified for an exponential distribution'''
 
     accuracy_h1 = []  # list of lists of lists
@@ -131,7 +131,7 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=50, MASinitCells=[1], MASlocBern=[0.
             AICval = []
             LLval = []
             for numState in range(numState_start, numState_end + 1):
-                logging.info(f'numState:{numState}')
+                logging.info('numState: %i', numState)
                 _, _, all_states, tHMMobj, _, _ = Analyze(X, numStates=numState)
                 tHMMobj, _, _, _, LL = fit(tHMMobj, max_iter=100, verbose=False)
                 AIC_ls, LL_ls, _ = getAIC(tHMMobj, LL)
@@ -198,7 +198,6 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
     logging.info('starting')
     lineages = range(lineage_start, lineage_end + 1)
     accuracy_h1 = []  # list of lists of lists
-    number_of_cells_h1 = []
     bern_MAS_h1 = []
     bern_2_h1 = []
     betaExp_MAS_h1 = []
@@ -208,27 +207,26 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
     X1 = []
     for lineage_num in lineages:  # a pop with num number of lineages
         accuracy_h2 = []
-        number_of_cells_h2 = []
         bern_MAS_h2 = []
         bern_2_h2 = []
         betaExp_MAS_h2 = []
         betaExp_2_h2 = []
 
-        for rep in range(reps):
+        for _ in range(reps):
 
             logging.info('making lineage')
-            for num in range(lineage_num):
+            for _ in range(lineage_num):
 
                 if not switchT:
-                    X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
+                    X, newLineage, masterLineage, _ = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
                     while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
-                        X, newLineage, masterLineage, subLineage2 = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
+                        X, newLineage, masterLineage, _ = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
 
                 elif switchT:
-                    X, newLineage, masterLineage, subLineage2 = Breadth_Two_State_Lineage(
+                    X, newLineage, masterLineage, _ = Breadth_Two_State_Lineage(
                         experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
                     while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
-                        X, newLineage, masterLineage, subLineage2 = Breadth_Two_State_Lineage(
+                        X, newLineage, masterLineage, _ = Breadth_Two_State_Lineage(
                             experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
 
                 X = remove_singleton_lineages(X)
@@ -263,14 +261,12 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
                 betaExp_2_h3.append(E[state_2, 1])
 
             accuracy_h2.extend(accuracy_h3)
-            number_of_cells_h2.extend(number_of_cells_h3)
             bern_MAS_h2.extend(bern_MAS_h3)
             bern_2_h2.extend(bern_2_h3)
             betaExp_MAS_h2.extend(betaExp_MAS_h3)
             betaExp_2_h2.extend(betaExp_2_h3)
 
         accuracy_h1.append(np.mean(accuracy_h2))
-        number_of_cells_h1.extend(number_of_cells_h2)
         bern_MAS_h1.append(np.mean(bern_MAS_h2))
         bern_2_h1.append(np.mean(bern_2_h2))
         betaExp_MAS_h1.append(np.mean(betaExp_MAS_h2))
