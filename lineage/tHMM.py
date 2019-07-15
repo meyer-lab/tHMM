@@ -108,44 +108,36 @@ class tHMM:
         state j (from parent to daughter):
             P(z_u = k) = sum_on_all_j(Transition(from j to k) * P(parent_cell_u) = j)
         '''
-        numStates = self.numStates
-        numLineages = self.numLineages
-        population = self.population
-        paramlist = self.paramlist
-
         MSD = []
 
-        for num in range(numLineages):  # for each lineage in our Population
-            lineage = population[num]  # getting the lineage in the Population by lineage index
-            params = paramlist[num]  # getting the respective params by lineage index
-            MSD_array = np.zeros((len(lineage), numStates), dtype=float)  # instantiating N by K array
-            for state_k in range(numStates):
+        for num in range(self.numLineages):  # for each lineage in our Population
+            lineage = self.population[num]  # getting the lineage in the Population by lineage index
+            params = self.paramlist[num]  # getting the respective params by lineage index
+            MSD_array = np.zeros((len(lineage), self.numStates), dtype=float)  # instantiating N by K array
+            for state_k in range(self.numStates):
                 MSD_array[0, state_k] = params["pi"][state_k]
             MSD.append(MSD_array)
 
-        for num in range(numLineages):
+        for num in range(self.numLineages):
             MSD_0_row_sum = np.sum(MSD[num][0])
             assert np.isclose(MSD_0_row_sum, 1.), "The Marginal State Distribution for your root cells, P(z_1 = k), for all states k in numStates, are not adding up to 1!"
 
-        for num in range(numLineages):
-            lineage = population[num]  # getting the lineage in the Population by lineage index
-            curr_level = 2
-            max_level = max_gen(lineage)
-            while curr_level <= max_level:
+        for num in range(self.numLineages):
+            lineage = self.population[num]  # getting the lineage in the Population by lineage index
+
+            for curr_level in range(2, max_gen(lineage)+1):
                 level = get_gen(curr_level, lineage)  # get lineage for the gen
                 for cell in level:
                     parent_cell_idx = lineage.index(cell.parent)  # get the index of the parent cell
                     current_cell_idx = lineage.index(cell)
-                    for state_k in range(numStates):  # recursion based on parent cell
-                        temp_sum_holder = []  # for all states k, calculate the sum of temp
+                    for state_k in range(self.numStates):  # recursion based on parent cell
+                        temp_sum_holder = 0  # for all states k, calculate the sum of temp
 
-                        for state_j in range(numStates):  # for all states j, calculate temp
-                            temp = params["T"][state_j, state_k] * MSD[num][parent_cell_idx, state_j]
-                            # temp = T_jk * P(z_parent(n) = j)
-                            temp_sum_holder.append(temp)
+                        for state_j in range(self.numStates):  # for all states j, calculate temp
+                            temp_sum_holder += params["T"][state_j, state_k] * MSD[num][parent_cell_idx, state_j]
 
-                        MSD[num][current_cell_idx, state_k] = sum(temp_sum_holder)
-                curr_level += 1
+                        MSD[num][current_cell_idx, state_k] = temp_sum_holder
+
             MSD_row_sums = np.sum(MSD[num], axis=1)
 
             assert np.allclose(MSD_row_sums, 1.0), "The Marginal State Distribution for your cells, P(z_k = k), for all states k in numStates, are not adding up to 1!"
