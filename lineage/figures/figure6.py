@@ -3,7 +3,7 @@ This creates Figure 6.
 """
 from .figureCommon import getSetup
 import numpy as np
-from matplotlib import ticker as ticker
+from matplotlib import ticker
 from .Fig_Gen import KL_per_lineage
 from .Matplot_gen import moving_average
 
