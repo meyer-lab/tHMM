@@ -169,8 +169,7 @@ class tHMM:
         '''
         EL = []
 
-        for num in range(self.numLineages):  # for each lineage in our Population
-            lineage = self.population[num]  # getting the lineage in the Population by lineage index
+        for num, lineage in enumerate(self.population):  # for each lineage in our Population
             params = self.paramlist[num]  # getting the respective params by lineage index
             EL_array = np.zeros((len(lineage), self.numStates))  # instantiating N by K array for each lineage
             E_param_array = params["E"]  # K by 3 array of distribution parameters for each lineage
@@ -186,8 +185,7 @@ class tHMM:
                     k_gamma_shape = E_param_k[1]
                     k_gamma_scale = E_param_k[2]
 
-                for cell in lineage:  # for each cell in the lineage
-                    current_cell_idx = lineage.index(cell)  # get the index of the current cell
+                for current_cell_idx, cell in enumerate(lineage):  # for each cell in the lineage
                     if self.FOM == 'E':
                         temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)  # bernoulli likelihood
                         if cell.fateObserved:
