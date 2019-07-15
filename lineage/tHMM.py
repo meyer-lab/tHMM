@@ -167,20 +167,15 @@ class tHMM:
         P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_E | z_n = k).
 
         '''
-        numStates = self.numStates
-        numLineages = self.numLineages
-        population = self.population
-        paramlist = self.paramlist
-
         EL = []
 
-        for num in range(numLineages):  # for each lineage in our Population
-            lineage = population[num]  # getting the lineage in the Population by lineage index
-            params = paramlist[num]  # getting the respective params by lineage index
-            EL_array = np.zeros((len(lineage), numStates))  # instantiating N by K array for each lineage
+        for num in range(self.numLineages):  # for each lineage in our Population
+            lineage = self.population[num]  # getting the lineage in the Population by lineage index
+            params = self.paramlist[num]  # getting the respective params by lineage index
+            EL_array = np.zeros((len(lineage), self.numStates))  # instantiating N by K array for each lineage
             E_param_array = params["E"]  # K by 3 array of distribution parameters for each lineage
 
-            for state_k in range(numStates):  # for each state
+            for state_k in range(self.numStates):  # for each state
                 E_param_k = E_param_array[state_k, :]  # get the emission parameters for that state
                 k_bern = E_param_k[0]  # bernoulli rate parameter
                 k_expon_beta = 0
