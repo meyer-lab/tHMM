@@ -1,4 +1,5 @@
 '''Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch'''
+import logging
 import numpy as np
 
 from .tHMM_utils import max_gen, get_gen, get_daughters
@@ -72,7 +73,6 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     '''Runs the tHMM function through Baum Welch fitting'''
     numLineages = tHMMobj.numLineages
     numStates = tHMMobj.numStates
-    population = tHMMobj.population
 
     # first E step
 
@@ -83,16 +83,9 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     get_nonroot_gammas(tHMMobj, gammas, betas)
 
     # first stopping condition check
-
-    old_LL_list = [-np.inf] * numLineages
     new_LL_list = calculate_log_likelihood(tHMMobj, NF)
-    truth_list = np.isclose(np.array(old_LL_list), np.array(new_LL_list), atol=tolerance)
-    go = any(truth_list)
 
-    count = 0
-    while go:  # exit the loop
-
-        count += 1
+    for _ in range(max_iter):
         old_LL_list = new_LL_list
 
         # code for grouping all states in cell lineages
@@ -100,12 +93,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         for state in range(numStates):
             cell_groups[str(state)] = []
 
-        for num in range(numLineages):
-            if not truth_list[num]:
-                break
-            lineage = population[num]
-            beta_array = betas[num]
-            MSD_array = tHMMobj.MSD[num]
+        for num, lineage in enumerate(tHMMobj.population):
             gamma_array = gammas[num]
             tHMMobj.paramlist[num]["pi"] = gamma_array[0, :]
             T_holder = np.zeros((numStates, numStates), dtype=float)
@@ -116,16 +104,13 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                     numer = get_all_zetas(parent_state_j=state_j,
                                           child_state_k=state_k,
                                           lineage=lineage,
-                                          beta_array=beta_array,
-                                          MSD_array=MSD_array,
+                                          beta_array=betas[num],
+                                          MSD_array=tHMMobj.MSD[num],
                                           gamma_array=gamma_array,
                                           T=tHMMobj.paramlist[num]["T"])
-                    entry = numer / denom
-                    T_holder[state_j, state_k] = entry
+                    T_holder[state_j, state_k] = numer / denom
 
-            row_sums = T_holder.sum(axis=1)
-            T_new = T_holder / row_sums[:, np.newaxis]
-            tHMMobj.paramlist[num]["T"] = T_new
+            tHMMobj.paramlist[num]["T"] = T_holder / T_holder.sum(axis=1)[:, np.newaxis]
 
             max_state_holder = []  # a list the size of lineage, that contains max state for each cell
             for ii, cell in enumerate(lineage):
@@ -170,14 +155,10 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         # tolerance checking
         new_LL_list = calculate_log_likelihood(tHMMobj, NF)
 
-        # if verbose:
-        #print("Average Log-Likelihood across all lineages: {}".format(np.mean(new_LL_list)))
+        logging.info("Average Log-Likelihood across all lineages: {}".format(np.mean(new_LL_list)))
 
-        truth_list = np.isclose(np.array(old_LL_list), np.array(new_LL_list), atol=tolerance)
-        go = any(truth_list)
+        if np.allclose(np.array(old_LL_list), np.array(new_LL_list), atol=tolerance):
+            return(tHMMobj, NF, betas, gammas, new_LL_list)
 
-        if count > max_iter:
-            if verbose:
-                print("Max iteration of {} steps achieved. Exiting Baum-Welch EM while loop.".format(max_iter))
-            break
+    logging.info("Max iteration of {} steps achieved. Exiting Baum-Welch EM while loop.".format(max_iter))
     return(tHMMobj, NF, betas, gammas, new_LL_list)
