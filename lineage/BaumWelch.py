@@ -7,7 +7,7 @@ from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_n
 from .Lineage_utils import bernoulliParameterEstimatorAnalytical, exponentialAnalytical, gammaAnalytical
 
 
-def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
+def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, child_state_k, lineage, beta_array, MSD_array, gamma_array, T):
     '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
 
     # check the child-parent relationship
@@ -16,23 +16,20 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
     assert lineage[node_child_n_idx].isChild(), "Something wrong with your parent-daughter linkage when trying to use the zeta-related functions... Check again that your lineage is constructed clearly."
     # either be the left daughter or the right daughter
 
-    beta_child_state_k = beta_array[node_child_n_idx, state_k]
-    gamma_parent_state_j = gamma_array[node_parent_m_idx, state_j]
-    MSD_child_state_k = MSD_array[node_child_n_idx, state_k]
+    beta_child_state_k = beta_array[node_child_n_idx, child_state_k]
+    gamma_parent_state_j = gamma_array[node_parent_m_idx, parent_state_j]
+    MSD_child_state_k = MSD_array[node_child_n_idx, child_state_k]
     numStates = MSD_array.shape[1]
-    also_numStates = gamma_array.shape[1]
-    also_also_numStates = beta_array.shape[1]
-    assert numStates == also_numStates == also_also_numStates, "Your numStates (number of states) and the dimensions of your arrays are mistmatched! Please check your instantiation of the tHMM object."
     beta_parent_child_state_j = beta_parent_child_func(numStates=numStates,
                                                        lineage=lineage,
                                                        beta_array=beta_array,
                                                        T=T,
                                                        MSD_array=MSD_array,
-                                                       state_j=state_j,
+                                                       state_j=parent_state_j,
                                                        node_parent_m_idx=node_parent_m_idx,
                                                        node_child_n_idx=node_child_n_idx)
 
-    zeta = beta_child_state_k * T[state_j, state_k] * gamma_parent_state_j / (MSD_child_state_k * beta_parent_child_state_j)
+    zeta = beta_child_state_k * T[parent_state_j, child_state_k] * gamma_parent_state_j / (MSD_child_state_k * beta_parent_child_state_j)
     return zeta
 
 
@@ -54,29 +51,25 @@ def get_all_gammas(lineage, gamma_array_at_state_j):
 
 def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array, gamma_array, T):
     '''sum of the list of all the zeta parent child for all the parent cells for a given state transition pair'''
-    curr_level = 1
-    max_level = max_gen(lineage)
-    holder = []
-    while curr_level < max_level:
-        level = get_gen(curr_level, lineage)  # get lineage for the gen
+    assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Your numStates (number of states) and the dimensions of your arrays are mistmatched! Please check your instantiation of the tHMM object."
 
-        for cell in level:
-            parent_idx = lineage.index(cell)
-            daughter_idxs_list = get_daughters(cell)
+    holder = 0.0
+    for curr_level in range(1, max_gen(lineage)):
+        for cell in get_gen(curr_level, lineage):  # get lineage for the gen
+            node_parent_m_idx = lineage.index(cell)
 
-            for daughter_idx in daughter_idxs_list:
-                child_idx = lineage.index(daughter_idx)
-                holder.append(zeta_parent_child_func(node_parent_m_idx=parent_idx,
-                                                     node_child_n_idx=child_idx,
-                                                     state_j=parent_state_j,
-                                                     state_k=child_state_k,
-                                                     lineage=lineage,
-                                                     beta_array=beta_array,
-                                                     MSD_array=MSD_array,
-                                                     gamma_array=gamma_array,
-                                                     T=T))
-        curr_level += 1
-    return sum(holder)
+            for daughter_idx in get_daughters(cell):
+                node_child_n_idx = lineage.index(daughter_idx)
+                holder += zeta_parent_child_func(node_parent_m_idx=node_parent_m_idx,
+                                                 node_child_n_idx=node_child_n_idx,
+                                                 parent_state_j=parent_state_j,
+                                                 child_state_k=child_state_k,
+                                                 lineage=lineage,
+                                                 beta_array=beta_array,
+                                                 MSD_array=MSD_array,
+                                                 gamma_array=gamma_array,
+                                                 T=T)
+    return holder
 
 
 def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
