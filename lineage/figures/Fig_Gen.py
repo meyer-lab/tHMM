@@ -12,9 +12,8 @@ from ..tHMM_utils import getAccuracy, getAIC
 from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 
 
-def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=200, min_lin_length=80, FOM='E', verbose=False):
+def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=200, min_lin_length=80, FOM='E'):
     """Run the KL divergence on emmission likelihoods."""
-    experimentTime = T_MAS + T_2
     # Make the master cells equal to the same thing
     MASlocBern_array, MASbeta_array = [], []
     for i in range(reps):
@@ -77,13 +76,10 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
             betaExp_MAS_h2.append(E[state_1, 1])
             betaExp_2_h2.append(E[state_2, 1])
 
-            if verbose:
-                logging.info('pi: {}'.format(pi))
-                logging.info('T: {}'.format(T))
-                logging.info('E', E)
-                logging.info('accuracy:', accuracy)
-                logging.info('KL:', KL)
-                logging.info('MAS length, 2nd lin length:', len(masterLineage), len(newLineage) - len(masterLineage))
+            logging.info(f"""E {E}
+                             accuracy: {accuracy}")
+                             KL: {KL}")
+                             MAS length, 2nd lin length: {len(masterLineage)}, {len(newLineage) - len(masterLineage)}""")
 
         KL_h1.extend(KL_h2)
         acc_h1.extend(acc_h2)
@@ -197,11 +193,9 @@ def Lineage_Length(T_MAS=500, T_2=100, reps=50, MASinitCells=[1], MASlocBern=[0.
     return data
 
 
-def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.999], beta2=[20], max_lin_length=300, min_lin_length=5, FOM='E', verbose=True, switchT=True):
+def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, T_MAS=500, T_2=100, reps=1, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.999], beta2=[20], max_lin_length=300, min_lin_length=5, FOM='E', switchT=True):
     '''Creates four figures of how accuracy, bernoulli parameter, gomp c, and gomp scale change as the number of lineages in a population are varied'''
-    experimentTime = T_MAS + T_2
-    if verbose:
-        logging.info('starting')
+    logging.info('starting')
     lineages = range(lineage_start, lineage_end + 1)
     accuracy_h1 = []  # list of lists of lists
     number_of_cells_h1 = []
@@ -222,8 +216,7 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
 
         for rep in range(reps):
 
-            if verbose:
-                logging.info('making lineage')
+            logging.info('making lineage')
             for num in range(lineage_num):
 
                 if not switchT:
@@ -253,8 +246,7 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
             betaExp_MAS_h3 = []
             betaExp_2_h3 = []
 
-            if verbose:
-                logging.info('analyzing')
+            logging.info('analyzing')
             for lin in range(tHMMobj.numLineages):
                 AccuracyPop, _, stateAssignmentPop = getAccuracy(tHMMobj, all_states, verbose=False)
                 accuracy = AccuracyPop[lin]
@@ -285,8 +277,7 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
         betaExp_2_h1.append(np.mean(betaExp_2_h2))
         numb_of_lineage_h1.append(lineage_num)
 
-        if verbose:
-            logging.info('Accuracy of', lineage_num, 'is', np.mean(accuracy_h2))
+        logging.info(f'Accuracy of {lineage_num} is {np.mean(accuracy_h2)}')
 
     data = (numb_of_lineage_h1, accuracy_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, betaExp_MAS_h1, betaExp_2_h1, MASbeta, beta2)
 
