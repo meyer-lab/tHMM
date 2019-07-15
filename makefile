@@ -30,6 +30,9 @@ manuscript/manuscript.pdf: manuscript/manuscript.tex $(patsubst %, $(fdir)/figur
 manuscript/manuscript.tex: manuscript/*.md
 	pandoc -s $(pan_common) --template=./common/templates/default.latex --pdf-engine=xelatex -o $@
 
+Guide_to_tHMM.pdf: venv Guide_to_tHMM.ipynb
+	. venv/bin/activate && jupyter nbconvert --to pdf --execute Guide_to_tHMM.ipynb
+
 test: venv
 	. venv/bin/activate; pytest -s
 

@@ -6,22 +6,14 @@ from .UpwardRecursion import beta_parent_child_func
 
 
 def get_root_gammas(tHMMobj, betas):
-    '''need the first gamma terms in the baum welch, which are just the beta values of the root nodes.'''
-    numStates = tHMMobj.numStates
-    numLineages = tHMMobj.numLineages
-    population = tHMMobj.population
-
+    ''' Need the first gamma terms in the baum welch, which are just the beta values of the root nodes. '''
     gammas = []
 
-    for num in range(numLineages):  # for each lineage in our Population
-        lineage = population[num]
-        gamma_array = np.zeros((len(lineage), numStates))
+    for num, lineage in enumerate(tHMMobj.population):  # for each lineage in our Population
+        gamma_array = np.zeros((len(lineage), tHMMobj.numStates))
         gamma_array[0, :] = betas[num][0, :]
+        assert np.isclose(np.sum(gamma_array[0]), 1.)
         gammas.append(gamma_array)
-
-    for num in range(numLineages):
-        gammas_0_row_sum = np.sum(gammas[num][0])
-        assert np.isclose(gammas_0_row_sum, 1.)
 
     return gammas
 
@@ -34,17 +26,12 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
     paramlist = tHMMobj.paramlist
     MSD = tHMMobj.MSD
 
-    for num in range(numLineages):  # for each lineage in our Population
-        lineage = population[num]  # getting the lineage in the Population by index
+    for num, lineage in enumerate(population):  # for each lineage in our Population
         MSD_array = MSD[num]  # getting the MSD of the respective lineage
-        params = paramlist[num]
+        T = paramlist[num]['T']
         beta_array = betas[num]  # instantiating N by K array
-        T = params['T']
 
-        curr_level = 1
-        max_level = max_gen(lineage)
-
-        while curr_level < max_level:
+        for curr_level in range(1, max_gen(lineage)):
             level = get_gen(curr_level, lineage)  # get lineage for the gen
             for cell in level:
                 parent_idx = lineage.index(cell)
@@ -75,7 +62,6 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                         gammas[num][child_idx, child_state_k] = gamma_child_state_k
                         for state_k in range(numStates):
                             assert gammas[num][0, state_k] == betas[num][0, state_k]
-            curr_level += 1
+
     for num in range(numLineages):
-        gammas_row_sum = np.sum(gammas[num], axis=1)
-        assert np.allclose(gammas_row_sum, 1.)
+        assert np.allclose(np.sum(gammas[num], axis=1), 1.)
