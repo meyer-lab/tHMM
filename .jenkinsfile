@@ -34,8 +34,8 @@ pipeline {
         }
         stage('Build') {
           steps {
-            sh 'make manuscript/manuscript.pdf -j 8'
-            archiveArtifacts artifacts: 'manuscript/manuscript.pdf, manuscript/figures/*.pdf', onlyIfSuccessful: true
+            sh 'make Guide_to_tHMM.pdf manuscript/manuscript.pdf -j 8'
+            archiveArtifacts artifacts: '*.pdf, manuscript/manuscript.pdf, manuscript/figures/*.pdf', onlyIfSuccessful: true
           }
         }
       }

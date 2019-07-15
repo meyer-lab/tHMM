@@ -10,3 +10,4 @@ pytest
 sphinx-autoapi
 pytest-cov
 pylint
+jupyter
