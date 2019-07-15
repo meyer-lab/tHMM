@@ -41,7 +41,7 @@ testcover: venv
 
 testprofile: venv
 	. venv/bin/activate && python3 -m cProfile -o profile /usr/local/bin/pytest
-	gprof2dot -f pstats profile | dot -Tsvg -o profile.svg
+	gprof2dot -f pstats --node-thres=5.0 profile | dot -Tsvg -o profile.svg
 
 pylint.log: venv
 	. venv/bin/activate && (pylint --rcfile=./common/pylintrc lineage > pylint.log || echo "pylint exited with $?")
