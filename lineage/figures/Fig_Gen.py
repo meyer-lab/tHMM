@@ -14,11 +14,6 @@ from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 
 def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[0.99], beta2=[20], numStates=2, max_lin_length=200, min_lin_length=80, FOM='E'):
     """Run the KL divergence on emmission likelihoods."""
-    # Make the master cells equal to the same thing
-    MASlocBern_array, MASbeta_array = [], []
-    for i in range(reps):
-        MASlocBern_array.append(MASlocBern), MASbeta_array.append(MASbeta)
-
     # Make the downstream subpopulation a random distribution
     locBern2 = np.random.uniform(0.8, 0.99, size=reps)
     beta2 = np.random.randint(20, 80, size=reps)
@@ -26,14 +21,13 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
     # arrays to hold for each rep
     KL_h1 = []
     acc_h1 = []  # list of lists of lists
-    cell_h1 = []
     bern_MAS_h1 = []
     bern_2_h1 = []
     betaExp_MAS_h1 = []
     betaExp_2_h1 = []
 
     for rep in range(reps):
-        X, newLineage, masterLineage, _ = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern_array[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta_array[rep]], [beta2[rep]])
+        X, newLineage, masterLineage, _ = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, [locBern2[rep]], FOM, MASbeta, [beta2[rep]])
 
         while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
             # re calculate distributions if they are too large, or else model wont run
@@ -41,7 +35,7 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
                 locBern2[rep] = [np.random.uniform(0.8, 0.99, size=1)][0][0]
                 beta2[rep] = [np.random.randint(20, 40, size=1)][0][0]
             # generate new lineage
-            X, newLineage, masterLineage, _ = Depth_Two_State_Lineage(T_MAS, MASinitCells, [MASlocBern_array[rep]], T_2, initCells2, [locBern2[rep]], FOM, [MASbeta_array[rep]], [beta2[rep]])
+            X, newLineage, masterLineage, _ = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, [locBern2[rep]], FOM, MASbeta, [beta2[rep]])
         logging.info('Repetition Number: {}'.format(rep + 1))
 
         X = remove_singleton_lineages(newLineage)
@@ -51,7 +45,6 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
         # arrays to hold values for each lineage within the population that the rep made
         KL_h2 = []
         acc_h2 = []
-        cell_h2 = []
         bern_MAS_h2 = []
         bern_2_h2 = []
         betaExp_MAS_h2 = []
@@ -62,7 +55,6 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
             accuracy = AccuracyPop[lin]
             state_1 = stateAssignmentPop[lin][0]
             state_2 = stateAssignmentPop[lin][1]
-            lineage = tHMMobj.population[lin]
             E = tHMMobj.paramlist[lin]["E"]
             EL = tHMMobj.EL[lin]
 
@@ -70,7 +62,6 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
 
             KL_h2.append(KL)
             acc_h2.append(100 * accuracy)
-            cell_h2.append(len(lineage))
             bern_MAS_h2.append(E[state_1, 0])
             bern_2_h2.append(E[state_2, 0])
             betaExp_MAS_h2.append(E[state_1, 1])
@@ -83,7 +74,6 @@ def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8
 
         KL_h1.extend(KL_h2)
         acc_h1.extend(acc_h2)
-        cell_h1.extend(cell_h2)
         bern_MAS_h1.extend(bern_MAS_h2)
         bern_2_h1.extend(bern_2_h2)
         betaExp_MAS_h1.extend(betaExp_MAS_h2)
@@ -213,21 +203,16 @@ def Lineages_per_Population_Figure(lineage_start=1, lineage_end=2, numStates=2, 
         betaExp_2_h2 = []
 
         for _ in range(reps):
-
             logging.info('making lineage')
             for _ in range(lineage_num):
-
-                if not switchT:
-                    X, newLineage, masterLineage, _ = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
-                    while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
+                while True:
+                    if not switchT:
                         X, newLineage, masterLineage, _ = Depth_Two_State_Lineage(T_MAS, MASinitCells, MASlocBern, T_2, initCells2, locBern2, FOM=FOM, betaExp=MASbeta, betaExp2=beta2)
+                    elif switchT:
+                        X, newLineage, masterLineage, _ = Breadth_Two_State_Lineage(experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
 
-                elif switchT:
-                    X, newLineage, masterLineage, _ = Breadth_Two_State_Lineage(
-                        experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
-                    while len(newLineage) > max_lin_length or len(masterLineage) < min_lin_length or (len(newLineage) - len(masterLineage)) < min_lin_length:
-                        X, newLineage, masterLineage, _ = Breadth_Two_State_Lineage(
-                            experimentTime=T_MAS + T_2, initCells=MASinitCells, locBern=MASlocBern, betaExp=MASbeta, switchT=T_MAS, bern2=locBern2, betaExp2=beta2, FOM=FOM, verbose=False)
+                    if len(newLineage) < max_lin_length and len(masterLineage) > min_lin_length and (len(newLineage) - len(masterLineage)) > min_lin_length:
+                        break
 
                 X = remove_singleton_lineages(X)
                 newLineage = remove_unfinished_cells(X)
