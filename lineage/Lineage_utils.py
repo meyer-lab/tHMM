@@ -4,8 +4,6 @@ import math
 import numpy as np
 from .CellNode import generateLineageWithTime
 
-##------------------------ Generating population of cells ---------------------------##
-
 
 def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, switchT=None, bern2=None, betaExp2=None,
                                FOM='E', shape_gamma1=None, scale_gamma1=None, shape_gamma2=None, scale_gamma2=None):
@@ -99,8 +97,6 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, swit
 
     return population
 
-##-------------------------------- Removing Unfinished Cells -------------------------##
-
 
 def remove_unfinished_cells(X):
     """
@@ -129,8 +125,6 @@ def remove_unfinished_cells(X):
             ii += 1  # only move forward in the list if you don't delete a cell
     return X
 
-##------------------------- Removing Singleton Lineages ---------------------------##
-
 
 def remove_singleton_lineages(X):
     """
@@ -156,8 +150,6 @@ def remove_singleton_lineages(X):
         else:
             ii += 1  # only move forward in the list if you don't delete a cell
     return X
-
-##------------------------ Find the number of Lineages ---------------------------##
 
 
 def get_numLineages(X):
@@ -186,8 +178,6 @@ def get_numLineages(X):
     assert len(root_cell_holder) == len(root_cell_linID_holder), "Something wrong with your unique number of lineages. Check the number of root cells and the number of lineages in your data."
     numLineages = len(root_cell_holder)  # the number of lineages is the number of root cells
     return numLineages
-
-##---------------------- creating a population out of lineages -------------------##
 
 
 def init_Population(X, numLineages):
@@ -224,8 +214,6 @@ def init_Population(X, numLineages):
             population.append(temp_lineage)  # append the lineage to the Population holder
     return population
 
-##-------------------------Estimating Bernoulli Parameter -------------------------##
-
 
 def bernoulliParameterEstimatorAnalytical(X):
     """
@@ -255,8 +243,6 @@ def bernoulliParameterEstimatorAnalytical(X):
 
     return result
 
-##--------------------- Estimating Exponential Parameter ----------------------##
-
 
 def exponentialAnalytical(X):
     """
@@ -285,8 +271,6 @@ def exponentialAnalytical(X):
     result = (sum(tau_holder) + sum(tauFake_holder) + 62.5) / (len(tau_holder) + 1)
 
     return result
-
-##------------------ Estimating Gamma Distribution Parameters --------------------##
 
 
 def gammaAnalytical(X):
@@ -343,15 +327,9 @@ def gammaAnalytical(X):
 
         if np.abs(a_hat_new - a_hat0) <= 0.01:
             return [a_hat_new, b_hat_new]
-        else:
-            pass
-    assert np.abs(a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new - a_hat0 = {}".format(np.abs(a_hat_new - a_hat0))
 
-    result = [a_hat_new, b_hat_new]
-    return result
+    raise RuntimeError(f"a_hat has not converged properly, a_hat_new - a_hat0 = {np.abs(a_hat_new - a_hat0)}")
 
-
-##------------------------------ Select the population up to some time point -----------------------------------##
 
 def select_population(X, experimentTime):
     """
@@ -408,9 +386,8 @@ def select_population(X, experimentTime):
                         assert cell.left.startT > intended_end_time
                     elif cell.right:
                         assert cell.right.startT > intended_end_time
-#                     assert cell.left.startT == cell.right.startT
-                    cell.left = None
-                    cell.right = None
+
+                    cell.left, cell.right = None, None
 
                     assert cell.isLeaf()  # new leaf being made
                 elif not cell.isLeaf() and cell.endT <= intended_end_time:
