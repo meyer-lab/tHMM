@@ -1,26 +1,23 @@
 import scipy.stats as sp
 import numpy as np
 
-class cell:
+class Cell:
     def __init__(self, state, left, right, parent):
-
+        """ Instantiates the cell object. Contains memeber variables that identify daughter cells and parent cells. Also contains the state of the cell. """
         self.state = state
         self.left = left
         self.right = right
         self.parent = parent
-#         self.observation = observation ## TODO
+        self.observation = observation #TODO
         
-    def divide(self, state, T):
-
-        state = self.state
-        left_state, right_state = double(state, T)
+    def _divide(self, state, T):
+        """ Membber function that performs division of a cell. Equivalent to adding another timestep in a Markov process. """
+        parent_state = self.state
+        left_state, right_state = double(parent_state, T)
         self.left = cell(state = left_state, left = None, right = None, parent = self)
         self.right = cell(state = right_state, left = None, right = None, parent = self)
         
-        return [self.left, self.right]
-
-
-
+        return self.left, self.right
 
 # second function
 def double(state, T):
