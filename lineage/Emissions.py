@@ -14,18 +14,21 @@ class Cell:
         """ Member function that performs division of a cell. Equivalent to adding another timestep in a Markov process. """
         parent_state = self.state # get the state of the parent
         left_state, right_state = double(parent_state, T) # roll a loaded die according to the row in the transtion matrix
-        self.left = cell(state = left_state, left = None, right = None, parent = self) # assign the outcoming states to new cells
-        self.right = cell(state = right_state, left = None, right = None, parent = self)
+        self.left = cell(state = left_state, left = None, right = None, parent = self) # assign the resulting states to new cells
+        self.right = cell(state = right_state, left = None, right = None, parent = self) # ensure that those cells are related
         
         return self.left, self.right
 
 # second function
-def double(state, T):
-    """ Function that essentially rolls a loaded die given a state that determines the row of the transition matrix. """
-    num_states = len(T[0])
-    assertIn(state, range(num_state)), "the state you provided is not in the range"
-
-    state_decider = sp.multinomial.rvs(2, T[state])
+def _double(parent_state, T):
+    """ Function that essentially rolls two of the same loaded dice given a state that determines the row of the transition matrix. The results of the roll of the loaded dice are two new states that are returned. """
+    # Checking that the inputs are of the right shape
+    assert T.shape[0] == T.shape[1], "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
+    num_states = T.shape[0]
+    assert 0 <= parent_state <= num_states-1, "The parent state is a state outside of the range states being considered."
+    
+    # Rolling two of the same loaded dice separate times
+    state_decider = sp.multinomial.rvs(n=1, p=T[parent_state,:], size=2)
     s = state_decider.tolist()
 
     if 2 in s:
