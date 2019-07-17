@@ -76,8 +76,15 @@ def _double(parent_state, T):
 
     return left_state, right_state
 
+class LineageTree:
+    def __init__(self, pi, T, E, desired_num_cells):
+        self.pi = pi
+        self.T = T
+        self.E = E
+        self.desired_num_cells = desired_num_cells
+        self.lineage_list = generate(self.pi, self.T, self.desired_num_cells)
 
-def generate(pi, T, num_cells):
+def generate(pi, T, desired_num_cells):
     """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states). """
     first_state_results = sp.multinomial.rvs(1, pi) # roll the dice and yield the state for the first cell
     first_cell_state = first_state_results.index(1) 
@@ -90,7 +97,7 @@ def generate(pi, T, num_cells):
             lineage_list.append(left_cell) # add daughters to the list of cells
             lineage_list.append(right_cell)
 
-        if len(lineage_list) >= num_cells:
+        if len(lineage_list) >= desired_num_cells:
             break
             
     return lineage_list
