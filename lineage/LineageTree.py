@@ -1,3 +1,19 @@
+""" This file contains the LineageTree class. """
+
+from .Lineage import CellVar
+
+import scipy.stats as sp
+import numpy as np
+
+# temporary style guide:
+# Boolean functions are in camelCase.
+# Functions that return cells or lists of cells will be spaced with underscores.
+# Functions that are not to be used by a general user are prefixed with an underscore.
+# States of cells are 0-indexed and discrete (states start at 0 and are whole numbers).
+# Variables with the prefix num (i.e., num_states, num_cells) have an underscore following the 'num'.
+# Docstrings use """ and not '''.
+# Class names use camelCase.
+
 class LineageTree:
     def __init__(self, pi, T, E, desired_num_cells):
         self.pi = pi
