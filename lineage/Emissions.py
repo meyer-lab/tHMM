@@ -57,7 +57,8 @@ class CellVar:
             curr_cell = curr_cell.parent
         assert _isRootParent(curr_cell)
         return curr_cell
-        
+
+
 def _double(parent_state, T):
     """ Function that essentially rolls two of the same loaded dice given a state that determines the row of the transition matrix. The results of the roll of the loaded dice are two new states that are returned. """
     # Checking that the inputs are of the right shape
@@ -71,6 +72,7 @@ def _double(parent_state, T):
     right_state = right_state_results.index(1)
 
     return left_state, right_state
+
 
 def generate(T, pi, num_cells):
     """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states). """
@@ -89,3 +91,48 @@ def generate(T, pi, num_cells):
             break
             
     return lineage_list
+
+
+def count(state, X):
+    """ Counts the number of cells in a specific state and makes a list out of those cells.
+Used for generating emissions for that specific state. """
+
+    num_cellsInState = [] # a list holding cells in the same state
+    for cell in X: 
+        if cell.state == state: # if the cell is in the given state
+            num_cellsInState.append(cell) # append them to a list
+
+    count = len(num_cellsInState) # counts the list
+    return num_cellsInState, count
+
+
+def make_tuple(emission_dict, state, X):
+    """ Gets the dictionary holding the inner dictionaries;
+The inner dictionaries are those with key = name_of_distribution, and the value = parameter_for_that_distribution.
+For now, we are assuming that there are two emissions, bernoulli and exponential/gamma, so we have two values for each,
+this functions make a list of tuples, holding the value of these emissions for each cell in a specific state."""
+
+    subX, counts = count(state, X)
+    inner_dict = emission_dict['{}'.format(state)] 
+
+    observation_list = []
+    for dist in inner_dict.values():
+        observation_list.append(dist.rvs(counts)) # counts is the number of cells for that state
+
+        tuple_list = functools.reduce(( lambda x,y: list(zip(x,y))), observation_list) # makes tuples off of (bernoulli, dist_value)
+    return tuple_list
+
+
+def assign_emission(emission_dict, state, X):
+    """ Observation assignment for each state. """
+     
+    tuple_list = make_tuple(emission_dict, state, X)
+    subX, counts = count(state, X)
+
+    assert len(subX) == len(tuple_list)
+
+        for i, cell in enumerate(subX):
+            cell.observation = tuple_list[i]
+    
+    return subX
+    
