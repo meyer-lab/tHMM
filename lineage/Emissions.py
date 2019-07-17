@@ -96,7 +96,6 @@ def generate(T, pi, num_cells):
 def count(state, X):
     """ Counts the number of cells in a specific state and makes a list out of those cells.
 Used for generating emissions for that specific state. """
-
     num_cellsInState = [] # a list holding cells in the same state
     for cell in X: 
         if cell.state == state: # if the cell is in the given state
