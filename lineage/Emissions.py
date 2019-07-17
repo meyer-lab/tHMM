@@ -2,8 +2,11 @@
 import scipy.stats as sp
 import numpy as np
 
+# temporary style guide:
 # Boolean functions are in camel-case.
 # Functions that return cells or lists of cells will be spaced with underscores.
+# Functions that are not to be used by a general user are prefixed with an underscore.
+# States of cells are 0-indexed and discrete (states start at 0 and are whole numbers).
 
 class CellVar:
     def __init__(self, state, left, right, parent, gen):
@@ -74,7 +77,7 @@ def _double(parent_state, T):
     return left_state, right_state
 
 
-def generate(T, pi, num_cells):
+def generate(pi, T, num_cells):
     """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states). """
     first_state_results = sp.multinomial.rvs(1, pi) # roll the dice and yield the state for the first cell
     first_cell_state = first_state_results.index(1) 
@@ -93,30 +96,26 @@ def generate(T, pi, num_cells):
     return lineage_list
 
 
-def count(state, X):
-    """ Counts the number of cells in a specific state and makes a list out of those cells.
-Used for generating emissions for that specific state. """
-    num_cellsInState = [] # a list holding cells in the same state
-    for cell in X: 
-        if cell.state == state: # if the cell is in the given state
-            num_cellsInState.append(cell) # append them to a list
+def _get_state_count(state, lineage_list):
+    """ Counts the number of cells in a specific state and makes a list out of those numbers. Used for generating emissions for that specific state. """
+    cells_in_state = [] # a list holding cells in the same state
+    for cell in lineage_list: 
+        if cell.state == state: # if the cell is in the given state...
+            cells_in_state.append(cell) # append them to a list
 
-    count = len(num_cellsInState) # counts the list
-    return num_cellsInState, count
+    num_cells_in_state = len(cells_in_state) # gets the number of cells in the list
+    
+    return num_cells_in_state, cells_in_state
 
 
-def make_tuple(emission_dict, state, X):
-    """ Gets the dictionary holding the inner dictionaries;
-The inner dictionaries are those with key = name_of_distribution, and the value = parameter_for_that_distribution.
-For now, we are assuming that there are two emissions, bernoulli and exponential/gamma, so we have two values for each,
-this functions make a list of tuples, holding the value of these emissions for each cell in a specific state."""
-
-    subX, counts = count(state, X)
-    inner_dict = emission_dict['{}'.format(state)] 
+def _generate_state_obs(emission_dict, state, lineage_list):
+    """ Gets the dictionary holding the inner dictionaries (the state dictionaries); the inner dictionaries are those where the key is the name of the distribution, and the value is an object of that distribution's class (which are instantiated with the parameter(s) defining that distribution.This functions make a list of tuples, holding the value of these emissions for each cell in a specific state. """
+    num_cells_in_state, cells_in_state = _state_count(state, lineage_list)
+    inner_state_dict = emission_dict['{}'.format(state)] 
 
     observation_list = []
-    for dist in inner_dict.values():
-        observation_list.append(dist.rvs(counts)) # counts is the number of cells for that state
+    for dist_object in inner_state_dict.values():
+        observation_list.append(dist_object.rvs(size=num_cells_in_state)) # counts is the number of cells for that state
 
         tuple_list = functools.reduce(( lambda x,y: list(zip(x,y))), observation_list) # makes tuples off of (bernoulli, dist_value)
     return tuple_list
