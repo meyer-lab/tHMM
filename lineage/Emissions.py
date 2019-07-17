@@ -93,6 +93,8 @@ class LineageTree:
         self.num_states = pi_num_states
         self.desired_num_cells = desired_num_cells
         self.lineage_list = self._generate_lineage_list()
+        for state in self.num_states:
+            self.E["{}".format(state)]["cells"] = self._assign_obs(state)
         
     def _generate_lineage_list(self):
         """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states). """
@@ -137,16 +139,14 @@ class LineageTree:
             dist_observation_tuples = functools.reduce((lambda growing_list, additional_list: list(zip(growing_list,additional_list))), dist_observation_lists)
         return dist_observation_tuples
 
-    def _assign_emission(self, state):
+    def _assign_obs(self, state):
         """ Observation assignment for each state. """
+        dist_observation_tuples = self._generate_state_obs(state)
+        num_cells_in_state, cells_in_state = self._get_state_count(state)
+        assert len(cells_in_state) == len(dist_observation_tuples) == num_cells_in_state
 
-        tuple_list = make_tuple(emission_dict, state, X)
-        subX, counts = count(state, X)
+        for i, cell in enumerate(cells_in_state):
+            cell.obs = dist_observation_tuples[i]
 
-        assert len(subX) == len(tuple_list)
-
-            for i, cell in enumerate(subX):
-                cell.observation = tuple_list[i]
-
-        return subX
+        return cells_in_state
     
