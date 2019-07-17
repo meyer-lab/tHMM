@@ -128,12 +128,14 @@ class LineageTree:
         num_cells_in_state, _ = self._get_state_count(state)
         inner_state_dict = self.E["{}".format(state)] 
 
-        observation_list = []
+        dist_observation_lists = []
         for dist_object in inner_state_dict.values():
-            observation_list.append(dist_object.rvs(size=num_cells_in_state)) # collect random variables
-
-            tuple_list = functools.reduce(( lambda x,y: list(zip(x,y))), observation_list) # makes tuples off of (bernoulli, dist_value)
-        return tuple_list
+            dist_observation_lists.append(dist_object.rvs(size=num_cells_in_state)) # collect random variables
+            # Makes a list of tuples by zipping the list of different emissions into tuples. 
+            # For example, a list of 5 lists of emissions (one being Bernoulli, another being exponential, etc.) is reduced to
+            # a list of tuples, each tuple with 5 values.
+            dist_observation_tuples = functools.reduce((lambda growing_list, additional_list: list(zip(growing_list,additional_list))), dist_observation_lists)
+        return dist_observation_tuples
 
     def _assign_emission(self, state):
         """ Observation assignment for each state. """
