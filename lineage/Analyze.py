@@ -14,7 +14,6 @@ def Analyze(X, numStates):
     #--------------------------------##
     # TODO: putting remove_unfinished_cells here breaks the code X = remove_unfinished_cells(X)
     #--------------------------------##
-
     X = remove_singleton_lineages(X)
     run = True
     while run:

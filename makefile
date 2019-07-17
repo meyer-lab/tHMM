@@ -4,7 +4,7 @@ pan_common = -F pandoc-crossref -F pandoc-citeproc --filter=./common/templates/f
 
 .PHONY: clean test testprofile testcover docs
 
-flist = 1 2 3 4 5 6 7 S1 S2 S3 S4 S5
+flist = 1 2 3 4 5 6 7
 
 venv: venv/bin/activate
 
@@ -30,6 +30,9 @@ manuscript/manuscript.pdf: manuscript/manuscript.tex $(patsubst %, $(fdir)/figur
 manuscript/manuscript.tex: manuscript/*.md
 	pandoc -s $(pan_common) --template=./common/templates/default.latex --pdf-engine=xelatex -o $@
 
+Guide_to_tHMM.pdf: venv Guide_to_tHMM.ipynb
+	. venv/bin/activate && jupyter nbconvert --to pdf --execute Guide_to_tHMM.ipynb
+
 test: venv
 	. venv/bin/activate; pytest -s
 
@@ -38,7 +41,7 @@ testcover: venv
 
 testprofile: venv
 	. venv/bin/activate && python3 -m cProfile -o profile /usr/local/bin/pytest
-	gprof2dot -f pstats profile | dot -Tsvg -o profile.svg
+	gprof2dot -f pstats --node-thres=5.0 profile | dot -Tsvg -o profile.svg
 
 pylint.log: venv
 	. venv/bin/activate && (pylint --rcfile=./common/pylintrc lineage > pylint.log || echo "pylint exited with $?")

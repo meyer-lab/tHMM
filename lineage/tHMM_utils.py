@@ -3,7 +3,6 @@
 import itertools
 import numpy as np
 from sklearn.metrics.cluster import normalized_mutual_info_score
-from scipy.special import gamma, gammaincc
 
 
 ##------------------- Find maximum generation in a lineage -----------------------##
@@ -28,8 +27,6 @@ def max_gen(lineage):
             gen_holder = cell.gen
     return gen_holder
 
-##---------------------- Finding the cells in a generation -------------------------##
-
 
 def get_gen(gen, lineage):
     """
@@ -49,8 +46,6 @@ def get_gen(gen, lineage):
         if cell.gen == gen:
             first_set.append(cell)
     return first_set
-
-##----------------------finding parents of cells in a generation------------------##
 
 
 def get_parents_for_level(level, lineage):
@@ -76,8 +71,6 @@ def get_parents_for_level(level, lineage):
         parent_holder.add(lineage.index(parent_cell))
     return parent_holder
 
-##---------------------- finding daughter of a given cell -------------------------##
-
 
 def get_daughters(cell):
     """
@@ -97,8 +90,6 @@ def get_daughters(cell):
     if cell.right:
         temp.append(cell.right)
     return temp
-
-##------------------------ Akaike Information Criterion -------------------------##
 
 
 def getAIC(tHMMobj, LL):
@@ -169,8 +160,6 @@ def getAIC(tHMMobj, LL):
         LL_ls.append(-LL[num])  # append negative log likelihood
 
     return(AIC_ls, LL_ls, AIC_degrees_of_freedom)  # no longer returning relative to zero
-
-##------------------------- Calculate accuracy ----------------------------------##
 
 
 def getAccuracy(tHMMobj, all_states, verbose=False):
@@ -291,7 +280,6 @@ def get_mutual_info(tHMMobj, all_states, verbose=True):
         mutual_info = get_mutual_info(tHMMobj, all_states, verbose = True)
     """
 
-    numStates = tHMMobj.numStates
     tHMMobj.Accuracy2 = []
     tHMMobj.stateAssignment = []
     tHMMobj.states = []

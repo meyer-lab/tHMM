@@ -23,7 +23,7 @@ pipeline {
         stage('Lint') {
           steps {
             sh 'make pylint.log'
-            recordIssues(tools: [pyLint(pattern: 'pylint.log')])
+            recordIssues qualityGates: [[threshold: 130, type: 'TOTAL', unstable: true]], tools: [pyLint(pattern: 'pylint.log')]
           }
         }
         stage('Doc') {
@@ -35,7 +35,7 @@ pipeline {
         stage('Build') {
           steps {
             sh 'make manuscript/manuscript.pdf -j 8'
-            archiveArtifacts artifacts: 'manuscript/manuscript.pdf, manuscript/figures/*.pdf', onlyIfSuccessful: true
+            archiveArtifacts artifacts: '*.pdf, manuscript/manuscript.pdf, manuscript/figures/*.pdf', onlyIfSuccessful: true
           }
         }
       }

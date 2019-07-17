@@ -1,9 +1,8 @@
 '''utility and helper functions for cleaning up input populations and lineages and other needs in the tHMM class'''
 
+import math
 import numpy as np
 from .CellNode import generateLineageWithTime
-
-##------------------------ Generating population of cells ---------------------------##
 
 
 def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, switchT=None, bern2=None, betaExp2=None,
@@ -98,8 +97,6 @@ def generatePopulationWithTime(experimentTime, initCells, locBern, betaExp, swit
 
     return population
 
-##-------------------------------- Removing Unfinished Cells -------------------------##
-
 
 def remove_unfinished_cells(X):
     """
@@ -108,10 +105,10 @@ def remove_unfinished_cells(X):
     it replaces the cell with None which essentially removes the cell, and returns
     the new list of cells that does not inclue any NaN.
      Args:
-        ----------
+    ------
         X (list): list that holds cells as objects.
      Returns:
-        ----------
+    ---------
         X (list): a list of objects (cells) in which the NaNs have been removed.
      """
     ii = 0  # establish a count outside of the loop
@@ -128,19 +125,17 @@ def remove_unfinished_cells(X):
             ii += 1  # only move forward in the list if you don't delete a cell
     return X
 
-##------------------------- Removing Singleton Lineages ---------------------------##
-
 
 def remove_singleton_lineages(X):
     """
     Removes lineages that are only a single root cell that does not divide or just dies
 
     Args:
-        ----------
+    -----
         X (list): list that holds cells as objects.
 
     Returns:
-        ----------
+    --------
         X (list): a list of objects (cells) in which the root cells that do not
         make a lineage, have been removed.
 
@@ -156,8 +151,6 @@ def remove_singleton_lineages(X):
             ii += 1  # only move forward in the list if you don't delete a cell
     return X
 
-##------------------------ Find the number of Lineages ---------------------------##
-
 
 def get_numLineages(X):
     """
@@ -167,11 +160,11 @@ def get_numLineages(X):
     and then keeps track of the cells that are root, and counts the number of them
 
     Args:
-        ----------
+    -----
         X (list): list of objects (cells)
 
     Returns:
-        ----------
+    --------
         numLineages (int): the number of lineages in the given population
 
     """
@@ -185,8 +178,6 @@ def get_numLineages(X):
     assert len(root_cell_holder) == len(root_cell_linID_holder), "Something wrong with your unique number of lineages. Check the number of root cells and the number of lineages in your data."
     numLineages = len(root_cell_holder)  # the number of lineages is the number of root cells
     return numLineages
-
-##---------------------- creating a population out of lineages -------------------##
 
 
 def init_Population(X, numLineages):
@@ -223,8 +214,6 @@ def init_Population(X, numLineages):
             population.append(temp_lineage)  # append the lineage to the Population holder
     return population
 
-##-------------------------Estimating Bernoulli Parameter -------------------------##
-
 
 def bernoulliParameterEstimatorAnalytical(X):
     """
@@ -248,13 +237,11 @@ def bernoulliParameterEstimatorAnalytical(X):
     fate_holder = []  # instantiates list to hold cell fates as 1s or 0s
     for cell in X:  # go through every cell in the population
         if not cell.isUnfinished():  # if the cell has lived a meaningful life and matters
-            fate_holder.append(cell.fate * 1)  # append 1 for dividing, and 0 for dying
+            fate_holder.append(cell.fate * 1.)  # append 1 for dividing, and 0 for dying
 
     result = (sum(fate_holder) + 1e-10) / (len(fate_holder) + 2e-10)  # add up all the 1s and divide by the total length (finding the average)
 
     return result
-
-##--------------------- Estimating Exponential Parameter ----------------------##
 
 
 def exponentialAnalytical(X):
@@ -284,8 +271,6 @@ def exponentialAnalytical(X):
     result = (sum(tau_holder) + sum(tauFake_holder) + 62.5) / (len(tau_holder) + 1)
 
     return result
-
-##------------------ Estimating Gamma Distribution Parameters --------------------##
 
 
 def gammaAnalytical(X):
@@ -342,9 +327,74 @@ def gammaAnalytical(X):
 
         if np.abs(a_hat_new - a_hat0) <= 0.01:
             return [a_hat_new, b_hat_new]
-        else:
-            pass
-    assert np.abs(a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new - a_hat0 = {}".format(np.abs(a_hat_new - a_hat0))
 
-    result = [a_hat_new, b_hat_new]
-    return result
+    raise RuntimeError(f"a_hat has not converged properly, a_hat_new - a_hat0 = {np.abs(a_hat_new - a_hat0)}")
+
+
+def select_population(X, experimentTime):
+    """
+    In this function we remove the cells that are unfinished at the end and restrict our end-time analysis and build the model
+    up to some time-point, which is intended_end_time.
+    Here we first loop over the leaf cells and get the maximum tau of those, then to make sure we avoid unfinished cells in the
+    new population, we add it to 1 [hour] and then this will be the time-interval from the right (end of the experiment). In this
+    way we find the suitable end-time so that for all the cells in the lineage we have the tau and fate of all cells.
+
+    Args:
+    -----
+        X (list of objects): a list holding the cells of the population as objects.
+        experimentTime (int/float): experiment time for simulation -- the same as before.
+    Returns:
+    --------
+        new_population (list of objects): after removing those cells at the end that we don't know their fate and end time.
+    *** Make sure you run the experiment long enough, experimentTime >>1 to have a reasonable number of cells at the end
+    """
+
+    new_population = []
+    leaf_cell_taus = []
+
+    # first remove singleton lineages
+    X = remove_singleton_lineages(X)
+
+    # get the lifetime of leaf cells and append them to a list
+    for cell in X:
+        if cell.isLeaf():
+            if cell.isUnfinished():
+                leaf_cell_taus.append(cell.tauFake)
+            else:
+                leaf_cell_taus.append(cell.tau)
+
+    # find the intended end of experiment time by maximum tau of leaf cells
+    intended_interval = max(leaf_cell_taus) + 0.01
+    intended_end_time = experimentTime - intended_interval
+
+    # lose the cells that were born after intended experiment end time
+    for cell in X:
+        if cell:
+            if cell.startT <= intended_end_time and not cell.isUnfinished():
+                # only if the cell is born before the intended experiment time
+                # do we think about keeping the cell
+                if cell.isLeaf():
+                    # If the cell's start time is before our intended end time
+                    # and if the cell is a leaf
+                    # we don't have to do anything to it.
+                    pass
+                elif not cell.isLeaf() and cell.endT > intended_end_time:
+                    # if the cell's start time is before the intended end time
+                    # and has daughter cells whose start times are after the intended
+                    # end time, then that parent cell is a leaf in our new population
+                    if cell.left:
+                        assert cell.left.startT > intended_end_time
+                    elif cell.right:
+                        assert cell.right.startT > intended_end_time
+
+                    cell.left, cell.right = None, None
+
+                    assert cell.isLeaf()  # new leaf being made
+                elif not cell.isLeaf() and cell.endT <= intended_end_time:
+                    pass
+
+                assert not math.isnan(cell.endT), "There still exists NaN in your population after removing undetermined cells"
+                new_population.append(cell)
+
+    assert len(new_population) <= len(X)
+    return new_population, intended_end_time

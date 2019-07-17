@@ -19,8 +19,8 @@ def Matplot_gen(ax, x, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MAS
     font2 = 10
 
     if FOM == 'E':
-        panel_3_title = 'Exponential'
-        panel_3_ylabel = 'Labmda'
+        panel_3_title = r'Exponential'
+        panel_3_ylabel = r'lambda'
 
     x_vs_acc = np.column_stack((x, acc_h1))
     sorted_x_vs_acc = x_vs_acc[np.argsort(x_vs_acc[:, 0])]
