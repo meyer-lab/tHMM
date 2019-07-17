@@ -8,6 +8,7 @@ import numpy as np
 # Functions that are not to be used by a general user are prefixed with an underscore.
 # States of cells are 0-indexed and discrete (states start at 0 and are whole numbers).
 # Variables with the prefix num (i.e., num_states, num_cells) have an underscore following the 'num'.
+# Docstrings use """ and not '''.
 
 class CellVar:
     def __init__(self, state, left, right, parent, gen):
@@ -88,7 +89,8 @@ class LineageTree:
         T_num_states = self.T.shape[0]
         self.E = E
         E_num_states = len[state for state in self.E.keys()]
-        assert pi_num_states == T_num_states == E_num_states
+        assert pi_num_states == T_num_states == E_num_states, "The number of states in your input Markov probability parameters are mistmatched. Please check that the dimensions and states match. "
+        self.num_states = pi_num_states
         self.desired_num_cells = desired_num_cells
         self.lineage_list = self._generate_lineage_list()
         
@@ -123,27 +125,26 @@ class LineageTree:
 
     def _generate_state_obs(self, state):
         """ Gets the dictionary holding the inner dictionaries (the state dictionaries); the inner dictionaries are those where the key is the name of the distribution, and the value is an object of that distribution's class (which are instantiated with the parameter(s) defining that distribution.This functions make a list of tuples, holding the value of these emissions for each cell in a specific state. """
-        num_cells_in_state, cells_in_state = self._get_state_count(state)
-        inner_state_dict = emission_dict['{}'.format(state)] 
+        num_cells_in_state, _ = self._get_state_count(state)
+        inner_state_dict = self.E["{}".format(state)] 
 
         observation_list = []
         for dist_object in inner_state_dict.values():
-            observation_list.append(dist_object.rvs(size=num_cells_in_state)) # counts is the number of cells for that state
+            observation_list.append(dist_object.rvs(size=num_cells_in_state)) # collect random variables
 
             tuple_list = functools.reduce(( lambda x,y: list(zip(x,y))), observation_list) # makes tuples off of (bernoulli, dist_value)
         return tuple_list
 
+    def _assign_emission(self, state):
+        """ Observation assignment for each state. """
 
-def assign_emission(emission_dict, state, X):
-    """ Observation assignment for each state. """
-     
-    tuple_list = make_tuple(emission_dict, state, X)
-    subX, counts = count(state, X)
+        tuple_list = make_tuple(emission_dict, state, X)
+        subX, counts = count(state, X)
 
-    assert len(subX) == len(tuple_list)
+        assert len(subX) == len(tuple_list)
 
-        for i, cell in enumerate(subX):
-            cell.observation = tuple_list[i]
-    
-    return subX
+            for i, cell in enumerate(subX):
+                cell.observation = tuple_list[i]
+
+        return subX
     
