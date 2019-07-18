@@ -43,6 +43,7 @@ class StateDistribution:
         unzipped_list_of_tuples_of_obs = list(zip(*list_of_tuples_of_obs))
         
         # getting the observations as individual lists
+        # {
         bern_obs = list(unzipped_list_of_tuples_of_obs[0])
         exp_obs = list(unzipped_list_of_tuples_of_obs[1])
         gamma_obs = list(unzipped_list_of_tuples_of_obs[2])
@@ -56,9 +57,12 @@ class StateDistribution:
                                                expon_scale_beta=expon_scale_beta_estimate,
                                                gamma_a=gamma_a_estimate,
                                                gamma_scale=gamma_scale_estimate)
-        # Note that we return an instance of the observation class, but now instantiated with the parameters 
-        # from estimation.
-        return state_estimate_obj 
+        # } requires the user's attention.
+        self.state_estimate_obj = state_estimate_obj
+        # Note that we return an instance of the state distribution class, but now instantiated with the parameters 
+        # from estimation. This is then stored in the original state distribution object which then gets updated 
+        # if this function runs again.
+        return self.state_estimate_obj 
         
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide 
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
