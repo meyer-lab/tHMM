@@ -17,7 +17,9 @@ class ObservationEmission:
         gamma_obs = sp.gamma.rvs(a=self.gamma_a, scale=self.gamma_scale, size=size) # gamma observations
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        return list(zip(bern_obs, exp_obs, gamma_obs))
+        tuple_of_obs = list(zip(bern_obs, exp_obs, gamma_obs))
+        self.obs = tuple_of_obs
+        return self.obs
     
     def pdf(self, tuple_of_obs): # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
