@@ -74,4 +74,3 @@ class LineageTree:
             cell.obs = list_of_tuples_of_obs[i]
 
         return cells_in_state
-    
