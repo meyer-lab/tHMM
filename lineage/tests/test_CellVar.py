@@ -51,8 +51,8 @@ class TestModel(unittest.TestCase):
              [0.0, 1.0]])
 
         parent_state = 1
-        cell_left = c(state = parent_state)
-        left_cell, right_cell = cell_left._divide(T)
+        cell = c(state = parent_state, left = None, right = None, parent = None, gen = 1)
+        left_cell, right_cell = cell._divide(T)
 
         self.assertTrue(left_cell.state == 1)
         self.assertTrue(right_cell.state == 1)
