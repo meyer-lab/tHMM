@@ -1,12 +1,64 @@
 """ Unit test file. """
 import unittest
-
-from ..CellVar import CellVar as c
+import numpy as np
+from ..CellVar import CellVar as c, _double
 
 
 class TestModel(unittest.TestCase):
+
+#     def setUp(self):
+#         self.cell = CellVar()
+        
+    def test_cellVar(self):
+        """ Make sure cell state transition is correct. """
+
+        left_state = 0
+        right_state = 1
+
+        cell_left = c(state = left_state, left = None, right = None, parent = None, gen = 1)
+        cell_right = c(state = right_state, left = None, right = None, parent = None, gen = 1)
+
+        self.assertTrue(cell_left.state == 0)
+        self.assertTrue(cell_right.state == 1)
+
+
+    def test_cell_double(self):
+        """ Make sure double function creates the right and left states properly. """
+
+        # transition matrix
+        T = np.array([[1.0, 0.0],
+             [0.0, 1.0]])
+
+        # arbitrary parent state, based on T given above, we get the two daughter cell states.
+        parent_state = 0
+
+        left_state, right_state = _double(parent_state, T)
+        self.assertTrue(left_state == 0)
+        self.assertTrue(right_state == 0), " double function is not working properly based on transition matrix. "
+
+        # second arbitrary parent state
+        parent_state2 = 1
+
+        left_state2, right_state2 = double(parent_state2, T)
+        self.assertTrue(left_state == 1)
+        self.assertTrue(right_state == 1), " double function is not working properly based on transition matrix. "
+
+
     def test_cell_divide(self):
-        """Make sure cells divide properly with proper parent/child member variables."""
+            
+        T = np.array([[1.0, 0.0],
+             [0.0, 1.0]])
+
+        parent_state = 1
+        cell_left = c(state = parent_state)
+        left_cell, right_cell = cell_left._divide(T)
+
+        self.assertTrue(left_cell.state == 1)
+        self.assertTrue(right_cell.state == 1)
+        
+        
+        
+            
     #        cell1 = c(startT=20)
     #        cell2, cell3 = cell1.divide(40)
 
