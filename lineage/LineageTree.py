@@ -66,7 +66,7 @@ class LineageTree:
     def _assign_obs(self, state):
         """ Observation assignment give a state. """
         num_cells_in_state, cells_in_state, _ = self._get_state_count(state)
-        list_of_tuples_of_obs = self.E["{}".format{state}]["emission_obj"].rvs(size=num_cells_in_state)
+        list_of_tuples_of_obs = self.E["{}".format{state}].rvs(size=num_cells_in_state)
         
         assert len(cells_in_state) == len(list_of_tuples_of_obs) == num_cells_in_state
 
