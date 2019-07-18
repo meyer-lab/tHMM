@@ -44,37 +44,46 @@ class ObservationEmission:
         exp_obs = list(unzipped_list_of_tuples_of_obs[1])
         gamma_obs = list(unzipped_list_of_tuples_of_obs[2])
         
-        return result
+        bern_p_estimate = bernoulli_estimator(bern_obs)
+        expon_scale_beta_estimate = exponential_estimator(exp_obs)
+        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
+        
+        obs_estimate_obj = ObservationEmission(bern_p=bern_p_estimate,
+                                               expon_scale_beta=expon_scale_beta_estimate,
+                                               gamma_a=gamma_a_estimate,
+                                               gamma_scale=gamma_scale_estimate)
+        # Note that we return an instance of the observation class, but now instantiated with the parameters 
+        # from estimation.
+        return obs_estimate_obj 
         
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide 
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
-# Their use in the ObservationEmission class is shown in the estimator class method.
-
-##--------------------- Estimating the Bernoulli Parameter ----------------------##
+# Their use in the ObservationEmission class is shown in the estimator class method. User must take care to define estimators that
+# can handle the case where the list of observations is empty.
 
 def bernoulli_estimator(bern_obs):
     """ Add up all the 1s and divide by the total length (finding the average). """
      return ( sum(bern_obs)+1e-10 )/( len(bern_obs)+2e-10 )  
 
-##--------------------- Estimating the Exponential Parameter --------------------##
-
 def exponential_estimator(exp_obs):
-    """  """
-    return ( sum(exp_obs) )/( len(exp_obs)+1 )
-
-##------------------ Estimating the Gamma Distribution Parameters --------------------##
+    """ Trivial exponentia """
+    return ( sum(exp_obs) )/( len(exp_obs) )
 
 def gamma_estimator(gamma_obs):
     """
     An analytical estimator for two parameters of the Gamma distribution. Based on Thomas P. Minka, 2002 "Estimating a Gamma distribution".
     The likelihood function for Gamma distribution is:
     p(x | a, b) = Gamma(x; a, b) = x^(a-1)/(Gamma(a) * b^a) * exp(-x/b)
-    Here we intend to find "a" and "b" given x as a sequence of data -- in this case
-    the data is the cells' lifetime.
-    To find the best estimate we find the value that maximizes the likelihood function.
+    Here we intend to find "a" and "b" given x as a sequence of gamma distributed data.
+    To find the best estimate, we find the value that maximizes the likelihood of observing that data.
+    We fix b_hat as:
+    
     b_hat = x_bar / a
-    using Newton's method to find the second parameter:
-    a_hat =~ 0.5 / (log(x_bar) - log(x)_bar)
+    
+    We then use Newton's method to find the second parameter:
+    
+    a_hat ~= 0.5 / (log(x_bar) - (log(x))_bar)
+    
     Here x_bar means the average of x.
     Args:
         ----------
@@ -107,10 +116,9 @@ def gamma_estimator(gamma_obs):
         psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
 
         if np.abs(a_hat_new - a_hat0) <= 0.01:
-            return [a_hat_new, b_hat_new]
+            return a_hat_new, b_hat_new
         else:
             pass
     assert np.abs(a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new - a_hat0 = {}".format(np.abs(a_hat_new - a_hat0))
 
-    result = [a_hat_new, b_hat_new]
-    return result
+    return a_hat_new, b_hat_new
