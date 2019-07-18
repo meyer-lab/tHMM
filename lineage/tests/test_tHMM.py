@@ -100,7 +100,6 @@ class TestModel(unittest.TestCase):
             if cell.isRootParent():
                 self.assertTrue(not cell.isUnfinished())  # If the cell is rootparent, it souldn't be unfinished.
 
-
     def test_get_numLineages(self):
         '''
         Checks to see that the initial number
