@@ -33,15 +33,16 @@ class TestModel(unittest.TestCase):
         parent_state = 0
 
         left_state, right_state = _double(parent_state, T)
+        print(left_state)
         self.assertTrue(left_state == 0)
         self.assertTrue(right_state == 0), " double function is not working properly based on transition matrix. "
 
         # second arbitrary parent state
         parent_state2 = 1
 
-        left_state2, right_state2 = double(parent_state2, T)
-        self.assertTrue(left_state == 1)
-        self.assertTrue(right_state == 1), " double function is not working properly based on transition matrix. "
+        left_state2, right_state2 = _double(parent_state2, T)
+        self.assertTrue(left_state2 == 1)
+        self.assertTrue(right_state2 == 1), " double function is not working properly based on transition matrix. "
 
 
     def test_cell_divide(self):
