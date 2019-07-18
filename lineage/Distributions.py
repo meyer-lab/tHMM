@@ -64,7 +64,7 @@ def exponential_estimator(exp_obs):
 
 ##------------------ Estimating the Gamma Distribution Parameters --------------------##
 
-def gammaAnalytical(X):
+def gamma_estimator(gamma_obs):
     """
     An analytical estimator for two parameters of the Gamma distribution. Based on Thomas P. Minka, 2002 "Estimating a Gamma distribution".
     The likelihood function for Gamma distribution is:
@@ -78,19 +78,14 @@ def gammaAnalytical(X):
     Here x_bar means the average of x.
     Args:
         ----------
-        X (obj): The object holding cell's attributes, including lifetime, to be used as data.
+        gamma_obs (list): A list of gamma-distributed observations.
     Returns:
         ----------
         a_hat (float): The estimated value for shape parameter of the Gamma distribution
         b_hat (float): The estimated value for scale parameter of the Gamma distribution
     """
-
-    # store the lifetime of every cell in a list, only if it is finished by the end of the experiment
-    tau1 = []
-    for cell in X:
-        if not cell.isUnfinished():
-            tau1.append(cell.tau)
-
+    tau1 = gamma_obs
+    
     tau_mean = np.mean(tau1)
     tau_logmean = np.log(tau_mean)
     tau_meanlog = np.mean(np.log(tau1))
