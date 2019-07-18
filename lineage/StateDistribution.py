@@ -1,9 +1,10 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
 import scipy.stats as sp
 
-class ObservationEmission:
-    def __init__(self, bern_p, expon_scale_beta, gamma_a, gamma_scale): # user has to identify what parameters to use for each state
+class StateDistribution:
+    def __init__(self, state, bern_p, expon_scale_beta, gamma_a, gamma_scale): # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
+        self.state = state
         self.bern_p = bern_p
         self.expon_scale_beta = expon_scale_beta
         self.gamma_a = gamma_a
@@ -50,13 +51,14 @@ class ObservationEmission:
         expon_scale_beta_estimate = exponential_estimator(exp_obs)
         gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
         
-        obs_estimate_obj = ObservationEmission(bern_p=bern_p_estimate,
+        state_estimate_obj = StateDistribution(state=self.state,
+                                               bern_p=bern_p_estimate,
                                                expon_scale_beta=expon_scale_beta_estimate,
                                                gamma_a=gamma_a_estimate,
                                                gamma_scale=gamma_scale_estimate)
         # Note that we return an instance of the observation class, but now instantiated with the parameters 
         # from estimation.
-        return obs_estimate_obj 
+        return state_estimate_obj 
         
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide 
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
