@@ -65,10 +65,14 @@ class StateDistribution:
         # if this function runs again.
         return self.state_estimate_obj
 
-    def prune_rule(self):
-        
     
-
+def prune_rule(cell):
+    """ User-defined function that checks whether a cell's subtree should be removed. """
+    truther = False
+    if cell.obs[0] == 0:
+        truther = True #cell has died; subtree must be removed
+    return truther
+    
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
 # Their use in the ObservationEmission class is shown in the estimator class method. User must take care to define estimators that
