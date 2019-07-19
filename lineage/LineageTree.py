@@ -32,10 +32,12 @@ class LineageTree:
         self.desired_num_cells = desired_num_cells
         self.full_lin_list = self._generate_lineage_list()
         for state in self.num_states:
-            self.E[state].full_lin_cells = self._assign_obs(state)
+            self.E[state].full_lin_cells, self.E[state].full_lin_cells_idx = self._full_assign_obs(state)
          # pruning
         self.prune_boolean = prune_boolean # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
         self.pruned_lin_list = self._prune_lineage()
+        for state in self.num_states:
+            self.E[state].pruned_lin_cells, self.E[state].pruned_lin_cells_idx = self._pruned_assign_obs(state)
 
         # Based on the user's decision, if they want the lineage to be pruned (prune_boolean == True), 
         # the lineage tree that is given to the tHMM, will be the pruned one.
@@ -76,22 +78,23 @@ class LineageTree:
                 assert cell._isLeaf()
         return self.pruned_list
 
-    def _get_state_count(self, state):
+    def _get_full_state_count(self, state):
         """ Counts the number of cells in a specific state and makes a list out of those numbers. Used for generating emissions for that specific state. """
         cells_in_state = []  # a list holding cells in the same state
         indices_of_cells_in_state = []
+        
         for cell in self.full_lin_list:
             if cell.state == state:  # if the cell is in the given state...
                 cells_in_state.append(cell)  # append them to a list
-                indices_of_cells_in_state.append(self.full_lin_list)
+                indices_of_cells_in_state.append(self.full_lin_list.index(cell))
 
         num_cells_in_state = len(cells_in_state)  # gets the number of cells in the list
 
         return num_cells_in_state, cells_in_state, indices_of_cells_in_state
 
-    def _assign_obs(self, state):
+    def _assign_full_obs(self, state):
         """ Observation assignment give a state. """
-        num_cells_in_state, cells_in_state, _ = self._get_state_count(state)
+        num_cells_in_state, cells_in_state, indices_of_cells_in_state = self._get_state_count(state)
         list_of_tuples_of_obs = self.E[state].rvs(size=num_cells_in_state)
 
         assert len(cells_in_state) == len(list_of_tuples_of_obs) == num_cells_in_state
@@ -99,7 +102,7 @@ class LineageTree:
         for i, cell in enumerate(cells_in_state):
             cell.obs = list_of_tuples_of_obs[i]
 
-        return cells_in_state
+        return cells_in_state, indices_of_cells_in_state
 
 # tools for traversing trees
 
