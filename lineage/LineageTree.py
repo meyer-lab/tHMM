@@ -15,7 +15,7 @@ import numpy as np
 # Variables with the prefix num (i.e., num_states, num_cells) have an underscore following the 'num'.
 # Docstrings use """ and not '''.
 # Class names use camelCase.
-# The transition matrix must be a square matrix; not a list of lists.
+# The transition matrix must be a square matrix, not a list of lists.
 
 
 class LineageTree:
@@ -37,15 +37,17 @@ class LineageTree:
         self.prune_boolean = prune_boolean # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
         self.pruned_list = self._prune_lineage(self.fullLineage_list)
 
-        # Based on the user's decision, if they want the lineage to be pruned (prune_boolean == True), the lineage tree that is given to the tHMM, will be the pruned one
-        # If the user decides that they want the full binary tree (prune_boolean == False), then the fullLineage_list will be passed to the output_lineage.
+        # Based on the user's decision, if they want the lineage to be pruned (prune_boolean == True), 
+        # the lineage tree that is given to the tHMM, will be the pruned one.
+        # If the user decides that they want the full binary tree (prune_boolean == False), 
+        # then the fullLineage_list will be passed to the output_lineage.
         if prune_boolean is True:
             self.output_lineage = self.pruned_list
         else:
             self.output_lineage = self.fullLineage
 
         for state in self.num_states:
-            self.E["{}".format(state)].cells = self._assign_obs(state)
+            self.E[state].cells = self._assign_obs(state)
 
     def _generate_lineage_list(self):
         """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states). """
@@ -89,7 +91,7 @@ class LineageTree:
     def _assign_obs(self, state):
         """ Observation assignment give a state. """
         num_cells_in_state, cells_in_state, _ = self._get_state_count(state)
-        list_of_tuples_of_obs = self.E["{}".format{state}].rvs(size=num_cells_in_state)
+        list_of_tuples_of_obs = self.E[state].rvs(size=num_cells_in_state)
 
         assert len(cells_in_state) == len(list_of_tuples_of_obs) == num_cells_in_state
 
