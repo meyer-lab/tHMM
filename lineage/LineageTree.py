@@ -67,11 +67,11 @@ class LineageTree:
 
     def _prune_lineage(self):
         """  """
-        to_be_pruned_tree = self.fullLineage_list
+        self.pruned_list = self.fullLineage_list
         for cell in to_be_pruned_tree:
             _, residual_tree = get_subtrees(cell, fullLineage_list)
-            to_be_pruned_tree = residual_tree
-        return to_be_pruned_tree
+            self.pruned_list = residual_tree
+        return self.pruned_list
 
     def _get_state_count(self, state):
         """ Counts the number of cells in a specific state and makes a list out of those numbers. Used for generating emissions for that specific state. """
