@@ -1,6 +1,7 @@
 """ This file contains the LineageTree class. """
 
 from .CellVar import CellVar
+from .StateDistribution import StateDistribution
 from .subtree_utils import tree_recursion, get_subtrees
 
 import scipy.stats as sp

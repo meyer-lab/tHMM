@@ -65,6 +65,10 @@ class StateDistribution:
         # if this function runs again.
         return self.state_estimate_obj
 
+    def prune_rule(self):
+        
+    
+
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
 # Their use in the ObservationEmission class is shown in the estimator class method. User must take care to define estimators that
@@ -77,7 +81,7 @@ def bernoulli_estimator(bern_obs):
 
 
 def exponential_estimator(exp_obs):
-    """ Trivial exponentia """
+    """ Trivial exponential """
     return (sum(exp_obs)) / (len(exp_obs))
 
 
@@ -98,10 +102,10 @@ def gamma_estimator(gamma_obs):
 
     Here x_bar means the average of x.
     Args:
-        ----------
+    -----
         gamma_obs (list): A list of gamma-distributed observations.
     Returns:
-        ----------
+    --------
         a_hat (float): The estimated value for shape parameter of the Gamma distribution
         b_hat (float): The estimated value for scale parameter of the Gamma distribution
     """
