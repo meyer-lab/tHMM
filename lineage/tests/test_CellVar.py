@@ -44,13 +44,18 @@ class TestModel(unittest.TestCase):
         self.assertTrue(left_cell.gen == 2 and right_cell.gen == 2)
         
     def test_isParent(self):
+        parent_state = 1
+        cell = c(state=parent_state, left=None, right=None, parent=None, gen=1)
+        self.assertFalse(cell._isParent())
+        left_cell, right_cell = cell._divide(T)
+        self.assertTrue(cell._isParent())
 
     def test_cell_double(self):
         """ Make sure double function creates the right and left states properly. """
 
         # transition matrix
         T = np.array([[1.0, 0.0],
-             [0.0, 1.0]])
+                      [0.0, 1.0]])
 
         # arbitrary parent state, based on T given above, we get the two daughter cell states.
         parent_state = 0
@@ -67,20 +72,3 @@ class TestModel(unittest.TestCase):
         self.assertTrue(left_state2 == 1)
         self.assertTrue(right_state2 == 1), " double function is not working properly based on transition matrix. "
         
-        
-        
-            
-    #        cell1 = c(startT=20)
-    #        cell2, cell3 = cell1.divide(40)
-
-    #        # cell divides at correct time & parent dies
-    #        self.assertFalse(cell1.isUnfinished())
-    #        self.assertTrue(cell1.tau == 20)
-    #        self.assertTrue(cell2.startT == 40)
-    #        self.assertTrue(cell2.isUnfinished())
-
-        # left and right children exist for cell1 with proper linking
-    #        self.assertTrue(cell1.left is cell2)
-    #        self.assertTrue(cell1.right is cell3)
-    #        self.assertTrue(cell2.parent is cell1)
-    #        self.assertTrue(cell3.parent is cell1)
