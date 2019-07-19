@@ -18,7 +18,6 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell_right.state == 1)
     
     def test_cell_divide(self):
-        
         T = np.array([[1.0, 0.0],
              [0.0, 1.0]])
 
@@ -28,7 +27,8 @@ class TestModel(unittest.TestCase):
 
         self.assertTrue(left_cell.state == 1)
         self.assertTrue(right_cell.state == 1)
-
+        
+    def test_isParent(self):
 
     def test_cell_double(self):
         """ Make sure double function creates the right and left states properly. """
