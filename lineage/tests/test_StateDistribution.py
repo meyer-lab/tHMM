@@ -4,6 +4,8 @@ import numpy as np
 from ..StateDistribution import bernoulli_estimator, exponential_estimator, gamma_estimator
 
 class TestModel(unittest.TestCase):
+    """Here are the unit tests."""
+
     def test_bernoulli_estimator(self):
         """ blah """
         bern_obs = sp.bernoulli.rvs(p=0.9, size=100)  # bernoulli observations
