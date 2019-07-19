@@ -18,7 +18,7 @@ class TestModel(unittest.TestCase):
 
     def test_gamma_estimator(self):
         """ blah """
-        gamma_obs = sp.gamma.rvs(a=12.5, scale=3, size=100)  # gamma observations
+        gamma_obs = sp.gamma.rvs(a=12.5, scale=3, size=100) # gamma observations
         shape, scale = gamma_estimator(gamma_obs)
 
         self.assertTrue(10 <= shape <= 15)
