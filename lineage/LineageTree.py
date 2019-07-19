@@ -19,7 +19,7 @@ import numpy as np
 
 
 class LineageTree:
-    def __init__(self, pi, T, E, desired_num_cells, prune_boolean, output_lineage):
+    def __init__(self, pi, T, E, desired_num_cells, prune_boolean):
         self.pi = pi
         pi_num_states = len(pi)
         self.T = T
@@ -27,13 +27,14 @@ class LineageTree:
         assert T_shape[0] == T_shape[1], "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
         T_num_states = self.T.shape[0]
         self.E = E
-        E_num_states = len[state for state in self.E.keys()]
+        E_num_states = len(E)
         assert pi_num_states == T_num_states == E_num_states, "The number of states in your input Markov probability parameters are mistmatched. Please check that the dimensions and states match. "
         self.num_states = pi_num_states
         self.desired_num_cells = desired_num_cells
-        self.prune_boolean = prune_boolean # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
-
         self.fullLineage_list = self._generate_lineage_list()
+        
+        # pruning
+        self.prune_boolean = prune_boolean # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
         self.pruned_list = self._prune_lineage(self.fullLineage_list)
 
         # Based on the user's decision, if they want the lineage to be pruned (prune_boolean == True), the lineage tree that is given to the tHMM, will be the pruned one
@@ -64,15 +65,13 @@ class LineageTree:
 
         return fullLineage_list
 
-    def _prune_lineage(self, fullLineage_list):
-
-        for cell in fullLineage_list:
-            if cell.prune_subtree is True: # if the cell's subtree has to be removed...
-                _, residual_tree = get_subtrees(cell, fullLineage_list)
-                fullLineage_list = residual_tree
-            elif cell.prune_subtree is False:
-                pass
-                
+    def _prune_lineage(self):
+        """  """
+        to_be_pruned_tree = self.fullLineage_list
+        for cell in to_be_pruned_tree:
+            _, residual_tree = get_subtrees(cell, fullLineage_list)
+            to_be_pruned_tree = residual_tree
+        return to_be_pruned_tree
 
     def _get_state_count(self, state):
         """ Counts the number of cells in a specific state and makes a list out of those numbers. Used for generating emissions for that specific state. """
