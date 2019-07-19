@@ -1,8 +1,7 @@
 """ This file contains the LineageTree class. """
 
 from .CellVar import CellVar
-from .StateDistribution import StateDistribution
-from .subtree_utils import tree_recursion, get_subtrees
+from .StateDistribution import prune_rule
 
 import scipy.stats as sp
 import numpy as np
@@ -70,7 +69,8 @@ class LineageTree:
         """  """
         self.pruned_lin_list = self.full_lin_list
         for cell in self.pruned_lin_list:
-            _, self.pruned_lin_list = get_subtrees(cell, self.pruned_lin_list)
+            if prune_rule(cell):
+                _, _, self.pruned_lin_list = find_two_subtrees(cell, self.pruned_lin_list)
         return self.pruned_list
 
     def _get_state_count(self, state):
@@ -110,7 +110,6 @@ def tree_recursion(cell, subtree):
     tree_recursion(cell.right, subtree)
     return
 
-
 def get_subtrees(node, lineage):
     """ Given one cell, return the subtree of that cell, and return all the tree other than that subtree. """
     subtree = [node]
@@ -121,7 +120,6 @@ def get_subtrees(node, lineage):
             not_subtree.append(cell)
     return subtree, not_subtree
 
-
 def find_two_subtrees(node, lineage):
     """ Gets the left and right subtrees from a cell. """
     left_sub, _ = get_subtrees(cell.left, lineage)
@@ -131,7 +129,6 @@ def find_two_subtrees(node, lineage):
         if cell not in left_sub and cell not in right_sub:
             neither_subtree.append(cell)
     return left_sub, right_sub, neither_subtree
-
 
 def get_mixed_subtrees(node_m, node_n, lineage):
     m_sub, _ = get_subtrees(node_m, lineage)
