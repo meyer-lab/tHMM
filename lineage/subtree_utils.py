@@ -1,8 +1,8 @@
-''' This file is used to prune the tree, i.e., removing those cells that have been assigned to die and their descendants'''
-
+""" This file is used to prune the tree, i.e., removing those cells that have been assigned to die and their descendants. """ 
 
 def tree_recursion(cell, subtree):
-    if cell.isLeaf():
+    """ a recurssive function that traverses upwards from the leaf to the root. """
+    if cell._isLeaf():
         return
     subtree.append(cell.left)
     subtree.append(cell.right)
@@ -12,8 +12,8 @@ def tree_recursion(cell, subtree):
 
 
 def get_subtrees(node, lineage):
-    '''Get subtrees for one lineage'''
-    subtree_list = [node]
+    """ Given one cell, return the subtree of that cell, and return all the tree other than that subtree. """
+    subtree = [node]
     tree_recursion(node, subtree)
     not_subtree = []
     for cell in lineage:
@@ -23,7 +23,7 @@ def get_subtrees(node, lineage):
 
 
 def find_two_subtrees(node, lineage):
-    '''Gets the left and right subtrees from a cell'''
+    """ Gets the left and right subtrees from a cell. """
     left_sub, _ = get_subtrees(cell.left, lineage)
     right_sub, _ = get_subtrees(cell.right, lineage)
     neither_subtree = []
