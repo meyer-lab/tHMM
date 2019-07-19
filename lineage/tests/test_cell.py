@@ -110,40 +110,6 @@ class TestModel(unittest.TestCase):
                 tau_beta50.append(n2.tau)
         self.assertGreater(np.mean(tau_beta50), np.mean(tau_beta20))
 
-    def test_MLE_bern(self):
-        """ Generate multiple lineages and estimate the bernoulli parameter with MLE. Estimators must be within +/- 0.08 of true locBern for popTime. """
-        self.assertTrue(0.899 <= bernoulliParameterEstimatorAnalytical(self.pop1) <= 1.0)
-
-    def test_MLE_exp_analytical(self):
-        """ Use the analytical shortcut to estimate the exponential parameters. """
-        # test populations w.r.t. time
-        beta_out = exponentialAnalytical(self.pop1)
-        truther = (45 <= beta_out <= 55)
-        self.assertTrue(truther)  # +/- 5 of beta
-
-    def test_MLE_gamma_analytical(self):
-        """ Use the analytical shortcut to estimate the Gamma parameters. """
-        # test populations w.r.t. time
-        #data = sp.gamma.rvs(a = 13, loc = 0 , scale = 3, size = 1000)
-        result = gammaAnalytical(self.pop3)
-        shape = result[0]
-        logging.info('%f : shape estimated.', shape)
-        scale = result[1]
-        logging.info('%f : scale estimated.', scale)
-
-        self.assertTrue(11 <= shape <= 15)
-        self.assertTrue(2 <= scale <= 4)
-
-    def test_doubleT_E(self):
-        """Check for basic functionality of doubleT."""
-        base = doublingTime(100, 0.7, betaExp=80, FOM='E')
-
-        # doubles quicker when cells divide 90% of the time
-        self.assertGreater(base, doublingTime(100, 0.9, betaExp=50, FOM='E'))
-
-        self.assertGreater(base, doublingTime(100, 0.7, betaExp=50, FOM='E'))
-        self.assertGreater(base, doublingTime(100, 0.7, betaExp=40, FOM='E'))
-
     def test_hetergeneous_pop_E(self):
         """ Calls generatePopulationWithTime when there is a switch in parameters over the course of the experiment's time. (Exponential)"""
         experimentTime = 168  # we can now set this to be a value (in hours) that is experimentally useful (a week's worth of hours)
