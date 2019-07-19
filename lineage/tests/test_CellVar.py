@@ -19,14 +19,29 @@ class TestModel(unittest.TestCase):
     
     def test_cell_divide(self):
         T = np.array([[1.0, 0.0],
-             [0.0, 1.0]])
+                      [0.0, 1.0]])
 
         parent_state = 1
-        cell = c(state = parent_state, left = None, right = None, parent = None, gen = 1)
+        cell = c(state=parent_state, left=None, right=None, parent=None, gen=1)
         left_cell, right_cell = cell._divide(T)
-
-        self.assertTrue(left_cell.state == 1)
+        self.assertTrue(left_cell.state == 1) # the probability of switching states is 0
         self.assertTrue(right_cell.state == 1)
+        self.assertTrue(right_cell.parent is cell and left_cell.parent is cell)
+        self.assertTrue(cell.left is left_cell and cell.right is right_cell)
+        self.assertTrue(not cell.parent)
+        self.assertTrue(cell.gen == 1)
+        self.assertTrue(left_cell.gen == 2 and right_cell.gen == 2)
+
+        parent_state = 0
+        cell = c(state=parent_state, left=None, right=None, parent=None, gen=1)
+        left_cell, right_cell = cell._divide(T)
+        self.assertTrue(left_cell.state == 0) # the probability of switching states is 0
+        self.assertTrue(right_cell.state == 0)
+        self.assertTrue(right_cell.parent is cell and left_cell.parent is cell)
+        self.assertTrue(cell.left is left_cell and cell.right is right_cell)
+        self.assertTrue(not cell.parent)
+        self.assertTrue(cell.gen == 1)
+        self.assertTrue(left_cell.gen == 2 and right_cell.gen == 2)
         
     def test_isParent(self):
 
