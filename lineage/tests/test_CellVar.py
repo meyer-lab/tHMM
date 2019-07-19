@@ -6,20 +6,28 @@ from ..CellVar import CellVar as c, _double
 
 class TestModel(unittest.TestCase):
 
-#     def setUp(self):
-#         self.cell = CellVar()
-        
     def test_cellVar(self):
-        """ Make sure cell state transition is correct. """
-
+        """ Make sure cell state assignment is correct. """
         left_state = 0
         right_state = 1
-
-        cell_left = c(state = left_state, left = None, right = None, parent = None, gen = 1)
-        cell_right = c(state = right_state, left = None, right = None, parent = None, gen = 1)
+        
+        cell_left = c(state=left_state, left=None, right=None, parent=None, gen=1)
+        cell_right = c(state=right_state, left=None, right=None, parent=None, gen=1)
 
         self.assertTrue(cell_left.state == 0)
         self.assertTrue(cell_right.state == 1)
+    
+    def test_cell_divide(self):
+        
+        T = np.array([[1.0, 0.0],
+             [0.0, 1.0]])
+
+        parent_state = 1
+        cell = c(state = parent_state, left = None, right = None, parent = None, gen = 1)
+        left_cell, right_cell = cell._divide(T)
+
+        self.assertTrue(left_cell.state == 1)
+        self.assertTrue(right_cell.state == 1)
 
 
     def test_cell_double(self):
@@ -43,19 +51,6 @@ class TestModel(unittest.TestCase):
         left_state2, right_state2 = _double(parent_state2, T)
         self.assertTrue(left_state2 == 1)
         self.assertTrue(right_state2 == 1), " double function is not working properly based on transition matrix. "
-
-
-    def test_cell_divide(self):
-            
-        T = np.array([[1.0, 0.0],
-             [0.0, 1.0]])
-
-        parent_state = 1
-        cell = c(state = parent_state, left = None, right = None, parent = None, gen = 1)
-        left_cell, right_cell = cell._divide(T)
-
-        self.assertTrue(left_cell.state == 1)
-        self.assertTrue(right_cell.state == 1)
         
         
         
