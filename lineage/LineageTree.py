@@ -70,7 +70,10 @@ class LineageTree:
         self.pruned_lin_list = self.full_lin_list
         for cell in self.pruned_lin_list:
             if prune_rule(cell):
+                cell.left = None
+                cell.right = None
                 _, _, self.pruned_lin_list = find_two_subtrees(cell, self.pruned_lin_list)
+                assert cell._isLeaf()
         return self.pruned_list
 
     def _get_state_count(self, state):
