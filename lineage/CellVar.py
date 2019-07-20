@@ -66,13 +66,13 @@ class CellVar:
         return curr_cell
     
     def __repr__(self):
-        if self.obs:
+        if hasattr(self, 'obs'):            
             return "Generation: {}, Observation: {}".format(self.gen, self.obs)
         else:
             return "Generation: {}, Observation: {}".format(self.gen, "This cell has no observations to report.")
             
     def __str__(self):
-        if self.obs:
+        if hasattr(self, 'obs'):            
             return "Generation: {}, Observation: {}".format(self.gen, self.obs)
         else:
             return "Generation: {}, Observation: {}".format(self.gen, "This cell has no observations to report.")
