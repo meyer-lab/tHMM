@@ -31,7 +31,7 @@ class LineageTree:
         assert pi_num_states == T_num_states == E_num_states, "The number of states in your input Markov probability parameters are mistmatched. Please check that the dimensions and states match. "
         self.num_states = pi_num_states
         self.desired_num_cells = desired_num_cells
-        self.prune_boolean = prune_boolean # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
+        self.prune_boolean = prune_boolean # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree; this is an option for every lineage
 
         self.fullLineage_list = self._generate_lineage_list()
         self.pruned_list = self._prune_lineage(self.fullLineage_list)

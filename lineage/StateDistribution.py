@@ -66,6 +66,9 @@ class StateDistribution:
         return self.state_estimate_obj
 
     def prune_rule(self):
+        """ Returns true if a cell's subtree has to be removed, returns false if not. """
+        observations = self.obs
+        bernoulli = 
         
     
 
