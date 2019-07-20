@@ -66,11 +66,16 @@ class CellVar:
         return curr_cell
     
     def __repr__(self):
-        return "Generation: {}, Observation: {}".format(self.gen, self.obs)
+        if hasattr(self, 'obs'):            
+            return "Generation: {}, Observation: {}".format(self.gen, self.obs)
+        else:
+            return "Generation: {}, Observation: {}".format(self.gen, "This cell has no observations to report.")
             
     def __str__(self):
-        return "Generation: {}, Observation: {}".format(self.gen, self.obs)
-
+        if hasattr(self, 'obs'):            
+            return "Generation: {}, Observation: {}".format(self.gen, self.obs)
+        else:
+            return "Generation: {}, Observation: {}".format(self.gen, "This cell has no observations to report.")
 
 def _double(parent_state, T):
     """ Function that essentially rolls two of the same loaded dice given a state that determines the row of the transition matrix. The results of the roll of the loaded dice are two new states that are returned. """
