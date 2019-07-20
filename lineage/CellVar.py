@@ -65,6 +65,12 @@ class CellVar:
             curr_cell = curr_cell.parent
         assert _isRootParent(curr_cell)
         return curr_cell
+    
+    def __repr__(self):
+        return "Generation: {}, Observation: {}".format(self.gen, self.obs)
+            
+    def __str__(self):
+        return "Generation: {}, Observation: {}".format(self.gen, self.obs)
 
 
 def _double(parent_state, T):
