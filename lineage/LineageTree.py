@@ -19,10 +19,25 @@ import numpy as np
 
 class LineageTree:
     def __init__(self, pi, T, E, desired_num_cells, prune_boolean):
+        """
+        A class for the structure of the lineage tree. Every lineage from this class is a binary tree built based on initial probabilities and transition probabilities given by the user that builds up the states based off of these until it reaches the desired number of cells in the tree, and then stops. Given the desired distributions for emission, the object will have the "E" a list of state distribution objects assigned to them.
+
+        Args:
+        -----
+        pi {numpy array}: The initial probability matrix; its shape must be the same as the number of states and all of them must sum up to 1.
+
+        T {numpy square matrix}: The transition probability matrix; every row must sum up to 1.
+
+        E {list}: A list containing state distribution objects, the length of it is the same as the number of states. 
+
+        desired_num_cells {Int}: The desired number of cells we want the lineage to end up with.
+
+        prune_boolean {bool}: If it is True, it means the user want this lineage to be pruned, if False it means the user want this lineage as a full binary tree -- in which none of the cells die.        
+        """
         self.pi = pi
         pi_num_states = len(pi)
         self.T = T
-        T_shape = self.T.shape()
+        T_shape = self.T.shape
         assert T_shape[0] == T_shape[1], "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
         T_num_states = self.T.shape[0]
         self.E = E
@@ -59,7 +74,15 @@ class LineageTree:
 
 
     def _generate_lineage_list(self):
-        """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states). """
+        """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states) in a full binary tree manner. It generates the tree until it reaches the desired number of cells in the lineage.
+        Args:
+        -----
+        It takes in the LineageTree object
+
+        Returns:
+        --------
+        full_lin_list {list}: A list containing cells with assigned hidden states based on initial and transition probabilities.
+        """
         first_state_results = sp.multinomial.rvs(1, self.pi)  # roll the dice and yield the state for the first cell
         [first_cell_state] = np.where(first_state_results == 1)
         first_cell = CellVar(state=first_cell_state, left=None, right=None, parent=None, gen=1)  # create first cell
@@ -69,7 +92,6 @@ class LineageTree:
             if not cell.left:  # if the cell has no daughters...
                 left_cell, right_cell = cell._divide(self.T)  # make daughters by dividing and assigning states
                 self.full_lin_list.append(left_cell)  # add daughters to the list of cells
-                self.full_lin_list.append(right_cell)
 
             if len(self.full_lin_list) >= desired_num_cells:
                 break
@@ -77,7 +99,9 @@ class LineageTree:
         return self.full_lin_list
 
     def _prune_lineage(self):
-        """  """
+        """ This function removes those cells that are intended to be remove from the full binary tree based on emissions.
+        It takes in LineageTree object, walks through all the cells in the full binary tree, applies the pruning to each cell that is supposed to be removed, and returns the pruned list of cells.
+        """
         self.pruned_lin_list = self.full_lin_list
         for cell in self.pruned_lin_list:
             if prune_rule(cell):
@@ -88,7 +112,19 @@ class LineageTree:
         return self.pruned_list
 
     def _get_state_count(self, state, prune=False):
-        """ Counts the number of cells in a specific state and makes a list out of those numbers. Used for generating emissions for that specific state. """
+        """ Counts the number of cells in a specific state and makes a list out of those numbers. Used for generating emissions for that specific state.
+        Args:
+        -----
+        state {Int}: The number assigned to a state.
+
+        Returns:
+        --------
+        num_cells_in_state {Int}: The number of cells in the given state.
+
+        cells_in_state {list}: A list of cells being in the given state.
+
+        indices_of_cells_in_state {list}: Holding the indexes of the cells being in the given state 
+        """
         cells_in_state = []  # a list holding cells in the same state
         indices_of_cells_in_state = []
         list_to_use = []
