@@ -49,16 +49,12 @@ class LineageTree:
         self.fullLineage_list = self._generate_lineage_list()
         
         for state in range(self.num_states):
-            print(state)
-            print(self.E[state])
             self.E[state].num_full_lin_cells, self.E[state].full_lin_cells, self.E[state].full_lin_cells_idx = self._full_assign_obs(state)
     
         self.prune_boolean = prune_boolean # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
         self.pruned_list = self._prune_lineage()
 
         for state in range(self.num_states):
-            print(state)
-            print(self.E[state])
             self.E[state].num_pruned_lin_cells, self.E[state].pruned_lin_cells, self.E[state].pruned_lin_cells_idx = self._get_state_count(state, prune=True)
 
         # Based on the user's decision, if they want the lineage to be pruned (prune_boolean == True), 
@@ -91,7 +87,7 @@ class LineageTree:
                 left_cell, right_cell = cell._divide(self.T)  # make daughters by dividing and assigning states
                 self.full_lin_list.append(left_cell)  # add daughters to the list of cells
 
-            if len(self.full_lin_list) > self.desired_num_cells:
+            if len(self.full_lin_list) == self.desired_num_cells:
                 break
 
         return self.full_lin_list
@@ -100,15 +96,13 @@ class LineageTree:
         """ This function removes those cells that are intended to be remove from the full binary tree based on emissions.
         It takes in LineageTree object, walks through all the cells in the full binary tree, applies the pruning to each cell that is supposed to be removed, and returns the pruned list of cells.
         """
-        print('dsgdkjgkjkgkkfdkgffkdj')
         self.pruned_lin_list = self.full_lin_list.copy()
         for cell in self.pruned_lin_list:
-            print(cell)
             if prune_rule(cell):
                 _, _, self.pruned_lin_list = find_two_subtrees(cell, self.pruned_lin_list)
-                print('kjhgskdlfjhgdk')
-                print(self.pruned_lin_list)
-                #assert cell._isLeaf()
+                cell.left = None
+                cell.right = None
+                assert cell._isLeaf()
         return self.pruned_lin_list
 
     def _get_state_count(self, state, prune):
@@ -136,10 +130,6 @@ class LineageTree:
             if cell.state == state:  # if the cell is in the given state...
                 cells_in_state.append(cell)  # append them to a list
                 indices_of_cells_in_state.append(list_to_use.index(cell))
-        print('statecount')
-        print(state)
-        print(prune)
-        print(len(cells_in_state))
         num_cells_in_state = len(cells_in_state)  # gets the number of cells in the list
 
         return num_cells_in_state, cells_in_state, indices_of_cells_in_state
@@ -148,9 +138,7 @@ class LineageTree:
         """ Observation assignment give a state. """
         num_cells_in_state, cells_in_state, indices_of_cells_in_state = self._get_state_count(state, prune=False)
         list_of_tuples_of_obs = self.E[state].rvs(size=num_cells_in_state)
-        print('assignobs')
-        print(state)
-        print(len(cells_in_state))
+
         assert len(cells_in_state) == len(list_of_tuples_of_obs) == num_cells_in_state
 
         for i, cell in enumerate(cells_in_state):
@@ -202,14 +190,9 @@ class LineageTree:
 
 def tree_recursion(cell, subtree):
     """ a recurssive function that traverses upwards from the leaf to the root. """
-    print('treerecursion')
-    print(cell)
     if cell._isLeaf():
-        print('YOU HIT A LEAF', cell)
         return
-    print('going left')
     subtree.append(cell.left)
-    print('going right')
     subtree.append(cell.right)
     tree_recursion(cell.left, subtree)
     tree_recursion(cell.right, subtree)
@@ -218,7 +201,6 @@ def tree_recursion(cell, subtree):
 def get_subtrees(node, lineage):
     """ Given one cell, return the subtree of that cell, and return all the tree other than that subtree. """
     subtree = [node]
-    print("goinggg")
     tree_recursion(node, subtree)
     not_subtree = []
     for cell in lineage:
@@ -228,9 +210,7 @@ def get_subtrees(node, lineage):
 
 def find_two_subtrees(cell, lineage):
     """ Gets the left and right subtrees from a cell. """
-    print("getting left")
     left_sub, _ = get_subtrees(cell.left, lineage)
-    print("getting right")
     right_sub, _ = get_subtrees(cell.right, lineage)
     neither_subtree = []
     for node in lineage:

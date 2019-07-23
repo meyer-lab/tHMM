@@ -46,7 +46,7 @@ class CellVar:
 
     def _isLeaf(self):
         """ Boolean. Returns true when a cell is a leaf with no children. """
-        return self.left
+        return self.left is None and self.right is None
 
     def _get_sister(self):
         """ Member function that gets the sister of the current cell. """
