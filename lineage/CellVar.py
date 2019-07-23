@@ -24,8 +24,8 @@ class CellVar:
     def _divide(self, T):
         """ Member function that performs division of a cell. Equivalent to adding another timestep in a Markov process. """
         left_state, right_state = _double(self.state, T)  # roll a loaded die according to the row in the transtion matrix
-        self.left = CellVar(state=left_state[0], left=None, right=None, parent=self, gen=self.gen + 1)  # assign the resulting states to new cells
-        self.right = CellVar(state=right_state[0], left=None, right=None, parent=self, gen=self.gen + 1)  # ensure that those cells are related
+        self.left = CellVar(state=left_state, left=None, right=None, parent=self, gen=self.gen + 1)  # assign the resulting states to new cells
+        self.right = CellVar(state=right_state, left=None, right=None, parent=self, gen=self.gen + 1)  # ensure that those cells are related
 
         return self.left, self.right
 
@@ -67,15 +67,15 @@ class CellVar:
     
     def __repr__(self):
         if hasattr(self, 'obs'):            
-            return "Generation: {}, Observation: {}".format(self.gen, self.obs)
+            return "Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, self.obs)
         else:
-            return "Generation: {}, Observation: {}".format(self.gen, "This cell has no observations to report.")
+            return "Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, "This cell has no observations to report.")
             
     def __str__(self):
         if hasattr(self, 'obs'):            
-            return "Generation: {}, Observation: {}".format(self.gen, self.obs)
+            return "Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, self.obs)
         else:
-            return "Generation: {}, Observation: {}".format(self.gen, "This cell has no observations to report.")
+            return "Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, "This cell has no observations to report.")
 
 def _double(parent_state, T):
     """ Function that essentially rolls two of the same loaded dice given a state that determines the row of the transition matrix. The results of the roll of the loaded dice are two new states that are returned. """
@@ -85,9 +85,9 @@ def _double(parent_state, T):
     assert 0 <= parent_state <= T_num_states - 1, "The parent state is a state outside of the range of states being considered."
 
     # Rolling two of the same loaded dice separate times and assigning where they landed to states
-    left_state_results, right_state_results = sp.multinomial.rvs(n=1, p=T[parent_state, :], size = 2)  # first and second roll are left and right
 
-    [left_state] = np.where(left_state_results == 1)
-    [right_state] = np.where(right_state_results == 1)
+    left_state_results, right_state_results = sp.multinomial.rvs(n=1, p=np.squeeze(T[parent_state, :]), size = 2)  # first and second roll are left and right
+    left_state = left_state_results.tolist().index(1)
+    right_state = right_state_results.tolist().index(1)
 
     return left_state, right_state
