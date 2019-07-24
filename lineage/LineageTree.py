@@ -87,7 +87,7 @@ class LineageTree:
                 left_cell, right_cell = cell._divide(self.T)  # make daughters by dividing and assigning states
                 self.full_lin_list.append(left_cell)  # add daughters to the list of cells
 
-            if len(self.full_lin_list) == self.desired_num_cells:
+            if len(self.full_lin_list) >= self.desired_num_cells:
                 break
 
         return self.full_lin_list

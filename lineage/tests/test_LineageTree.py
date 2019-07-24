@@ -6,13 +6,34 @@ from ..LineageTree import LineageTree
 
 class TestModel(unittest.TestCase):
 
-    def test_cellVar(self):
-        """ Make sure cell state assignment is correct. """
-        left_state = 0
-        right_state = 1
+    def test_generate_lineage_list(self):
         
-        cell_left = c(state=left_state, left=None, right=None, parent=None, gen=1)
-        cell_right = c(state=right_state, left=None, right=None, parent=None, gen=1)
+        # state0: resistant
+        # state1: susciptible
+        self.pi = np.array([0.85, 0.15]) # initial probability matrix
+        self.T = np.array([[0.95, 0.05],
+                      [0.3, 0.7]])
+        self.desired_num_cells = 2**8 - 1
 
-        self.assertTrue(cell_left.state == 0)
-        self.assertTrue(cell_right.state == 1)
+        full_lin_list = _generate_lineage_list(self)
+        self.assertTrue(len(full_lin_list) == len(self.desired_num_cells))
+        self.assertTrue(self.full_lin_list == full_lin_list)
+
+        for cell in full_lin_list:
+            self.assertTrue(cell is not None)
+
+            
+    def test_prune_lineage(self):
+        pruned_list = _prune_lineage(self)
+        self.assertTrue(len(pruned_list) != 0)
+        
+
+    def test_get_state_count(self):
+        return
+
+    def test_full_assign_obs(self):
+        return
+
+    def test_tree_recursion():
+        return
+        
