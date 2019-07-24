@@ -21,8 +21,7 @@ class StateDistribution:
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         tuple_of_obs = list(zip(bern_obs, exp_obs, gamma_obs))
-        self.obs = tuple_of_obs
-        return self.obs
+        return tuple_of_obs
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
@@ -60,11 +59,11 @@ class StateDistribution:
                                                gamma_a=gamma_a_estimate,
                                                gamma_scale=gamma_scale_estimate)
         # } requires the user's attention.
-        self.state_estimate_obj = state_estimate_obj
+        state_estimate_obj
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
-        return self.state_estimate_obj
+        return state_estimate_obj
 
     def __repr__(self):
         return "State object w/ parameters: {}, {}, {}, {}, {}.".format(self.state, self.bern_p, self.expon_scale_beta, self.gamma_a, self.gamma_scale)

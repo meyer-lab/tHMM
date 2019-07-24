@@ -16,7 +16,10 @@ import numpy as np
 # Class names use camelCase.
 # The transition matrix must be a square matrix, not a list of lists.
 
-
+class LineageStateStats:
+    def __init__(self):
+        pass
+    
 class LineageTree:
     def __init__(self, pi, T, E, desired_num_cells, prune_boolean):
         """
@@ -45,17 +48,21 @@ class LineageTree:
         assert pi_num_states == T_num_states == E_num_states, "The number of states in your input Markov probability parameters are mistmatched. Please check that the dimensions and states match. "
         self.num_states = pi_num_states
         self.desired_num_cells = desired_num_cells
+        self.lineage_stats = []
+        for state in range(self.num_states):
+            self.lineage_stats.append(LineageStateStats)
         
         self.fullLineage_list = self._generate_lineage_list()
         
         for state in range(self.num_states):
-            self.E[state].num_full_lin_cells, self.E[state].full_lin_cells, self.E[state].full_lin_cells_idx = self._full_assign_obs(state)
+            self.lineage_stats[state].num_full_lin_cells, self.lineage_stats[state].full_lin_cells, self.lineage_stats[state].full_lin_cells_obs, self.lineage_stats[state].full_lin_cells_idx = self._full_assign_obs(state)
     
         self.prune_boolean = prune_boolean # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
         self.pruned_list = self._prune_lineage()
 
         for state in range(self.num_states):
-            self.E[state].num_pruned_lin_cells, self.E[state].pruned_lin_cells, self.E[state].pruned_lin_cells_idx = self._get_state_count(state, prune=True)
+            self.lineage_stats[state].num_pruned_lin_cells, self.lineage_stats[state].pruned_lin_cells, self.lineage_stats[state].pruned_lin_cells_obs, self.lineage_stats[state].pruned_lin_cells_idx = self._get_pruned_state_count(state)
+
 
         # Based on the user's decision, if they want the lineage to be pruned (prune_boolean == True), 
         # the lineage tree that is given to the tHMM, will be the pruned one.
@@ -105,7 +112,7 @@ class LineageTree:
                 assert cell._isLeaf()
         return self.pruned_lin_list
 
-    def _get_state_count(self, state, prune):
+    def _get_full_state_count(self, state):
         """ Counts the number of cells in a specific state and makes a list out of those numbers. Used for generating emissions for that specific state.
         Args:
         -----
@@ -121,22 +128,17 @@ class LineageTree:
         """
         cells_in_state = []  # a list holding cells in the same state
         indices_of_cells_in_state = []
-        list_to_use = []
-        if prune:
-            list_to_use = self.pruned_lin_list
-        else:
-            list_to_use = self.full_lin_list
-        for cell in list_to_use:
+        for cell in self.full_lin_list:
             if cell.state == state:  # if the cell is in the given state...
                 cells_in_state.append(cell)  # append them to a list
-                indices_of_cells_in_state.append(list_to_use.index(cell))
+                indices_of_cells_in_state.append(self.full_lin_list.index(cell))
         num_cells_in_state = len(cells_in_state)  # gets the number of cells in the list
 
         return num_cells_in_state, cells_in_state, indices_of_cells_in_state
 
     def _full_assign_obs(self, state):
         """ Observation assignment give a state. """
-        num_cells_in_state, cells_in_state, indices_of_cells_in_state = self._get_state_count(state, prune=False)
+        num_cells_in_state, cells_in_state, indices_of_cells_in_state = self._get_full_state_count(state)
         list_of_tuples_of_obs = self.E[state].rvs(size=num_cells_in_state)
 
         assert len(cells_in_state) == len(list_of_tuples_of_obs) == num_cells_in_state
@@ -144,7 +146,21 @@ class LineageTree:
         for i, cell in enumerate(cells_in_state):
             cell.obs = list_of_tuples_of_obs[i]
 
-        return num_cells_in_state, cells_in_state, indices_of_cells_in_state
+        return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
+    
+    def _get_pruned_state_count(self, state):
+        cells_in_state = []  # a list holding cells in the same state
+        list_of_tuples_of_obs = []
+        indices_of_cells_in_state = []
+        for cell in self.pruned_lin_list:
+            if cell.state == state:  # if the cell is in the given state...
+                cells_in_state.append(cell)  # append them to a list
+                list_of_tuples_of_obs.append(cell.obs)
+                indices_of_cells_in_state.append(self.pruned_lin_list.index(cell))
+        num_cells_in_state = len(cells_in_state)  # gets the number of cells in the list
+
+        return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
+    
 
     def _find_leaves(self):
         lineage = self.output_lineage
@@ -199,7 +215,6 @@ class LineageTree:
 def tree_recursion(cell, subtree):
     """ a recurssive function that traverses upwards from the leaf to the root. """
     if cell._isLeaf():
-        print(cell.left, cell.right)
         return
     subtree.append(cell.left)
     subtree.append(cell.right)
@@ -219,6 +234,8 @@ def get_subtrees(node, lineage):
 
 def find_two_subtrees(cell, lineage):
     """ Gets the left and right subtrees from a cell. """
+    if cell._isLeaf():
+        return None, None, lineage
     left_sub, _ = get_subtrees(cell.left, lineage)
     right_sub, _ = get_subtrees(cell.right, lineage)
     neither_subtree = []
