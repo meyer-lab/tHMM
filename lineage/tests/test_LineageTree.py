@@ -35,7 +35,7 @@ class TestModel(unittest.TestCase):
 
         E = [state_obj0, state_obj1]
                 
-        self.lineage1_big_full = LineageTree(pi, T, E, desired_num_cells=2**9 - 1, prune_boolean=False)
+        self.lineage1_big_full = LineageTree(pi, T, E, desired_num_cells=2**4 - 1, prune_boolean=False)
         self.lineage2_small_full = LineageTree(pi, T, E, desired_num_cells=2**3 - 1, prune_boolean=False)
         self.lineage3_big_pruned = LineageTree(pi, T, E, desired_num_cells=2**9 - 1, prune_boolean=True)
         self.lineage4_small_pruned = LineageTree(pi, T, E, desired_num_cells=2**3 - 1, prune_boolean=True)
@@ -49,6 +49,6 @@ class TestModel(unittest.TestCase):
     def test_full_assign_obs(self):
         pass
 
-    def test_tree_recursion():
+    def test_tree_recursion(self):
         pass
         
