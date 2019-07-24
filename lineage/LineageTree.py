@@ -17,8 +17,8 @@ import numpy as np
 # The transition matrix must be a square matrix, not a list of lists.
 
 class LineageStateStats:
-    def __init__(self):
-        pass
+    def __init__(self, state):
+        self.state = state
     
 class LineageTree:
     def __init__(self, pi, T, E, desired_num_cells, prune_boolean):
@@ -49,8 +49,9 @@ class LineageTree:
         self.num_states = pi_num_states
         self.desired_num_cells = desired_num_cells
         self.lineage_stats = []
+        
         for state in range(self.num_states):
-            self.lineage_stats.append(LineageStateStats)
+            self.lineage_stats.append(LineageStateStats(state))
         
         self.fullLineage_list = self._generate_lineage_list()
         
@@ -175,7 +176,7 @@ class LineageTree:
             s1 = "This tree is pruned. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
             s_list = []
             for state in range(self.num_states):
-                s_list.append("\n \t There are {} cells of state {}".format(self.E[state].num_pruned_lin_cells, state))
+                s_list.append("\n \t There are {} cells of state {}".format(self.lineage_stats[state].num_pruned_lin_cells, state))
             seperator = ', '
             s2 = seperator.join(s_list)
             s3 = ".\n This pruned tree has {} many cells in total".format(len(self.pruned_lin_list))
@@ -184,7 +185,7 @@ class LineageTree:
             s1 = "This tree is NOT pruned. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
             s_list = []
             for state in range(self.num_states):
-                s_list.append("\n \t There are {} cells of state {}".format(self.E[state].num_full_lin_cells, state))
+                s_list.append("\n \t There are {} cells of state {}".format(self.lineage_stats[state].num_full_lin_cells, state))
             seperator = ', '
             s2 = seperator.join(s_list)
             s3 = ".\n This UNpruned tree has {} many cells in total".format(len(self.full_lin_list))
@@ -195,7 +196,7 @@ class LineageTree:
             s1 = "This tree is pruned. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
             s_list = []
             for state in range(self.num_states):
-                s_list.append("\n \t There are {} cells of state {}".format(self.E[state].num_pruned_lin_cells, state))
+                s_list.append("\n \t There are {} cells of state {}".format(self.lineage_stats[state].num_pruned_lin_cells, state))
             seperator = ', '
             s2 = seperator.join(s_list)
             s3 = ".\n This pruned tree has {} cells in total".format(len(self.pruned_lin_list))
@@ -204,7 +205,7 @@ class LineageTree:
             s1 = "This tree is NOT pruned. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
             s_list = []
             for state in range(self.num_states):
-                s_list.append("\n \t There are {} cells of state {}".format(self.E[state].num_full_lin_cells, state))
+                s_list.append("\n \t There are {} cells of state {}".format(self.lineage_stats[state].num_full_lin_cells, state))
             seperator = ', '
             s2 = seperator.join(s_list)
             s3 = ".\n This UNpruned tree has {} cells in total".format(len(self.full_lin_list))
