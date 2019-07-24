@@ -67,7 +67,7 @@ class StateDistribution:
         return self.state_estimate_obj
     
     def __repr__(self):
-        return "State object w/ parameters: {}, {}, {}, {}.".format(self.state, self.bern_p, self.expon_scale_beta, self.gamma_a, self.gamma_scale)
+        return "State object w/ parameters: {}, {}, {}, {}, {}.".format(self.state, self.bern_p, self.expon_scale_beta, self.gamma_a, self.gamma_scale)
        
 
     
@@ -119,7 +119,6 @@ def gamma_estimator(gamma_obs):
         b_hat (float): The estimated value for scale parameter of the Gamma distribution
     """
     tau1 = gamma_obs
-
     tau_mean = np.mean(tau1)
     tau_logmean = np.log(tau_mean)
     tau_meanlog = np.mean(np.log(tau1))
