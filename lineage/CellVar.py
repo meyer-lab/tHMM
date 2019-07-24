@@ -31,11 +31,14 @@ class CellVar:
 
     def _isParent(self):
         """ Boolean. Returns true if the cell has daughters. """
-        return self.left or self.right
+        return self.left is not None or self.right is not None
 
     def _isChild(self):
         """ Boolean. Returns true if this cell has a known parent. """
-        return self.parent.isParent()
+        if self.parent:
+            return self.parent._isParent()
+        else:
+            return False
 
     def _isRootParent(self):
         """ Boolean. Returns true if this cell is the first cell in a lineage. """
@@ -62,7 +65,7 @@ class CellVar:
         curr_cell = self
         while curr_cell.gen > 1:
             curr_cell = curr_cell.parent
-        assert _isRootParent(curr_cell)
+        assert curr_cell._isRootParent()
         return curr_cell
     
     def __repr__(self):
