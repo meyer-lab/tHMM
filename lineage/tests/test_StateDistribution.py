@@ -1,6 +1,7 @@
 """ Unit test file. """
 import unittest
 import numpy as np
+import scipy.stats as sp
 from ..StateDistribution import bernoulli_estimator, exponential_estimator, gamma_estimator
 
 class TestModel(unittest.TestCase):

@@ -29,11 +29,11 @@ class TestModel(unittest.TestCase):
         
 
     def test_get_state_count(self):
-        return
+        pass
 
     def test_full_assign_obs(self):
-        return
+        pass
 
     def test_tree_recursion():
-        return
+        pass
         
