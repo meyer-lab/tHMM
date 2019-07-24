@@ -84,6 +84,12 @@ def prune_rule(cell):
 # can handle the case where the list of observations is empty.
 
 
+def report_time(cell):
+    """ This function is to find the amount of time it took for the cells to be generated and reach to the desired number of cells. """
+    pass
+    
+
+    
 def bernoulli_estimator(bern_obs):
     """ Add up all the 1s and divide by the total length (finding the average). """
     return (sum(bern_obs) + 1e-10) / (len(bern_obs) + 2e-10)
