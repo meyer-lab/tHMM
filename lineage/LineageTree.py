@@ -191,6 +191,7 @@ class LineageTree:
 def tree_recursion(cell, subtree):
     """ a recurssive function that traverses upwards from the leaf to the root. """
     if cell._isLeaf():
+        print(cell.left, cell.right)
         return
     subtree.append(cell.left)
     subtree.append(cell.right)
