@@ -85,9 +85,18 @@ def prune_rule(cell):
 
 
 def report_time(cell):
+    """ Given any cell in the lineage, this function walks through the cell's ancestors and return how long it has taken so far. """
+    taus = [cell.obs[1], cell.parent.obs[1]]
+    generation = cell.gen -2
+
+    while generation > 0:
+        
+        
+        taus.append()
+        generation -= 1
+
+def get_expTime():
     """ This function is to find the amount of time it took for the cells to be generated and reach to the desired number of cells. """
-    pass
-    
 
     
 def bernoulli_estimator(bern_obs):
