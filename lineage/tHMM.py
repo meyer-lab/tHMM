@@ -30,65 +30,14 @@ class tHMM:
         self.population = init_Population(self.X, self.numLineages)  # arranges the population into a list of lineages (each lineage might have varying length)
         assert self.numLineages == len(
             self.population), "Something is wrong with the number of lineages in your population member variable for your tHMM class and the number of lineages member variable for your tHMM class. Check the number of unique root cells and the number of lineages in your data."
-        self.paramlist = self.init_paramlist()  # list that is numLineages long of parameters for each lineage tree in our population
 
         self.MSD = self.get_Marginal_State_Distributions()  # full Marginal State Distribution holder
         self.EL = self.get_Emission_Likelihoods()  # full Emission Likelihood holder
 
 
-##------------------------ Initializing the parameter list --------------------------##
 
 
-    def init_paramlist(self):
-        ''' Creates a list of dictionaries holding the tHMM parameters for each lineage.
-        In this function, the dictionary is initialized.
 
-        There are three matrices in this function:
-            1. "pi" (The initial probability matrix): The matrix holding the probability of
-            being in each state at time = 0. This matrix is a [K x 1] matrix assuming
-            we have K hidden states. The matrix is initialized uniformly.
-
-            2. "T" (Transition probability matrix): The matrix holding the probability of
-            transitioning between different states. This is a [K x K] matrix assuming
-            we have K hidden states. The matrix in initialized uniformly.
-
-            3. "E" (Emission probability matrix): The matrix holding the probability of
-            emissions (observations) corresponding to each state. In this case, emissions are
-            1. whether a cell dies or divides (Bernoulli distribution with 1 parameter)
-            2. how long a cell lives:
-                2.1. Exponential distribution with 1 parameter (beta)
-                    beta intialized to 62.5
-
-            If the Exponential is used, on the whole we will have 2 parameters for emissions, so
-            the emission matrix will be [K x 2].
-
-        Returns:
-            ----------
-            paramlist (dictionary): a dictionary holding three matrices mentioned above.
-
-        '''
-        paramlist = []
-        numStates = self.numStates
-        numLineages = self.numLineages
-        temp_params = {"pi": np.ones((numStates)) / numStates,  # inital state distributions [K] initialized to 1/K
-                       "T": np.ones((numStates, numStates)) / numStates}  # state transition matrix [KxK] initialized to 1/K
-        if self.FOM == 'E':
-            temp_params["E"] = np.ones((numStates, 2))  # sequence of emission likelihood distribution parameters [Kx2]
-            for state_j in range(numStates):
-                temp_params["E"][state_j, 0] = 0.5  # initializing all Bernoulli p parameters to 0.5
-                temp_params["E"][state_j, 1] = 62.5 * (1 + np.random.uniform())  # initializing all Exponential beta parameters to 62.5
-        elif self.FOM == 'Ga':
-            temp_params["E"] = np.ones((numStates, 3))
-            for state_j in range(numStates):
-                temp_params["E"][state_j, 0] = 0.5  # initializing all Bernoulli p parameters to 0.5
-                temp_params["E"][state_j, 1] = 10 * (1 + np.random.uniform())  # Gamma shape parameter
-                temp_params["E"][state_j, 2] = 5 * (1 + np.random.uniform())  # Gamma scale parameter
-
-        for lineage_num in range(numLineages):  # for each lineage in our population
-            paramlist.append(temp_params.copy())  # create a new dictionary holding the parameters and append it
-            assert len(paramlist) == lineage_num + 1, "The number of parameters being estimated is mismatched with the number of lineages in your population. Check the number of unique root cells and the number of lineages in your data."
-
-        return paramlist
 
 ##---------------------------- Marginal State Distribution ------------------------------##
     def get_Marginal_State_Distributions(self):
