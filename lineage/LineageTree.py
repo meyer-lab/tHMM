@@ -145,7 +145,15 @@ class LineageTree:
             cell.obs = list_of_tuples_of_obs[i]
 
         return num_cells_in_state, cells_in_state, indices_of_cells_in_state
-    
+
+    def _find_leaves(self):
+        lineage = self.output_lineage
+        leaves = []
+        for cell in lineage:
+            if cell._isLeaf():
+                leaves.append(cell)
+        return leaves
+
     def __repr__(self):
         if self.prune_boolean:
             s1 = "This tree is pruned. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
