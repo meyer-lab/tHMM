@@ -1,4 +1,5 @@
-'''Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch'''
+''' Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch. '''
+import logging
 import numpy as np
 
 from .tHMM_utils import max_gen, get_gen, get_daughters
@@ -6,7 +7,7 @@ from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, beta_parent_child_func
 
 
-def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
+def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, child_state_k, lineage, beta_array, MSD_array, gamma_array, T):
     '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
 
     # check the child-parent relationship
@@ -15,23 +16,16 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
     assert lineage[node_child_n_idx]._isChild(), "Something wrong with your parent-daughter linkage when trying to use the zeta-related functions... Check again that your lineage is constructed clearly."
     # either be the left daughter or the right daughter
 
-    beta_child_state_k = beta_array[node_child_n_idx, state_k]
-    gamma_parent_state_j = gamma_array[node_parent_m_idx, state_j]
-    MSD_child_state_k = MSD_array[node_child_n_idx, state_k]
-    numStates = MSD_array.shape[1]
-    also_numStates = gamma_array.shape[1]
-    also_also_numStates = beta_array.shape[1]
-    assert numStates == also_numStates == also_also_numStates, "Your numStates (number of states) and the dimensions of your arrays are mistmatched! Please check your instantiation of the tHMM object."
-    beta_parent_child_state_j = beta_parent_child_func(numStates=numStates,
-                                                       lineage=lineage,
-                                                       beta_array=beta_array,
+    beta_child_state_k = beta_array[node_child_n_idx, child_state_k]
+    gamma_parent_state_j = gamma_array[node_parent_m_idx, parent_state_j]
+    MSD_child_state_k = MSD_array[node_child_n_idx, child_state_k]
+    beta_parent_child_state_j = beta_parent_child_func(beta_array=beta_array,
                                                        T=T,
                                                        MSD_array=MSD_array,
-                                                       state_j=state_j,
-                                                       node_parent_m_idx=node_parent_m_idx,
+                                                       state_j=parent_state_j,
                                                        node_child_n_idx=node_child_n_idx)
 
-    zeta = beta_child_state_k * T[state_j, state_k] * gamma_parent_state_j / (MSD_child_state_k * beta_parent_child_state_j)
+    zeta = beta_child_state_k * T[parent_state_j, child_state_k] * gamma_parent_state_j / (MSD_child_state_k * beta_parent_child_state_j)
     return zeta
 
 
@@ -53,29 +47,25 @@ def get_all_gammas(lineage, gamma_array_at_state_j):
 
 def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array, gamma_array, T):
     '''sum of the list of all the zeta parent child for all the parent cells for a given state transition pair'''
-    curr_level = 1
-    max_level = max_gen(lineage)
-    holder = []
-    while curr_level < max_level:
-        level = get_gen(curr_level, lineage)  # get lineage for the gen
+    assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
 
-        for cell in level:
-            parent_idx = lineage.index(cell)
-            daughter_idxs_list = get_daughters(cell)
+    holder = 0.0
+    for curr_level in range(1, max_gen(lineage)):
+        for cell in get_gen(curr_level, lineage):  # get lineage for the gen
+            node_parent_m_idx = lineage.index(cell)
 
-            for daughter_idx in daughter_idxs_list:
-                child_idx = lineage.index(daughter_idx)
-                holder.append(zeta_parent_child_func(node_parent_m_idx=parent_idx,
-                                                     node_child_n_idx=child_idx,
-                                                     state_j=parent_state_j,
-                                                     state_k=child_state_k,
-                                                     lineage=lineage,
-                                                     beta_array=beta_array,
-                                                     MSD_array=MSD_array,
-                                                     gamma_array=gamma_array,
-                                                     T=T))
-        curr_level += 1
-    return sum(holder)
+            for daughter_idx in get_daughters(cell):
+                node_child_n_idx = lineage.index(daughter_idx)
+                holder += zeta_parent_child_func(node_parent_m_idx=node_parent_m_idx,
+                                                 node_child_n_idx=node_child_n_idx,
+                                                 parent_state_j=parent_state_j,
+                                                 child_state_k=child_state_k,
+                                                 lineage=lineage,
+                                                 beta_array=beta_array,
+                                                 MSD_array=MSD_array,
+                                                 gamma_array=gamma_array,
+                                                 T=T)
+    return holder
 
 
 def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
@@ -92,18 +82,9 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     get_nonroot_gammas(tHMMobj, gammas, betas)
 
     # first stopping condition check
-
-    old_LL_list = [-np.inf] * numLineages
     new_LL_list = calculate_log_likelihood(tHMMobj, NF)
-    truth_list = []
-    for lineage_iter in range(len(new_LL_list)):
-        truth_list.append(abs(new_LL_list[lineage_iter] - old_LL_list[lineage_iter]) > tolerance)
-    go = any(truth_list)
 
-    count = 0
-    while go:  # exit the loop
-        
-        count += 1
+    for _ in range(max_iter):
         old_LL_list = new_LL_list
 
         # code for grouping all states in cell lineages
@@ -117,6 +98,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             lineage = lineageObj.output_lineage
             beta_array = betas[num]
             MSD_array = tHMMobj.MSD[num]
+
             gamma_array = gammas[num]
             tHMMobj.estimate.pi = gamma_array[0, :]
             T_holder = np.zeros((numStates, numStates), dtype=float)
@@ -127,8 +109,8 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                     numer = get_all_zetas(parent_state_j=state_j,
                                           child_state_k=state_k,
                                           lineage=lineage,
-                                          beta_array=beta_array,
-                                          MSD_array=MSD_array,
+                                          beta_array=betas[num],
+                                          MSD_array=tHMMobj.MSD[num],
                                           gamma_array=gamma_array,
                                           T=tHMMobj.estimate.T)
                     entry = numer / denom
@@ -137,6 +119,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             row_sums = T_holder.sum(axis=1)
             T_new = T_holder / row_sums[:, np.newaxis]
             tHMMobj.estimate.T = T_new
+
 
             max_state_holder = []  # a list the size of lineage, that contains max state for each cell
             for ii, cell in enumerate(lineage):
@@ -167,16 +150,10 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         # tolerance checking
         new_LL_list = calculate_log_likelihood(tHMMobj, NF)
 
-        # if verbose:
-        #print("Average Log-Likelihood across all lineages: {}".format(np.mean(new_LL_list)))
+        logging.info("Average Log-Likelihood across all lineages: {}".format(np.mean(new_LL_list)))
 
-        for lineage_iter in range(len(new_LL_list)):
-            calculation = abs(new_LL_list[lineage_iter] - old_LL_list[lineage_iter])
-            truth_list[lineage_iter] = (calculation > tolerance)
-        go = any(truth_list)
+        if np.allclose(np.array(old_LL_list), np.array(new_LL_list), atol=tolerance):
+            return(tHMMobj, NF, betas, gammas, new_LL_list)
 
-        if count > max_iter:
-            if verbose:
-                print("Max iteration of {} steps achieved. Exiting Baum-Welch EM while loop.".format(max_iter))
-            break
+    logging.info("Max iteration of {} steps achieved. Exiting Baum-Welch EM while loop.".format(max_iter))
     return(tHMMobj, NF, betas, gammas, new_LL_list)

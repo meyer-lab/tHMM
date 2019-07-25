@@ -94,7 +94,7 @@ def get_leaf_betas(tHMMobj, NF):
     betas = []  # full betas holder
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        lineage = lineageObj.output_lineage # getting the lineage in the Population by index
+        lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
         MSD_array = MSD[num]  # getting the MSD of the respective lineage
         EL_array = EL[num]  # geting the EL of the respective lineage
         NF_array = NF[num]  # getting the NF of the respective lineage
@@ -142,7 +142,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
         lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
         MSD_array = MSD[num]  # getting the MSD of the respective lineage
         EL_array = EL[num]  # geting the EL of the respective lineage
-        T = tHMMobj.estimate.T # getting the transition matrix of the respective lineage
+        T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
 
         curr_gen = max_gen(lineage)  # start at the lowest generation of the lineage (at the leaves)
         while curr_gen > 1:
@@ -180,20 +180,17 @@ def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, sta
     children_list = get_daughters(node_parent_m)
     children_idx_list = [lineage.index(daughter) for daughter in children_list]
     for node_child_n_idx in children_idx_list:
-        beta_m_n = beta_parent_child_func(numStates=numStates,
-                                          lineage=lineage,
-                                          beta_array=beta_array,
+        beta_m_n = beta_parent_child_func(beta_array=beta_array,
                                           T=T,
                                           MSD_array=MSD_array,
                                           state_j=state_j,
-                                          node_parent_m_idx=node_parent_m_idx,
                                           node_child_n_idx=node_child_n_idx)
         beta_m_n_holder.append(beta_m_n)
     result = np.prod(beta_m_n_holder)  # calculates the product of items in a list
     return result
 
 
-def beta_parent_child_func(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx, node_child_n_idx):
+def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
     '''
     This "helper" function calculates the probability
     described as a 'beta-link' between parent and child
@@ -226,6 +223,7 @@ def calculate_log_likelihood(tHMMobj, NF):
     LL = []
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
+
         NF_array = NF[num]  # getting the NF of the respective lineage
         log_NF_array = np.log(NF_array)
         ll_per_num = sum(log_NF_array)

@@ -4,6 +4,7 @@ import numpy as np
 import scipy.stats as sp
 from ..StateDistribution import bernoulli_estimator, exponential_estimator, gamma_estimator
 
+
 class TestModel(unittest.TestCase):
     """Here are the unit tests."""
 
@@ -19,7 +20,7 @@ class TestModel(unittest.TestCase):
 
     def test_gamma_estimator(self):
         """ blah """
-        gamma_obs = sp.gamma.rvs(a=12.5, scale=3, size=1000) # gamma observations
+        gamma_obs = sp.gamma.rvs(a=12.5, scale=3, size=1000)  # gamma observations
         shape, scale = gamma_estimator(gamma_obs)
 
         self.assertTrue(10 <= shape <= 15)

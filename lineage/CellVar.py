@@ -67,18 +67,19 @@ class CellVar:
             curr_cell = curr_cell.parent
         assert curr_cell._isRootParent()
         return curr_cell
-    
+
     def __repr__(self):
-        if hasattr(self, 'obs'):            
+        if hasattr(self, 'obs'):
             return "Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, self.obs)
         else:
             return "Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, "This cell has no observations to report.")
-            
+
     def __str__(self):
-        if hasattr(self, 'obs'):            
+        if hasattr(self, 'obs'):
             return "Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, self.obs)
         else:
             return "Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, "This cell has no observations to report.")
+
 
 def _double(parent_state, T):
     """ Function that essentially rolls two of the same loaded dice given a state that determines the row of the transition matrix. The results of the roll of the loaded dice are two new states that are returned. """
@@ -89,7 +90,7 @@ def _double(parent_state, T):
 
     # Rolling two of the same loaded dice separate times and assigning where they landed to states
 
-    left_state_results, right_state_results = sp.multinomial.rvs(n=1, p=np.squeeze(T[parent_state, :]), size = 2)  # first and second roll are left and right
+    left_state_results, right_state_results = sp.multinomial.rvs(n=1, p=np.squeeze(T[parent_state, :]), size=2)  # first and second roll are left and right
     left_state = left_state_results.tolist().index(1)
     right_state = right_state_results.tolist().index(1)
 

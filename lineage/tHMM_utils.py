@@ -26,8 +26,6 @@ def max_gen(lineage):
             gen_holder = cell.gen
     return gen_holder
 
-##---------------------- Finding the cells in a generation -------------------------##
-
 
 def get_gen(gen, lineage):
     """
@@ -47,8 +45,6 @@ def get_gen(gen, lineage):
         if cell.gen == gen:
             first_set.append(cell)
     return first_set
-
-##----------------------finding parents of cells in a generation------------------##
 
 
 def get_parents_for_level(level, lineage):
@@ -74,8 +70,6 @@ def get_parents_for_level(level, lineage):
         parent_holder.add(lineage.index(parent_cell))
     return parent_holder
 
-##---------------------- finding daughter of a given cell -------------------------##
-
 
 def get_daughters(cell):
     """
@@ -95,4 +89,3 @@ def get_daughters(cell):
     if cell.right:
         temp.append(cell.right)
     return temp
-
