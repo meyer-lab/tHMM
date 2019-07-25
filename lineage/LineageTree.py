@@ -1,10 +1,10 @@
 """ This file contains the LineageTree class. """
+import scipy.stats as sp
+import numpy as np
 
 from .CellVar import CellVar
 from .StateDistribution import prune_rule
 
-import scipy.stats as sp
-import numpy as np
 
 # temporary style guide:
 # Boolean functions are in camelCase.
@@ -217,7 +217,7 @@ class LineageTree:
 
 
 def tree_recursion(cell, subtree):
-    """ a recurssive function that traverses upwards from the leaf to the root. """
+    """ a recursive function that traverses upwards from the leaf to the root. """
     if cell._isLeaf():
         return
     subtree.append(cell.left)
