@@ -4,12 +4,9 @@ import numpy as np
 import scipy
 import scipy.stats
 import logging
-from ..Depth_Two_State_Lineage import Depth_Two_State_Lineage
-from ..Breadth_Two_State_Lineage import Breadth_Two_State_Lineage
+
 from ..Analyze import Analyze
 from ..BaumWelch import fit
-from ..tHMM_utils import getAccuracy, getAIC
-from ..Lineage_utils import remove_singleton_lineages, remove_unfinished_cells
 
 
 def KL_per_lineage(T_MAS=500, T_2=100, reps=2, MASinitCells=[1], MASlocBern=[0.8], MASbeta=[80], initCells2=[1], locBern2=[

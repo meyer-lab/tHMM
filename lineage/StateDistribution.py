@@ -2,7 +2,6 @@
 import numpy as np
 import scipy.stats as sp
 
-
 class StateDistribution:
     def __init__(self, state, bern_p, expon_scale_beta, gamma_a, gamma_scale):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
@@ -88,14 +87,24 @@ def report_time(cell):
     taus = [cell.obs[1]]
 
     for cells in list_parents:
-        if cells.parent not in list_parents:
+        if cells._isRootParent():
+            taus.append(cells.obs[1])
+            break
+        elif cells.parent not in list_parents:
             list_parents.append(cells.parent)
             taus.append(cells.parent.obs[1])
-    return list_parents
+        summation = sum(taus)
+        return summation
 
-def get_expTime():
+def get_expTime(lineage):
     """ This function is to find the amount of time it took for the cells to be generated and reach to the desired number of cells. """
-
+    leaf_list = lineage._find_leaves()
+    leaf_times = []
+    for cell in leaf_list:
+        temp = report_time(cell)
+        leaf_times.append(temp)
+    longest = max(leaf_times)
+    return longest
     
 def bernoulli_estimator(bern_obs):
     """ Add up all the 1s and divide by the total length (finding the average). """
