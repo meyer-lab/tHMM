@@ -1,7 +1,6 @@
 '''File holds the code for the downward recursion.'''
 
 import numpy as np
-from .tHMM_utils import max_gen, get_gen, get_daughters
 from .UpwardRecursion import beta_parent_child_func
 
 
@@ -39,15 +38,15 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
         T = tHMMobj.estimate.T
 
         curr_level = 1
-        max_level = max_gen(lineage)
+        max_level = lineage._max_gen()
 
 
-        for curr_level in range(1, max_gen(lineage)):
-            level = get_gen(curr_level, lineage)  # get lineage for the gen
+        for curr_level in range(1, lineage._max_gen()):
+            level = lineage._get_gen(curr_level)  # get lineage for the gen
             for cell in level:
                 parent_idx = lineage.index(cell)
 
-                for daughter_idx in get_daughters(cell):
+                for daughter_idx in cell._get_daughters():
                     child_idx = lineage.index(daughter_idx)
                     coeffs = beta_array[child_idx, :] / MSD_array[child_idx, :]
 
