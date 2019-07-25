@@ -4,7 +4,6 @@ import numpy as np
 from .tHMM_utils import max_gen, get_gen, get_daughters
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, beta_parent_child_func
-from .Lineage_utils import bernoulliParameterEstimatorAnalytical, exponentialAnalytical, gammaAnalytical
 
 
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k, lineage, beta_array, MSD_array, gamma_array, T):
@@ -13,7 +12,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, state_j, state_k
     # check the child-parent relationship
     assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx], "Something wrong with your parent-daughter linkage when trying to use the zeta-related functions... Check again that your lineage is constructed clearly."
     # if the child-parent relationship is correct, then the child must
-    assert lineage[node_child_n_idx].isChild(), "Something wrong with your parent-daughter linkage when trying to use the zeta-related functions... Check again that your lineage is constructed clearly."
+    assert lineage[node_child_n_idx]._isChild(), "Something wrong with your parent-daughter linkage when trying to use the zeta-related functions... Check again that your lineage is constructed clearly."
     # either be the left daughter or the right daughter
 
     beta_child_state_k = beta_array[node_child_n_idx, state_k]
@@ -44,7 +43,7 @@ def get_all_gammas(lineage, gamma_array_at_state_j):
     while curr_level < max_level:  # get all the gammas but not the ones at the last level
         level = get_gen(curr_level, lineage)  # get lineage for the gen
         for cell in level:
-            if not cell.isLeaf():
+            if not cell._isLeaf():
                 cell_idx = lineage.index(cell)
                 holder.append(gamma_array_at_state_j[cell_idx])
 
@@ -81,9 +80,8 @@ def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array,
 
 def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     '''Runs the tHMM function through Baum Welch fitting'''
-    numLineages = tHMMobj.numLineages
     numStates = tHMMobj.numStates
-    population = tHMMobj.population
+    numLineages = len(tHMMobj.X)
 
     # first E step
 
@@ -104,7 +102,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
 
     count = 0
     while go:  # exit the loop
-
+        
         count += 1
         old_LL_list = new_LL_list
 
@@ -113,14 +111,14 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         for state in range(numStates):
             cell_groups[str(state)] = []
 
-        for num in range(numLineages):
+        for num, lineageObj in enumerate(tHMMobj.X):
             if not truth_list[num]:
                 break
-            lineage = population[num]
+            lineage = lineageObj.output_lineage
             beta_array = betas[num]
             MSD_array = tHMMobj.MSD[num]
             gamma_array = gammas[num]
-            tHMMobj.paramlist[num]["pi"] = gamma_array[0, :]
+            tHMMobj.estimate.pi = gamma_array[0, :]
             T_holder = np.zeros((numStates, numStates), dtype=float)
             for state_j in range(numStates):
                 gamma_array_at_state_j = gamma_array[:, state_j]
@@ -132,13 +130,13 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                                           beta_array=beta_array,
                                           MSD_array=MSD_array,
                                           gamma_array=gamma_array,
-                                          T=tHMMobj.paramlist[num]["T"])
+                                          T=tHMMobj.estimate.T)
                     entry = numer / denom
                     T_holder[state_j, state_k] = entry
 
             row_sums = T_holder.sum(axis=1)
             T_new = T_holder / row_sums[:, np.newaxis]
-            tHMMobj.paramlist[num]["T"] = T_new
+            tHMMobj.estimate.T = T_new
 
             max_state_holder = []  # a list the size of lineage, that contains max state for each cell
             for ii, cell in enumerate(lineage):
@@ -150,26 +148,12 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                 cell_groups[str(state)].append(lineage[ii])
 
         # after iterating through each lineage, do the population wide E calculation
-        global_params = {}
         for state_j in range(numStates):
             cells = cell_groups[str(state_j)]  # this array has the correct cells classified per group
-            global_params['B' + str(state_j)] = bernoulliParameterEstimatorAnalytical(cells)  # list of cells
-            if tHMMobj.FOM == 'E':
-                global_params['E' + str(state_j)] = exponentialAnalytical(cells)
-            elif tHMMobj.FOM == 'Ga':
-                global_params['Ga_shape' + str(state_j)] = gammaAnalytical(cells)[0]
-                global_params['Ga_scale' + str(state_j)] = gammaAnalytical(cells)[1]
-
-        # now go through each lineage and replace with the new E
-        for num in range(numLineages):
-            for state in range(numStates):
-                # assigns the global state to the lineage-specific state assignment
-                tHMMobj.paramlist[num]["E"][state, 0] = global_params['B' + str(state)]
-                if tHMMobj.FOM == 'E':
-                    tHMMobj.paramlist[num]["E"][state, 1] = global_params['E' + str(state)]
-                if tHMMobj.FOM == 'Ga':
-                    tHMMobj.paramlist[num]["E"][state, 1] = global_params['Ga_shape' + str(state)]
-                    tHMMobj.paramlist[num]["E"][state, 2] = global_params['Ga_scale' + str(state)]
+            list_of_tuples_of_obs = []
+            for cell in cells:
+                list_of_tuples_of_obs.append(cell.obs)
+            tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator(list_of_tuples_of_obs)
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()

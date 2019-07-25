@@ -91,9 +91,10 @@ class LineageTree:
         self.full_lin_list = [first_cell]
 
         for cell in self.full_lin_list:  # letting the first cell proliferate
-            if not cell.left:  # if the cell has no daughters...
+            if cell._isLeaf():  # if the cell has no daughters...
                 left_cell, right_cell = cell._divide(self.T)  # make daughters by dividing and assigning states
                 self.full_lin_list.append(left_cell)  # add daughters to the list of cells
+                self.full_lin_list.append(right_cell) 
 
             if len(self.full_lin_list) >= self.desired_num_cells:
                 break

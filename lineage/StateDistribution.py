@@ -59,7 +59,6 @@ class StateDistribution:
                                                gamma_a=gamma_a_estimate,
                                                gamma_scale=gamma_scale_estimate)
         # } requires the user's attention.
-        state_estimate_obj
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
