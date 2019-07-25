@@ -71,10 +71,7 @@ def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array,
 def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     '''Runs the tHMM function through Baum Welch fitting'''
     numStates = tHMMobj.numStates
-<<<<<<< HEAD
     numLineages = len(tHMMobj.X)
-=======
->>>>>>> master
 
     # first E step
 
@@ -95,16 +92,13 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         for state in range(numStates):
             cell_groups[str(state)] = []
 
-<<<<<<< HEAD
         for num, lineageObj in enumerate(tHMMobj.X):
             if not truth_list[num]:
                 break
             lineage = lineageObj.output_lineage
             beta_array = betas[num]
             MSD_array = tHMMobj.MSD[num]
-=======
-        for num, lineage in enumerate(tHMMobj.population):
->>>>>>> master
+
             gamma_array = gammas[num]
             tHMMobj.estimate.pi = gamma_array[0, :]
             T_holder = np.zeros((numStates, numStates), dtype=float)
@@ -118,7 +112,6 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                                           beta_array=betas[num],
                                           MSD_array=tHMMobj.MSD[num],
                                           gamma_array=gamma_array,
-<<<<<<< HEAD
                                           T=tHMMobj.estimate.T)
                     entry = numer / denom
                     T_holder[state_j, state_k] = entry
@@ -126,12 +119,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             row_sums = T_holder.sum(axis=1)
             T_new = T_holder / row_sums[:, np.newaxis]
             tHMMobj.estimate.T = T_new
-=======
-                                          T=tHMMobj.paramlist[num]["T"])
-                    T_holder[state_j, state_k] = numer / denom
 
-            tHMMobj.paramlist[num]["T"] = T_holder / T_holder.sum(axis=1)[:, np.newaxis]
->>>>>>> master
 
             max_state_holder = []  # a list the size of lineage, that contains max state for each cell
             for ii, cell in enumerate(lineage):
