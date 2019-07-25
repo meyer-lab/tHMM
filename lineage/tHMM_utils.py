@@ -3,10 +3,6 @@
 import itertools
 import numpy as np
 
-
-##------------------- Find maximum generation in a lineage -----------------------##
-
-
 def max_gen(lineage):
     """
     finds the max generation in a lineage tree, in a given experiment time;
@@ -26,7 +22,6 @@ def max_gen(lineage):
             gen_holder = cell.gen
     return gen_holder
 
-
 def get_gen(gen, lineage):
     """
     Creates a list with all cells in the given generation
@@ -45,7 +40,6 @@ def get_gen(gen, lineage):
         if cell.gen == gen:
             first_set.append(cell)
     return first_set
-
 
 def get_parents_for_level(level, lineage):
     """
@@ -69,23 +63,3 @@ def get_parents_for_level(level, lineage):
         parent_cell = cell.parent
         parent_holder.add(lineage.index(parent_cell))
     return parent_holder
-
-
-def get_daughters(cell):
-    """
-    Returns a list of the daughters of a given cell.
-    Args:
-        ----------
-        cell (obj): an object (the cell) with different instances, including
-        the cell's right daughter and cell's left daughter.
-
-    Returns:
-        ----------
-        temp (list): a list of two objects, i.e., two daughter cells of a given cell.
-    """
-    temp = []
-    if cell.left:
-        temp.append(cell.left)
-    if cell.right:
-        temp.append(cell.right)
-    return temp
