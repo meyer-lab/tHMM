@@ -3,24 +3,6 @@
 import itertools
 import numpy as np
 
-def get_gen(gen, lineage):
-    """
-    Creates a list with all cells in the given generation
-    Args:
-        ----------
-        gen (int): the generation number that we want to separate from the rest.
-        lineage (list of objects): a list holding the objects (cells) in a lineage.
-
-    Returns:
-        ----------
-        first_set (list of objects): a list that holds the cells with the same given
-        generation.
-    """
-    first_set = []
-    for cell in lineage:
-        if cell.gen == gen:
-            first_set.append(cell)
-    return first_set
 
 def get_parents_for_level(level, lineage):
     """
