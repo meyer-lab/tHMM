@@ -21,7 +21,6 @@ class LineageStateStats:
     def __init__(self, state):
         self.state = state
 
-
 class LineageTree:
     def __init__(self, pi, T, E, desired_num_cells, prune_boolean):
         """
@@ -168,15 +167,22 @@ class LineageTree:
     def _max_gen(self):
         """ finds the maximal generation in the tree. """
         gen_holder = 1
-        for cell in lineage:
+        for cell in self.output_lineage:
             if cell.gen > gen_holder:
                 gen_holder = cell.gen
         return gen_holder
+    
+    def _get_gen(self, gen):
+        """ returns all cells in a generation """
+        first_set = []
+        for cell in self.output_lineage:
+            if cell.gen == gen:
+                first_set.append(cell)
+        return first_set
 
     def _find_leaves(self):
-        lineage = self.output_lineage
         leaves = []
-        for cell in lineage:
+        for cell in self.output_lineage:
             if cell._isLeaf():
                 leaves.append(cell)
         return leaves
