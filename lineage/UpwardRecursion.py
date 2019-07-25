@@ -200,7 +200,6 @@ def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
     to the root node) node beta and Normalizing Factor
     values.
     '''
-<<<<<<< HEAD
     assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
     assert lineage[node_child_n_idx]._isChild()  # if the child-parent relationship is correct, then the child must
     # either be the left daughter or the right daughter
@@ -215,11 +214,6 @@ def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
         summand_holder.append(numer1 * numer2 / denom)
 
     return sum(summand_holder)
-=======
-    # beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
-    # P( z_n = k | z_m = j); P(z_n = k)
-    return np.sum(beta_array[node_child_n_idx, :] * T[state_j, :] / MSD_array[node_child_n_idx, :])
->>>>>>> master
 
 
 def calculate_log_likelihood(tHMMobj, NF):
@@ -228,11 +222,8 @@ def calculate_log_likelihood(tHMMobj, NF):
     '''
     LL = []
 
-<<<<<<< HEAD
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-=======
-    for num in range(tHMMobj.numLineages):  # for each lineage in our Population
->>>>>>> master
+
         NF_array = NF[num]  # getting the NF of the respective lineage
         log_NF_array = np.log(NF_array)
         ll_per_num = sum(log_NF_array)
