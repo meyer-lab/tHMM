@@ -3,25 +3,6 @@
 import itertools
 import numpy as np
 
-def max_gen(lineage):
-    """
-    finds the max generation in a lineage tree, in a given experiment time;
-    i.e., the generation of the leaf cells.
-
-    Args:
-        ----------
-        lineage (list): a list of objects (cells) in a lineage.
-
-    Returns:
-        ----------
-        gen_holder (int): the maximum generation in a lineage.
-    """
-    gen_holder = 1
-    for cell in lineage:
-        if cell.gen > gen_holder:
-            gen_holder = cell.gen
-    return gen_holder
-
 def get_gen(gen, lineage):
     """
     Creates a list with all cells in the given generation
