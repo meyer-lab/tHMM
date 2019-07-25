@@ -60,7 +60,6 @@ class tHMM:
         state j (from parent to daughter):
             P(z_u = k) = sum_on_all_j(Transition(from j to k) * P(parent_cell_u) = j)
         '''
-<<<<<<< HEAD
         numStates = self.numStates
 
         MSD = []
@@ -81,26 +80,7 @@ class tHMM:
             curr_level = 2
             max_level = max_gen(lineage)
             while curr_level <= max_level:
-=======
-        MSD = []
 
-        for num in range(self.numLineages):  # for each lineage in our Population
-            lineage = self.population[num]  # getting the lineage in the Population by lineage index
-            params = self.paramlist[num]  # getting the respective params by lineage index
-            MSD_array = np.zeros((len(lineage), self.numStates), dtype=float)  # instantiating N by K array
-            for state_k in range(self.numStates):
-                MSD_array[0, state_k] = params["pi"][state_k]
-            MSD.append(MSD_array)
-
-        for num in range(self.numLineages):
-            MSD_0_row_sum = np.sum(MSD[num][0])
-            assert np.isclose(MSD_0_row_sum, 1.), "The Marginal State Distribution for your root cells, P(z_1 = k), for all states k in numStates, are not adding up to 1!"
-
-        for num in range(self.numLineages):
-            lineage = self.population[num]  # getting the lineage in the Population by lineage index
-
-            for curr_level in range(2, max_gen(lineage)+1):
->>>>>>> master
                 level = get_gen(curr_level, lineage)  # get lineage for the gen
                 for cell in level:
                     parent_cell_idx = lineage.index(cell.parent)  # get the index of the parent cell
@@ -108,17 +88,10 @@ class tHMM:
                     for state_k in range(self.numStates):  # recursion based on parent cell
                         temp_sum_holder = 0  # for all states k, calculate the sum of temp
 
-<<<<<<< HEAD
                         for state_j in range(numStates):  # for all states j, calculate temp
                             temp = self.estimate.T[state_j, state_k] * MSD[num][parent_cell_idx, state_j]
                             # temp = T_jk * P(z_parent(n) = j)
                             temp_sum_holder.append(temp)
-=======
-                        for state_j in range(self.numStates):  # for all states j, calculate temp
-                            temp_sum_holder += params["T"][state_j, state_k] * MSD[num][parent_cell_idx, state_j]
-
-                        MSD[num][current_cell_idx, state_k] = temp_sum_holder
->>>>>>> master
 
             MSD_row_sums = np.sum(MSD[num], axis=1)
 
@@ -149,7 +122,6 @@ class tHMM:
         P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_E | z_n = k).
 
         '''
-<<<<<<< HEAD
         numStates = self.numStates
 
         EL = []
@@ -163,41 +135,6 @@ class tHMM:
                 for cell in lineage:  # for each cell in the lineage
                     current_cell_idx = lineage.index(cell)  # get the index of the current cell
                     EL_array[current_cell_idx, state_k] = self.estimate.E[state_k].pdf(cell.obs)
-=======
-        EL = []
-
-        for num, lineage in enumerate(self.population):  # for each lineage in our Population
-            params = self.paramlist[num]  # getting the respective params by lineage index
-            EL_array = np.zeros((len(lineage), self.numStates))  # instantiating N by K array for each lineage
-            E_param_array = params["E"]  # K by 3 array of distribution parameters for each lineage
-
-            for state_k in range(self.numStates):  # for each state
-                E_param_k = E_param_array[state_k, :]  # get the emission parameters for that state
-                k_bern = E_param_k[0]  # bernoulli rate parameter
-                k_expon_beta = 0
-
-                if self.FOM == 'E':
-                    k_expon_beta = E_param_k[1]
-                elif self.FOM == 'Ga':
-                    k_gamma_shape = E_param_k[1]
-                    k_gamma_scale = E_param_k[2]
-
-                for current_cell_idx, cell in enumerate(lineage):  # for each cell in the lineage
-                    if self.FOM == 'E':
-                        temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)  # bernoulli likelihood
-                        if cell.fateObserved:
-                            temp_beta = sp.expon.pdf(x=cell.tau, scale=k_expon_beta)  # exponential likelihood
-                        elif not cell.fateObserved:
-                            temp_beta = sp.expon.pdf(x=cell.tauFake, scale=k_expon_beta)  # exponential likelihood is the same in the cased of an unobserved death
-                        assert np.isfinite(temp_beta), "You have a Exponential likelihood calculation returning NaN. Your parameter estimates are likely creating overflow in the likelihood calculations."
-                        # the right-censored and uncensored exponential pdfs are the
-                        EL_array[current_cell_idx, state_k] = temp_beta * temp_b
-                    if self.FOM == 'Ga':
-                        temp_b = sp.bernoulli.pmf(k=cell.fate, p=k_bern)  # bernoulli likelihood
-                        if cell.fateObserved:
-                            temp_g = sp.gamma.pdf(x=cell.tau, a=k_gamma_shape, scale=k_gamma_scale)
-                        assert np.isfinite(temp_g), "Gamma likelihood is returning NaN"
-                        EL_array[current_cell_idx, state_k] = temp_g * temp_b
->>>>>>> master
+                    
             EL.append(EL_array)  # append the EL_array for each lineage
         return EL
