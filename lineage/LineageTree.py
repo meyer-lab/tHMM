@@ -180,7 +180,7 @@ class LineageTree:
                 first_set.append(cell)
         return first_set
     
-    def get_parents_for_level(self, level):
+    def _get_parents_for_level(self, level):
         """ get the parents of a generation """
         parent_holder = set()  # set makes sure only one index is put in and no overlap
         for cell in level:
