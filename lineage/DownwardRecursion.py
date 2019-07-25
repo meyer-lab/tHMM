@@ -6,6 +6,7 @@ from .UpwardRecursion import beta_parent_child_func
 
 
 def get_root_gammas(tHMMobj, betas):
+<<<<<<< HEAD
     '''need the first gamma terms in the baum welch, which are just the beta values of the root nodes.'''
     numStates = tHMMobj.numStates
 
@@ -14,18 +15,30 @@ def get_root_gammas(tHMMobj, betas):
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lineageObj.output_lineage
         gamma_array = np.zeros((len(lineage), numStates))
+=======
+    ''' Need the first gamma terms in the baum welch, which are just the beta values of the root nodes. '''
+    gammas = []
+
+    for num, lineage in enumerate(tHMMobj.population):  # for each lineage in our Population
+        gamma_array = np.zeros((len(lineage), tHMMobj.numStates))
+>>>>>>> master
         gamma_array[0, :] = betas[num][0, :]
+        assert np.isclose(np.sum(gamma_array[0]), 1.)
         gammas.append(gamma_array)
 
+<<<<<<< HEAD
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         gammas_0_row_sum = np.sum(gammas[num][0])
         assert np.isclose(gammas_0_row_sum, 1.)
 
+=======
+>>>>>>> master
     return gammas
 
 
 def get_nonroot_gammas(tHMMobj, gammas, betas):
     '''get the gammas for all other nodes using recursion from the root nodes'''
+<<<<<<< HEAD
     numStates = tHMMobj.numStates
 
     MSD = tHMMobj.MSD
@@ -38,33 +51,32 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
 
         curr_level = 1
         max_level = max_gen(lineage)
+=======
+    for num, lineage in enumerate(tHMMobj.population):  # for each lineage in our Population
+        MSD_array = tHMMobj.MSD[num]  # getting the MSD of the respective lineage
+        T = tHMMobj.paramlist[num]['T']
+        beta_array = betas[num]  # instantiating N by K array
+>>>>>>> master
 
-        while curr_level < max_level:
+        for curr_level in range(1, max_gen(lineage)):
             level = get_gen(curr_level, lineage)  # get lineage for the gen
             for cell in level:
                 parent_idx = lineage.index(cell)
-                daughter_idxs_list = get_daughters(cell)
 
-                for daughter_idx in daughter_idxs_list:
+                for daughter_idx in get_daughters(cell):
                     child_idx = lineage.index(daughter_idx)
+                    coeffs = beta_array[child_idx, :] / MSD_array[child_idx, :]
 
-                    for child_state_k in range(numStates):
-                        beta_child = beta_array[child_idx, child_state_k]
-                        MSD_child = MSD_array[child_idx, child_state_k]
-                        coeff = beta_child / MSD_child
-                        sum_holder = []
+                    for child_state_k in range(tHMMobj.numStates):
+                        sum_holder = 0.0
 
-                        for parent_state_j in range(numStates):
-                            T_fac = T[parent_state_j, child_state_k]
-                            gamma_parent = gammas[num][parent_idx, parent_state_j]
-                            beta_parent = beta_parent_child_func(numStates=numStates,
-                                                                 lineage=lineage,
-                                                                 beta_array=beta_array,
+                        for parent_state_j in range(tHMMobj.numStates):
+                            beta_parent = beta_parent_child_func(beta_array=beta_array,
                                                                  T=T,
                                                                  MSD_array=MSD_array,
                                                                  state_j=parent_state_j,
-                                                                 node_parent_m_idx=parent_idx,
                                                                  node_child_n_idx=child_idx)
+<<<<<<< HEAD
                             sum_holder.append(T_fac * gamma_parent / beta_parent)
                         gamma_child_state_k = coeff * sum(sum_holder)
                         gammas[num][child_idx, child_state_k] = gamma_child_state_k
@@ -75,3 +87,13 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
         gammas_row_sum = np.sum(gammas[num], axis=1)
         # print(gammas_row_sum)
         #assert np.allclose(gammas_row_sum, 1.)
+=======
+                            sum_holder += T[parent_state_j, child_state_k] * gammas[num][parent_idx, parent_state_j] / beta_parent
+
+                        gammas[num][child_idx, child_state_k] = coeffs[child_state_k] * sum_holder
+
+                        assert np.all(gammas[num][0, :] == betas[num][0, :])
+
+    for _, gg in enumerate(gammas):
+        assert np.allclose(np.sum(gg, axis=1), 1.)
+>>>>>>> master

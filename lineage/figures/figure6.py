@@ -3,17 +3,16 @@ This creates Figure 6.
 """
 from .figureCommon import getSetup
 import numpy as np
-from matplotlib import ticker as ticker
+from matplotlib import ticker
 from .Fig_Gen import KL_per_lineage
 from .Matplot_gen import moving_average
 
 
 def makeFigure():
-    # Get list of axis objects
-
+    """ Main figure generating function for Fig. 6 """
     ax, f = getSetup((7, 7), (1, 1))
 
-    KL_h1, acc_h1, bern_MAS_h1, bern_2_h1, MASlocBern, locBern2, MASbeta, beta2, betaExp_MAS_h1, betaExp_2_h1 = KL_per_lineage()
+    KL_h1, acc_h1, _, _, _, _, _, _, _, _ = KL_per_lineage()
 
     x_vs_acc = np.column_stack((KL_h1, acc_h1))
     sorted_x_vs_acc = x_vs_acc[np.argsort(x_vs_acc[:, 0])]
