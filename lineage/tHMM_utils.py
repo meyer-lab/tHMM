@@ -95,4 +95,3 @@ def get_daughters(cell):
     if cell.right:
         temp.append(cell.right)
     return temp
-

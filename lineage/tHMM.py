@@ -4,6 +4,7 @@ import numpy as np
 from .StateDistribution import StateDistribution
 from .tHMM_utils import max_gen, get_gen
 
+
 class estimate:
     def __init__(self, numStates):
         self.numStates = numStates
@@ -11,8 +12,9 @@ class estimate:
         self.T = np.ones((numStates, numStates)) / numStates
         self.E = []
         for state in range(self.numStates):
-            self.E.append(StateDistribution(state, 0.9*(np.random.uniform()), 50*(1+np.random.uniform()), 7.5, 1.5))
-        
+            self.E.append(StateDistribution(state, 0.9 * (np.random.uniform()), 50 * (1 + np.random.uniform()), 7.5, 1.5))
+
+
 class tHMM:
     """ Main tHMM class. """
 
@@ -37,11 +39,9 @@ class tHMM:
         self.EL = self.get_Emission_Likelihoods()  # full Emission Likelihood holder
 
 
-
-
-
-
 ##---------------------------- Marginal State Distribution ------------------------------##
+
+
     def get_Marginal_State_Distributions(self):
         '''
         Marginal State Distribution (MSD) matrix and recursion.
@@ -86,7 +86,7 @@ class tHMM:
                     current_cell_idx = lineage.index(cell)
                     for state_k in range(numStates):  # recursion based on parent cell
                         temp_sum_holder = []  # for all states k, calculate the sum of temp
-                        
+
                         for state_j in range(numStates):  # for all states j, calculate temp
                             temp = self.estimate.T[state_j, state_k] * MSD[num][parent_cell_idx, state_j]
                             # temp = T_jk * P(z_parent(n) = j)

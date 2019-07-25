@@ -14,7 +14,7 @@ class TestModel(unittest.TestCase):
         # T: transition probability matrix
         T = np.array([[0.85, 0.15],
                       [0.2, 0.8]])
-        
+
         # E: states are defined as StateDistribution objects
         # State 0 parameters "Resistant"
         state0 = 0
@@ -34,15 +34,15 @@ class TestModel(unittest.TestCase):
         state_obj1 = StateDistribution(state1, bern_p1, expon_scale_beta1, gamma_a1, gamma_scale1)
 
         E = [state_obj0, state_obj1]
-                
+
         self.lineage1_big_full = LineageTree(pi, T, E, desired_num_cells=2**4 - 1, prune_boolean=False)
         self.lineage2_small_full = LineageTree(pi, T, E, desired_num_cells=2**3 - 1, prune_boolean=False)
         self.lineage3_big_pruned = LineageTree(pi, T, E, desired_num_cells=2**9 - 1, prune_boolean=True)
         self.lineage4_small_pruned = LineageTree(pi, T, E, desired_num_cells=2**3 - 1, prune_boolean=True)
-            
+
     def test_prune_lineage(self):
         pass
-        
+
     def test_get_state_count(self):
         pass
 
@@ -51,4 +51,3 @@ class TestModel(unittest.TestCase):
 
     def test_tree_recursion(self):
         pass
-        

@@ -73,5 +73,5 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
             curr_level += 1
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         gammas_row_sum = np.sum(gammas[num], axis=1)
-        #print(gammas_row_sum)
+        # print(gammas_row_sum)
         #assert np.allclose(gammas_row_sum, 1.)

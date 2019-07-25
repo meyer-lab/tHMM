@@ -94,7 +94,7 @@ def get_leaf_betas(tHMMobj, NF):
     betas = []  # full betas holder
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        lineage = lineageObj.output_lineage # getting the lineage in the Population by index
+        lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
         MSD_array = MSD[num]  # getting the MSD of the respective lineage
         EL_array = EL[num]  # geting the EL of the respective lineage
         NF_array = NF[num]  # getting the NF of the respective lineage
@@ -142,7 +142,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
         lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
         MSD_array = MSD[num]  # getting the MSD of the respective lineage
         EL_array = EL[num]  # geting the EL of the respective lineage
-        T = tHMMobj.estimate.T # getting the transition matrix of the respective lineage
+        T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
 
         curr_gen = max_gen(lineage)  # start at the lowest generation of the lineage (at the leaves)
         while curr_gen > 1:

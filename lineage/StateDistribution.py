@@ -66,16 +66,15 @@ class StateDistribution:
 
     def __repr__(self):
         return "State object w/ parameters: {}, {}, {}, {}, {}.".format(self.state, self.bern_p, self.expon_scale_beta, self.gamma_a, self.gamma_scale)
-       
 
-    
+
 def prune_rule(cell):
     """ User-defined function that checks whether a cell's subtree should be removed. """
     truther = False
     if cell.obs[0] == 0:
-        truther = True #cell has died; subtree must be removed
+        truther = True  # cell has died; subtree must be removed
     return truther
-    
+
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
 # Their use in the ObservationEmission class is shown in the estimator class method. User must take care to define estimators that
@@ -93,10 +92,11 @@ def report_time(cell):
             taus.append(cells.parent.obs[1])
     return list_parents
 
+
 def get_expTime():
     """ This function is to find the amount of time it took for the cells to be generated and reach to the desired number of cells. """
 
-    
+
 def bernoulli_estimator(bern_obs):
     """ Add up all the 1s and divide by the total length (finding the average). """
     return (sum(bern_obs) + 1e-10) / (len(bern_obs) + 2e-10)
