@@ -164,6 +164,14 @@ class LineageTree:
         num_cells_in_state = len(cells_in_state)  # gets the number of cells in the list
 
         return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
+    
+    def _max_gen(self):
+        """ finds the maximal generation in the tree. """
+        gen_holder = 1
+        for cell in lineage:
+            if cell.gen > gen_holder:
+                gen_holder = cell.gen
+        return gen_holder
 
     def _find_leaves(self):
         lineage = self.output_lineage
@@ -212,9 +220,8 @@ class LineageTree:
             s2 = seperator.join(s_list)
             s3 = ".\n This UNpruned tree has {} cells in total".format(len(self.full_lin_list))
             return s1 + s2 + s3
-
+        
 # tools for traversing trees
-
 
 def tree_recursion(cell, subtree):
     """ a recursive function that traverses upwards from the leaf to the root. """
