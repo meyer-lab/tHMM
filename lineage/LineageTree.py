@@ -179,6 +179,13 @@ class LineageTree:
             if cell.gen == gen:
                 first_set.append(cell)
         return first_set
+    
+    def get_parents_for_level(self, level):
+        """ get the parents of a generation """
+        parent_holder = set()  # set makes sure only one index is put in and no overlap
+        for cell in level:
+            parent_holder.add(self.output_lineage.index(cell.parent))
+        return parent_holder
 
     def _find_leaves(self):
         leaves = []
