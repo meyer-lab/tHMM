@@ -67,6 +67,15 @@ class CellVar:
             curr_cell = curr_cell.parent
         assert curr_cell._isRootParent()
         return curr_cell
+    
+    def _get_daughters(self):
+        """ Get the left and right daughters of a cell. """
+        temp = []
+        if self.left is not None:
+            temp.append(self.left)
+        if self.right is not None:
+            temp.append(self.right)
+        return temp
 
     def __repr__(self):
         if hasattr(self, 'obs'):
