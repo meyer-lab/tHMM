@@ -95,7 +95,6 @@ def report_time(cell):
         summation = sum(taus)
         return summation
 
-<<<<<<< HEAD
 def get_expTime(lineage):
     """ This function is to find the amount of time it took for the cells to be generated and reach to the desired number of cells. """
     leaf_list = lineage._find_leaves()
@@ -105,14 +104,8 @@ def get_expTime(lineage):
         leaf_times.append(temp)
     longest = max(leaf_times)
     return longest
-    
-=======
-
-def get_expTime():
-    """ This function is to find the amount of time it took for the cells to be generated and reach to the desired number of cells. """
 
 
->>>>>>> f95878e0b9b3e0f85ff4865279f33a43020e03ee
 def bernoulli_estimator(bern_obs):
     """ Add up all the 1s and divide by the total length (finding the average). """
     return (sum(bern_obs) + 1e-10) / (len(bern_obs) + 2e-10)

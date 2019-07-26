@@ -25,3 +25,6 @@ class TestModel(unittest.TestCase):
 
         self.assertTrue(10 <= shape <= 15)
         self.assertTrue(2 <= scale <= 4)
+
+        
+    
