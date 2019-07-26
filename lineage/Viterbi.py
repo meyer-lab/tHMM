@@ -1,6 +1,5 @@
 '''This file contains the methods for the Viterbi algorithm implemented in an a upward recursion.'''
 import numpy as np
-from .tHMM_utils import max_gen, get_gen, get_parents_for_level, get_daughters
 
 
 def get_leaf_deltas(tHMMobj):

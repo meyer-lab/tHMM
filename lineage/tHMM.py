@@ -2,7 +2,6 @@
 
 import numpy as np
 from .StateDistribution import StateDistribution, tHMM_E_init
-from .tHMM_utils import max_gen, get_gen
 
 class estimate:
     def __init__(self, numStates):
@@ -76,10 +75,10 @@ class tHMM:
         for num, lineageObj in enumerate(self.X):
             lineage = lineageObj.output_lineage
             curr_level = 2
-            max_level = max_gen(lineage)
+            max_level = lineage._max_gen
             while curr_level <= max_level:
 
-                level = get_gen(curr_level, lineage)  # get lineage for the gen
+                level = lineage._get_gen(curr_level) # get lineage for the gen
                 for cell in level:
                     parent_cell_idx = lineage.index(cell.parent)  # get the index of the parent cell
                     current_cell_idx = lineage.index(cell)

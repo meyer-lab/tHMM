@@ -2,7 +2,8 @@
 import unittest
 import numpy as np
 import scipy.stats as sp
-from ..StateDistribution import bernoulli_estimator, exponential_estimator, gamma_estimator
+from ..StateDistribution import StateDistribution, bernoulli_estimator, exponential_estimator, gamma_estimator, report_time
+from ..LineageTree import LineageTree
 from ..CellVar import CellVar as c
 
 
@@ -56,7 +57,7 @@ class TestModel(unittest.TestCase):
         prune_boolean = True # To get the full tree
         lineage1 = LineageTree(pi, T, E, desired_num_cells, prune_boolean)
 
-        list_of_cells = [cells for cells in lineage1.lineage_output]
+        list_of_cells = [cells for cells in lineage1.output_lineage]
         cell0_tau = list_of_cells[0].obs[1]
         cell0_to_left_tau = list_of_cells[1].obs[1] + cell0_tau
         cell0_to_right_tau = list_of_cells[2].obs[1] + cell0_tau
