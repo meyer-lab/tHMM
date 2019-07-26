@@ -1,9 +1,8 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
 import numpy as np
-from .StateDistribution import StateDistribution
+from .StateDistribution import StateDistribution, tHMM_E_init
 from .tHMM_utils import max_gen, get_gen
-
 
 class estimate:
     def __init__(self, numStates):
@@ -12,8 +11,7 @@ class estimate:
         self.T = np.ones((numStates, numStates)) / numStates
         self.E = []
         for state in range(self.numStates):
-            self.E.append(StateDistribution(state, 0.9 * (np.random.uniform()), 50 * (1 + np.random.uniform()), 7.5, 1.5))
-
+            self.E.append(tHMM_E_init(state))
 
 class tHMM:
     """ Main tHMM class. """
@@ -32,7 +30,7 @@ class tHMM:
             FOM (str): For now, it is either "E": Exponential, or "G": Gompertz
             and it determines the type of distribution for lifetime of the cells
         """
-        self.X = X  # list containing lineage, should be in correct format (contain no NaNs)
+        self.X = X  # list containing lineages, should be in correct format (contain no NaNs)
         self.numStates = numStates  # number of discrete hidden states
         self.estimate = estimate(self.numStates)
         self.MSD = self.get_Marginal_State_Distributions()  # full Marginal State Distribution holder

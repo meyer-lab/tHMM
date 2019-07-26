@@ -21,7 +21,6 @@ class LineageStateStats:
     def __init__(self, state):
         self.state = state
 
-
 class LineageTree:
     def __init__(self, pi, T, E, desired_num_cells, prune_boolean):
         """
@@ -164,11 +163,33 @@ class LineageTree:
         num_cells_in_state = len(cells_in_state)  # gets the number of cells in the list
 
         return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
+    
+    def _max_gen(self):
+        """ finds the maximal generation in the tree. """
+        gen_holder = 1
+        for cell in self.output_lineage:
+            if cell.gen > gen_holder:
+                gen_holder = cell.gen
+        return gen_holder
+    
+    def _get_gen(self, gen):
+        """ returns all cells in a generation """
+        first_set = []
+        for cell in self.output_lineage:
+            if cell.gen == gen:
+                first_set.append(cell)
+        return first_set
+    
+    def _get_parents_for_level(self, level):
+        """ get the parents of a generation """
+        parent_holder = set()  # set makes sure only one index is put in and no overlap
+        for cell in level:
+            parent_holder.add(self.output_lineage.index(cell.parent))
+        return parent_holder
 
     def _find_leaves(self):
-        lineage = self.output_lineage
         leaves = []
-        for cell in lineage:
+        for cell in self.output_lineage:
             if cell._isLeaf():
                 leaves.append(cell)
         return leaves
@@ -212,9 +233,8 @@ class LineageTree:
             s2 = seperator.join(s_list)
             s3 = ".\n This UNpruned tree has {} cells in total".format(len(self.full_lin_list))
             return s1 + s2 + s3
-
+        
 # tools for traversing trees
-
 
 def tree_recursion(cell, subtree):
     """ a recursive function that traverses upwards from the leaf to the root. """

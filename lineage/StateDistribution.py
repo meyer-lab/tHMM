@@ -74,6 +74,13 @@ def prune_rule(cell):
         truther = True  # cell has died; subtree must be removed
     return truther
 
+def tHMM_E_init(state):
+    return StateDistribution(state,
+                             0.9*(np.random.uniform()),
+                             50*(1+np.random.uniform()),
+                             7.5*(np.random.uniform()),
+                             1.5*(np.random.uniform()))
+
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
 # Their use in the ObservationEmission class is shown in the estimator class method. User must take care to define estimators that

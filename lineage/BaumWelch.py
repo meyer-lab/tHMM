@@ -2,7 +2,6 @@
 import logging
 import numpy as np
 
-from .tHMM_utils import max_gen, get_gen, get_daughters
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, beta_parent_child_func
 
@@ -32,10 +31,10 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, 
 def get_all_gammas(lineage, gamma_array_at_state_j):
     '''sum of the list of all the gamma parent child for all the parent child relationships'''
     curr_level = 1
-    max_level = max_gen(lineage)
+    max_level = lineage._max_gen()
     holder = []
     while curr_level < max_level:  # get all the gammas but not the ones at the last level
-        level = get_gen(curr_level, lineage)  # get lineage for the gen
+        level = lineage._get_gen(curr_level)  # get lineage for the gen
         for cell in level:
             if not cell._isLeaf():
                 cell_idx = lineage.index(cell)
@@ -50,11 +49,11 @@ def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array,
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
 
     holder = 0.0
-    for curr_level in range(1, max_gen(lineage)):
-        for cell in get_gen(curr_level, lineage):  # get lineage for the gen
+    for curr_level in range(1, lineage._max_gen()):
+        for cell in lineage._get_gen(curr_level):  # get lineage for the gen
             node_parent_m_idx = lineage.index(cell)
 
-            for daughter_idx in get_daughters(cell):
+            for daughter_idx in cell._get_daughters():
                 node_child_n_idx = lineage.index(daughter_idx)
                 holder += zeta_parent_child_func(node_parent_m_idx=node_parent_m_idx,
                                                  node_child_n_idx=node_child_n_idx,
