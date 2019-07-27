@@ -28,7 +28,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(10 <= shape <= 15)
         self.assertTrue(2 <= scale <= 4)
 
-    def test_report_time(self):
+    def test_get_expTime(self):
 
         T = np.array([[1.0, 0.0],
                       [0.0, 1.0]])
@@ -57,13 +57,8 @@ class TestModel(unittest.TestCase):
         prune_boolean = True # To get the full tree
         lineage1 = LineageTree(pi, T, E, desired_num_cells, prune_boolean)
 
-        X = [lineage1]
-        list_of_cells = []
-        for num, lineageObj in enumerate(X):
-            lineage = lineageObj.output_lineage
-            for cells in lineage:
-                list_of_cells.append(cells)
-        
+        longest = 
+
         self.assertTrue(len(list_of_cells == 3))
         print(list_of_cells)
         cell0_tau = list_of_cells[0].obs[1]

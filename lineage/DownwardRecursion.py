@@ -38,13 +38,12 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
         T = tHMMobj.estimate.T
 
         curr_level = 1
-        max_level = lineage._max_gen()
+        max_level = lineageObj._max_gen()
 
 
-        for curr_level in range(1, lineage._max_gen()):
-            level = lineage._get_gen(curr_level)  # get lineage for the gen
-            for cell in level:
-                parent_idx = lineage.index(cell)
+        for curr_level in range(1, lineageObj._max_gen()):
+            level = lineageObj._get_gen(curr_level)  # get lineage for the gen
+            for parent_idx, cell in enumerate(level):
 
                 for daughter_idx in cell._get_daughters():
                     child_idx = lineage.index(daughter_idx)

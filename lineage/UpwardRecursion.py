@@ -100,19 +100,18 @@ def get_leaf_betas(tHMMobj, NF):
 
         beta_array = np.zeros((len(lineage), numStates))  # instantiating N by K array
 
-        for cell in lineage:  # for each cell in the lineage
+        for indx, cell in enumerate(lineage):  # for each cell in the lineage
             if cell._isLeaf():  # if it is a leaf
-                leaf_cell_idx = lineage.index(cell)  # get the index of the leaf
 
                 for state_k in range(numStates):  # for each state
                     # see expression in docstring
-                    numer1 = EL_array[leaf_cell_idx, state_k]  # Emission Likelihood
+                    numer1 = EL_array[indx, state_k]  # Emission Likelihood
                     # P(x_n = x | z_n = k)
-                    numer2 = MSD_array[leaf_cell_idx, state_k]  # Marginal State Distribution
+                    numer2 = MSD_array[indx, state_k]  # Marginal State Distribution
                     # P(z_n = k)
-                    denom = NF_array[leaf_cell_idx]  # Normalizing Factor (same regardless of state)
+                    denom = NF_array[indx]  # Normalizing Factor (same regardless of state)
                     # P(x_n = x)
-                    beta_array[leaf_cell_idx, state_k] = numer1 * numer2 / denom
+                    beta_array[indx, state_k] = numer1 * numer2 / denom
         betas.append(beta_array)
     for num, lineageObj in enumerate(tHMMobj.X):
         betas_last_row_sum = np.sum(betas[num][-1])
@@ -143,10 +142,10 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
         EL_array = EL[num]  # geting the EL of the respective lineage
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
 
-        curr_gen = lineage._max_gen()  # start at the lowest generation of the lineage (at the leaves)
+        curr_gen = lineageObj._max_gen()  # start at the lowest generation of the lineage (at the leaves)
         while curr_gen > 1:
-            level = lineage._get_gen(curr_gen)
-            parent_holder = lineage._get_parents_for_level(level)
+            level = lineageObj._get_gen(curr_gen)
+            parent_holder = lineageObj._get_parents_for_level(level)
             for node_parent_m_idx in parent_holder:
                 numer_holder = []
                 for state_j in range(tHMMobj.numStates):
@@ -183,13 +182,16 @@ def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, sta
                                           T=T,
                                           MSD_array=MSD_array,
                                           state_j=state_j,
-                                          node_child_n_idx=node_child_n_idx)
+                                          node_child_n_idx=node_child_n_idx,
+                                          numStates=numStates)
         beta_m_n_holder.append(beta_m_n)
+    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
+    assert lineage[node_child_n_idx]._isChild()  # if the child-parent relationship is correct, then the child must
     result = np.prod(beta_m_n_holder)  # calculates the product of items in a list
     return result
 
 
-def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
+def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx, numStates):
     '''
     This "helper" function calculates the probability
     described as a 'beta-link' between parent and child
@@ -199,8 +201,7 @@ def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
     to the root node) node beta and Normalizing Factor
     values.
     '''
-    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
-    assert lineage[node_child_n_idx]._isChild()  # if the child-parent relationship is correct, then the child must
+
     # either be the left daughter or the right daughter
     summand_holder = []  # summing over the states
 
