@@ -75,15 +75,15 @@ class tHMM:
         for num, lineageObj in enumerate(self.X):
             lineage = lineageObj.output_lineage
             curr_level = 2
-            max_level = lineage._max_gen
+            max_level = lineageObj._max_gen()
             while curr_level <= max_level:
 
-                level = lineage._get_gen(curr_level) # get lineage for the gen
+                level = lineageObj._get_gen(curr_level) # get lineage for the gen
                 for cell in level:
                     parent_cell_idx = lineage.index(cell.parent)  # get the index of the parent cell
                     current_cell_idx = lineage.index(cell)
                     for state_k in range(self.numStates):  # recursion based on parent cell
-                        temp_sum_holder = 0  # for all states k, calculate the sum of temp
+                        temp_sum_holder = []  # for all states k, calculate the sum of temp
 
                         for state_j in range(numStates):  # for all states j, calculate temp
                             temp = self.estimate.T[state_j, state_k] * MSD[num][parent_cell_idx, state_j]

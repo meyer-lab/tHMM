@@ -57,7 +57,15 @@ class TestModel(unittest.TestCase):
         prune_boolean = True # To get the full tree
         lineage1 = LineageTree(pi, T, E, desired_num_cells, prune_boolean)
 
-        list_of_cells = [cells for cells in lineage1.output_lineage]
+        X = [lineage1]
+        list_of_cells = []
+        for num, lineageObj in enumerate(X):
+            lineage = lineageObj.output_lineage
+            for cells in lineage:
+                list_of_cells.append(cells)
+        
+        self.assertTrue(len(list_of_cells == 3))
+        print(list_of_cells)
         cell0_tau = list_of_cells[0].obs[1]
         cell0_to_left_tau = list_of_cells[1].obs[1] + cell0_tau
         cell0_to_right_tau = list_of_cells[2].obs[1] + cell0_tau
