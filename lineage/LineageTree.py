@@ -70,7 +70,7 @@ class LineageTree:
         self.pruned_leaves_idx, self.pruned_leaves = get_leaves(self.pruned_list)
         
         self._prune_boolean = prune_boolean  # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
-        self.prune_boolean(self._prune_boolean)
+        self.prune_boolean = self._prune_boolean
 
     # Based on the user's decision, if they want the lineage to be pruned (prune_boolean == True),
     # the lineage tree that is given to the tHMM, will be the pruned one.

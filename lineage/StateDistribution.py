@@ -107,9 +107,8 @@ def report_time(cell):
 
 def get_expTime(lineage):
     """ This function is to find the amount of time it took for the cells to be generated and reach to the desired number of cells. """
-    leaf_list = lineage._find_leaves()
     leaf_times = []
-    for cell in leaf_list:
+    for cell in lineage.output_leaves:
         temp = report_time(cell)
         leaf_times.append(temp)
     longest = max(leaf_times)
@@ -123,7 +122,7 @@ def bernoulli_estimator(bern_obs):
 
 def exponential_estimator(exp_obs):
     """ Trivial exponential """
-    return (sum(exp_obs)) / (len(exp_obs))
+    return (sum(exp_obs) + 50e-10) / (len(exp_obs) + 1e-10)
 
 
 def gamma_estimator(gamma_obs):

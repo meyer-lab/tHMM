@@ -79,15 +79,15 @@ class CellVar:
 
     def __repr__(self):
         if hasattr(self, 'obs'):
-            return "Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, self.obs)
+            return "\n Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, self.obs)
         else:
-            return "Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, "This cell has no observations to report.")
+            return "\n Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, "This cell has no observations to report.")
 
     def __str__(self):
         if hasattr(self, 'obs'):
-            return "Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, self.obs)
+            return "\n Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, self.obs)
         else:
-            return "Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, "This cell has no observations to report.")
+            return "\n Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, "This cell has no observations to report.")
 
 
 def _double(parent_state, T):

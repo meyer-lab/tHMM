@@ -29,7 +29,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, 
 def get_all_gammas(lineageObj, gamma_array_at_state_j):
     '''sum of the list of all the gamma parent child for all the parent child relationships'''
     holder = []
-    for level in lineageObj.output_list_of_gens[1:]
+    for level in lineageObj.output_list_of_gens[1:]:
         for cell in level:
             if not cell._isLeaf():
                 cell_idx = lineage._index(cell)

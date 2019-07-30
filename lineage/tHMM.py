@@ -76,7 +76,7 @@ class tHMM:
         for num, lineageObj in enumerate(self.X):
             lineage = lineageObj.output_lineage
             max_level = lineageObj.output_max_gen
-            for level in lineageObj.output_list_of_gens[1:]
+            for level in lineageObj.output_list_of_gens[2:]:
                 for cell in level:
                     parent_cell_idx = lineage.index(cell.parent)  # get the index of the parent cell
                     current_cell_idx = lineage.index(cell)

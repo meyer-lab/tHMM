@@ -40,7 +40,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
         EL_array = EL[num]  # geting the EL of the respective lineage
         NF_array = np.zeros((len(lineage)), dtype=float)  # instantiating N by 1 array
 
-        for ii, cell in enumerate(lineageObj.output_leaves}:  # for each cell in the lineage's leaves
+        for ii, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
             assert cell._isLeaf()
             leaf_cell_idx = lineageObj.output_leaves_idx[ii]
             temp_sum_holder = []  # create a temporary list
@@ -97,7 +97,7 @@ def get_leaf_betas(tHMMobj, NF):
         NF_array = NF[num]  # getting the NF of the respective lineage
 
         beta_array = np.zeros((len(lineage), numStates))  # instantiating N by K array
-        for ii, cell in enumerate(lineageObj.output_leaves}:  # for each cell in the lineage's leaves
+        for ii, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
             assert cell._isLeaf()
             leaf_cell_idx = lineageObj.output_leaves_idx[ii]
             for state_k in range(numStates):  # for each state
@@ -139,7 +139,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
         EL_array = EL[num]  # geting the EL of the respective lineage
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
                                   
-        for level in lineageObg.output_list_of_gens[1:][::-1]
+        for level in lineageObg.output_list_of_gens[1:][::-1]:
             parent_holder = lineageObj._get_parents_for_level(level)
             for node_parent_m_idx in parent_holder:
                 numer_holder = []
