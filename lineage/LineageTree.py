@@ -239,7 +239,7 @@ class LineageTree:
 def max_gen(lineage):
     """ finds the maximal generation in the tree. """
     gens = set([cell.gen for cell in lineage])
-    list_of_lists_of_cells_by_gen = []
+    list_of_lists_of_cells_by_gen = [[None]]
     for gen in gens:
         temp_gen_list = []
         for cell in lineage:
