@@ -167,13 +167,6 @@ class LineageTree:
 
         return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
 
-    def _get_parents_for_level(self, level):
-        """ get the parents of a generation """
-        parent_holder = set()  # set makes sure only one index is put in and no overlap
-        for cell in level:
-            parent_holder.add(self.output_lineage.index(cell.parent))
-        return parent_holder
-
     def _find_leaves(self):
         leaves = []
         for cell in self.output_lineage:
@@ -225,17 +218,22 @@ class LineageTree:
 
 def max_gen(lineage):
     """ finds the maximal generation in the tree. """
-    sorted_by_gen_lineage_list = lineage.sort(key=lambda x: x.gen, reverse=True)
-    gens = set([cell.gen for cell in sorted_by_gen_lineage_list])
-    list_of_lists_of_cells_by_gen
+    gens = set([cell.gen for cell in lineage])
+    list_of_lists_of_cells_by_gen = []
     for gen in gens:
         temp_gen_list = []
         for cell in lineage:
             if cell.gen == gen:
                 temp_gen_list.append(cell)
-        gen_list.append(temp_gen_list)
-    max_gen = gens[-1]
-    return max_gen, list_of_lists_of_cells_by_gen
+        list_of_lists_of_cells_by_gen.append(temp_gen_list)
+    return max(gens), list_of_lists_of_cells_by_gen
+
+def get_parents_for_gen(lineage, level):
+    """ get the parent's index of a generation """
+    parent_holder = set()  # set makes sure only one index is put in and no overlap
+    for cell in level:
+        parent_holder.add(lineage.index(cell.parent))
+    return parent_holder
 
 # tools for traversing trees
 
