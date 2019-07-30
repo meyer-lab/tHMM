@@ -21,7 +21,7 @@ def get_root_gammas(tHMMobj, betas):
         for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
             gammas_0_row_sum = np.sum(gammas[num][0])
             assert np.isclose(gammas_0_row_sum, 1.)
-            
+
     return gammas
 
 
@@ -39,7 +39,6 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
 
         curr_level = 1
         max_level = lineageObj._max_gen()
-
 
         for curr_level in range(1, lineageObj._max_gen()):
             level = lineageObj._get_gen(curr_level)  # get lineage for the gen

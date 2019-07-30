@@ -119,7 +119,6 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             T_new = T_holder / row_sums[:, np.newaxis]
             tHMMobj.estimate.T = T_new
 
-
             max_state_holder = []  # a list the size of lineage, that contains max state for each cell
             for ii, cell in enumerate(lineage):
                 assert lineage[ii] is cell

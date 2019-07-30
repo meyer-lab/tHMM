@@ -2,6 +2,7 @@
 import numpy as np
 import scipy.stats as sp
 
+
 class StateDistribution:
     def __init__(self, state, bern_p, expon_scale_beta, gamma_a, gamma_scale):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
@@ -74,12 +75,13 @@ def prune_rule(cell):
         truther = True  # cell has died; subtree must be removed
     return truther
 
+
 def tHMM_E_init(state):
     return StateDistribution(state,
-                             0.9*(np.random.uniform()),
-                             50*(1+np.random.uniform()),
-                             7.5*(np.random.uniform()),
-                             1.5*(np.random.uniform()))
+                             0.9 * (np.random.uniform()),
+                             50 * (1 + np.random.uniform()),
+                             7.5 * (np.random.uniform()),
+                             1.5 * (np.random.uniform()))
 
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
@@ -101,6 +103,7 @@ def report_time(cell):
             taus.append(cells.parent.obs[1])
         summation = sum(taus)
         return summation
+
 
 def get_expTime(lineage):
     """ This function is to find the amount of time it took for the cells to be generated and reach to the desired number of cells. """

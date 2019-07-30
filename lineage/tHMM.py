@@ -3,6 +3,7 @@
 import numpy as np
 from .StateDistribution import StateDistribution, tHMM_E_init
 
+
 class estimate:
     def __init__(self, numStates):
         self.numStates = numStates
@@ -11,6 +12,7 @@ class estimate:
         self.E = []
         for state in range(self.numStates):
             self.E.append(tHMM_E_init(state))
+
 
 class tHMM:
     """ Main tHMM class. """
@@ -37,7 +39,6 @@ class tHMM:
 
 
 ##---------------------------- Marginal State Distribution ------------------------------##
-
 
     def get_Marginal_State_Distributions(self):
         '''
@@ -78,7 +79,7 @@ class tHMM:
             max_level = lineageObj._max_gen()
             while curr_level <= max_level:
 
-                level = lineageObj._get_gen(curr_level) # get lineage for the gen
+                level = lineageObj._get_gen(curr_level)  # get lineage for the gen
                 for cell in level:
                     parent_cell_idx = lineage.index(cell.parent)  # get the index of the parent cell
                     current_cell_idx = lineage.index(cell)
@@ -132,6 +133,6 @@ class tHMM:
                 for cell in lineage:  # for each cell in the lineage
                     current_cell_idx = lineage.index(cell)  # get the index of the current cell
                     EL_array[current_cell_idx, state_k] = self.estimate.E[state_k].pdf(cell.obs)
-                    
+
             EL.append(EL_array)  # append the EL_array for each lineage
         return EL
