@@ -75,11 +75,8 @@ class tHMM:
 
         for num, lineageObj in enumerate(self.X):
             lineage = lineageObj.output_lineage
-            curr_level = 2
-            max_level = lineageObj._max_gen()
-            while curr_level <= max_level:
-
-                level = lineageObj._get_gen(curr_level)  # get lineage for the gen
+            max_level = lineageObj.output_max_gen
+            for level in lineageObj.output_list_of_gens[1:]
                 for cell in level:
                     parent_cell_idx = lineage.index(cell.parent)  # get the index of the parent cell
                     current_cell_idx = lineage.index(cell)
@@ -106,19 +103,7 @@ class tHMM:
         P(x_n = x | z_n = k),
 
         for all x_n and z_n in our observed and hidden state tree
-        and for all possible discrete states k. Since we have a
-        multiple observation model, that is
-
-        x_n = {x_B, x_E}, # in case of Exponential distribution for lifetime
-
-        consists of more than one observation, x_B = division(1) or
-        death(0) (which is one of the observations x_B) and the other
-        being,x_E = lifetime, lifetime >=0, (which is the other observation x_E)
-        we make the assumption that
-
-        In case of Exponential lifetime in stead of Gompertz, we have:
-        P(x_n = x | z_n = k) = P(x_n1 = x_B | z_n = k) * P(x_n = x_E | z_n = k).
-
+        and for all possible discrete states k.
         '''
         numStates = self.numStates
 
@@ -126,7 +111,6 @@ class tHMM:
 
         for lineageObj in self.X:  # for each lineage in our Population
             lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
-
             EL_array = np.zeros((len(lineage), numStates))  # instantiating N by K array for each lineage
 
             for state_k in range(numStates):  # for each state
