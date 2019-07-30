@@ -23,7 +23,7 @@ class LineageStateStats:
 
 
 class LineageTree:
-    def __init__(self, pi, T, E, desired_num_cells, prune_boolean):
+    def __init__(self, pi, T, E, desired_num_cells, prune_boolean=True):
         """
         A class for the structure of the lineage tree. Every lineage from this class is a binary tree built based on initial probabilities and transition probabilities given by the user that builds up the states based off of these until it reaches the desired number of cells in the tree, and then stops. Given the desired distributions for emission, the object will have the "E" a list of state distribution objects assigned to them.
 
@@ -60,10 +60,11 @@ class LineageTree:
         for state in range(self.num_states):
             self.lineage_stats[state].num_full_lin_cells, self.lineage_stats[state].full_lin_cells, self.lineage_stats[state].full_lin_cells_obs, self.lineage_stats[state].full_lin_cells_idx = self._full_assign_obs(
                 state)
-        self.full
+        self.full_max_gen, self.full_list_of_gens = max_gen(self.full_lin_list)
 
-        self.prune_boolean = prune_boolean  # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
+        self._prune_boolean = prune_boolean  # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
         self.pruned_list = self._prune_lineage()
+        self.pruned_max_gen, self.pruned_list_of_gens = max_gen(self.pruned_list)
 
         for state in range(self.num_states):
             self.lineage_stats[state].num_pruned_lin_cells, self.lineage_stats[state].pruned_lin_cells, self.lineage_stats[state].pruned_lin_cells_obs, self.lineage_stats[state].pruned_lin_cells_idx = self._get_pruned_state_count(
@@ -75,8 +76,13 @@ class LineageTree:
         # then the full_lin_list will be passed to the output_lineage.
         if prune_boolean:
             self.output_lineage = self.pruned_lin_list
+            self.output_max_gen = self.pruned_max_gen
+            self.output_list_of_gens = self.pruned_list_of_gens
         else:
             self.output_lineage = self.full_lin_list
+            self.output_max_gen = self.full_max_gen
+            self.output_list_of_gens = self.full_list_of_gens
+
         
 
     def _generate_lineage_list(self):
