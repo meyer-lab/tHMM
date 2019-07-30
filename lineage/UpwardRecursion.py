@@ -139,7 +139,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
         EL_array = EL[num]  # geting the EL of the respective lineage
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
                                   
-        for level in lineageObg.output_list_of_gens[::-1]
+        for level in lineageObg.output_list_of_gens[1:][::-1]
             parent_holder = lineageObj._get_parents_for_level(level)
             for node_parent_m_idx in parent_holder:
                 numer_holder = []
