@@ -26,13 +26,10 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, 
     zeta = beta_child_state_k * T[parent_state_j, child_state_k] * gamma_parent_state_j / (MSD_child_state_k * beta_parent_child_state_j)
     return zeta
 
-def get_all_gammas(lineage, gamma_array_at_state_j):
+def get_all_gammas(lineageObj, gamma_array_at_state_j):
     '''sum of the list of all the gamma parent child for all the parent child relationships'''
-    curr_level = 1
-    max_level = lineage._max_gen()
     holder = []
-    while curr_level < max_level:  # get all the gammas but not the ones at the last level
-        level = lineage.get_gen(curr_level)  # get lineage for the gen
+    for level in lineageObj.output_list_of_gens[1:]
         for cell in level:
             if not cell._isLeaf():
                 cell_idx = lineage._index(cell)
@@ -47,7 +44,7 @@ def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array,
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
 
     holder = 0.0
-    for curr_level in range(1, lineage._max_gen()):
+    for level in lineage.output_list_of_gens[1:]:
         for cell in lineage._get_gen(curr_level):  # get lineage for the gen
             node_parent_m_idx = lineage.index(cell)
 
@@ -101,7 +98,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             T_holder = np.zeros((numStates, numStates), dtype=float)
             for state_j in range(numStates):
                 gamma_array_at_state_j = gamma_array[:, state_j]
-                denom = get_all_gammas(lineage, gamma_array_at_state_j)
+                denom = get_all_gammas(lineageObj, gamma_array_at_state_j)
                 for state_k in range(numStates):
                     numer = get_all_zetas(parent_state_j=state_j,
                                           child_state_k=state_k,
