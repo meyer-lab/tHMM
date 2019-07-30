@@ -37,15 +37,11 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
         beta_array = betas[num]  # instantiating N by K array
         T = tHMMobj.estimate.T
 
-        curr_level = 1
-        max_level = lineageObj._max_gen()
+        for level in lineageObj.output_list_of_gens[1:]:
+            for cell in level:
 
-        for curr_level in range(1, lineageObj._max_gen()):
-            level = lineageObj._get_gen(curr_level)  # get lineage for the gen
-            for parent_idx, cell in enumerate(level):
-
-                for daughter_idx in cell._get_daughters():
-                    child_idx = lineage.index(daughter_idx)
+                for daughter in cell._get_daughters():
+                    child_idx = lineage.index(daughter)
                     coeffs = beta_array[child_idx, :] / MSD_array[child_idx, :]
 
                     for child_state_k in range(tHMMobj.numStates):
