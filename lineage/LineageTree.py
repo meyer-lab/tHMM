@@ -60,6 +60,7 @@ class LineageTree:
         for state in range(self.num_states):
             self.lineage_stats[state].num_full_lin_cells, self.lineage_stats[state].full_lin_cells, self.lineage_stats[state].full_lin_cells_obs, self.lineage_stats[state].full_lin_cells_idx = self._full_assign_obs(
                 state)
+        self.full
 
         self.prune_boolean = prune_boolean  # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
         self.pruned_list = self._prune_lineage()
@@ -76,6 +77,7 @@ class LineageTree:
             self.output_lineage = self.pruned_lin_list
         else:
             self.output_lineage = self.full_lin_list
+        
 
     def _generate_lineage_list(self):
         """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states) in a full binary tree manner. It generates the tree until it reaches the desired number of cells in the lineage.
@@ -165,22 +167,6 @@ class LineageTree:
 
         return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
 
-    def _max_gen(self):
-        """ finds the maximal generation in the tree. """
-        gen_holder = 1
-        for cell in self.output_lineage:
-            if cell.gen > gen_holder:
-                gen_holder = cell.gen
-        return gen_holder
-
-    def _get_gen(self, gen):
-        """ returns all cells in a generation """
-        first_set = []
-        for cell in self.output_lineage:
-            if cell.gen == gen:
-                first_set.append(cell)
-        return first_set
-
     def _get_parents_for_level(self, level):
         """ get the parents of a generation """
         parent_holder = set()  # set makes sure only one index is put in and no overlap
@@ -234,9 +220,24 @@ class LineageTree:
             s2 = seperator.join(s_list)
             s3 = ".\n This UNpruned tree has {} cells in total".format(len(self.full_lin_list))
             return s1 + s2 + s3
+        
+# tools for analyzing trees
+
+def max_gen(lineage):
+    """ finds the maximal generation in the tree. """
+    sorted_by_gen_lineage_list = lineage.sort(key=lambda x: x.gen, reverse=True)
+    gens = set([cell.gen for cell in sorted_by_gen_lineage_list])
+    list_of_lists_of_cells_by_gen
+    for gen in gens:
+        temp_gen_list = []
+        for cell in lineage:
+            if cell.gen == gen:
+                temp_gen_list.append(cell)
+        gen_list.append(temp_gen_list)
+    max_gen = gens[-1]
+    return max_gen, list_of_lists_of_cells_by_gen
 
 # tools for traversing trees
-
 
 def tree_recursion(cell, subtree):
     """ a recursive function that traverses upwards from the leaf to the root. """
