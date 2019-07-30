@@ -2,8 +2,6 @@
 This creates Figure 4.
 """
 from .figureCommon import getSetup
-from .Matplot_gen import Matplot_gen
-from .Fig_Gen import Lineage_Length
 
 
 def makeFigure():
