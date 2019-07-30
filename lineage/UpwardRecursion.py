@@ -186,7 +186,7 @@ def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, sta
     return result
 
 
-def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx, numStates):
+def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
     '''
     This "helper" function calculates the probability
     described as a 'beta-link' between parent and child
@@ -196,19 +196,9 @@ def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx, 
     to the root node) node beta and Normalizing Factor
     values.
     '''
-
-    # either be the left daughter or the right daughter
-    summand_holder = []  # summing over the states
-
-    for state_k in range(numStates):  # for each state k
-        numer1 = beta_array[node_child_n_idx, state_k]  # get the already calculated beta at node n for state k
-        numer2 = T[state_j, state_k]  # get the transition rate for going from state j to state k
-        # P( z_n = k | z_m = j)
-        denom = MSD_array[node_child_n_idx, state_k]  # get the MSD for node n at state k
-        # P(z_n = k)
-        summand_holder.append(numer1 * numer2 / denom)
-
-    return sum(summand_holder)
+    # beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
+    # P( z_n = k | z_m = j); P(z_n = k)
+    return np.sum(beta_array[node_child_n_idx, :] * T[state_j, :] / MSD_array[node_child_n_idx, :])
 
 
 def calculate_log_likelihood(tHMMobj, NF):
