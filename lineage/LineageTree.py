@@ -74,7 +74,7 @@ class LineageTree:
         # the lineage tree that is given to the tHMM, will be the pruned one.
         # If the user decides that they want the full binary tree (prune_boolean == False),
         # then the full_lin_list will be passed to the output_lineage.
-        if prune_boolean:
+        if self._prune_boolean:
             self.output_lineage = self.pruned_lin_list
             self.output_max_gen = self.pruned_max_gen
             self.output_list_of_gens = self.pruned_list_of_gens
@@ -82,8 +82,24 @@ class LineageTree:
             self.output_lineage = self.full_lin_list
             self.output_max_gen = self.full_max_gen
             self.output_list_of_gens = self.full_list_of_gens
+            
+    @property
+    def prune_boolean(self):
+        return self._prune_boolean
 
-        
+    @prune_boolean.setter
+    def prune_boolean(self, new_prune_boolean):
+        if type(new_prune_boolean) is not bool:
+            raise ValueError("Boolean deciding whether to prune or not must be True or False.")
+        self._prune_boolean = new_prune_boolean
+        if self._prune_boolean:
+            self.output_lineage = self.pruned_lin_list
+            self.output_max_gen = self.pruned_max_gen
+            self.output_list_of_gens = self.pruned_list_of_gens
+        else:
+            self.output_lineage = self.full_lin_list
+            self.output_max_gen = self.full_max_gen
+            self.output_list_of_gens = self.full_list_of_gens
 
     def _generate_lineage_list(self):
         """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states) in a full binary tree manner. It generates the tree until it reaches the desired number of cells in the lineage.
