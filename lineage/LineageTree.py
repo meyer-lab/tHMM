@@ -60,14 +60,14 @@ class LineageTree:
             self.lineage_stats[state].num_full_lin_cells, self.lineage_stats[state].full_lin_cells, self.lineage_stats[state].full_lin_cells_obs, self.lineage_stats[state].full_lin_cells_idx = self._full_assign_obs(
                 state)
         self.full_max_gen, self.full_list_of_gens = max_gen(self.full_lin_list)
-        self.full_leaves = get_leaves(self.full_lin_list)
+        self.full_leaves_idx, self.full_leaves = get_leaves(self.full_lin_list)
 
         self.pruned_list = self._prune_lineage()
         for state in range(self.num_states):
             self.lineage_stats[state].num_pruned_lin_cells, self.lineage_stats[state].pruned_lin_cells, self.lineage_stats[state].pruned_lin_cells_obs, self.lineage_stats[state].pruned_lin_cells_idx = self._get_pruned_state_count(
                 state)
         self.pruned_max_gen, self.pruned_list_of_gens = max_gen(self.pruned_list)
-        self.pruned_leaves = get_leaves(self.pruned_list)
+        self.pruned_leaves_idx, self.pruned_leaves = get_leaves(self.pruned_list)
         
         self._prune_boolean = prune_boolean  # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
         self.prune_boolean(self._prune_boolean)
@@ -90,12 +90,14 @@ class LineageTree:
             self.output_lineage = self.pruned_lin_list
             self.output_max_gen = self.pruned_max_gen
             self.output_list_of_gens = self.pruned_list_of_gens
+            self.output_leaves_idx = self.pruned_leaves_idx
             self.output_leaves = self.pruned_leaves
         else:
             self.output_lineage = self.full_lin_list
             self.output_max_gen = self.full_max_gen
             self.output_list_of_gens = self.full_list_of_gens
-            self.output_leaves = self.full_leaves
+            self.output_leaves_idx = self.full_leaves_idx
+            self.output_leaves = self.full_leaves  
 
     def _generate_lineage_list(self):
         """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states) in a full binary tree manner. It generates the tree until it reaches the desired number of cells in the lineage.
@@ -240,11 +242,13 @@ def max_gen(lineage):
     return max(gens), list_of_lists_of_cells_by_gen
 
 def get_leaves(lineage):
+    leaf_indices = []
     leaves = []
     for cell in lineage:
         if cell._isLeaf():
             leaves.append(cell)
-    return leaves
+            leaf_indices.append(lineage.index(cell))
+    return leaf_indices, leaves
 
 # tools for traversing trees
 
