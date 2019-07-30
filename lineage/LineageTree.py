@@ -55,33 +55,27 @@ class LineageTree:
         for state in range(self.num_states):
             self.lineage_stats.append(LineageStateStats(state))
 
-        self.fullLineage_list = self._generate_lineage_list()
-
+        self.full_lin_list = self._generate_lineage_list()
         for state in range(self.num_states):
             self.lineage_stats[state].num_full_lin_cells, self.lineage_stats[state].full_lin_cells, self.lineage_stats[state].full_lin_cells_obs, self.lineage_stats[state].full_lin_cells_idx = self._full_assign_obs(
                 state)
         self.full_max_gen, self.full_list_of_gens = max_gen(self.full_lin_list)
+        self.full_leaves = get_leaves(self.full_lin_list)
 
-        self._prune_boolean = prune_boolean  # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
         self.pruned_list = self._prune_lineage()
-        self.pruned_max_gen, self.pruned_list_of_gens = max_gen(self.pruned_list)
-
         for state in range(self.num_states):
             self.lineage_stats[state].num_pruned_lin_cells, self.lineage_stats[state].pruned_lin_cells, self.lineage_stats[state].pruned_lin_cells_obs, self.lineage_stats[state].pruned_lin_cells_idx = self._get_pruned_state_count(
                 state)
+        self.pruned_max_gen, self.pruned_list_of_gens = max_gen(self.pruned_list)
+        self.pruned_leaves = get_leaves(self.pruned_list)
+        
+        self._prune_boolean = prune_boolean  # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
+        self.prune_boolean(self._prune_boolean)
 
-        # Based on the user's decision, if they want the lineage to be pruned (prune_boolean == True),
-        # the lineage tree that is given to the tHMM, will be the pruned one.
-        # If the user decides that they want the full binary tree (prune_boolean == False),
-        # then the full_lin_list will be passed to the output_lineage.
-        if self._prune_boolean:
-            self.output_lineage = self.pruned_lin_list
-            self.output_max_gen = self.pruned_max_gen
-            self.output_list_of_gens = self.pruned_list_of_gens
-        else:
-            self.output_lineage = self.full_lin_list
-            self.output_max_gen = self.full_max_gen
-            self.output_list_of_gens = self.full_list_of_gens
+    # Based on the user's decision, if they want the lineage to be pruned (prune_boolean == True),
+    # the lineage tree that is given to the tHMM, will be the pruned one.
+    # If the user decides that they want the full binary tree (prune_boolean == False),
+    # then the full_lin_list will be passed to the output_lineage.
             
     @property
     def prune_boolean(self):
@@ -96,10 +90,12 @@ class LineageTree:
             self.output_lineage = self.pruned_lin_list
             self.output_max_gen = self.pruned_max_gen
             self.output_list_of_gens = self.pruned_list_of_gens
+            self.output_leaves = self.pruned_leaves
         else:
             self.output_lineage = self.full_lin_list
             self.output_max_gen = self.full_max_gen
             self.output_list_of_gens = self.full_list_of_gens
+            self.output_leaves = self.full_leaves
 
     def _generate_lineage_list(self):
         """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states) in a full binary tree manner. It generates the tree until it reaches the desired number of cells in the lineage.
@@ -189,15 +185,8 @@ class LineageTree:
 
         return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
 
-    def _find_leaves(self):
-        leaves = []
-        for cell in self.output_lineage:
-            if cell._isLeaf():
-                leaves.append(cell)
-        return leaves
-
     def __repr__(self):
-        if self.prune_boolean:
+        if self._prune_boolean:
             s1 = "This tree is pruned. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
             s_list = []
             for state in range(self.num_states):
@@ -217,7 +206,7 @@ class LineageTree:
             return s1 + s2 + s3
 
     def __str__(self):
-        if self.prune_boolean:
+        if self._prune_boolean:
             s1 = "This tree is pruned. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
             s_list = []
             for state in range(self.num_states):
@@ -250,12 +239,12 @@ def max_gen(lineage):
         list_of_lists_of_cells_by_gen.append(temp_gen_list)
     return max(gens), list_of_lists_of_cells_by_gen
 
-def get_parents_for_gen(lineage, level):
-    """ get the parent's index of a generation """
-    parent_holder = set()  # set makes sure only one index is put in and no overlap
-    for cell in level:
-        parent_holder.add(lineage.index(cell.parent))
-    return parent_holder
+def get_leaves(lineage):
+    leaves = []
+    for cell in lineage:
+        if cell._isLeaf():
+            leaves.append(cell)
+    return leaves
 
 # tools for traversing trees
 
