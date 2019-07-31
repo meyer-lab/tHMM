@@ -97,20 +97,19 @@ def tHMM_E_init(state):
 def report_time(cell):
     """ Given any cell in the lineage, this function walks through the cell's ancestors and return how long it has taken so far. """
     list_parents = [cell]
-    taus = [cell.obs[1]]
+    taus = cell.obs[1]
 
-    for cells in list_parents:
-        if cells._isRootParent():
-            taus.append(cells.obs[1])
+    for cell in list_parents:
+        if cell._isRootParent():
+            taus += cell.obs[1]
             break
-        elif cells.parent not in list_parents:
-            list_parents.append(cells.parent)
-            taus.append(cells.parent.obs[1])
-        summation = sum(taus)
-        return summation
+        elif cell.parent not in list_parents:
+            list_parents.append(cell.parent)
+            taus += cell.parent.obs[1]
+        return taus
 
 
-def get_expTime(lineage):
+def get_experiment_time(lineage):
     """ This function is to find the amount of time it took for the cells to be generated and reach to the desired number of cells. """
     leaf_times = []
     for cell in lineage.output_leaves:

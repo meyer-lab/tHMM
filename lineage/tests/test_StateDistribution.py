@@ -13,7 +13,7 @@ class TestModel(unittest.TestCase):
     def test_bernoulli_estimator(self):
         """ blah """
         bern_obs = sp.bernoulli.rvs(p=0.90, size=1000)  # bernoulli observations
-        self.assertTrue(0.88 <= bernoulli_estimator(bern_obs) <= 0.92)
+        self.assertTrue(0.87 <= bernoulli_estimator(bern_obs) <= 0.93)
 
     def test_exponential_estimator(self):
         """ blah """
