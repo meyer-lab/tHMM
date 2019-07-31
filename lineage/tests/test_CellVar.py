@@ -18,6 +18,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell_right.state == 1)
 
     def test_cell_divide(self):
+        """ blah """
         T = np.array([[1.0, 0.0],
                       [0.0, 1.0]])
 
@@ -44,6 +45,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(left_cell.gen == 2 and right_cell.gen == 2)
 
     def test_isParent(self):
+        """ blah """
         T = np.array([[1.0, 0.0],
                       [0.0, 1.0]])
 
@@ -54,6 +56,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell._isParent())
 
     def test_isChild(self):
+         """ blah """       
         T = np.array([[1.0, 0.0],
                       [0.0, 1.0]])
 
@@ -64,6 +67,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(left_cell._isChild() and right_cell._isChild())
 
     def test_isRootParent(self):
+        """ blah """        
         T = np.array([[1.0, 0.0],
                       [0.0, 1.0]])
 
@@ -74,6 +78,7 @@ class TestModel(unittest.TestCase):
         self.assertFalse(left_cell._isRootParent() and right_cell._isRootParent())
 
     def test_isLeaf(self):
+        """ blah """        
         T = np.array([[1.0, 0.0],
                       [0.0, 1.0]])
 
@@ -85,6 +90,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(left_cell._isLeaf() and right_cell._isLeaf())
 
     def test_get_sister(self):
+        """ blah """        
         T = np.array([[1.0, 0.0],
                       [0.0, 1.0]])
 
@@ -94,6 +100,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(left_cell._get_sister() is right_cell and right_cell._get_sister() is left_cell)
 
     def test_get_root_cell(self):
+        """ blah """        
         T = np.array([[1.0, 0.0],
                       [0.0, 1.0]])
 

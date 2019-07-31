@@ -167,21 +167,21 @@ def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, sta
     Calculates the product of beta-links for every parent-child
     relationship of a given parent cell in a given state.
     '''
-    beta_m_n_holder = []  # list to hold the factors in the product
+    beta_m_n_holder = 1.0  # list to hold the factors in the product
     node_parent_m = lineage[node_parent_m_idx]  # get the index of the parent
     children_list = node_parent_m._get_daughters()
     children_idx_list = [lineage.index(daughter) for daughter in children_list]
     for node_child_n_idx in children_idx_list:
+        assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
+        assert lineage[node_child_n_idx]._isChild()  # if the child-parent relationship is correct, then the child must
         beta_m_n = beta_parent_child_func(beta_array=beta_array,
                                           T=T,
                                           MSD_array=MSD_array,
                                           state_j=state_j,
                                           node_child_n_idx=node_child_n_idx)
-        beta_m_n_holder.append(beta_m_n)
-    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
-    assert lineage[node_child_n_idx]._isChild()  # if the child-parent relationship is correct, then the child must
-    result = np.prod(beta_m_n_holder)  # calculates the product of items in a list
-    return result
+        beta_m_n_holder *= beta_m_n
+
+    return beta_m_n_holder
 
 
 def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
