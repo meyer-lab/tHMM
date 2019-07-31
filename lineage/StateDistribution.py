@@ -70,7 +70,7 @@ class StateDistribution:
         return state_estimate_obj
 
     def __repr__(self):
-        return "State object w/ parameters: {}, {}, {}, {}, {}.".format(self.state, self.bern_p, self.expon_scale_beta, self.gamma_a, self.gamma_scale)
+        return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.expon_scale_beta, self.gamma_a, self.gamma_scale)
 
 
 def prune_rule(cell):
