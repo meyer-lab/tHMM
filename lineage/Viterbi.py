@@ -1,26 +1,24 @@
 '''This file contains the methods for the Viterbi algorithm implemented in an a upward recursion.'''
 import numpy as np
-from .tHMM_utils import max_gen, get_gen, get_parents_for_level, get_daughters
 
 
 def get_leaf_deltas(tHMMobj):
     '''delta matrix and base case at the leaves. Each element in this N by K matrix is the probability for the leaves P(x_n = x | z_n = k).'''
     numStates = tHMMobj.numStates
-    numLineages = tHMMobj.numLineages
-    population = tHMMobj.population
+
     EL = tHMMobj.EL
 
     deltas = []
     state_ptrs = []
 
-    for num in range(numLineages):  # for each lineage in our Population
-        lineage = population[num]  # getting the lineage in the Population by index
+    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
+        lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
         EL_array = EL[num]  # geting the EL of the respective lineage
         delta_array = np.zeros((len(lineage), numStates))  # instantiating N by K array
         state_ptrs_array = np.empty((len(lineage), numStates), dtype=object)  # instantiating N by K array
 
         for cell in lineage:  # for each cell in the lineage
-            if cell.isLeaf():  # if it is a leaf
+            if cell._isLeaf():  # if it is a leaf
                 leaf_cell_idx = lineage.index(cell)  # get the index of the leaf
                 delta_array[leaf_cell_idx, :] = EL_array[leaf_cell_idx, :]
 
@@ -32,21 +30,16 @@ def get_leaf_deltas(tHMMobj):
 def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
     '''Calculates the delta values for all non-leaf cells.'''
     numStates = tHMMobj.numStates
-    numLineages = tHMMobj.numLineages
-    population = tHMMobj.population
-    paramlist = tHMMobj.paramlist
+
     EL = tHMMobj.EL
 
-    for num in range(numLineages):  # for each lineage in our Population
-        lineage = population[num]  # getting the lineage in the Population by index
-        params = paramlist[num]  # getting the respective params by lineage index
-        T = params["T"]  # getting the transition matrix of the respective lineage
+    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
+        lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
+        T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
         EL_array = EL[num]  # geting the EL of the respective lineage
-        curr_gen = max_gen(lineage)  # start at the leafs in the maximum generation
 
-        while curr_gen > 1:  # move up one generation until the 2nd generation is the children and the root nodes are the parents
-            level = get_gen(curr_gen, lineage)
-            parent_holder = get_parents_for_level(level, lineage)
+        for level in lineageObj.output_list_of_gens[2:][::-1]:  # move up one generation until the 2nd generation is the children and the root nodes are the parents
+            parent_holder = lineageObj._get_parents_for_level(level)
 
             for node_parent_m_idx in parent_holder:
                 for state_k in range(numStates):
@@ -59,8 +52,6 @@ def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
                     fac2 = EL_array[node_parent_m_idx, state_k]
                     deltas[num][node_parent_m_idx, state_k] = fac1 * fac2
                     state_ptrs[num][node_parent_m_idx, state_k] = max_state_ptr
-
-            curr_gen -= 1
 
 
 def get_delta_parent_child_prod(numStates, lineage, delta_array, T, state_k, node_parent_m_idx):
@@ -96,7 +87,7 @@ def get_delta_parent_child_prod(numStates, lineage, delta_array, T, state_k, nod
 def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_parent_m_idx, node_child_n_idx):
     '''Calculates the delta value for a single parent-child relationship where the parent is in a given state.'''
     assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
-    assert lineage[node_child_n_idx].isChild()  # if the child-parent relationship is correct, then the child must be either the left daughter or the right daughter
+    assert lineage[node_child_n_idx]._isChild()  # if the child-parent relationship is correct, then the child must be either the left daughter or the right daughter
     max_holder = []  # maxing over the states
     for state_k in range(numStates):  # for each state k
         num1 = delta_array[node_child_n_idx, state_k]  # get the already calculated delta at node n for state k
@@ -111,29 +102,21 @@ def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_pa
 
 def Viterbi(tHMMobj, deltas, state_ptrs):
     '''Runs the viterbi algorithm and returns a list of arrays containing the optimal state of each cell.'''
-    numLineages = tHMMobj.numLineages
-    population = tHMMobj.population
-    paramlist = tHMMobj.paramlist
-
     all_states = []
 
-    for num in range(numLineages):
-        lineage = population[num]
-        params = paramlist[num]
-        pi = params['pi']
+    for num, lineageObj in enumerate(tHMMobj.X):
+        lineage = lineageObj.output_lineage
+        pi = tHMMobj.estimate.pi
         delta_array = deltas[num]
         state_ptrs_array = state_ptrs[num]
 
         opt_state_tree = np.zeros((len(lineage)), dtype=int)
         possible_first_states = np.multiply(delta_array[0, :], pi)
         opt_state_tree[0] = np.argmax(possible_first_states)
-        max_level = max_gen(lineage)
-        count = 1  # start at the root nodes
-        while count < max_level:  # move down until the lowest leaf node is reached
-            level = get_gen(count, lineage)
+        for level in lineageObj.output_list_of_gens[1:]:
             for cell in level:
                 parent_idx = lineage.index(cell)
-                temp = get_daughters(cell)
+                temp = cell._get_daughters()
                 for n in temp:
                     child_idx = lineage.index(n)
                     parent_state = opt_state_tree[parent_idx]
@@ -141,7 +124,7 @@ def Viterbi(tHMMobj, deltas, state_ptrs):
                     for child_state_tuple in temp:
                         if child_state_tuple[0] == child_idx:
                             opt_state_tree[child_idx] = child_state_tuple[1]
-            count += 1
+
         all_states.append(opt_state_tree)
 
     return all_states
