@@ -28,24 +28,24 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, 
 
 def get_all_gammas(lineageObj, gamma_array_at_state_j):
     '''sum of the list of all the gamma parent child for all the parent child relationships'''
-    holder = []
-    for level in lineageObj.output_list_of_gens[1:]:
+    lineage = lineageObj.output_lineage
+    holder = 0.0
+    for level in lineageObj.output_list_of_gens[1:]:  # get all the gammas but not the ones at the last level
         for cell in level:
             if not cell._isLeaf():
-                cell_idx = lineage._index(cell)
-                holder.append(gamma_array_at_state_j[cell_idx])
+                cell_idx = lineage.index(cell)
+                holder += gamma_array_at_state_j[cell_idx]
 
-        curr_level += 1
-    return sum(holder)
+    return holder
 
 
-def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array, gamma_array, T):
+def get_all_zetas(parent_state_j, child_state_k, lineageObj, beta_array, MSD_array, gamma_array, T):
     '''sum of the list of all the zeta parent child for all the parent cells for a given state transition pair'''
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
-
+    lineage = lineageObj.output_lineage
     holder = 0.0
-    for level in lineage.output_list_of_gens[1:]:
-        for cell in lineage._get_gen(curr_level):  # get lineage for the gen
+    for level in lineageObj.output_list_of_gens[1:]:
+        for cell in level:  # get lineage for the gen
             node_parent_m_idx = lineage.index(cell)
 
             for daughter_idx in cell._get_daughters():
@@ -64,8 +64,8 @@ def get_all_zetas(parent_state_j, child_state_k, lineage, beta_array, MSD_array,
 
 def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     '''Runs the tHMM function through Baum Welch fitting'''
-    numStates = tHMMobj.numStates
     numLineages = len(tHMMobj.X)
+    numStates = tHMMobj.numStates
 
     # first E step
 
@@ -87,12 +87,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             cell_groups[str(state)] = []
 
         for num, lineageObj in enumerate(tHMMobj.X):
-            if not truth_list[num]:
-                break
             lineage = lineageObj.output_lineage
-            beta_array = betas[num]
-            MSD_array = tHMMobj.MSD[num]
-
             gamma_array = gammas[num]
             tHMMobj.estimate.pi = gamma_array[0, :]
             T_holder = np.zeros((numStates, numStates), dtype=float)
@@ -102,17 +97,14 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
                 for state_k in range(numStates):
                     numer = get_all_zetas(parent_state_j=state_j,
                                           child_state_k=state_k,
-                                          lineage=lineage,
+                                          lineageObj=lineageObj,
                                           beta_array=betas[num],
                                           MSD_array=tHMMobj.MSD[num],
                                           gamma_array=gamma_array,
                                           T=tHMMobj.estimate.T)
-                    entry = numer / denom
-                    T_holder[state_j, state_k] = entry
+                    T_holder[state_j, state_k] = numer / denom
 
-            row_sums = T_holder.sum(axis=1)
-            T_new = T_holder / row_sums[:, np.newaxis]
-            tHMMobj.estimate.T = T_new
+            tHMMobj.estimate.T = T_holder / T_holder.sum(axis=1)[:, np.newaxis]
 
             max_state_holder = []  # a list the size of lineage, that contains max state for each cell
             for ii, cell in enumerate(lineage):
@@ -126,10 +118,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         # after iterating through each lineage, do the population wide E calculation
         for state_j in range(numStates):
             cells = cell_groups[str(state_j)]  # this array has the correct cells classified per group
-            list_of_tuples_of_obs = []
-            for cell in cells:
-                list_of_tuples_of_obs.append(cell.obs)
-            tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator(list_of_tuples_of_obs)
+            tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator([cell.obs for cell in cells]) 
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()

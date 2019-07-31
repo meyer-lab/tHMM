@@ -37,11 +37,9 @@ def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
         lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
         EL_array = EL[num]  # geting the EL of the respective lineage
-        curr_gen = max_gen(lineage)  # start at the leafs in the maximum generation
 
-        while curr_gen > 1:  # move up one generation until the 2nd generation is the children and the root nodes are the parents
-            level = lineage._get_gen(curr_gen)
-            parent_holder = lineage._get_parents_for_level(level)
+        for level in lineageObj.output_list_of_gens[2:][::-1]:  # move up one generation until the 2nd generation is the children and the root nodes are the parents
+            parent_holder = lineageObj._get_parents_for_level(level)
 
             for node_parent_m_idx in parent_holder:
                 for state_k in range(numStates):
@@ -54,8 +52,6 @@ def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
                     fac2 = EL_array[node_parent_m_idx, state_k]
                     deltas[num][node_parent_m_idx, state_k] = fac1 * fac2
                     state_ptrs[num][node_parent_m_idx, state_k] = max_state_ptr
-
-            curr_gen -= 1
 
 
 def get_delta_parent_child_prod(numStates, lineage, delta_array, T, state_k, node_parent_m_idx):
@@ -117,13 +113,10 @@ def Viterbi(tHMMobj, deltas, state_ptrs):
         opt_state_tree = np.zeros((len(lineage)), dtype=int)
         possible_first_states = np.multiply(delta_array[0, :], pi)
         opt_state_tree[0] = np.argmax(possible_first_states)
-        max_level = max_gen(lineage)
-        count = 1  # start at the root nodes
-        while count < max_level:  # move down until the lowest leaf node is reached
-            level = lineage._get_gen(count)
+        for level in lineageObj.output_list_of_gens[1:]:
             for cell in level:
                 parent_idx = lineage.index(cell)
-                temp = cell._get_daughters
+                temp = cell._get_daughters()
                 for n in temp:
                     child_idx = lineage.index(n)
                     parent_state = opt_state_tree[parent_idx]
@@ -131,7 +124,7 @@ def Viterbi(tHMMobj, deltas, state_ptrs):
                     for child_state_tuple in temp:
                         if child_state_tuple[0] == child_idx:
                             opt_state_tree[child_idx] = child_state_tuple[1]
-            count += 1
+                            
         all_states.append(opt_state_tree)
 
     return all_states

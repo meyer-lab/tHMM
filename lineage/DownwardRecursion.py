@@ -27,21 +27,18 @@ def get_root_gammas(tHMMobj, betas):
 
 def get_nonroot_gammas(tHMMobj, gammas, betas):
     '''get the gammas for all other nodes using recursion from the root nodes'''
-    numStates = tHMMobj.numStates
-
-    MSD = tHMMobj.MSD
-
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
-        MSD_array = MSD[num]  # getting the MSD of the respective lineage
-        beta_array = betas[num]  # instantiating N by K array
+        lineage = lineageObj.output_lineage
+        MSD_array = tHMMobj.MSD[num]  # getting the MSD of the respective lineage
         T = tHMMobj.estimate.T
+        beta_array = betas[num]  # instantiating N by K array
 
         for level in lineageObj.output_list_of_gens[1:]:
             for cell in level:
+                parent_idx = lineage.index(cell)
 
-                for daughter in cell._get_daughters():
-                    child_idx = lineage.index(daughter)
+                for daughter_idx in cell._get_daughters():
+                    child_idx = lineage.index(daughter_idx)
                     coeffs = beta_array[child_idx, :] / MSD_array[child_idx, :]
 
                     for child_state_k in range(tHMMobj.numStates):
@@ -53,12 +50,12 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                                                                  MSD_array=MSD_array,
                                                                  state_j=parent_state_j,
                                                                  node_child_n_idx=child_idx)
-                            sum_holder.append(T_fac * gamma_parent / beta_parent)
-                        gamma_child_state_k = coeff * sum(sum_holder)
-                        gammas[num][child_idx, child_state_k] = gamma_child_state_k
-                        for state_k in range(numStates):
-                            assert gammas[num][0, state_k] == betas[num][0, state_k]
-            curr_level += 1
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        gammas_row_sum = np.sum(gammas[num], axis=1)
-        #assert np.allclose(gammas_row_sum, 1.)
+                            sum_holder += T[parent_state_j, child_state_k] * gammas[num][parent_idx, parent_state_j] / beta_parent
+
+                        gammas[num][child_idx, child_state_k] = coeffs[child_state_k] * sum_holder
+
+                        assert np.all(gammas[num][0, :] == betas[num][0, :])
+
+    for _, gg in enumerate(gammas):
+        assert np.allclose(np.sum(gg, axis=1), 1.)
+        pass

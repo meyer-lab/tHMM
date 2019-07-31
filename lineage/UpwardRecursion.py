@@ -134,19 +134,16 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
     # betas is an input argument
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        lineage = population[num]  # getting the lineage in the Population by index
+        lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
         MSD_array = MSD[num]  # getting the MSD of the respective lineage
         EL_array = EL[num]  # geting the EL of the respective lineage
-        params = paramlist[num]  # getting the respective params by lineage index
         T = tHMMobj.estimate.T # getting the transition matrix of the respective lineage
 
-        curr_gen = max_gen(lineage)  # start at the lowest generation of the lineage (at the leaves)
-        while curr_gen > 1:
-            level = get_gen(curr_gen, lineage)
-            parent_holder = get_parents_for_level(level, lineage)
+        for level in lineageObj.output_list_of_gens[2:][::-1]:
+            parent_holder = lineageObj._get_parents_for_level(level)
             for node_parent_m_idx in parent_holder:
                 numer_holder = []
-                for state_j in range(tHMMobj.numStates):
+                for state_j in range(numStates):
                     fac1 = get_beta_parent_child_prod(numStates=numStates,
                                                       lineage=lineage,
                                                       MSD_array=MSD_array,
@@ -160,8 +157,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                 NF[num][node_parent_m_idx] = sum(numer_holder)
                 for state_j in range(numStates):
                     betas[num][node_parent_m_idx, state_j] = numer_holder[state_j] / NF[num][node_parent_m_idx]
-            curr_gen -= 1
-    for num in range(numLineages):
+    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         betas_row_sum = np.sum(betas[num], axis=1)
         assert np.allclose(betas_row_sum, 1.)
 
@@ -180,8 +176,7 @@ def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, sta
                                           T=T,
                                           MSD_array=MSD_array,
                                           state_j=state_j,
-                                          node_child_n_idx=node_child_n_idx,
-                                          numStates=numStates)
+                                          node_child_n_idx=node_child_n_idx)
         beta_m_n_holder.append(beta_m_n)
     assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
     assert lineage[node_child_n_idx]._isChild()  # if the child-parent relationship is correct, then the child must
