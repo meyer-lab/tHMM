@@ -57,9 +57,8 @@ class TestModel(unittest.TestCase):
 
     def test_isChild(self):
          """ blah """
-        T = np.array([[1.0, 0.0],
+        T = np.array([[1.0, 0.0], 
                       [0.0, 1.0]])
-
         parent_state = 1
         cell = c(state=parent_state, left=None, right=None, parent=None, gen=1)
         self.assertFalse(cell._isChild())
