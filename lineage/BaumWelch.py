@@ -5,6 +5,7 @@ import numpy as np
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, beta_parent_child_func
 
+
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, child_state_k, lineage, beta_array, MSD_array, gamma_array, T):
     '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
 
@@ -25,6 +26,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, 
 
     zeta = beta_child_state_k * T[parent_state_j, child_state_k] * gamma_parent_state_j / (MSD_child_state_k * beta_parent_child_state_j)
     return zeta
+
 
 def get_all_gammas(lineageObj, gamma_array_at_state_j):
     '''sum of the list of all the gamma parent child for all the parent child relationships'''
@@ -118,7 +120,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         # after iterating through each lineage, do the population wide E calculation
         for state_j in range(numStates):
             cells = cell_groups[str(state_j)]  # this array has the correct cells classified per group
-            tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator([cell.obs for cell in cells]) 
+            tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator([cell.obs for cell in cells])
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()

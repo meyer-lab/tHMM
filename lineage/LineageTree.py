@@ -68,7 +68,7 @@ class LineageTree:
                 state)
         self.pruned_max_gen, self.pruned_list_of_gens = max_gen(self.pruned_list)
         self.pruned_leaves_idx, self.pruned_leaves = get_leaves(self.pruned_list)
-        
+
         self._prune_boolean = prune_boolean  # this is given by the user, true of they want the lineage to be pruned, false if they want the full binary tree
         self.prune_boolean = self._prune_boolean
 
@@ -76,14 +76,14 @@ class LineageTree:
     # the lineage tree that is given to the tHMM, will be the pruned one.
     # If the user decides that they want the full binary tree (prune_boolean == False),
     # then the full_lin_list will be passed to the output_lineage.
-            
+
     @property
     def prune_boolean(self):
         return self._prune_boolean
 
     @prune_boolean.setter
     def prune_boolean(self, new_prune_boolean):
-        if type(new_prune_boolean) is not bool:
+        if not isinstance(new_prune_boolean, bool):
             raise ValueError("Boolean deciding whether to prune or not must be True or False.")
         self._prune_boolean = new_prune_boolean
         if self._prune_boolean:
@@ -97,7 +97,7 @@ class LineageTree:
             self.output_max_gen = self.full_max_gen
             self.output_list_of_gens = self.full_list_of_gens
             self.output_leaves_idx = self.full_leaves_idx
-            self.output_leaves = self.full_leaves  
+            self.output_leaves = self.full_leaves
 
     def _generate_lineage_list(self):
         """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states) in a full binary tree manner. It generates the tree until it reaches the desired number of cells in the lineage.
@@ -186,7 +186,7 @@ class LineageTree:
         num_cells_in_state = len(cells_in_state)  # gets the number of cells in the list
 
         return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
-    
+
     def _get_parents_for_level(self, level):
         """ get the parents of a generation """
         parent_holder = set()  # set makes sure only one index is put in and no overlap
@@ -233,8 +233,9 @@ class LineageTree:
             s2 = seperator.join(s_list)
             s3 = ".\n This UNpruned tree has {} cells in total".format(len(self.full_lin_list))
             return s1 + s2 + s3
-        
+
 # tools for analyzing trees
+
 
 def max_gen(lineage):
     """ finds the maximal generation in the tree. """
@@ -248,6 +249,7 @@ def max_gen(lineage):
         list_of_lists_of_cells_by_gen.append(temp_gen_list)
     return max(gens), list_of_lists_of_cells_by_gen
 
+
 def get_leaves(lineage):
     leaf_indices = []
     leaves = []
@@ -258,6 +260,7 @@ def get_leaves(lineage):
     return leaf_indices, leaves
 
 # tools for traversing trees
+
 
 def tree_recursion(cell, subtree):
     """ a recursive function that traverses upwards from the leaf to the root. """

@@ -124,7 +124,7 @@ def Viterbi(tHMMobj, deltas, state_ptrs):
                     for child_state_tuple in temp:
                         if child_state_tuple[0] == child_idx:
                             opt_state_tree[child_idx] = child_state_tuple[1]
-                            
+
         all_states.append(opt_state_tree)
 
     return all_states

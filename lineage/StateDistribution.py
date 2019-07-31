@@ -49,11 +49,11 @@ class StateDistribution:
             bern_obs = list(unzipped_list_of_tuples_of_obs[0])
             exp_obs = list(unzipped_list_of_tuples_of_obs[1])
             gamma_obs = list(unzipped_list_of_tuples_of_obs[2])
-        except:
+        except BaseException:
             bern_obs = [sp.bernoulli.rvs(p=0.9 * (np.random.uniform()))]
-            exp_obs = [sp.expon.rvs(scale=50*(1+np.random.uniform()))]  # exponential observations
-            gamma_obs = [sp.gamma.rvs(a=7.5*(np.random.uniform()), scale=1.5 * (np.random.uniform()))]  # gamma observations
-            
+            exp_obs = [sp.expon.rvs(scale=50 * (1 + np.random.uniform()))]  # exponential observations
+            gamma_obs = [sp.gamma.rvs(a=7.5 * (np.random.uniform()), scale=1.5 * (np.random.uniform()))]  # gamma observations
+
         bern_p_estimate = bernoulli_estimator(bern_obs)
         expon_scale_beta_estimate = exponential_estimator(exp_obs)
         gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)

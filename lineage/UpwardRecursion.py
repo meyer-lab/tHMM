@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 def get_leaf_Normalizing_Factors(tHMMobj):
     '''
     Normalizing factor (NF) matrix and base case at the leaves.
@@ -137,7 +138,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
         lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
         MSD_array = MSD[num]  # getting the MSD of the respective lineage
         EL_array = EL[num]  # geting the EL of the respective lineage
-        T = tHMMobj.estimate.T # getting the transition matrix of the respective lineage
+        T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
 
         for level in lineageObj.output_list_of_gens[2:][::-1]:
             parent_holder = lineageObj._get_parents_for_level(level)
