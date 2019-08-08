@@ -164,11 +164,11 @@ def gamma_estimator(gamma_obs):
     Here x_bar means the average of x.
     Args:
     -----
-    gamma_obs (list): A list of gamma-distributed observations.
+    gamma_obs {list}: A list of gamma-distributed observations.
     Returns:
     --------
-    a_hat (float): The estimated value for shape parameter of the Gamma distribution
-    b_hat (float): The estimated value for scale parameter of the Gamma distribution
+    a_hat {float}: The estimated value for shape parameter of the Gamma distribution
+    b_hat {float}: The estimated value for scale parameter of the Gamma distribution
     """
     tau1 = gamma_obs
     tau_mean = np.mean(tau1)
