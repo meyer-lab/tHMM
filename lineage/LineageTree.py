@@ -100,7 +100,7 @@ class LineageTree:
             self.output_leaves = self.full_leaves
 
     def _generate_lineage_list(self):
-        """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states) in a full binary tree manner. It generates the tree until it reaches the desired number of cells in the lineage.
+        """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states) in a full binary tree manner. It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
         Args:
         -----
         It takes in the LineageTree object
