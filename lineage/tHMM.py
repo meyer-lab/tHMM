@@ -20,16 +20,13 @@ class tHMM:
     def __init__(self, X, numStates=1):
         """ Instantiates a tHMM.
 
-        This function uses the following functions and assings them to the cells
-        (objects) in the lineage.
+        This function uses the following functions and instantials the tHMM with the requirements, such as the population of cells, the number of states, the initial estimates of the parameters, marginal state distribution, and emission likelihood.
 
         Args:
-            ----------
-            X (list of objects): A list of objects (cells) in a lineage in which
-            the NaNs have been removed.
-            numStates (int): the number of hidden states that we want our model have
-            FOM (str): For now, it is either "E": Exponential, or "G": Gompertz
-            and it determines the type of distribution for lifetime of the cells
+        -----
+        X {list}: A list of objects (cells) in a lineage in which
+        the NaNs have been removed.
+        numStates {int}: the number of hidden states that we want our model have
         """
         self.X = X  # list containing lineages, should be in correct format (contain no NaNs)
         self.numStates = numStates  # number of discrete hidden states
@@ -41,7 +38,7 @@ class tHMM:
 ##---------------------------- Marginal State Distribution ------------------------------##
 
     def get_Marginal_State_Distributions(self):
-        '''
+        """
         Marginal State Distribution (MSD) matrix and recursion.
         This is the probability that a hidden state variable z_n is of
         state k, that is, each value in the N by K MSD array for each lineage is
@@ -56,8 +53,8 @@ class tHMM:
 
         Every element in MSD matrix is essentially sum over all transitions from any state to
         state j (from parent to daughter):
-            P(z_u = k) = sum_on_all_j(Transition(from j to k) * P(parent_cell_u) = j)
-        '''
+        P(z_u = k) = sum_on_all_j(Transition(from j to k) * P(parent_cell_u) = j)
+        """
         MSD = []
 
         for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
@@ -96,7 +93,7 @@ class tHMM:
 
 
     def get_Emission_Likelihoods(self):
-        '''
+        """
         Emission Likelihood (EL) matrix.
 
         Each element in this N by K matrix represents the probability
@@ -105,7 +102,7 @@ class tHMM:
 
         for all x_n and z_n in our observed and hidden state tree
         and for all possible discrete states k.
-        '''
+        """
         numStates = self.numStates
 
         EL = []
