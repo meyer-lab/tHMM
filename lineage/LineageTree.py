@@ -163,7 +163,24 @@ class LineageTree:
         return num_cells_in_state, cells_in_state, indices_of_cells_in_state
 
     def _full_assign_obs(self, state):
-        """ Observation assignment give a state. """
+        """ Observation assignment give a state. 
+        Given the lineageTree object and the specific intended state, this function assigns the corresponding observations
+        comming from specific distributions for that state.
+
+        Args:
+        -----
+        state {Int}: The number assigned to a state.
+
+        Returns:
+        --------
+        num_cells_in_state {Int}: The number of cells in the given state.
+
+        cells_in_state {list}: The list of cells in the given state.
+
+        list_of_tuples_of_obs {list}: A list including tuples which represents (bernoulli for die/divide, exponential for lifetime) 
+
+        indices_of_cells_in_state {list}: Holding the indexes of the cells being in the given state
+        """
         num_cells_in_state, cells_in_state, indices_of_cells_in_state = self._get_full_state_count(state)
         list_of_tuples_of_obs = self.E[state].rvs(size=num_cells_in_state)
 
@@ -175,6 +192,8 @@ class LineageTree:
         return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
 
     def _get_pruned_state_count(self, state):
+        """ This function finds the cells that are in a specific state after pruning the lineage, and returns the same outputs as 
+        `_full_assign_obs()`. """
         cells_in_state = []  # a list holding cells in the same state
         list_of_tuples_of_obs = []
         indices_of_cells_in_state = []
@@ -188,13 +207,26 @@ class LineageTree:
         return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
 
     def _get_parents_for_level(self, level):
-        """ get the parents of a generation """
+        """ get the parents of a generation.
+        Given the generation level, this function returns the parent cells of the cells being in that generation level.
+
+        Args:
+        -----
+        level {Int}: The generation level, being 2,3,...
+
+        Retunrs:
+        --------
+        parent_holder {list}: A list holding the parents of cells in a given generation.
+        """
         parent_holder = set()  # set makes sure only one index is put in and no overlap
         for cell in level:
             parent_holder.add(self.output_lineage.index(cell.parent))
         return parent_holder
 
     def __repr__(self):
+        """ This function is used to get string representation of an object, used for debugging and development.
+        Represents the information about the lineage that the user has created, like whether the tree is pruned or is a full tree;
+        and for both of the options it prints the number of states, the number of cells in the states, the total number of cells. """
         if self._prune_boolean:
             s1 = "This tree is pruned. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
             s_list = []
@@ -215,6 +247,7 @@ class LineageTree:
             return s1 + s2 + s3
 
     def __str__(self):
+        """ This function is used to get string representation of an object, used for showing the results to the user. Same as `__repr__()` """
         if self._prune_boolean:
             s1 = "This tree is pruned. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
             s_list = []
@@ -238,7 +271,19 @@ class LineageTree:
 
 
 def max_gen(lineage):
-    """ finds the maximal generation in the tree. """
+    """ finds the maximal generation in the tree, and cells organized by their generations.
+    This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and 
+    creates a list of them, appends the lists leading to have a list of the lists of cells in specific generations.
+
+    Args:
+    -----
+    lineage {list}: A list of cells (objects) with known state, generation, ect.
+
+    Returns:
+    --------
+    max(gens) {Int}: The maximal generation in the given lineage.
+    list_of_lists_of_cells_by_gen {list}: A list of lists of cells, organized by their generations.
+    """
     gens = {cell.gen for cell in lineage}
     list_of_lists_of_cells_by_gen = [[None]]
     for gen in gens:
@@ -263,7 +308,8 @@ def get_leaves(lineage):
 
 
 def tree_recursion(cell, subtree):
-    """ a recursive function that traverses upwards from the leaf to the root. """
+    """ A recursive helper function that traverses upwards from the leaf to the root.
+    """
     if cell._isLeaf():
         return
     subtree.append(cell.left)
@@ -298,6 +344,9 @@ def find_two_subtrees(cell, lineage):
 
 
 def get_mixed_subtrees(node_m, node_n, lineage):
+    """ Takes in the lineage and the two cells in any part of the lineage tree, finds the subtree to the both given cells,
+    and returns a group of cells that are in both subtrees, and the remaining cells in the lineage that are not in any of those.
+    """
     m_sub, _ = get_subtrees(node_m, lineage)
     n_sub, _ = get_subtrees(node_n, lineage)
     mixed_sub = []
