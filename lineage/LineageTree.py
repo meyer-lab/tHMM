@@ -139,7 +139,7 @@ class LineageTree:
         return self.pruned_lin_list
 
     def _get_full_state_count(self, state):
-        """ Counts the number of cells in a specific state and makes a list out of those numbers. Used for generating emissions for that specific state.
+        """ Counts the number of cells in a specific state in the full lineage (before pruning) and makes a list out of the cells and their indexes in the given state. Used for generating emissions for that specific state.
         Args:
         -----
         state {Int}: The number assigned to a state.
@@ -162,11 +162,9 @@ class LineageTree:
 
         return num_cells_in_state, cells_in_state, indices_of_cells_in_state
 
-    def _full_assign_obs(self, state):
-        """ Observation assignment give a state. 
-        Given the lineageTree object and the specific intended state, this function assigns the corresponding observations
-        comming from specific distributions for that state.
 
+    def _get_pruned_state_count(self, state):
+        """ This function finds the cells that are in a specific state after pruning the lineage.
         Args:
         -----
         state {Int}: The number assigned to a state.
@@ -179,21 +177,8 @@ class LineageTree:
 
         list_of_tuples_of_obs {list}: A list including tuples which represents (bernoulli for die/divide, exponential for lifetime) 
 
-        indices_of_cells_in_state {list}: Holding the indexes of the cells being in the given state
+        indices_of_cells_in_state {list}: Holding the indexes of the cells being in the given state.
         """
-        num_cells_in_state, cells_in_state, indices_of_cells_in_state = self._get_full_state_count(state)
-        list_of_tuples_of_obs = self.E[state].rvs(size=num_cells_in_state)
-
-        assert len(cells_in_state) == len(list_of_tuples_of_obs) == num_cells_in_state
-
-        for i, cell in enumerate(cells_in_state):
-            cell.obs = list_of_tuples_of_obs[i]
-
-        return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
-
-    def _get_pruned_state_count(self, state):
-        """ This function finds the cells that are in a specific state after pruning the lineage, and returns the same outputs as 
-        `_full_assign_obs()`. """
         cells_in_state = []  # a list holding cells in the same state
         list_of_tuples_of_obs = []
         indices_of_cells_in_state = []
@@ -205,6 +190,28 @@ class LineageTree:
         num_cells_in_state = len(cells_in_state)  # gets the number of cells in the list
 
         return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
+
+    def _full_assign_obs(self, state):
+        """ Observation assignment give a state. 
+        Given the lineageTree object and the specific intended state, this function assigns the corresponding observations
+        comming from specific distributions for that state.
+
+        Args:
+        -----
+        state {Int}: The number assigned to a state.
+
+        Returns the same outputs as the above function ().
+        """
+        num_cells_in_state, cells_in_state, indices_of_cells_in_state = self._get_full_state_count(state)
+        list_of_tuples_of_obs = self.E[state].rvs(size=num_cells_in_state)
+
+        assert len(cells_in_state) == len(list_of_tuples_of_obs) == num_cells_in_state
+
+        for i, cell in enumerate(cells_in_state):
+            cell.obs = list_of_tuples_of_obs[i]
+
+        return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
+
 
     def _get_parents_for_level(self, level):
         """ get the parents of a generation.
@@ -226,7 +233,8 @@ class LineageTree:
     def __repr__(self):
         """ This function is used to get string representation of an object, used for debugging and development.
         Represents the information about the lineage that the user has created, like whether the tree is pruned or is a full tree;
-        and for both of the options it prints the number of states, the number of cells in the states, the total number of cells. """
+        and for both of the options it prints the number of states, the number of cells in the states, the total number of cells.
+        """
         if self._prune_boolean:
             s1 = "This tree is pruned. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
             s_list = []
@@ -308,8 +316,7 @@ def get_leaves(lineage):
 
 
 def tree_recursion(cell, subtree):
-    """ A recursive helper function that traverses upwards from the leaf to the root.
-    """
+    """ A recursive helper function that traverses upwards from the leaf to the root. """
     if cell._isLeaf():
         return
     subtree.append(cell.left)
