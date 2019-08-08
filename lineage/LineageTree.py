@@ -200,7 +200,7 @@ class LineageTree:
         -----
         state {Int}: The number assigned to a state.
 
-        Returns the same outputs as the above function ().
+        Returns the same outputs as the `_get_pruned_state_count()`.
         """
         num_cells_in_state, cells_in_state, indices_of_cells_in_state = self._get_full_state_count(state)
         list_of_tuples_of_obs = self.E[state].rvs(size=num_cells_in_state)
