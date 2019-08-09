@@ -119,7 +119,6 @@ def report_time(cell):
 
     for cell in list_parents:
         if cell._isRootParent():
-            taus += cell.obs[1]
             break
         elif cell.parent not in list_parents:
             list_parents.append(cell.parent)
