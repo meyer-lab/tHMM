@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 import scipy.stats as sp
-from ..StateDistribution import StateDistribution, bernoulli_estimator, exponential_estimator, gamma_estimator, report_time, get_experiment_time
+from ..StateDistribution import StateDistribution, bernoulli_estimator, exponential_estimator, gamma_estimator, prune_rule, report_time, get_experiment_time
 from ..LineageTree import LineageTree
 from ..CellVar import CellVar as c
 
@@ -12,11 +12,16 @@ class TestModel(unittest.TestCase):
     def setUp(self):
         # observation parameters for state0
         self.state0 = 0
-        self.bern0 = 0.95
+        self.bern0 = 1.0
         self.expon0 = 40.0
         self.gamma_a0 = 10.0
         self.gamma_b0 = 2.0
         self.stateDist0 = StateDistribution(self.state0, self.bern0, self.expon0, self.gamma_a0, self.gamma_b0)
+
+        # ingredients for LineageTree!
+        self.pi = np.array([0.75, 0.25])
+        self.T = np.array([[0.85, 0.15],
+                      [0.2, 0.8]])
 
         # observation parameters for state1
         self.state1 = 1
@@ -26,6 +31,12 @@ class TestModel(unittest.TestCase):
         self.gamma_b1 = 10.0
         self.stateDist1 = StateDistribution(self.state1, self.bern1, self.expon1, self.gamma_a1, self.gamma_b1)
 
+        # observations object
+        self.E = [self.stateDist0, self.stateDist1]
+
+        # creating two lineages, one with False for pruning, one with True.
+        self.lineage = LineageTree(self.pi, self.T, self.E, desired_num_cells=2**3 - 1, prune_boolean=False) # 7-cell lineage
+        self.lineage2 = LineageTree(self.pi, self.T, self.E, desired_num_cells=2**2 - 1, prune_boolean=False)
 
     def test_rvs(self):
         """ A unittest for random generator function, given the number of random variables we want from each distribution, that each corresponds to one of the observation types. """
@@ -61,10 +72,53 @@ class TestModel(unittest.TestCase):
         self.assertTrue(0.0 <= abs(estimator_obj.gamma_a - self.stateDist0.gamma_a) <= 1.0)
         self.assertTrue(0.0 <= abs(estimator_obj.gamma_scale - self.stateDist0.gamma_scale) <= 1.0)
 
+    def test_prune_rule(self):
+        """ A unittest for the prune_rule. """
+
+        _, cells_in_state0, _, _ = self.lineage._full_assign_obs(self.state0)
+        for cell in cells_in_state0:
+            if cell.obs[0] == 0:
+                self.assertTrue(prune_rule(cell) == True)
+
+        _, cells_in_state1, _, _ = self.lineage._full_assign_obs(self.state1)
+        for cell in cells_in_state1:
+            if cell.obs[0] == 0:
+                self.assertTrue(prune_rule(cell) == True)
+                
     def test_report_time(self):
-        pass
+        """ Given a cell, the report_time function has to return the time since the start of the experiment to the time of this cell's time. """
+        _, cells_in_state0, _, _ = self.lineage._full_assign_obs(self.state0)
+        _, cells_in_state1, _, _ = self.lineage._full_assign_obs(self.state1)
+        # bringing all the cells after assigning observations to them
+        all_cells = cells_in_state0 + cells_in_state1
+
+        # here we check this for the root parent, since the time has taken so far, equals to the lifetime of the cell
+        for cell in all_cells:
+            if cell._isRootParent():
+                parent_tau = cell.obs[1]
+                self.assertTrue(report_time(cell) == parent_tau)
+
+        # here we check for the root parent and its left child
+        for cell in all_cells:
+            if cell._isRootParent():
+                taus = cell.obs[1] + cell.left.obs[1]
+                self.assertTrue(report_time(cell.left) == taus)
+
     def test_get_experiment_time(self):
-        pass
+        """ A unittest to check the experiment time is reported correctly. Here we use a lineage with 3 cells, self.lineage2 built in the setup function."""
+        _, cells_in_state0, _, _ = self.lineage2._full_assign_obs(self.state0)
+        _, cells_in_state1, _, _ = self.lineage2._full_assign_obs(self.state1)
+        # bringing all the cells after assigning observations to them
+        all_cells = cells_in_state0 + cells_in_state1
+
+        # here we check this for the root parent, since the time has taken so far, equals to the lifetime of the cell
+        for cell in all_cells:
+            if cell._isRootParent():
+                left = cell.obs[1] + cell.left.obs[1]
+                right = cell.obs[1] + cell.right.obs[1]
+        maximum = max(left, right)
+        self.assertTrue(get_experiment_time(self.lineage2) == maximum)
+                
 
     def test_bernoulli_estimator(self):
         """ Testing the bernoulli estimator, by comparing the result of the estimator to the result of scipy random variable generator. """
