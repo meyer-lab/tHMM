@@ -193,7 +193,7 @@ class LineageTree:
 
     def _full_assign_obs(self, state):
         """ Observation assignment give a state. 
-        Given the lineageTree object and the specific intended state, this function assigns the corresponding observations
+        Given the lineageTree object and the intended state, this function assigns the corresponding observations
         comming from specific distributions for that state.
 
         Args:
@@ -219,7 +219,7 @@ class LineageTree:
 
         Args:
         -----
-        level {Int}: The generation level, being 2,3,...
+        level {list}: A list containing cells in a specific generation level.
 
         Retunrs:
         --------
