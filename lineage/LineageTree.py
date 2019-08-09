@@ -366,7 +366,7 @@ def get_mixed_subtrees(node_m, node_n, lineage):
     """
     m_sub, _ = get_subtrees(node_m, lineage)
     n_sub, _ = get_subtrees(node_n, lineage)
-    mixed_sub = []
+    mixed_sub = n_sub
     for cell in m_sub:
         if cell not in n_sub:
             mixed_sub.append(cell)
