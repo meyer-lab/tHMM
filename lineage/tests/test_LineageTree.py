@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from ..CellVar import CellVar as c
-from ..LineageTree import LineageTree, max_gen, get_leaves
+from ..LineageTree import LineageTree, max_gen, get_leaves, get_subtrees, tree_recursion
 from ..StateDistribution import StateDistribution
 
 
@@ -50,10 +50,22 @@ class TestModel(unittest.TestCase):
         cell_5 = c(state=self.state0, left=None, right=None, parent=cell_2, gen=3)
         cell_6 = c(state=self.state0, left=None, right=None, parent=cell_3, gen=3)
         cell_7 = c(state=self.state0, left=None, right=None, parent=cell_3, gen=3)
+        cell_1.left = cell_2
+        cell_1.right = cell_3
+        cell_2.left = cell_4
+        cell_2.right = cell_5
+        cell_3.left = cell_6
+        cell_3.right = cell_7
+
         self.test_lineage = [cell_1, cell_2, cell_3, cell_4, cell_5, cell_6, cell_7]
         self.level1 = [cell_1]
         self.level2 = [cell_2, cell_3]
         self.level3 = [cell_4, cell_5, cell_6, cell_7]
+        # for test_get_subtrees
+        self.cell_2 = cell_2
+        self.subtree1 = [cell_2, cell_4, cell_5]
+        self.cell_3 = cell_3
+        self.subtree2 = [cell_3, cell_6, cell_7]
         
 
     def test_generate_lineage_list(self):
@@ -110,6 +122,7 @@ class TestModel(unittest.TestCase):
     def test_full_assign_obs(self):
         """ A unittest for checking the full_assign_obs function. """
         num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state = self.lineage1._full_assign_obs(self.state0)
+
         # unzipping the tuple of observations
         unzipped_list_obs = list(zip(*list_of_tuples_of_obs))
         bern_obs = list(unzipped_list_obs[0])
@@ -134,7 +147,7 @@ class TestModel(unittest.TestCase):
         
         
     def test_max_gen(self):
-        """ A unittest for testing max_gen function by creating the lineage manually for 3 generations ==> total of 7 cells. """
+        """ A unittest for testing max_gen function by creating the lineage manually for 3 generations ==> total of 7 cells in the setup  function. """
 
         max_generation, list_by_gen = max_gen(self.test_lineage)
         self.assertTrue(max_generation == 3)
@@ -157,13 +170,22 @@ class TestModel(unittest.TestCase):
     def test_get_leaves(self):
         """ A unittest fot get_leaves function. """
         leaf_index, leaf_cells = get_leaves(self.lineage1.output_lineage) # getting the leaves and their indexes for lineage1
+
         # to check the leaf cells do not have daughters
         for cells in leaf_cells:
             self.assertTrue(cells.left == None), " The leaf cell doesn't seems to be a leaf, it has a left daughter."
             self.assertTrue(cells.right == None), " The leaf cell doesn't seems to be a leaf, it has a right daughter."
+
         # to check the indexes for leaf cells are true
         for i in leaf_index:
             self.assertTrue(self.lineage1.output_lineage[i]._isLeaf() == True)
 
-#     def test_tree_recursion(self):
+    def test_get_subtrees(self):
+        """ A unittest to get the subtrees and the remaining lineage except for that subtree. Here we use the manually-built-7-cell lineage in the setup function. """
+        subtree1, not_subtree1 = get_subtrees(self.cell_2, self.test_lineage)
+        self.assertTrue(subtree1 == self.subtree1), " The subtree is not being specified correctly."
+
+        subtree2, not_subtree2 = get_subtrees(self.cell_3, self.test_lineage)
+        self.assertTrue(subtree2 == self.subtree2), " The subtree is not being specified correctly."
+        
         
