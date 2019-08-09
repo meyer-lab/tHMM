@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from ..CellVar import CellVar as c
-from ..LineageTree import LineageTree, max_gen, get_leaves, get_subtrees, tree_recursion
+from ..LineageTree import LineageTree, max_gen, get_leaves, get_subtrees, tree_recursion, find_two_subtrees, get_mixed_subtrees
 from ..StateDistribution import StateDistribution
 
 
@@ -66,6 +66,10 @@ class TestModel(unittest.TestCase):
         self.subtree1 = [cell_2, cell_4, cell_5]
         self.cell_3 = cell_3
         self.subtree2 = [cell_3, cell_6, cell_7]
+        # for test_find_two_subtrees
+        self.cell_1 = cell_1
+        # for test_get_mixed_subtrees
+        self.mixed = [cell_2, cell_3, cell_4, cell_5, cell_6, cell_7]
         
 
     def test_generate_lineage_list(self):
@@ -187,5 +191,22 @@ class TestModel(unittest.TestCase):
 
         subtree2, not_subtree2 = get_subtrees(self.cell_3, self.test_lineage)
         self.assertTrue(subtree2 == self.subtree2), " The subtree is not being specified correctly."
+
+    def test_find_two_subtrees(self):
+        """ A unittest for find_two_subtrees, using the built-in-7-cell lineage in the setup function.  """
+        left_sub, right_sub, neither_subtree = find_two_subtrees(self.cell_1, self.test_lineage)
+        self.assertTrue(left_sub == self.subtree1), "left subtree wrong"
+        self.assertTrue(right_sub == self.subtree2), "right subtree wrong"
+        self.assertTrue(neither_subtree == [self.cell_1]), "neither subtree is wrong"
+
+    def test_get_mixed_subtrees(self):
+        """ A unittest for get_mixed_subtrees, using the built-in-7-cell lineage in the setup function. """
+        mixed_sub, not_mixed = get_mixed_subtrees(self.cell_2, self.cell_3, self.test_lineage)
+        mixed = self.subtree2 + self.subtree1
+        self.assertTrue(mixed_sub == mixed)
+        self.assertTrue(not_mixed == [self.cell_1])
+            
+            
+        
         
         
