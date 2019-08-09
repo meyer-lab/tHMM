@@ -24,9 +24,8 @@ class tHMM:
 
         Args:
         -----
-        X {list}: A list of objects (cells) in a lineage in which
-        the NaNs have been removed.
-        numStates {int}: the number of hidden states that we want our model have
+        X {obj}: The lineageTree object with its instances and properties.
+        numStates {int}: the number of hidden states that we want our model to have.
         """
         self.X = X  # list containing lineages, should be in correct format (contain no NaNs)
         self.numStates = numStates  # number of discrete hidden states
