@@ -91,18 +91,20 @@ class TestModel(unittest.TestCase):
         self.assertTrue(num_cells_in_state1 <= 2**9 - 1), "The number of cells in one state is greater than the total number of cells!"
         self.assertTrue(max(indices_of_cells_in_state1) <= 2**9 - 1), "something is wrong with the indices of the cells returned by the function"
 
-        
+
     def test_get_pruned_state_count(self):
         """ A unittest for _get_pruned_state_count. """
         num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state = self.lineage1._get_pruned_state_count(self.state0)
         self.assertTrue(len(cells_in_state) == num_cells_in_state == len(list_of_tuples_of_obs))
         self.assertTrue(num_cells_in_state <= len(self.lineage1.pruned_lin_list)), "The number of cells in one state is greater than the total number of cells!"
-        self.assertTrue(max(indices_of_cells_in_state) <= 2**9 - 1), "something is wrong with the indices of the cells returned by the function"
+        if len(indices_of_cells_in_state) > 0:
+            self.assertTrue(max(indices_of_cells_in_state) <= (2**9 - 1)), "something is wrong with the indices of the cells returned by the function"
 
         num_cells_in_state1, cells_in_state1, list_of_tuples_of_obs1, indices_of_cells_in_state1 = self.lineage1._get_pruned_state_count(self.state1)
         self.assertTrue(len(cells_in_state1) == num_cells_in_state1 == len(list_of_tuples_of_obs1))
         self.assertTrue(num_cells_in_state1 <= len(self.lineage1.pruned_lin_list)), "The number of cells in one state is greater than the total number of cells!"
-        self.assertTrue(max(indices_of_cells_in_state1) <= 2**9 - 1), "something is wrong with the indices of the cells returned by the function"
+        if len(indices_of_cells_in_state) > 0:
+            self.assertTrue(max(indices_of_cells_in_state1) <= (2**9 - 1)), "something is wrong with the indices of the cells returned by the function"
 
 
     def test_full_assign_obs(self):
