@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from ..CellVar import CellVar as c
-from ..LineageTree import LineageTree, max_gen
+from ..LineageTree import LineageTree, max_gen, get_leaves
 from ..StateDistribution import StateDistribution
 
 
@@ -110,16 +110,18 @@ class TestModel(unittest.TestCase):
     def test_full_assign_obs(self):
         """ A unittest for checking the full_assign_obs function. """
         num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state = self.lineage1._full_assign_obs(self.state0)
+        # unzipping the tuple of observations
         unzipped_list_obs = list(zip(*list_of_tuples_of_obs))
         bern_obs = list(unzipped_list_obs[0])
         exp_obs = list(unzipped_list_obs[1])
         gamma_obs = list(unzipped_list_obs[2])
-        self.assertTrue(len(bern_obs) == len(exp_obs) == len(gamma_obs))
+        self.assertTrue(len(bern_obs) == len(exp_obs) == len(gamma_obs)), "The number of observations for different emissions don't match!"
 
-
+        # making sure observations have been assigned properly
         for i, cell in enumerate(cells_in_state):
             self.assertTrue(cell.obs == list_of_tuples_of_obs[i])
 
+        # checking the above tests for a lineage with prune_boolean == True
         num_cells_in_state1, cells_in_state1, list_of_tuples_of_obs1, indices_of_cells_in_state1 = self.lineage1._full_assign_obs(self.state1)
         unzipped_list_obs1 = list(zip(*list_of_tuples_of_obs1))
         bern_obs1 = list(unzipped_list_obs1[0])
@@ -129,7 +131,7 @@ class TestModel(unittest.TestCase):
 
         for j, Cell in enumerate(cells_in_state1):
             self.assertTrue(Cell.obs == list_of_tuples_of_obs1[j])
-
+        
         
     def test_max_gen(self):
         """ A unittest for testing max_gen function by creating the lineage manually for 3 generations ==> total of 7 cells. """
@@ -140,13 +142,28 @@ class TestModel(unittest.TestCase):
         self.assertTrue(list_by_gen[2] == self.level2)
         self.assertTrue(list_by_gen[3] == self.level3)
 
-#     def test_get_parent_for_level(self):
-#         """ A unittest for get_parent_for_level. """
-#         self.output_lineage = self.test_lineage
-#         parent_holder2 = self.test_lineage._get_parents_for_level(self.level2)
-#         parent_holder3 = self.test_lineage._get_parents_for_level(self.level3)
-#         self.assertTrue(parent_holder2 == self.level2)
-#         self.assertTrue(parent_holder3 == self.level3)
-        
-        
+    def test_get_parent_for_level(self):
+        """ A unittest for get_parent_for_level. """
+        _, list_by_gen = max_gen(self.lineage1.output_lineage)
+        parent_ind_holder = self.lineage1._get_parents_for_level(list_by_gen[3])
+
+        # making a list of parent cells using the indexes that _get_parent_for_level returns
+        parent_holder = []
+        for ind in parent_ind_holder:
+            parent_holder.append(self.lineage1.output_lineage[ind])
+
+        self.assertTrue(parent_holder == list_by_gen[2])
+
+    def test_get_leaves(self):
+        """ A unittest fot get_leaves function. """
+        leaf_index, leaf_cells = get_leaves(self.lineage1.output_lineage) # getting the leaves and their indexes for lineage1
+        # to check the leaf cells do not have daughters
+        for cells in leaf_cells:
+            self.assertTrue(cells.left == None), " The leaf cell doesn't seems to be a leaf, it has a left daughter."
+            self.assertTrue(cells.right == None), " The leaf cell doesn't seems to be a leaf, it has a right daughter."
+        # to check the indexes for leaf cells are true
+        for i in leaf_index:
+            self.assertTrue(self.lineage1.output_lineage[i]._isLeaf() == True)
+
+#     def test_tree_recursion(self):
         
