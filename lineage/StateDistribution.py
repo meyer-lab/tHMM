@@ -40,11 +40,12 @@ class StateDistribution:
         distribution observations), so the likelihood of observing the multivariate observation is just the product of
         the individual observation likelihoods.
         """
-        bern_ll = sp.bernoulli.pmf(k=tuple_of_obs[0], p=self.bern_p)  # bernoulli likelihood
-        exp_ll = sp.expon.pdf(x=tuple_of_obs[1], scale=self.expon_scale_beta)  # exponential likelihood
-        gamma_ll = sp.gamma.pdf(x=tuple_of_obs[2], a=self.gamma_a, scale=self.gamma_scale)  # gamma likelihood
-
-        return bern_ll * exp_ll * gamma_ll
+        bern_obs, exp_obs, gamma_obs = list(zip(*tuple_of_obs))
+        bern_ll = sp.bernoulli.pmf(k=bern_obs, p=self.bern_p)  # bernoulli likelihood
+        exp_ll = sp.expon.pdf(x=exp_obs, scale=self.expon_scale_beta)  # exponential likelihood
+        gamma_ll = sp.gamma.pdf(x=gamma_obs, a=self.gamma_a, scale=self.gamma_scale)  # gamma likelihood
+        likelihood = bern_ll * exp_ll * gamma_ll
+        return likelihood
 
     def estimator(self, list_of_tuples_of_obs):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. It gathers the observations separately given the list of tuples, and passes them to the aforementioned function and finds the estimates for the parameters. Finally, returns them as a StateDistribution object with all the estimated parameters.
