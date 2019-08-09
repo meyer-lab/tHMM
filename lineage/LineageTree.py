@@ -214,8 +214,8 @@ class LineageTree:
 
 
     def _get_parents_for_level(self, level):
-        """ get the parents of a generation.
-        Given the generation level, this function returns the parent cells of the cells being in that generation level.
+        """ get the parents's index of a generation in the population list.
+        Given the generation level, this function returns the index of parent cells of the cells being in that generation level.
 
         Args:
         -----
@@ -223,7 +223,7 @@ class LineageTree:
 
         Retunrs:
         --------
-        parent_holder {list}: A list holding the parents of cells in a given generation.
+        parent_holder {set}: A set holding the parents' indexes of cells in a given generation.
         """
         parent_holder = set()  # set makes sure only one index is put in and no overlap
         for cell in level:
@@ -292,28 +292,38 @@ def max_gen(lineage):
     max(gens) {Int}: The maximal generation in the given lineage.
     list_of_lists_of_cells_by_gen {list}: A list of lists of cells, organized by their generations.
     """
-    gens = {cell.gen for cell in lineage}
+    gens = {cell.gen for cell in lineage} # appending the generation of cells in the lineage
     list_of_lists_of_cells_by_gen = [[None]]
     for gen in gens:
         temp_gen_list = []
         for cell in lineage:
             if cell.gen == gen:
-                temp_gen_list.append(cell)
-        list_of_lists_of_cells_by_gen.append(temp_gen_list)
+                temp_gen_list.append(cell) # appending the cells in the ssme generation
+        list_of_lists_of_cells_by_gen.append(temp_gen_list) # appending the list of cells being in the same generation
     return max(gens), list_of_lists_of_cells_by_gen
 
 
 def get_leaves(lineage):
+    """ A function to find the leaves and their indexes in the lineage list.
+    Args:
+    -----
+    lineage {list}: A list of cells in the lineage.
+
+    Returns:
+    --------
+    leaf_indices {list}: A list of indexes to the leaf cells in the lineage list.
+    leaves {list}: A list holding the leaf cells in the lineage given.
+    """
     leaf_indices = []
     leaves = []
-    for cell in lineage:
+    for index, cell in enumerate(lineage):
         if cell._isLeaf():
-            leaves.append(cell)
-            leaf_indices.append(lineage.index(cell))
+            leaves.append(cell) # appending the leaf cells to a list
+            leaf_indices.append(index) # appending the index of the cells
     return leaf_indices, leaves
 
-# tools for traversing trees
 
+##------------------- tools for traversing trees ------------------------##
 
 def tree_recursion(cell, subtree):
     """ A recursive helper function that traverses upwards from the leaf to the root. """
