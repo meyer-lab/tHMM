@@ -9,6 +9,7 @@ from ..CellVar import CellVar as c
 
 class TestModel(unittest.TestCase):
     """Here are the unit tests."""
+
     def setUp(self):
         # observation parameters for state0
         self.state0 = 0
@@ -21,7 +22,7 @@ class TestModel(unittest.TestCase):
         # ingredients for LineageTree!
         self.pi = np.array([0.75, 0.25])
         self.T = np.array([[0.85, 0.15],
-                      [0.2, 0.8]])
+                           [0.2, 0.8]])
 
         # observation parameters for state1
         self.state1 = 1
@@ -35,7 +36,7 @@ class TestModel(unittest.TestCase):
         self.E = [self.stateDist0, self.stateDist1]
 
         # creating two lineages, one with False for pruning, one with True.
-        self.lineage = LineageTree(self.pi, self.T, self.E, desired_num_cells=2**3 - 1, prune_boolean=False) # 7-cell lineage
+        self.lineage = LineageTree(self.pi, self.T, self.E, desired_num_cells=2**3 - 1, prune_boolean=False)  # 7-cell lineage
         self.lineage2 = LineageTree(self.pi, self.T, self.E, desired_num_cells=2**2 - 1, prune_boolean=False)
 
     def test_rvs(self):
@@ -47,7 +48,7 @@ class TestModel(unittest.TestCase):
         tuple_of_obs1 = self.stateDist1.rvs(size=40)
         bern_obs1, exp_obs1, gamma_obs1 = list(zip(*tuple_of_obs1))
         self.assertTrue(len(bern_obs1) == len(exp_obs1) == len(gamma_obs1) == 40)
-        
+
     def test_pdf(self):
         """ A unittest for the likelihood function. Here we generate one set of observation (the size == 1 which mean we just have one bernoulli, one exponential, and one gamma) although we don't need gamma AND exponential  together, for now we will leave it this way. """
         # for stateDist0
@@ -59,7 +60,7 @@ class TestModel(unittest.TestCase):
         tuple_of_obs1 = self.stateDist1.rvs(size=1)
         likelihood1 = self.stateDist1.pdf(tuple_of_obs1)
         self.assertTrue(0.0 <= likelihood1 <= 1.0), " The likelihood function calculation is not working properly."
-        
+
     def test_estimator(self):
         """ A unittest for the estimator function, by generating 150 observatopns for each of the distribution functions, we use the estimator and compare. """
         tuples_of_obs = self.stateDist0.rvs(size=150)
@@ -84,7 +85,7 @@ class TestModel(unittest.TestCase):
         for cell in cells_in_state1:
             if cell.obs[0] == 0:
                 self.assertTrue(prune_rule(cell) == True)
-                
+
     def test_report_time(self):
         """ Given a cell, the report_time function has to return the time since the start of the experiment to the time of this cell's time. """
         _, cells_in_state0, _, _ = self.lineage._full_assign_obs(self.state0)
@@ -118,7 +119,6 @@ class TestModel(unittest.TestCase):
                 right = cell.obs[1] + cell.right.obs[1]
         maximum = max(left, right)
         self.assertTrue(get_experiment_time(self.lineage2) == maximum)
-                
 
     def test_bernoulli_estimator(self):
         """ Testing the bernoulli estimator, by comparing the result of the estimator to the result of scipy random variable generator. """

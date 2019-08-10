@@ -16,7 +16,7 @@ class StateDistribution:
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. It uses random variable generator functions of scipy.stats and makes a tuple out of them.
         Args:
         -----
-        size {Int}: The desired number of random varibales for a specific observation. 
+        size {Int}: The desired number of random varibales for a specific observation.
 
         Returns:
         --------

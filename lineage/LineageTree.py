@@ -162,7 +162,6 @@ class LineageTree:
 
         return num_cells_in_state, cells_in_state, indices_of_cells_in_state
 
-
     def _get_pruned_state_count(self, state):
         """ This function finds the cells that are in a specific state after pruning the lineage.
         Args:
@@ -175,7 +174,7 @@ class LineageTree:
 
         cells_in_state {list}: The list of cells in the given state.
 
-        list_of_tuples_of_obs {list}: A list including tuples which represents (bernoulli for die/divide, exponential for lifetime) 
+        list_of_tuples_of_obs {list}: A list including tuples which represents (bernoulli for die/divide, exponential for lifetime)
 
         indices_of_cells_in_state {list}: Holding the indexes of the cells being in the given state.
         """
@@ -192,7 +191,7 @@ class LineageTree:
         return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
 
     def _full_assign_obs(self, state):
-        """ Observation assignment give a state. 
+        """ Observation assignment give a state.
         Given the lineageTree object and the intended state, this function assigns the corresponding observations
         comming from specific distributions for that state.
 
@@ -211,7 +210,6 @@ class LineageTree:
             cell.obs = list_of_tuples_of_obs[i]
 
         return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
-
 
     def _get_parents_for_level(self, level):
         """ get the parents's index of a generation in the population list.
@@ -280,7 +278,7 @@ class LineageTree:
 
 def max_gen(lineage):
     """ finds the maximal generation in the tree, and cells organized by their generations.
-    This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and 
+    This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
     creates a list of them, appends the lists leading to have a list of the lists of cells in specific generations.
 
     Args:
@@ -292,14 +290,14 @@ def max_gen(lineage):
     max(gens) {Int}: The maximal generation in the given lineage.
     list_of_lists_of_cells_by_gen {list}: A list of lists of cells, organized by their generations.
     """
-    gens = {cell.gen for cell in lineage} # appending the generation of cells in the lineage
+    gens = {cell.gen for cell in lineage}  # appending the generation of cells in the lineage
     list_of_lists_of_cells_by_gen = [[None]]
     for gen in gens:
         temp_gen_list = []
         for cell in lineage:
             if cell.gen == gen:
-                temp_gen_list.append(cell) # appending the cells in the ssme generation
-        list_of_lists_of_cells_by_gen.append(temp_gen_list) # appending the list of cells being in the same generation
+                temp_gen_list.append(cell)  # appending the cells in the ssme generation
+        list_of_lists_of_cells_by_gen.append(temp_gen_list)  # appending the list of cells being in the same generation
     return max(gens), list_of_lists_of_cells_by_gen
 
 
@@ -318,8 +316,8 @@ def get_leaves(lineage):
     leaves = []
     for index, cell in enumerate(lineage):
         if cell._isLeaf():
-            leaves.append(cell) # appending the leaf cells to a list
-            leaf_indices.append(index) # appending the index of the cells
+            leaves.append(cell)  # appending the leaf cells to a list
+            leaf_indices.append(index)  # appending the index of the cells
     return leaf_indices, leaves
 
 

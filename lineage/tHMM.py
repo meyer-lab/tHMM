@@ -36,6 +36,7 @@ class tHMM:
 
 ##---------------------------- Marginal State Distribution ------------------------------##
 
+
     def get_Marginal_State_Distributions(self):
         """
         Marginal State Distribution (MSD) matrix and recursion.
@@ -89,7 +90,6 @@ class tHMM:
 
 
 ##--------------------------- Emission Likelihood --------------------------------##
-
 
     def get_Emission_Likelihoods(self):
         """

@@ -14,7 +14,7 @@ class TestModel(unittest.TestCase):
 
         # T: transition probability matrix
         self.T = np.array([[0.85, 0.15],
-                      [0.2, 0.8]])
+                           [0.2, 0.8]])
 
         # E: states are defined as StateDistribution objects
         # State 0 parameters "Resistant"
@@ -70,12 +70,11 @@ class TestModel(unittest.TestCase):
         self.cell_1 = cell_1
         # for test_get_mixed_subtrees
         self.mixed = [cell_2, cell_3, cell_4, cell_5, cell_6, cell_7]
-        
 
     def test_generate_lineage_list(self):
         """ A unittest for generate_lineage_list. """
         # checking the number of cells generated is equal to the desired number of cells given by the user.
-        self.assertTrue(len(self.lineage1.full_lin_list) == 2**9 -1)
+        self.assertTrue(len(self.lineage1.full_lin_list) == 2**9 - 1)
         self.assertTrue(self.lineage1.full_lin_list == self.lineage1.output_lineage), "The output lineage is wrong according to prune boolean"
         self.assertTrue(self.lineage2_pruned.pruned_lin_list == self.lineage2_pruned.output_lineage), "The output lineage is wrong according to prune boolean"
 
@@ -87,13 +86,13 @@ class TestModel(unittest.TestCase):
         # checking all the cells in the pruned version should have all the bernoulli observations == 1 (dead cells have been removed.)
         for cell in self.lineage1.pruned_lin_list:
             if cell._isLeaf():
-                self.assertTrue(cell.left == None)
-                self.assertTrue(cell.right == None)
+                self.assertTrue(cell.left is None)
+                self.assertTrue(cell.right is None)
 
         for cell in self.lineage2_pruned.pruned_lin_list:
             if cell._isLeaf():
-                self.assertTrue(cell.left == None)
-                self.assertTrue(cell.right == None)
+                self.assertTrue(cell.left is None)
+                self.assertTrue(cell.right is None)
 
     def test_get_full_state_count(self):
         """ A unittest for _get_full_state_count. """
@@ -106,7 +105,6 @@ class TestModel(unittest.TestCase):
         self.assertTrue(len(cells_in_state1) == num_cells_in_state1)
         self.assertTrue(num_cells_in_state1 <= 2**9 - 1), "The number of cells in one state is greater than the total number of cells!"
         self.assertTrue(max(indices_of_cells_in_state1) <= 2**9 - 1), "something is wrong with the indices of the cells returned by the function"
-
 
     def test_get_pruned_state_count(self):
         """ A unittest for _get_pruned_state_count. """
@@ -121,7 +119,6 @@ class TestModel(unittest.TestCase):
         self.assertTrue(num_cells_in_state1 <= len(self.lineage1.pruned_lin_list)), "The number of cells in one state is greater than the total number of cells!"
         if len(indices_of_cells_in_state) > 0:
             self.assertTrue(max(indices_of_cells_in_state1) <= (2**9 - 1)), "something is wrong with the indices of the cells returned by the function"
-
 
     def test_full_assign_obs(self):
         """ A unittest for checking the full_assign_obs function. """
@@ -148,8 +145,7 @@ class TestModel(unittest.TestCase):
 
         for j, Cell in enumerate(cells_in_state1):
             self.assertTrue(Cell.obs == list_of_tuples_of_obs1[j])
-        
-        
+
     def test_max_gen(self):
         """ A unittest for testing max_gen function by creating the lineage manually for 3 generations ==> total of 7 cells in the setup  function. """
 
@@ -173,12 +169,12 @@ class TestModel(unittest.TestCase):
 
     def test_get_leaves(self):
         """ A unittest fot get_leaves function. """
-        leaf_index, leaf_cells = get_leaves(self.lineage1.output_lineage) # getting the leaves and their indexes for lineage1
+        leaf_index, leaf_cells = get_leaves(self.lineage1.output_lineage)  # getting the leaves and their indexes for lineage1
 
         # to check the leaf cells do not have daughters
         for cells in leaf_cells:
-            self.assertTrue(cells.left == None), " The leaf cell doesn't seems to be a leaf, it has a left daughter."
-            self.assertTrue(cells.right == None), " The leaf cell doesn't seems to be a leaf, it has a right daughter."
+            self.assertTrue(cells.left is None), " The leaf cell doesn't seems to be a leaf, it has a left daughter."
+            self.assertTrue(cells.right is None), " The leaf cell doesn't seems to be a leaf, it has a right daughter."
 
         # to check the indexes for leaf cells are true
         for i in leaf_index:
@@ -205,8 +201,3 @@ class TestModel(unittest.TestCase):
         mixed = self.subtree2 + self.subtree1
         self.assertTrue(mixed_sub == mixed)
         self.assertTrue(not_mixed == [self.cell_1])
-            
-            
-        
-        
-        
