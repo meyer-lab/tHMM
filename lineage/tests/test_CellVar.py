@@ -4,6 +4,8 @@ import numpy as np
 from ..CellVar import CellVar as c, _double
 
 
+# pylint: disable=protected-access
+
 class TestModel(unittest.TestCase):
 
     def test_cellVar(self):
