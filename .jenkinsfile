@@ -12,18 +12,18 @@ pipeline {
         sh 'make venv'
       }
     }
+    stage('Lint') {
+      steps {
+        sh 'make pylint.log'
+        recordIssues qualityGates: [[threshold: 130, type: 'TOTAL', unstable: true]], tools: [pyLint(pattern: 'pylint.log')]
+      }
+    }
     stage('Build/Test') {
       parallel {
         stage('Test') {
           steps {
             sh 'make testcover'
             cobertura coberturaReportFile: 'coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
-          }
-        }
-        stage('Lint') {
-          steps {
-            sh 'make pylint.log'
-            recordIssues qualityGates: [[threshold: 130, type: 'TOTAL', unstable: true]], tools: [pyLint(pattern: 'pylint.log')]
           }
         }
         stage('Doc') {
