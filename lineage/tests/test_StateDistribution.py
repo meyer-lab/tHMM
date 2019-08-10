@@ -63,15 +63,15 @@ class TestModel(unittest.TestCase):
 
     def test_estimator(self):
         """ A unittest for the estimator function, by generating 150 observatopns for each of the distribution functions, we use the estimator and compare. """
-        tuples_of_obs = self.stateDist0.rvs(size=150)
+        tuples_of_obs = self.stateDist0.rvs(size=300)
         estimator_obj = self.stateDist0.estimator(tuples_of_obs)
 
         # here we check the estimated parameters to be close
         self.assertEqual(estimator_obj.state, self.stateDist0.state)
-        self.assertTrue(0.0 <= abs(estimator_obj.bern_p - self.stateDist0.bern_p) <= 0.5)
-        self.assertTrue(0.0 <= abs(estimator_obj.expon_scale_beta - self.stateDist0.expon_scale_beta) <= 7.0)
-        self.assertTrue(0.0 <= abs(estimator_obj.gamma_a - self.stateDist0.gamma_a) <= 5.0)
-        self.assertTrue(0.0 <= abs(estimator_obj.gamma_scale - self.stateDist0.gamma_scale) <= 5.0)
+        self.assertTrue(0.0 <= abs(estimator_obj.bern_p - self.stateDist0.bern_p) <= 0.1)
+        self.assertTrue(0.0 <= abs(estimator_obj.expon_scale_beta - self.stateDist0.expon_scale_beta) <= 5.0)
+        self.assertTrue(0.0 <= abs(estimator_obj.gamma_a - self.stateDist0.gamma_a) <= 3.0)
+        self.assertTrue(0.0 <= abs(estimator_obj.gamma_scale - self.stateDist0.gamma_scale) <= 3.0)
 
     def test_prune_rule(self):
         """ A unittest for the prune_rule. """
