@@ -70,8 +70,8 @@ class TestModel(unittest.TestCase):
         self.assertEqual(estimator_obj.state, self.stateDist0.state)
         self.assertTrue(0.0 <= abs(estimator_obj.bern_p - self.stateDist0.bern_p) <= 0.5)
         self.assertTrue(0.0 <= abs(estimator_obj.expon_scale_beta - self.stateDist0.expon_scale_beta) <= 7.0)
-        self.assertTrue(0.0 <= abs(estimator_obj.gamma_a - self.stateDist0.gamma_a) <= 1.0)
-        self.assertTrue(0.0 <= abs(estimator_obj.gamma_scale - self.stateDist0.gamma_scale) <= 1.0)
+        self.assertTrue(0.0 <= abs(estimator_obj.gamma_a - self.stateDist0.gamma_a) <= 5.0)
+        self.assertTrue(0.0 <= abs(estimator_obj.gamma_scale - self.stateDist0.gamma_scale) <= 5.0)
 
     def test_prune_rule(self):
         """ A unittest for the prune_rule. """
