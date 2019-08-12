@@ -254,6 +254,9 @@ class LineageTree:
         Represents the information about the lineage that the user has created, like whether the tree is pruned or is a full tree;
         and for both of the options it prints the number of states, the number of cells in the states, the total number of cells.
         """
+        s1 = ""
+        s2 = ""
+        s3 = ""
         if self._prune_boolean:
             s1 = "This tree is pruned. It is made of {} states.\n For each state in this tree: ".format(
                 self.num_states)
@@ -265,7 +268,6 @@ class LineageTree:
             s2 = seperator.join(s_list)
             s3 = ".\n This pruned tree has {} many cells in total".format(
                 len(self.pruned_lin_list))
-            return s1 + s2 + s3
         else:
             s1 = "This tree is NOT pruned. It is made of {} states.\n For each state in this tree: ".format(
                 self.num_states)
@@ -277,10 +279,13 @@ class LineageTree:
             s2 = seperator.join(s_list)
             s3 = ".\n This UNpruned tree has {} many cells in total".format(
                 len(self.full_lin_list))
-            return s1 + s2 + s3
+        return s1 + s2 + s3
 
     def __str__(self):
         """ This function is used to get string representation of an object, used for showing the results to the user. Same as `__repr__()` """
+        s1 = ""
+        s2 = ""
+        s3 = ""
         if self._prune_boolean:
             s1 = "This tree is pruned. It is made of {} states.\n For each state in this tree: ".format(
                 self.num_states)
@@ -292,7 +297,6 @@ class LineageTree:
             s2 = seperator.join(s_list)
             s3 = ".\n This pruned tree has {} cells in total".format(
                 len(self.pruned_lin_list))
-            return s1 + s2 + s3
         else:
             s1 = "This tree is NOT pruned. It is made of {} states.\n For each state in this tree: ".format(
                 self.num_states)
@@ -304,7 +308,7 @@ class LineageTree:
             s2 = seperator.join(s_list)
             s3 = ".\n This UNpruned tree has {} cells in total".format(
                 len(self.full_lin_list))
-            return s1 + s2 + s3
+        return s1 + s2 + s3
 
 # tools for analyzing trees
 
