@@ -22,7 +22,7 @@ class TestModel(unittest.TestCase):
         # ingredients for LineageTree!
         self.pi = np.array([0.75, 0.25])
         self.T = np.array([[0.85, 0.15],
-                           [0.2, 0.8]])
+                           [0.20, 0.80]])
 
         # observation parameters for state1
         self.state1 = 1
@@ -88,11 +88,13 @@ class TestModel(unittest.TestCase):
 
     def test_report_time(self):
         """ Given a cell, the report_time function has to return the time since the start of the experiment to the time of this cell's time. """
-        _, cells_in_state0, _, _ = self.lineage._full_assign_obs(self.state0)
-        _, cells_in_state1, _, _ = self.lineage._full_assign_obs(self.state1)
-        # bringing all the cells after assigning observations to them
-        all_cells = cells_in_state0 + cells_in_state1
+        full_lin_cells_holder = []
+        for state in range(2):
+            full_lin_cells_holder.append(self.lineage.lineage_stats[state].full_lin_cells)
 
+        # bringing all the cells after assigning observations to them
+        all_cells = [cell for sublist in full_lin_cells_holder for cell in sublist]
+        
         # here we check this for the root parent, since the time has taken so far, equals to the lifetime of the cell
         for cell in all_cells:
             if cell._isRootParent():
