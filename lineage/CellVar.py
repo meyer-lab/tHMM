@@ -53,10 +53,10 @@ class CellVar:
 
     def _isChild(self):
         """ Boolean. Returns true if this cell has a known parent. """
+        booler = False
         if self.parent:
-            return self.parent._isParent()
-        else:
-            return False
+            booler = self.parent._isParent()
+        return booler
 
     def _isRootParent(self):
         """ Boolean. Returns true if this cell is the first cell in a lineage. """
