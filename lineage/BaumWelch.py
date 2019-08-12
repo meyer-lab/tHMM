@@ -11,7 +11,8 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j,
     '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
 
     # check the child-parent relationship
-    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx], "Something wrong with your parent-daughter linkage when trying to use the zeta-related functions... Check again that your lineage is constructed clearly."
+    err_str = "Something wrong with your parent-daughter linkage when trying to use the zeta-related functions... Check again that your lineage is constructed clearly."
+    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx], err_str
     # if the child-parent relationship is correct, then the child must
     assert lineage[node_child_n_idx]._isChild(
     ), "Something wrong with your parent-daughter linkage when trying to use the zeta-related functions... Check again that your lineage is constructed clearly."
@@ -70,9 +71,8 @@ def get_all_zetas(parent_state_j, child_state_k, lineageObj,
     return holder
 
 
-def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
+def fit(tHMMobj, tolerance=1e-10, max_iter=100):
     '''Runs the tHMM function through Baum Welch fitting'''
-    numLineages = len(tHMMobj.X)
     numStates = tHMMobj.numStates
 
     # first E step
