@@ -72,18 +72,22 @@ class TestModel(unittest.TestCase):
             exp_obs1) == len(gamma_obs1) == 40)
 
     def test_pdf(self):
-        """ A unittest for the likelihood function. Here we generate one set of observation (the size == 1 which mean we just have one bernoulli, one exponential, and one gamma) although we don't need gamma AND exponential  together, for now we will leave it this way. """
+        """ 
+        A unittest for the likelihood function. 
+        Here we generate one set of observation 
+        (the size == 1 which mean we just have one bernoulli, one exponential, and one gamma) 
+        although we don't need gamma AND exponential together, for now we will leave it this way. """
         # for stateDist0
         tuple_of_obs = self.stateDist0.rvs(size=1)
         likelihood = self.stateDist0.pdf(tuple_of_obs)
         self.assertTrue(
-            0.0 <= likelihood <= 1.0), " The likelihood function calculation is not working properly."
+            0.0 <= likelihood <= 1.0),
 
         # for stateDist1
         tuple_of_obs1 = self.stateDist1.rvs(size=1)
         likelihood1 = self.stateDist1.pdf(tuple_of_obs1)
         self.assertTrue(
-            0.0 <= likelihood1 <= 1.0), " The likelihood function calculation is not working properly."
+            0.0 <= likelihood1 <= 1.0)
 
     def test_estimator(self):
         """ A unittest for the estimator function, by generating 150 observatopns for each of the distribution functions, we use the estimator and compare. """
@@ -145,7 +149,11 @@ class TestModel(unittest.TestCase):
                 self.assertTrue(report_time(cell.left) == taus)
 
     def test_get_experiment_time(self):
-        """ A unittest to check the experiment time is reported correctly. Here we use a lineage with 3 cells, self.lineage2 built in the setup function."""
+        """
+        A unittest to check the experiment time is
+        reported correctly. Here we use a lineage with 3 cells, 
+        self.lineage2 built in the setup function.
+        """
         _, cells_in_state0, _, _ = self.lineage2._full_assign_obs(
             self.state0)
         _, cells_in_state1, _, _ = self.lineage2._full_assign_obs(
@@ -163,20 +171,32 @@ class TestModel(unittest.TestCase):
         self.assertTrue(get_experiment_time(self.lineage2) == maximum)
 
     def test_bernoulli_estimator(self):
-        """ Testing the bernoulli estimator, by comparing the result of the estimator to the result of scipy random variable generator. """
+        """
+        Testing the bernoulli estimator,
+        by comparing the result of the estimator
+        to the result of scipy random variable generator.
+        """
         bern_obs = sp.bernoulli.rvs(
             p=0.90, size=1000)  # bernoulli observations
         self.assertTrue(0.87 <= bernoulli_estimator(bern_obs) <= 0.93)
 
     def test_exponential_estimator(self):
-        """ Testing the exponential estimator, by comparing the result of the estimator to the result of scipy random variable generator. """
+        """
+        Testing the exponential estimator,
+        by comparing the result of the estimator
+        to the result of scipy random variable generator.
+        """
         exp_obs = sp.expon.rvs(
             scale=50, size=1000)  # exponential observations
         self.assertTrue(45 <= exponential_estimator(
             exp_obs) <= 55)  # +/- 5 of beta
 
     def test_gamma_estimator(self):
-        """ Testing the gamma estimator, by comparing the result of the estimator to the result of scipy random variable generator. """
+        """
+        Testing the gamma estimator,
+        by comparing the result of the estimator
+        to the result of scipy random variable generator.
+        """
         gamma_obs = sp.gamma.rvs(
             a=12.5, scale=3, size=1000)  # gamma observations
         shape, scale = gamma_estimator(gamma_obs)

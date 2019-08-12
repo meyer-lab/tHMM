@@ -139,9 +139,9 @@ class TestModel(unittest.TestCase):
         # number of cells given by the user.
         self.assertTrue(len(self.lineage1.full_lin_list) == 2**9 - 1)
         self.assertTrue(self.lineage1.full_lin_list ==
-                        self.lineage1.output_lineage), "The output lineage is wrong according to prune boolean"
+                        self.lineage1.output_lineage)
         self.assertTrue(self.lineage2_pruned.pruned_lin_list ==
-                        self.lineage2_pruned.output_lineage), "The output lineage is wrong according to prune boolean"
+                        self.lineage2_pruned.output_lineage)
 
     def test_prune_lineage(self):
         """ A unittest for prune_lineage. """
@@ -168,17 +168,17 @@ class TestModel(unittest.TestCase):
             self.state0)
         self.assertTrue(len(cells_in_state) == num_cells_in_state)
         self.assertTrue(num_cells_in_state <= 2**9 -
-                        1), "The number of cells in one state is greater than the total number of cells!"
+                        1)
         self.assertTrue(max(indices_of_cells_in_state) <= 2**9 -
-                        1), "something is wrong with the indices of the cells returned by the function"
+                        1)
 
         num_cells_in_state1, cells_in_state1, indices_of_cells_in_state1 = self.lineage1._get_full_state_count(
             self.state1)
         self.assertTrue(len(cells_in_state1) == num_cells_in_state1)
         self.assertTrue(num_cells_in_state1 <= 2**9 -
-                        1), "The number of cells in one state is greater than the total number of cells!"
+                        1)
         self.assertTrue(max(indices_of_cells_in_state1) <= 2**9 -
-                        1), "something is wrong with the indices of the cells returned by the function"
+                        1)
 
     def test_get_pruned_state_count(self):
         """ A unittest for _get_pruned_state_count. """
@@ -187,21 +187,21 @@ class TestModel(unittest.TestCase):
         self.assertTrue(len(cells_in_state) ==
                         num_cells_in_state == len(list_of_tuples_of_obs))
         self.assertTrue(num_cells_in_state <= len(self.lineage1.pruned_lin_list)
-                        ), "The number of cells in one state is greater than the total number of cells!"
+                        )
         if len(indices_of_cells_in_state) > 0:
             self.assertTrue(
                 max(indices_of_cells_in_state) <= (
-                    2**9 - 1)), "something is wrong with the indices of the cells returned by the function"
+                    2**9 - 1))
 
         num_cells_in_state1, cells_in_state1, list_of_tuples_of_obs1, indices_of_cells_in_state1 = self.lineage1._get_pruned_state_count(
             self.state1)
         self.assertTrue(len(cells_in_state1) ==
                         num_cells_in_state1 == len(list_of_tuples_of_obs1))
         self.assertTrue(num_cells_in_state1 <= len(self.lineage1.pruned_lin_list)
-                        ), "The number of cells in one state is greater than the total number of cells!"
+                        )
         if len(indices_of_cells_in_state) > 0:
             self.assertTrue(max(indices_of_cells_in_state1) <= (
-                2**9 - 1)), "something is wrong with the indices of the cells returned by the function"
+                2**9 - 1))
 
     def test_full_assign_obs(self):
         """ A unittest for checking the full_assign_obs function. """
@@ -214,7 +214,7 @@ class TestModel(unittest.TestCase):
         exp_obs = list(unzipped_list_obs[1])
         gamma_obs = list(unzipped_list_obs[2])
         self.assertTrue(len(bern_obs) == len(exp_obs) == len(
-            gamma_obs)), "The number of observations for different emissions don't match!"
+            gamma_obs))
 
         # making sure observations have been assigned properly
         for i, cell in enumerate(cells_in_state):
@@ -263,9 +263,9 @@ class TestModel(unittest.TestCase):
         # to check the leaf cells do not have daughters
         for cells in leaf_cells:
             self.assertTrue(
-                cells.left is None), " The leaf cell doesn't seems to be a leaf, it has a left daughter."
+                cells.left is None)
             self.assertTrue(
-                cells.right is None), " The leaf cell doesn't seems to be a leaf, it has a right daughter."
+                cells.right is None)
 
         # to check the indexes for leaf cells are true
         for i in leaf_index:
@@ -277,22 +277,22 @@ class TestModel(unittest.TestCase):
         subtree1, not_subtree1 = get_subtrees(
             self.cell_2, self.test_lineage)
         self.assertTrue(
-            subtree1 == self.subtree1), " The subtree is not being specified correctly."
+            subtree1 == self.subtree1)
 
         subtree2, not_subtree2 = get_subtrees(
             self.cell_3, self.test_lineage)
         self.assertTrue(
-            subtree2 == self.subtree2), " The subtree is not being specified correctly."
+            subtree2 == self.subtree2)
 
     def test_find_two_subtrees(self):
         """ A unittest for find_two_subtrees, using the built-in-7-cell lineage in the setup function.  """
         left_sub, right_sub, neither_subtree = find_two_subtrees(
             self.cell_1, self.test_lineage)
-        self.assertTrue(left_sub == self.subtree1), "left subtree wrong"
-        self.assertTrue(right_sub == self.subtree2), "right subtree wrong"
+        self.assertTrue(left_sub == self.subtree1)
+        self.assertTrue(right_sub == self.subtree2)
         self.assertTrue(
             neither_subtree == [
-                self.cell_1]), "neither subtree is wrong"
+                self.cell_1])
 
     def test_get_mixed_subtrees(self):
         """ A unittest for get_mixed_subtrees, using the built-in-7-cell lineage in the setup function. """
