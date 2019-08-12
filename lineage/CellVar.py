@@ -14,11 +14,12 @@ import numpy as np
 
 class CellVar:
     """ cell class. """
+
     def __init__(self, state, left, right, parent, gen):
-        """ 
-        Instantiates the cell object. 
-        Contains memeber variables that identify daughter cells 
-        and parent cells. Also contains the state of the cell. 
+        """
+        Instantiates the cell object.
+        Contains memeber variables that identify daughter cells
+        and parent cells. Also contains the state of the cell.
         """
         self.state = state
         self.left = left
@@ -108,19 +109,19 @@ class CellVar:
     def __str__(self):
         str_print = ""
         if hasattr(self, 'obs'):
-            str_print =  "\n Generation: {}, State: {}, Observation: {}".format(
+            str_print = "\n Generation: {}, State: {}, Observation: {}".format(
                 self.gen, self.state, self.obs)
         else:
-            str_print =  "\n Generation: {}, State: {}, Observation: {}".format(
+            str_print = "\n Generation: {}, State: {}, Observation: {}".format(
                 self.gen, self.state, "This cell has no observations to report.")
         return str_print
 
 
 def _double(parent_state, T):
-    """ 
-    Function that essentially rolls two of the same loaded dice 
-    given a state that determines the row of the transition matrix. 
-    The results of the roll of the loaded dice are two new states that are returned. 
+    """
+    Function that essentially rolls two of the same loaded dice
+    given a state that determines the row of the transition matrix.
+    The results of the roll of the loaded dice are two new states that are returned.
     """
     # Checking that the inputs are of the right shape
     assert T.shape[0] == T.shape[1], "Transition numpy array is not square. \

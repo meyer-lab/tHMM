@@ -71,10 +71,10 @@ class TestModel(unittest.TestCase):
             exp_obs1) == len(gamma_obs1) == 40)
 
     def test_pdf(self):
-        """ 
-        A unittest for the likelihood function. 
-        Here we generate one set of observation 
-        (the size == 1 which mean we just have one bernoulli, one exponential, and one gamma) 
+        """
+        A unittest for the likelihood function.
+        Here we generate one set of observation
+        (the size == 1 which mean we just have one bernoulli, one exponential, and one gamma)
         although we don't need gamma AND exponential together, for now we will leave it this way. """
         # for stateDist0
         tuple_of_obs = self.stateDist0.rvs(size=1)
@@ -124,10 +124,10 @@ class TestModel(unittest.TestCase):
                 self.assertTrue(prune_rule(cell))
 
     def test_report_time(self):
-        """ 
-        Given a cell, the report_time function has to 
-        return the time since the start of the experiment 
-        to the time of this cell's time. 
+        """
+        Given a cell, the report_time function has to
+        return the time since the start of the experiment
+        to the time of this cell's time.
         """
         full_lin_cells_holder = []
         for state in range(2):
@@ -154,7 +154,7 @@ class TestModel(unittest.TestCase):
     def test_get_experiment_time(self):
         """
         A unittest to check the experiment time is
-        reported correctly. Here we use a lineage with 3 cells, 
+        reported correctly. Here we use a lineage with 3 cells,
         self.lineage2 built in the setup function.
         """
         full_lin_cells_holder = []
