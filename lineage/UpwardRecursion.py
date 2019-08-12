@@ -35,26 +35,35 @@ def get_leaf_Normalizing_Factors(tHMMobj):
 
     NF = []  # full Normalizing Factors holder
 
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
+    for num, lineageObj in enumerate(
+            tHMMobj.X):  # for each lineage in our Population
+        # getting the lineage in the Population by index
+        lineage = lineageObj.output_lineage
         MSD_array = MSD[num]  # getting the MSD of the respective lineage
         EL_array = EL[num]  # geting the EL of the respective lineage
-        NF_array = np.zeros((len(lineage)), dtype=float)  # instantiating N by 1 array
+        # instantiating N by 1 array
+        NF_array = np.zeros((len(lineage)), dtype=float)
 
-        for ii, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
+        for ii, cell in enumerate(
+                lineageObj.output_leaves):  # for each cell in the lineage's leaves
             assert cell._isLeaf()
             leaf_cell_idx = lineageObj.output_leaves_idx[ii]
             temp_sum_holder = []  # create a temporary list
             for state_k in range(numStates):  # for each state
-                joint_prob = MSD_array[leaf_cell_idx, state_k] * EL_array[leaf_cell_idx, state_k]  # def of conditional prob
+                joint_prob = MSD_array[leaf_cell_idx,
+                                       state_k] * EL_array[leaf_cell_idx,
+                                                           state_k]  # def of conditional prob
                 # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
                 # this product is the joint probability
-                temp_sum_holder.append(joint_prob)  # append the joint probability to be summed
+                # append the joint probability to be summed
+                temp_sum_holder.append(joint_prob)
 
             marg_prob = sum(temp_sum_holder)  # law of total probability
             # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
-            # the sum of the joint probabilities is the marginal probability
-            NF_array[leaf_cell_idx] = marg_prob  # each leaf is now intialized
+            # the sum of the joint probabilities is the marginal
+            # probability
+            # each leaf is now intialized
+            NF_array[leaf_cell_idx] = marg_prob
         NF.append(NF_array)
     return NF
 
@@ -91,25 +100,33 @@ def get_leaf_betas(tHMMobj, NF):
 
     betas = []  # full betas holder
 
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
+    for num, lineageObj in enumerate(
+            tHMMobj.X):  # for each lineage in our Population
+        # getting the lineage in the Population by index
+        lineage = lineageObj.output_lineage
         MSD_array = MSD[num]  # getting the MSD of the respective lineage
         EL_array = EL[num]  # geting the EL of the respective lineage
         NF_array = NF[num]  # getting the NF of the respective lineage
 
-        beta_array = np.zeros((len(lineage), numStates))  # instantiating N by K array
-        for ii, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
+        # instantiating N by K array
+        beta_array = np.zeros((len(lineage), numStates))
+        for ii, cell in enumerate(
+                lineageObj.output_leaves):  # for each cell in the lineage's leaves
             assert cell._isLeaf()
             leaf_cell_idx = lineageObj.output_leaves_idx[ii]
             for state_k in range(numStates):  # for each state
                 # see expression in docstring
-                numer1 = EL_array[leaf_cell_idx, state_k]  # Emission Likelihood
+                # Emission Likelihood
+                numer1 = EL_array[leaf_cell_idx, state_k]
                 # P(x_n = x | z_n = k)
-                numer2 = MSD_array[leaf_cell_idx, state_k]  # Marginal State Distribution
+                # Marginal State Distribution
+                numer2 = MSD_array[leaf_cell_idx, state_k]
                 # P(z_n = k)
-                denom = NF_array[leaf_cell_idx]  # Normalizing Factor (same regardless of state)
+                # Normalizing Factor (same regardless of state)
+                denom = NF_array[leaf_cell_idx]
                 # P(x_n = x)
-                beta_array[leaf_cell_idx, state_k] = numer1 * numer2 / denom
+                beta_array[leaf_cell_idx,
+                           state_k] = numer1 * numer2 / denom
         betas.append(beta_array)
     for num, lineageObj in enumerate(tHMMobj.X):
         betas_last_row_sum = np.sum(betas[num][-1])
@@ -134,8 +151,10 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
     # NF is an input argument
     # betas is an input argument
 
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
+    for num, lineageObj in enumerate(
+            tHMMobj.X):  # for each lineage in our Population
+        # getting the lineage in the Population by index
+        lineage = lineageObj.output_lineage
         MSD_array = MSD[num]  # getting the MSD of the respective lineage
         EL_array = EL[num]  # geting the EL of the respective lineage
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
@@ -157,24 +176,31 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                     numer_holder.append(fac1 * fac2 * fac3)
                 NF[num][node_parent_m_idx] = sum(numer_holder)
                 for state_j in range(numStates):
-                    betas[num][node_parent_m_idx, state_j] = numer_holder[state_j] / NF[num][node_parent_m_idx]
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
+                    betas[num][node_parent_m_idx,
+                               state_j] = numer_holder[state_j] / NF[num][node_parent_m_idx]
+    for num, lineageObj in enumerate(
+            tHMMobj.X):  # for each lineage in our Population
         betas_row_sum = np.sum(betas[num], axis=1)
         assert np.allclose(betas_row_sum, 1.)
 
 
-def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
+def get_beta_parent_child_prod(
+        numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
     '''
     Calculates the product of beta-links for every parent-child
     relationship of a given parent cell in a given state.
     '''
     beta_m_n_holder = 1.0  # list to hold the factors in the product
-    node_parent_m = lineage[node_parent_m_idx]  # get the index of the parent
+    # get the index of the parent
+    node_parent_m = lineage[node_parent_m_idx]
     children_list = node_parent_m._get_daughters()
-    children_idx_list = [lineage.index(daughter) for daughter in children_list]
+    children_idx_list = [lineage.index(daughter)
+                         for daughter in children_list]
     for node_child_n_idx in children_idx_list:
-        assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
-        assert lineage[node_child_n_idx]._isChild()  # if the child-parent relationship is correct, then the child must
+        # check the child-parent relationship
+        assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]
+        # if the child-parent relationship is correct, then the child must
+        assert lineage[node_child_n_idx]._isChild()
         beta_m_n = beta_parent_child_func(beta_array=beta_array,
                                           T=T,
                                           MSD_array=MSD_array,
@@ -185,7 +211,8 @@ def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, sta
     return beta_m_n_holder
 
 
-def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
+def beta_parent_child_func(
+        beta_array, T, MSD_array, state_j, node_child_n_idx):
     '''
     This "helper" function calculates the probability
     described as a 'beta-link' between parent and child
@@ -197,7 +224,8 @@ def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
     '''
     # beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
     # P( z_n = k | z_m = j); P(z_n = k)
-    return np.sum(beta_array[node_child_n_idx, :] * T[state_j, :] / MSD_array[node_child_n_idx, :])
+    return np.sum(beta_array[node_child_n_idx, :] *
+                  T[state_j, :] / MSD_array[node_child_n_idx, :])
 
 
 def calculate_log_likelihood(tHMMobj, NF):
@@ -206,7 +234,8 @@ def calculate_log_likelihood(tHMMobj, NF):
     '''
     LL = []
 
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
+    for num, lineageObj in enumerate(
+            tHMMobj.X):  # for each lineage in our Population
 
         NF_array = NF[num]  # getting the NF of the respective lineage
         log_NF_array = np.log(NF_array)

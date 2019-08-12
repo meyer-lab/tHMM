@@ -6,7 +6,7 @@ from .figureCommon import getSetup
 
 def makeFigure():
     """ makes figure 7 """
-    
+
     # Get list of axis objects
     ax, f = getSetup((5, 5), (1, 1))
 

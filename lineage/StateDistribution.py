@@ -4,7 +4,9 @@ import scipy.stats as sp
 
 
 class StateDistribution:
-    def __init__(self, state, bern_p, expon_scale_beta, gamma_a, gamma_scale):  # user has to identify what parameters to use for each state
+    # user has to identify what parameters to use for each state
+    def __init__(self, state, bern_p, expon_scale_beta,
+                 gamma_a, gamma_scale):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.state = state
         self.bern_p = bern_p
@@ -23,11 +25,18 @@ class StateDistribution:
         tuple_of_obs {list}: A list containing tuples of observations, for now it is (bernoulli for die/divide, exponential for lifetime, gamma for lifetime).
         """
         # {
-        bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
-        exp_obs = sp.expon.rvs(scale=self.expon_scale_beta, size=size)  # exponential observations
-        gamma_obs = sp.gamma.rvs(a=self.gamma_a, scale=self.gamma_scale, size=size)  # gamma observations
+        bern_obs = sp.bernoulli.rvs(
+            p=self.bern_p, size=size)  # bernoulli observations
+        exp_obs = sp.expon.rvs(
+            scale=self.expon_scale_beta,
+            size=size)  # exponential observations
+        gamma_obs = sp.gamma.rvs(
+            a=self.gamma_a,
+            scale=self.gamma_scale,
+            size=size)  # gamma observations
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
-        # These tuples of observations will go into the cells in the lineage tree.
+        # These tuples of observations will go into the cells in the
+        # lineage tree.
         tuple_of_obs = list(zip(bern_obs, exp_obs, gamma_obs))
         return tuple_of_obs
 
@@ -41,9 +50,14 @@ class StateDistribution:
         the individual observation likelihoods.
         """
         bern_obs, exp_obs, gamma_obs = list(zip(*tuple_of_obs))
-        bern_ll = sp.bernoulli.pmf(k=bern_obs, p=self.bern_p)  # bernoulli likelihood
-        exp_ll = sp.expon.pdf(x=exp_obs, scale=self.expon_scale_beta)  # exponential likelihood
-        gamma_ll = sp.gamma.pdf(x=gamma_obs, a=self.gamma_a, scale=self.gamma_scale)  # gamma likelihood
+        bern_ll = sp.bernoulli.pmf(
+            k=bern_obs, p=self.bern_p)  # bernoulli likelihood
+        # exponential likelihood
+        exp_ll = sp.expon.pdf(x=exp_obs, scale=self.expon_scale_beta)
+        gamma_ll = sp.gamma.pdf(
+            x=gamma_obs,
+            a=self.gamma_a,
+            scale=self.gamma_scale)  # gamma likelihood
         likelihood = bern_ll * exp_ll * gamma_ll
         return likelihood
 
@@ -67,9 +81,13 @@ class StateDistribution:
             exp_obs = list(unzipped_list_of_tuples_of_obs[1])
             gamma_obs = list(unzipped_list_of_tuples_of_obs[2])
         except BaseException:
-            bern_obs = [sp.bernoulli.rvs(p=0.9 * (np.random.uniform()))]  # bernoulli observations
-            exp_obs = [sp.expon.rvs(scale=50 * (1 + np.random.uniform()))]  # exponential observations
-            gamma_obs = [sp.gamma.rvs(a=7.5 * (np.random.uniform()), scale=1.5 * (np.random.uniform()))]  # gamma observations
+            # bernoulli observations
+            bern_obs = [sp.bernoulli.rvs(p=0.9 * (np.random.uniform()))]
+            # exponential observations
+            exp_obs = [sp.expon.rvs(scale=50 * (1 + np.random.uniform()))]
+            gamma_obs = [sp.gamma.rvs(a=7.5 *
+                                      (np.random.uniform()), scale=1.5 *
+                                      (np.random.uniform()))]  # gamma observations
 
         bern_p_estimate = bernoulli_estimator(bern_obs)
         expon_scale_beta_estimate = exponential_estimator(exp_obs)
@@ -87,7 +105,8 @@ class StateDistribution:
         return state_estimate_obj
 
     def __repr__(self):
-        return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.expon_scale_beta, self.gamma_a, self.gamma_scale)
+        return "State object w/ parameters: {}, {}, {}, {}.".format(
+            self.bern_p, self.expon_scale_beta, self.gamma_a, self.gamma_scale)
 
 
 def prune_rule(cell):
@@ -177,13 +196,17 @@ def gamma_estimator(gamma_obs):
 
     # initialization step
     a_hat0 = 0.5 / (tau_logmean - tau_meanlog)  # shape
-    psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)  # psi is the derivative of log of gamma function, which has been approximated as this term
-    psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)  # this is the derivative of psi
+    # psi is the derivative of log of gamma function, which has been
+    # approximated as this term
+    psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)
+    # this is the derivative of psi
+    psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
     assert a_hat0 != 0, "the first parameter has been set to zero!"
 
     # updating the parameters
     for i in range(100):
-        a_hat_new = (a_hat0 * (1 - a_hat0 * psi_prime0)) / (1 - a_hat0 * psi_prime0 + tau_meanlog - tau_logmean + np.log(a_hat0) - psi_0)
+        a_hat_new = (a_hat0 * (1 - a_hat0 * psi_prime0)) / (1 - a_hat0 *
+                                                            psi_prime0 + tau_meanlog - tau_logmean + np.log(a_hat0) - psi_0)
         b_hat_new = tau_mean / a_hat_new
 
         a_hat0 = a_hat_new
@@ -195,6 +218,9 @@ def gamma_estimator(gamma_obs):
             return a_hat_new, b_hat_new
         else:
             pass
-    assert np.abs(a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new - a_hat0 = {}".format(np.abs(a_hat_new - a_hat0))
+    assert np.abs(
+        a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new - a_hat0 = {}".format(
+        np.abs(
+            a_hat_new - a_hat0))
 
     return a_hat_new, b_hat_new
