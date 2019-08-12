@@ -234,7 +234,7 @@ def calculate_log_likelihood(tHMMobj, NF):
     '''
     LL = []
 
-    for num, lineageObj in enumerate(
+    for num, _ in enumerate(
             tHMMobj.X):  # for each lineage in our Population
 
         NF_array = NF[num]  # getting the NF of the respective lineage
