@@ -4,7 +4,6 @@ import numpy as np
 import scipy.stats as sp
 from ..StateDistribution import StateDistribution, bernoulli_estimator, exponential_estimator, gamma_estimator, prune_rule, report_time, get_experiment_time
 from ..LineageTree import LineageTree
-from ..CellVar import CellVar as c
 
 
 class TestModel(unittest.TestCase):

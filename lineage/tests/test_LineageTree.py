@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from ..CellVar import CellVar as c
-from ..LineageTree import LineageTree, max_gen, get_leaves, get_subtrees, tree_recursion, find_two_subtrees, get_mixed_subtrees
+from ..LineageTree import LineageTree, max_gen, get_leaves, get_subtrees, find_two_subtrees, get_mixed_subtrees
 from ..StateDistribution import StateDistribution
 
 

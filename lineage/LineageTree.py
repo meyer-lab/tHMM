@@ -1,6 +1,5 @@
 """ This file contains the LineageTree class. """
 import scipy.stats as sp
-import numpy as np
 
 from .CellVar import CellVar
 from .StateDistribution import prune_rule
