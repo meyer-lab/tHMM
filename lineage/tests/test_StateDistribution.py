@@ -63,7 +63,7 @@ class TestModel(unittest.TestCase):
 
     def test_estimator(self):
         """ A unittest for the estimator function, by generating 150 observatopns for each of the distribution functions, we use the estimator and compare. """
-        tuples_of_obs = self.stateDist0.rvs(size=300)
+        tuples_of_obs = self.stateDist0.rvs(size=3000)
         estimator_obj = self.stateDist0.estimator(tuples_of_obs)
 
         # here we check the estimated parameters to be close
@@ -76,13 +76,11 @@ class TestModel(unittest.TestCase):
     def test_prune_rule(self):
         """ A unittest for the prune_rule. """
 
-        _, cells_in_state0, _, _ = self.lineage._full_assign_obs(self.state0)
-        for cell in cells_in_state0:
+        for cell in self.lineage.lineage_stats[0].full_lin_cells:
             if cell.obs[0] == 0:
                 self.assertTrue(prune_rule(cell) == True)
 
-        _, cells_in_state1, _, _ = self.lineage._full_assign_obs(self.state1)
-        for cell in cells_in_state1:
+        for cell in self.lineage.lineage_stats[1].full_lin_cells:
             if cell.obs[0] == 0:
                 self.assertTrue(prune_rule(cell) == True)
 
