@@ -270,7 +270,7 @@ class TestModel(unittest.TestCase):
         # to check the indexes for leaf cells are true
         for i in leaf_index:
             self.assertTrue(
-                self.lineage1.output_lineage[i]._isLeaf() == True)
+                self.lineage1.output_lineage[i]._isLeaf())
 
     def test_get_subtrees(self):
         """ A unittest to get the subtrees and the remaining lineage except for that subtree. Here we use the manually-built-7-cell lineage in the setup function. """

@@ -118,14 +118,18 @@ class TestModel(unittest.TestCase):
 
         for cell in self.lineage.lineage_stats[0].full_lin_cells:
             if cell.obs[0] == 0:
-                self.assertTrue(prune_rule(cell) == True)
+                self.assertTrue(prune_rule(cell))
 
         for cell in self.lineage.lineage_stats[1].full_lin_cells:
             if cell.obs[0] == 0:
-                self.assertTrue(prune_rule(cell) == True)
+                self.assertTrue(prune_rule(cell))
 
     def test_report_time(self):
-        """ Given a cell, the report_time function has to return the time since the start of the experiment to the time of this cell's time. """
+        """ 
+        Given a cell, the report_time function has to 
+        return the time since the start of the experiment 
+        to the time of this cell's time. 
+        """
         full_lin_cells_holder = []
         for state in range(2):
             full_lin_cells_holder.append(
@@ -154,12 +158,14 @@ class TestModel(unittest.TestCase):
         reported correctly. Here we use a lineage with 3 cells, 
         self.lineage2 built in the setup function.
         """
-        _, cells_in_state0, _, _ = self.lineage2._full_assign_obs(
-            self.state0)
-        _, cells_in_state1, _, _ = self.lineage2._full_assign_obs(
-            self.state1)
+        full_lin_cells_holder = []
+        for state in range(2):
+            full_lin_cells_holder.append(
+                self.lineage2.lineage_stats[state].full_lin_cells)
+
         # bringing all the cells after assigning observations to them
-        all_cells = cells_in_state0 + cells_in_state1
+        all_cells = [
+            cell for sublist in full_lin_cells_holder for cell in sublist]
 
         # here we check this for the root parent, since the time has taken
         # so far, equals to the lifetime of the cell
