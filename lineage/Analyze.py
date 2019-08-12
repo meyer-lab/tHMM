@@ -10,7 +10,7 @@ def Analyze(X, numStates):
     '''Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas'''
 
     tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
-    fit(tHMMobj, max_iter=200, verbose=True)
+    fit(tHMMobj, max_iter=200)
 
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
