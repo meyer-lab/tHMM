@@ -13,14 +13,13 @@ import numpy as np
 
 
 class CellVar:
-    def __init__(self, state, left, right, parent, gen, plotVar):
+    def __init__(self, state, left, right, parent, gen):
         """ Instantiates the cell object. Contains memeber variables that identify daughter cells and parent cells. Also contains the state of the cell. """
         self.state = state
         self.left = left
         self.right = right
         self.parent = parent
         self.gen = gen
-        self.plotVar = plotVar
 
     def _divide(self, T):
         """ Member function that performs division of a cell. Equivalent to adding another timestep in a Markov process. """
