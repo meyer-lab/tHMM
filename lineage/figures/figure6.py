@@ -29,11 +29,11 @@ def accuracy_increased_cells():
     """ Calclates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
 
     # pi: the initial probability vector
-    pi = np.array([0.5, 0.5], dtype="float")
+    pi = np.array([0.6, 0.4], dtype="float")
 
     # T: transition probability matrix
-    T = np.array([[0.99, 0.01],
-                  [0.15, 0.85]])
+    T = np.array([[0.85, 0.15],
+                  [0.15, 0.85]], dtype="float")
 
     # State 0 parameters "Resistant"
     state0 = 0
@@ -43,7 +43,7 @@ def accuracy_increased_cells():
 
     # State 1 parameters "Susciptible"
     state1 = 1
-    bern_p1 = 0.8
+    bern_p1 = 0.85
     gamma_a1 = 10.0
     gamma_scale1 = 2.0
 

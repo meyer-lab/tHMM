@@ -85,7 +85,6 @@ class tHMM:
                             temp_sum_holder += self.estimate.T[state_j, state_k] * MSD[num][parent_cell_idx, state_j]
 
                         MSD[num][current_cell_idx, state_k] = temp_sum_holder
-
             MSD_row_sums = np.sum(MSD[num], axis=1)
 
             assert np.allclose(MSD_row_sums, 1.0), "The Marginal State Distribution for your cells, P(z_k = k), for all states k in numStates, are not adding up to 1!"
