@@ -64,10 +64,9 @@ def get_all_zetas(parent_state_j, child_state_k, lineageObj, beta_array, MSD_arr
     return holder
 
 
-def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=True):
+def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     '''Runs the tHMM function through Baum Welch fitting'''
     numLineages = len(tHMMobj.X)
-    print("lin1 size", len(tHMMobj.X[0].output_lineage))
     numStates = tHMMobj.numStates
 
     # first E step
@@ -91,7 +90,6 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=True):
 
         for num, lineageObj in enumerate(tHMMobj.X):
             lineage = lineageObj.output_lineage
-            print("len lineage", len(lineage))
             gamma_array = gammas[num]
             tHMMobj.estimate.pi = gamma_array[0, :]
             T_holder = np.zeros((numStates, numStates), dtype=float)
@@ -107,7 +105,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=True):
                                           gamma_array=gamma_array,
                                           T=tHMMobj.estimate.T)
                     if denom == 0:
-                        T_holder[state_j, state_k] = 0.5
+                        T_holder[state_j, state_k] = tHMMobj.estimate.T[state_j, state_k]
                     else:
                         T_holder[state_j, state_k] = numer/denom
 
@@ -124,10 +122,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=True):
 
         # after iterating through each lineage, do the population wide E calculation
         for state_j in range(numStates):
-            print("state_j", state_j)
             cells = cell_groups[str(state_j)]  # this array has the correct cells classified per group
-            print("this is len cells ", len(cells))
-            
             tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator([cell.obs for cell in cells])
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
