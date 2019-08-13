@@ -56,7 +56,7 @@ class tHMM:
 
         Every element in MSD matrix is essentially sum over all transitions from any state to
         state j (from parent to daughter):
-            P(z_u = k) = sum_on_all_j(Transition(from j to k) * P(parent_cell_u) = j)
+            P(z_n = k) = sum_on_all_j(Transition(from j to k) * P(parent_cell_n) = j)
         """
         MSD = []
 

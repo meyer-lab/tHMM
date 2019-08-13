@@ -13,19 +13,20 @@ import numpy as np
 
 
 class CellVar:
-    def __init__(self, state, left, right, parent, gen):
+    def __init__(self, state, left, right, parent, gen, plotVar):
         """ Instantiates the cell object. Contains memeber variables that identify daughter cells and parent cells. Also contains the state of the cell. """
         self.state = state
         self.left = left
         self.right = right
         self.parent = parent
         self.gen = gen
+        self.plotVar = plotVar
 
     def _divide(self, T):
         """ Member function that performs division of a cell. Equivalent to adding another timestep in a Markov process. """
         left_state, right_state = _double(self.state, T)  # roll a loaded die according to the row in the transtion matrix
-        self.left = CellVar(state=left_state, left=None, right=None, parent=self, gen=self.gen + 1)  # assign the resulting states to new cells
-        self.right = CellVar(state=right_state, left=None, right=None, parent=self, gen=self.gen + 1)  # ensure that those cells are related
+        self.left = CellVar(state=left_state, left=None, right=None, parent=self, gen=self.gen + 1, plotVar=(self.plotVar+0.5))  # assign the resulting states to new cells
+        self.right = CellVar(state=right_state, left=None, right=None, parent=self, gen=self.gen + 1, plotVar=(self.plotVar-0.5))  # ensure that those cells are related
 
         return self.left, self.right
 

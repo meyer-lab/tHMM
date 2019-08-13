@@ -11,3 +11,8 @@ def makeFigure():
     f.tight_layout()
 
     return f
+
+    
+##-------------------- Figure 7   
+def accuracy_increased_lineages():
+    """ Calclates accuracy and parameter estimation by increasing the number of lineages. """

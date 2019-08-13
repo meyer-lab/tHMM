@@ -21,7 +21,7 @@ def Analyze(X, numStates):
     state_ptrs {}:
     all_states {}:
     tHMMobj {obj}:
-    NF {}:
+    NF {vector}: A N x 1 matrix, each element is for each cell which is basically marginal observation distribution.
     LL {}:
     """
 
@@ -37,55 +37,17 @@ def Analyze(X, numStates):
     LL = calculate_log_likelihood(tHMMobj, NF)
     return(deltas, state_ptrs, all_states, tHMMobj, NF, LL)
 
-##-------------------- Figure 6 
-def accuracy_increased_cells():
-    """ Calclates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
-
-    # pi: the initial probability vector
-    pi = np.array([0.5, 0.5], dtype="float")
-
-    # T: transition probability matrix
-    T = np.array([[0.99, 0.01],
-              [0.15, 0.85]])
-
-    # State 0 parameters "Resistant"
-    state0 = 0
-    bern_p0 = 0.95
-    expon_scale_beta0 = 80
-    gamma_a0 = 5.0
-    gamma_scale0 = 1.0
-
-    # State 1 parameters "Susciptible"
-    state1 = 1
-    bern_p1 = 0.8
-    expon_scale_beta1 = 40
-    gamma_a1 = 10.0
-    gamma_scale1 = 2.0
-
-    state_obj0 = StateDistribution(state0, bern_p0, expon_scale_beta0, gamma_a0, gamma_scale0)
-    state_obj1 = StateDistribution(state1, bern_p1, expon_scale_beta1, gamma_a1, gamma_scale1)
-
-    E = [state_obj0, state_obj1]
-    # the key part in this function
-    desired_num_cells = [2**5 - 1, 2**7 - 1, 2**8 - 1, 2**9 - 1, 2**10 - 1, 2**11 - 1]
-    
-    for num in desired_num_cells:
-        # unpruned lineage
-        lineage_unpruned = LineageTree(pi, T, E, num, prune_boolean=False)
-        # pruned lineage
-        lineage_pruned = LineageTree(pi, T, E, num, prune_boolean=True)
-
-        X1 = [lineage1]
-        X2 = [lineage2]
+#
+def accuracy(X, all_states):
+    for num, lineageObj in enumerate(X):
+        lin_estimated_states = all_states[num]
+        lin_true_states = [cell.state for cell in lineageObj.output_lineage]
+        total = len(lin_estimated_states)
+        assert total == len(lin_true_states)
+        counter = [1. if a==b else 0. for (a,b) in zip(lin_estimated_states,lin_true_states)]
+        acc = sum(counter)/total
+    return max(acc, 1-acc)
         
-
-    
-    
-    
-##-------------------- Figure 7   
-def accuracy_increased_lineages():
-    """ Calclates accuracy and parameter estimation by increasing the number of lineages. """
-    
     
     
     

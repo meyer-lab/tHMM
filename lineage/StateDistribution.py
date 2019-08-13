@@ -5,11 +5,10 @@ import math
 
 
 class StateDistribution:
-    def __init__(self, state, bern_p, expon_scale_beta, gamma_a, gamma_scale):  # user has to identify what parameters to use for each state
+    def __init__(self, state, bern_p, gamma_a, gamma_scale):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.state = state
         self.bern_p = bern_p
-        self.expon_scale_beta = expon_scale_beta
         self.gamma_a = gamma_a
         self.gamma_scale = gamma_scale
 
@@ -17,11 +16,10 @@ class StateDistribution:
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
-        exp_obs = sp.expon.rvs(scale=self.expon_scale_beta, size=size)  # exponential observations
         gamma_obs = sp.gamma.rvs(a=self.gamma_a, scale=self.gamma_scale, size=size)  # gamma observations
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        tuple_of_obs = list(zip(bern_obs, exp_obs, gamma_obs))
+        tuple_of_obs = list(zip(bern_obs, gamma_obs))
         return tuple_of_obs
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
@@ -34,10 +32,9 @@ class StateDistribution:
         # the individual observation likelihoods.
 
         bern_ll = sp.bernoulli.pmf(k=tuple_of_obs[0], p=self.bern_p)  # bernoulli likelihood
-        exp_ll = sp.expon.pdf(x=tuple_of_obs[1], scale=self.expon_scale_beta)  # exponential likelihood
-        gamma_ll = sp.gamma.pdf(x=tuple_of_obs[2], a=self.gamma_a, scale=self.gamma_scale)  # gamma likelihood
+        gamma_ll = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)  # gamma likelihood
 
-        return bern_ll * exp_ll * gamma_ll
+        return bern_ll * gamma_ll
 
     def estimator(self, list_of_tuples_of_obs):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
@@ -48,20 +45,16 @@ class StateDistribution:
         # {
         try:
             bern_obs = list(unzipped_list_of_tuples_of_obs[0])
-            exp_obs = list(unzipped_list_of_tuples_of_obs[1])
-            gamma_obs = list(unzipped_list_of_tuples_of_obs[2])
+            gamma_obs = list(unzipped_list_of_tuples_of_obs[1])
         except BaseException:
             bern_obs = [sp.bernoulli.rvs(p=0.9 * (np.random.uniform()))]
-            exp_obs = [sp.expon.rvs(scale=50 * (1 + np.random.uniform()))]  # exponential observations
             gamma_obs = [sp.gamma.rvs(a=7.5 * (np.random.uniform()), scale=1.5 * (np.random.uniform()))]  # gamma observations
 
         bern_p_estimate = bernoulli_estimator(bern_obs)
-        expon_scale_beta_estimate = exponential_estimator(exp_obs)
         gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
 
         state_estimate_obj = StateDistribution(state=self.state,
                                                bern_p=bern_p_estimate,
-                                               expon_scale_beta=expon_scale_beta_estimate,
                                                gamma_a=gamma_a_estimate,
                                                gamma_scale=gamma_scale_estimate)
         # } requires the user's attention.
@@ -71,7 +64,7 @@ class StateDistribution:
         return state_estimate_obj
 
     def __repr__(self):
-        return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.expon_scale_beta, self.gamma_a, self.gamma_scale)
+        return "State object w/ parameters: {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_scale)
 
 
 def prune_rule(cell):
@@ -85,7 +78,6 @@ def prune_rule(cell):
 def tHMM_E_init(state):
     return StateDistribution(state,
                              0.9 * (np.random.uniform()),
-                             50 * (1 + np.random.uniform()),
                              7.5 * (np.random.uniform()),
                              1.5 * (np.random.uniform()))
 
