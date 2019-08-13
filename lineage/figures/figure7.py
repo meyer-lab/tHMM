@@ -7,6 +7,7 @@ from .figureCommon import getSetup
 def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((5, 5), (1, 1))
+    
 
     f.tight_layout()
 
@@ -39,9 +40,11 @@ def accuracy_increased_lineages():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
 
     E = [state_obj0, state_obj1]
-    # the key part in this function
-    desired_num_cells = 2**8
-    num_lineages = [1, 2, 4, 6, 8, 10, 15]
+
+    # 127 cells in every lineage
+    desired_num_cells = 2**7 - 1
+    # increasing number of lineages from 1 to 10 and calculating accuracy and estimate parameters for both pruned and unpruned lineages.
+    num_lineages = list(range(1, 10))
 
     accuracies_unpruned = []
     accuracies_pruned = []
@@ -60,14 +63,15 @@ def accuracy_increased_lineages():
         # pruned lineage
         lineage_pruned = lineage_unpruned.prune_boolean(True)
 
-        X1 = [lineage_unpruned]
-        X2 = [lineage_pruned]
-        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X1, 2) 
-        deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2) 
-        acc1 = accuracy(X1, all_states)
-        acc2 = accuracy(X2, all_states2)
+        X_p.append(lineage_unpruned)
+        X_u.append(lineage_pruned)
+        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X_p, 2) 
+        deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X_u, 2) 
+        acc1 = accuracy(X_p, all_states)
+        acc2 = accuracy(X_u, all_states2)
         accuracies_unpruned.append(100*acc1)        
         accuracies_pruned.append(100*acc2)
+        
 
         # unpruned lineage
 
