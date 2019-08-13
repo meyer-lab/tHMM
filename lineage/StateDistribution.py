@@ -204,17 +204,20 @@ def exponential_estimator(exp_obs):
 def gamma_estimator(gamma_obs):
     """ This is a cloesd-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
     N = len(gamma_obs)
-    x_lnx = [x * np.log(x) for x in gamma_obs]
-    lnx = [np.log(x) for x in gamma_obs]
-    # gamma_a
-    a_hat = (N * (sum(gamma_obs)))/(N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)))
-    # gamma_scale
-    b_hat = (1/(N**2)) * (N * (sum(x_lnx)) - (sum(lnx)) * (sum(gamma_obs)))
-    # bias correction
-    a_corrected = (N /(N - 1)) * a_hat
-    # bias correction
-    b_corrected = b_hat - (1/N) * (3*b_hat - (2/3) * (b_hat/(b_hat + 1)) - (4/5)* (b_hat)/((1 + b_hat)**2))
+    a_val = 7.5
+    b_val = 2.5
+    if N > 1:
+        x_lnx = [x * np.log(x) for x in gamma_obs]
+        lnx = [np.log(x) for x in gamma_obs]
+        # gamma_a
+        a_val = (N * (sum(gamma_obs)))/(N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)))
+        # gamma_scale
+        b_val = (1/(N**2)) * (N * (sum(x_lnx)) - (sum(lnx)) * (sum(gamma_obs)))
+        # bias correction
+        a_val = (N /(N - 1)) * a_val
+        # bias correction
+        b_val = b_val - (1/N) * (3*b_val - (2/3) * (b_val/(b_val + 1)) - (4/5)* (b_val)/((1 + b_val)**2))
 
-    return a_corrected, b_corrected
+    return a_val, b_val
 
 

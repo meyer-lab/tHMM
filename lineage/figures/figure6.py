@@ -2,11 +2,12 @@
 This creates Figure 6.
 """
 from .figureCommon import getSetup
-from ..Analyze import accuracy
+from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
 import numpy as np
+import copy as cp
 
 def makeFigure():
     """ Main figure generating function for Fig. 6 """
@@ -51,7 +52,7 @@ def accuracy_increased_cells():
 
     E = [state_obj0, state_obj1]
     # the key part in this function
-    desired_num_cells = np.logspace(5, 11, num=14, base=2.0)
+    desired_num_cells = np.logspace(8, 11, num=14, base=2.0)
     desired_num_cells = [num_cell-1 for num_cell in desired_num_cells]
 
     accuracies_unpruned = []
@@ -66,7 +67,8 @@ def accuracy_increased_cells():
         # unpruned lineage
         lineage_unpruned = LineageTree(pi, T, E, num, prune_boolean=False)
         # pruned lineage
-        lineage_pruned = lineage_unpruned.prune_boolean(True)
+        lineage_pruned = cp.deepcopy(lineage_unpruned)
+        lineage_pruned.prune_boolean = True
 
         X1 = [lineage_unpruned]
         X2 = [lineage_pruned]
