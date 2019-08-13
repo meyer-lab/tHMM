@@ -1,7 +1,7 @@
 import scipy.stats as sp
 
 
-#######------Check the list of distributions and fit to the data --------#######
+#######------Check the list of distributions and fit to the data --------#
 
 def check_dist(data, verbose=False):
     '''
