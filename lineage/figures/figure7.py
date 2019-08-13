@@ -106,3 +106,48 @@ def accuracy_increased_lineages():
         gamma_b_pruned.append(gamma_b_total_p)
         
     return desired_num_cells, accuracies_unpruned, accuracies_pruned, bern_unpruned, gamma_a_unpruned, gamma_b_unpruned, bern_pruned, gamma_a_pruned, gamma_b_pruned
+
+
+def figure_maker(ax, num_lineages, accuracies_unpruned, accuracies_pruned, bern_unpruned, gamma_a_unpruned, gamma_b_unpruned, bern_pruned, gamma_a_pruned, gamma_b_pruned):
+    x = num_lineages
+    font2 = 10
+    ax[0].set_xlim((0, int(np.ceil(1.1 * max(x)))))
+    ax[0].set_xlabel('Number of Lineages', fontsize=font2)
+    ax[0].set_ylim(0, 110)
+    ax[0].errorbar(x, acc_h1, fmt='o', c='k', marker="o", label='Accuracy', alpha=0.3)
+    ax[0].plot(sorted_x_vs_acc[:, 0][9:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
+    ax[0].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)  # linestyle is dashdotdotted
+    ax[0].set_ylabel('Accuracy (%)', rotation=90, fontsize=font2)
+    ax[0].get_yticks()
+    ax[0].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.4)
+    ax[0].set_title('State Assignment Accuracy', fontsize=font)
+
+    #ax = axs[0, 1]
+    ax[1].set_xlim((0, int(np.ceil(1.1 * max(x)))))
+    ax[1].set_xlabel(xlabel, fontsize=font2)
+    ax[1].errorbar(x, bern_MAS_h1, fmt='o', c='b', marker="o", label='Susceptible', alpha=0.2)
+    ax[1].errorbar(x, bern_2_h1, fmt='o', c='r', marker="o", label='Resistant', alpha=0.2)
+    ax[1].set_ylabel('Theta', rotation=90, fontsize=font2)
+    ax[1].axhline(y=MASlocBern, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
+    ax[1].axhline(y=locBern2, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
+    ax[1].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    ax[1].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
+    ax[1].set_title('Bernoulli', fontsize=font)
+    ax[1].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.3)
+    ax[1].legend(loc='best', framealpha=0.3)
+
+    #ax = axs[1, 0]
+    ax[2].set_xlim((0, int(np.ceil(1.1 * max(x)))))
+    ax[2].set_xlabel(xlabel, fontsize=font2)
+    #ax[2].set_xscale("log", nonposx='clip')
+    ax[2].errorbar(x, betaExp_MAS_h1, fmt='o', c='b', marker="o", label='Susceptible', alpha=0.2)
+    ax[2].errorbar(x, betaExp_2_h1, fmt='o', c='r', marker="o", label='Resistant', alpha=0.2)
+    ax[2].axhline(y=MASbeta, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
+    ax[2].axhline(y=beta2, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
+    ax[2].set_ylabel(panel_3_ylabel, rotation=90, fontsize=font2)
+    ax[2].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    ax[2].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
+    ax[2].set_title(panel_3_title, fontsize=font)
+    ax[2].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.3)
+    ax[2].legend(loc='best', framealpha=0.3)
+        
