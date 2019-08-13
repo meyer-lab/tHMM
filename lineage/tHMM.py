@@ -24,12 +24,12 @@ class tHMM:
         (objects) in the lineage.
 
         Args:
-        -----
-        X (list of objects): A list of objects (cells) in a lineage in which
-        the NaNs have been removed.
-        numStates (int): the number of hidden states that we want our model have
-        FOM (str): For now, it is either "E": Exponential, or "G": Gompertz
-        and it determines the type of distribution for lifetime of the cells
+            ----------
+            X (list of objects): A list of objects (cells) in a lineage in which
+            the NaNs have been removed.
+            numStates (int): the number of hidden states that we want our model have
+            FOM (str): For now, it is either "E": Exponential, or "G": Gompertz
+            and it determines the type of distribution for lifetime of the cells
         """
         self.X = X  # list containing lineages, should be in correct format (contain no NaNs)
         self.numStates = numStates  # number of discrete hidden states
@@ -41,7 +41,7 @@ class tHMM:
 ##---------------------------- Marginal State Distribution ------------------------------##
 
     def get_Marginal_State_Distributions(self):
-        """
+        '''
         Marginal State Distribution (MSD) matrix and recursion.
         This is the probability that a hidden state variable z_n is of
         state k, that is, each value in the N by K MSD array for each lineage is
@@ -56,8 +56,8 @@ class tHMM:
 
         Every element in MSD matrix is essentially sum over all transitions from any state to
         state j (from parent to daughter):
-            P(z_n = k) = sum_on_all_j(Transition(from j to k) * P(parent_cell_n) = j)
-        """
+            P(z_u = k) = sum_on_all_j(Transition(from j to k) * P(parent_cell_u) = j)
+        '''
         MSD = []
 
         for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
@@ -85,7 +85,6 @@ class tHMM:
                             temp_sum_holder += self.estimate.T[state_j, state_k] * MSD[num][parent_cell_idx, state_j]
 
                         MSD[num][current_cell_idx, state_k] = temp_sum_holder
-
             MSD_row_sums = np.sum(MSD[num], axis=1)
 
             assert np.allclose(MSD_row_sums, 1.0), "The Marginal State Distribution for your cells, P(z_k = k), for all states k in numStates, are not adding up to 1!"
@@ -96,7 +95,7 @@ class tHMM:
 
 
     def get_Emission_Likelihoods(self):
-        """
+        '''
         Emission Likelihood (EL) matrix.
 
         Each element in this N by K matrix represents the probability
@@ -105,7 +104,7 @@ class tHMM:
 
         for all x_n and z_n in our observed and hidden state tree
         and for all possible discrete states k.
-        """
+        '''
         numStates = self.numStates
 
         EL = []

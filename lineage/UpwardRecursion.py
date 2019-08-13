@@ -4,7 +4,7 @@ import numpy as np
 
 
 def get_leaf_Normalizing_Factors(tHMMobj):
-    """
+    '''
     Normalizing factor (NF) matrix and base case at the leaves.
 
     Each element in this N by 1 matrix is the normalizing
@@ -27,7 +27,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
     P(x_n = x):
 
     sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
-    """
+    '''
     numStates = tHMMobj.numStates
 
     MSD = tHMMobj.MSD
