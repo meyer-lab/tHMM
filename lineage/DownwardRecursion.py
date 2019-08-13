@@ -5,8 +5,7 @@ from .UpwardRecursion import beta_parent_child_func
 
 
 def get_root_gammas(tHMMobj, betas):
-    """need the first gamma terms in the baum welch, which are just the beta values of the root nodes. Gamma matrix is a N x K matrix, and we have one for every lineage.
-    """
+    '''need the first gamma terms in the baum welch, which are just the beta values of the root nodes.'''
     numStates = tHMMobj.numStates
 
     gammas = []
