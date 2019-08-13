@@ -3,6 +3,7 @@ This creates Figure 6.
 """
 from .figureCommon import getSetup
 from ..Analyze import accuracy
+from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
 import numpy as np
@@ -12,7 +13,7 @@ def makeFigure():
     ax, f = getSetup((7, 7), (1, 1))
 
     
-    desired_num_cells, accuracies_unpruned, accuracies_pruned, bern_unpruned, gamma_a_unpruned, gamma_b_unpruned, bern_pruned, gamma_a_pruned, gamma_b_pruned = accuracy_increased_cells
+    desired_num_cells, accuracies_unpruned, accuracies_pruned, bern_unpruned, gamma_a_unpruned, gamma_b_unpruned, bern_pruned, gamma_a_pruned, gamma_b_pruned = accuracy_increased_cells()
     figure_maker(ax[0:3],desired_num_cells, accuracies_unpruned, accuracies_pruned, bern_unpruned, gamma_a_unpruned, gamma_b_unpruned, bern_pruned, gamma_a_pruned, gamma_b_pruned)
     
     
@@ -31,7 +32,7 @@ def accuracy_increased_cells():
 
     # T: transition probability matrix
     T = np.array([[0.99, 0.01],
-              [0.15, 0.85]])
+                  [0.15, 0.85]])
 
     # State 0 parameters "Resistant"
     state0 = 0
@@ -122,10 +123,8 @@ def figure_maker(ax, desired_num_cells, accuracies_unpruned, accuracies_pruned, 
     ax[0].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)  # linestyle is dashdotdotted
     ax[0].set_ylabel('Accuracy (%)', rotation=90, fontsize=font2)
     ax[0].get_yticks()
-    ax[0].get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
-    ax[0].get_xaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
     ax[0].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.4)
-    ax[0].set_title('Accuracy', fontsize=font)
+    ax[0].set_title('State Assignment Accuracy', fontsize=font)
 
     #ax = axs[0, 1]
     ax[1].set_xlim((0, int(np.ceil(1.1 * max(x)))))
