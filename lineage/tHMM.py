@@ -115,8 +115,7 @@ class tHMM:
             EL_array = np.zeros((len(lineage), numStates))  # instantiating N by K array for each lineage
 
             for state_k in range(numStates):  # for each state
-                for cell in lineage:  # for each cell in the lineage
-                    current_cell_idx = lineage.index(cell)  # get the index of the current cell
+                for current_cell_idx, cell in enumerate(lineage):  # for each cell in the lineage
                     EL_array[current_cell_idx, state_k] = self.estimate.E[state_k].pdf(cell.obs)
 
             EL.append(EL_array)  # append the EL_array for each lineage

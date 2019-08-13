@@ -20,9 +20,7 @@ def get_root_gammas(tHMMobj, betas):
         gammas.append(gamma_array)
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-#         gammas_0_row_sum = np.sum(gammas[num][0]) ############ Do you need the [0] one? 
-        # my suggestion: 
-        gammas_0_row_sum = np.sum(gammas[num])
+        gammas_0_row_sum = np.sum(gammas[num][0])
         assert np.isclose(gammas_0_row_sum, 1.)
 
     return gammas
