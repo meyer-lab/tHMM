@@ -18,8 +18,8 @@ class StateDistribution:
         gamma_obs = sp.gamma.rvs(a=self.gamma_a, scale=self.gamma_scale, size=size)  # gamma observations
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        tuple_of_obs = list(zip(bern_obs, gamma_obs))
-        return tuple_of_obs
+        list_of_tuple_of_obs = list(zip(bern_obs, gamma_obs))
+        return list_of_tuple_of_obs
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
@@ -82,23 +82,22 @@ def tHMM_E_init(state):
 
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
-# Their use in the ObservationEmission class is shown in the estimator class method. User must take care to define estimators that
+# Their use in the StateDistribution class is shown in the estimator class method. User must take care to define estimators that
 # can handle the case where the list of observations is empty.
 
 
 def report_time(cell):
     """ Given any cell in the lineage, this function walks through the cell's ancestors and return how long it has taken so far. """
     list_parents = [cell]
-    taus = cell.obs[1]
+    taus = 0.0 + cell.obs[1]
 
     for cell in list_parents:
         if cell._isRootParent():
-            taus += cell.obs[1]
             break
         elif cell.parent not in list_parents:
             list_parents.append(cell.parent)
             taus += cell.parent.obs[1]
-        return taus
+    return taus
 
 
 def get_experiment_time(lineage):

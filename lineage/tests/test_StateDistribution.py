@@ -71,12 +71,14 @@ class TestModel(unittest.TestCase):
         (the size == 1 which mean we just have one bernoulli, and one gamma).
         """
         # for stateDist0
-        tuple_of_obs = self.stateDist0.rvs(size=1)
+        list_of_tuple_of_obs = self.stateDist0.rvs(size=1)
+        tuple_of_obs = list_of_tuple_of_obs[0]
         likelihood = self.stateDist0.pdf(tuple_of_obs)
         self.assertTrue(0.0 <= likelihood <= 1.0),
 
         # for stateDist1
-        tuple_of_obs1 = self.stateDist1.rvs(size=1)
+        list_of_tuple_of_obs1 = self.stateDist1.rvs(size=1)
+        tuple_of_obs1 = list_of_tuple_of_obs1[0]
         likelihood1 = self.stateDist1.pdf(tuple_of_obs1)
         self.assertTrue(0.0 <= likelihood1 <= 1.0)
 
@@ -119,11 +121,10 @@ class TestModel(unittest.TestCase):
         """
         full_lin_cells_holder = []
         for state in range(2):
-            full_lin_cells_holder.append(
-                self.lineage.lineage_stats[state].full_lin_cells)
+            full_lin_cells_holder.append(self.lineage.lineage_stats[state].full_lin_cells)
 
         # bringing all the cells after assigning observations to them
-        all_cells = [cell for sublist in full_lin_cells_holder for cell in sublist]
+        all_cells = [cell for sub_statelist in full_lin_cells_holder for cell in sub_statelist]
 
         # here we check this for the root parent, since the time has taken
         # so far, equals to the lifetime of the cell
