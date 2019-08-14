@@ -40,6 +40,7 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                 for daughter_idx in cell._get_daughters():
                     child_idx = lineage.index(daughter_idx)
                     coeffs = beta_array[child_idx, :] / MSD_array[child_idx, :]
+                    print(coeffs)
 
                     for child_state_k in range(tHMMobj.numStates):
                         sum_holder = 0.0
@@ -53,9 +54,12 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                             sum_holder += T[parent_state_j, child_state_k] * gammas[num][parent_idx, parent_state_j] / beta_parent
 
                         gammas[num][child_idx, child_state_k] = coeffs[child_state_k] * sum_holder
-
+                        print(sum_holder)
+                        print(gammas[num][child_idx, child_state_k])
+            
                         assert np.all(gammas[num][0, :] == betas[num][0, :])
 
     for _, gg in enumerate(gammas):
-        #assert np.allclose(np.sum(gg, axis=1), 1.)
+        print(gammas)
+        assert np.allclose(np.sum(gg, axis=1), 1.)
         pass
