@@ -14,20 +14,18 @@ class TestModel(unittest.TestCase):
 
         # T: transition probability matrix
         self.T = np.array([[0.85, 0.15],
-                           [0.2, 0.8]])
+                           [0.20, 0.80]])
 
         # E: states are defined as StateDistribution objects
         # State 0 parameters "Resistant"
         self.state0 = 0
         self.bern_p0 = 0.99
-        self.expon_scale_beta0 = 20
         self.gamma_a0 = 5.0
         self.gamma_scale0 = 1.0
 
         # State 1 parameters "Susciptible"
         self.state1 = 1
         self.bern_p1 = 0.8
-        self.expon_scale_beta1 = 80
         self.gamma_a1 = 10.0
         self.gamma_scale1 = 2.0
 
@@ -35,13 +33,11 @@ class TestModel(unittest.TestCase):
         state_obj0 = StateDistribution(
             self.state0,
             self.bern_p0,
-            self.expon_scale_beta0,
             self.gamma_a0,
             self.gamma_scale0)
         state_obj1 = StateDistribution(
             self.state1,
             self.bern_p1,
-            self.expon_scale_beta1,
             self.gamma_a1,
             self.gamma_scale1)
 
@@ -211,10 +207,8 @@ class TestModel(unittest.TestCase):
         # unzipping the tuple of observations
         unzipped_list_obs = list(zip(*list_of_tuples_of_obs))
         bern_obs = list(unzipped_list_obs[0])
-        exp_obs = list(unzipped_list_obs[1])
-        gamma_obs = list(unzipped_list_obs[2])
-        self.assertTrue(len(bern_obs) == len(exp_obs) == len(
-            gamma_obs))
+        gamma_obs = list(unzipped_list_obs[1])
+        self.assertTrue(len(bern_obs) == len(gamma_obs))
 
         # making sure observations have been assigned properly
         for i, cell in enumerate(cells_in_state):
@@ -225,10 +219,9 @@ class TestModel(unittest.TestCase):
             self.state1)
         unzipped_list_obs1 = list(zip(*list_of_tuples_of_obs1))
         bern_obs1 = list(unzipped_list_obs1[0])
-        exp_obs1 = list(unzipped_list_obs1[1])
-        gamma_obs1 = list(unzipped_list_obs1[2])
-        self.assertTrue(len(bern_obs1) == len(exp_obs1) == len(gamma_obs1))
-
+        gamma_obs1 = list(unzipped_list_obs1[1])
+        self.assertTrue(len(bern_obs1) == len(gamma_obs1))
+        
         for j, Cell in enumerate(cells_in_state1):
             self.assertTrue(Cell.obs == list_of_tuples_of_obs1[j])
 
