@@ -1,5 +1,6 @@
 """ This file contains the LineageTree class. """
 import scipy.stats as sp
+from copy import deepcopy
 
 from .CellVar import CellVar
 from .StateDistribution import prune_rule
@@ -143,7 +144,7 @@ class LineageTree:
         """ This function removes those cells that are intended to be remove from the full binary tree based on emissions.
         It takes in LineageTree object, walks through all the cells in the full binary tree, applies the pruning to each cell that is supposed to be removed, and returns the pruned list of cells.
         """
-        self.pruned_lin_list = self.full_lin_list.copy()
+        self.pruned_lin_list = deepcopy(self.full_lin_list)
         for cell in self.pruned_lin_list:
             if prune_rule(cell):
                 _, _, self.pruned_lin_list = find_two_subtrees(
@@ -327,17 +328,11 @@ def max_gen(lineage):
     max(gens) {Int}: The maximal generation in the given lineage.
     list_of_lists_of_cells_by_gen {list}: A list of lists of cells, organized by their generations.
     """
-    gens = {
-        cell.gen for cell in lineage}  # appending the generation of cells in the lineage
+    gens = sorted({cell.gen for cell in lineage})  # appending the generation of cells in the lineage
     list_of_lists_of_cells_by_gen = [[None]]
     for gen in gens:
-        temp_gen_list = []
-        for cell in lineage:
-            if cell.gen == gen:
-                # appending the cells in the ssme generation
-                temp_gen_list.append(cell)
-        # appending the list of cells being in the same generation
-        list_of_lists_of_cells_by_gen.append(temp_gen_list)
+        level = [cell for cell in lineage if cell.gen == gen]
+        list_of_lists_of_cells_by_gen.append(level)
     return max(gens), list_of_lists_of_cells_by_gen
 
 
