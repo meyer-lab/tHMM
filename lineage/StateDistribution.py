@@ -46,8 +46,8 @@ class StateDistribution:
             bern_obs = list(unzipped_list_of_tuples_of_obs[0])
             gamma_obs = list(unzipped_list_of_tuples_of_obs[1])
         except BaseException:
-            bern_obs = sp.bernoulli.rvs(p=0.9 * (np.random.uniform()), size=1)
-            gamma_obs = sp.gamma.rvs(a=7.5 * (np.random.uniform()), scale=1.5 * (np.random.uniform()), size=1)  # gamma observations
+            bern_obs = []
+            gamma_obs = []
 
         bern_p_estimate = bernoulli_estimator(bern_obs)
         gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
@@ -123,17 +123,17 @@ def exponential_estimator(exp_obs):
 def gamma_estimator(gamma_obs):
     """ This is a cloesd-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
     N = len(gamma_obs)
-    assert N != 0, "The number of gamma observations is zero!"
+    #assert N != 0, "The number of gamma observations is zero!"
     print("the number of gamma observations", N)
     x_lnx = [x * np.log(x) for x in gamma_obs]
     lnx = [np.log(x) for x in gamma_obs]
     # gamma_a
     a_hat = (N * (sum(gamma_obs)) + 1e-10)/(N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
     # gamma_scale
-    b_hat = (1/(N**2)) * (N * (sum(x_lnx)) - (sum(lnx)) * (sum(gamma_obs)))
+    b_hat = ((1+1e-10)/(N**2 + 1e-10)) * (N*(sum(x_lnx)) - (sum(lnx))*(sum(gamma_obs)))
     # bias correction
-#     a_corrected = (N /(N - 1)) * a_hat
-    # bias correction
-    b_corrected = b_hat - (1/N) * (3*b_hat - (2/3) * (b_hat/(b_hat + 1)) - (4/5)* (b_hat)/((1 + b_hat)**2))
+    if N>1:
+        a_hat = (N /(N - 1)) * a_hat
+        b_hat = b_hat - (1/N) * (3*b_hat - (2/3) * (b_hat/(b_hat + 1)) - (4/5)* (b_hat)/((1 + b_hat)**2))
 
-    return a_hat, b_corrected
+    return a_hat, b_hat

@@ -17,7 +17,7 @@ class estimate:
 class tHMM:
     """ Main tHMM class. """
 
-    def __init__(self, X, numStates=1):
+    def __init__(self, X, numStates):
         """ Instantiates a tHMM.
 
         This function uses the following functions and assings them to the cells

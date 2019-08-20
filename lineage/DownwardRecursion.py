@@ -51,9 +51,9 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                                                                  state_j=parent_state_j,
                                                                  node_child_n_idx=child_idx)
                             sum_holder += T[parent_state_j, child_state_k] * gammas[num][parent_idx, parent_state_j] / beta_parent
-                        
+
                         gammas[num][child_idx, child_state_k] = coeffs[child_state_k] * sum_holder
                         assert np.all(gammas[num][0, :] == betas[num][0, :])
-                    
+
     for _, gg in enumerate(gammas):
         assert np.allclose(np.sum(gg, axis=1), 1.)
