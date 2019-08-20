@@ -28,8 +28,6 @@ def get_leaf_Normalizing_Factors(tHMMobj):
 
     sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
     '''
-    numStates = tHMMobj.numStates
-
     MSD = tHMMobj.MSD
     EL = tHMMobj.EL
 
@@ -44,17 +42,14 @@ def get_leaf_Normalizing_Factors(tHMMobj):
         for ii, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
             assert cell._isLeaf()
             leaf_cell_idx = lineageObj.output_leaves_idx[ii]
-            temp_sum_holder = []  # create a temporary list
-            for state_k in range(numStates):  # for each state
-                joint_prob = MSD_array[leaf_cell_idx, state_k] * EL_array[leaf_cell_idx, state_k]  # def of conditional prob
-                # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
-                # this product is the joint probability
-                temp_sum_holder.append(joint_prob)  # append the joint probability to be summed
 
-            marg_prob = sum(temp_sum_holder)  # law of total probability
+            # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
+            # this product is the joint probability
             # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
             # the sum of the joint probabilities is the marginal probability
-            NF_array[leaf_cell_idx] = marg_prob  # each leaf is now intialized
+            NF_array[leaf_cell_idx] = np.sum(MSD_array[leaf_cell_idx, :] * EL_array[leaf_cell_idx, :])  # def of conditional prob
+            # assert NF_array[leaf_cell_idx] > 0.0 # TODO: Not sure if this is proper
+            
         NF.append(NF_array)
     return NF
 
