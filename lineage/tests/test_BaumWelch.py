@@ -1,9 +1,11 @@
 """ Unit test file. """
 import unittest
 import numpy as np
-import scipy.stats as sp
-from ..StateDistribution import StateDistribution, bernoulli_estimator, exponential_estimator, gamma_estimator, prune_rule, report_time, get_experiment_time
+from ..StateDistribution import StateDistribution
+from ..UpwardRecursion import get_leaf_Normalizing_Factors, calculate_log_likelihood
+from ..BaumWelch import fit
 from ..LineageTree import LineageTree
+from ..tHMM import tHMM
 
 
 class TestModel(unittest.TestCase):
@@ -35,47 +37,18 @@ class TestModel(unittest.TestCase):
         state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
 
         E = [state_obj0, state_obj1]
-
-        accuracies_unpruned = []
-        accuracies_pruned = []
-        bern_unpruned = []
-        gamma_a_unpruned = []
-        gamma_b_unpruned = []
-        bern_pruned = []
-        gamma_a_pruned = []
-        gamma_b_pruned = []
         
         num = 10000
 
-        print(num)
-        # unpruned lineage
-        lineage_unpruned = LineageTree(pi, T, E, num, prune_boolean=False)
-        # pruned lineage
-        lineage_pruned = cp.deepcopy(lineage_unpruned)
-        lineage_pruned.prune_boolean = True
+        # Using an unpruned lineage to avoid unforseen issues
+        X = LineageTree(pi, T, E, num, prune_boolean=False)
+        
+        tHMMobj = tHMM([X], numStates=2)  # build the tHMM class with X
+        
+        LLbefore = calculate_log_likelihood(tHMMobj, get_leaf_Normalizing_Factors(tHMMobj))
+        
+        fit(tHMMobj, max_iter=4)
 
-        X1 = [lineage_unpruned]
-        X2 = [lineage_pruned]
-        print("unpruned")
+        LL = calculate_log_likelihood(tHMMobj, get_leaf_Normalizing_Factors(tHMMobj))
         
-        
-        tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
-        
-        LLbefore = calculate_log_likelihood(tHMMobj, NF)
-        
-        fit(tHMMobj, max_iter=200)
-
-        NF = get_leaf_Normalizing_Factors(tHMMobj)
-        LL = calculate_log_likelihood(tHMMobj, NF)
-        
-        
-        
-        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X1, 2) 
-        print("pruned")
-        deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2) 
-        acc1 = accuracy(X1, all_states)
-        acc2 = accuracy(X2, all_states2)
-        accuracies_unpruned.append(100*acc1)        
-        accuracies_pruned.append(100*acc2)
-        
-        self.assertLess()
+        self.assertGreater(LL, LLbefore)
