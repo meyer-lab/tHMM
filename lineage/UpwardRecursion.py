@@ -48,7 +48,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
             # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
             # the sum of the joint probabilities is the marginal probability
             NF_array[leaf_cell_idx] = np.sum(MSD_array[leaf_cell_idx, :] * EL_array[leaf_cell_idx, :])  # def of conditional prob
-            # assert NF_array[leaf_cell_idx] > 0.0 # TODO: Not sure if this is proper
+            assert NF_array[leaf_cell_idx] > 0.0
             
         NF.append(NF_array)
     return NF
@@ -202,10 +202,7 @@ def calculate_log_likelihood(tHMMobj, NF):
     LL = []
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-
-        NF_array = NF[num]  # getting the NF of the respective lineage
-        log_NF_array = np.log(NF_array)
-        ll_per_num = sum(log_NF_array)
+        ll_per_num = sum(np.log(NF[num]))
         LL.append(ll_per_num)
 
     return LL

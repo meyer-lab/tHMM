@@ -56,6 +56,4 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                         assert np.all(gammas[num][0, :] == betas[num][0, :])
                     
     for _, gg in enumerate(gammas):
-        print(gammas)
         assert np.allclose(np.sum(gg, axis=1), 1.)
-        pass

@@ -8,7 +8,7 @@ from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 
 
-class TestModel(unittest.TestCase):
+class TestBW(unittest.TestCase):
     """ Unit tests for Baum-Welch methods. """
         
     def test_step(self):
@@ -42,13 +42,16 @@ class TestModel(unittest.TestCase):
 
         # Using an unpruned lineage to avoid unforseen issues
         X = LineageTree(pi, T, E, num, prune_boolean=False)
-        
+
         tHMMobj = tHMM([X], numStates=2)  # build the tHMM class with X
-        
+
         LLbefore = calculate_log_likelihood(tHMMobj, get_leaf_Normalizing_Factors(tHMMobj))
-        
-        fit(tHMMobj, max_iter=4)
+
+        self.assertTrue(np.isfinite(LLbefore[0]))
+
+        fit(tHMMobj, max_iter=2)
 
         LL = calculate_log_likelihood(tHMMobj, get_leaf_Normalizing_Factors(tHMMobj))
-        
-        self.assertGreater(LL, LLbefore)
+
+        self.assertTrue(np.isfinite(LL[0]))
+        self.assertGreater(LL[0], LLbefore[0])
