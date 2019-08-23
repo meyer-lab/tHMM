@@ -162,38 +162,41 @@ def gamma_estimator(gamma_obs):
     a_hat {float}: The estimated value for shape parameter of the Gamma distribution
     b_hat {float}: The estimated value for scale parameter of the Gamma distribution
     """
-    tau1 = gamma_obs
-    tau_mean = np.mean(tau1)
-    tau_logmean = np.log(tau_mean)
-    tau_meanlog = np.mean(np.log(tau1))
+    if len(gamma_obs) <= 1:
+        print("the number of observations is very small, don't go through estimation.")
+        return 7.5, 1.5
+    else:
+        tau1 = gamma_obs
+        tau_mean = np.mean(tau1)
+        tau_logmean = np.log(tau_mean)
+        tau_meanlog = np.mean(np.log(tau1))
 
-    # initialization step
-    a_hat0 = 0.5 / (tau_logmean - tau_meanlog)  # shape
-    # psi is the derivative of log of gamma function, which has been
-    # approximated as this term
-    psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)
-    # this is the derivative of psi
-    psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
-    assert a_hat0 != 0, "the first parameter has been set to zero!"
-
-    # updating the parameters
-    for i in range(100):
-        a_hat_new = (a_hat0 * (1 - a_hat0 * psi_prime0)) / (1 - a_hat0 *
-                                                            psi_prime0 + tau_meanlog - tau_logmean + np.log(a_hat0) - psi_0)
-        b_hat_new = tau_mean / a_hat_new
-
-        a_hat0 = a_hat_new
-        psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
+        # initialization step
+        a_hat0 = 0.5 / (tau_logmean - tau_meanlog)  # shape
+        # psi is the derivative of log of gamma function, which has been
+        # approximated as this term
         psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)
+        # this is the derivative of psi
         psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
+        assert a_hat0 != 0, "the first parameter has been set to zero!"
 
-        if np.abs(a_hat_new - a_hat0) <= 0.01:
-            return a_hat_new, b_hat_new
-        else:
-            pass
-    assert np.abs(
-        a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new - a_hat0 = {}".format(
-        np.abs(
-            a_hat_new - a_hat0))
+        # updating the parameters
+        for i in range(10):
+            a_hat_new = (a_hat0 * (1 - a_hat0 * psi_prime0)) / (1 - a_hat0 *
+                                                                psi_prime0 + tau_meanlog - tau_logmean + np.log(a_hat0) - psi_0)
+            b_hat_new = tau_mean / a_hat_new
 
-    return a_hat_new, b_hat_new
+            a_hat0 = a_hat_new
+            psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
+            psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)
+            psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
+
+            #assert not math.isnan(a_hat_new), "it is breakin in the {}". format(i)
+            if np.abs(a_hat_new - a_hat0) <= 0.01:
+                return a_hat_new, b_hat_new
+            else:
+                pass
+        assert np.abs(
+            a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new {} - a_hat0 {} = {}".format(a_hat_new, a_hat0, np.abs(a_hat_new - a_hat0))
+
+        return a_hat_new, b_hat_new
