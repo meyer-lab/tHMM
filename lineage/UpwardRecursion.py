@@ -48,8 +48,8 @@ def get_leaf_Normalizing_Factors(tHMMobj):
             # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
             # the sum of the joint probabilities is the marginal probability
             NF_array[leaf_cell_idx] = np.sum(MSD_array[leaf_cell_idx, :] * EL_array[leaf_cell_idx, :])  # def of conditional prob
-            assert NF_array[leaf_cell_idx] > 0.0
-            
+            assert NF_array[leaf_cell_idx] > 0.0, "{} and {} and {} and {}".format(NF_array, NF_array[leaf_cell_idx], MSD_array[leaf_cell_idx, :], EL_array[leaf_cell_idx, :])
+        print(NF_array)
         NF.append(NF_array)
     return NF
 

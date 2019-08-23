@@ -20,30 +20,25 @@ class TestBW(unittest.TestCase):
         # T: transition probability matrix
         T = np.array([[0.85, 0.15],
                       [0.15, 0.85]], dtype="float")
-
         # State 0 parameters "Resistant"
         state0 = 0
         bern_p0 = 0.95
         gamma_a0 = 5.0
         gamma_scale0 = 1.0
-
         # State 1 parameters "Susciptible"
         state1 = 1
         bern_p1 = 0.85
         gamma_a1 = 10.0
         gamma_scale1 = 2.0
-
         state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
         state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
-
         E = [state_obj0, state_obj1]
-        
         num = 2**7-1
-
         # Using an unpruned lineage to avoid unforseen issues
         X = LineageTree(pi, T, E, num, prune_boolean=False)
         tHMMobj = tHMM([X], numStates=2)  # build the tHMM class with X
         
+        # Test cases below
         # Get the likelihoods before fitting
         NF_before = get_leaf_Normalizing_Factors(tHMMobj)
         betas_before = get_leaf_betas(tHMMobj, NF_before)
@@ -59,3 +54,30 @@ class TestBW(unittest.TestCase):
 
         self.assertTrue(np.isfinite(LL_after[0]))
         self.assertGreater(LL_after[0], LL_before[0])
+        
+    def test_step(self):
+        """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
+        
+        # pi: the initial probability vector
+        pi = np.array([0.6, 0.4], dtype="float")
+
+        # T: transition probability matrix
+        T = np.array([[0.85, 0.15],
+                      [0.15, 0.85]], dtype="float")
+        # State 0 parameters "Resistant"
+        state0 = 0
+        bern_p0 = 0.95
+        gamma_a0 = 5.0
+        gamma_scale0 = 1.0
+        # State 1 parameters "Susciptible"
+        state1 = 1
+        bern_p1 = 0.85
+        gamma_a1 = 10.0
+        gamma_scale1 = 2.0
+        state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
+        state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
+        E = [state_obj0, state_obj1]
+        num = 2**7-1
+        # Using an unpruned lineage to avoid unforseen issues
+        X = LineageTree(pi, T, E, num, prune_boolean=False)
+        tHMMobj = tHMM([X], numStates=2)  # build the tHMM class with X
