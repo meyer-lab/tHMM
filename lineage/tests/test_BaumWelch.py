@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from ..StateDistribution import StateDistribution
-from ..UpwardRecursion import get_leaf_Normalizing_Factors, calculate_log_likelihood
+from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
 from ..BaumWelch import fit
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
@@ -38,20 +38,24 @@ class TestBW(unittest.TestCase):
 
         E = [state_obj0, state_obj1]
         
-        num = 10000
+        num = 2**7-1
 
         # Using an unpruned lineage to avoid unforseen issues
         X = LineageTree(pi, T, E, num, prune_boolean=False)
-
         tHMMobj = tHMM([X], numStates=2)  # build the tHMM class with X
+        
+        # Get the likelihoods before fitting
+        NF_before = get_leaf_Normalizing_Factors(tHMMobj)
+        betas_before = get_leaf_betas(tHMMobj, NF_before)
+        get_nonleaf_NF_and_betas(tHMMobj, NF_before, betas_before)
+        LL_before = calculate_log_likelihood(tHMMobj, NF_before)
+        self.assertTrue(np.isfinite(LL_before[0]))
 
-        LLbefore = calculate_log_likelihood(tHMMobj, get_leaf_Normalizing_Factors(tHMMobj))
+        # Get the likelihoods after fitting
+        tHMMobj_after, NF_after, betas_after, gammas_after, new_LL_list_after = fit(tHMMobj, max_iter=4)
+        LL_after = calculate_log_likelihood(tHMMobj, NF_after)
+        self.assertTrue(np.isfinite(LL_after[0]))
+        self.assertTrue(np.isfinite(new_LL_list_after[0]))
 
-        self.assertTrue(np.isfinite(LLbefore[0]))
-
-        fit(tHMMobj, max_iter=2)
-
-        LL = calculate_log_likelihood(tHMMobj, get_leaf_Normalizing_Factors(tHMMobj))
-
-        self.assertTrue(np.isfinite(LL[0]))
-        self.assertGreater(LL[0], LLbefore[0])
+        self.assertTrue(np.isfinite(LL_after[0]))
+        self.assertGreater(LL_after[0], LL_before[0])
