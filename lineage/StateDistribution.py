@@ -123,12 +123,12 @@ def get_experiment_time(lineage):
 
 def bernoulli_estimator(bern_obs):
     """ Add up all the 1s and divide by the total length (finding the average). """
-    return float(sum(bern_obs) ) / float(len(bern_obs) )
+    return float(sum(bern_obs) + np.spacing(1)) / float(len(bern_obs) + 2*np.spacing(1))
 
 
 def exponential_estimator(exp_obs):
     """ Trivial exponential """
-    return float(sum(exp_obs) ) / float(len(exp_obs) )
+    return float(sum(exp_obs) + 50*np.spacing(1)) / float(len(exp_obs) + np.spacing(1))
 
 
 # def gamma_estimator(gamma_obs):
