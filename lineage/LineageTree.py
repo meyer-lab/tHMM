@@ -116,8 +116,7 @@ class LineageTree:
         --------
         full_lin_list {list}: A list containing cells with assigned hidden states based on initial and transition probabilities.
         """
-        first_state_results = sp.multinomial.rvs(
-            1, self.pi)  # roll the dice and yield the state for the first cell
+        first_state_results = sp.multinomial.rvs(1, self.pi)  # roll the dice and yield the state for the first cell
         first_cell_state = first_state_results.tolist().index(1)
         first_cell = CellVar(
             state=first_cell_state,

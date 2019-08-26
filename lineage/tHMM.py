@@ -119,5 +119,4 @@ class tHMM:
                     EL_array[current_cell_idx, state_k] = self.estimate.E[state_k].pdf(cell.obs)
 
             EL.append(EL_array)  # append the EL_array for each lineage
-            print(EL_array)
         return EL

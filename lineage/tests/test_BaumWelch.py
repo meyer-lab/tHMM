@@ -52,5 +52,4 @@ class TestBW(unittest.TestCase):
         self.assertTrue(np.isfinite(LL_after[0]))
         self.assertTrue(np.isfinite(new_LL_list_after[0]))
 
-        self.assertTrue(np.isfinite(LL_after[0]))
         self.assertGreater(LL_after[0], LL_before[0])

@@ -133,6 +133,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100):
 
         # tolerance checking
         new_LL_list = calculate_log_likelihood(tHMMobj, NF)
+        print(new_LL_list)
 
         logging.info("Average Log-Likelihood across all lineages: {}".format(np.mean(new_LL_list)))
 
