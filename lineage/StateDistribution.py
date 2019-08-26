@@ -89,7 +89,7 @@ def prune_rule(cell):
 def tHMM_E_init(state):
     return StateDistribution(state,
                              0.9 * (np.random.uniform()),
-                             50 * (np.random.uniform()))
+                             50)
 
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
@@ -123,12 +123,12 @@ def get_experiment_time(lineage):
 
 def bernoulli_estimator(bern_obs):
     """ Add up all the 1s and divide by the total length (finding the average). """
-    return (sum(bern_obs) + 1e-10) / (len(bern_obs) + 2e-10)
+    return float(sum(bern_obs) ) / float(len(bern_obs) )
 
 
 def exponential_estimator(exp_obs):
     """ Trivial exponential """
-    return (sum(exp_obs) + 50e-10) / (len(exp_obs) + 1e-10)
+    return float(sum(exp_obs) ) / float(len(exp_obs) )
 
 
 # def gamma_estimator(gamma_obs):
