@@ -40,11 +40,10 @@ class StateDistribution:
         exp_ll = sp.expon.pdf(x=tuple_of_obs[1], scale=self.exp_scale_beta)
         #gamma_ll = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)  # gamma likelihood
         
-        result = bern_ll * exp_ll
-        if result == 0:
+        if bern_ll * exp_ll == 0:
             print(bern_ll, tuple_of_obs[0], self.bern_p, exp_ll, tuple_of_obs[1], self.exp_scale_beta)
         
-        return result
+        return bern_ll * exp_ll
 
     def estimator(self, list_of_tuples_of_obs):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
