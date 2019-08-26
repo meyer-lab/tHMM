@@ -20,26 +20,22 @@ class TestModel(unittest.TestCase):
         # State 0 parameters "Resistant"
         self.state0 = 0
         self.bern_p0 = 0.99
-        self.gamma_a0 = 5.0
-        self.gamma_scale0 = 1.0
+        self.exp_a0 = 5.0
 
         # State 1 parameters "Susciptible"
         self.state1 = 1
         self.bern_p1 = 0.8
-        self.gamma_a1 = 10.0
-        self.gamma_scale1 = 2.0
+        self.exp_a1 = 10.0
 
         # creating the state object
         state_obj0 = StateDistribution(
             self.state0,
             self.bern_p0,
-            self.gamma_a0,
-            self.gamma_scale0)
+            self.exp_a0)
         state_obj1 = StateDistribution(
             self.state1,
             self.bern_p1,
-            self.gamma_a1,
-            self.gamma_scale1)
+            self.exp_a1)
 
         # observations object
         self.E = [state_obj0, state_obj1]
