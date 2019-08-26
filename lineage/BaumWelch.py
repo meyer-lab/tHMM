@@ -64,7 +64,7 @@ def get_all_zetas(parent_state_j, child_state_k, lineageObj, beta_array, MSD_arr
     return holder
 
 
-def fit(tHMMobj, tolerance=1e-10, max_iter=100):
+def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
     '''Runs the tHMM function through Baum Welch fitting'''
     numLineages = len(tHMMobj.X)
     numStates = tHMMobj.numStates

@@ -17,10 +17,10 @@ rc('text', usetex=True)
 
 def makeFigure():
     """ Main figure generating function for Fig. 6 """
-    ax, f = getSetup((21, 7), (1, 3))
+    ax, f = getSetup((15, 5), (1, 3))
     
-    desired_num_cells, accuracies_unpruned, accuracies_pruned, bern_unpruned, exp_unpruned = accuracy_increased_cells()
-    figure_maker(ax[0:3], desired_num_cells, accuracies_unpruned, accuracies_pruned, bern_unpruned, exp_unpruned)
+    desired_num_cells, accuracies_unpruned, bern_unpruned, exp_unpruned = accuracy_increased_cells()
+    figure_maker(ax[0:3], desired_num_cells, accuracies_unpruned, bern_unpruned, exp_unpruned)
     
     
     f.tight_layout()
@@ -59,7 +59,7 @@ def accuracy_increased_cells():
     desired_num_cells = [num_cell-1 for num_cell in desired_num_cells]
 
     accuracies_unpruned = []
-    accuracies_pruned = []
+    #accuracies_pruned = []
     bern_unpruned = []
     exp_unpruned = []
 
@@ -94,10 +94,10 @@ def accuracy_increased_cells():
         exp_unpruned.append(exp_total)
 
         
-    return desired_num_cells, accuracies_unpruned, accuracies_pruned, bern_unpruned,exp_unpruned
+    return desired_num_cells, accuracies_unpruned, bern_unpruned, exp_unpruned
 
 
-def figure_maker(ax, desired_num_cells, accuracies_unpruned, accuracies_pruned, bern_unpruned, exp_unpruned):
+def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, exp_unpruned):
     x = desired_num_cells
     font=11
     font2 = 10
