@@ -34,9 +34,14 @@ class StateDistribution:
         bern_ll = sp.bernoulli.pmf(k=tuple_of_obs[0], p=self.bern_p)  # bernoulli likelihood
         gamma_ll = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)  # gamma likelihood
         
+<<<<<<< HEAD
         result = bern_ll * gamma_ll
         assert not math.isnan(result), "{} and {} and {} and {}".format(gamma_ll, tuple_of_obs[1], self.gamma_a, self.gamma_scale )
 
+=======
+        assert not math.isnan(gamma_ll), "{} {} {} {}".format(gamma_ll, tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+        
+>>>>>>> 398d2882fc71143c88aa29e9bcbf2b171d8f9f95
         return bern_ll * gamma_ll
 
     def estimator(self, list_of_tuples_of_obs):
@@ -124,7 +129,27 @@ def exponential_estimator(exp_obs):
     return (sum(exp_obs) + 50e-10) / (len(exp_obs) + 1e-10)
 
 
+# def gamma_estimator(gamma_obs):
+#     """ This is a cloesd-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
+#     N = len(gamma_obs)
+#     #assert N != 0, "The number of gamma observations is zero!"
+#     print("the number of gamma observations", N)
+#     x_lnx = [x * np.log(x) for x in gamma_obs]
+#     lnx = [np.log(x) for x in gamma_obs]
+#     # gamma_a
+#     a_hat = (N * (sum(gamma_obs)) + 1e-10)/(N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
+#     # gamma_scale
+#     b_hat = ((1+1e-10)/(N**2 + 1e-10)) * (N*(sum(x_lnx)) - (sum(lnx))*(sum(gamma_obs)))
+#     # bias correction
+# #     if N>1:
+# #         a_hat = (N /(N - 1)) * a_hat
+# #         b_hat = b_hat - (1/N) * (3*b_hat - (2/3) * (b_hat/(b_hat + 1)) - (4/5)* (b_hat)/((1 + b_hat)**2))
+
+#     return a_hat, b_hat
+
+
 def gamma_estimator(gamma_obs):
+<<<<<<< HEAD
     """ This is a cloesd-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
     N = len(gamma_obs)
     #assert N != 0, "The number of gamma observations is zero!"
@@ -137,3 +162,62 @@ def gamma_estimator(gamma_obs):
     b_hat = ((1+1e-10)/(N**2 + 1e-10)) * (N*(sum(x_lnx)) - (sum(lnx))*(sum(gamma_obs)))
 
     return a_hat, b_hat
+=======
+    """
+    An analytical estimator for two parameters of the Gamma distribution. Based on Thomas P. Minka, 2002 "Estimating a Gamma distribution".
+    The likelihood function for Gamma distribution is:
+    p(x | a, b) = Gamma(x; a, b) = x^(a-1)/(Gamma(a) * b^a) * exp(-x/b)
+    Here we intend to find "a" and "b" given x as a sequence of gamma distributed data.
+    To find the best estimate, we find the value that maximizes the likelihood of observing that data.
+    We fix b_hat as:
+    b_hat = x_bar / a
+    We then use Newton's method to find the second parameter:
+    a_hat ~= 0.5 / (log(x_bar) - (log(x))_bar)
+    Here x_bar means the average of x.
+    Args:
+    -----
+    gamma_obs {list}: A list of gamma-distributed observations.
+    Returns:
+    --------
+    a_hat {float}: The estimated value for shape parameter of the Gamma distribution
+    b_hat {float}: The estimated value for scale parameter of the Gamma distribution
+    """
+    if len(gamma_obs) <= 1:
+        print("the number of observations is very small, don't go through estimation.")
+        return 7.5, 1.5
+    else:
+        tau1 = gamma_obs
+        tau_mean = np.mean(tau1)
+        tau_logmean = np.log(tau_mean)
+        tau_meanlog = np.mean(np.log(tau1))
+
+        # initialization step
+        a_hat0 = 0.5 / (tau_logmean - tau_meanlog)  # shape
+        # psi is the derivative of log of gamma function, which has been
+        # approximated as this term
+        psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)
+        # this is the derivative of psi
+        psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
+        assert a_hat0 != 0, "the first parameter has been set to zero!"
+
+        # updating the parameters
+        for i in range(10):
+            a_hat_new = (a_hat0 * (1 - a_hat0 * psi_prime0)) / (1 - a_hat0 *
+                                                                psi_prime0 + tau_meanlog - tau_logmean + np.log(a_hat0) - psi_0)
+            b_hat_new = tau_mean / a_hat_new
+
+            a_hat0 = a_hat_new
+            psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
+            psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)
+            psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
+
+            #assert not math.isnan(a_hat_new), "it is breakin in the {}". format(i)
+            if np.abs(a_hat_new - a_hat0) <= 0.01:
+                return a_hat_new, b_hat_new
+            else:
+                pass
+        assert np.abs(
+            a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new {} - a_hat0 {} = {}".format(a_hat_new, a_hat0, np.abs(a_hat_new - a_hat0))
+
+        return a_hat_new, b_hat_new
+>>>>>>> 398d2882fc71143c88aa29e9bcbf2b171d8f9f95

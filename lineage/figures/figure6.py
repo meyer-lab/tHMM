@@ -52,7 +52,7 @@ def accuracy_increased_cells():
 
     E = [state_obj0, state_obj1]
     # the key part in this function
-    desired_num_cells = np.logspace(8, 10, num=3, base=2.0)
+    desired_num_cells = np.logspace(8, 10, num=5, base=2.0)
     desired_num_cells = [num_cell-1 for num_cell in desired_num_cells]
 
     accuracies_unpruned = []
