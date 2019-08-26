@@ -34,14 +34,9 @@ class StateDistribution:
         bern_ll = sp.bernoulli.pmf(k=tuple_of_obs[0], p=self.bern_p)  # bernoulli likelihood
         gamma_ll = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)  # gamma likelihood
         
-<<<<<<< HEAD
         result = bern_ll * gamma_ll
         assert not math.isnan(result), "{} and {} and {} and {}".format(gamma_ll, tuple_of_obs[1], self.gamma_a, self.gamma_scale )
 
-=======
-        assert not math.isnan(gamma_ll), "{} {} {} {}".format(gamma_ll, tuple_of_obs[1], self.gamma_a, self.gamma_scale)
-        
->>>>>>> 398d2882fc71143c88aa29e9bcbf2b171d8f9f95
         return bern_ll * gamma_ll
 
     def estimator(self, list_of_tuples_of_obs):
@@ -149,20 +144,6 @@ def exponential_estimator(exp_obs):
 
 
 def gamma_estimator(gamma_obs):
-<<<<<<< HEAD
-    """ This is a cloesd-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
-    N = len(gamma_obs)
-    #assert N != 0, "The number of gamma observations is zero!"
-    print("the number of gamma observations", N)
-    x_lnx = [x * np.log(x) for x in gamma_obs]
-    lnx = [np.log(x) for x in gamma_obs]
-    # gamma_a
-    a_hat = (N * (sum(gamma_obs)) + 1e-10)/(N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
-    # gamma_scale
-    b_hat = ((1+1e-10)/(N**2 + 1e-10)) * (N*(sum(x_lnx)) - (sum(lnx))*(sum(gamma_obs)))
-
-    return a_hat, b_hat
-=======
     """
     An analytical estimator for two parameters of the Gamma distribution. Based on Thomas P. Minka, 2002 "Estimating a Gamma distribution".
     The likelihood function for Gamma distribution is:
@@ -220,4 +201,3 @@ def gamma_estimator(gamma_obs):
             a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new {} - a_hat0 {} = {}".format(a_hat_new, a_hat0, np.abs(a_hat_new - a_hat0))
 
         return a_hat_new, b_hat_new
->>>>>>> 398d2882fc71143c88aa29e9bcbf2b171d8f9f95
