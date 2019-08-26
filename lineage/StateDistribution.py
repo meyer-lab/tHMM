@@ -1,6 +1,7 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
 import numpy as np
 import scipy.stats as sp
+import math
 
 
 class StateDistribution:
@@ -32,6 +33,9 @@ class StateDistribution:
 
         bern_ll = sp.bernoulli.pmf(k=tuple_of_obs[0], p=self.bern_p)  # bernoulli likelihood
         gamma_ll = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)  # gamma likelihood
+        
+        result = bern_ll * gamma_ll
+        assert not math.isnan(result), "{} and {} and {} and {}".format(gamma_ll, tuple_of_obs[1], self.gamma_a, self.gamma_scale )
 
         return bern_ll * gamma_ll
 
@@ -131,9 +135,5 @@ def gamma_estimator(gamma_obs):
     a_hat = (N * (sum(gamma_obs)) + 1e-10)/(N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
     # gamma_scale
     b_hat = ((1+1e-10)/(N**2 + 1e-10)) * (N*(sum(x_lnx)) - (sum(lnx))*(sum(gamma_obs)))
-    # bias correction
-    if N>1:
-        a_hat = (N /(N - 1)) * a_hat
-        b_hat = b_hat - (1/N) * (3*b_hat - (2/3) * (b_hat/(b_hat + 1)) - (4/5)* (b_hat)/((1 + b_hat)**2))
 
     return a_hat, b_hat

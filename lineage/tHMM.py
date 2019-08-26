@@ -9,6 +9,7 @@ class estimate:
         self.numStates = numStates
         self.pi = np.ones((numStates)) / numStates
         self.T = np.ones((numStates, numStates)) / numStates
+        self.T
         self.E = []
         for state in range(self.numStates):
             self.E.append(tHMM_E_init(state))
