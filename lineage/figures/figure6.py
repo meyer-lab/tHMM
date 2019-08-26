@@ -65,24 +65,15 @@ def accuracy_increased_cells():
 
     for num in desired_num_cells:
         print(num)
-        # unpruned lineage
         lineage_unpruned = LineageTree(pi, T, E, num, prune_boolean=False)
-        # pruned lineage
-        #lineage_pruned = cp.deepcopy(lineage_unpruned)
-        #lineage_pruned.prune_boolean = True
+
 
         X1 = [lineage_unpruned]
-        #X2 = [lineage_pruned]
         print("unpruned")
         deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X1, 2) 
-        #print("pruned")
-        #deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2) 
         acc1 = accuracy(X1, all_states)
-        #acc2 = accuracy(X2, all_states2)
         accuracies_unpruned.append(100*acc1)        
-        #accuracies_pruned.append(100*acc2)
 
-        # unpruned lineage
 
         bern_p_total = ()
         exp_total = ()

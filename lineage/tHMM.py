@@ -8,7 +8,8 @@ class estimate:
     def __init__(self, numStates):
         self.numStates = numStates
         self.pi = np.ones((numStates)) / numStates
-        self.T = np.ones((numStates, numStates)) / numStates
+        np.random.dirichlet(np.ones(10),size=1)
+        self.T = np.random.dirichlet([1,numStates],numStates)
         self.E = []
         for state in range(self.numStates):
             self.E.append(tHMM_E_init(state))

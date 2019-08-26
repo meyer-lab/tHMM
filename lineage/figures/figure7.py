@@ -57,31 +57,20 @@ def accuracy_increased_lineages():
     num_lineages = list(range(1, 10))
 
     accuracies_unpruned = []
-    #accuracies_pruned = []
     bern_unpruned = []
     exp_unpruned = []
-    #bern_pruned = []
-    #exp_pruned = []
+
 
     X_p = []
-    X_u = []
     for num in num_lineages:
-        # unpruned lineage
         lineage_unpruned = LineageTree(pi, T, E, desired_num_cells, prune_boolean=False)
-        # pruned lineage
-        #lineage_pruned = lineage_unpruned.prune_boolean(True)
+
 
         X_p.append(lineage_unpruned)
-        #X_u.append(lineage_pruned)
         deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X_p, 2) 
-        #deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X_u, 2) 
         acc1 = accuracy(X_p, all_states)
-        #acc2 = accuracy(X_u, all_states2)
         accuracies_unpruned.append(100*acc1)        
-        #accuracies_pruned.append(100*acc2)
-        
 
-        # unpruned lineage
 
         bern_p_total = []
         exp_total = []
