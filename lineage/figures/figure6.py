@@ -19,8 +19,8 @@ def makeFigure():
     """ Main figure generating function for Fig. 6 """
     ax, f = getSetup((15, 5), (1, 3))
     
-    desired_num_cells, accuracies_unpruned, bern_unpruned, exp_unpruned = accuracy_increased_cells()
-    figure_maker(ax[0:3], desired_num_cells, accuracies_unpruned, bern_unpruned, exp_unpruned)
+    desired_num_cells, accuracies_unpruned, bern_unpruned, gamma_a_unpruned, gamma_scale_unpruned = accuracy_increased_cells()
+    figure_maker(ax[0:3], desired_num_cells, accuracies_unpruned, bern_unpruned, gamma_a_unpruned, gamma_scale_unpruned)
     
     
     f.tight_layout()
@@ -42,26 +42,29 @@ def accuracy_increased_cells():
 
     # State 0 parameters "Resistant"
     state0 = 0
-    bern_p0 = 0.95
-    exp_0 = 20.0
+    bern_p0 = 0.99
+    gamma_a0 = 5.0
+    gamma_scale0 = 1.0
 
     # State 1 parameters "Susciptible"
     state1 = 1
-    bern_p1 = 0.85
-    exp_1 = 80.0
+    bern_p1 = 0.8
+    gamma_a1 = 40.0
+    gamma_scale1 = 8.0
 
-    state_obj0 = StateDistribution(state0, bern_p0, exp_0)
-    state_obj1 = StateDistribution(state1, bern_p1, exp_1)
+    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
+    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
 
     E = [state_obj0, state_obj1]
     # the key part in this function
-    desired_num_cells = np.logspace(4, 10, num=50, base=2.0)
+    desired_num_cells = np.logspace(6, 10, num=50, base=2.0)
     desired_num_cells = [num_cell-1 for num_cell in desired_num_cells]
 
     accuracies_unpruned = []
     #accuracies_pruned = []
     bern_unpruned = []
-    exp_unpruned = []
+    gamma_a_unpruned = []
+    gamma_scale_unpruned = []
 
     for num in desired_num_cells:
         print(num)
@@ -76,19 +79,23 @@ def accuracy_increased_cells():
 
 
         bern_p_total = ()
-        exp_total = ()
+        gamma_a_total = ()
+        gamma_scale_total = ()
         for state in range(tHMMobj.numStates):
             bern_p_total += (tHMMobj.estimate.E[state].bern_p,)
-            exp_total += (tHMMobj.estimate.E[state].exp_scale_beta,)
+            gamma_a_total += (tHMMobj.estimate.E[state].gamma_a,)
+            gamma_scale_total += (tHMMobj.estimate.E[state].gamma_scale,)
+            
 
         bern_unpruned.append(bern_p_total)
-        exp_unpruned.append(exp_total)
+        gamma_a_unpruned.append(gamma_a_total)
+        gamma_scale_unpruned.append(gamma_scale_total)
 
         
-    return desired_num_cells, accuracies_unpruned, bern_unpruned, exp_unpruned
+    return desired_num_cells, accuracies_unpruned, bern_unpruned, gamma_a_unpruned, gamma_scale_unpruned
 
 
-def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, exp_unpruned):
+def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, gamma_a_unpruned, gamma_scale_unpruned):
     x = desired_num_cells
     font=11
     font2 = 10
@@ -114,15 +121,15 @@ def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, exp_
     ax[1].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[1].legend(loc='best', framealpha=0.3)
     
-    res = [[ i for i, j in exp_unpruned ], [ j for i, j in exp_unpruned ]] 
+    res = [[ i for i, j in gamma_a_unpruned ], [ j for i, j in gamma_a_unpruned ]] 
     ax[2].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[2].set_xlabel('Number of Cells', fontsize=font2)
     ax[2].scatter(x, res[0], c='b', marker="o", label='Susceptible Unpruned', alpha=0.5)
     ax[2].scatter(x, res[1], c='r', marker="o", label='Resistant Unpruned', alpha=0.5)
-    ax[2].set_ylabel(r'Exponential scale $\beta$', rotation=90, fontsize=font2)
-    ax[2].axhline(y=20, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
-    ax[2].axhline(y=80, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
-    ax[2].set_title('Exponential', fontsize=font)
+    ax[2].set_ylabel(r'Gamma a $\beta$', rotation=90, fontsize=font2)
+    ax[2].axhline(y=5, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
+    ax[2].axhline(y=40, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
+    ax[2].set_title('Gamma', fontsize=font)
     ax[2].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[2].legend(loc='best', framealpha=0.3)
         
