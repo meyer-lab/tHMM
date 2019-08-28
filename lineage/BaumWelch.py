@@ -64,7 +64,7 @@ def get_all_zetas(parent_state_j, child_state_k, lineageObj, beta_array, MSD_arr
     return holder
 
 
-def fit(tHMMobj, tolerance=1e-10, max_iter=100):
+def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
     '''Runs the tHMM function through Baum Welch fitting'''
     numLineages = len(tHMMobj.X)
     numStates = tHMMobj.numStates
@@ -111,7 +111,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100):
             max_state_holder = []  # a list the size of lineage, that contains max state for each cell
             for ii, cell in enumerate(lineage):
                 assert lineage[ii] is cell
-                max_state_holder.append(np.argmax(gamma_array[ii, :]))  # says which state is maximal
+                max_state_holder.append(np.argmax(gammas[num][ii, :]))  # says which state is maximal
 
             # this bins the cells by lineage to the population cell lists
             for ii, state in enumerate(max_state_holder):
