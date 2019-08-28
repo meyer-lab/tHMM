@@ -133,8 +133,8 @@ def figure_maker(ax, desired_num_cells, accuracies_unpruned, accuracies_pruned, 
     #ax = axs[0, 1]
     ax[1].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[1].set_xlabel('Bernoulli', fontsize=font2)
-    ax[1].scatter(x, res[0], c='b', marker="o", label='Susceptible Unpruned', alpha=0.2)
-    ax[1].scatter(x, res[1], c='r', marker="o", label='Resistant Unpruned', alpha=0.2)
+    ax[1].scatter(x, res[0], c='b', marker="o", label='Resistant Unpruned', alpha=0.2)
+    ax[1].scatter(x, res[1], c='r', marker="o", label='Susceptible Unpruned', alpha=0.2)
     ax[1].set_ylabel('Bern p', rotation=90, fontsize=font2)
     ax[1].axhline(y=0.95, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
     ax[1].axhline(y=0.85, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
