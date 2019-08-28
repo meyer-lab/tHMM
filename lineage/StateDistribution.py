@@ -35,6 +35,8 @@ class StateDistribution:
         gamma_ll = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)  # gamma likelihood
         
         assert not math.isnan(gamma_ll), "{} {} {} {}".format(gamma_ll, tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+        if bern_ll * gamma_ll == 0:
+            print(bern_ll, tuple_of_obs[0], self.bern_p, gamma_ll, tuple_of_obs[1], self.gamma_a, self.gamma_scale)
         
         return bern_ll * gamma_ll
 
@@ -181,10 +183,13 @@ def gamma_estimator(gamma_obs):
         assert a_hat0 != 0, "the first parameter has been set to zero!"
 
         # updating the parameters
-        for i in range(10):
+        while (abs(a_hat_new - a_hat0) >= 0.1):
             a_hat_new = (a_hat0 * (1 - a_hat0 * psi_prime0)) / (1 - a_hat0 *
                                                                 psi_prime0 + tau_meanlog - tau_logmean + np.log(a_hat0) - psi_0)
             b_hat_new = tau_mean / a_hat_new
+            
+            if a_hat_new >= 50.0:
+                a_hat_new = a_hat0
 
             a_hat0 = a_hat_new
             psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
@@ -192,10 +197,10 @@ def gamma_estimator(gamma_obs):
             psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
 
             #assert not math.isnan(a_hat_new), "it is breakin in the {}". format(i)
-            if np.abs(a_hat_new - a_hat0) <= 0.01:
-                return a_hat_new, b_hat_new
-            else:
-                pass
+#             if np.abs(a_hat_new - a_hat0) <= 0.01:
+#                 return a_hat_new, b_hat_new
+#             else:
+#                 pass
         assert np.abs(
             a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new {} - a_hat0 {} = {}".format(a_hat_new, a_hat0, np.abs(a_hat_new - a_hat0))
 
