@@ -10,7 +10,7 @@ from ..tHMM import tHMM
     
 class TestModel(unittest.TestCase):
 
-    def test_step(self):
+    def setUp(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
         
         # pi: the initial probability vector
@@ -36,8 +36,8 @@ class TestModel(unittest.TestCase):
         E = [state_obj0, state_obj1]
         num = 2**7-1
         # Using an unpruned lineage to avoid unforseen issues
-        self.X = LineageTree(pi, T, E, num, prune_boolean=False)
-        tHMMobj = tHMM([self.X], numStates=2)  # build the tHMM class with X
+        self.X = [LineageTree(pi, T, E, num, prune_boolean=False)]
+        tHMMobj = tHMM(self.X, numStates=2)  # build the tHMM class with X
         
         # Test cases below
         # Get the likelihoods before fitting
@@ -61,10 +61,10 @@ class TestModel(unittest.TestCase):
         labels and sizes.
         '''
         t = tHMM(self.X, numStates=2)  # build the tHMM class with X
-        self.assertEqual(t.paramlist[0]["pi"].shape[0], 2)  # make sure shape is numStates
-        self.assertEqual(t.paramlist[0]["T"].shape[0], 2)  # make sure shape is numStates
-        self.assertEqual(t.paramlist[0]["T"].shape[1], 2)  # make sure shape is numStates
-        self.assertEqual(t.paramlist[0]["E"].shape[0], 2)  # make sure shape is numStates
+        self.assertEqual(t.estimate.pi.shape[0], 2)  # make sure shape is numStates
+        self.assertEqual(t.estimate.T.shape[0], 2)  # make sure shape is numStates
+        self.assertEqual(t.estimate.T.shape[1], 2)  # make sure shape is numStates
+        self.assertEqual(len(t.estimate.E), 2)  # make sure shape is numStates
 
     def test_get_MSD(self):
         '''

@@ -165,7 +165,7 @@ def gamma_estimator(gamma_obs):
     b_hat {float}: The estimated value for scale parameter of the Gamma distribution
     """
     if len(gamma_obs) <= 1:
-        print("the number of observations is very small, don't go through estimation.")
+        print("the number of observations is very small, don't go through estimation. the number of obs is {}".format(len(gamma_obs)))
         return 7.5, 1.5
     else:
         tau1 = gamma_obs
