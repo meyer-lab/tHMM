@@ -4,6 +4,7 @@ import numpy as np
 from ..StateDistribution import StateDistribution
 from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
 from ..BaumWelch import fit
+from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, get_delta_parent_child_prod, delta_parent_child_func, Viterbi
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM    
     
@@ -33,10 +34,10 @@ class TestModel(unittest.TestCase):
         
         state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
         state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
-        E = [state_obj0, state_obj1]
+        self.E = [state_obj0, state_obj1]
         num = 2**7-1
         # Using an unpruned lineage to avoid unforseen issues
-        self.X = [LineageTree(pi, T, E, num, prune_boolean=False)]
+        self.X = [LineageTree(pi, T, self.E, num, prune_boolean=False)]
         tHMMobj = tHMM(self.X, numStates=2)  # build the tHMM class with X
         
         # Test cases below
@@ -108,3 +109,4 @@ class TestModel(unittest.TestCase):
         self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population
         for _, NFlin in enumerate(NF):
             self.assertGreaterEqual(NFlin.shape[0], 0)  # at least zero cells in each lineage
+
