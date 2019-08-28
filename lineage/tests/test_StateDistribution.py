@@ -10,30 +10,26 @@ class TestModel(unittest.TestCase):
     """Here are the unit tests."""
 
     def setUp(self):
-        # observation parameters for state0
-        self.state0 = 0
-        self.bern0 = 1.0
-        self.exp_scale_beta_0 = 10.0
-        self.stateDist0 = StateDistribution(
-            self.state0,
-            self.bern0,
-            self.exp_scale_beta_0)
-
         # ingredients for LineageTree!
         self.pi = np.array([0.75, 0.25])
         self.T = np.array([[0.85, 0.15],
                            [0.20, 0.80]])
 
-        # observation parameters for state1
-        self.state1 = 1
-        self.bern1 = 0.8
-        self.exp_scale_beta_1 = 2.0
-        self.stateDist1 = StateDistribution(
-            self.state1,
-            self.bern1,
-            self.exp_scale_beta_1)
+        # State 0 parameters "Resistant"
+        self.state0 = 0
+        bern_p0 = 0.99
+        gamma_a0 = 20
+        gamma_scale0 = 5
 
-        # observations object
+        # State 1 parameters "Susceptible"
+        self.state1 = 1
+        bern_p1 = 0.8
+        gamma_a1 = 10
+        gamma_scale1 = 1
+
+        self.stateDist0 = StateDistribution(self.state0, bern_p0, gamma_a0, gamma_scale0)
+        self.stateDist1 = StateDistribution(self.state1, bern_p1, gamma_a1, gamma_scale1)
+
         self.E = [self.stateDist0, self.stateDist1]
 
         # creating two lineages, one with False for pruning, one with True.
@@ -91,8 +87,13 @@ class TestModel(unittest.TestCase):
                 self.stateDist0.bern_p) <= 0.1)
         self.assertTrue(
             0.0 <= abs(
-                estimator_obj.exp_scale_beta -
-                self.stateDist0.exp_scale_beta) <= 3.0)
+                estimator_obj.gamma_a -
+                self.stateDist0.gamma_a) <= 3.0)
+        self.assertTrue(
+            0.0 <= abs(
+                estimator_obj.gamma_scale -
+                self.stateDist0.gamma_scale) <= 3.0)
+        
 
     def test_prune_rule(self):
         """ A unittest for the prune_rule. """

@@ -22,16 +22,19 @@ class TestBW(unittest.TestCase):
                       [0.15, 0.85]], dtype="float")
         # State 0 parameters "Resistant"
         state0 = 0
-        bern_p0 = 0.95
-        exp_a0 = 5.0
+        bern_p0 = 0.99
+        gamma_a0 = 20
+        gamma_scale0 = 5
 
-        # State 1 parameters "Susciptible"
+        # State 1 parameters "Susceptible"
         state1 = 1
-        bern_p1 = 0.85
-        exp_a1 = 10.0
-        
-        state_obj0 = StateDistribution(state0, bern_p0, exp_a0)
-        state_obj1 = StateDistribution(state1, bern_p1, exp_a1)
+        bern_p1 = 0.8
+        gamma_a1 = 10
+        gamma_scale1 = 1
+
+        state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
+        state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
+
         E = [state_obj0, state_obj1]
         num = 2**7-1
         # Using an unpruned lineage to avoid unforseen issues

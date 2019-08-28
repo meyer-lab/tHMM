@@ -16,28 +16,21 @@ class TestModel(unittest.TestCase):
         self.T = np.array([[0.85, 0.15],
                            [0.20, 0.80]])
 
-        # E: states are defined as StateDistribution objects
         # State 0 parameters "Resistant"
         self.state0 = 0
-        self.bern_p0 = 0.99
-        self.exp_a0 = 5.0
+        bern_p0 = 0.99
+        gamma_a0 = 20
+        gamma_scale0 = 5
 
-        # State 1 parameters "Susciptible"
+        # State 1 parameters "Susceptible"
         self.state1 = 1
-        self.bern_p1 = 0.8
-        self.exp_a1 = 10.0
+        bern_p1 = 0.8
+        gamma_a1 = 10
+        gamma_scale1 = 1
 
-        # creating the state object
-        state_obj0 = StateDistribution(
-            self.state0,
-            self.bern_p0,
-            self.exp_a0)
-        state_obj1 = StateDistribution(
-            self.state1,
-            self.bern_p1,
-            self.exp_a1)
+        state_obj0 = StateDistribution(self.state0, bern_p0, gamma_a0, gamma_scale0)
+        state_obj1 = StateDistribution(self.state1, bern_p1, gamma_a1, gamma_scale1)
 
-        # observations object
         self.E = [state_obj0, state_obj1]
 
         # creating two lineages, one with False for pruning, one with True.
