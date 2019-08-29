@@ -8,7 +8,6 @@ from ..StateDistribution import StateDistribution
 
 import numpy as np
 import copy as cp
-
 from matplotlib import rc
 rc('font', **{'family': 'sans-serif', 'sans-serif': ['Helvetica']})
 # for Palatino and other serif fonts use:
@@ -69,7 +68,6 @@ def accuracy_increased_cells():
 
 
     for num in desired_num_cells:
-        print(num)
         lineage_unpruned = LineageTree(pi, T, E, num, prune_boolean=False)
         lineage_pruned = cp.deepcopy(lineage_unpruned)
         lineage_pruned.prune_boolean = True
