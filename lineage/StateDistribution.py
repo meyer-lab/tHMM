@@ -36,7 +36,7 @@ class StateDistribution:
         
         assert not math.isnan(np.exp(gamma_ll)), "{} {} {} {}".format(gamma_ll, tuple_of_obs[1], self.gamma_a, self.gamma_scale)
         if bern_ll == 0 or np.exp(gamma_ll) == 0:
-            print(np.exp(gamma_ll), tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+            print(np.exp(gamma_ll),',',tuple_of_obs[1],',',self.gamma_a,',',self.gamma_scale)
         
         return np.exp(gamma_ll)
 
@@ -143,8 +143,8 @@ def gamma_estimator(gamma_obs):
 #         a_hat = (N /(N - 1)) * a_hat
 #         b_hat = b_hat - (1/N) * (3*b_hat - (2/3) * (b_hat/(b_hat + 1)) - (4/5)* (b_hat)/((1 + b_hat)**2
 
-    if b_hat < 0.1:
-        return a_hat, b_hat+1
+    if b_hat < 1.0 or 50. < a_hat < 5.:
+        return 10, 1
 
     return a_hat, b_hat
 
