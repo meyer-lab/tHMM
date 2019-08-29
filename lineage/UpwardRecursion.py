@@ -150,7 +150,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                     fac3 = MSD_array[node_parent_m_idx, state_j]
                     numer_holder.append(fac1 * fac2 * fac3)
                 NF[num][node_parent_m_idx] = sum(numer_holder)
-                assert NF[num][node_parent_m_idx] > 0.0, "{} and {} and {} and {}".format(NF_array, NF_array[leaf_cell_idx], MSD_array[leaf_cell_idx, :], EL_array[leaf_cell_idx, :])
+                assert NF[num][node_parent_m_idx] > 0.0, "{} and {} and {} and {}".format(NF[num], NF[num][leaf_cell_idx], MSD_array[leaf_cell_idx, :], EL_array[leaf_cell_idx, :])
                 for state_j in range(numStates):
                     betas[num][node_parent_m_idx, state_j] = numer_holder[state_j] / NF[num][node_parent_m_idx]
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population

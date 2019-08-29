@@ -64,7 +64,7 @@ def get_all_zetas(parent_state_j, child_state_k, lineageObj, beta_array, MSD_arr
     return holder
 
 
-def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
+def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
     '''Runs the tHMM function through Baum Welch fitting'''
     numLineages = len(tHMMobj.X)
     numStates = tHMMobj.numStates
@@ -84,9 +84,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
         old_LL_list = new_LL_list
 
         # code for grouping all states in cell lineages
-        cell_groups = {}
-        for state in range(numStates):
-            cell_groups[str(state)] = []
+        cell_groups = [[] for state in range(numStates)]
 
         for num, lineageObj in enumerate(tHMMobj.X):
             lineage = lineageObj.output_lineage
@@ -111,16 +109,15 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
             max_state_holder = []  # a list the size of lineage, that contains max state for each cell
             for ii, cell in enumerate(lineage):
                 assert lineage[ii] is cell
-                max_state_holder.append(np.argmax(gammas[num][ii, :]))  # says which state is maximal
+                max_state_holder.append(np.argmax(gamma_array[ii, :]))  # says which state is maximal
 
             # this bins the cells by lineage to the population cell lists
             for ii, state in enumerate(max_state_holder):
-                cell_groups[str(state)].append(lineage[ii])
+                cell_groups[state].append(lineage[ii])
 
         # after iterating through each lineage, do the population wide E calculation
         for state_j in range(numStates):
-            cells = cell_groups[str(state_j)]  # this array has the correct cells classified per group
-            tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator([cell.obs for cell in cells])
+            tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator([cell.obs for cell in cell_groups[state_j]])
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
@@ -133,6 +130,7 @@ def fit(tHMMobj, tolerance=1e-10, max_iter=100, verbose=False):
 
         # tolerance checking
         new_LL_list = calculate_log_likelihood(tHMMobj, NF)
+        print(new_LL_list)
 
         logging.info("Average Log-Likelihood across all lineages: {}".format(np.mean(new_LL_list)))
 

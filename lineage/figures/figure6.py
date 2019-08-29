@@ -43,21 +43,21 @@ def accuracy_increased_cells():
     # State 0 parameters "Resistant"
     state0 = 0
     bern_p0 = 0.99
-    gamma_a0 = 5.0
-    gamma_scale0 = 1.0
+    gamma_a0 = 20
+    gamma_scale0 = 5
 
-    # State 1 parameters "Susciptible"
+    # State 1 parameters "Susceptible"
     state1 = 1
-    bern_p1 = 0.8
-    gamma_a1 = 40.0
-    gamma_scale1 = 8.0
+    bern_p1 = 0.88
+    gamma_a1 = 10
+    gamma_scale1 = 1
 
     state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
 
     E = [state_obj0, state_obj1]
     # the key part in this function
-    desired_num_cells = np.logspace(6, 10, num=50, base=2.0)
+    desired_num_cells = np.logspace(7, 10, num=50, base=2.0)
     desired_num_cells = [num_cell-1 for num_cell in desired_num_cells]
 
     accuracies_unpruned = []
