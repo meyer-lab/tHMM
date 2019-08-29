@@ -38,7 +38,7 @@ class StateDistribution:
         if bern_ll == 0 or np.exp(gamma_ll) == 0:
             print(tuple_of_obs[1],',',self.gamma_a,',',self.gamma_scale,',',np.exp(gamma_ll))
         
-        return bern_ll * np.exp(gamma_ll)
+        return np.exp(gamma_ll)
 
     def estimator(self, list_of_tuples_of_obs):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
