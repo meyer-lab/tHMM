@@ -9,25 +9,24 @@ from ..StateDistribution import StateDistribution
 import numpy as np
 import copy as cp
 from matplotlib import rc
-rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-## for Palatino and other serif fonts use:
-#rc('font',**{'family':'serif','serif':['Palatino']})
+rc('font', **{'family': 'sans-serif', 'sans-serif': ['Helvetica']})
+# for Palatino and other serif fonts use:
+# rc('font',**{'family':'serif','serif':['Palatino']})
 rc('text', usetex=True)
 
 
 def makeFigure():
     """ Main figure generating function for Fig. 6 """
     ax, f = getSetup((15, 5), (1, 3))
-    
+
     num_lineages, accuracies_unpruned, bern_unpruned, exp_unpruned = accuracy_increased_lineages()
-    figure_maker(ax[0:3],  num_lineages, accuracies_unpruned, bern_unpruned, exp_unpruned)
-    
-    
+    figure_maker(ax[0:3], num_lineages, accuracies_unpruned, bern_unpruned, exp_unpruned)
+
     f.tight_layout()
     return f
 
-    
-##-------------------- Figure 7   
+
+# -------------------- Figure 7
 def accuracy_increased_lineages():
     """ Calclates accuracy and parameter estimation by increasing the number of lineages. """
     # pi: the initial probability vector
@@ -60,17 +59,14 @@ def accuracy_increased_lineages():
     bern_unpruned = []
     exp_unpruned = []
 
-
     X_p = []
     for num in num_lineages:
         lineage_unpruned = LineageTree(pi, T, E, desired_num_cells, prune_boolean=False)
 
-
         X_p.append(lineage_unpruned)
-        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X_p, 2) 
+        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X_p, 2)
         acc1 = accuracy(X_p, all_states)
-        accuracies_unpruned.append(100*acc1)        
-
+        accuracies_unpruned.append(100 * acc1)
 
         bern_p_total = []
         exp_total = []
@@ -81,17 +77,16 @@ def accuracy_increased_lineages():
 
             bern_p_total.append(bern_p_estimate)
             exp_total.append(exp_estimate)
-            
+
         bern_unpruned.append(bern_p_total)
         exp_unpruned.append(exp_total)
 
-        
     return num_lineages, accuracies_unpruned, bern_unpruned, exp_unpruned
 
 
 def figure_maker(ax, num_lineages, accuracies_unpruned, bern_unpruned, exp_unpruned):
     x = num_lineages
-    font=11
+    font = 11
     font2 = 10
     ax[0].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[0].set_xlabel('Number of Lineages', fontsize=font2)
@@ -102,8 +97,8 @@ def figure_maker(ax, num_lineages, accuracies_unpruned, bern_unpruned, exp_unpru
     ax[0].get_yticks()
     ax[0].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[0].set_title('State Assignment Accuracy', fontsize=font)
-    
-    res = [[ i for i, j in bern_unpruned ], [ j for i, j in bern_unpruned ]] 
+
+    res = [[i for i, j in bern_unpruned], [j for i, j in bern_unpruned]]
     ax[1].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[1].set_xlabel('Number of Lineages', fontsize=font2)
     ax[1].scatter(x, res[0], c='b', marker="o", label='Susceptible Unpruned', alpha=0.5)
@@ -114,8 +109,8 @@ def figure_maker(ax, num_lineages, accuracies_unpruned, bern_unpruned, exp_unpru
     ax[1].set_title('Bernoulli', fontsize=font)
     ax[1].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[1].legend(loc='best', framealpha=0.3)
-    
-    res = [[ i for i, j in exp_unpruned ], [ j for i, j in exp_unpruned ]] 
+
+    res = [[i for i, j in exp_unpruned], [j for i, j in exp_unpruned]]
     ax[2].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[2].set_xlabel('Number of Lineages', fontsize=font2)
     ax[2].scatter(x, res[0], c='b', marker="o", label='Susceptible Unpruned', alpha=0.5)

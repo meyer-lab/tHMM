@@ -10,10 +10,10 @@ from ..tHMM import tHMM
 
 class TestBW(unittest.TestCase):
     """ Unit tests for Baum-Welch methods. """
-        
+
     def test_step(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
-        
+
         # pi: the initial probability vector
         pi = np.array([0.6, 0.4], dtype="float")
 
@@ -36,11 +36,11 @@ class TestBW(unittest.TestCase):
         state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
 
         E = [state_obj0, state_obj1]
-        num = 2**7-1
+        num = 2**7 - 1
         # Using an unpruned lineage to avoid unforseen issues
         X = LineageTree(pi, T, E, num, prune_boolean=False)
         tHMMobj = tHMM([X], numStates=2)  # build the tHMM class with X
-        
+
         # Test cases below
         # Get the likelihoods before fitting
         NF_before = get_leaf_Normalizing_Factors(tHMMobj)

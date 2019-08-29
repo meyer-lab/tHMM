@@ -93,7 +93,6 @@ class TestModel(unittest.TestCase):
             0.0 <= abs(
                 estimator_obj.gamma_scale -
                 self.stateDist0.gamma_scale) <= 3.0)
-        
 
     def test_prune_rule(self):
         """ A unittest for the prune_rule. """

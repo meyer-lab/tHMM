@@ -12,8 +12,8 @@ def Analyze(X, numStates):
     """Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
     Args:
     -----
-    X {list}: A list containing LineageTree objects as lineages. 
-    numStates {Int}: The number of states we want our model to estimate for the given population. 
+    X {list}: A list containing LineageTree objects as lineages.
+    numStates {Int}: The number of states we want our model to estimate for the given population.
 
     Returns:
     --------
@@ -38,16 +38,14 @@ def Analyze(X, numStates):
     return(deltas, state_ptrs, all_states, tHMMobj, NF, LL)
 
 #
+
+
 def accuracy(X, all_states):
     for num, lineageObj in enumerate(X):
         lin_estimated_states = all_states[num]
         lin_true_states = [cell.state for cell in lineageObj.output_lineage]
         total = len(lin_estimated_states)
         assert total == len(lin_true_states)
-        counter = [1. if a==b else 0. for (a,b) in zip(lin_estimated_states,lin_true_states)]
-        acc = sum(counter)/total
-    return max(acc, 1-acc)
-        
-    
-    
-    
+        counter = [1. if a == b else 0. for (a, b) in zip(lin_estimated_states, lin_true_states)]
+        acc = sum(counter) / total
+    return max(acc, 1 - acc)

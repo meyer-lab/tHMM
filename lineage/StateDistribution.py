@@ -33,11 +33,11 @@ class StateDistribution:
 
         bern_ll = sp.bernoulli.pmf(k=tuple_of_obs[0], p=self.bern_p)  # bernoulli likelihood
         gamma_ll = sp.gamma.logpdf(x=tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)  # gamma likelihood
-        
+
         assert not math.isnan(np.exp(gamma_ll)), "{} {} {} {}".format(gamma_ll, tuple_of_obs[1], self.gamma_a, self.gamma_scale)
         if bern_ll == 0 or np.exp(gamma_ll) == 0:
-            print(tuple_of_obs[1],',',self.gamma_a,',',self.gamma_scale,',',np.exp(gamma_ll))
-        
+            print(tuple_of_obs[1], ',', self.gamma_a, ',', self.gamma_scale, ',', np.exp(gamma_ll))
+
         return np.exp(gamma_ll)
 
     def estimator(self, list_of_tuples_of_obs):
@@ -135,9 +135,9 @@ def gamma_estimator(gamma_obs):
     x_lnx = [x * np.log(x) for x in gamma_obs]
     lnx = [np.log(x) for x in gamma_obs]
     # gamma_a
-    a_hat = (N * (sum(gamma_obs)) + 1e-10)/(N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
+    a_hat = (N * (sum(gamma_obs)) + 1e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
     # gamma_scale
-    b_hat = ((1+1e-10)/(N**2 + 1e-10)) * (N*(sum(x_lnx)) - (sum(lnx))*(sum(gamma_obs)))
+    b_hat = ((1 + 1e-10) / (N**2 + 1e-10)) * (N * (sum(x_lnx)) - (sum(lnx)) * (sum(gamma_obs)))
     # bias correction
 #     if N>1:
 #         a_hat = (N /(N - 1)) * a_hat

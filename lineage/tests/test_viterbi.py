@@ -8,11 +8,12 @@ from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, get_delta_parent_chil
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 
+
 class TestModel(unittest.TestCase):
 
     def setUp(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
-        
+
         # pi: the initial probability vector
         pi = np.array([0.6, 0.4], dtype="float")
 
@@ -30,11 +31,11 @@ class TestModel(unittest.TestCase):
         bern_p1 = 0.85
         gamma_a1 = 10
         gamma_scale1 = 1
-        
+
         state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
         state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
         self.E = [state_obj0, state_obj1]
-        num = 2**7-1
+        num = 2**7 - 1
         # Using an unpruned lineage to avoid unforseen issues
         self.X = [LineageTree(pi, T, self.E, num, prune_boolean=False)]
         tHMMobj = tHMM(self.X, numStates=2)  # build the tHMM class with X
@@ -168,5 +169,3 @@ class TestModel(unittest.TestCase):
                 num_of_ones += 1
         self.assertGreater(num_of_zeros, num_of_ones)
         # there should be a greater number of lineages with all zeros than all ones as hidden states
-
-            

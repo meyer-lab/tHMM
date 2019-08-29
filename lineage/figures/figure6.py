@@ -10,26 +10,24 @@ import numpy as np
 import copy as cp
 
 from matplotlib import rc
-rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-## for Palatino and other serif fonts use:
-#rc('font',**{'family':'serif','serif':['Palatino']})
+rc('font', **{'family': 'sans-serif', 'sans-serif': ['Helvetica']})
+# for Palatino and other serif fonts use:
+# rc('font',**{'family':'serif','serif':['Palatino']})
 rc('text', usetex=True)
+
 
 def makeFigure():
     """ Main figure generating function for Fig. 6 """
     ax, f = getSetup((15, 5), (1, 3))
-    
+
     desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1 = accuracy_increased_cells()
     figure_maker(ax[0:3], desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1)
-    
-    
+
     f.tight_layout()
     return f
 
 
-
-
-#-------------------- Figure 6 
+# -------------------- Figure 6
 def accuracy_increased_cells():
     """ Calclates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
 
@@ -58,7 +56,7 @@ def accuracy_increased_cells():
     E = [state_obj0, state_obj1]
     # the key part in this function
     desired_num_cells = np.logspace(7, 10, num=50, base=2.0)
-    desired_num_cells = [num_cell-1 for num_cell in desired_num_cells]
+    desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
 
     accuracies_unpruned = []
     #accuracies_pruned = []
@@ -70,13 +68,11 @@ def accuracy_increased_cells():
         print(num)
         lineage_unpruned = LineageTree(pi, T, E, num, prune_boolean=False)
 
-
         X1 = [lineage_unpruned]
         print("unpruned")
-        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X1, 2) 
+        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X1, 2)
         acc1 = accuracy(X1, all_states)
-        accuracies_unpruned.append(100*acc1)        
-
+        accuracies_unpruned.append(100 * acc1)
 
         bern_p_total = ()
         gamma_a_total = ()
@@ -85,19 +81,17 @@ def accuracy_increased_cells():
             bern_p_total += (tHMMobj.estimate.E[state].bern_p,)
             gamma_a_total += (tHMMobj.estimate.E[state].gamma_a,)
             gamma_scale_total += (tHMMobj.estimate.E[state].gamma_scale,)
-            
 
         bern_unpruned.append(bern_p_total)
         gamma_a_unpruned.append(gamma_a_total)
         gamma_scale_unpruned.append(gamma_scale_total)
 
-        
     return desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1
 
 
 def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1):
     x = desired_num_cells
-    font=11
+    font = 11
     font2 = 10
     ax[0].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[0].set_xlabel('Number of Cells', fontsize=font2)
@@ -108,8 +102,8 @@ def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, bern
     ax[0].get_yticks()
     ax[0].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[0].set_title('State Assignment Accuracy', fontsize=font)
-    
-    res = [[ i for i, j in bern_unpruned ], [ j for i, j in bern_unpruned ]] 
+
+    res = [[i for i, j in bern_unpruned], [j for i, j in bern_unpruned]]
     ax[1].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[1].set_xlabel('Number of Cells', fontsize=font2)
     ax[1].scatter(x, res[0], c='b', marker="o", label='Susceptible Unpruned', alpha=0.5)
@@ -120,8 +114,8 @@ def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, bern
     ax[1].set_title('Bernoulli', fontsize=font)
     ax[1].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[1].legend(loc='best', framealpha=0.3)
-    
-    res = [[ i for i, j in gamma_a_unpruned ], [ j for i, j in gamma_a_unpruned ]] 
+
+    res = [[i for i, j in gamma_a_unpruned], [j for i, j in gamma_a_unpruned]]
     ax[2].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[2].set_xlabel('Number of Cells', fontsize=font2)
     ax[2].scatter(x, res[0], c='b', marker="o", label='Susceptible Unpruned', alpha=0.5)
@@ -132,9 +126,3 @@ def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, bern
     ax[2].set_title('Gamma', fontsize=font)
     ax[2].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[2].legend(loc='best', framealpha=0.3)
-        
-        
-        
-
-    
-    

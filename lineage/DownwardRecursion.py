@@ -40,7 +40,7 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                 for daughter_idx in cell._get_daughters():
                     child_idx = lineage.index(daughter_idx)
                     coeffs = beta_array[child_idx, :] / MSD_array[child_idx, :]
-                        
+
                     for child_state_k in range(tHMMobj.numStates):
                         sum_holder = 0.0
 

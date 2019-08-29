@@ -210,7 +210,7 @@ class TestModel(unittest.TestCase):
         bern_obs1 = list(unzipped_list_obs1[0])
         gamma_obs1 = list(unzipped_list_obs1[1])
         self.assertTrue(len(bern_obs1) == len(gamma_obs1))
-        
+
         for j, Cell in enumerate(cells_in_state1):
             self.assertTrue(Cell.obs == list_of_tuples_of_obs1[j])
 
