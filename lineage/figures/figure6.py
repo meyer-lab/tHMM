@@ -19,8 +19,8 @@ def makeFigure():
     """ Main figure generating function for Fig. 6 """
     ax, f = getSetup((15, 5), (1, 3))
     
-    desired_num_cells, accuracies_unpruned, bern_unpruned, gamma_a_unpruned, gamma_scale_unpruned = accuracy_increased_cells()
-    figure_maker(ax[0:3], desired_num_cells, accuracies_unpruned, bern_unpruned, gamma_a_unpruned, gamma_scale_unpruned)
+    desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1 = accuracy_increased_cells()
+    figure_maker(ax[0:3], desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1)
     
     
     f.tight_layout()
@@ -92,10 +92,10 @@ def accuracy_increased_cells():
         gamma_scale_unpruned.append(gamma_scale_total)
 
         
-    return desired_num_cells, accuracies_unpruned, bern_unpruned, gamma_a_unpruned, gamma_scale_unpruned
+    return desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1
 
 
-def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, gamma_a_unpruned, gamma_scale_unpruned):
+def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1):
     x = desired_num_cells
     font=11
     font2 = 10
@@ -115,8 +115,8 @@ def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, gamm
     ax[1].scatter(x, res[0], c='b', marker="o", label='Susceptible Unpruned', alpha=0.5)
     ax[1].scatter(x, res[1], c='r', marker="o", label='Resistant Unpruned', alpha=0.5)
     ax[1].set_ylabel('Bern $p$', rotation=90, fontsize=font2)
-    ax[1].axhline(y=0.95, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
-    ax[1].axhline(y=0.85, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
+    ax[1].axhline(y=bern_p0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
+    ax[1].axhline(y=bern_p1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
     ax[1].set_title('Bernoulli', fontsize=font)
     ax[1].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[1].legend(loc='best', framealpha=0.3)
@@ -127,8 +127,8 @@ def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, gamm
     ax[2].scatter(x, res[0], c='b', marker="o", label='Susceptible Unpruned', alpha=0.5)
     ax[2].scatter(x, res[1], c='r', marker="o", label='Resistant Unpruned', alpha=0.5)
     ax[2].set_ylabel(r'Gamma a $\beta$', rotation=90, fontsize=font2)
-    ax[2].axhline(y=5, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
-    ax[2].axhline(y=40, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
+    ax[2].axhline(y=gamma_a0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
+    ax[2].axhline(y=gamma_a1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
     ax[2].set_title('Gamma', fontsize=font)
     ax[2].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[2].legend(loc='best', framealpha=0.3)

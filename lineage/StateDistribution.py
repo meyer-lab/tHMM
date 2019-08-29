@@ -36,9 +36,9 @@ class StateDistribution:
         
         assert not math.isnan(np.exp(gamma_ll)), "{} {} {} {}".format(gamma_ll, tuple_of_obs[1], self.gamma_a, self.gamma_scale)
         if bern_ll == 0 or np.exp(gamma_ll) == 0:
-            print(np.exp(gamma_ll),',',tuple_of_obs[1],',',self.gamma_a,',',self.gamma_scale)
+            print(tuple_of_obs[1],',',self.gamma_a,',',self.gamma_scale,',',np.exp(gamma_ll))
         
-        return np.exp(gamma_ll)
+        return bern_ll * np.exp(gamma_ll)
 
     def estimator(self, list_of_tuples_of_obs):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
@@ -81,9 +81,9 @@ def prune_rule(cell):
 
 def tHMM_E_init(state):
     return StateDistribution(state,
-                             0.9 * (np.random.uniform()),
+                             0.9,
                              10 * (np.random.uniform()),
-                             1 * (np.random.uniform()))
+                             1)
 
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
