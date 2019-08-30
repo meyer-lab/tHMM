@@ -40,7 +40,7 @@ def Analyze(X, numStates):
 
 
 def accuracy(tHMMobj, all_states):
-    acuracy = []
+    acuracy_holder = []
     for num, lineageObj in enumerate(tHMMobj.X):
         lin_true_states = [cell.state for cell in lineageObj.output_lineage]
 
@@ -68,13 +68,12 @@ def accuracy(tHMMobj, all_states):
 
         counter = [1 if a == b else 0 for (a, b) in zip(new_all_states, lin_true_states)]
         acc = sum(counter) / len(lin_true_states)
-        acuracy.append(acc)
+        acuracy_holder.append(acc)
 
-    return acuracy
-
+    return acuracy_holder
 
 def accuracy_for_lineages(tHMMobj, all_states):
-    accuracy = []
+    acuracy_holder = []
     for num, lineageObj in enumerate(tHMMobj.X):
         lin_true_states = [cell.state for cell in lineageObj.output_lineage]
 
@@ -104,4 +103,4 @@ def accuracy_for_lineages(tHMMobj, all_states):
         acc = sum(counter) / len(lin_true_states)
         accuracy.append(acc)
 
-    return accuracy
+    return acuracy_holder
