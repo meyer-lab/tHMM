@@ -66,7 +66,6 @@ def accuracy_increased_cells():
     gamma_a_pruned = []
     gamma_scale_pruned = []
 
-
     for num in desired_num_cells:
         lineage_unpruned = LineageTree(pi, T, E, num, prune_boolean=False)
         lineage_pruned = cp.deepcopy(lineage_unpruned)
@@ -107,7 +106,8 @@ def accuracy_increased_cells():
     return desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned
 
 
-def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned):
+def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1,
+                 gamma_scale_unpruned, gamma_scale0, gamma_scale1, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned):
     x = desired_num_cells
     font = 11
     font2 = 10
@@ -156,7 +156,7 @@ def figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, bern
     ax[3].set_title('Gamma', fontsize=font)
     ax[3].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[3].legend(loc='best', framealpha=0.3)
-    
+
     ax[4].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[4].set_xlabel('Number of Cells', fontsize=font2)
     ax[4].set_ylim(0, 110)

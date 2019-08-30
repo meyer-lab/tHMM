@@ -61,13 +61,13 @@ def accuracy(tHMMobj, all_states):
             new_all_states = all_states[num]
         else:
             print('SWITCHING!')
-            new_all_states = [not(x) for x in all_states[num]] 
+            new_all_states = [not(x) for x in all_states[num]]
             tmp = cp.deepcopy(tHMMobj.estimate.E[1])
             tHMMobj.estimate.E[1] = tHMMobj.estimate.E[0]
             tHMMobj.estimate.E[0] = tmp
 
-        counter = [1 if a==b else 0 for (a,b) in zip(new_all_states,lin_true_states)]
-        acc = sum(counter)/len(lin_true_states)
+        counter = [1 if a == b else 0 for (a, b) in zip(new_all_states, lin_true_states)]
+        acc = sum(counter) / len(lin_true_states)
         acuracy.append(acc)
 
     return acuracy
@@ -95,13 +95,13 @@ def accuracy_for_lineages(tHMMobj, all_states):
             new_all_states = all_states[num]
         else:
             print('SWITCHING!')
-            new_all_states = [not(x) for x in all_states[num]] 
+            new_all_states = [not(x) for x in all_states[num]]
             tmp = cp.deepcopy(tHMMobj.estimate.E[1])
             tHMMobj.estimate.E[1] = tHMMobj.estimate.E[0]
             tHMMobj.estimate.E[0] = tmp
 
-        counter = [1 if a==b else 0 for (a,b) in zip(new_all_states,lin_true_states)]
-        acc = sum(counter)/len(lin_true_states)
+        counter = [1 if a == b else 0 for (a, b) in zip(new_all_states, lin_true_states)]
+        acc = sum(counter) / len(lin_true_states)
         accuracy.append(acc)
 
     return accuracy

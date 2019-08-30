@@ -109,13 +109,14 @@ def accuracy_increased_lineages():
         gamma_scale_pruned.append(gamma_scale_total2)
 
     for i in range(len(accuracies_unpruned)):
-        unprunedNewAcc.append(sum(accuracies_unpruned[i])/(i+1))
-        prunedNewAcc.append(sum(accuracies_pruned[i])/(i+1))
-        
+        unprunedNewAcc.append(sum(accuracies_unpruned[i]) / (i + 1))
+        prunedNewAcc.append(sum(accuracies_pruned[i]) / (i + 1))
+
     return num_lineages, unprunedNewAcc, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, prunedNewAcc, bern_pruned, gamma_a_pruned, gamma_scale_pruned
 
 
-def figure_maker(ax, num_lineages, unprunedNewAcc, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, prunedNewAcc, bern_pruned, gamma_a_pruned, gamma_scale_pruned):
+def figure_maker(ax, num_lineages, unprunedNewAcc, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1,
+                 gamma_scale_unpruned, gamma_scale0, gamma_scale1, prunedNewAcc, bern_pruned, gamma_a_pruned, gamma_scale_pruned):
     x = num_lineages
     font = 11
     font2 = 10
