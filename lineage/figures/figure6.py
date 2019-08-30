@@ -19,8 +19,8 @@ def makeFigure():
     """ Main figure generating function for Fig. 6 """
     ax, f = getSetup((20, 10), (2, 4))
 
-    desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned = accuracy_increased_cells()
-    figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned)
+    #desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned = accuracy_increased_cells()
+    #figure_maker(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned)
 
     f.tight_layout()
     return f
