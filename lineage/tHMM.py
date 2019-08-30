@@ -1,7 +1,7 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
 import numpy as np
-from .StateDistribution import StateDistribution, tHMM_E_init
+from .StateDistribution import tHMM_E_init
 
 
 class estimate:
@@ -118,5 +118,4 @@ class tHMM:
                     EL_array[current_cell_idx, state_k] = self.estimate.E[state_k].pdf(cell.obs)
 
             EL.append(EL_array)  # append the EL_array for each lineage
-#             print(EL_array)
         return EL
