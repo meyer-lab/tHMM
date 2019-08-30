@@ -6,6 +6,7 @@ from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
 from .tHMM import tHMM
 
+
 def Analyze(X, numStates):
     """Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
     Args:
@@ -68,6 +69,7 @@ def accuracy(tHMMobj, all_states):
         acuracy_holder.append(acc)
 
     return acuracy_holder
+
 
 def accuracy_for_lineages(tHMMobj, all_states):
     acuracy_holder = []

@@ -54,7 +54,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(np.isfinite(new_LL_list_after[0]))
 
         self.assertGreater(LL_after[0], LL_before[0])
-        
+
         del _
 
     def test_init_paramlist(self):
