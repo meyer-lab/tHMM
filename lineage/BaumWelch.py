@@ -66,7 +66,6 @@ def get_all_zetas(parent_state_j, child_state_k, lineageObj, beta_array, MSD_arr
 
 def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
     '''Runs the tHMM function through Baum Welch fitting'''
-    numLineages = len(tHMMobj.X)
     numStates = tHMMobj.numStates
 
     # first E step
@@ -130,12 +129,8 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
 
         # tolerance checking
         new_LL_list = calculate_log_likelihood(tHMMobj, NF)
-        print(new_LL_list)
-
-        logging.info("Average Log-Likelihood across all lineages: {}".format(np.mean(new_LL_list)))
 
         if np.allclose(np.array(old_LL_list), np.array(new_LL_list), atol=tolerance):
             return(tHMMobj, NF, betas, gammas, new_LL_list)
 
-    logging.info("Max iteration of {} steps achieved. Exiting Baum-Welch EM while loop.".format(max_iter))
     return(tHMMobj, NF, betas, gammas, new_LL_list)
