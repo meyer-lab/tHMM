@@ -2,7 +2,7 @@
 This creates Figure 7. AIC Figure.
 """
 from .figureCommon import getSetup
-from ..Analyze import accuracy, Analyze
+from ..Analyze import accuracy, Analyze, accuracy_for_lineages
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
@@ -67,20 +67,23 @@ def accuracy_increased_lineages():
     gamma_a_pruned = []
     gamma_scale_pruned = []
 
+    prunedNewAcc = []
+    unprunedNewAcc = []
     X_p = []
     X_unp = []
     for num in num_lineages:
         lineage_unpruned = LineageTree(pi, T, E, desired_num_cells, prune_boolean=False)
         lineage_pruned = cp.deepcopy(lineage_unpruned)
         lineage_pruned.prune_boolean = True
+
         X_unp.append(lineage_unpruned)
         X_p.append(lineage_pruned)
         deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X_unp, 2)
         deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X_p, 2)
-        acc1 = accuracy(tHMMobj, all_states)
-        acc2 = accuracy(tHMMobj2, all_states2)
-        accuracies_unpruned.append(100 * acc1)
-        accuracies_pruned.append(100 * acc2)
+        acc1 = accuracy_for_lineages(tHMMobj, all_states)
+        acc2 = accuracy_for_lineages(tHMMobj2, all_states2)
+        accuracies_unpruned.append(acc1)
+        accuracies_pruned.append(acc2)
 
         bern_p_total = ()
         gamma_a_total = ()
@@ -104,8 +107,12 @@ def accuracy_increased_lineages():
         bern_pruned.append(bern_p_total2)
         gamma_a_pruned.append(gamma_a_total2)
         gamma_scale_pruned.append(gamma_scale_total2)
-        print("unpruned accuracy", accuracies_unpruned)
-    return num_lineages, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned
+
+    for i in range(len(accuracies_unpruned)):
+        unprunedNewAcc.append(sum(accuracies_unpruned[i])/(i+1))
+        prunedNewAcc.append(sum(accuracies_pruned[i])/(i+1))
+        
+    return num_lineages, unprunedNewAcc, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, prunedNewAcc, bern_pruned, gamma_a_pruned, gamma_scale_pruned
 
 
 def figure_maker(ax, num_lineages, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned):

@@ -79,8 +79,8 @@ def accuracy_increased_cells():
         deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2)
         acc1 = accuracy(tHMMobj, all_states)[0]
         acc2 = accuracy(tHMMobj2, all_states2)[0]
-        accuracies_unpruned.append(100 * acc1)
-        accuracies_pruned.append(100 * acc2)
+        accuracies_unpruned.append(acc1)
+        accuracies_pruned.append(acc2)
 
         bern_p_total = ()
         gamma_a_total = ()
@@ -103,7 +103,7 @@ def accuracy_increased_cells():
         bern_pruned.append(bern_p_total2)
         gamma_a_pruned.append(gamma_a_total2)
         gamma_scale_pruned.append(gamma_scale_total2)
-
+    print("accuracy", accuracies_unpruned)
     return desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned
 
 
