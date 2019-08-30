@@ -87,6 +87,8 @@ class TestModel(unittest.TestCase):
         self.assertFalse(cell._isParent())
         left_cell, right_cell = cell._divide(T)
         self.assertTrue(cell._isParent())
+        self.assertTrue(left_cell._get_sister() is right_cell)
+        self.assertTrue(right_cell._get_sister() is left_cell)
 
     def test_isChild(self):
         """ Tests the daughter relationships of cells. """

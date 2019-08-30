@@ -66,7 +66,7 @@ class TestModel(unittest.TestCase):
         list_of_tuple_of_obs = self.stateDist0.rvs(size=1)
         tuple_of_obs = list_of_tuple_of_obs[0]
         likelihood = self.stateDist0.pdf(tuple_of_obs)
-        self.assertTrue(0.0 <= likelihood <= 1.0),
+        self.assertTrue(0.0 <= likelihood <= 1.0)
 
         # for stateDist1
         list_of_tuple_of_obs1 = self.stateDist1.rvs(size=1)
