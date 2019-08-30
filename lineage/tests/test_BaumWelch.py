@@ -50,9 +50,10 @@ class TestBW(unittest.TestCase):
         self.assertTrue(np.isfinite(LL_before[0]))
 
         # Get the likelihoods after fitting
-        tHMMobj_after, NF_after, betas_after, gammas_after, new_LL_list_after = fit(tHMMobj, max_iter=4)
-        LL_after = calculate_log_likelihood(tHMMobj, NF_after)
+        tHMMobj_after, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
+        LL_after = calculate_log_likelihood(tHMMobj_after, NF_after)
         self.assertTrue(np.isfinite(LL_after[0]))
         self.assertTrue(np.isfinite(new_LL_list_after[0]))
 
         self.assertGreater(LL_after[0], LL_before[0])
+        del _

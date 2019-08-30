@@ -190,7 +190,7 @@ class TestModel(unittest.TestCase):
 
     def test_full_assign_obs(self):
         """ A unittest for checking the full_assign_obs function. """
-        num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state = self.lineage1._full_assign_obs(
+        _, cells_in_state, list_of_tuples_of_obs, _ = self.lineage1._full_assign_obs(
             self.state0)
 
         # unzipping the tuple of observations
@@ -204,7 +204,7 @@ class TestModel(unittest.TestCase):
             self.assertTrue(cell.obs == list_of_tuples_of_obs[i])
 
         # checking the above tests for a lineage with prune_boolean == True
-        num_cells_in_state1, cells_in_state1, list_of_tuples_of_obs1, indices_of_cells_in_state1 = self.lineage1._full_assign_obs(
+        _, cells_in_state1, list_of_tuples_of_obs1, _ = self.lineage1._full_assign_obs(
             self.state1)
         unzipped_list_obs1 = list(zip(*list_of_tuples_of_obs1))
         bern_obs1 = list(unzipped_list_obs1[0])
@@ -213,6 +213,8 @@ class TestModel(unittest.TestCase):
 
         for j, Cell in enumerate(cells_in_state1):
             self.assertTrue(Cell.obs == list_of_tuples_of_obs1[j])
+            
+        del _
 
     def test_max_gen(self):
         """ A unittest for testing max_gen function by creating the lineage manually for 3 generations ==> total of 7 cells in the setup  function. """
