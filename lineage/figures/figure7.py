@@ -19,8 +19,8 @@ def makeFigure():
     """ Main figure generating function for Fig. 6 """
     ax, f = getSetup((20, 10), (2, 4))
 
-    num_lineages, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned = accuracy_increased_lineages()
-    figure_maker(ax, num_lineages, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned)
+    num_lineages, unprunedNewAcc, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, prunedNewAcc, bern_pruned, gamma_a_pruned, gamma_scale_pruned = accuracy_increased_lineages()
+    figure_maker(ax, num_lineages, unprunedNewAcc, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, prunedNewAcc, bern_pruned, gamma_a_pruned, gamma_scale_pruned)
 
     f.tight_layout()
     return f
@@ -54,7 +54,7 @@ def accuracy_increased_lineages():
 
     E = [state_obj0, state_obj1]
 
-    desired_num_cells = 2**4 - 1
+    desired_num_cells = 2**6 - 1
     # increasing number of lineages from 1 to 10 and calculating accuracy and estimate parameters for both pruned and unpruned lineages.
     num_lineages = list(range(1, 5))
 
@@ -115,14 +115,14 @@ def accuracy_increased_lineages():
     return num_lineages, unprunedNewAcc, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, prunedNewAcc, bern_pruned, gamma_a_pruned, gamma_scale_pruned
 
 
-def figure_maker(ax, num_lineages, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned):
+def figure_maker(ax, num_lineages, unprunedNewAcc, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, prunedNewAcc, bern_pruned, gamma_a_pruned, gamma_scale_pruned):
     x = num_lineages
     font = 11
     font2 = 10
     ax[0].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[0].set_xlabel('Number of Lineages', fontsize=font2)
     ax[0].set_ylim(0, 110)
-    ax[0].scatter(x, accuracies_unpruned, c='k', marker="o", label='Accuracy', alpha=0.3)
+    ax[0].scatter(x, unprunedNewAcc, c='k', marker="o", label='Accuracy', alpha=0.3)
     ax[0].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)  # linestyle is dashdotdotted
     ax[0].set_ylabel(r'Accuracy (\%)', rotation=90, fontsize=font2)
     ax[0].get_yticks()
@@ -168,7 +168,7 @@ def figure_maker(ax, num_lineages, accuracies_unpruned, bern_unpruned, bern_p0, 
     ax[4].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[4].set_xlabel('Number of Lineages', fontsize=font2)
     ax[4].set_ylim(0, 110)
-    ax[4].scatter(x, accuracies_unpruned, c='k', marker="o", label='Accuracy', alpha=0.3)
+    ax[4].scatter(x, prunedNewAcc, c='k', marker="o", label='Accuracy', alpha=0.3)
     ax[4].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)  # linestyle is dashdotdotted
     ax[4].set_ylabel(r'Accuracy (\%)', rotation=90, fontsize=font2)
     ax[4].get_yticks()
