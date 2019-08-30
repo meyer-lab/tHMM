@@ -4,7 +4,6 @@ import numpy as np
 from ..StateDistribution import StateDistribution
 from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
 from ..BaumWelch import fit
-from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, get_delta_parent_child_prod, delta_parent_child_func, Viterbi
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 

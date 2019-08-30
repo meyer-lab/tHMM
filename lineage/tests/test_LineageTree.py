@@ -258,15 +258,16 @@ class TestModel(unittest.TestCase):
 
     def test_get_subtrees(self):
         """ A unittest to get the subtrees and the remaining lineage except for that subtree. Here we use the manually-built-7-cell lineage in the setup function. """
-        subtree1, not_subtree1 = get_subtrees(
+        subtree1, _ = get_subtrees(
             self.cell_2, self.test_lineage)
         self.assertTrue(
             subtree1 == self.subtree1)
 
-        subtree2, not_subtree2 = get_subtrees(
+        subtree2, _ = get_subtrees(
             self.cell_3, self.test_lineage)
         self.assertTrue(
             subtree2 == self.subtree2)
+        del _
 
     def test_find_two_subtrees(self):
         """ A unittest for find_two_subtrees, using the built-in-7-cell lineage in the setup function.  """
