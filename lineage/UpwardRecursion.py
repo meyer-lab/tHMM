@@ -139,8 +139,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
             for node_parent_m_idx in parent_holder:
                 numer_holder = []
                 for state_j in range(numStates):
-                    fac1 = get_beta_parent_child_prod(numStates=numStates,
-                                                      lineage=lineage,
+                    fac1 = get_beta_parent_child_prod(lineage=lineage,
                                                       MSD_array=MSD_array,
                                                       T=T,
                                                       beta_array=betas[num],
@@ -158,7 +157,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
         assert np.allclose(betas_row_sum, 1.)
 
 
-def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
+def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
     '''
     Calculates the product of beta-links for every parent-child
     relationship of a given parent cell in a given state.
@@ -201,7 +200,7 @@ def calculate_log_likelihood(tHMMobj, NF):
     '''
     LL = []
 
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
+    for num, _ in enumerate(tHMMobj.X):  # for each lineage in our Population
         ll_per_num = sum(np.log(NF[num]))
         LL.append(ll_per_num)
 
