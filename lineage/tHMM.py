@@ -1,14 +1,14 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
 import numpy as np
-from .StateDistribution import StateDistribution, tHMM_E_init
+from .StateDistribution import tHMM_E_init
 
 
 class estimate:
     def __init__(self, numStates):
         self.numStates = numStates
-        self.pi = np.ones((numStates)) / numStates
-        self.T = np.ones((numStates, numStates)) / numStates
+        self.pi = np.squeeze(np.random.dirichlet(np.random.rand(numStates), 1).T)
+        self.T = np.random.dirichlet(np.random.rand(numStates), numStates)
         self.E = []
         for state in range(self.numStates):
             self.E.append(tHMM_E_init(state))
@@ -39,6 +39,7 @@ class tHMM:
 
 
 ##---------------------------- Marginal State Distribution ------------------------------##
+
 
     def get_Marginal_State_Distributions(self):
         '''
@@ -92,7 +93,6 @@ class tHMM:
 
 
 ##--------------------------- Emission Likelihood --------------------------------##
-
 
     def get_Emission_Likelihoods(self):
         '''

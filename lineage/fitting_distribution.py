@@ -33,8 +33,8 @@ def check_dist(data, verbose=False):
     for i, val in enumerate(dist):
         parameters = eval('sp.' + val + '.fit(data, fscale =1)')
 
-        D, p = sp.kstest(data, val, args=parameters)
-
+        _, p = sp.kstest(data, val, args=parameters)
+        del _
         if verbose:
             if p >= 0.01:
                 print(dist[i], ':   ', 'p-value = ', p)

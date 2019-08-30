@@ -28,8 +28,6 @@ def get_leaf_Normalizing_Factors(tHMMobj):
 
     sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
     '''
-    numStates = tHMMobj.numStates
-
     MSD = tHMMobj.MSD
     EL = tHMMobj.EL
 
@@ -44,17 +42,13 @@ def get_leaf_Normalizing_Factors(tHMMobj):
         for ii, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
             assert cell._isLeaf()
             leaf_cell_idx = lineageObj.output_leaves_idx[ii]
-            temp_sum_holder = []  # create a temporary list
-            for state_k in range(numStates):  # for each state
-                joint_prob = MSD_array[leaf_cell_idx, state_k] * EL_array[leaf_cell_idx, state_k]  # def of conditional prob
-                # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
-                # this product is the joint probability
-                temp_sum_holder.append(joint_prob)  # append the joint probability to be summed
 
-            marg_prob = sum(temp_sum_holder)  # law of total probability
+            # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
+            # this product is the joint probability
             # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
             # the sum of the joint probabilities is the marginal probability
-            NF_array[leaf_cell_idx] = marg_prob  # each leaf is now intialized
+            NF_array[leaf_cell_idx] = np.sum(MSD_array[leaf_cell_idx, :] * EL_array[leaf_cell_idx, :])  # def of conditional prob
+            assert NF_array[leaf_cell_idx] > 0.0, "{} and {} and {} and {}".format(NF_array, NF_array[leaf_cell_idx], MSD_array[leaf_cell_idx, :], EL_array[leaf_cell_idx, :])
         NF.append(NF_array)
     return NF
 
@@ -145,8 +139,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
             for node_parent_m_idx in parent_holder:
                 numer_holder = []
                 for state_j in range(numStates):
-                    fac1 = get_beta_parent_child_prod(numStates=numStates,
-                                                      lineage=lineage,
+                    fac1 = get_beta_parent_child_prod(lineage=lineage,
                                                       MSD_array=MSD_array,
                                                       T=T,
                                                       beta_array=betas[num],
@@ -156,6 +149,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                     fac3 = MSD_array[node_parent_m_idx, state_j]
                     numer_holder.append(fac1 * fac2 * fac3)
                 NF[num][node_parent_m_idx] = sum(numer_holder)
+                assert NF[num][node_parent_m_idx] > 0.0, "{} and {} and {} and {}".format(NF[num], NF[num][node_parent_m_idx], MSD_array[node_parent_m_idx, :], EL_array[node_parent_m_idx, :])
                 for state_j in range(numStates):
                     betas[num][node_parent_m_idx, state_j] = numer_holder[state_j] / NF[num][node_parent_m_idx]
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
@@ -163,7 +157,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
         assert np.allclose(betas_row_sum, 1.)
 
 
-def get_beta_parent_child_prod(numStates, lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
+def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
     '''
     Calculates the product of beta-links for every parent-child
     relationship of a given parent cell in a given state.
@@ -206,11 +200,8 @@ def calculate_log_likelihood(tHMMobj, NF):
     '''
     LL = []
 
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-
-        NF_array = NF[num]  # getting the NF of the respective lineage
-        log_NF_array = np.log(NF_array)
-        ll_per_num = sum(log_NF_array)
+    for num, _ in enumerate(tHMMobj.X):  # for each lineage in our Population
+        ll_per_num = sum(np.log(NF[num]))
         LL.append(ll_per_num)
 
     return LL
