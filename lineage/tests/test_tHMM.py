@@ -62,6 +62,7 @@ class TestModel(unittest.TestCase):
         labels and sizes.
         '''
         t = tHMM(self.X, numStates=2)  # build the tHMM class with X
+        print(t.estimate.pi.shape)
         self.assertEqual(t.estimate.pi.shape[0], 2)  # make sure shape is numStates
         self.assertEqual(t.estimate.T.shape[0], 2)  # make sure shape is numStates
         self.assertEqual(t.estimate.T.shape[1], 2)  # make sure shape is numStates
@@ -80,7 +81,7 @@ class TestModel(unittest.TestCase):
             self.assertGreaterEqual(MSDlin.shape[0], 0)  # at least zero cells in each lineage
             self.assertEqual(MSDlin.shape[1], 2)  # there are 2 states for each cell
             for node_n in range(MSDlin.shape[0]):
-                self.assertEqual(sum(MSDlin[node_n, :]), 1)  # the rows should sum to 1
+                self.assertTrue(np.isclose(sum(MSDlin[node_n, :]), 1))  # the rows should sum to 1
 
     def test_get_EL(self):
         '''
