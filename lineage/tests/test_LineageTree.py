@@ -214,8 +214,6 @@ class TestModel(unittest.TestCase):
         for j, Cell in enumerate(cells_in_state1):
             self.assertTrue(Cell.obs == list_of_tuples_of_obs1[j])
 
-        del _
-
     def test_max_gen(self):
         """ A unittest for testing max_gen function by creating the lineage manually for 3 generations ==> total of 7 cells in the setup  function. """
 
