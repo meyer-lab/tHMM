@@ -265,7 +265,6 @@ class TestModel(unittest.TestCase):
             self.cell_3, self.test_lineage)
         self.assertTrue(
             subtree2 == self.subtree2)
-        del _
 
     def test_find_two_subtrees(self):
         """ A unittest for find_two_subtrees, using the built-in-7-cell lineage in the setup function.  """
