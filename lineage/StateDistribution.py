@@ -126,7 +126,7 @@ def exponential_estimator(exp_obs):
 
 
 def gamma_estimator(gamma_obs):
-    """ This is a cloesd-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
+    """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
     N = len(gamma_obs)
     if N == 0:
         return 10, 1
@@ -147,59 +147,3 @@ def gamma_estimator(gamma_obs):
         return 10, 1
 
     return a_hat, b_hat
-
-
-# def gamma_estimator(gamma_obs):
-#     """
-#     An analytical estimator for two parameters of the Gamma distribution. Based on Thomas P. Minka, 2002 "Estimating a Gamma distribution".
-#     The likelihood function for Gamma distribution is:
-#     p(x | a, b) = Gamma(x; a, b) = x^(a-1)/(Gamma(a) * b^a) * exp(-x/b)
-#     Here we intend to find "a" and "b" given x as a sequence of gamma distributed data.
-#     To find the best estimate, we find the value that maximizes the likelihood of observing that data.
-#     We fix b_hat as:
-#     b_hat = x_bar / a
-#     We then use Newton's method to find the second parameter:
-#     a_hat ~= 0.5 / (log(x_bar) - (log(x))_bar)
-#     Here x_bar means the average of x.
-#     Args:
-#     -----
-#     gamma_obs {list}: A list of gamma-distributed observations.
-#     Returns:
-#     --------
-#     a_hat {float}: The estimated value for shape parameter of the Gamma distribution
-#     b_hat {float}: The estimated value for scale parameter of the Gamma distribution
-#     """
-#     tau1 = gamma_obs
-#     tau_mean = np.mean(tau1)
-#     tau_logmean = np.log(tau_mean)
-#     tau_meanlog = np.mean(np.log(tau1))
-
-#     # initialization step
-#     a_hat0 = 0.5 / (tau_logmean - tau_meanlog)  # shape
-#     # psi is the derivative of log of gamma function, which has been
-#     # approximated as this term
-#     psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)
-#     # this is the derivative of psi
-#     psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
-#     assert a_hat0 != 0, "the first parameter has been set to zero!"
-
-#     # updating the parameters
-#     for i in range(100):
-#         a_hat_new = (a_hat0 * (1 - a_hat0 * psi_prime0)) / (1 - a_hat0 *
-#                                                             psi_prime0 + tau_meanlog - tau_logmean + np.log(a_hat0) - psi_0)
-#         b_hat_new = tau_mean / a_hat_new
-
-#         a_hat0 = a_hat_new
-#         psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
-#         psi_0 = np.log(a_hat0) - 1 / (2 * a_hat0)
-#         psi_prime0 = 1 / a_hat0 + 1 / (a_hat0 ** 2)
-
-#         #assert not math.isnan(a_hat_new), "it is breakin in the {}". format(i)
-#         if np.abs(a_hat_new - a_hat0) <= 0.01:
-#             return a_hat_new, b_hat_new
-#         else:
-#             pass
-#     assert np.abs(
-#         a_hat_new - a_hat0) <= 0.01, "a_hat has not converged properly, a_hat_new {} - a_hat0 {} = {}".format(a_hat_new, a_hat0, np.abs(a_hat_new - a_hat0))
-
-#     return a_hat_new, b_hat_new
