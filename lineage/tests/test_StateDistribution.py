@@ -10,38 +10,26 @@ class TestModel(unittest.TestCase):
     """Here are the unit tests."""
 
     def setUp(self):
-        # observation parameters for state0
-        self.state0 = 0
-        self.bern0 = 1.0
-        self.expon0 = 40.0
-        self.gamma_a0 = 10.0
-        self.gamma_b0 = 2.0
-        self.stateDist0 = StateDistribution(
-            self.state0,
-            self.bern0,
-            self.expon0,
-            self.gamma_a0,
-            self.gamma_b0)
-
         # ingredients for LineageTree!
         self.pi = np.array([0.75, 0.25])
         self.T = np.array([[0.85, 0.15],
                            [0.20, 0.80]])
 
-        # observation parameters for state1
-        self.state1 = 1
-        self.bern1 = 0.8
-        self.expon1 = 20
-        self.gamma_a1 = 2.0
-        self.gamma_b1 = 10.0
-        self.stateDist1 = StateDistribution(
-            self.state1,
-            self.bern1,
-            self.expon1,
-            self.gamma_a1,
-            self.gamma_b1)
+        # State 0 parameters "Resistant"
+        self.state0 = 0
+        bern_p0 = 0.99
+        gamma_a0 = 20
+        gamma_scale0 = 5
 
-        # observations object
+        # State 1 parameters "Susceptible"
+        self.state1 = 1
+        bern_p1 = 0.8
+        gamma_a1 = 10
+        gamma_scale1 = 1
+
+        self.stateDist0 = StateDistribution(self.state0, bern_p0, gamma_a0, gamma_scale0)
+        self.stateDist1 = StateDistribution(self.state1, bern_p1, gamma_a1, gamma_scale1)
+
         self.E = [self.stateDist0, self.stateDist1]
 
         # creating two lineages, one with False for pruning, one with True.
@@ -61,32 +49,30 @@ class TestModel(unittest.TestCase):
     def test_rvs(self):
         """ A unittest for random generator function, given the number of random variables we want from each distribution, that each corresponds to one of the observation types. """
         tuple_of_obs = self.stateDist0.rvs(size=30)
-        bern_obs, exp_obs, gamma_obs = list(zip(*tuple_of_obs))
-        self.assertTrue(len(bern_obs) == len(
-            exp_obs) == len(gamma_obs) == 30)
+        bern_obs, gamma_obs = list(zip(*tuple_of_obs))
+        self.assertTrue(len(bern_obs) == len(gamma_obs) == 30)
 
         tuple_of_obs1 = self.stateDist1.rvs(size=40)
-        bern_obs1, exp_obs1, gamma_obs1 = list(zip(*tuple_of_obs1))
-        self.assertTrue(len(bern_obs1) == len(
-            exp_obs1) == len(gamma_obs1) == 40)
+        bern_obs1, gamma_obs1 = list(zip(*tuple_of_obs1))
+        self.assertTrue(len(bern_obs1) == len(gamma_obs1) == 40)
 
     def test_pdf(self):
         """
         A unittest for the likelihood function.
         Here we generate one set of observation
-        (the size == 1 which mean we just have one bernoulli, one exponential, and one gamma)
-        although we don't need gamma AND exponential together, for now we will leave it this way. """
+        (the size == 1 which mean we just have one bernoulli, and one gamma).
+        """
         # for stateDist0
-        tuple_of_obs = self.stateDist0.rvs(size=1)
+        list_of_tuple_of_obs = self.stateDist0.rvs(size=1)
+        tuple_of_obs = list_of_tuple_of_obs[0]
         likelihood = self.stateDist0.pdf(tuple_of_obs)
-        self.assertTrue(
-            0.0 <= likelihood <= 1.0),
+        self.assertTrue(0.0 <= likelihood <= 1.0)
 
         # for stateDist1
-        tuple_of_obs1 = self.stateDist1.rvs(size=1)
+        list_of_tuple_of_obs1 = self.stateDist1.rvs(size=1)
+        tuple_of_obs1 = list_of_tuple_of_obs1[0]
         likelihood1 = self.stateDist1.pdf(tuple_of_obs1)
-        self.assertTrue(
-            0.0 <= likelihood1 <= 1.0)
+        self.assertTrue(0.0 <= likelihood1 <= 1.0)
 
     def test_estimator(self):
         """ A unittest for the estimator function, by generating 150 observatopns for each of the distribution functions, we use the estimator and compare. """
@@ -99,10 +85,6 @@ class TestModel(unittest.TestCase):
             0.0 <= abs(
                 estimator_obj.bern_p -
                 self.stateDist0.bern_p) <= 0.1)
-        self.assertTrue(
-            0.0 <= abs(
-                estimator_obj.expon_scale_beta -
-                self.stateDist0.expon_scale_beta) <= 5.0)
         self.assertTrue(
             0.0 <= abs(
                 estimator_obj.gamma_a -
@@ -131,12 +113,10 @@ class TestModel(unittest.TestCase):
         """
         full_lin_cells_holder = []
         for state in range(2):
-            full_lin_cells_holder.append(
-                self.lineage.lineage_stats[state].full_lin_cells)
+            full_lin_cells_holder.append(self.lineage.lineage_stats[state].full_lin_cells)
 
         # bringing all the cells after assigning observations to them
-        all_cells = [
-            cell for sublist in full_lin_cells_holder for cell in sublist]
+        all_cells = [cell for sub_statelist in full_lin_cells_holder for cell in sub_statelist]
 
         # here we check this for the root parent, since the time has taken
         # so far, equals to the lifetime of the cell
@@ -163,8 +143,7 @@ class TestModel(unittest.TestCase):
                 self.lineage2.lineage_stats[state].full_lin_cells)
 
         # bringing all the cells after assigning observations to them
-        all_cells = [
-            cell for sublist in full_lin_cells_holder for cell in sublist]
+        all_cells = [cell for sublist in full_lin_cells_holder for cell in sublist]
 
         # here we check this for the root parent, since the time has taken
         # so far, equals to the lifetime of the cell

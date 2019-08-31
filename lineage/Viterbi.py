@@ -3,7 +3,7 @@ import numpy as np
 
 
 def get_leaf_deltas(tHMMobj):
-    '''delta matrix and base case at the leaves. Each element in this N by K matrix is the probability for the leaves P(x_n = x | z_n = k).'''
+    """delta matrix and base case at the leaves. Each element in this N by K matrix is the probability for the leaves P(x_n = x | z_n = k)."""
     numStates = tHMMobj.numStates
 
     EL = tHMMobj.EL

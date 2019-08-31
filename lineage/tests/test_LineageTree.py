@@ -14,38 +14,23 @@ class TestModel(unittest.TestCase):
 
         # T: transition probability matrix
         self.T = np.array([[0.85, 0.15],
-                           [0.2, 0.8]])
+                           [0.20, 0.80]])
 
-        # E: states are defined as StateDistribution objects
         # State 0 parameters "Resistant"
         self.state0 = 0
-        self.bern_p0 = 0.99
-        self.expon_scale_beta0 = 20
-        self.gamma_a0 = 5.0
-        self.gamma_scale0 = 1.0
+        bern_p0 = 0.99
+        gamma_a0 = 20
+        gamma_scale0 = 5
 
-        # State 1 parameters "Susciptible"
+        # State 1 parameters "Susceptible"
         self.state1 = 1
-        self.bern_p1 = 0.8
-        self.expon_scale_beta1 = 80
-        self.gamma_a1 = 10.0
-        self.gamma_scale1 = 2.0
+        bern_p1 = 0.8
+        gamma_a1 = 10
+        gamma_scale1 = 1
 
-        # creating the state object
-        state_obj0 = StateDistribution(
-            self.state0,
-            self.bern_p0,
-            self.expon_scale_beta0,
-            self.gamma_a0,
-            self.gamma_scale0)
-        state_obj1 = StateDistribution(
-            self.state1,
-            self.bern_p1,
-            self.expon_scale_beta1,
-            self.gamma_a1,
-            self.gamma_scale1)
+        state_obj0 = StateDistribution(self.state0, bern_p0, gamma_a0, gamma_scale0)
+        state_obj1 = StateDistribution(self.state1, bern_p1, gamma_a1, gamma_scale1)
 
-        # observations object
         self.E = [state_obj0, state_obj1]
 
         # creating two lineages, one with False for pruning, one with True.
@@ -205,29 +190,26 @@ class TestModel(unittest.TestCase):
 
     def test_full_assign_obs(self):
         """ A unittest for checking the full_assign_obs function. """
-        num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state = self.lineage1._full_assign_obs(
+        _, cells_in_state, list_of_tuples_of_obs, _ = self.lineage1._full_assign_obs(
             self.state0)
 
         # unzipping the tuple of observations
         unzipped_list_obs = list(zip(*list_of_tuples_of_obs))
         bern_obs = list(unzipped_list_obs[0])
-        exp_obs = list(unzipped_list_obs[1])
-        gamma_obs = list(unzipped_list_obs[2])
-        self.assertTrue(len(bern_obs) == len(exp_obs) == len(
-            gamma_obs))
+        gamma_obs = list(unzipped_list_obs[1])
+        self.assertTrue(len(bern_obs) == len(gamma_obs))
 
         # making sure observations have been assigned properly
         for i, cell in enumerate(cells_in_state):
             self.assertTrue(cell.obs == list_of_tuples_of_obs[i])
 
         # checking the above tests for a lineage with prune_boolean == True
-        num_cells_in_state1, cells_in_state1, list_of_tuples_of_obs1, indices_of_cells_in_state1 = self.lineage1._full_assign_obs(
+        _, cells_in_state1, list_of_tuples_of_obs1, _ = self.lineage1._full_assign_obs(
             self.state1)
         unzipped_list_obs1 = list(zip(*list_of_tuples_of_obs1))
         bern_obs1 = list(unzipped_list_obs1[0])
-        exp_obs1 = list(unzipped_list_obs1[1])
-        gamma_obs1 = list(unzipped_list_obs1[2])
-        self.assertTrue(len(bern_obs1) == len(exp_obs1) == len(gamma_obs1))
+        gamma_obs1 = list(unzipped_list_obs1[1])
+        self.assertTrue(len(bern_obs1) == len(gamma_obs1))
 
         for j, Cell in enumerate(cells_in_state1):
             self.assertTrue(Cell.obs == list_of_tuples_of_obs1[j])
@@ -274,12 +256,12 @@ class TestModel(unittest.TestCase):
 
     def test_get_subtrees(self):
         """ A unittest to get the subtrees and the remaining lineage except for that subtree. Here we use the manually-built-7-cell lineage in the setup function. """
-        subtree1, not_subtree1 = get_subtrees(
+        subtree1, _ = get_subtrees(
             self.cell_2, self.test_lineage)
         self.assertTrue(
             subtree1 == self.subtree1)
 
-        subtree2, not_subtree2 = get_subtrees(
+        subtree2, _ = get_subtrees(
             self.cell_3, self.test_lineage)
         self.assertTrue(
             subtree2 == self.subtree2)
