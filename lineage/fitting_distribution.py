@@ -34,7 +34,7 @@ def check_dist(data, verbose=False):
         parameters = eval('sp.' + val + '.fit(data, fscale =1)')
 
         _, p = sp.kstest(data, val, args=parameters)
-        del _
+
         if verbose:
             if p >= 0.01:
                 print(dist[i], ':   ', 'p-value = ', p)
