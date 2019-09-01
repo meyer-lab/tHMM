@@ -53,7 +53,7 @@ def accuracy_increased_cells():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
     E = [state_obj0, state_obj1]
     
-    desired_num_cells = np.logspace(5, 10, num=10, base=2.0)
+    desired_num_cells = np.logspace(5, 10, num=100, base=2.0)
     desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
     
     x_unpruned = []
@@ -70,6 +70,10 @@ def accuracy_increased_cells():
     for num in desired_num_cells:
         # Creating an unpruned and pruned lineage
         lineage_unpruned = LineageTree(pi, T, E, num, prune_boolean=False)
+        # if the length of the pruned lineage tree is less than 5 cells, don't analyze either the pruned
+        # or the unpruned lineage and skip
+        if lineage_unpruned.__len__(True) <= 5:
+            continue
         lineage_pruned = cp.deepcopy(lineage_unpruned)
         lineage_pruned.prune_boolean = True
         
