@@ -28,7 +28,7 @@ def makeFigure():
 
 # -------------------- Figure 6
 def accuracy_increased_cells():
-    """ Calclates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
+    """ Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
 
     # pi: the initial probability vector
     pi = np.array([0.6, 0.4], dtype="float")
