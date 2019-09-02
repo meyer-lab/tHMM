@@ -19,8 +19,8 @@ def makeFigure():
     """ Main figure generating function for Fig. 6 """
     ax, f = getSetup((20, 10), (2, 4))
 
-    num_lineages, unprunedNewAcc, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, prunedNewAcc, bern_pruned, gamma_a_pruned, gamma_scale_pruned = accuracy_increased_lineages()
-    figure_maker(ax, num_lineages, unprunedNewAcc, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, prunedNewAcc, bern_pruned, gamma_a_pruned, gamma_scale_pruned)
+    x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned = accuracy_increased_lineages()
+    figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned)
 
     f.tight_layout()
     return f
@@ -44,7 +44,7 @@ def accuracy_increased_lineages():
 
     # State 1 parameters "Susceptible"
     state1 = 1
-    bern_p1 = 0.88
+    bern_p1 = 0.91
     gamma_a1 = 10
     gamma_scale1 = 1
 
@@ -52,8 +52,8 @@ def accuracy_increased_lineages():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
     E = [state_obj0, state_obj1]
     
-    desired_num_cells = 2**6 - 1
-    num_lineages = list(range(1,51))
+    desired_num_cells = 2**4 - 1
+    num_lineages = list(range(1,21))
     
     list_of_lineages_unpruned = []
     list_of_lineages_pruned = []
@@ -63,11 +63,9 @@ def accuracy_increased_lineages():
         X2 = []
         for lineages in range(num):
             # Creating an unpruned and pruned lineage
-            lineage_unpruned = LineageTree(pi, T, E, num, prune_boolean=False)
-            # if the length of the pruned lineage tree is less than 5 cells, don't analyze either the pruned
-            # or the unpruned lineage and skip
-            if lineage_unpruned.__len__(True) <= 20:
-                continue
+            lineage_unpruned = LineageTree(pi, T, E, desired_num_cells, prune_boolean=False)
+            while lineage_unpruned.__len__(True) <= 5:
+                lineage_unpruned = LineageTree(pi, T, E, desired_num_cells, prune_boolean=False)
             lineage_pruned = cp.deepcopy(lineage_unpruned)
             lineage_pruned.prune_boolean = True
             
@@ -95,6 +93,7 @@ def accuracy_increased_lineages():
         deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2)
         
         # Collecting how many lineages are in each analysis
+        print(x_unpruned)
         x_unpruned.append(len(X1))
         x_pruned.append(len(X2))
         
