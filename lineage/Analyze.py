@@ -100,6 +100,47 @@ def accuracy_for_lineages(tHMMobj, all_states):
 
         counter = [1 if a == b else 0 for (a, b) in zip(new_all_states, lin_true_states)]
         acc = sum(counter) / len(lin_true_states)
-        accuracy.append(acc)
+        accuracy.append(100*acc)
+
+    return acuracy_holder
+
+
+##-------------------- when we have G1 and G2
+def accuracyG(tHMMobj, all_states):
+    acuracy_holder = []
+    for num, lineageObj in enumerate(tHMMobj.X):
+        lin_true_states = [cell.state for cell in lineageObj.output_lineage]
+
+        bern_diff = np.zeros((lineageObj.num_states))
+        gamma_aG1_diff = np.zeros((lineageObj.num_states))
+        gamma_scaleG1_diff = np.zeros((lineageObj.num_states))
+        gamma_aG2_diff = np.zeros((lineageObj.num_states))
+        gamma_scaleG2_diff = np.zeros((lineageObj.num_states))
+        for state in range(lineageObj.num_states):
+            bern_diff[state] = abs(tHMMobj.estimate.E[state].bern_p - lineageObj.E[0].bern_p)
+            gamma_aG1_diff[state] = abs(tHMMobj.estimate.E[state].gamma_aG1 - lineageObj.E[0].gamma_aG1)
+            gamma_scaleG1_diff[state] = abs(tHMMobj.estimate.E[state].gamma_scaleG1 - lineageObj.E[0].gamma_scaleG1)
+            gamma_aG2_diff[state] = abs(tHMMobj.estimate.E[state].gamma_aG2 - lineageObj.E[0].gamma_aG2)
+            gamma_scaleG2_diff[state] = abs(tHMMobj.estimate.E[state].gamma_scaleG2 - lineageObj.E[0].gamma_scaleG2)
+
+        bern_diff = bern_diff / sum(bern_diff)
+        gamma_aG1_diff = gamma_aG1_diff / sum(gamma_aG1_diff)
+        gamma_scaleG1_diff = gamma_scaleG1_diff / sum(gamma_scaleG1_diff)
+        gamma_aG2_diff = gamma_aG2_diff / sum(gamma_aG2_diff)
+        gamma_scaleG2_diff = gamma_scaleG2_diff / sum(gamma_scaleG2_diff)
+
+        total_errs = bern_diff + gamma_aG1_diff + gamma_scaleG1_diff + gamma_aG2_diff + gamma_scaleG2_diff
+        if total_errs[0] <= total_errs[1]:
+            new_all_states = all_states[num]
+        else:
+            print('SWITCHING!')
+            new_all_states = [not(x) for x in all_states[num]]
+            tmp = cp.deepcopy(tHMMobj.estimate.E[1])
+            tHMMobj.estimate.E[1] = tHMMobj.estimate.E[0]
+            tHMMobj.estimate.E[0] = tmp
+
+        counter = [1 if a == b else 0 for (a, b) in zip(new_all_states, lin_true_states)]
+        acc = sum(counter) / len(lin_true_states)
+        acuracy_holder.append(100*acc)
 
     return acuracy_holder
