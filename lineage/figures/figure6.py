@@ -138,17 +138,17 @@ def accuracy_increased_cellsG():
     # State 0 parameters "Resistant"
     state0 = 0
     bern_p0 = 0.99
-    gamma_aG11 = 5
-    gamma_scaleG11 = 1.8
-    gamma_aG21 = 10
-    gamma_scaleG21 = 1.8
+    gamma_aG11 = 10
+    gamma_scaleG11 = 2.0
+    gamma_aG21 = 15
+    gamma_scaleG21 = 2.0
 
     # State 1 parameters "Susceptible"
     state1 = 1
     bern_p1 = 0.88
-    gamma_aG12 = 8
+    gamma_aG12 = 7
     gamma_scaleG12 = 1.0
-    gamma_aG22 = 16
+    gamma_aG22 = 18
     gamma_scaleG22 = 1.0
 
     state_obj0 = StateDistribution(state0, bern_p0, gamma_aG11, gamma_scaleG11, gamma_aG21, gamma_scaleG21)
@@ -388,8 +388,6 @@ def figure_makerG(ax, x_unpruned, x_pruned, accuracies_unpruned, bern_unpruned, 
     ax[3].set_ylabel(r'Gamma scale $\alpha$', rotation=90, fontsize=font2)
     ax[3].axhline(y=gamma_scaleG11, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
     ax[3].axhline(y=gamma_scaleG12, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
-    ax[3].axhline(y=gamma_scaleG21, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='g', alpha=0.6)
-    ax[3].axhline(y=gamma_scaleG22, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='m', alpha=0.6)
     ax[3].set_title('Gamma', fontsize=font)
     ax[3].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[3].legend(loc='best', framealpha=0.3)
@@ -442,8 +440,6 @@ def figure_makerG(ax, x_unpruned, x_pruned, accuracies_unpruned, bern_unpruned, 
     ax[7].set_ylabel(r'Gamma scale $\alpha$', rotation=90, fontsize=font2)
     ax[7].axhline(y=gamma_scaleG11, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
     ax[7].axhline(y=gamma_scaleG12, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
-    ax[7].axhline(y=gamma_scaleG21, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='g', alpha=0.6)
-    ax[7].axhline(y=gamma_scaleG22, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='m', alpha=0.6)
     ax[7].set_title('Gamma', fontsize=font)
     ax[7].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[7].legend(loc='best', framealpha=0.3)
