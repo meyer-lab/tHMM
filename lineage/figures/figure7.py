@@ -17,10 +17,10 @@ rc('text', usetex=True)
 
 def makeFigure():
     """ Main figure generating function for Fig. 6 """
-    ax, f = getSetup((20, 10), (2, 4))
+    ax, f = getSetup((30, 10), (2, 6))
 
-    x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned = accuracy_increased_lineages()
-    figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned)
+    x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm = accuracy_increased_lineages()
+    figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm)
 
     f.tight_layout()
     return f
@@ -52,8 +52,8 @@ def accuracy_increased_lineages():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
     E = [state_obj0, state_obj1]
     
-    desired_num_cells = 2**4 - 1
-    num_lineages = list(range(1,21))
+    desired_num_cells = 2**7 - 1
+    num_lineages = list(range(1,10))
     
     list_of_lineages_unpruned = []
     list_of_lineages_pruned = []
@@ -64,7 +64,7 @@ def accuracy_increased_lineages():
         for lineages in range(num):
             # Creating an unpruned and pruned lineage
             lineage_unpruned = LineageTree(pi, T, E, desired_num_cells, prune_boolean=False)
-            while lineage_unpruned.__len__(True) <= 5:
+            while lineage_unpruned.__len__(True) <= 15:
                 lineage_unpruned = LineageTree(pi, T, E, desired_num_cells, prune_boolean=False)
             lineage_pruned = cp.deepcopy(lineage_unpruned)
             lineage_pruned.prune_boolean = True
@@ -86,6 +86,10 @@ def accuracy_increased_lineages():
     bern_pruned = []
     gamma_a_pruned = []
     gamma_scale_pruned = []
+    tr_unprunedNorm = []
+    tr_prunedNorm = []
+    pi_unprunedNorm = []
+    pi_prunedNorm = []
 
     for X1, X2 in zip(list_of_lineages_unpruned, list_of_lineages_pruned):
         # Analyzing the lineages
@@ -93,7 +97,6 @@ def accuracy_increased_lineages():
         deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2)
         
         # Collecting how many lineages are in each analysis
-        print(x_unpruned)
         x_unpruned.append(len(X1))
         x_pruned.append(len(X2))
         
@@ -112,7 +115,6 @@ def accuracy_increased_lineages():
         # Weighting and summing the accuracies
         X1_acc = sum([acc*weight_cell_count for (acc,weight_cell_count) in zip(acc1,weight_cell_count_unpruned)])
         X2_acc = sum([acc*weight_cell_count for (acc,weight_cell_count) in zip(acc2,weight_cell_count_pruned)])
-        
         # Collecting the weighted accuracies
         accuracies_unpruned.append(X1_acc)
         accuracies_pruned.append(X2_acc)
@@ -140,101 +142,164 @@ def accuracy_increased_lineages():
         gamma_a_pruned.append(gamma_a_total2)
         gamma_scale_pruned.append(gamma_scale_total2)
 
-    return x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned
+    # Transition and Pi estimates
+        transition_mat_unpruned = tHMMobj.estimate.T # unpruned
+        transition_mat_pruned = tHMMobj2.estimate.T # pruned
+        
+        temp1 = T - transition_mat_unpruned
+        temp2 = T - transition_mat_pruned
+        tr_unprunedNorm.append(np.linalg.norm(temp1))
+        tr_prunedNorm.append(np.linalg.norm(temp2))
+
+        pi_mat_unpruned = tHMMobj.estimate.pi
+        pi_mat_pruned = tHMMobj2.estimate.pi
+        t1 = pi - pi_mat_unpruned
+        t2 = pi - pi_mat_pruned
+        pi_unprunedNorm.append(np.linalg.norm(t1))
+        pi_prunedNorm.append(np.linalg.norm(t2))
+    return x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm
 
 
-def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned):
+def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm):
 
     font = 11
     font2 = 10
-    ax[0].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
-    ax[0].set_xlabel('Number of Lineages', fontsize=font2)
-    ax[0].set_ylim(0, 110)
-    ax[0].scatter(x_unpruned, accuracies_unpruned, c='k', marker="o", label='Accuracy', alpha=0.3)
-    ax[0].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)  # linestyle is dashdotdotted
-    ax[0].set_ylabel(r'Accuracy (\%)', rotation=90, fontsize=font2)
-    ax[0].get_yticks()
-    ax[0].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
-    ax[0].set_title('State Assignment Accuracy', fontsize=font)
+    i=0
+    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
+    ax[i].set_xlabel('Number of Lineages', fontsize=font2)
+    ax[i].set_ylim(0, 110)
+    ax[i].scatter(x_unpruned, accuracies_unpruned, c='k', marker="o", label='Accuracy', alpha=0.3)
+    ax[i].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)  # linestyle is dashdotdotted
+    ax[i].set_ylabel(r'Accuracy (\%)', rotation=90, fontsize=font2)
+    ax[i].get_yticks()
+    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].set_title('State Assignment Accuracy', fontsize=font)
 
+    i+=1
     res = [[i for i, j in bern_unpruned], [j for i, j in bern_unpruned]]
-    ax[1].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
-    ax[1].set_xlabel('Number of Lineages', fontsize=font2)
-    ax[1].scatter(x_unpruned, res[0], c='b', marker="o", label='Susceptible Unpruned', alpha=0.5)
-    ax[1].scatter(x_unpruned, res[1], c='r', marker="o", label='Resistant Unpruned', alpha=0.5)
-    ax[1].set_ylabel('Bern $p$', rotation=90, fontsize=font2)
-    ax[1].axhline(y=bern_p0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
-    ax[1].axhline(y=bern_p1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
-    ax[1].set_title('Bernoulli', fontsize=font)
-    ax[1].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
-    ax[1].legend(loc='best', framealpha=0.3)
+    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
+    ax[i].set_xlabel('Number of Lineages', fontsize=font2)
+    ax[i].scatter(x_unpruned, res[0], c='b', marker="o", label='Susceptible Unpruned', alpha=0.5)
+    ax[i].scatter(x_unpruned, res[1], c='r', marker="o", label='Resistant Unpruned', alpha=0.5)
+    ax[i].set_ylabel('Bern $p$', rotation=90, fontsize=font2)
+    ax[i].axhline(y=bern_p0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
+    ax[i].axhline(y=bern_p1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
+    ax[i].set_title('Bernoulli', fontsize=font)
+    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].legend(loc='best', framealpha=0.3)
 
+    i+=1
     res = [[i for i, j in gamma_a_unpruned], [j for i, j in gamma_a_unpruned]]
-    ax[2].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
-    ax[2].set_xlabel('Number of Lineages', fontsize=font2)
-    ax[2].scatter(x_unpruned, res[0], c='b', marker="o", label='Susceptible Unpruned', alpha=0.5)
-    ax[2].scatter(x_unpruned, res[1], c='r', marker="o", label='Resistant Unpruned', alpha=0.5)
-    ax[2].set_ylabel(r'Gamma a $\beta$', rotation=90, fontsize=font2)
-    ax[2].axhline(y=gamma_a0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
-    ax[2].axhline(y=gamma_a1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
-    ax[2].set_title('Gamma', fontsize=font)
-    ax[2].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
-    ax[2].legend(loc='best', framealpha=0.3)
+    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
+    ax[i].set_xlabel('Number of Lineages', fontsize=font2)
+    ax[i].scatter(x_unpruned, res[0], c='b', marker="o", label='Susceptible Unpruned', alpha=0.5)
+    ax[i].scatter(x_unpruned, res[1], c='r', marker="o", label='Resistant Unpruned', alpha=0.5)
+    ax[i].set_ylabel(r'Gamma a $\beta$', rotation=90, fontsize=font2)
+    ax[i].axhline(y=gamma_a0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
+    ax[i].axhline(y=gamma_a1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
+    ax[i].set_title('Gamma', fontsize=font)
+    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].legend(loc='best', framealpha=0.3)
 
+    i+=1
     res = [[i for i, j in gamma_scale_unpruned], [j for i, j in gamma_scale_unpruned]]
-    ax[3].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
-    ax[3].set_xlabel('Number of Lineages', fontsize=font2)
-    ax[3].scatter(x_unpruned, res[0], c='b', marker="o", label='Susceptible Unpruned', alpha=0.5)
-    ax[3].scatter(x_unpruned, res[1], c='r', marker="o", label='Resistant Unpruned', alpha=0.5)
-    ax[3].set_ylabel(r'Gamma scale $\alpha$', rotation=90, fontsize=font2)
-    ax[3].axhline(y=gamma_scale0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
-    ax[3].axhline(y=gamma_scale1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
-    ax[3].set_title('Gamma', fontsize=font)
-    ax[3].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
-    ax[3].legend(loc='best', framealpha=0.3)
+    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
+    ax[i].set_xlabel('Number of Lineages', fontsize=font2)
+    ax[i].scatter(x_unpruned, res[0], c='b', marker="o", label='Susceptible Unpruned', alpha=0.5)
+    ax[i].scatter(x_unpruned, res[1], c='r', marker="o", label='Resistant Unpruned', alpha=0.5)
+    ax[i].set_ylabel(r'Gamma scale $\alpha$', rotation=90, fontsize=font2)
+    ax[i].axhline(y=gamma_scale0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
+    ax[i].axhline(y=gamma_scale1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
+    ax[i].set_title('Gamma', fontsize=font)
+    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].legend(loc='best', framealpha=0.3)
 
-    ax[4].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
-    ax[4].set_xlabel('Number of Lineages', fontsize=font2)
-    ax[4].set_ylim(0, 110)
-    ax[4].scatter(x_pruned, accuracies_pruned, c='k', marker="o", label='Accuracy', alpha=0.3)
-    ax[4].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)  # linestyle is dashdotdotted
-    ax[4].set_ylabel(r'Accuracy (\%)', rotation=90, fontsize=font2)
-    ax[4].get_yticks()
-    ax[4].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
-    ax[4].set_title('State Assignment Accuracy', fontsize=font)
+    i+=1
+    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
+    ax[i].set_xlabel('Number of Cells', fontsize=font2)
+    ax[i].scatter(x_unpruned, tr_unprunedNorm, c='k', marker="o", label=' Unpruned', alpha=0.5)
+    ax[i].set_ylabel(r'$||T-T_{est}||_{F}$', rotation=90, fontsize=font2)
+    ax[i].axhline(y=0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)
+    ax[i].set_title('Norm Transition', fontsize=font)
+    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].legend(loc='best', framealpha=0.3)
 
+    i+=1
+    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
+    ax[i].set_xlabel('Number of Cells', fontsize=font2)
+    ax[i].scatter(x_unpruned, pi_unprunedNorm, c='k', marker="o", label=' Unpruned', alpha=0.5)
+    ax[i].set_ylabel(r'$||\pi-\pi_{est}||_{2}$', rotation=90, fontsize=font2)
+    ax[i].axhline(y=0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)
+    ax[i].set_title('Norm Pi', fontsize=font)
+    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].legend(loc='best', framealpha=0.3)
+
+    i+=1
+    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_pruned)))))
+    ax[i].set_xlabel('Number of Lineages', fontsize=font2)
+    ax[i].set_ylim(0, 110)
+    ax[i].scatter(x_pruned, accuracies_pruned, c='k', marker="o", label='Accuracy', alpha=0.3)
+    ax[i].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)  # linestyle is dashdotdotted
+    ax[i].set_ylabel(r'Accuracy (\%)', rotation=90, fontsize=font2)
+    ax[i].get_yticks()
+    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].set_title('State Assignment Accuracy', fontsize=font)
+
+    i+=1
     res = [[i for i, j in bern_pruned], [j for i, j in bern_pruned]]
-    ax[5].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
-    ax[5].set_xlabel('Number of Lineages', fontsize=font2)
-    ax[5].scatter(x_pruned, res[0], c='b', marker="o", label='Susceptible Pruned', alpha=0.5)
-    ax[5].scatter(x_pruned, res[1], c='r', marker="o", label='Resistant Pruned', alpha=0.5)
-    ax[5].set_ylabel('Bern $p$', rotation=90, fontsize=font2)
-    ax[5].axhline(y=bern_p0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
-    ax[5].axhline(y=bern_p1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
-    ax[5].set_title('Bernoulli', fontsize=font)
-    ax[5].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
-    ax[5].legend(loc='best', framealpha=0.3)
+    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_pruned)))))
+    ax[i].set_xlabel('Number of Lineages', fontsize=font2)
+    ax[i].scatter(x_pruned, res[0], c='b', marker="o", label='Susceptible Pruned', alpha=0.5)
+    ax[i].scatter(x_pruned, res[1], c='r', marker="o", label='Resistant Pruned', alpha=0.5)
+    ax[i].set_ylabel('Bern $p$', rotation=90, fontsize=font2)
+    ax[i].axhline(y=bern_p0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
+    ax[i].axhline(y=bern_p1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
+    ax[i].set_title('Bernoulli', fontsize=font)
+    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].legend(loc='best', framealpha=0.3)
 
+    i+=1
     res = [[i for i, j in gamma_a_pruned], [j for i, j in gamma_a_pruned]]
-    ax[6].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
-    ax[6].set_xlabel('Number of Lineages', fontsize=font2)
-    ax[6].scatter(x_pruned, res[0], c='b', marker="o", label='Susceptible Pruned', alpha=0.5)
-    ax[6].scatter(x_pruned, res[1], c='r', marker="o", label='Resistant Pruned', alpha=0.5)
-    ax[6].set_ylabel(r'Gamma a $\beta$', rotation=90, fontsize=font2)
-    ax[6].axhline(y=gamma_a0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
-    ax[6].axhline(y=gamma_a1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
-    ax[6].set_title('Gamma', fontsize=font)
-    ax[6].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
-    ax[6].legend(loc='best', framealpha=0.3)
+    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_pruned)))))
+    ax[i].set_xlabel('Number of Lineages', fontsize=font2)
+    ax[i].scatter(x_pruned, res[0], c='b', marker="o", label='Susceptible Pruned', alpha=0.5)
+    ax[i].scatter(x_pruned, res[1], c='r', marker="o", label='Resistant Pruned', alpha=0.5)
+    ax[i].set_ylabel(r'Gamma a $\beta$', rotation=90, fontsize=font2)
+    ax[i].axhline(y=gamma_a0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
+    ax[i].axhline(y=gamma_a1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
+    ax[i].set_title('Gamma', fontsize=font)
+    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].legend(loc='best', framealpha=0.3)
 
+    i+=1
     res = [[i for i, j in gamma_scale_pruned], [j for i, j in gamma_scale_pruned]]
-    ax[7].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
-    ax[7].set_xlabel('Number of Lineages', fontsize=font2)
-    ax[7].scatter(x_pruned, res[0], c='b', marker="o", label='Susceptible Pruned', alpha=0.5)
-    ax[7].scatter(x_pruned, res[1], c='r', marker="o", label='Resistant Pruned', alpha=0.5)
-    ax[7].set_ylabel(r'Gamma scale $\alpha$', rotation=90, fontsize=font2)
-    ax[7].axhline(y=gamma_scale0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
-    ax[7].axhline(y=gamma_scale1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
-    ax[7].set_title('Gamma', fontsize=font)
-    ax[7].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
-    ax[7].legend(loc='best', framealpha=0.3)
+    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_pruned)))))
+    ax[i].set_xlabel('Number of Lineages', fontsize=font2)
+    ax[i].scatter(x_pruned, res[0], c='b', marker="o", label='Susceptible Pruned', alpha=0.5)
+    ax[i].scatter(x_pruned, res[1], c='r', marker="o", label='Resistant Pruned', alpha=0.5)
+    ax[i].set_ylabel(r'Gamma scale $\alpha$', rotation=90, fontsize=font2)
+    ax[i].axhline(y=gamma_scale0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
+    ax[i].axhline(y=gamma_scale1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
+    ax[i].set_title('Gamma', fontsize=font)
+    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].legend(loc='best', framealpha=0.3)
+
+    i+=1
+    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_pruned)))))
+    ax[i].set_xlabel('Number of Cells', fontsize=font2)
+    ax[i].scatter(x_pruned, tr_prunedNorm, c='k', marker="o", label=' Pruned', alpha=0.5)
+    ax[i].set_ylabel(r'$||T-T_{est}||_{F}$', rotation=90, fontsize=font2)
+    ax[i].axhline(y=0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)
+    ax[i].set_title('Norm Transition', fontsize=font)
+    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].legend(loc='best', framealpha=0.3)
+
+    i+=1
+    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_pruned)))))
+    ax[i].set_xlabel('Number of Cells', fontsize=font2)
+    ax[i].scatter(x_pruned, pi_prunedNorm, c='k', marker="o", label=' Pruned', alpha=0.5)
+    ax[i].set_ylabel(r'$||\pi-\pi_{est}||_{2}$', rotation=90, fontsize=font2)
+    ax[i].axhline(y=0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)
+    ax[i].set_title('Norm Pi', fontsize=font)
+    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].legend(loc='best', framealpha=0.3)
