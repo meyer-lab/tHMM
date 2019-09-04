@@ -126,6 +126,7 @@ def accuracy_increased_lineages():
         bern_p_total2 = ()
         gamma_a_total2 = ()
         gamma_scale_total2 = ()
+
         for state in range(tHMMobj.numStates):
             bern_p_total += (tHMMobj.estimate.E[state].bern_p,)
             gamma_a_total += (tHMMobj.estimate.E[state].gamma_a,)
@@ -142,7 +143,7 @@ def accuracy_increased_lineages():
         gamma_a_pruned.append(gamma_a_total2)
         gamma_scale_pruned.append(gamma_scale_total2)
 
-    # Transition and Pi estimates
+        # Transitionestimates
         transition_mat_unpruned = tHMMobj.estimate.T # unpruned
         transition_mat_pruned = tHMMobj2.estimate.T # pruned
         
@@ -151,12 +152,14 @@ def accuracy_increased_lineages():
         tr_unprunedNorm.append(np.linalg.norm(temp1))
         tr_prunedNorm.append(np.linalg.norm(temp2))
 
+        # Pi estimates
         pi_mat_unpruned = tHMMobj.estimate.pi
         pi_mat_pruned = tHMMobj2.estimate.pi
         t1 = pi - pi_mat_unpruned
         t2 = pi - pi_mat_pruned
         pi_unprunedNorm.append(np.linalg.norm(t1))
         pi_prunedNorm.append(np.linalg.norm(t2))
+
     return x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm
 
 
@@ -164,7 +167,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
 
     font = 11
     font2 = 10
-    i=0
+    i=0 # accuracy unpruned
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
     ax[i].set_xlabel('Number of Lineages', fontsize=font2)
     ax[i].set_ylim(0, 110)

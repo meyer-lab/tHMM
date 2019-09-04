@@ -17,20 +17,12 @@ rc('text', usetex=True)
 
 def makeFigure():
     """ Main figure generating function for Fig. 6 """
-<<<<<<< HEAD
+
     ax, f = getSetup((30, 10), (2, 6))
 
     x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm = accuracy_increased_cells()
     figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm)
-=======
-    ax, f = getSetup((20, 10), (2, 5))
 
-
-#     x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned = accuracy_increased_cells()
-#     figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned)
-    desired_num_cells, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned = accuracy_increased_cellsG()
-
->>>>>>> cbce299fd0200548e376af0e9b8cb07bde647b0b
 
     f.tight_layout()
     return f
@@ -149,10 +141,6 @@ def accuracy_increased_cells():
 
     return x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm
 
-<<<<<<< HEAD
-
-def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm):
-=======
 #----------- Figure 6 for G1G2
 
 def accuracy_increased_cellsG():
@@ -257,7 +245,6 @@ def accuracy_increased_cellsG():
 
 
 def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned):
->>>>>>> cbce299fd0200548e376af0e9b8cb07bde647b0b
 
     font = 11
     font2 = 10
@@ -370,7 +357,6 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
 
     i+=1
     res = [[i for i, j in gamma_scale_pruned], [j for i, j in gamma_scale_pruned]]
-<<<<<<< HEAD
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
     ax[i].scatter(x_pruned, res[0], c='b', marker="o", label='Susceptible Pruned', alpha=0.5)
@@ -401,17 +387,6 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].set_title('Norm Pi', fontsize=font)
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].legend(loc='best', framealpha=0.3)
-=======
-    ax[7].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
-    ax[7].set_xlabel('Number of Cells', fontsize=font2)
-    ax[7].scatter(x_pruned, res[0], c='b', marker="o", label='Susceptible Pruned', alpha=0.5)
-    ax[7].scatter(x_pruned, res[1], c='r', marker="o", label='Resistant Pruned', alpha=0.5)
-    ax[7].set_ylabel(r'Gamma scale $\alpha$', rotation=90, fontsize=font2)
-    ax[7].axhline(y=gamma_scale0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
-    ax[7].axhline(y=gamma_scale1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
-    ax[7].set_title('Gamma', fontsize=font)
-    ax[7].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
-    ax[7].legend(loc='best', framealpha=0.3)
 
 
 #------------- figure for G1G2
@@ -511,4 +486,4 @@ def figure_makerG(ax, desired_num_cells, accuracies_unpruned, bern_unpruned, ber
     ax[7].set_title('Gamma', fontsize=font)
     ax[7].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[7].legend(loc='best', framealpha=0.3)
->>>>>>> cbce299fd0200548e376af0e9b8cb07bde647b0b
+
