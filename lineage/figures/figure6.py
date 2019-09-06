@@ -20,11 +20,12 @@ def makeFigure():
     ax, f = getSetup((20, 10), (2, 4))
 
 
-#     x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned = accuracy_increased_cells()
-#     figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned)
-    x_unpruned, x_pruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned = accuracy_increased_cellsG()
+    x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned = accuracy_increased_cells()
+    figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned)
 
-    figure_makerG(ax, x_unpruned, x_pruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned)
+#     x_unpruned, x_pruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned = accuracy_increased_cellsG()
+
+#     figure_makerG(ax, x_unpruned, x_pruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned)
 
     f.tight_layout()
     return f
