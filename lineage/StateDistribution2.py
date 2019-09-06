@@ -40,7 +40,7 @@ class StateDistribution:
         bern_ll = sp.bernoulli.pmf(k=tuple_of_obs[0], p=self.bern_p)  # bernoulli likelihood
         gamma_llG1 = sp.gamma.logpdf(x=tuple_of_obs[1], a=self.gamma_aG1, scale=self.gamma_scaleG1)  # gamma likelihood
 
-        gamma_ll = sp.gamma.logpdf(x=tuple_of_obs[1], a=self.gamma_aG1, scale=self.gamma_scaleG1) + sp.gamma.logpdf(x=tuple_of_obs[2], a=self.gamma_aG2, scale=self.gamma_scaleG2) 
+        gamma_ll = sp.gamma.logpdf(x=tuple_of_obs[1], a=self.gamma_aG1, scale=self.gamma_scaleG1) + sp.gamma.logpdf(x=tuple_of_obs[2], a=self.gamma_aG2, scale=self.gamma_scaleG2)
         assert not math.isnan(np.exp(gamma_llG1)), "{} {} {} {}".format(gamma_llG1, tuple_of_obs[1], self.gamma_aG1, self.gamma_scaleG1)
         if bern_ll == 0 or np.exp(gamma_llG1) == 0:
             print(tuple_of_obs[1], ',', self.gamma_aG1, ',', self.gamma_scaleG1, ',', np.exp(gamma_llG1))
@@ -70,13 +70,12 @@ class StateDistribution:
         gamma_a_estimate1, gamma_scale_estimate1 = gamma_estimator(gamma_obsG1)
         gamma_a_estimate2, gamma_scale_estimate2 = gamma_estimator(gamma_obsG2)
 
-
         state_estimate_obj = StateDistribution(state=self.state,
                                                bern_p=bern_p_estimate,
-                                               gamma_aG1 = gamma_a_estimate1,
-                                               gamma_scaleG1 = gamma_scale_estimate1,
-                                               gamma_aG2 = gamma_a_estimate2,
-                                               gamma_scaleG2 = gamma_scale_estimate2)
+                                               gamma_aG1=gamma_a_estimate1,
+                                               gamma_scaleG1=gamma_scale_estimate1,
+                                               gamma_aG2=gamma_a_estimate2,
+                                               gamma_scaleG2=gamma_scale_estimate2)
 
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters

@@ -66,12 +66,12 @@ def accuracy(tHMMobj, all_states):
 
         counter = [1 if a == b else 0 for (a, b) in zip(new_all_states, lin_true_states)]
         acc = sum(counter) / len(lin_true_states)
-        acuracy_holder.append(100*acc)
+        acuracy_holder.append(100 * acc)
 
     return acuracy_holder
 
 
-##-------------------- when we have G1 and G2
+# -------------------- when we have G1 and G2
 def accuracyG(tHMMobj, all_states):
     acuracy_holder = []
     for num, lineageObj in enumerate(tHMMobj.X):
@@ -107,6 +107,6 @@ def accuracyG(tHMMobj, all_states):
 
         counter = [1 if a == b else 0 for (a, b) in zip(new_all_states, lin_true_states)]
         acc = sum(counter) / len(lin_true_states)
-        acuracy_holder.append(100*acc)
+        acuracy_holder.append(100 * acc)
 
     return acuracy_holder

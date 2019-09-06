@@ -58,18 +58,18 @@ class LineageTree:
         self.full_lin_list = self._generate_lineage_list()
         for state in range(self.num_states):
             self.lineage_stats[state].num_full_lin_cells, \
-            self.lineage_stats[state].full_lin_cells, \
-            self.lineage_stats[state].full_lin_cells_obs, \
-            self.lineage_stats[state].full_lin_cells_idx = self._full_assign_obs(state)
+                self.lineage_stats[state].full_lin_cells, \
+                self.lineage_stats[state].full_lin_cells_obs, \
+                self.lineage_stats[state].full_lin_cells_idx = self._full_assign_obs(state)
         self.full_max_gen, self.full_list_of_gens = max_gen(self.full_lin_list)
         self.full_leaves_idx, self.full_leaves = get_leaves(self.full_lin_list)
 
         self.pruned_lin_list = self._prune_lineage()
         for state in range(self.num_states):
             self.lineage_stats[state].num_pruned_lin_cells, \
-            self.lineage_stats[state].pruned_lin_cells, \
-            self.lineage_stats[state].pruned_lin_cells_obs, \
-            self.lineage_stats[state].pruned_lin_cells_idx = self._get_pruned_state_count(state)
+                self.lineage_stats[state].pruned_lin_cells, \
+                self.lineage_stats[state].pruned_lin_cells_obs, \
+                self.lineage_stats[state].pruned_lin_cells_idx = self._get_pruned_state_count(state)
         self.pruned_max_gen, self.pruned_list_of_gens = max_gen(self.pruned_lin_list)
         self.pruned_leaves_idx, self.pruned_leaves = get_leaves(self.pruned_lin_list)
 
@@ -105,11 +105,12 @@ class LineageTree:
             self.output_list_of_gens = self.full_list_of_gens
             self.output_leaves_idx = self.full_leaves_idx
             self.output_leaves = self.full_leaves
-            
-    def __len__(self, prune_boolean): 
-        if prune_boolean: return len(self.pruned_lin_list)
-        else: return(len(self.full_lin_list))
 
+    def __len__(self, prune_boolean):
+        if prune_boolean:
+            return len(self.pruned_lin_list)
+        else:
+            return(len(self.full_lin_list))
 
     def _generate_lineage_list(self):
         """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states) in a full binary tree manner. It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.

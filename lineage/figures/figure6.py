@@ -19,9 +19,25 @@ def makeFigure():
     """ Main figure generating function for Fig. 6 """
     ax, f = getSetup((20, 10), (2, 4))
 
-
     x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned = accuracy_increased_cells()
-    figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned)
+    figure_maker(
+        ax,
+        x_unpruned,
+        accuracies_unpruned,
+        bern_unpruned,
+        bern_p0,
+        bern_p1,
+        gamma_a_unpruned,
+        gamma_a0,
+        gamma_a1,
+        gamma_scale_unpruned,
+        gamma_scale0,
+        gamma_scale1,
+        x_pruned,
+        accuracies_pruned,
+        bern_pruned,
+        gamma_a_pruned,
+        gamma_scale_pruned)
 
 #     x_unpruned, x_pruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned = accuracy_increased_cellsG()
 
@@ -57,10 +73,10 @@ def accuracy_increased_cells():
     state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
     E = [state_obj0, state_obj1]
-    
+
     desired_num_cells = np.logspace(5, 10, num=100, base=2.0)
     desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
-    
+
     x_unpruned = []
     x_pruned = []
     accuracies_unpruned = []
@@ -81,17 +97,17 @@ def accuracy_increased_cells():
             continue
         lineage_pruned = cp.deepcopy(lineage_unpruned)
         lineage_pruned.prune_boolean = True
-        
+
         # Setting then into a list or a population of lineages and collecting the length of each lineage
         X1 = [lineage_unpruned]
         x_unpruned.append(len(lineage_unpruned.output_lineage))
         X2 = [lineage_pruned]
         x_pruned.append(len(lineage_pruned.output_lineage))
-        
+
         # Analyzing the lineages
         deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X1, 2)
         deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2)
-        
+
         # Collecting the accuracies of the lineages
         acc1 = accuracy(tHMMobj, all_states)[0]
         acc2 = accuracy(tHMMobj2, all_states2)[0]
@@ -124,7 +140,7 @@ def accuracy_increased_cells():
     return x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned
 
 
-#----------- Figure 6 for G1G2
+# ----------- Figure 6 for G1G2
 
 def accuracy_increased_cellsG():
     """ Calclates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
@@ -184,13 +200,13 @@ def accuracy_increased_cellsG():
         x_unpruned.append(len(lineage_unpruned.output_lineage))
         X2 = [lineage_pruned]
         x_pruned.append(len(lineage_pruned.output_lineage))
-        
+
         print("unpruned")
         deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X1, 2)
         print("pruned")
         deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2)
-        acc1 = accuracyG(tHMMobj, all_states)[0] # for pruned
-        acc2 = accuracyG(tHMMobj2, all_states2)[0] # for unpruned
+        acc1 = accuracyG(tHMMobj, all_states)[0]  # for pruned
+        acc2 = accuracyG(tHMMobj2, all_states2)[0]  # for unpruned
         accuracies_unpruned.append(acc1)
         accuracies_pruned.append(acc2)
 
@@ -237,8 +253,8 @@ def accuracy_increased_cellsG():
     return x_unpruned, x_pruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned
 
 
-
-def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned):
+def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1,
+                 gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned):
 
     font = 11
     font2 = 10
@@ -335,9 +351,10 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[7].legend(loc='best', framealpha=0.3)
 
 
-#------------- figure for G1G2
+# ------------- figure for G1G2
 
-def figure_makerG(ax, x_unpruned, x_pruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned):
+def figure_makerG(ax, x_unpruned, x_pruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned,
+                  gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned):
 
     font = 11
     font2 = 10
