@@ -5,18 +5,19 @@ import math
 
 
 class StateDistribution:
-    def __init__(self, state, bern_p, gamma_a, gamma_scale):  # user has to identify what parameters to use for each state
+    def __init__(self, state, bern_p, gamma_a, gamma_loc, gamma_scale):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.state = state
         self.bern_p = bern_p
         self.gamma_a = gamma_a
+        self.gamma_loc = gamma_loc
         self.gamma_scale = gamma_scale
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
-        gamma_obs = sp.gamma.rvs(a=self.gamma_a, scale=self.gamma_scale, size=size)  # gamma observations
+        gamma_obs = sp.gamma.rvs(a=self.gamma_a, loc=self.gamma_loc, scale=self.gamma_scale, size=size)  # gamma observations
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         list_of_tuple_of_obs = list(zip(bern_obs, gamma_obs))
@@ -32,13 +33,13 @@ class StateDistribution:
         # the individual observation likelihoods.
 
         bern_ll = sp.bernoulli.pmf(k=tuple_of_obs[0], p=self.bern_p)  # bernoulli likelihood
-        gamma_ll = sp.gamma.logpdf(x=tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)  # gamma likelihood
+        gamma_ll = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a, loc=self.gamma_loc, scale=self.gamma_scale)  # gamma likelihood
 
-        assert not math.isnan(np.exp(gamma_ll)), "{} {} {} {}".format(gamma_ll, tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+        assert not math.isnan(gamma_ll), "{} {} {} {} {}".format(tuple_of_obs[1], gamma_ll, self.gamma_a, self.gamma_loc, self.gamma_scale)
         if bern_ll == 0 or np.exp(gamma_ll) == 0:
-            print(tuple_of_obs[1], ',', self.gamma_a, ',', self.gamma_scale, ',', np.exp(gamma_ll))
+            print(tuple_of_obs[1], ',', gamma_ll, ',', self.gamma_a, ',',  self.gamma_loc, ',', self.gamma_scale, tuple_of_obs[0], bern_ll, self.bern_p)
 
-        return np.exp(gamma_ll)
+        return bern_ll * gamma_ll
 
     def estimator(self, list_of_tuples_of_obs):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
@@ -55,11 +56,12 @@ class StateDistribution:
             gamma_obs = []
 
         bern_p_estimate = bernoulli_estimator(bern_obs)
-        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
+        gamma_a_estimate, gamma_loc_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
 
         state_estimate_obj = StateDistribution(state=self.state,
                                                bern_p=bern_p_estimate,
                                                gamma_a=gamma_a_estimate,
+                                               gamma_loc=gamma_loc_estimate,
                                                gamma_scale=gamma_scale_estimate)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
@@ -68,7 +70,7 @@ class StateDistribution:
         return state_estimate_obj
 
     def __repr__(self):
-        return "State object w/ parameters: {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_scale)
+        return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_loc, self.gamma_scale)
 
 
 def prune_rule(cell):
@@ -83,6 +85,7 @@ def tHMM_E_init(state):
     return StateDistribution(state,
                              0.9,
                              10 * (np.random.uniform()),
+                             0,
                              1)
 
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide
@@ -125,7 +128,7 @@ def exponential_estimator(exp_obs):
     return (sum(exp_obs) + 50e-10) / (len(exp_obs) + 1e-10)
 
 
-def gamma_estimator(gamma_obs):
+def gamma_estimator0(gamma_obs):
     """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
     N = len(gamma_obs)
     if N == 0:
@@ -147,3 +150,14 @@ def gamma_estimator(gamma_obs):
         return 10, 1
 
     return a_hat, b_hat
+
+def gamma_estimator(gamma_obs):
+    """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
+    N = len(gamma_obs)
+    if N == 0:
+        return 10, 0, 1
+    floc = 0.0
+    a, scale = gamma_estimator0(gamma_obs)
+    #a, loc, scale = sp.gamma.fit(gamma_obs, a=a, floc=floc, scale=scale)
+    print(a, floc, scale)
+    return a, floc, scale

@@ -2,7 +2,7 @@
 This creates Figure 6.
 """
 from .figureCommon import getSetup
-from ..Analyze import accuracyG, Analyze
+from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
@@ -62,6 +62,7 @@ def accuracy_increased_cells():
     state0 = 0
     bern_p0 = 0.99
     gamma_a0 = 20
+    loc = 0.0
     gamma_scale0 = 5
 
     # State 1 parameters "Susceptible"
@@ -70,11 +71,11 @@ def accuracy_increased_cells():
     gamma_a1 = 10
     gamma_scale1 = 1
 
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
+    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, loc, gamma_scale0)
+    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-    desired_num_cells = np.logspace(5, 10, num=100, base=2.0)
+    desired_num_cells = np.logspace(8, 10, num=10, base=2.0)
     desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
 
     x_unpruned = []
