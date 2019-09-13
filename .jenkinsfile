@@ -7,6 +7,7 @@ pipeline {
   stages {
     stage('Clean/Setup') {
       steps {
+        sh 'tlmgr install type1cm'
         sh 'git clean -ffdx && make clean'
         sh 'git submodule update --init --recursive'
         sh 'make venv'
