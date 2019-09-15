@@ -20,7 +20,28 @@ def makeFigure():
     ax, f = getSetup((30, 10), (2, 6))
 
     x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm = accuracy_increased_cells()
-    figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm)
+    figure_maker(
+        ax,
+        x_unpruned,
+        accuracies_unpruned,
+        bern_unpruned,
+        bern_p0,
+        bern_p1,
+        gamma_a_unpruned,
+        gamma_a0,
+        gamma_a1,
+        gamma_scale_unpruned,
+        gamma_scale0,
+        gamma_scale1,
+        x_pruned,
+        accuracies_pruned,
+        bern_pruned,
+        gamma_a_pruned,
+        gamma_scale_pruned,
+        tr_unprunedNorm,
+        tr_prunedNorm,
+        pi_unprunedNorm,
+        pi_prunedNorm)
 
     f.tight_layout()
     return f
@@ -52,10 +73,10 @@ def accuracy_increased_cells():
     state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
     E = [state_obj0, state_obj1]
-    
+
     desired_num_cells = np.logspace(5, 10, num=2, base=2.0)
     desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
-    
+
     x_unpruned = []
     x_pruned = []
     accuracies_unpruned = []
@@ -80,17 +101,17 @@ def accuracy_increased_cells():
             continue
         lineage_pruned = cp.deepcopy(lineage_unpruned)
         lineage_pruned.prune_boolean = True
-        
+
         # Setting then into a list or a population of lineages and collecting the length of each lineage
         X1 = [lineage_unpruned]
         x_unpruned.append(len(lineage_unpruned.output_lineage))
         X2 = [lineage_pruned]
         x_pruned.append(len(lineage_pruned.output_lineage))
-        
+
         # Analyzing the lineages
         deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X1, 2)
         deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2)
-        
+
         # Collecting the accuracies of the lineages
         acc1 = accuracy(tHMMobj, all_states)[0]
         acc2 = accuracy(tHMMobj2, all_states2)[0]
@@ -121,9 +142,9 @@ def accuracy_increased_cells():
         gamma_scale_pruned.append(gamma_scale_total2)
 
     # Transition and Pi estimates
-        transition_mat_unpruned = tHMMobj.estimate.T # unpruned
-        transition_mat_pruned = tHMMobj2.estimate.T # pruned
-        
+        transition_mat_unpruned = tHMMobj.estimate.T  # unpruned
+        transition_mat_pruned = tHMMobj2.estimate.T  # pruned
+
         temp1 = T - transition_mat_unpruned
         temp2 = T - transition_mat_pruned
         tr_unprunedNorm.append(np.linalg.norm(temp1))
@@ -136,15 +157,15 @@ def accuracy_increased_cells():
         pi_unprunedNorm.append(np.linalg.norm(t1))
         pi_prunedNorm.append(np.linalg.norm(t2))
 
-
     return x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm
 
 
-def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm):
+def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0,
+                 gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm):
 
     font = 11
     font2 = 10
-    i=0
+    i = 0
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
     ax[i].set_ylim(0, 110)
@@ -155,7 +176,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].set_title('State Assignment Accuracy', fontsize=font)
 
-    i+=1
+    i += 1
     res = [[i for i, j in bern_unpruned], [j for i, j in bern_unpruned]]
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
@@ -168,7 +189,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].legend(loc='best', framealpha=0.3)
 
-    i+=1
+    i += 1
     res = [[i for i, j in gamma_a_unpruned], [j for i, j in gamma_a_unpruned]]
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
@@ -181,7 +202,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].legend(loc='best', framealpha=0.3)
 
-    i+=1
+    i += 1
     res = [[i for i, j in gamma_scale_unpruned], [j for i, j in gamma_scale_unpruned]]
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
@@ -194,7 +215,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].legend(loc='best', framealpha=0.3)
 
-    i+=1
+    i += 1
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
     ax[i].scatter(x_unpruned, tr_unprunedNorm, c='k', marker="o", label=' Unpruned', alpha=0.5)
@@ -204,7 +225,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].legend(loc='best', framealpha=0.3)
 
-    i+=1
+    i += 1
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
     ax[i].scatter(x_unpruned, pi_unprunedNorm, c='k', marker="o", label=' Unpruned', alpha=0.5)
@@ -214,7 +235,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].legend(loc='best', framealpha=0.3)
 
-    i+=1
+    i += 1
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
     ax[i].set_ylim(0, 110)
@@ -225,7 +246,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].set_title('State Assignment Accuracy', fontsize=font)
 
-    i+=1
+    i += 1
     res = [[i for i, j in bern_pruned], [j for i, j in bern_pruned]]
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
@@ -238,7 +259,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].legend(loc='best', framealpha=0.3)
 
-    i+=1
+    i += 1
     res = [[i for i, j in gamma_a_pruned], [j for i, j in gamma_a_pruned]]
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
@@ -251,7 +272,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].legend(loc='best', framealpha=0.3)
 
-    i+=1
+    i += 1
     res = [[i for i, j in gamma_scale_pruned], [j for i, j in gamma_scale_pruned]]
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
@@ -264,7 +285,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].legend(loc='best', framealpha=0.3)
 
-    i+=1
+    i += 1
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_pruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
     ax[i].scatter(x_pruned, tr_prunedNorm, c='k', marker="o", label=' Pruned', alpha=0.5)
@@ -274,7 +295,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].legend(loc='best', framealpha=0.3)
 
-    i+=1
+    i += 1
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_pruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
     ax[i].scatter(x_pruned, pi_prunedNorm, c='k', marker="o", label=' Pruned', alpha=0.5)
