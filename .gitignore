@@ -1,5 +1,7 @@
 *.sublime-workspace
 **/.ipynb_checkpoints
+**/.hypothesis
+**/.pytest_cache
 **/__pycache__/
 nosetests.xml
 **.png
