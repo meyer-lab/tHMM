@@ -101,6 +101,9 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
                                           MSD_array=tHMMobj.MSD[num],
                                           gamma_array=gamma_array,
                                           T=tHMMobj.estimate.T)
+                    if denom == 0:
+                        print(numer)
+                        print(gamma_array)
                     T_holder[state_j, state_k] = numer / denom
 
             tHMMobj.estimate.T = T_holder / T_holder.sum(axis=1)[:, np.newaxis]
