@@ -4,10 +4,8 @@
 **/.pytest_cache
 **/__pycache__/
 nosetests.xml
-**.png
-**.pdf
-**.svg
 **.ipynb
 # Exception to the rule
 !Guide_to_tHMM.ipynb
 venv/
+output/
