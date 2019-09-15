@@ -48,7 +48,7 @@ pylint.log: venv
 
 clean:
 	rm -f coverage.xml .coverage .coverage* junit.xml coverage.xml profile profile.svg
-	rm -rf prof manuscript/figures
+	rm -rf prof output
 
 docs: venv
 	. venv/bin/activate && sphinx-apidoc -o doc/source lineage

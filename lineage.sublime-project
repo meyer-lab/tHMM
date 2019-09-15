@@ -2,6 +2,12 @@
 	"folders":
 	[
 		{
+			"folder_exclude_patterns":
+			[
+				".pytest_cache",
+				".hypothesis",
+				"venv"
+			],
 			"path": "."
 		}
 	]
