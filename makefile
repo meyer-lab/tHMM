@@ -1,7 +1,8 @@
 SHELL := /bin/bash
-fdir = ./manuscript/figures
 
 .PHONY: clean test testprofile testcover docs
+
+all: output/manuscript.html output/manuscript.pdf coverage.xml pylint.log
 
 flist = 1 2 3 4 5 6 7
 
@@ -59,8 +60,8 @@ Guide_to_tHMM.pdf: venv Guide_to_tHMM.ipynb
 test: venv
 	. venv/bin/activate; pytest -s
 
-testcover: venv
-	. venv/bin/activate; pytest -s --junitxml=junit.xml --cov=lineage --cov-report xml:coverage.xml
+coverage.xml: venv
+	. venv/bin/activate; pytest --junitxml=junit.xml --cov=lineage --cov-report xml:coverage.xml
 
 testprofile: venv
 	. venv/bin/activate && python3 -m cProfile -o profile /usr/local/bin/pytest
