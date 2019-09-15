@@ -1,6 +1,5 @@
 SHELL := /bin/bash
 fdir = ./manuscript/figures
-pan_common = -F pandoc-crossref -F pandoc-citeproc --filter=./common/templates/figure-filter.py -f markdown ./manuscript/*.md
 
 .PHONY: clean test testprofile testcover docs
 
@@ -9,26 +8,50 @@ flist = 1 2 3 4 5 6 7
 venv: venv/bin/activate
 
 venv/bin/activate: requirements.txt
-	test -d venv || virtualenv --system-site-packages venv
+	test -d venv || virtualenv venv
 	. venv/bin/activate && pip install -Ur requirements.txt
 	touch venv/bin/activate
 
-$(fdir)/figure%.svg: venv genFigures.py 
+output/figure%.svg: venv genFigures.py 
 	mkdir -p ./manuscript/figures
 	. venv/bin/activate && ./genFigures.py $*
 
-$(fdir)/figure%pdf: $(fdir)/figure%svg
-	rsvg-convert -f pdf $< -o $@
+output/manuscript.md: venv manuscript/*.md
+	. venv/bin/activate && manubot process --content-directory=./manuscript/ --output-directory=./output --log-level=INFO
 
-$(fdir)/figure%eps: $(fdir)/figure%svg
-	rsvg-convert -f eps $< -o $@
+output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.svg, $(flist))
+	mkdir output/output
+	cp output/*.svg output/output/
+	. venv/bin/activate && pandoc --verbose \
+		--from=markdown --to=html5 --filter=pandoc-fignos --filter=pandoc-eqnos --filter=pandoc-tablenos \
+		--bibliography=output/references.json \
+		--csl=common/templates/manubot/style.csl \
+		--metadata link-citations=true \
+		--include-after-body=common/templates/manubot/default.html \
+		--include-after-body=common/templates/manubot/plugins/table-scroll.html \
+		--include-after-body=common/templates/manubot/plugins/anchors.html \
+		--include-after-body=common/templates/manubot/plugins/accordion.html \
+		--include-after-body=common/templates/manubot/plugins/tooltips.html \
+		--include-after-body=common/templates/manubot/plugins/jump-to-first.html \
+		--include-after-body=common/templates/manubot/plugins/link-highlight.html \
+		--include-after-body=common/templates/manubot/plugins/table-of-contents.html \
+		--include-after-body=common/templates/manubot/plugins/lightbox.html \
+		--mathjax \
+		--variable math="" \
+		--include-after-body=common/templates/manubot/plugins/math.html \
+		--include-after-body=common/templates/manubot/plugins/hypothesis.html \
+		--output=output/manuscript.html output/manuscript.md
 
-manuscript/manuscript.pdf: manuscript/manuscript.tex $(patsubst %, $(fdir)/figure%.pdf, $(flist))
-	(cd ./manuscript && latexmk -xelatex -f -quiet)
-	rm -f ./manuscript/manuscript.b* ./manuscript/manuscript.aux ./manuscript/manuscript.fls
-
-manuscript/manuscript.tex: manuscript/*.md
-	pandoc -s $(pan_common) --template=./common/templates/default.latex --pdf-engine=xelatex -o $@
+output/manuscript.pdf: venv output/manuscript.md $(patsubst %, output/figure%.svg, $(flist))
+	. venv/bin/activate && pandoc --from=markdown --to=html5 \
+    	--pdf-engine=weasyprint --pdf-engine-opt=--presentational-hints \
+    	--filter=pandoc-fignos --filter=pandoc-eqnos --filter=pandoc-tablenos \
+    	--bibliography=output/references.json \
+    	--csl=common/templates/manubot/style.csl \
+    	--metadata link-citations=true \
+    	--webtex=https://latex.codecogs.com/svg.latex? \
+    	--include-after-body=common/templates/manubot/default.html \
+    	--output=output/manuscript.pdf output/manuscript.md
 
 Guide_to_tHMM.pdf: venv Guide_to_tHMM.ipynb
 	. venv/bin/activate && jupyter nbconvert --to pdf --execute Guide_to_tHMM.ipynb

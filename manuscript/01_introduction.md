@@ -1,46 +1,8 @@
----
-title: A lineage-based Markov tree model to quantify cellular heterogeneity
-author:
-- name: Shakthi Visagan
-  affilnum: a
-- name: Nikan K. Namiri
-  affilnum: a
-- name: Ali Farhat
-  affilnum: a
-- name: Adam Weiner
-  affilnum: a
-- name: Farnaz Mohammadi
-  affilnum: a
-- name: Aaron S. Meyer
-  affilnum: a,b
-keywords: [cancer, heterogeneity, lineage, hidden Markov Model]
-affiliation:
-- name: Department of Bioengineering, Jonsson Comprehensive Cancer Center, Eli and Edythe Broad Center of Regenerative Medicine and Stem Cell Research; University of California, Los Angeles
-  key: a
-- name: Contact info
-  key: b
-bibliography: ./manuscript/references.bib
-abstract: Cell plasticity, or the ability of cells within a population to reversibly alter epigenetic state, is an important feature of tissue homeostasis during processes such as wound healing and is dysregulated in cancer. Plasticity cooperates with other sources of cell-cell heterogeneity, including genetic mutations and variation in signaling, during resistance development. Ultimately these mechanisms prevent most cancer therapies from being curative. The predominant methods of quantifying tumor-drug response operate on population-level measurements and therefore lack evolutionary dynamics, which are particularly critical for highly dynamic processes such as plasticity. Here, we apply a tree-based adaptation of a hidden Markov model (tHMM) that employs single cell lineages, to learn characteristic patterns of single cell heterogeneity and state transitions. This model enables single-cell classification based on the phenotype of individual cells and their relatives for improved specificity when pinpointing the molecular drivers of variability in drug response. Integrating this model with a probabilistic language for defining observed phenotypes enabled flexible phenotype specification. Using only cell growth and death as our observed phenotype on synthetic data demonstrated that the model successfully classifies cells within experimentally-tractable dataset sizes. A model accounting for cell cycle phase successfully identified resistant cells within a heterogeneous breast cancer population, which matched with molecular markers of resistance in those same cells. In total, this tHMM framework allows for flexible classification of single-cell heterogeneity across heritable phenotypes.
-link-citations: true
-csl: ./common/templates/nature.csl
----
-
-# Summary points
-
-- A tree-based hidden Markov model (tHMM) captures cell-cell variability and dynamic population changes.
-- Using a probabilistic language to define observed phenotypes allows the model to work with a wide variety of single-cell measurements.
-- The model successfully classifies cells within experimentally-tractable dataset sizes.
-- Classifying cells based on their phenotypic heterogeneity can uncover resistance mechanisms masked at the population level.
-
-# Author Summary
-
-Cell heterogeneity, such as variability in drug response, arises as cells proliferate. _Shared_ heterogeneous traits, like a response to a drug such as resistance or susceptibility within a subpopulation, are correlated across a lineage because resistant subpopulations most likely diverged from a common progenitor or a set of common progenitors that were _also_ resistant or had acquired traits leading to resistance. These acquired traits of resistance may be the result of responses to cellular microenvironments, epigenetics, or mutations. Using lineage tree information, we hope to capture these dynamic transitions between different latent states of cells and arrive with more accurate identifications of cell heterogeneity in a tumor. Our computational approach employing Markov random field theory provides higher specificity through identifying intratumor resistance on an individual cell level based on lineage histories and enables real-time identification of changes in resistance throughout therapy.
-
-# Introduction
+## Introduction
 
 One of the primary treatments of cancer consists of chemotherapy, mainly targeted therapies, whereby patients are administered drugs that eliminate prolific cells to stall cancer growth or eliminate the tumor. Long-term therapeutic efficacy, however, varies significantly due to the vast heterogeneity in intratumor response to therapy [@DiMaio; @DeRoock]. Cell variability in drug response can originate from cell-intrinsic factors, such as genomic alterations (i.e., altered nucleotide excision repair, telomere maintenance, and copy-number variation), and cell-extrinsic factors such as spatial variability in the surrounding vasculature and environmental stressors [@Feinberg; @Falkenberg; @Inde]. 
 
-Advances in ‘omics’ technologies have enabled detailed analysis of cell-to-cell variability [@DeRoock; @Gerlinger], and the development of fine mapping and protein network algorithms have determined the presence of causal genetic mutations and dysregulation events that drive abnormal protein function [@Hormozdiari; @Alvarez]. These modalities, however, are labor and time-intensive [@Teicher], do not account for environmental factors, and serve primarily as end-point analysis barring longitudinal observation of tumor evolution. In addition to 'omics' modalities, genetic _association_ studies (i.e., Cancer Cell Line Encyclopedia) are similarly able to find common risk factors with smaller effect sizes using population-level samples. The findings are valuable but fail to identify rare and meaningful transitions on the single-cell level, [@barretina2012cancer] in particular the stochastic changes in individual cell state that have significant effects on overall tumor resistance. Lastly, fitness markers such as cell end-of-life fate, lifetime, and population doubling time are adopted in the clinical setting to measure cell pathologies [@Gett; @Arai; @Bourhis; @Yachida]. Recent research has made efforts to track phenotypic measurements of fitness at the single-cell level [@Huang_D; @Tyson]; however, most efforts are not yet resolved enough to illuminate the full complexity of cancer cells due in large part to reliance on population-level analysis (i.e., IC~50~) [@O_Connor].
+Advances in ‘omics’ technologies have enabled detailed analysis of cell-to-cell variability [@DeRoock; @Gerlinger], and the development of fine mapping and protein network algorithms have determined the presence of causal genetic mutations and dysregulation events that drive abnormal protein function [@Hormozdiari; @Alvarez]. These modalities, however, are labor and time-intensive [@Teicher], do not account for environmental factors, and serve primarily as end-point analysis barring longitudinal observation of tumor evolution. In addition to 'omics' modalities, genetic _association_ studies (i.e., Cancer Cell Line Encyclopedia) are similarly able to find common risk factors with smaller effect sizes using population-level samples. The findings are valuable but fail to identify rare and meaningful transitions on the single-cell level, [@barretina2012cancer] in particular the stochastic changes in individual cell state that have significant effects on overall tumor resistance. Lastly, fitness markers such as cell end-of-life fate, lifetime, and population doubling time are adopted in the clinical setting to measure cell pathologies [@Gett; @pmid:8072198; @Bourhis; @Yachida]. Recent research has made efforts to track phenotypic measurements of fitness at the single-cell level [@Huang_D; @Tyson]; however, most efforts are not yet resolved enough to illuminate the full complexity of cancer cells due in large part to reliance on population-level analysis (i.e., IC~50~) [@O_Connor].
 
 These conventional methods cannot illuminate the scope of resistance inheritance by themselves, but instead can be combined with  an additional means of tracking inheritance patterns through multiple generations of cells. The latter concept has been well-implemented in genetic studies of _linkage_ analyses, which use pairs of affected relatives (i.e., siblings, parents) to identify genes that are shared more frequently among those who exhibit a known phenotype [@concannon2009genetics]. As a result, linkage analyses have found success in identifying rare risk factors that possess large effect sizes. Of note, linkage analyses are most potent when multiple routes to molecular change can each give rise to a frequent phenotypic change. In the cellular case, linkage analyses rely on lineage trees to identify groups of related cells within subpopulations, and in general, hidden Markov models (HMMs) let one infer cell state from indirect measurements. By expanding the HMM framework to a lineage tree, we can form a tree Hidden Markov model (tHMM) to enable single-cell linkage analysis of cellular heterogeneity. 
 

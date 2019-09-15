@@ -1,0 +1,64 @@
+---
+title: "A lineage-based Markov tree model to quantify cellular heterogeneity"
+keywords:
+  - cancer
+  - heterogeneity
+  - lineage
+  - hidden Markov model
+lang: en-US
+author_info:
+  -
+    github: johndoe
+    name: Shakthi Visagan
+    initials: JD
+    orcid: XXXX-XXXX-XXXX-XXXX
+    twitter: johndoe
+    email: john.doe@something.com
+    affiliations:
+      - Department of Something, University of Whatever
+    funders: Grant XXXXXXXX
+  -
+    github: janeroe
+    name: Nikan K. Namiri
+    initials: JR
+    orcid: XXXX-XXXX-XXXX-XXXX
+    email: jane.roe@whatever.edu
+    affiliations:
+      - Department of Something, University of Whatever
+      - Department of Whatever, University of Something
+  -
+    github: janeroe
+    name: Ali Farhat
+    initials: JR
+    orcid: XXXX-XXXX-XXXX-XXXX
+    email: jane.roe@whatever.edu
+    affiliations:
+      - Department of Something, University of Whatever
+      - Department of Whatever, University of Something
+  -
+    github: janeroe
+    name: Adam Weiner
+    initials: JR
+    orcid: XXXX-XXXX-XXXX-XXXX
+    email: jane.roe@whatever.edu
+    affiliations:
+      - Department of Something, University of Whatever
+      - Department of Whatever, University of Something
+  -
+    github: janeroe
+    name: Farnaz Mohammadi
+    initials: JR
+    orcid: XXXX-XXXX-XXXX-XXXX
+    email: jane.roe@whatever.edu
+    affiliations:
+      - Department of Something, University of Whatever
+      - Department of Whatever, University of Something
+  -
+    github: janeroe
+    name: Aaron S. Meyer
+    initials: JR
+    orcid: XXXX-XXXX-XXXX-XXXX
+    email: jane.roe@whatever.edu
+    affiliations:
+      - Department of Something, University of Whatever
+      - Department of Whatever, University of Something
