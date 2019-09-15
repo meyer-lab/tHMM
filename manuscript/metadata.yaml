@@ -10,55 +10,42 @@ author_info:
   -
     github: johndoe
     name: Shakthi Visagan
-    initials: JD
-    orcid: XXXX-XXXX-XXXX-XXXX
-    twitter: johndoe
-    email: john.doe@something.com
+    initials: SV
     affiliations:
-      - Department of Something, University of Whatever
-    funders: Grant XXXXXXXX
+      - Department of Bioengineering, University of California, Los Angeles
   -
     github: janeroe
     name: Nikan K. Namiri
-    initials: JR
-    orcid: XXXX-XXXX-XXXX-XXXX
-    email: jane.roe@whatever.edu
+    initials: NKN
     affiliations:
       - Department of Something, University of Whatever
-      - Department of Whatever, University of Something
   -
     github: janeroe
     name: Ali Farhat
-    initials: JR
-    orcid: XXXX-XXXX-XXXX-XXXX
-    email: jane.roe@whatever.edu
+    initials: AF
     affiliations:
       - Department of Something, University of Whatever
-      - Department of Whatever, University of Something
   -
     github: janeroe
     name: Adam Weiner
-    initials: JR
-    orcid: XXXX-XXXX-XXXX-XXXX
-    email: jane.roe@whatever.edu
+    initials: AW
     affiliations:
       - Department of Something, University of Whatever
-      - Department of Whatever, University of Something
   -
     github: janeroe
     name: Farnaz Mohammadi
-    initials: JR
-    orcid: XXXX-XXXX-XXXX-XXXX
-    email: jane.roe@whatever.edu
+    initials: FM
     affiliations:
-      - Department of Something, University of Whatever
-      - Department of Whatever, University of Something
+      - Department of Bioengineering, University of California, Los Angeles
   -
-    github: janeroe
+    github: aarmey
     name: Aaron S. Meyer
-    initials: JR
-    orcid: XXXX-XXXX-XXXX-XXXX
-    email: jane.roe@whatever.edu
+    initials: ASM
+    twitter: aarmey
+    orcid: 0000-0003-4513-1840
+    email: a@asmlab.org
     affiliations:
-      - Department of Something, University of Whatever
-      - Department of Whatever, University of Something
+      - Department of Bioengineering, University of California, Los Angeles
+      - Department of Bioinformatics, University of California, Los Angeles
+      - Jonsson Comprehensive Cancer Center, University of California, Los Angeles
+      - Eli and Edythe Broad Center of Regenerative Medicine and Stem Cell Research, University of California, Los Angeles
