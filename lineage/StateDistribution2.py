@@ -94,14 +94,14 @@ def prune_rule(cell):
     return truther
 
 
-def tHMM_E_init(state):
+def tHMM_E_init2(state):
     return StateDistribution2(state,
                              0.9,
                              10 * (np.random.uniform()),
                              0,
-                             1,
-                             5 * (np.random.uniform()),
-                             2)
+                             1.5,
+                             10 * (np.random.uniform()),
+                             1.5)
 
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
@@ -109,7 +109,7 @@ def tHMM_E_init(state):
 # can handle the case where the list of observations is empty.
 
 
-def report_time(cell):
+def report_time2(cell):
     """ Given any cell in the lineage, this function walks through the cell's ancestors and return how long it has taken so far. """
     list_parents = [cell]
     taus = 0.0 + cell.obs[1] + cell.obs[2]
