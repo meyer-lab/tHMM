@@ -2,9 +2,10 @@
 This creates Figure 6.
 """
 from .figureCommon import getSetup
-from ..Analyze import accuracy, Analyze
+from ..Analyze import accuracy, accuracyG, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
+from ..StateDistribution2 import StateDistribution2
 
 import numpy as np
 import copy as cp
@@ -15,38 +16,37 @@ rc('font', **{'family': 'sans-serif', 'sans-serif': ['Helvetica']})
 rc('text', usetex=True)
 
 
-def makeFigure():
-    """ Main figure generating function for Fig. 6 """
-    ax, f = getSetup((30, 10), (2, 6))
+# def makeFigure():
+#     """ Main figure generating function for Fig. 6 """
+#     ax, f = getSetup((30, 10), (2, 6))
 
-    x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm = accuracy_increased_cells()
-    figure_maker(
-        ax,
-        x_unpruned,
-        accuracies_unpruned,
-        bern_unpruned,
-        bern_p0,
-        bern_p1,
-        gamma_a_unpruned,
-        gamma_a0,
-        gamma_a1,
-        gamma_scale_unpruned,
-        gamma_scale0,
-        gamma_scale1,
-        x_pruned,
-        accuracies_pruned,
-        bern_pruned,
-        gamma_a_pruned,
-        gamma_scale_pruned,
-        tr_unprunedNorm,
-        tr_prunedNorm,
-        pi_unprunedNorm,
-        pi_prunedNorm)
+#     x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm = accuracy_increased_cells()
+#     figure_maker(
+#         ax,
+#         x_unpruned,
+#         accuracies_unpruned,
+#         bern_unpruned,
+#         bern_p0,
+#         bern_p1,
+#         gamma_a_unpruned,
+#         gamma_a0,
+#         gamma_a1,
+#         gamma_scale_unpruned,
+#         gamma_scale0,
+#         gamma_scale1,
+#         x_pruned,
+#         accuracies_pruned,
+#         bern_pruned,
+#         gamma_a_pruned,
+#         gamma_scale_pruned,
+#         tr_unprunedNorm,
+#         tr_prunedNorm,
+#         pi_unprunedNorm,
+#         pi_prunedNorm)
 
-    f.tight_layout()
-    return f
+#     f.tight_layout()
+#     return f
 
-"""
 def makeFigure():
      # Main figure generating function for Fig. 6 if we have G1 and G2 phase 
     ax, f = getSetup((40, 10), (2, 8))
@@ -57,7 +57,7 @@ def makeFigure():
 
     f.tight_layout()
     return f
-"""
+
 
 
 # -------------------- Figure 6
@@ -358,8 +358,8 @@ def accuracy_increased_cellsG():
     gamma_aG22 = 18
     gamma_scaleG22 = 1.0
 
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_aG11, gamma_loc, gamma_scaleG11, gamma_aG21, gamma_scaleG21)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_aG12, gamma_loc, gamma_scaleG12, gamma_aG22, gamma_scaleG22)
+    state_obj0 = StateDistribution2(state0, bern_p0, gamma_aG11, gamma_loc, gamma_scaleG11, gamma_aG21, gamma_scaleG21)
+    state_obj1 = StateDistribution2(state1, bern_p1, gamma_aG12, gamma_loc, gamma_scaleG12, gamma_aG22, gamma_scaleG22)
 
     E = [state_obj0, state_obj1]
     # the key part in this function

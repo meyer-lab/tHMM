@@ -4,7 +4,7 @@ import scipy.stats as sp
 import math
 
 
-class StateDistribution:
+class StateDistribution2:
     def __init__(self, state, bern_p, gamma_a1, gamma_loc, gamma_scale1, gamma_a2, gamma_scale2):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.state = state
@@ -69,7 +69,7 @@ class StateDistribution:
         gamma_a1_estimate, gamma_loc_estimate, gamma_scale1_estimate = gamma_estimator(gamma_obsG1)
         gamma_a2_estimate, gamma_loc_estimate, gamma_scale2_estimate = gamma_estimator(gamma_obsG2)
 
-        state_estimate_obj = StateDistribution(state=self.state,
+        state_estimate_obj = StateDistribution2(state=self.state,
                                                bern_p=bern_p_estimate,
                                                gamma_a1=gamma_a1_estimate,
                                                gamma_loc=gamma_loc_estimate,
@@ -95,7 +95,7 @@ def prune_rule(cell):
 
 
 def tHMM_E_init(state):
-    return StateDistribution(state,
+    return StateDistribution2(state,
                              0.9,
                              10 * (np.random.uniform()),
                              0,
