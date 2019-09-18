@@ -84,6 +84,7 @@ def accuracy_increased_cells():
     gamma_a1 = 10
     gamma_scale1 = 1
 
+
     state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
@@ -240,6 +241,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     i += 1
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
+
     ax[i].scatter(x_unpruned, tr_unprunedNorm, c='k', marker="o", label=' Unpruned', alpha=0.5)
     ax[i].set_ylabel(r'$||T-T_{est}||_{F}$', rotation=90, fontsize=font2)
     ax[i].axhline(y=0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)
@@ -260,6 +262,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     i += 1
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x_unpruned)))))
     ax[i].set_xlabel('Number of Cells', fontsize=font2)
+
     ax[i].set_ylim(0, 110)
     ax[i].scatter(x_pruned, accuracies_pruned, c='k', marker="o", label='Accuracy', alpha=0.3)
     ax[i].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)  # linestyle is dashdotdotted
@@ -326,6 +329,7 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].set_title('Norm Pi', fontsize=font)
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].legend(loc='best', framealpha=0.3)
+
 
 
 
@@ -666,3 +670,4 @@ def figure_makerG(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, b
     ax[i].set_title('Norm Pi', fontsize=font)
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].legend(loc='best', framealpha=0.3)
+

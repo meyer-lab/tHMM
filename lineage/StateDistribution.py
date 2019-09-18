@@ -161,3 +161,4 @@ def gamma_estimator(gamma_obs):
     #a, loc, scale = sp.gamma.fit(gamma_obs, a=a, floc=floc, scale=scale)
     print(a, floc, scale)
     return a, floc, scale
+
