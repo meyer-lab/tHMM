@@ -75,6 +75,7 @@ def accuracy_increased_cells():
     state0 = 0
     bern_p0 = 0.99
     gamma_a0 = 20
+    gamma_loc = 0
     gamma_scale0 = 5
 
     # State 1 parameters "Susceptible"
@@ -83,11 +84,11 @@ def accuracy_increased_cells():
     gamma_a1 = 10
     gamma_scale1 = 1
 
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
+    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
+    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-    desired_num_cells = np.logspace(5, 10, num=2, base=2.0)
+    desired_num_cells = np.logspace(5, 10, num=10, base=2.0)
     desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
 
     x_unpruned = []
@@ -96,9 +97,11 @@ def accuracy_increased_cells():
     accuracies_pruned = []
     bern_unpruned = []
     gamma_a_unpruned = []
+    gamma_loc_unpruned = []
     gamma_scale_unpruned = []
     bern_pruned = []
     gamma_a_pruned = []
+    gamma_loc_pruned = []
     gamma_scale_pruned = []
     tr_unprunedNorm = []
     tr_prunedNorm = []
@@ -134,24 +137,30 @@ def accuracy_increased_cells():
         # Collecting the parameter estimations
         bern_p_total = ()
         gamma_a_total = ()
+        gamma_loc_total = ()
         gamma_scale_total = ()
         bern_p_total2 = ()
         gamma_a_total2 = ()
+        gamma_loc_total2 = ()
         gamma_scale_total2 = ()
         for state in range(tHMMobj.numStates):
             bern_p_total += (tHMMobj.estimate.E[state].bern_p,)
             gamma_a_total += (tHMMobj.estimate.E[state].gamma_a,)
+            gamma_loc_total += (tHMMobj.estimate.E[state].gamma_loc,)
             gamma_scale_total += (tHMMobj.estimate.E[state].gamma_scale,)
 
             bern_p_total2 += (tHMMobj2.estimate.E[state].bern_p,)
             gamma_a_total2 += (tHMMobj2.estimate.E[state].gamma_a,)
+            gamma_loc_total2 += (tHMMobj2.estimate.E[state].gamma_loc,)
             gamma_scale_total2 += (tHMMobj2.estimate.E[state].gamma_scale,)
 
         bern_unpruned.append(bern_p_total)
         gamma_a_unpruned.append(gamma_a_total)
+        gamma_loc_unpruned.append(gamma_loc_total)
         gamma_scale_unpruned.append(gamma_scale_total)
         bern_pruned.append(bern_p_total2)
         gamma_a_pruned.append(gamma_a_total2)
+        gamma_loc_pruned.append(gamma_loc_total2)
         gamma_scale_pruned.append(gamma_scale_total2)
 
     # Transition and Pi estimates
@@ -336,6 +345,7 @@ def accuracy_increased_cellsG():
     state0 = 0
     bern_p0 = 0.99
     gamma_aG11 = 10
+    gamma_loc = 0
     gamma_scaleG11 = 2.0
     gamma_aG21 = 15
     gamma_scaleG21 = 2.0
@@ -348,8 +358,8 @@ def accuracy_increased_cellsG():
     gamma_aG22 = 18
     gamma_scaleG22 = 1.0
 
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_aG11, gamma_scaleG11, gamma_aG21, gamma_scaleG21)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_aG12, gamma_scaleG12, gamma_aG22, gamma_scaleG22)
+    state_obj0 = StateDistribution(state0, bern_p0, gamma_aG11, gamma_loc, gamma_scaleG11, gamma_aG21, gamma_scaleG21)
+    state_obj1 = StateDistribution(state1, bern_p1, gamma_aG12, gamma_loc, gamma_scaleG12, gamma_aG22, gamma_scaleG22)
 
     E = [state_obj0, state_obj1]
     # the key part in this function
@@ -362,6 +372,7 @@ def accuracy_increased_cellsG():
     accuracies_pruned = []
     bern_unpruned = []
     gamma_aG1_unpruned = []
+    gamma_loc_unpruned = []
     gamma_scaleG1_unpruned = []
     gamma_aG2_unpruned = []
     gamma_scaleG2_unpruned = []
@@ -369,6 +380,7 @@ def accuracy_increased_cellsG():
     gamma_aG1_pruned = []
     gamma_scaleG1_pruned = []
     gamma_aG2_pruned = []
+    gamma_loc_pruned = []
     gamma_scaleG2_pruned = []
 
     for num in desired_num_cells:
@@ -392,11 +404,13 @@ def accuracy_increased_cellsG():
 
         bern_p_total = ()
         gamma_aG1_total = ()
+        gamma_loc_total = ()
         gamma_scaleG1_total = ()
         gamma_aG2_total = ()
         gamma_scaleG2_total = ()
         bern_p_total2 = ()
         gamma_aG1_total2 = ()
+        gamma_loc_total2 = ()
         gamma_scaleG1_total2 = ()
         gamma_aG2_total2 = ()
         gamma_scaleG2_total2 = ()
@@ -404,6 +418,7 @@ def accuracy_increased_cellsG():
             # upruned
             bern_p_total += (tHMMobj.estimate.E[state].bern_p,)
             gamma_aG1_total += (tHMMobj.estimate.E[state].gamma_aG1,)
+            gamma_loc_total += (tHMMobj.estimate.E[state].gamma_loc,)
             gamma_scaleG1_total += (tHMMobj.estimate.E[state].gamma_scaleG1,)
             gamma_aG2_total += (tHMMobj.estimate.E[state].gamma_aG2,)
             gamma_scaleG2_total += (tHMMobj.estimate.E[state].gamma_scaleG2,)
@@ -411,6 +426,7 @@ def accuracy_increased_cellsG():
             # pruned
             bern_p_total2 += (tHMMobj2.estimate.E[state].bern_p,)
             gamma_aG1_total2 += (tHMMobj2.estimate.E[state].gamma_aG1,)
+            gamma_loc_total2 += (tHMMobj2.estimate.E[state].gamma_loc,)
             gamma_scaleG1_total2 += (tHMMobj2.estimate.E[state].gamma_scaleG1,)
             gamma_aG2_total2 += (tHMMobj2.estimate.E[state].gamma_aG2,)
             gamma_scaleG2_total2 += (tHMMobj2.estimate.E[state].gamma_scaleG2,)
@@ -418,6 +434,7 @@ def accuracy_increased_cellsG():
         # unpruned
         bern_unpruned.append(bern_p_total)
         gamma_aG1_unpruned.append(gamma_aG1_total)
+        gamma_loc_unpruned.append(gamma_loc_total)
         gamma_scaleG1_unpruned.append(gamma_scaleG1_total)
         gamma_aG2_unpruned.append(gamma_aG2_total)
         gamma_scaleG2_unpruned.append(gamma_scaleG2_total)
@@ -425,6 +442,7 @@ def accuracy_increased_cellsG():
         # pruned
         bern_pruned.append(bern_p_total2)
         gamma_aG1_pruned.append(gamma_aG1_total2)
+        gamma_loc_pruned.append(gamma_loc_total2)
         gamma_scaleG1_pruned.append(gamma_scaleG1_total2)
         gamma_aG2_pruned.append(gamma_aG2_total2)
         gamma_scaleG2_pruned.append(gamma_scaleG2_total2)
