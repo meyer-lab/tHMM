@@ -37,7 +37,7 @@ class StateDistribution:
 
         assert not math.isnan(gamma_ll), "{} {} {} {} {}".format(tuple_of_obs[1], gamma_ll, self.gamma_a, self.gamma_loc, self.gamma_scale)
         if bern_ll == 0 or np.exp(gamma_ll) == 0:
-            print(tuple_of_obs[1], ',', gamma_ll, ',', self.gamma_a, ',',  self.gamma_loc, ',', self.gamma_scale, tuple_of_obs[0], bern_ll, self.bern_p)
+            print(tuple_of_obs[1], ',', gamma_ll, ',', self.gamma_a, ',', self.gamma_loc, ',', self.gamma_scale, tuple_of_obs[0], bern_ll, self.bern_p)
 
         return bern_ll * gamma_ll
 
@@ -151,6 +151,7 @@ def gamma_estimator0(gamma_obs):
 
     return a_hat, b_hat
 
+
 def gamma_estimator(gamma_obs):
     """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
     N = len(gamma_obs)
@@ -161,4 +162,3 @@ def gamma_estimator(gamma_obs):
     #a, loc, scale = sp.gamma.fit(gamma_obs, a=a, floc=floc, scale=scale)
     print(a, floc, scale)
     return a, floc, scale
-

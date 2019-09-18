@@ -183,7 +183,7 @@ class TestModel(unittest.TestCase):
         to the result of scipy random variable generator.
         """
         gamma_obs = sp.gamma.rvs(
-            a=12.5, loc = 0.0, scale=3, size=1000)  # gamma observations
+            a=12.5, loc=0.0, scale=3, size=1000)  # gamma observations
         shape, loc, scale = gamma_estimator(gamma_obs)
 
         self.assertTrue(10 <= shape <= 15)

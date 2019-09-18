@@ -81,7 +81,6 @@ def accuracy_increased_lineages():
     list_of_lineages_unpruned = []
     list_of_lineages_pruned = []
 
-
     for num in num_lineages:
         X1 = []
         X2 = []
@@ -118,14 +117,12 @@ def accuracy_increased_lineages():
     pi_unprunedNorm = []
     pi_prunedNorm = []
 
-
     for X1, X2 in zip(list_of_lineages_unpruned, list_of_lineages_pruned):
         # Analyzing the lineages
         deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X1, 2)
         deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2)
 
         # Collecting how many lineages are in each analysis
-
 
         x_unpruned.append(len(X1))
         x_pruned.append(len(X2))
@@ -335,4 +332,3 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].set_title('Norm Pi', fontsize=font)
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].legend(loc='best', framealpha=0.3)
-

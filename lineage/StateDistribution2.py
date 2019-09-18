@@ -41,11 +41,11 @@ class StateDistribution2:
 
         assert not math.isnan(gamma_llG1), "{} {} {} {} {}".format(tuple_of_obs[1], gamma_llG1, self.gamma_a1, self.gamma_loc, self.gamma_scale1)
         if bern_ll == 0 or np.exp(gamma_llG1) == 0:
-            print(tuple_of_obs[1], ',', gamma_llG1, ',', self.gamma_a1, ',',  self.gamma_loc, ',', self.gamma_scale1, tuple_of_obs[0], bern_ll, self.bern_p)
+            print(tuple_of_obs[1], ',', gamma_llG1, ',', self.gamma_a1, ',', self.gamma_loc, ',', self.gamma_scale1, tuple_of_obs[0], bern_ll, self.bern_p)
 
         assert not math.isnan(gamma_llG2), "{} {} {} {} {}".format(tuple_of_obs[2], gamma_llG2, self.gamma_a2, self.gamma_loc, self.gamma_scale2)
         if bern_ll == 0 or np.exp(gamma_llG2) == 0:
-            print(tuple_of_obs[2], ',', gamma_llG2, ',', self.gamma_a2, ',',  self.gamma_loc, ',', self.gamma_scale2, tuple_of_obs[0], bern_ll, self.bern_p)
+            print(tuple_of_obs[2], ',', gamma_llG2, ',', self.gamma_a2, ',', self.gamma_loc, ',', self.gamma_scale2, tuple_of_obs[0], bern_ll, self.bern_p)
 
         return bern_ll * gamma_llG1 * gamma_llG2
 
@@ -70,12 +70,12 @@ class StateDistribution2:
         gamma_a2_estimate, gamma_loc_estimate, gamma_scale2_estimate = gamma_estimator(gamma_obsG2)
 
         state_estimate_obj = StateDistribution2(state=self.state,
-                                               bern_p=bern_p_estimate,
-                                               gamma_a1=gamma_a1_estimate,
-                                               gamma_loc=gamma_loc_estimate,
-                                               gamma_scale1=gamma_scale1_estimate,
-                                               gamma_a2=gamma_a2_estimate,
-                                               gamma_scale2=gamma_scale2_estimate)
+                                                bern_p=bern_p_estimate,
+                                                gamma_a1=gamma_a1_estimate,
+                                                gamma_loc=gamma_loc_estimate,
+                                                gamma_scale1=gamma_scale1_estimate,
+                                                gamma_a2=gamma_a2_estimate,
+                                                gamma_scale2=gamma_scale2_estimate)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
@@ -96,12 +96,12 @@ def prune_rule(cell):
 
 def tHMM_E_init2(state):
     return StateDistribution2(state,
-                             0.9,
-                             10 * (np.random.uniform()),
-                             0,
-                             1.5,
-                             10 * (np.random.uniform()),
-                             1.5)
+                              0.9,
+                              10 * (np.random.uniform()),
+                              0,
+                              1.5,
+                              10 * (np.random.uniform()),
+                              1.5)
 
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
@@ -165,6 +165,7 @@ def gamma_estimator0(gamma_obs):
         return 10, 1
 
     return a_hat, b_hat
+
 
 def gamma_estimator(gamma_obs):
     """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """

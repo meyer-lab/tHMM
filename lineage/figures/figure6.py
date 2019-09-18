@@ -46,9 +46,11 @@ def makeFigure():
 
     f.tight_layout()
     return f
+
+
 """
 def makeFigure():
-     # Main figure generating function for Fig. 6 if we have G1 and G2 phase 
+     # Main figure generating function for Fig. 6 if we have G1 and G2 phase
     ax, f = getSetup((40, 10), (2, 8))
 
     x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, x_pruned, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm = accuracy_increased_cellsG()
@@ -61,6 +63,8 @@ def makeFigure():
 """
 
 # -------------------- Figure 6
+
+
 def accuracy_increased_cells():
     """ Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
 
@@ -83,7 +87,6 @@ def accuracy_increased_cells():
     bern_p1 = 0.88
     gamma_a1 = 10
     gamma_scale1 = 1
-
 
     state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
@@ -331,8 +334,6 @@ def figure_maker(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, be
     ax[i].legend(loc='best', framealpha=0.3)
 
 
-
-
 # ----------- Figure 6 for G1G2
 
 def accuracy_increased_cellsG():
@@ -476,7 +477,8 @@ def accuracy_increased_cellsG():
 
 # ------------- figure for G1G2
 
-def figure_makerG(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, x_pruned, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm):
+def figure_makerG(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11,
+                  gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, x_pruned, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm):
 
     font = 11
     font2 = 10
@@ -670,4 +672,3 @@ def figure_makerG(ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, b
     ax[i].set_title('Norm Pi', fontsize=font)
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
     ax[i].legend(loc='best', framealpha=0.3)
-
