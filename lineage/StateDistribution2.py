@@ -4,23 +4,26 @@ import scipy.stats as sp
 import math
 
 
-class StateDistribution:
-    def __init__(self, state, bern_p, gamma_a, gamma_loc, gamma_scale):  # user has to identify what parameters to use for each state
+class StateDistribution2:
+    def __init__(self, state, bern_p, gamma_a1, gamma_loc, gamma_scale1, gamma_a2, gamma_scale2):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.state = state
         self.bern_p = bern_p
-        self.gamma_a = gamma_a
+        self.gamma_a1 = gamma_a1
         self.gamma_loc = gamma_loc
-        self.gamma_scale = gamma_scale
+        self.gamma_scale1 = gamma_scale1
+        self.gamma_a2 = gamma_a2
+        self.gamma_scale2 = gamma_scale2
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
-        gamma_obs = sp.gamma.rvs(a=self.gamma_a, loc=self.gamma_loc, scale=self.gamma_scale, size=size)  # gamma observations
+        gamma_obsG1 = sp.gamma.rvs(a=self.gamma_a1, loc=self.gamma_loc, scale=self.gamma_scale1, size=size)  # gamma observations
+        gamma_obsG2 = sp.gamma.rvs(a=self.gamma_a2, loc=self.gamma_loc, scale=self.gamma_scale2, size=size)
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        list_of_tuple_of_obs = list(zip(bern_obs, gamma_obs))
+        list_of_tuple_of_obs = list(zip(bern_obs, gamma_obsG1, gamma_obsG2))
         return list_of_tuple_of_obs
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
@@ -33,13 +36,18 @@ class StateDistribution:
         # the individual observation likelihoods.
 
         bern_ll = sp.bernoulli.pmf(k=tuple_of_obs[0], p=self.bern_p)  # bernoulli likelihood
-        gamma_ll = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a, loc=self.gamma_loc, scale=self.gamma_scale)  # gamma likelihood
+        gamma_llG1 = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a1, loc=self.gamma_loc, scale=self.gamma_scale1)  # gamma likelihood for G1
+        gamma_llG2 = sp.gamma.pdf(x=tuple_of_obs[2], a=self.gamma_a2, loc=self.gamma_loc, scale=self.gamma_scale2)  # gamma likelihood for G2
 
-        assert not math.isnan(gamma_ll), "{} {} {} {} {}".format(tuple_of_obs[1], gamma_ll, self.gamma_a, self.gamma_loc, self.gamma_scale)
-        if bern_ll == 0 or np.exp(gamma_ll) == 0:
-            print(tuple_of_obs[1], ',', gamma_ll, ',', self.gamma_a, ',', self.gamma_loc, ',', self.gamma_scale, tuple_of_obs[0], bern_ll, self.bern_p)
+        assert not math.isnan(gamma_llG1), "{} {} {} {} {}".format(tuple_of_obs[1], gamma_llG1, self.gamma_a1, self.gamma_loc, self.gamma_scale1)
+        if bern_ll == 0 or np.exp(gamma_llG1) == 0:
+            print(tuple_of_obs[1], ',', gamma_llG1, ',', self.gamma_a1, ',', self.gamma_loc, ',', self.gamma_scale1, tuple_of_obs[0], bern_ll, self.bern_p)
 
-        return bern_ll * gamma_ll
+        assert not math.isnan(gamma_llG2), "{} {} {} {} {}".format(tuple_of_obs[2], gamma_llG2, self.gamma_a2, self.gamma_loc, self.gamma_scale2)
+        if bern_ll == 0 or np.exp(gamma_llG2) == 0:
+            print(tuple_of_obs[2], ',', gamma_llG2, ',', self.gamma_a2, ',', self.gamma_loc, ',', self.gamma_scale2, tuple_of_obs[0], bern_ll, self.bern_p)
+
+        return bern_ll * gamma_llG1 * gamma_llG2
 
     def estimator(self, list_of_tuples_of_obs):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
@@ -50,19 +58,24 @@ class StateDistribution:
         # {
         try:
             bern_obs = list(unzipped_list_of_tuples_of_obs[0])
-            gamma_obs = list(unzipped_list_of_tuples_of_obs[1])
+            gamma_obsG1 = list(unzipped_list_of_tuples_of_obs[1])
+            gamma_obsG2 = list(unzipped_list_of_tuples_of_obs[2])
         except BaseException:
             bern_obs = []
-            gamma_obs = []
+            gamma_obsG1 = []
+            gamma_obsG2 = []
 
         bern_p_estimate = bernoulli_estimator(bern_obs)
-        gamma_a_estimate, gamma_loc_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
+        gamma_a1_estimate, gamma_loc_estimate, gamma_scale1_estimate = gamma_estimator(gamma_obsG1)
+        gamma_a2_estimate, gamma_loc_estimate, gamma_scale2_estimate = gamma_estimator(gamma_obsG2)
 
-        state_estimate_obj = StateDistribution(state=self.state,
-                                               bern_p=bern_p_estimate,
-                                               gamma_a=gamma_a_estimate,
-                                               gamma_loc=gamma_loc_estimate,
-                                               gamma_scale=gamma_scale_estimate)
+        state_estimate_obj = StateDistribution2(state=self.state,
+                                                bern_p=bern_p_estimate,
+                                                gamma_a1=gamma_a1_estimate,
+                                                gamma_loc=gamma_loc_estimate,
+                                                gamma_scale1=gamma_scale1_estimate,
+                                                gamma_a2=gamma_a2_estimate,
+                                                gamma_scale2=gamma_scale2_estimate)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
@@ -70,7 +83,7 @@ class StateDistribution:
         return state_estimate_obj
 
     def __repr__(self):
-        return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_loc, self.gamma_scale)
+        return "State object w/ parameters: {}, {}, {}, {}, {}, {}.".format(self.bern_p, self.gamma_a1, self.gamma_loc, self.gamma_scale1, self.gamma_a2, self.gamma_scale2)
 
 
 def prune_rule(cell):
@@ -81,12 +94,14 @@ def prune_rule(cell):
     return truther
 
 
-def tHMM_E_init(state):
-    return StateDistribution(state,
-                             0.9,
-                             10 * (np.random.uniform()),
-                             0,
-                             1)
+def tHMM_E_init2(state):
+    return StateDistribution2(state,
+                              0.9,
+                              10 * (np.random.uniform()),
+                              0,
+                              1.5,
+                              10 * (np.random.uniform()),
+                              1.5)
 
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
@@ -94,17 +109,17 @@ def tHMM_E_init(state):
 # can handle the case where the list of observations is empty.
 
 
-def report_time(cell):
+def report_time2(cell):
     """ Given any cell in the lineage, this function walks through the cell's ancestors and return how long it has taken so far. """
     list_parents = [cell]
-    taus = 0.0 + cell.obs[1]
+    taus = 0.0 + cell.obs[1] + cell.obs[2]
 
     for cell in list_parents:
         if cell._isRootParent():
             break
         elif cell.parent not in list_parents:
             list_parents.append(cell.parent)
-            taus += cell.parent.obs[1]
+            taus = taus + cell.parent.obs[1] + cell.parent.obs[2]
     return taus
 
 

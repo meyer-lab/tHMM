@@ -84,10 +84,10 @@ def accuracyG(tHMMobj, all_states):
         gamma_scaleG2_diff = np.zeros((lineageObj.num_states))
         for state in range(lineageObj.num_states):
             bern_diff[state] = abs(tHMMobj.estimate.E[state].bern_p - lineageObj.E[0].bern_p)
-            gamma_aG1_diff[state] = abs(tHMMobj.estimate.E[state].gamma_aG1 - lineageObj.E[0].gamma_aG1)
-            gamma_scaleG1_diff[state] = abs(tHMMobj.estimate.E[state].gamma_scaleG1 - lineageObj.E[0].gamma_scaleG1)
-            gamma_aG2_diff[state] = abs(tHMMobj.estimate.E[state].gamma_aG2 - lineageObj.E[0].gamma_aG2)
-            gamma_scaleG2_diff[state] = abs(tHMMobj.estimate.E[state].gamma_scaleG2 - lineageObj.E[0].gamma_scaleG2)
+            gamma_aG1_diff[state] = abs(tHMMobj.estimate.E[state].gamma_a1 - lineageObj.E[0].gamma_a1)
+            gamma_scaleG1_diff[state] = abs(tHMMobj.estimate.E[state].gamma_scale1 - lineageObj.E[0].gamma_scale1)
+            gamma_aG2_diff[state] = abs(tHMMobj.estimate.E[state].gamma_a2 - lineageObj.E[0].gamma_a2)
+            gamma_scaleG2_diff[state] = abs(tHMMobj.estimate.E[state].gamma_scale2 - lineageObj.E[0].gamma_scale2)
 
         bern_diff = bern_diff / sum(bern_diff)
         gamma_aG1_diff = gamma_aG1_diff / sum(gamma_aG1_diff)
