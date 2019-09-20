@@ -121,8 +121,8 @@ def accuracy_increased_cells():
         x_pruned.append(len(lineage_pruned.output_lineage))
 
         # Analyzing the lineages
-        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X1, 2)
-        deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2)
+        deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
+        deltas2, _, all_states2, tHMMobj2, _, _ = Analyze(X2, 2)
 
         # Collecting the accuracies of the lineages
         acc1 = accuracy(tHMMobj, all_states)[0]
