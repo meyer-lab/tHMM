@@ -127,7 +127,7 @@ def get_experiment_time(lineage):
     """ This function is to find the amount of time it took for the cells to be generated and reach to the desired number of cells. """
     leaf_times = []
     for cell in lineage.output_leaves:
-        temp = report_time(cell)
+        temp = report_time2(cell)
         leaf_times.append(temp)
     longest = max(leaf_times)
     return longest
