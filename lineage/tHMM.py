@@ -2,6 +2,7 @@
 
 import numpy as np
 from .StateDistribution import tHMM_E_init
+from .StateDistribution2 import tHMM_E_init2
 
 
 class estimate:
@@ -12,6 +13,8 @@ class estimate:
         self.E = []
         for state in range(self.numStates):
             self.E.append(tHMM_E_init(state))
+            # in case of using G1 G2 phase, this needs to be used instead of the above line.
+#             self.E.append(tHMM_E_init2(state))
 
 
 class tHMM:
@@ -39,6 +42,7 @@ class tHMM:
 
 
 ##---------------------------- Marginal State Distribution ------------------------------##
+
 
     def get_Marginal_State_Distributions(self):
         '''
@@ -92,7 +96,6 @@ class tHMM:
 
 
 ##--------------------------- Emission Likelihood --------------------------------##
-
 
     def get_Emission_Likelihoods(self):
         '''

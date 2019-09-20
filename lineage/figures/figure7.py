@@ -17,9 +17,11 @@ rc('text', usetex=True)
 
 def makeFigure():
     """ Main figure generating function for Fig. 6 """
+
     ax, f = getSetup((30, 10), (2, 6))
 
     x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1, x_pruned, accuracies_pruned, bern_pruned, gamma_a_pruned, gamma_scale_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm = accuracy_increased_lineages()
+
     figure_maker(
         ax,
         x_unpruned,
@@ -61,6 +63,7 @@ def accuracy_increased_lineages():
     state0 = 0
     bern_p0 = 0.99
     gamma_a0 = 20
+    gamma_loc = 0
     gamma_scale0 = 5
 
     # State 1 parameters "Susceptible"
@@ -69,8 +72,8 @@ def accuracy_increased_lineages():
     gamma_a1 = 10
     gamma_scale1 = 1
 
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
+    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
+    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
     desired_num_cells = 2**7 - 1
@@ -85,7 +88,9 @@ def accuracy_increased_lineages():
         for lineages in range(num):
             # Creating an unpruned and pruned lineage
             lineage_unpruned = LineageTree(pi, T, E, desired_num_cells, prune_boolean=False)
+
             while lineage_unpruned.__len__(True) <= 15:
+
                 lineage_unpruned = LineageTree(pi, T, E, desired_num_cells, prune_boolean=False)
             lineage_pruned = cp.deepcopy(lineage_unpruned)
             lineage_pruned.prune_boolean = True
@@ -107,6 +112,7 @@ def accuracy_increased_lineages():
     bern_pruned = []
     gamma_a_pruned = []
     gamma_scale_pruned = []
+
     tr_unprunedNorm = []
     tr_prunedNorm = []
     pi_unprunedNorm = []
@@ -118,6 +124,7 @@ def accuracy_increased_lineages():
         deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2)
 
         # Collecting how many lineages are in each analysis
+
         x_unpruned.append(len(X1))
         x_pruned.append(len(X2))
 
@@ -136,6 +143,7 @@ def accuracy_increased_lineages():
         # Weighting and summing the accuracies
         X1_acc = sum([acc * weight_cell_count for (acc, weight_cell_count) in zip(acc1, weight_cell_count_unpruned)])
         X2_acc = sum([acc * weight_cell_count for (acc, weight_cell_count) in zip(acc2, weight_cell_count_pruned)])
+
         # Collecting the weighted accuracies
         accuracies_unpruned.append(X1_acc)
         accuracies_pruned.append(X2_acc)

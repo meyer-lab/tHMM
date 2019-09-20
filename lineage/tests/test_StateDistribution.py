@@ -19,6 +19,7 @@ class TestModel(unittest.TestCase):
         self.state0 = 0
         bern_p0 = 0.99
         gamma_a0 = 20
+        gamma_loc = 0.0
         gamma_scale0 = 5
 
         # State 1 parameters "Susceptible"
@@ -27,8 +28,8 @@ class TestModel(unittest.TestCase):
         gamma_a1 = 10
         gamma_scale1 = 1
 
-        self.stateDist0 = StateDistribution(self.state0, bern_p0, gamma_a0, gamma_scale0)
-        self.stateDist1 = StateDistribution(self.state1, bern_p1, gamma_a1, gamma_scale1)
+        self.stateDist0 = StateDistribution(self.state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
+        self.stateDist1 = StateDistribution(self.state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
 
         self.E = [self.stateDist0, self.stateDist1]
 
@@ -182,8 +183,9 @@ class TestModel(unittest.TestCase):
         to the result of scipy random variable generator.
         """
         gamma_obs = sp.gamma.rvs(
-            a=12.5, scale=3, size=1000)  # gamma observations
-        shape, scale = gamma_estimator(gamma_obs)
+            a=12.5, loc=0.0, scale=3, size=1000)  # gamma observations
+        shape, loc, scale = gamma_estimator(gamma_obs)
 
         self.assertTrue(10 <= shape <= 15)
         self.assertTrue(2 <= scale <= 4)
+        self.assertTrue(loc == 0.0)

@@ -20,6 +20,7 @@ class TestModel(unittest.TestCase):
         self.state0 = 0
         bern_p0 = 0.99
         gamma_a0 = 20
+        gamma_loc = 0
         gamma_scale0 = 5
 
         # State 1 parameters "Susceptible"
@@ -28,8 +29,8 @@ class TestModel(unittest.TestCase):
         gamma_a1 = 10
         gamma_scale1 = 1
 
-        state_obj0 = StateDistribution(self.state0, bern_p0, gamma_a0, gamma_scale0)
-        state_obj1 = StateDistribution(self.state1, bern_p1, gamma_a1, gamma_scale1)
+        state_obj0 = StateDistribution(self.state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
+        state_obj1 = StateDistribution(self.state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
 
         self.E = [state_obj0, state_obj1]
 
