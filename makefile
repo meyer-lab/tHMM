@@ -71,10 +71,10 @@ pylint.log: venv
 	. venv/bin/activate && (pylint --rcfile=./common/pylintrc lineage > pylint.log || echo "pylint exited with $?")
 
 clean:
-	mv output/requests-cache.sqlite requests-cache.sqlite
+	mv output/requests-cache.sqlite requests-cache.sqlite || true
 	rm -rf prof output coverage.xml .coverage .coverage* junit.xml coverage.xml profile profile.svg
 	mkdir output
-	mv requests-cache.sqlite output/requests-cache.sqlite 
+	mv requests-cache.sqlite output/requests-cache.sqlite || true
 
 docs: venv
 	. venv/bin/activate && sphinx-apidoc -o doc/source lineage

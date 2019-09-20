@@ -148,8 +148,7 @@ def gamma_estimator0(gamma_obs):
     N = len(gamma_obs)
     if N == 0:
         return 10, 1
-    #assert N != 0, "The number of gamma observations is zero!"
-    print("the number of gamma observations", N)
+
     x_lnx = [x * np.log(x) for x in gamma_obs]
     lnx = [np.log(x) for x in gamma_obs]
     # gamma_a
