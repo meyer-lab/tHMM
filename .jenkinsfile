@@ -2,43 +2,28 @@ pipeline {
   agent { label 'docker' }
   options {
     timeout(time: 1, unit: 'HOURS')
-    parallelsAlwaysFailFast()
   }
   stages {
     stage('Clean/Setup') {
       steps {
         sh 'tlmgr install type1cm'
-        sh 'git clean -ffdx && make clean'
-        sh 'git submodule update --init --recursive'
+        sh 'git submodule update --init --recursive && make clean'
         sh 'make venv'
       }
     }
-    stage('Lint') {
+    stage('Doc') {
       steps {
-        sh 'make pylint.log'
-        recordIssues qualityGates: [[threshold: 130, type: 'TOTAL', unstable: true]], tools: [pyLint(pattern: 'pylint.log')]
+        sh 'make docs'
+        publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'doc/build', reportFiles: 'index.html', reportName: 'Sphinx Docs'])
       }
     }
-    stage('Build/Test') {
-      parallel {
-        stage('Test') {
-          steps {
-            sh 'make testcover'
-            cobertura coberturaReportFile: 'coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
-          }
-        }
-        stage('Doc') {
-          steps {
-            sh 'make docs'
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'doc/build', reportFiles: 'index.html', reportName: 'Sphinx Docs'])
-          }
-        }
-        stage('Build') {
-          steps {
-            sh 'make manuscript/manuscript.pdf -j 8'
-            archiveArtifacts artifacts: '*.pdf, manuscript/manuscript.pdf, manuscript/figures/*.pdf', onlyIfSuccessful: true
-          }
-        }
+    stage('Test/Build/Lint') {
+      steps {
+        sh 'make all -j 4'
+        archiveArtifacts artifacts: 'output/manuscript.pdf, output/*.svg', onlyIfSuccessful: true
+        cobertura coberturaReportFile: 'coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+        recordIssues qualityGates: [[threshold: 120, type: 'TOTAL', unstable: true]], tools: [pyLint(pattern: 'pylint.log')]
+        publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'output', reportFiles: 'manuscript.html', reportName: 'Manuscript'])
       }
     }
   }

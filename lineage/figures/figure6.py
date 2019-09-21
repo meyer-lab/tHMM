@@ -44,23 +44,15 @@ def makeFigure():
         pi_unprunedNorm,
         pi_prunedNorm)
 
-    f.tight_layout()
     return f
 
 
-"""
-def makeFigure():
-     # Main figure generating function for Fig. 6 if we have G1 and G2 phase
-    ax, f = getSetup((40, 10), (2, 8))
 
-    x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, x_pruned, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm = accuracy_increased_cellsG()
-    figure_makerG(
-        ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, x_pruned, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm)
+# Main figure generating function for Fig. 6 if we have G1 and G2 phase
+# x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, x_pruned, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm = accuracy_increased_cellsG()
+# figure_makerG(
+#     ax, x_unpruned, accuracies_unpruned, bern_unpruned, bern_p0, bern_p1, gamma_aG1_unpruned, gamma_aG2_unpruned, gamma_aG11, gamma_aG12, gamma_aG21, gamma_aG22, gamma_scaleG1_unpruned, gamma_scaleG2_unpruned, gamma_scaleG11, gamma_scaleG12, gamma_scaleG21, gamma_scaleG22, x_pruned, accuracies_pruned, bern_pruned, gamma_aG1_pruned, gamma_scaleG1_pruned, gamma_aG2_pruned, gamma_scaleG2_pruned, tr_unprunedNorm, tr_prunedNorm, pi_unprunedNorm, pi_prunedNorm)
 
-    f.tight_layout()
-    return f
-
-"""
 
 # -------------------- Figure 6
 
@@ -129,8 +121,8 @@ def accuracy_increased_cells():
         x_pruned.append(len(lineage_pruned.output_lineage))
 
         # Analyzing the lineages
-        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X1, 2)
-        deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2)
+        deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
+        deltas2, _, all_states2, tHMMobj2, _, _ = Analyze(X2, 2)
 
         # Collecting the accuracies of the lineages
         acc1 = accuracy(tHMMobj, all_states)[0]
@@ -403,9 +395,9 @@ def accuracy_increased_cellsG():
         x_pruned.append(len(lineage_pruned.output_lineage))
 
         print("unpruned")
-        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X1, 2)
+        deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
         print("pruned")
-        deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2)
+        deltas2, _, all_states2, tHMMobj2, _, _ = Analyze(X2, 2)
         acc1 = accuracyG(tHMMobj, all_states)[0]  # for pruned
         acc2 = accuracyG(tHMMobj2, all_states2)[0]  # for unpruned
         accuracies_unpruned.append(acc1)

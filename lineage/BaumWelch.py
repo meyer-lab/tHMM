@@ -1,5 +1,4 @@
 ''' Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch. '''
-import logging
 import numpy as np
 
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas

@@ -1,0 +1,51 @@
+---
+title: "A lineage-based Markov tree model to quantify cellular heterogeneity"
+keywords:
+  - cancer
+  - heterogeneity
+  - lineage
+  - hidden Markov model
+lang: en-US
+author_info:
+  -
+    github: johndoe
+    name: Shakthi Visagan
+    initials: SV
+    affiliations:
+      - Department of Bioengineering, University of California, Los Angeles
+  -
+    github: janeroe
+    name: Nikan K. Namiri
+    initials: NKN
+    affiliations:
+      - Department of Something, University of Whatever
+  -
+    github: janeroe
+    name: Ali Farhat
+    initials: AF
+    affiliations:
+      - Department of Something, University of Whatever
+  -
+    github: janeroe
+    name: Adam Weiner
+    initials: AW
+    affiliations:
+      - Department of Something, University of Whatever
+  -
+    github: janeroe
+    name: Farnaz Mohammadi
+    initials: FM
+    affiliations:
+      - Department of Bioengineering, University of California, Los Angeles
+  -
+    github: aarmey
+    name: Aaron S. Meyer
+    initials: ASM
+    twitter: aarmey
+    orcid: 0000-0003-4513-1840
+    email: a@asmlab.org
+    affiliations:
+      - Department of Bioengineering, University of California, Los Angeles
+      - Department of Bioinformatics, University of California, Los Angeles
+      - Jonsson Comprehensive Cancer Center, University of California, Los Angeles
+      - Eli and Edythe Broad Center of Regenerative Medicine and Stem Cell Research, University of California, Los Angeles

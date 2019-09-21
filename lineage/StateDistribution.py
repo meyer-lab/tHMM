@@ -133,8 +133,7 @@ def gamma_estimator0(gamma_obs):
     N = len(gamma_obs)
     if N == 0:
         return 10, 1
-    #assert N != 0, "The number of gamma observations is zero!"
-    print("the number of gamma observations", N)
+
     x_lnx = [x * np.log(x) for x in gamma_obs]
     lnx = [np.log(x) for x in gamma_obs]
     # gamma_a
@@ -160,5 +159,4 @@ def gamma_estimator(gamma_obs):
     floc = 0.0
     a, scale = gamma_estimator0(gamma_obs)
     #a, loc, scale = sp.gamma.fit(gamma_obs, a=a, floc=floc, scale=scale)
-    print(a, floc, scale)
     return a, floc, scale

@@ -1,18 +1,13 @@
 """
 This creates Figure 7. AIC Figure.
 """
+import numpy as np
+import copy as cp
+
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
-
-import numpy as np
-import copy as cp
-from matplotlib import rc
-rc('font', **{'family': 'sans-serif', 'sans-serif': ['Helvetica']})
-# for Palatino and other serif fonts use:
-# rc('font',**{'family':'serif','serif':['Palatino']})
-rc('text', usetex=True)
 
 
 def makeFigure():
