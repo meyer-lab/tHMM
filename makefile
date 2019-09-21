@@ -72,7 +72,7 @@ pylint.log: venv
 
 clean:
 	mv output/requests-cache.sqlite requests-cache.sqlite || true
-	rm -rf prof output coverage.xml .coverage .coverage* junit.xml coverage.xml profile profile.svg
+	rm -rf prof output coverage.xml .coverage .coverage* junit.xml coverage.xml profile profile.svg pylint.log
 	mkdir output
 	mv requests-cache.sqlite output/requests-cache.sqlite || true
 
