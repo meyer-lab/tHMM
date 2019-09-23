@@ -58,7 +58,6 @@ def accuracy(tHMMobj, all_states):
         if total_errs[0] <= total_errs[1]:
             new_all_states = all_states[num]
         else:
-            print('SWITCHING!')
             new_all_states = [not(x) for x in all_states[num]]
             tmp = cp.deepcopy(tHMMobj.estimate.E[1])
             tHMMobj.estimate.E[1] = tHMMobj.estimate.E[0]
@@ -99,7 +98,6 @@ def accuracyG(tHMMobj, all_states):
         if total_errs[0] <= total_errs[1]:
             new_all_states = all_states[num]
         else:
-            print('SWITCHING!')
             new_all_states = [not(x) for x in all_states[num]]
             tmp = cp.deepcopy(tHMMobj.estimate.E[1])
             tHMMobj.estimate.E[1] = tHMMobj.estimate.E[0]
