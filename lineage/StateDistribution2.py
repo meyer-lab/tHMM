@@ -15,6 +15,7 @@ class StateDistribution2:
         self.gamma_scale1 = gamma_scale1
         self.gamma_a2 = gamma_a2
         self.gamma_scale2 = gamma_scale2
+        
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
