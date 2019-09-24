@@ -1,6 +1,6 @@
 '''Calls the tHMM functions and outputs the parameters needed to generate the Figures'''
-import numpy as np
 import copy as cp
+import numpy as np
 from .BaumWelch import fit
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
