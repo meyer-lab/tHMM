@@ -1,8 +1,8 @@
 """
 This creates Figure 7. AIC Figure.
 """
-import numpy as np
 import copy as cp
+import numpy as np
 
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze
@@ -115,8 +115,8 @@ def accuracy_increased_lineages():
 
     for X1, X2 in zip(list_of_lineages_unpruned, list_of_lineages_pruned):
         # Analyzing the lineages
-        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X1, 2)
-        deltas2, state_ptrs2, all_states2, tHMMobj2, NF2, LL2 = Analyze(X2, 2)
+        _, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
+        _, _, all_states2, tHMMobj2, _, _ = Analyze(X2, 2)
 
         # Collecting how many lineages are in each analysis
 

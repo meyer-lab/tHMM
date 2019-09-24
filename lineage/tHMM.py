@@ -2,7 +2,6 @@
 
 import numpy as np
 from .StateDistribution import tHMM_E_init
-from .StateDistribution2 import tHMM_E_init2
 
 
 class estimate:
@@ -108,15 +107,13 @@ class tHMM:
         for all x_n and z_n in our observed and hidden state tree
         and for all possible discrete states k.
         '''
-        numStates = self.numStates
-
         EL = []
 
         for lineageObj in self.X:  # for each lineage in our Population
             lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
-            EL_array = np.zeros((len(lineage), numStates))  # instantiating N by K array for each lineage
+            EL_array = np.zeros((len(lineage), self.numStates))  # instantiating N by K array for each lineage
 
-            for state_k in range(numStates):  # for each state
+            for state_k in range(self.numStates):  # for each state
                 for current_cell_idx, cell in enumerate(lineage):  # for each cell in the lineage
                     EL_array[current_cell_idx, state_k] = self.estimate.E[state_k].pdf(cell.obs)
 

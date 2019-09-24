@@ -1,19 +1,13 @@
 """
 This creates Figure 6.
 """
+import copy as cp
+import numpy as np
 from .figureCommon import getSetup
 from ..Analyze import accuracy, accuracyG, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 from ..StateDistribution2 import StateDistribution2
-
-import numpy as np
-import copy as cp
-from matplotlib import rc
-rc('font', **{'family': 'sans-serif', 'sans-serif': ['Helvetica']})
-# for Palatino and other serif fonts use:
-# rc('font',**{'family':'serif','serif':['Palatino']})
-rc('text', usetex=True)
 
 
 def makeFigure():
