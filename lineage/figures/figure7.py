@@ -1,8 +1,8 @@
 """
 This creates Figure 7. AIC Figure.
 """
-import numpy as np
 import copy as cp
+import numpy as np
 
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze
