@@ -288,33 +288,8 @@ class LineageTree:
         return s1 + s2 + s3
 
     def __str__(self):
-        """ This function is used to get string representation of an object, used for showing the results to the user. Same as `__repr__()` """
-        s1 = ""
-        s2 = ""
-        s3 = ""
-        if self._prune_boolean:
-            s1 = "This tree is pruned. It is made of {} states.\n For each state in this tree: ".format(
-                self.num_states)
-            s_list = []
-            for state in range(self.num_states):
-                s_list.append("\n \t There are {} cells of state {}".format(
-                    self.lineage_stats[state].num_pruned_lin_cells, state))
-            seperator = ', '
-            s2 = seperator.join(s_list)
-            s3 = ".\n This pruned tree has {} cells in total".format(
-                len(self.pruned_lin_list))
-        else:
-            s1 = "This tree is NOT pruned. It is made of {} states.\n For each state in this tree: ".format(
-                self.num_states)
-            s_list = []
-            for state in range(self.num_states):
-                s_list.append("\n \t There are {} cells of state {}".format(
-                    self.lineage_stats[state].num_full_lin_cells, state))
-            seperator = ', '
-            s2 = seperator.join(s_list)
-            s3 = ".\n This UNpruned tree has {} cells in total".format(
-                len(self.full_lin_list))
-        return s1 + s2 + s3
+        """ This function is used to get string representation of an object, used for showing the results to the user. """
+        return self.__repr__()
 
 # tools for analyzing trees
 
