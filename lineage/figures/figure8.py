@@ -70,10 +70,11 @@ def AIC_increased_cells():
             lineage_unpruned = LineageTree(pi, T, E, num_cells, prune_boolean=False)
             # if the length of the pruned lineage tree is less than 5 cells, don't analyze either the pruned
             # or the unpruned lineage and skip
-            if lineage_unpruned.__len__(True) <= 5:
-                continue
+            while lineage_unpruned.__len__(True) <= 10:
+                lineage_unpruned = LineageTree(pi, T, E, num_cells, prune_boolean=False)
             lineage_pruned = cp.deepcopy(lineage_unpruned)
             lineage_pruned.prune_boolean = True
+       
 
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             X1 = [lineage_unpruned]
