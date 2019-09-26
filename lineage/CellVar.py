@@ -54,17 +54,17 @@ class CellVar:
 
     def _isChild(self):
         """ Boolean. Returns true if this cell has a known parent. """
-        booler = False
         if self.parent:
-            booler = self.parent._isParent()
-        return booler
+            return self.parent._isParent()
+
+        return False
 
     def _isRootParent(self):
         """ Boolean. Returns true if this cell is the first cell in a lineage. """
-        bool_parent = False
         if not self.parent and self.gen == 1:
-            bool_parent = True
-        return bool_parent
+            return True
+
+        return False
 
     def _isLeaf(self):
         """ Boolean. Returns true when a cell is a leaf with no children. """
