@@ -5,6 +5,7 @@ from .BaumWelch import fit
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
 from .tHMM import tHMM
+from .StateDistribution import get_experiment_time
 
 
 def Analyze(X, numStates):
@@ -108,3 +109,19 @@ def accuracyG(tHMMobj, all_states):
         acuracy_holder.append(100 * acc)
 
     return acuracy_holder
+
+
+def growth_rate(tHMMobj):
+    """ This function is to find the average growth rate for the total population of cells. """
+    exp_coef = np.zeros(shape=len(tHMMobj.X))
+    longest = np.zeros(shape=len(tHMMobj.X))
+
+    for lin_num, linObj in enumerate(tHMMobj.X):
+        longest[lin_num] = get_experiment_time(linObj)
+        print(longest)
+        y = float(len(linObj.output_lineage)) # number of cells up to the longest time
+        exp_coef[lin_num] = y **(1/longest[lin_num]) # exponential growth rate, assuming we start with 1 cell
+        print(exp_coef)
+
+    weighted_growthRate = np.sum([i*j for i, j in zip(longest, exp_coef)]) / sum(longest)
+    return weighted_growthRate
