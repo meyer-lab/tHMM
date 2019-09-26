@@ -8,6 +8,6 @@ def makeFigure():
     """ makes figure 4 """
 
     # Get list of axis objects
-    ax, f = getSetup((12, 3), (1, 3))
+    _, f = getSetup((12, 3), (1, 3))
 
     return f
