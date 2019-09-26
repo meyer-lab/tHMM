@@ -112,10 +112,6 @@ def accuracyG(tHMMobj, all_states):
     return acuracy_holder
 
 
-
-
-
-
 def getAIC(tHMMobj, LL):
     '''
     Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
@@ -123,44 +119,14 @@ def getAIC(tHMMobj, LL):
     AIC = 2*k - 2 * log(LL) in which k is the number of free parameters and LL is the maximum of likelihood function.
     Minimum of AIC detremines the relatively better model.
     Args:
-        ----------
+    -----
         tHMMobj (obj): the tHMM class which has been built.
         LL (list): a list containing log-likelihood values of Normalizing Factors for each lineage.
     Returns:
-        ----------
-        AIC_ls_rel_0 (list): containing AIC values relative to 0 for each lineage.
-        LL_ls_rel_0 (list): containing LL values relative to 0 for each lineage.
+    --------
+        AIC_ls (list): containing AIC values relative to 0 for each lineage.
+        LL_ls (list): containing LL values relative to 0 for each lineage.
         AIC_degrees_of_freedom : the degrees of freedom in AIC calculation (numStates**2 + numStates * number_of_parameters - 1) - same for each lineage
-    Example Usage:
-        from matplotlib.ticker import MaxNLocator
-        x1val = []
-        x2val = []
-        yval = []
-        for numState in range(3):
-            tHMMobj = tHMM(X, numStates=numState, FOM='G') # build the tHMM class with X
-            tHMMobj, NF, betas, gammas, LL = fit(tHMMobj, max_iter=100, verbose=False)
-            AIC_value, numStates, deg = getAIC(tHMMobj, LL)
-            x1val.append(numStates)
-            x2val.append(deg)
-            yval.append(AIC_value)
-        fig = plt.figure(figsize=(10,10))
-        ax1 = fig.add_subplot(111)
-        ax1.scatter(xval, yval, marker='*', c='b', s=500, label='One state data/model')
-        ax1.xaxis.set_major_locator(MaxNLocator(integer=True))
-        ax1.grid(True, linestyle='--')
-        ax1.set_xlabel('Number of States')
-        ax1.set_ylabel('AIC Cost')
-        title = ax1.set_title('Akaike Information Criterion')
-        title.set_y(1.1)
-        fig.subplots_adjust(top=1.3)
-        ax2 = ax1.twiny()
-        ax2.set_xticks([1]+ax1.get_xticks())
-        ax2.set_xbound(ax1.get_xbound())
-        ax2.set_xticklabels(x2val)
-        ax2.set_xlabel('Number of parameters')
-        ax1.legend()
-        plt.rcParams.update({'font.size': 28})
-        plt.show()
     '''
     numStates = tHMMobj.numStates
 
