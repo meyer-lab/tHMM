@@ -58,7 +58,7 @@ def AIC_increased_cells():
     
     desred_num_states = [1, 2, 3, 4]
     
-    desired_num_cells = np.logspace(5, 10, num=10, base=2.0)
+    desired_num_cells = np.logspace(5, 10, num=20, base=2.0)
     desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
 
     AIC_unpruned = np.zeros(shape=(len(desired_num_cells),len(desred_num_states)))
