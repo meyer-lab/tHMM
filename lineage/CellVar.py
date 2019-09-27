@@ -133,8 +133,8 @@ def _double(parent_state, T):
     # Rolling two of the same loaded dice separate times and assigning
     # where they landed to states
 
-    left_state_results, right_state_results = sp.multinomial.rvs(n=1, p=np.squeeze(
-        T[parent_state, :]), size=2)  # first and second roll are left and right
+    left_state_results, right_state_results = \
+    sp.multinomial.rvs(n=1, p=np.squeeze(T[parent_state, :]), size=2)  # first and second roll are left and right
     left_state = left_state_results.tolist().index(1)
     right_state = right_state_results.tolist().index(1)
 

@@ -1,5 +1,6 @@
 '''This file contains the methods that completes the downward recursion and evaulates the beta values.'''
 
+import math
 import numpy as np
 
 
@@ -145,6 +146,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                                                       beta_array=betas[num],
                                                       state_j=state_j,
                                                       node_parent_m_idx=node_parent_m_idx)
+                    if math.isnan(fac1): print("this is factor 1", fac1)
                     fac2 = EL_array[node_parent_m_idx, state_j]
                     fac3 = MSD_array[node_parent_m_idx, state_j]
                     numer_holder.append(fac1 * fac2 * fac3)
@@ -175,7 +177,6 @@ def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, state_j, node_
                                           state_j=state_j,
                                           node_child_n_idx=node_child_n_idx)
         beta_m_n_holder *= beta_m_n
-
     return beta_m_n_holder
 
 
@@ -191,6 +192,10 @@ def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
     '''
     # beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
     # P( z_n = k | z_m = j); P(z_n = k)
+    if math.isnan(np.sum(beta_array[node_child_n_idx, :] * T[state_j, :] / MSD_array[node_child_n_idx, :])):
+        print(beta_array[node_child_n_idx, :])
+        print(T)
+        print(MSD_array[node_child_n_idx, :])
     return np.sum(beta_array[node_child_n_idx, :] * T[state_j, :] / MSD_array[node_child_n_idx, :])
 
 
