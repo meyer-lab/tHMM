@@ -73,7 +73,7 @@ class StateDistribution:
         return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_loc, self.gamma_scale)
 
 
-def prune_rule(cell):
+def die_prune_rule(cell):
     """ User-defined function that checks whether a cell's subtree should be removed. """
     truther = False
     if cell.obs[0] == 0:
