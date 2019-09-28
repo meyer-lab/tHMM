@@ -72,11 +72,12 @@ class StateDistribution:
         return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_loc, self.gamma_scale)
 
 
-def die_prune_rule(cell):
+def die_prune_rule(cell, desired_experiment_time):
     """ User-defined function that checks whether a cell's subtree should be removed. """
     truther = False
-    if cell.obs[0] == 0:
-        truther = True  # cell has died; subtree must be removed
+    if cell.obs[0] == 0 or cell.time.timeThusFar > desired_experiment_time:
+        truther = True  # cell has died or lived past the experiment time
+        # subtree must be removed
     return truther
 
 
