@@ -3,7 +3,6 @@ import numpy as np
 import scipy.stats as sp
 import math
 
-
 class StateDistribution:
     def __init__(self, state, bern_p, gamma_a, gamma_loc, gamma_scale):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
@@ -88,11 +87,8 @@ def tHMM_E_init(state):
                              0,
                              1)
 
-# Because parameter estimation requires that estimators be written or imported, the user should be able to provide
-# estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
-# Their use in the StateDistribution class is shown in the estimator class method. User must take care to define estimators that
-# can handle the case where the list of observations is empty.
-
+def assign_times(lineageObj):
+    
 
 def report_time(cell):
     """ Given any cell in the lineage, this function walks through the cell's ancestors and return how long it has taken so far. """
@@ -108,15 +104,19 @@ def report_time(cell):
     return taus
 
 
-def get_experiment_time(lineage):
+def get_experiment_time(lineageObj):
     """ This function is to find the amount of time it took for the cells to be generated and reach to the desired number of cells. """
     leaf_times = []
-    for cell in lineage.output_leaves:
+    for cell in lineageObj.output_leaves:
         temp = report_time(cell)
         leaf_times.append(temp)
     longest = max(leaf_times)
     return longest
 
+# Because parameter estimation requires that estimators be written or imported, the user should be able to provide
+# estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
+# Their use in the StateDistribution class is shown in the estimator class method. User must take care to define estimators that
+# can handle the case where the list of observations is empty.
 
 def bernoulli_estimator(bern_obs):
     """ Add up all the 1s and divide by the total length (finding the average). """
