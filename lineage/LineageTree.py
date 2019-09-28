@@ -145,7 +145,7 @@ class LineageTree:
                 self.full_lin_list.append(left_cell)
                 self.full_lin_list.append(right_cell)
 
-            if len(self.full_lin_list) >= 2**10 - 1:
+            if len(self.full_lin_list) >= 2**11 - 1:
                 break
 
         return self.full_lin_list
