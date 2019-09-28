@@ -35,9 +35,9 @@ class TestModel(unittest.TestCase):
         state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
         state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
         self.E = [state_obj0, state_obj1]
-        num = 2**7 - 1
         # Using an unpruned lineage to avoid unforseen issues
-        self.X = [LineageTree(pi, T, self.E, num, prune_boolean=False)]
+        self.X = [LineageTree(pi,T, self.E, desired_experiment_time=500, prune_condition='die',\
+                              prune_boolean=False)]
         tHMMobj = tHMM(self.X, numStates=2)  # build the tHMM class with X
 
         # Test cases below
@@ -55,8 +55,6 @@ class TestModel(unittest.TestCase):
         self.assertTrue(np.isfinite(new_LL_list_after[0]))
 
         self.assertGreater(LL_after[0], LL_before[0])
-
-        del _
 
     def test_init_paramlist(self):
         '''

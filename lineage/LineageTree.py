@@ -50,6 +50,7 @@ class LineageTree:
         assert pi_num_states == T_num_states == E_num_states, "The number of states in your input Markov probability parameters are mistmatched. Please check that the dimensions and states match. "
         self.num_states = pi_num_states
         self.desired_experiment_time = desired_experiment_time
+        self.prune_condition = prune_condition # string for prune condition
         self.lineage_stats = []
 
         for state in range(self.num_states):
@@ -90,12 +91,12 @@ class LineageTree:
 
     @property
     def prune_boolean(self):
-        return self.prune_boolean
+        return self.__prune_boolean
 
     @prune_boolean.setter
     def prune_boolean(self, prune_boolean):
-        self.prune_boolean = prune_boolean
-        if self.prune_boolean == 'both':
+        self.__prune_boolean = prune_boolean
+        if self.prune_boolean:
             self.output_lineage = self.pruned_lin_list
             self.output_max_gen = self.pruned_max_gen
             self.output_list_of_gens = self.pruned_list_of_gens
