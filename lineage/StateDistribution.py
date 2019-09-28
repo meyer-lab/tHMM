@@ -89,54 +89,55 @@ def tHMM_E_init(state):
 
 
 class Time:
-    def __init__(self, startT, endT, lifetime):
+    """
+    Class that stores all the time related observations in a neater format.
+    This will assist in pruning based on experimental time as well as
+    obtaining attributes of the lineage as a whole, such as the 
+    average growth rate.
+    """
+    def __init__(self, startT, endT, lifetime, timeThusFar):
         self.startT = startT
         self.endT = endT
         self.lifetime = lifetime
+        self.timeThusFar = timeThusFar
 
 def assign_times(lineageObj):
     """
     Assigns the start and end time for each cell in the lineage.
     The time observation will be stored in the cell's observation parameter list
-    in the first position. See the other time functions to understand.
+    in the second position (index 1). See the other time functions to understand.
     """
     # traversing the cells by generation
     for gen, level in enumerate(lineageObj.output_list_of_gens[1:]):
         if gen == 1:
             for cell in level:
                 assert cell._isRootParent()
-                cell.time = Time(0, cell.obs[1], cell.obs[1])
+                cell.time = Time(0, cell.obs[1], cell.obs[1], cell.obs[1])
         else:
             for cell in level:
-                cell.time = Time(cell.parent.time.endT, cell.parent.time.endT+cell.obs[1], cell.obs[1])
-    
-
-def report_time(cell):
-    """ Given any cell in the lineage, this function walks through the cell's ancestors and return how long it has taken so far. """
-    list_parents = [cell]
-    taus = 0.0 + cell.obs[1]
-
-    for cell in list_parents:
-        if cell._isRootParent():
-            break
-        elif cell.parent not in list_parents:
-            list_parents.append(cell.parent)
-            taus += cell.parent.obs[1]
-    return taus
-
+                cell.time = Time(cell.parent.time.endT,
+                                 cell.parent.time.endT+cell.obs[1],
+                                 cell.obs[1],
+                                 cell.parent.time.timeThusFar+cell.obs[1])
 
 def get_experiment_time(lineageObj):
-    """ This function is to find the amount of time it took for the cells to be generated and reach to the desired number of cells. """
-    leaf_times = []
+    """
+    This function returns the longest experiment time 
+    experienced by cells in the lineage. This is effectively
+    the same as the experiment time for synthetic lineages.
+    """
+    leaf_timesThusFar = []
     for cell in lineageObj.output_leaves:
-        temp = report_time(cell)
-        leaf_times.append(temp)
-    longest = max(leaf_times)
+        leaf_timesThusFar.append(cell.time.timeThusFar)
+    longest = max(leaf_timesThusFar)
     return longest
 
-# Because parameter estimation requires that estimators be written or imported, the user should be able to provide
-# estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
-# Their use in the StateDistribution class is shown in the estimator class method. User must take care to define estimators that
+# Because parameter estimation requires that estimators be written or imported, 
+# the user should be able to provide
+# estimators that can solve for the parameters that describe the distributions. 
+# We provide some estimators below as an example.
+# Their use in the StateDistribution class is shown in the estimator class method. 
+# User must take care to define estimators that
 # can handle the case where the list of observations is empty.
 
 def bernoulli_estimator(bern_obs):
