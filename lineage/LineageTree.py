@@ -151,7 +151,7 @@ class LineageTree:
         """
         self.pruned_lin_list = deepcopy(self.full_lin_list)
         for cell in self.pruned_lin_list:
-            if prune_rule(cell):
+            if die_prune_rule(cell):
                 _, _, self.pruned_lin_list = find_two_subtrees(
                     cell, self.pruned_lin_list)
                 cell.left = None
