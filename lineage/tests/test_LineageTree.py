@@ -34,7 +34,7 @@ class TestModel(unittest.TestCase):
 
         self.E = [state_obj0, state_obj1]
 
-        # creating two lineages, one with False for pruning, one with True.
+        # creating lineages with the various prune conditions
         self.lineage1 = LineageTree(
             self.pi,
             self.T,
@@ -42,7 +42,7 @@ class TestModel(unittest.TestCase):
             desired_experiment_time=500,
             prune_condition='die',
             prune_boolean=False)
-        self.lineage2_pruned = LineageTree(
+        self.lineage2_pruned_die = LineageTree(
             self.pi,
             self.T,
             self.E,
@@ -125,11 +125,11 @@ class TestModel(unittest.TestCase):
         """ A unittest for generate_lineage_list. """
         # checking the number of cells generated is equal to the desired
         # number of cells given by the user.
-        self.assertTrue(len(self.lineage1.full_lin_list) == 2**10 - 1)
+        self.assertTrue(len(self.lineage1.full_lin_list) == 2**11 - 1)
         self.assertTrue(self.lineage1.full_lin_list ==
                         self.lineage1.output_lineage)
-        self.assertTrue(self.lineage2_pruned.pruned_lin_list ==
-                        self.lineage2_pruned.output_lineage)
+        self.assertTrue(self.lineage2_pruned_die.pruned_lin_list ==
+                        self.lineage2_pruned_die.output_lineage)
 
     def test_prune_lineage(self):
         """ A unittest for prune_lineage. """
@@ -145,7 +145,7 @@ class TestModel(unittest.TestCase):
                 self.assertTrue(cell.left is None)
                 self.assertTrue(cell.right is None)
 
-        for cell in self.lineage2_pruned.pruned_lin_list:
+        for cell in self.lineage2_pruned_die.pruned_lin_list:
             if cell._isLeaf():
                 self.assertTrue(cell.left is None)
                 self.assertTrue(cell.right is None)
@@ -155,14 +155,14 @@ class TestModel(unittest.TestCase):
         num_cells_in_state, cells_in_state, indices_of_cells_in_state = self.lineage1._get_full_state_count(
             self.state0)
         self.assertTrue(len(cells_in_state) == num_cells_in_state)
-        self.assertTrue(num_cells_in_state <= 2**10 - 1)
-        self.assertTrue(max(indices_of_cells_in_state) <= 2**10 - 1)
+        self.assertTrue(num_cells_in_state <= 2**11 - 1)
+        self.assertTrue(max(indices_of_cells_in_state) <= 2**11 - 1)
 
         num_cells_in_state1, cells_in_state1, indices_of_cells_in_state1 = self.lineage1._get_full_state_count(
             self.state1)
         self.assertTrue(len(cells_in_state1) == num_cells_in_state1)
-        self.assertTrue(num_cells_in_state1 <= 2**10 - 1)
-        self.assertTrue(max(indices_of_cells_in_state1) <= 2**10 - 1)
+        self.assertTrue(num_cells_in_state1 <= 2**11 - 1)
+        self.assertTrue(max(indices_of_cells_in_state1) <= 2**11 - 1)
 
     def test_get_pruned_state_count(self):
         """ A unittest for _get_pruned_state_count. """
@@ -174,7 +174,7 @@ class TestModel(unittest.TestCase):
                         )
         if len(indices_of_cells_in_state) > 0:
             self.assertTrue(
-                max(indices_of_cells_in_state) <= (2**10 - 1))
+                max(indices_of_cells_in_state) <= (2**11 - 1))
 
         num_cells_in_state1, cells_in_state1, list_of_tuples_of_obs1, indices_of_cells_in_state1 = self.lineage1._get_pruned_state_count(
             self.state1)
@@ -183,7 +183,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(num_cells_in_state1 <= len(self.lineage1.pruned_lin_list)
                         )
         if len(indices_of_cells_in_state) > 0:
-            self.assertTrue(max(indices_of_cells_in_state1) <= (2**10 - 1))
+            self.assertTrue(max(indices_of_cells_in_state1) <= (2**11 - 1))
 
     def test_full_assign_obs(self):
         """ A unittest for checking the full_assign_obs function. """
