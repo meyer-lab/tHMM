@@ -3,7 +3,7 @@ import scipy.stats as sp
 from copy import deepcopy
 
 from .CellVar import CellVar
-from .StateDistribution import die_prune_rule
+from .StateDistribution import assign_times, die_prune_rule
 
 
 # temporary style guide:
@@ -99,12 +99,14 @@ class LineageTree:
             self.output_list_of_gens = self.pruned_list_of_gens
             self.output_leaves_idx = self.pruned_leaves_idx
             self.output_leaves = self.pruned_leaves
+            assign_times(self)
         else:
             self.output_lineage = self.full_lin_list
             self.output_max_gen = self.full_max_gen
             self.output_list_of_gens = self.full_list_of_gens
             self.output_leaves_idx = self.full_leaves_idx
             self.output_leaves = self.full_leaves
+            assign_times(self)
 
     def __len__(self, prune_boolean):
         if prune_boolean:

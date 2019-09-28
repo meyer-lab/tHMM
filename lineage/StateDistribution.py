@@ -109,7 +109,8 @@ def assign_times(lineageObj):
     """
     # traversing the cells by generation
     for gen, level in enumerate(lineageObj.output_list_of_gens[1:]):
-        if gen == 1:
+        true_gen = gen+1 # generations are 1-indexed
+        if true_gen == 1:
             for cell in level:
                 assert cell._isRootParent()
                 cell.time = Time(0, cell.obs[1], cell.obs[1], cell.obs[1])
