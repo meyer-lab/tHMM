@@ -73,7 +73,14 @@ class StateDistribution:
 
 
 def die_prune_rule(cell, desired_experiment_time):
-    """ User-defined function that checks whether a cell's subtree should be removed. """
+    """
+    User-defined function that checks whether a cell's subtree should be removed.
+    Our example is based on the standard requirement that the first observation 
+    is a measure of the cell's fate (1 being alive, 0 being dead) and the second
+    observation being the cell's lifetime. Clearly if a cell has died, its subtree
+    must be removed. If a cell's end time exceeds past a certain experimental time then 
+    its subtree must be removed.
+    """
     truther = False
     if cell.obs[0] == 0 or cell.time.timeThusFar > desired_experiment_time:
         truther = True  # cell has died or lived past the experiment time
