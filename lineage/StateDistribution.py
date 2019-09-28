@@ -124,7 +124,7 @@ def get_experiment_time(lineageObj):
     longest = max(leaf_timesThusFar)
     return longest
 
-def die_prune_rule(cell, desired_experiment_time):
+def die_prune_rule(cell):
     """
     User-defined function that checks whether a cell's subtree should be removed.
     Our example is based on the standard requirement that the first observation 
@@ -137,7 +137,7 @@ def die_prune_rule(cell, desired_experiment_time):
         # subtree must be removed
     return truther
 
-def time_prune_rule(desired_experiment_time):
+def time_prune_rule(cell, desired_experiment_time):
     """
     User-defined function that checks whether a cell's subtree should be removed.
     Our example is based on the standard requirement that the second observation
@@ -145,6 +145,11 @@ def time_prune_rule(desired_experiment_time):
     If a cell has lived beyond a certain experiment time, then its subtree
     must be removed.
     """
+    truther = False
+    if cell.time.timeThusFar > desired_experiment_time:
+        truther = True  # cell has died
+        # subtree must be removed
+    return truther
 
 # Because parameter estimation requires that estimators be written or imported, 
 # the user should be able to provide

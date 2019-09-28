@@ -23,7 +23,7 @@ class LineageStateStats:
 
 
 class LineageTree:
-    def __init__(self, pi, T, E, desired_num_cells, desired_experiment_time, prune_condition='both'):
+    def __init__(self, pi, T, E, desired_experiment_time, prune_condition='both'):
         """
         A class for the structure of the lineage tree. Every lineage from this class is a binary tree built based on initial probabilities and transition probabilities given by the user that builds up the states based off of these until it reaches the desired number of cells in the tree, and then stops. Given the desired distributions for emission, the object will have the "E" a list of state distribution objects assigned to them.
 
@@ -49,7 +49,6 @@ class LineageTree:
         E_num_states = len(E)
         assert pi_num_states == T_num_states == E_num_states, "The number of states in your input Markov probability parameters are mistmatched. Please check that the dimensions and states match. "
         self.num_states = pi_num_states
-        self.desired_num_cells = desired_num_cells
         self.desired_experiment_time = desired_experiment_time
         self.lineage_stats = []
 
@@ -141,7 +140,7 @@ class LineageTree:
                 self.full_lin_list.append(left_cell)
                 self.full_lin_list.append(right_cell)
 
-            if len(self.full_lin_list) >= self.desired_num_cells:
+            if len(self.full_lin_list) >= 2**10 - 1:
                 break
 
         return self.full_lin_list
@@ -152,12 +151,27 @@ class LineageTree:
         """
         self.pruned_lin_list = deepcopy(self.full_lin_list)
         for cell in self.pruned_lin_list:
-            if die_prune_rule(cell, self.desired_experiment_time):
-                _, _, self.pruned_lin_list = find_two_subtrees(
-                    cell, self.pruned_lin_list)
-                cell.left = None
-                cell.right = None
-                assert cell._isLeaf()
+            if self.prune_condition == 'both':
+                if die_prune_rule(cell) and time_prune_rule(cell, self.desired_experiment_time):
+                    _, _, self.pruned_lin_list = find_two_subtrees(
+                        cell, self.pruned_lin_list)
+                    cell.left = None
+                    cell.right = None
+                    assert cell._isLeaf()
+            elseif self.prune_condition == 'die':
+                if die_prune_rule(cell):
+                    _, _, self.pruned_lin_list = find_two_subtrees(
+                        cell, self.pruned_lin_list)
+                    cell.left = None
+                    cell.right = None
+                    assert cell._isLeaf()          
+            elseif self.prune_condition == 'time':
+                if time_prune_rule(cell, self.desired_experiment_time):
+                    _, _, self.pruned_lin_list = find_two_subtrees(
+                        cell, self.pruned_lin_list)
+                    cell.left = None
+                    cell.right = None
+                    assert cell._isLeaf()
         return self.pruned_lin_list
 
     def _get_full_state_count(self, state):
