@@ -3,7 +3,7 @@ import scipy.stats as sp
 from copy import deepcopy
 
 from .CellVar import CellVar
-from .StateDistribution import prune_rule
+from .StateDistribution import die_prune_rule
 
 
 # temporary style guide:
