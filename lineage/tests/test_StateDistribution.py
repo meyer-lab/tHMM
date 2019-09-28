@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 import scipy.stats as sp
-from ..StateDistribution import StateDistribution, bernoulli_estimator, exponential_estimator, gamma_estimator, die_prune_rule, report_time, get_experiment_time
+from ..StateDistribution import StateDistribution, bernoulli_estimator, exponential_estimator, gamma_estimator, die_prune_rule, get_experiment_time
 from ..LineageTree import LineageTree
 
 
@@ -105,32 +105,6 @@ class TestModel(unittest.TestCase):
         for cell in self.lineage.lineage_stats[1].full_lin_cells:
             if cell.obs[0] == 0:
                 self.assertTrue(prune_rule(cell))
-
-    def test_report_time(self):
-        """
-        Given a cell, the report_time function has to
-        return the time since the start of the experiment
-        to the time of this cell's time.
-        """
-        full_lin_cells_holder = []
-        for state in range(2):
-            full_lin_cells_holder.append(self.lineage.lineage_stats[state].full_lin_cells)
-
-        # bringing all the cells after assigning observations to them
-        all_cells = [cell for sub_statelist in full_lin_cells_holder for cell in sub_statelist]
-
-        # here we check this for the root parent, since the time has taken
-        # so far, equals to the lifetime of the cell
-        for cell in all_cells:
-            if cell._isRootParent():
-                parent_tau = cell.obs[1]
-                self.assertTrue(report_time(cell) == parent_tau)
-
-        # here we check for the root parent and its left child
-        for cell in all_cells:
-            if cell._isRootParent():
-                taus = cell.obs[1] + cell.left.obs[1]
-                self.assertTrue(report_time(cell.left) == taus)
 
     def test_get_experiment_time(self):
         """
