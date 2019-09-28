@@ -72,29 +72,12 @@ class StateDistribution:
         return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_loc, self.gamma_scale)
 
 
-def die_prune_rule(cell, desired_experiment_time):
-    """
-    User-defined function that checks whether a cell's subtree should be removed.
-    Our example is based on the standard requirement that the first observation 
-    is a measure of the cell's fate (1 being alive, 0 being dead) and the second
-    observation being the cell's lifetime. Clearly if a cell has died, its subtree
-    must be removed. If a cell's end time exceeds past a certain experimental time then 
-    its subtree must be removed.
-    """
-    truther = False
-    if cell.obs[0] == 0 or cell.time.timeThusFar > desired_experiment_time:
-        truther = True  # cell has died or lived past the experiment time
-        # subtree must be removed
-    return truther
-
-
 def tHMM_E_init(state):
     return StateDistribution(state,
                              0.9,
                              10 * (np.random.uniform()),
                              0,
                              1)
-
 
 class Time:
     """
@@ -140,6 +123,28 @@ def get_experiment_time(lineageObj):
         leaf_timesThusFar.append(cell.time.timeThusFar)
     longest = max(leaf_timesThusFar)
     return longest
+
+def die_prune_rule(cell, desired_experiment_time):
+    """
+    User-defined function that checks whether a cell's subtree should be removed.
+    Our example is based on the standard requirement that the first observation 
+    (index 0) is a measure of the cell's fate (1 being alive, 0 being dead). 
+    Clearly if a cell has died, its subtree must be removed.
+    """
+    truther = False
+    if cell.obs[0] == 0:
+        truther = True  # cell has died
+        # subtree must be removed
+    return truther
+
+def time_prune_rule(desired_experiment_time):
+    """
+    User-defined function that checks whether a cell's subtree should be removed.
+    Our example is based on the standard requirement that the second observation
+    (index 1) is a measure of the cell's lifetime.
+    If a cell has lived beyond a certain experiment time, then its subtree
+    must be removed.
+    """
 
 # Because parameter estimation requires that estimators be written or imported, 
 # the user should be able to provide
