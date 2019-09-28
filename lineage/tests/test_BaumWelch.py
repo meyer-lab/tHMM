@@ -39,7 +39,7 @@ class TestBW(unittest.TestCase):
         E = [state_obj0, state_obj1]
         num = 2**7 - 1
         # Using an unpruned lineage to avoid unforseen issues
-        X = LineageTree(pi, T, E, num, prune_boolean=False)
+        X = LineageTree(pi, T, E, 500, prune_condition='die', prune_boolean=False)
         tHMMobj = tHMM([X], numStates=2)  # build the tHMM class with X
 
         # Test cases below

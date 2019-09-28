@@ -23,7 +23,7 @@ class LineageStateStats:
 
 
 class LineageTree:
-    def __init__(self, pi, T, E, desired_experiment_time, prune_condition='both'):
+    def __init__(self, pi, T, E, desired_experiment_time, prune_condition='both', prune_boolean=True):
         """
         A class for the structure of the lineage tree. Every lineage from this class is a binary tree built based on initial probabilities and transition probabilities given by the user that builds up the states based off of these until it reaches the desired number of cells in the tree, and then stops. Given the desired distributions for emission, the object will have the "E" a list of state distribution objects assigned to them.
 
@@ -74,10 +74,14 @@ class LineageTree:
         self.pruned_leaves_idx, self.pruned_leaves = get_leaves(self.pruned_lin_list)
 
         # this is given by the user:
-        # 'die' - prune based on the fate of the cell
+        # 'fate' - prune based on the fate of the cell
         # 'time' - prune based on the length of the experiment
         # 'both' - prune based on both the 'die' and 'time' conditions
         self.prune_condition = prune_condition
+        
+        # this governs whether or not the pruned or the
+        # the unpruned lineage is used in the analysis
+        self.prune_boolean = prune_boolean
 
     # Based on the user's decision, if they want the lineage to be pruned (prune_boolean == True),
     # the lineage tree that is given to the tHMM, will be the pruned one.
@@ -85,12 +89,12 @@ class LineageTree:
     # then the full_lin_list will be passed to the output_lineage.
 
     @property
-    def prune_condition(self):
-        return self.prune_condition
+    def prune_boolean(self):
+        return self.prune_boolean
 
-    @prune_condition.setter
-    def prune_boolean(self, prune_condition):
-        self.prune_boolean = prune_condition
+    @prune_boolean.setter
+    def prune_boolean(self, prune_boolean):
+        self.prune_boolean = prune_boolean
         if self.prune_boolean == 'both':
             self.output_lineage = self.pruned_lin_list
             self.output_max_gen = self.pruned_max_gen
@@ -158,14 +162,14 @@ class LineageTree:
                     cell.left = None
                     cell.right = None
                     assert cell._isLeaf()
-            elseif self.prune_condition == 'die':
+            elif self.prune_condition == 'die':
                 if die_prune_rule(cell):
                     _, _, self.pruned_lin_list = find_two_subtrees(
                         cell, self.pruned_lin_list)
                     cell.left = None
                     cell.right = None
                     assert cell._isLeaf()          
-            elseif self.prune_condition == 'time':
+            elif self.prune_condition == 'time':
                 if time_prune_rule(cell, self.desired_experiment_time):
                     _, _, self.pruned_lin_list = find_two_subtrees(
                         cell, self.pruned_lin_list)
@@ -271,14 +275,17 @@ class LineageTree:
         return parent_holder
 
     def __repr__(self):
-        """ This function is used to get string representation of an object, used for debugging and development.
-        Represents the information about the lineage that the user has created, like whether the tree is pruned or is a full tree;
-        and for both of the options it prints the number of states, the number of cells in the states, the total number of cells.
+        """ 
+        This function is used to get string representation of an object, used for debugging and development.
+        Represents the information about the lineage that the user has created, 
+        like whether the tree is pruned or is a full tree;
+        and for both of the options it prints the number of states, 
+        the number of cells in the states, the total number of cells.
         """
         s1 = ""
         s2 = ""
         s3 = ""
-        if self._prune_boolean:
+        if self.prune_boolean:
             s1 = "This tree is pruned. It is made of {} states.\n For each state in this tree: ".format(
                 self.num_states)
             s_list = []
@@ -303,7 +310,10 @@ class LineageTree:
         return s1 + s2 + s3
 
     def __str__(self):
-        """ This function is used to get string representation of an object, used for showing the results to the user. """
+        """
+        This function is used to get string representation of an object,
+        used for showing the results to the user. 
+        """
         return self.__repr__()
 
 # tools for analyzing trees

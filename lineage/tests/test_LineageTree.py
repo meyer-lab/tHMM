@@ -39,13 +39,15 @@ class TestModel(unittest.TestCase):
             self.pi,
             self.T,
             self.E,
-            desired_num_cells=2**9 - 1,
+            desired_experiment_time=500,
+            prune_condition='die',
             prune_boolean=False)
         self.lineage2_pruned = LineageTree(
             self.pi,
             self.T,
             self.E,
-            desired_num_cells=2**9 - 1,
+            desired_experiment_time=500,
+            prune_condition='die',
             prune_boolean=True)
 
         # creating 7 cells for 3 generations manually
