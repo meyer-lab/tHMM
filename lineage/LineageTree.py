@@ -3,7 +3,7 @@ import scipy.stats as sp
 from copy import deepcopy
 
 from .CellVar import CellVar
-from .StateDistribution import assign_times, die_prune_rule
+from .StateDistribution import assign_times, die_prune_rule, time_prune_rule
 
 
 # temporary style guide:
@@ -23,7 +23,7 @@ class LineageStateStats:
 
 
 class LineageTree:
-    def __init__(self, pi, T, E, desired_num_cells, desired_experiment_time, prune_boolean=True):
+    def __init__(self, pi, T, E, desired_num_cells, desired_experiment_time, prune_condition='both'):
         """
         A class for the structure of the lineage tree. Every lineage from this class is a binary tree built based on initial probabilities and transition probabilities given by the user that builds up the states based off of these until it reaches the desired number of cells in the tree, and then stops. Given the desired distributions for emission, the object will have the "E" a list of state distribution objects assigned to them.
 
@@ -74,10 +74,11 @@ class LineageTree:
         self.pruned_max_gen, self.pruned_list_of_gens = max_gen(self.pruned_lin_list)
         self.pruned_leaves_idx, self.pruned_leaves = get_leaves(self.pruned_lin_list)
 
-        # this is given by the user, true of they want the lineage to be
-        # pruned, false if they want the full binary tree
-        self._prune_boolean = prune_boolean
-        self.prune_boolean = self._prune_boolean
+        # this is given by the user:
+        # 'die' - prune based on the fate of the cell
+        # 'time' - prune based on the length of the experiment
+        # 'both' - prune based on both the 'die' and 'time' conditions
+        self.prune_condition = prune_condition
 
     # Based on the user's decision, if they want the lineage to be pruned (prune_boolean == True),
     # the lineage tree that is given to the tHMM, will be the pruned one.
@@ -85,16 +86,13 @@ class LineageTree:
     # then the full_lin_list will be passed to the output_lineage.
 
     @property
-    def prune_boolean(self):
-        return self._prune_boolean
+    def prune_condition(self):
+        return self.prune_condition
 
-    @prune_boolean.setter
-    def prune_boolean(self, new_prune_boolean):
-        if not isinstance(new_prune_boolean, bool):
-            raise ValueError(
-                "Boolean deciding whether to prune or not must be True or False.")
-        self._prune_boolean = new_prune_boolean
-        if self._prune_boolean:
+    @prune_condition.setter
+    def prune_boolean(self, prune_condition):
+        self.prune_boolean = prune_condition
+        if self.prune_boolean == 'both':
             self.output_lineage = self.pruned_lin_list
             self.output_max_gen = self.pruned_max_gen
             self.output_list_of_gens = self.pruned_list_of_gens
