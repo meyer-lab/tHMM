@@ -87,7 +87,28 @@ def tHMM_E_init(state):
                              0,
                              1)
 
+
+class Time:
+    def __init__(self, startT, endT, lifetime):
+        self.startT = startT
+        self.endT = endT
+        self.lifetime = lifetime
+
 def assign_times(lineageObj):
+    """
+    Assigns the start and end time for each cell in the lineage.
+    The time observation will be stored in the cell's observation parameter list
+    in the first position. See the other time functions to understand.
+    """
+    # traversing the cells by generation
+    for gen, level in enumerate(lineageObj.output_list_of_gens[1:]):
+        if gen == 1:
+            for cell in level:
+                assert cell._isRootParent()
+                cell.time = Time(0, cell.obs[1], cell.obs[1])
+        else:
+            for cell in level:
+                cell.time = Time(cell.parent.time.endT, cell.parent.time.endT+cell.obs[1], cell.obs[1])
     
 
 def report_time(cell):
