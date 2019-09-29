@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from ..CellVar import CellVar as c
 from ..LineageTree import LineageTree, max_gen, get_leaves, get_subtrees, find_two_subtrees, get_mixed_subtrees
-from ..StateDistribution import StateDistribution
+from ..StateDistribution import StateDistribution, get_experiment_time
 
 
 class TestModel(unittest.TestCase):
@@ -49,7 +49,20 @@ class TestModel(unittest.TestCase):
             desired_experiment_time=500,
             prune_condition='die',
             prune_boolean=True)
-
+        self.lineage3_pruned_time = LineageTree(
+            self.pi,
+            self.T,
+            self.E,
+            desired_experiment_time=500,
+            prune_condition='time',
+            prune_boolean=True)    
+        self.lineage4_pruned_both = LineageTree(
+            self.pi,
+            self.T,
+            self.E,
+            desired_experiment_time=500,
+            prune_condition='both',
+            prune_boolean=True) 
         # creating 7 cells for 3 generations manually
         cell_1 = c(
             state=self.state0,
@@ -144,8 +157,18 @@ class TestModel(unittest.TestCase):
             if cell._isLeaf():
                 self.assertTrue(cell.left is None)
                 self.assertTrue(cell.right is None)
-
+                self.assertGreater(get_experiment_time(lineage1), 500)
         for cell in self.lineage2_pruned_die.pruned_lin_list:
+            if cell._isLeaf():
+                self.assertTrue(cell.left is None)
+                self.assertTrue(cell.right is None)
+                self.assertGreater(get_experiment_time(lineage1), 500)
+        for cell in self.lineage3_pruned_time.pruned_lin_list:
+            if cell._isLeaf():
+                self.assertTrue(cell.left is None)
+                self.assertTrue(cell.right is None)
+
+        for cell in self.lineage4_pruned_both.pruned_lin_list:
             if cell._isLeaf():
                 self.assertTrue(cell.left is None)
                 self.assertTrue(cell.right is None)

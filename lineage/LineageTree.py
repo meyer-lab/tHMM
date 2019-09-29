@@ -102,14 +102,12 @@ class LineageTree:
             self.output_list_of_gens = self.pruned_list_of_gens
             self.output_leaves_idx = self.pruned_leaves_idx
             self.output_leaves = self.pruned_leaves
-            assign_times(self)
         else:
             self.output_lineage = self.full_lin_list
             self.output_max_gen = self.full_max_gen
             self.output_list_of_gens = self.full_list_of_gens
             self.output_leaves_idx = self.full_leaves_idx
             self.output_leaves = self.full_leaves
-            assign_times(self)
 
     def __len__(self, prune_boolean):
         if prune_boolean:
@@ -151,13 +149,17 @@ class LineageTree:
         return self.full_lin_list
 
     def _prune_lineage(self):
-        """ This function removes those cells that are intended to be remove from the full binary tree based on emissions.
-        It takes in LineageTree object, walks through all the cells in the full binary tree, applies the pruning to each cell that is supposed to be removed, and returns the pruned list of cells.
+        """ This function removes those cells that are intended to be remove 
+        from the full binary tree based on emissions.
+        It takes in LineageTree object, walks through all the cells in the full binary tree, 
+        applies the pruning to each cell that is supposed to be removed, 
+        and returns the pruned list of cells.
         """
+        assign_times(self)
         self.pruned_lin_list = deepcopy(self.full_lin_list)
         for cell in self.pruned_lin_list:
             if self.prune_condition == 'both':
-                if die_prune_rule(cell) and time_prune_rule(cell, self.desired_experiment_time):
+                if die_prune_rule(cell) or time_prune_rule(cell, self.desired_experiment_time):
                     _, _, self.pruned_lin_list = find_two_subtrees(
                         cell, self.pruned_lin_list)
                     cell.left = None

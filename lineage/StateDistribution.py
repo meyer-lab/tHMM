@@ -86,11 +86,10 @@ class Time:
     obtaining attributes of the lineage as a whole, such as the 
     average growth rate.
     """
-    def __init__(self, startT, endT, lifetime, timeThusFar):
+    def __init__(self, startT, lifetime, endT):
         self.startT = startT
-        self.endT = endT
         self.lifetime = lifetime
-        self.timeThusFar = timeThusFar
+        self.endT = endT # equivalent to endT
 
 def assign_times(lineageObj):
     """
@@ -99,29 +98,30 @@ def assign_times(lineageObj):
     in the second position (index 1). See the other time functions to understand.
     """
     # traversing the cells by generation
-    for gen, level in enumerate(lineageObj.output_list_of_gens[1:]):
+    for gen, level in enumerate(lineageObj.full_list_of_gens[1:]):
         true_gen = gen+1 # generations are 1-indexed
         if true_gen == 1:
             for cell in level:
                 assert cell._isRootParent()
-                cell.time = Time(0, cell.obs[1], cell.obs[1], cell.obs[1])
+                cell.time = Time(0, cell.obs[1], cell.obs[1])
         else:
             for cell in level:
                 cell.time = Time(cell.parent.time.endT,
-                                 cell.parent.time.endT+cell.obs[1],
                                  cell.obs[1],
-                                 cell.parent.time.timeThusFar+cell.obs[1])
+                                 cell.parent.time.endT+cell.obs[1])
 
 def get_experiment_time(lineageObj):
     """
     This function returns the longest experiment time 
-    experienced by cells in the lineage. This is effectively
+    experienced by cells in the lineage. 
+    We can simply find the leaf cell with the
+    longest end time. This is effectively
     the same as the experiment time for synthetic lineages.
     """
-    leaf_timesThusFar = []
+    longest = 0.0
     for cell in lineageObj.output_leaves:
-        leaf_timesThusFar.append(cell.time.timeThusFar)
-    longest = max(leaf_timesThusFar)
+        if cell.time.endT>longest:
+            longest = cell.time.endT
     return longest
 
 def die_prune_rule(cell):
@@ -146,8 +146,8 @@ def time_prune_rule(cell, desired_experiment_time):
     must be removed.
     """
     truther = False
-    if cell.time.timeThusFar > desired_experiment_time:
-        truther = True  # cell has died
+    if cell.time.endT > desired_experiment_time:
+        truther = True  # cell died after the experiment ended
         # subtree must be removed
     return truther
 

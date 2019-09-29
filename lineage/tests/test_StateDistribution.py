@@ -45,9 +45,16 @@ class TestModel(unittest.TestCase):
             self.pi,
             self.T,
             self.E,
+            desired_experiment_time=200,
+            prune_condition='time',
+            prune_boolean=True)
+        self.lineage3 = LineageTree(
+            self.pi,
+            self.T,
+            self.E,
             desired_experiment_time=500,
-            prune_condition='die',
-            prune_boolean=False)
+            prune_condition='both',
+            prune_boolean=True)
 
     def test_rvs(self):
         """ A unittest for random generator function, given the number of random variables we want from each distribution, that each corresponds to one of the observation types. """
@@ -107,6 +114,25 @@ class TestModel(unittest.TestCase):
         for cell in self.lineage.lineage_stats[1].full_lin_cells:
             if cell.obs[0] == 0:
                 self.assertTrue(die_prune_rule(cell))
+                
+    def test_time_prune_rule(self):
+        """ A unittest for the time_prune_rule. """
+
+        for cell in self.lineage3.lineage_stats[0].full_lin_cells:
+            if cell.time.endT > self.lineage3.desired_experiment_time:
+                self.assertTrue(time_prune_rule(cell,self.lineage3.desired_experiment_time))
+
+        for cell in self.lineage3.lineage_stats[1].full_lin_cells:
+            if cell.time.endT > self.lineage3.desired_experiment_time:
+                self.assertTrue(time_prune_rule(cell,self.lineage3.desired_experiment_time))
+                
+    def test_get_experiment_time(self):
+        """
+        A unittest for obtaining the experiment time.
+        """
+        experiment_time2 = get_experiment_time(self.lineage2)
+        experiment_time3 = get_experiment_time(self.lineage3)
+        self.assertLess(experiment_time2,experiment_time3)
 
     def test_bernoulli_estimator(self):
         """
