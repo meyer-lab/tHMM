@@ -55,14 +55,14 @@ class TestModel(unittest.TestCase):
             self.E,
             desired_experiment_time=500,
             prune_condition='time',
-            prune_boolean=True)    
+            prune_boolean=True)
         self.lineage4_pruned_both = LineageTree(
             self.pi,
             self.T,
             self.E,
             desired_experiment_time=500,
             prune_condition='both',
-            prune_boolean=True) 
+            prune_boolean=True)
         # creating 7 cells for 3 generations manually
         cell_1 = c(
             state=self.state0,

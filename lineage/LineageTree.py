@@ -50,7 +50,7 @@ class LineageTree:
         assert pi_num_states == T_num_states == E_num_states, "The number of states in your input Markov probability parameters are mistmatched. Please check that the dimensions and states match. "
         self.num_states = pi_num_states
         self.desired_experiment_time = desired_experiment_time
-        self.prune_condition = prune_condition # string for prune condition
+        self.prune_condition = prune_condition  # string for prune condition
         self.lineage_stats = []
 
         for state in range(self.num_states):
@@ -79,7 +79,7 @@ class LineageTree:
         # 'time' - prune based on the length of the experiment
         # 'both' - prune based on both the 'die' and 'time' conditions
         self.prune_condition = prune_condition
-        
+
         # this governs whether or not the pruned or the
         # the unpruned lineage is used in the analysis
         self.prune_boolean = prune_boolean
@@ -149,10 +149,10 @@ class LineageTree:
         return self.full_lin_list
 
     def _prune_lineage(self):
-        """ This function removes those cells that are intended to be remove 
+        """ This function removes those cells that are intended to be remove
         from the full binary tree based on emissions.
-        It takes in LineageTree object, walks through all the cells in the full binary tree, 
-        applies the pruning to each cell that is supposed to be removed, 
+        It takes in LineageTree object, walks through all the cells in the full binary tree,
+        applies the pruning to each cell that is supposed to be removed,
         and returns the pruned list of cells.
         """
         assign_times(self)
@@ -171,7 +171,7 @@ class LineageTree:
                         cell, self.pruned_lin_list)
                     cell.left = None
                     cell.right = None
-                    assert cell._isLeaf()          
+                    assert cell._isLeaf()
             elif self.prune_condition == 'time':
                 if time_prune_rule(cell, self.desired_experiment_time):
                     _, _, self.pruned_lin_list = find_two_subtrees(
@@ -278,11 +278,11 @@ class LineageTree:
         return parent_holder
 
     def __repr__(self):
-        """ 
+        """
         This function is used to get string representation of an object, used for debugging and development.
-        Represents the information about the lineage that the user has created, 
+        Represents the information about the lineage that the user has created,
         like whether the tree is pruned or is a full tree;
-        and for both of the options it prints the number of states, 
+        and for both of the options it prints the number of states,
         the number of cells in the states, the total number of cells.
         """
         s1 = ""
@@ -315,7 +315,7 @@ class LineageTree:
     def __str__(self):
         """
         This function is used to get string representation of an object,
-        used for showing the results to the user. 
+        used for showing the results to the user.
         """
         return self.__repr__()
 

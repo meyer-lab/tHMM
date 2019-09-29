@@ -3,6 +3,7 @@ import numpy as np
 import scipy.stats as sp
 import math
 
+
 class StateDistribution:
     def __init__(self, state, bern_p, gamma_a, gamma_loc, gamma_scale):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
@@ -79,17 +80,20 @@ def tHMM_E_init(state):
                              0,
                              1)
 
+
 class Time:
     """
     Class that stores all the time related observations in a neater format.
     This will assist in pruning based on experimental time as well as
-    obtaining attributes of the lineage as a whole, such as the 
+    obtaining attributes of the lineage as a whole, such as the
     average growth rate.
     """
+
     def __init__(self, startT, lifetime, endT):
         self.startT = startT
         self.lifetime = lifetime
-        self.endT = endT # equivalent to endT
+        self.endT = endT  # equivalent to endT
+
 
 def assign_times(lineageObj):
     """
@@ -99,7 +103,7 @@ def assign_times(lineageObj):
     """
     # traversing the cells by generation
     for gen, level in enumerate(lineageObj.full_list_of_gens[1:]):
-        true_gen = gen+1 # generations are 1-indexed
+        true_gen = gen + 1  # generations are 1-indexed
         if true_gen == 1:
             for cell in level:
                 assert cell._isRootParent()
@@ -108,27 +112,29 @@ def assign_times(lineageObj):
             for cell in level:
                 cell.time = Time(cell.parent.time.endT,
                                  cell.obs[1],
-                                 cell.parent.time.endT+cell.obs[1])
+                                 cell.parent.time.endT + cell.obs[1])
+
 
 def get_experiment_time(lineageObj):
     """
-    This function returns the longest experiment time 
-    experienced by cells in the lineage. 
+    This function returns the longest experiment time
+    experienced by cells in the lineage.
     We can simply find the leaf cell with the
     longest end time. This is effectively
     the same as the experiment time for synthetic lineages.
     """
     longest = 0.0
     for cell in lineageObj.output_leaves:
-        if cell.time.endT>longest:
+        if cell.time.endT > longest:
             longest = cell.time.endT
     return longest
+
 
 def die_prune_rule(cell):
     """
     User-defined function that checks whether a cell's subtree should be removed.
-    Our example is based on the standard requirement that the first observation 
-    (index 0) is a measure of the cell's fate (1 being alive, 0 being dead). 
+    Our example is based on the standard requirement that the first observation
+    (index 0) is a measure of the cell's fate (1 being alive, 0 being dead).
     Clearly if a cell has died, its subtree must be removed.
     """
     truther = False
@@ -136,6 +142,7 @@ def die_prune_rule(cell):
         truther = True  # cell has died
         # subtree must be removed
     return truther
+
 
 def time_prune_rule(cell, desired_experiment_time):
     """
@@ -151,13 +158,14 @@ def time_prune_rule(cell, desired_experiment_time):
         # subtree must be removed
     return truther
 
-# Because parameter estimation requires that estimators be written or imported, 
+# Because parameter estimation requires that estimators be written or imported,
 # the user should be able to provide
-# estimators that can solve for the parameters that describe the distributions. 
+# estimators that can solve for the parameters that describe the distributions.
 # We provide some estimators below as an example.
-# Their use in the StateDistribution class is shown in the estimator class method. 
+# Their use in the StateDistribution class is shown in the estimator class method.
 # User must take care to define estimators that
 # can handle the case where the list of observations is empty.
+
 
 def bernoulli_estimator(bern_obs):
     """ Add up all the 1s and divide by the total length (finding the average). """

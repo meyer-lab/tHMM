@@ -114,25 +114,25 @@ class TestModel(unittest.TestCase):
         for cell in self.lineage.lineage_stats[1].full_lin_cells:
             if cell.obs[0] == 0:
                 self.assertTrue(die_prune_rule(cell))
-                
+
     def test_time_prune_rule(self):
         """ A unittest for the time_prune_rule. """
 
         for cell in self.lineage3.lineage_stats[0].full_lin_cells:
             if cell.time.endT > self.lineage3.desired_experiment_time:
-                self.assertTrue(time_prune_rule(cell,self.lineage3.desired_experiment_time))
+                self.assertTrue(time_prune_rule(cell, self.lineage3.desired_experiment_time))
 
         for cell in self.lineage3.lineage_stats[1].full_lin_cells:
             if cell.time.endT > self.lineage3.desired_experiment_time:
-                self.assertTrue(time_prune_rule(cell,self.lineage3.desired_experiment_time))
-                
+                self.assertTrue(time_prune_rule(cell, self.lineage3.desired_experiment_time))
+
     def test_get_experiment_time(self):
         """
         A unittest for obtaining the experiment time.
         """
         experiment_time2 = get_experiment_time(self.lineage2)
         experiment_time3 = get_experiment_time(self.lineage3)
-        self.assertLess(experiment_time2,experiment_time3)
+        self.assertLess(experiment_time2, experiment_time3)
 
     def test_bernoulli_estimator(self):
         """

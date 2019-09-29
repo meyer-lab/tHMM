@@ -36,7 +36,7 @@ class TestModel(unittest.TestCase):
         state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
         self.E = [state_obj0, state_obj1]
         # Using an unpruned lineage to avoid unforseen issues
-        self.X = [LineageTree(pi,T, self.E, desired_experiment_time=500, prune_condition='die',\
+        self.X = [LineageTree(pi, T, self.E, desired_experiment_time=500, prune_condition='die',
                               prune_boolean=False)]
         tHMMobj = tHMM(self.X, numStates=2)  # build the tHMM class with X
 
