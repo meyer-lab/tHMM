@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 import scipy.stats as sp
-from ..StateDistribution import StateDistribution, bernoulli_estimator, exponential_estimator, gamma_estimator, die_prune_rule, time_prune_rule, get_experiment_time
+from ..StateDistribution import StateDistribution, bernoulli_estimator, exponential_estimator, gamma_estimator, fate_prune_rule, time_prune_rule, get_experiment_time
 from ..LineageTree import LineageTree
 
 
@@ -39,7 +39,7 @@ class TestModel(unittest.TestCase):
             self.T,
             self.E,
             desired_experiment_time=500,
-            prune_condition='die',
+            prune_condition='fate',
             prune_boolean=False)
         self.lineage2 = LineageTree(
             self.pi,
@@ -104,16 +104,16 @@ class TestModel(unittest.TestCase):
                 estimator_obj.gamma_scale -
                 self.stateDist0.gamma_scale) <= 3.0)
 
-    def test_die_prune_rule(self):
-        """ A unittest for the die_prune_rule. """
+    def test_fate_prune_rule(self):
+        """ A unittest for the fate_prune_rule. """
 
         for cell in self.lineage.lineage_stats[0].full_lin_cells:
             if cell.obs[0] == 0:
-                self.assertTrue(die_prune_rule(cell))
+                self.assertTrue(fate_prune_rule(cell))
 
         for cell in self.lineage.lineage_stats[1].full_lin_cells:
             if cell.obs[0] == 0:
-                self.assertTrue(die_prune_rule(cell))
+                self.assertTrue(fate_prune_rule(cell))
 
     def test_time_prune_rule(self):
         """ A unittest for the time_prune_rule. """

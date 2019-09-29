@@ -130,7 +130,7 @@ def get_experiment_time(lineageObj):
     return longest
 
 
-def die_prune_rule(cell):
+def fate_prune_rule(cell):
     """
     User-defined function that checks whether a cell's subtree should be removed.
     Our example is based on the standard requirement that the first observation

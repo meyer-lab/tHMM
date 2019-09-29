@@ -40,14 +40,14 @@ class TestModel(unittest.TestCase):
             self.T,
             self.E,
             desired_experiment_time=500,
-            prune_condition='die',
+            prune_condition='fate',
             prune_boolean=False)
-        self.lineage2_pruned_die = LineageTree(
+        self.lineage2_pruned_fate = LineageTree(
             self.pi,
             self.T,
             self.E,
             desired_experiment_time=500,
-            prune_condition='die',
+            prune_condition='fate',
             prune_boolean=True)
         self.lineage3_pruned_time = LineageTree(
             self.pi,
@@ -141,8 +141,8 @@ class TestModel(unittest.TestCase):
         self.assertTrue(len(self.lineage1.full_lin_list) == 2**11 - 1)
         self.assertTrue(self.lineage1.full_lin_list ==
                         self.lineage1.output_lineage)
-        self.assertTrue(self.lineage2_pruned_die.pruned_lin_list ==
-                        self.lineage2_pruned_die.output_lineage)
+        self.assertTrue(self.lineage2_pruned_fate.pruned_lin_list ==
+                        self.lineage2_pruned_fate.output_lineage)
 
     def test_prune_lineage(self):
         """ A unittest for prune_lineage. """
@@ -158,7 +158,7 @@ class TestModel(unittest.TestCase):
             if cell._isLeaf():
                 self.assertTrue(cell.left is None)
                 self.assertTrue(cell.right is None)
-        for cell in self.lineage2_pruned_die.pruned_lin_list:
+        for cell in self.lineage2_pruned_fate.pruned_lin_list:
             if cell._isLeaf():
                 self.assertTrue(cell.left is None)
                 self.assertTrue(cell.right is None)

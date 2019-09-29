@@ -3,7 +3,7 @@ import scipy.stats as sp
 from copy import deepcopy
 
 from .CellVar import CellVar
-from .StateDistribution import assign_times, die_prune_rule, time_prune_rule
+from .StateDistribution import assign_times, fate_prune_rule, time_prune_rule
 
 
 # temporary style guide:
@@ -77,7 +77,7 @@ class LineageTree:
         # this is given by the user:
         # 'fate' - prune based on the fate of the cell
         # 'time' - prune based on the length of the experiment
-        # 'both' - prune based on both the 'die' and 'time' conditions
+        # 'both' - prune based on both the 'fate' and 'time' conditions
         self.prune_condition = prune_condition
 
         # this governs whether or not the pruned or the
@@ -159,14 +159,14 @@ class LineageTree:
         self.pruned_lin_list = deepcopy(self.full_lin_list)
         for cell in self.pruned_lin_list:
             if self.prune_condition == 'both':
-                if die_prune_rule(cell) or time_prune_rule(cell, self.desired_experiment_time):
+                if fate_prune_rule(cell) or time_prune_rule(cell, self.desired_experiment_time):
                     _, _, self.pruned_lin_list = find_two_subtrees(
                         cell, self.pruned_lin_list)
                     cell.left = None
                     cell.right = None
                     assert cell._isLeaf()
-            elif self.prune_condition == 'die':
-                if die_prune_rule(cell):
+            elif self.prune_condition == 'fate':
+                if fate_prune_rule(cell):
                     _, _, self.pruned_lin_list = find_two_subtrees(
                         cell, self.pruned_lin_list)
                     cell.left = None
