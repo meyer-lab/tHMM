@@ -153,21 +153,19 @@ class TestModel(unittest.TestCase):
 
         # checking all the cells in the pruned version should have all the
         # bernoulli observations == 1 (dead cells have been removed.)
+        self.assertGreater(get_experiment_time(self.lineage1), 500)
         for cell in self.lineage1.pruned_lin_list:
             if cell._isLeaf():
                 self.assertTrue(cell.left is None)
                 self.assertTrue(cell.right is None)
-                self.assertGreater(get_experiment_time(lineage1), 500)
         for cell in self.lineage2_pruned_die.pruned_lin_list:
             if cell._isLeaf():
                 self.assertTrue(cell.left is None)
                 self.assertTrue(cell.right is None)
-                self.assertGreater(get_experiment_time(lineage1), 500)
         for cell in self.lineage3_pruned_time.pruned_lin_list:
             if cell._isLeaf():
                 self.assertTrue(cell.left is None)
                 self.assertTrue(cell.right is None)
-
         for cell in self.lineage4_pruned_both.pruned_lin_list:
             if cell._isLeaf():
                 self.assertTrue(cell.left is None)
