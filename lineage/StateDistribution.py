@@ -73,14 +73,6 @@ class StateDistribution:
         return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_loc, self.gamma_scale)
 
 
-def prune_rule(cell):
-    """ User-defined function that checks whether a cell's subtree should be removed. """
-    truther = False
-    if cell.obs[0] == 0:
-        truther = True  # cell has died; subtree must be removed
-    return truther
-
-
 def tHMM_E_init(state):
     return StateDistribution(state,
                              0.9,
@@ -88,34 +80,91 @@ def tHMM_E_init(state):
                              0,
                              1)
 
-# Because parameter estimation requires that estimators be written or imported, the user should be able to provide
-# estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.
-# Their use in the StateDistribution class is shown in the estimator class method. User must take care to define estimators that
-# can handle the case where the list of observations is empty.
+
+class Time:
+    """
+    Class that stores all the time related observations in a neater format.
+    This will assist in pruning based on experimental time as well as
+    obtaining attributes of the lineage as a whole, such as the
+    average growth rate.
+    """
+
+    def __init__(self, startT, lifetime, endT):
+        self.startT = startT
+        self.lifetime = lifetime
+        self.endT = endT  # equivalent to endT
 
 
-def report_time(cell):
-    """ Given any cell in the lineage, this function walks through the cell's ancestors and return how long it has taken so far. """
-    list_parents = [cell]
-    taus = 0.0 + cell.obs[1]
+def assign_times(lineageObj):
+    """
+    Assigns the start and end time for each cell in the lineage.
+    The time observation will be stored in the cell's observation parameter list
+    in the second position (index 1). See the other time functions to understand.
+    """
+    # traversing the cells by generation
+    for gen, level in enumerate(lineageObj.full_list_of_gens[1:]):
+        true_gen = gen + 1  # generations are 1-indexed
+        if true_gen == 1:
+            for cell in level:
+                assert cell._isRootParent()
+                cell.time = Time(0, cell.obs[1], cell.obs[1])
+        else:
+            for cell in level:
+                cell.time = Time(cell.parent.time.endT,
+                                 cell.obs[1],
+                                 cell.parent.time.endT + cell.obs[1])
 
-    for cell in list_parents:
-        if cell._isRootParent():
-            break
-        elif cell.parent not in list_parents:
-            list_parents.append(cell.parent)
-            taus += cell.parent.obs[1]
-    return taus
 
-
-def get_experiment_time(lineage):
-    """ This function is to find the amount of time it took for the cells to be generated and reach to the desired number of cells. """
-    leaf_times = []
-    for cell in lineage.output_leaves:
-        temp = report_time(cell)
-        leaf_times.append(temp)
-    longest = max(leaf_times)
+def get_experiment_time(lineageObj):
+    """
+    This function returns the longest experiment time
+    experienced by cells in the lineage.
+    We can simply find the leaf cell with the
+    longest end time. This is effectively
+    the same as the experiment time for synthetic lineages.
+    """
+    longest = 0.0
+    for cell in lineageObj.output_leaves:
+        if cell.time.endT > longest:
+            longest = cell.time.endT
     return longest
+
+
+def fate_prune_rule(cell):
+    """
+    User-defined function that checks whether a cell's subtree should be removed.
+    Our example is based on the standard requirement that the first observation
+    (index 0) is a measure of the cell's fate (1 being alive, 0 being dead).
+    Clearly if a cell has died, its subtree must be removed.
+    """
+    truther = False
+    if cell.obs[0] == 0:
+        truther = True  # cell has died
+        # subtree must be removed
+    return truther
+
+
+def time_prune_rule(cell, desired_experiment_time):
+    """
+    User-defined function that checks whether a cell's subtree should be removed.
+    Our example is based on the standard requirement that the second observation
+    (index 1) is a measure of the cell's lifetime.
+    If a cell has lived beyond a certain experiment time, then its subtree
+    must be removed.
+    """
+    truther = False
+    if cell.time.endT > desired_experiment_time:
+        truther = True  # cell died after the experiment ended
+        # subtree must be removed
+    return truther
+
+# Because parameter estimation requires that estimators be written or imported,
+# the user should be able to provide
+# estimators that can solve for the parameters that describe the distributions.
+# We provide some estimators below as an example.
+# Their use in the StateDistribution class is shown in the estimator class method.
+# User must take care to define estimators that
+# can handle the case where the list of observations is empty.
 
 
 def bernoulli_estimator(bern_obs):
