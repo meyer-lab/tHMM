@@ -3,7 +3,7 @@ import scipy.stats as sp
 from copy import deepcopy
 
 from .CellVar import CellVar
-from .StateDistribution import prune_rule
+from .StateDistribution import assign_times, fate_prune_rule, time_prune_rule
 
 
 # temporary style guide:
@@ -23,7 +23,7 @@ class LineageStateStats:
 
 
 class LineageTree:
-    def __init__(self, pi, T, E, desired_num_cells, prune_boolean=True):
+    def __init__(self, pi, T, E, desired_experiment_time, prune_condition='both', prune_boolean=True):
         """
         A class for the structure of the lineage tree. Every lineage from this class is a binary tree built based on initial probabilities and transition probabilities given by the user that builds up the states based off of these until it reaches the desired number of cells in the tree, and then stops. Given the desired distributions for emission, the object will have the "E" a list of state distribution objects assigned to them.
 
@@ -49,7 +49,8 @@ class LineageTree:
         E_num_states = len(E)
         assert pi_num_states == T_num_states == E_num_states, "The number of states in your input Markov probability parameters are mistmatched. Please check that the dimensions and states match. "
         self.num_states = pi_num_states
-        self.desired_num_cells = desired_num_cells
+        self.desired_experiment_time = desired_experiment_time
+        self.prune_condition = prune_condition  # string for prune condition
         self.lineage_stats = []
 
         for state in range(self.num_states):
@@ -73,10 +74,15 @@ class LineageTree:
         self.pruned_max_gen, self.pruned_list_of_gens = max_gen(self.pruned_lin_list)
         self.pruned_leaves_idx, self.pruned_leaves = get_leaves(self.pruned_lin_list)
 
-        # this is given by the user, true of they want the lineage to be
-        # pruned, false if they want the full binary tree
-        self._prune_boolean = prune_boolean
-        self.prune_boolean = self._prune_boolean
+        # this is given by the user:
+        # 'fate' - prune based on the fate of the cell
+        # 'time' - prune based on the length of the experiment
+        # 'both' - prune based on both the 'fate' and 'time' conditions
+        self.prune_condition = prune_condition
+
+        # this governs whether or not the pruned or the
+        # the unpruned lineage is used in the analysis
+        self.prune_boolean = prune_boolean
 
     # Based on the user's decision, if they want the lineage to be pruned (prune_boolean == True),
     # the lineage tree that is given to the tHMM, will be the pruned one.
@@ -85,15 +91,12 @@ class LineageTree:
 
     @property
     def prune_boolean(self):
-        return self._prune_boolean
+        return self.__prune_boolean
 
     @prune_boolean.setter
-    def prune_boolean(self, new_prune_boolean):
-        if not isinstance(new_prune_boolean, bool):
-            raise ValueError(
-                "Boolean deciding whether to prune or not must be True or False.")
-        self._prune_boolean = new_prune_boolean
-        if self._prune_boolean:
+    def prune_boolean(self, prune_boolean):
+        self.__prune_boolean = prune_boolean
+        if self.prune_boolean:
             self.output_lineage = self.pruned_lin_list
             self.output_max_gen = self.pruned_max_gen
             self.output_list_of_gens = self.pruned_list_of_gens
@@ -140,23 +143,42 @@ class LineageTree:
                 self.full_lin_list.append(left_cell)
                 self.full_lin_list.append(right_cell)
 
-            if len(self.full_lin_list) >= self.desired_num_cells:
+            if len(self.full_lin_list) >= 2**11 - 1:
                 break
 
         return self.full_lin_list
 
     def _prune_lineage(self):
-        """ This function removes those cells that are intended to be remove from the full binary tree based on emissions.
-        It takes in LineageTree object, walks through all the cells in the full binary tree, applies the pruning to each cell that is supposed to be removed, and returns the pruned list of cells.
+        """ This function removes those cells that are intended to be remove
+        from the full binary tree based on emissions.
+        It takes in LineageTree object, walks through all the cells in the full binary tree,
+        applies the pruning to each cell that is supposed to be removed,
+        and returns the pruned list of cells.
         """
+        assign_times(self)
         self.pruned_lin_list = deepcopy(self.full_lin_list)
         for cell in self.pruned_lin_list:
-            if prune_rule(cell):
-                _, _, self.pruned_lin_list = find_two_subtrees(
-                    cell, self.pruned_lin_list)
-                cell.left = None
-                cell.right = None
-                assert cell._isLeaf()
+            if self.prune_condition == 'both':
+                if fate_prune_rule(cell) or time_prune_rule(cell, self.desired_experiment_time):
+                    _, _, self.pruned_lin_list = find_two_subtrees(
+                        cell, self.pruned_lin_list)
+                    cell.left = None
+                    cell.right = None
+                    assert cell._isLeaf()
+            elif self.prune_condition == 'fate':
+                if fate_prune_rule(cell):
+                    _, _, self.pruned_lin_list = find_two_subtrees(
+                        cell, self.pruned_lin_list)
+                    cell.left = None
+                    cell.right = None
+                    assert cell._isLeaf()
+            elif self.prune_condition == 'time':
+                if time_prune_rule(cell, self.desired_experiment_time):
+                    _, _, self.pruned_lin_list = find_two_subtrees(
+                        cell, self.pruned_lin_list)
+                    cell.left = None
+                    cell.right = None
+                    assert cell._isLeaf()
         return self.pruned_lin_list
 
     def _get_full_state_count(self, state):
@@ -256,14 +278,17 @@ class LineageTree:
         return parent_holder
 
     def __repr__(self):
-        """ This function is used to get string representation of an object, used for debugging and development.
-        Represents the information about the lineage that the user has created, like whether the tree is pruned or is a full tree;
-        and for both of the options it prints the number of states, the number of cells in the states, the total number of cells.
+        """
+        This function is used to get string representation of an object, used for debugging and development.
+        Represents the information about the lineage that the user has created,
+        like whether the tree is pruned or is a full tree;
+        and for both of the options it prints the number of states,
+        the number of cells in the states, the total number of cells.
         """
         s1 = ""
         s2 = ""
         s3 = ""
-        if self._prune_boolean:
+        if self.prune_boolean:
             s1 = "This tree is pruned. It is made of {} states.\n For each state in this tree: ".format(
                 self.num_states)
             s_list = []
@@ -288,7 +313,10 @@ class LineageTree:
         return s1 + s2 + s3
 
     def __str__(self):
-        """ This function is used to get string representation of an object, used for showing the results to the user. """
+        """
+        This function is used to get string representation of an object,
+        used for showing the results to the user.
+        """
         return self.__repr__()
 
 # tools for analyzing trees

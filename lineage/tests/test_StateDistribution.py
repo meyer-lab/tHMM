@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 import scipy.stats as sp
-from ..StateDistribution import StateDistribution, bernoulli_estimator, exponential_estimator, gamma_estimator, prune_rule, report_time, get_experiment_time
+from ..StateDistribution import StateDistribution, bernoulli_estimator, exponential_estimator, gamma_estimator, fate_prune_rule, time_prune_rule, get_experiment_time
 from ..LineageTree import LineageTree
 
 
@@ -38,14 +38,23 @@ class TestModel(unittest.TestCase):
             self.pi,
             self.T,
             self.E,
-            desired_num_cells=2**3 - 1,
-            prune_boolean=False)  # 7-cell lineage
+            desired_experiment_time=500,
+            prune_condition='fate',
+            prune_boolean=False)
         self.lineage2 = LineageTree(
             self.pi,
             self.T,
             self.E,
-            desired_num_cells=2**2 - 1,
-            prune_boolean=False)
+            desired_experiment_time=200,
+            prune_condition='time',
+            prune_boolean=True)
+        self.lineage3 = LineageTree(
+            self.pi,
+            self.T,
+            self.E,
+            desired_experiment_time=500,
+            prune_condition='both',
+            prune_boolean=True)
 
     def test_rvs(self):
         """ A unittest for random generator function, given the number of random variables we want from each distribution, that each corresponds to one of the observation types. """
@@ -95,65 +104,35 @@ class TestModel(unittest.TestCase):
                 estimator_obj.gamma_scale -
                 self.stateDist0.gamma_scale) <= 3.0)
 
-    def test_prune_rule(self):
-        """ A unittest for the prune_rule. """
+    def test_fate_prune_rule(self):
+        """ A unittest for the fate_prune_rule. """
 
         for cell in self.lineage.lineage_stats[0].full_lin_cells:
             if cell.obs[0] == 0:
-                self.assertTrue(prune_rule(cell))
+                self.assertTrue(fate_prune_rule(cell))
 
         for cell in self.lineage.lineage_stats[1].full_lin_cells:
             if cell.obs[0] == 0:
-                self.assertTrue(prune_rule(cell))
+                self.assertTrue(fate_prune_rule(cell))
 
-    def test_report_time(self):
-        """
-        Given a cell, the report_time function has to
-        return the time since the start of the experiment
-        to the time of this cell's time.
-        """
-        full_lin_cells_holder = []
-        for state in range(2):
-            full_lin_cells_holder.append(self.lineage.lineage_stats[state].full_lin_cells)
+    def test_time_prune_rule(self):
+        """ A unittest for the time_prune_rule. """
 
-        # bringing all the cells after assigning observations to them
-        all_cells = [cell for sub_statelist in full_lin_cells_holder for cell in sub_statelist]
+        for cell in self.lineage3.lineage_stats[0].full_lin_cells:
+            if cell.time.endT > self.lineage3.desired_experiment_time:
+                self.assertTrue(time_prune_rule(cell, self.lineage3.desired_experiment_time))
 
-        # here we check this for the root parent, since the time has taken
-        # so far, equals to the lifetime of the cell
-        for cell in all_cells:
-            if cell._isRootParent():
-                parent_tau = cell.obs[1]
-                self.assertTrue(report_time(cell) == parent_tau)
-
-        # here we check for the root parent and its left child
-        for cell in all_cells:
-            if cell._isRootParent():
-                taus = cell.obs[1] + cell.left.obs[1]
-                self.assertTrue(report_time(cell.left) == taus)
+        for cell in self.lineage3.lineage_stats[1].full_lin_cells:
+            if cell.time.endT > self.lineage3.desired_experiment_time:
+                self.assertTrue(time_prune_rule(cell, self.lineage3.desired_experiment_time))
 
     def test_get_experiment_time(self):
         """
-        A unittest to check the experiment time is
-        reported correctly. Here we use a lineage with 3 cells,
-        self.lineage2 built in the setup function.
+        A unittest for obtaining the experiment time.
         """
-        full_lin_cells_holder = []
-        for state in range(2):
-            full_lin_cells_holder.append(
-                self.lineage2.lineage_stats[state].full_lin_cells)
-
-        # bringing all the cells after assigning observations to them
-        all_cells = [cell for sublist in full_lin_cells_holder for cell in sublist]
-
-        # here we check this for the root parent, since the time has taken
-        # so far, equals to the lifetime of the cell
-        for cell in all_cells:
-            if cell._isRootParent():
-                left = cell.obs[1] + cell.left.obs[1]
-                right = cell.obs[1] + cell.right.obs[1]
-        maximum = max(left, right)
-        self.assertTrue(get_experiment_time(self.lineage2) == maximum)
+        experiment_time2 = get_experiment_time(self.lineage2)
+        experiment_time3 = get_experiment_time(self.lineage3)
+        self.assertLess(experiment_time2, experiment_time3)
 
     def test_bernoulli_estimator(self):
         """
