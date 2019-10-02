@@ -102,8 +102,8 @@ def assign_times(lineageObj):
     in the second position (index 1). See the other time functions to understand.
     """
     # traversing the cells by generation
-    for gen, level in enumerate(lineageObj.full_list_of_gens[1:]):
-        true_gen = gen + 1  # generations are 1-indexed
+    for gen_minus_1, level in enumerate(lineageObj.full_list_of_gens[1:]):
+        true_gen = gen_minus_1 + 1  # generations are 1-indexed
         if true_gen == 1:
             for cell in level:
                 assert cell._isRootParent()
@@ -128,6 +128,25 @@ def get_experiment_time(lineageObj):
         if cell.time.endT > longest:
             longest = cell.time.endT
     return longest
+
+def track_lineage_growth_histogram(lineageObj, bins):
+    """
+    This function creates list of lists (as many lists as states)
+    that divides the total experiment time
+    into a certain number of bins (provided by the user) and collects the number
+    of cells in each state throughout the experiment based on the time
+    observations.
+    """
+    experiment_time = get_experiment_time(lineageObj)
+    delta_time = experiment_time / bins
+    hist = []
+    for gen_minus_1, level in enumerate(lineageObj.full_list_of_gens[1:]):
+            for state in range(lineageObj.num_states):
+                temp_list = []
+                for cell in level:
+                    if cell.state == state and cell.time.startT 
+                    
+        
 
 
 def fate_prune_rule(cell):
