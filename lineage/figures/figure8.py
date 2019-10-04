@@ -1,5 +1,5 @@
 """
-This creates Figure 4.
+This creates Figure 8.
 """
 from .figureCommon import subplotLabel, getSetup
 from matplotlib.ticker import MaxNLocator
@@ -65,7 +65,7 @@ def accuracy_increased_cells():
     
     for num in desired_num_cells:
         # Creating an unpruned and pruned lineage
-        lineage = LineageTree(piiii, T, E, num, desired_experiment_time=1000000, prune_condition='both', prune_boolean=False)
+        lineage = LineageTree(piiii, T, E, num, desired_experiment_time=1000000, prune_condition='both', prune_boolean=True)
 
         # Setting then into a list or a population of lineages and collecting the length of each lineage
         X1 = [lineage]
