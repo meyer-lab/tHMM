@@ -38,7 +38,8 @@ def Analyze(X, numStates):
 
 
 def accuracy(tHMMobj, all_states):
-    acuracy_holder = []
+    counter_holder = 0
+    length_holder = 0
     for num, lineageObj in enumerate(tHMMobj.X):
         lin_true_states = [cell.state for cell in lineageObj.output_lineage]
 
@@ -64,10 +65,10 @@ def accuracy(tHMMobj, all_states):
             tHMMobj.estimate.E[0] = tmp
 
         counter = [1 if a == b else 0 for (a, b) in zip(new_all_states, lin_true_states)]
-        acc = sum(counter) / len(lin_true_states)
-        acuracy_holder.append(100 * acc)
+        counter_holder += (sum(counter))
+        length_holder += (len(lin_true_states))
 
-    return acuracy_holder
+    return [counter_holder/length_holder]
 
 
 # -------------------- when we have G1 and G2

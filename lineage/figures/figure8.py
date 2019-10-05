@@ -63,9 +63,11 @@ def accuracy_increased_cells():
     gamma_scale_unpruned = []
     
     
-    for num in desired_num_cells:
+    times = np.linspace(100, 1000, 10)
+
+    for experiment_time in times:
         # Creating an unpruned and pruned lineage
-        lineage = LineageTree(piiii, T, E, num, desired_experiment_time=1000000, prune_condition='both', prune_boolean=True)
+        lineage = LineageTree(piiii, T, E, (2**12)-1, experiment_time, prune_condition='both', prune_boolean=True)
 
         # Setting then into a list or a population of lineages and collecting the length of each lineage
         X1 = [lineage]
