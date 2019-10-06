@@ -38,6 +38,7 @@ class TestModel(unittest.TestCase):
             self.pi,
             self.T,
             self.E,
+            desired_num_cells=(2**11)-1, 
             desired_experiment_time=500,
             prune_condition='fate',
             prune_boolean=False)
@@ -45,6 +46,7 @@ class TestModel(unittest.TestCase):
             self.pi,
             self.T,
             self.E,
+            desired_num_cells=(2**11)-1, 
             desired_experiment_time=200,
             prune_condition='time',
             prune_boolean=True)
@@ -52,6 +54,7 @@ class TestModel(unittest.TestCase):
             self.pi,
             self.T,
             self.E,
+            desired_num_cells=(2**11)-1, 
             desired_experiment_time=500,
             prune_condition='both',
             prune_boolean=True)
@@ -119,11 +122,11 @@ class TestModel(unittest.TestCase):
         """ A unittest for the time_prune_rule. """
 
         for cell in self.lineage3.lineage_stats[0].full_lin_cells:
-            if cell.time.endT > self.lineage3.desired_experiment_time:
+            if cell.time.startT > self.lineage3.desired_experiment_time:
                 self.assertTrue(time_prune_rule(cell, self.lineage3.desired_experiment_time))
 
         for cell in self.lineage3.lineage_stats[1].full_lin_cells:
-            if cell.time.endT > self.lineage3.desired_experiment_time:
+            if cell.time.startT > self.lineage3.desired_experiment_time:
                 self.assertTrue(time_prune_rule(cell, self.lineage3.desired_experiment_time))
 
     def test_get_experiment_time(self):
