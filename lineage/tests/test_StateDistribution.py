@@ -46,8 +46,8 @@ class TestModel(unittest.TestCase):
             self.pi,
             self.T,
             self.E,
-            desired_num_cells=(2**11)-1, 
-            desired_experiment_time=200,
+            desired_num_cells=(2**5.5)-1, 
+            desired_experiment_time=100,
             prune_condition='time',
             prune_boolean=True)
         self.lineage3 = LineageTree(
@@ -55,7 +55,7 @@ class TestModel(unittest.TestCase):
             self.T,
             self.E,
             desired_num_cells=(2**11)-1, 
-            desired_experiment_time=500,
+            desired_experiment_time=800,
             prune_condition='both',
             prune_boolean=True)
 
