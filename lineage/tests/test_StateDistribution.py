@@ -38,21 +38,24 @@ class TestModel(unittest.TestCase):
             self.pi,
             self.T,
             self.E,
-            desired_experiment_time=500,
+            desired_num_cells=(2**11)-1, 
+            desired_experiment_time=1000,
             prune_condition='fate',
             prune_boolean=False)
         self.lineage2 = LineageTree(
             self.pi,
             self.T,
             self.E,
-            desired_experiment_time=200,
+            desired_num_cells=(2**5.5)-1, 
+            desired_experiment_time=100,
             prune_condition='time',
             prune_boolean=True)
         self.lineage3 = LineageTree(
             self.pi,
             self.T,
             self.E,
-            desired_experiment_time=500,
+            desired_num_cells=(2**11)-1, 
+            desired_experiment_time=800,
             prune_condition='both',
             prune_boolean=True)
 
@@ -119,11 +122,11 @@ class TestModel(unittest.TestCase):
         """ A unittest for the time_prune_rule. """
 
         for cell in self.lineage3.lineage_stats[0].full_lin_cells:
-            if cell.time.endT > self.lineage3.desired_experiment_time:
+            if cell.time.startT > self.lineage3.desired_experiment_time:
                 self.assertTrue(time_prune_rule(cell, self.lineage3.desired_experiment_time))
 
         for cell in self.lineage3.lineage_stats[1].full_lin_cells:
-            if cell.time.endT > self.lineage3.desired_experiment_time:
+            if cell.time.startT > self.lineage3.desired_experiment_time:
                 self.assertTrue(time_prune_rule(cell, self.lineage3.desired_experiment_time))
 
     def test_get_experiment_time(self):
@@ -131,8 +134,8 @@ class TestModel(unittest.TestCase):
         A unittest for obtaining the experiment time.
         """
         experiment_time2 = get_experiment_time(self.lineage2)
-        experiment_time3 = get_experiment_time(self.lineage3)
-        self.assertLess(experiment_time2, experiment_time3)
+        experiment_time = get_experiment_time(self.lineage)
+        self.assertLess(experiment_time2, experiment_time)
 
     def test_bernoulli_estimator(self):
         """

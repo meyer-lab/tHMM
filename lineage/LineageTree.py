@@ -23,7 +23,7 @@ class LineageStateStats:
 
 
 class LineageTree:
-    def __init__(self, pi, T, E, desired_experiment_time, prune_condition='both', prune_boolean=True):
+    def __init__(self, pi, T, E, desired_num_cells, desired_experiment_time, prune_condition='both', prune_boolean=True):
         """
         A class for the structure of the lineage tree. Every lineage from this class is a binary tree built based on initial probabilities and transition probabilities given by the user that builds up the states based off of these until it reaches the desired number of cells in the tree, and then stops. Given the desired distributions for emission, the object will have the "E" a list of state distribution objects assigned to them.
 
@@ -49,6 +49,7 @@ class LineageTree:
         E_num_states = len(E)
         assert pi_num_states == T_num_states == E_num_states, "The number of states in your input Markov probability parameters are mistmatched. Please check that the dimensions and states match. "
         self.num_states = pi_num_states
+        self.desired_num_cells = desired_num_cells
         self.desired_experiment_time = desired_experiment_time
         self.prune_condition = prune_condition  # string for prune condition
         self.lineage_stats = []
@@ -143,7 +144,7 @@ class LineageTree:
                 self.full_lin_list.append(left_cell)
                 self.full_lin_list.append(right_cell)
 
-            if len(self.full_lin_list) >= 2**11 - 1:
+            if len(self.full_lin_list) >= self.desired_num_cells:
                 break
 
         return self.full_lin_list
