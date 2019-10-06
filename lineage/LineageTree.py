@@ -23,11 +23,7 @@ class LineageStateStats:
 
 
 class LineageTree:
-<<<<<<< HEAD
     def __init__(self, pi, T, E, desired_num_cells, desired_experiment_time, prune_condition='fate', prune_boolean=True):
-=======
-    def __init__(self, pi, T, E, desired_num_cells, desired_experiment_time, prune_condition='both', prune_boolean=True):
->>>>>>> master
         """
         A class for the structure o-f the lineage tree. Every lineage from this class is a binary tree built based on initial probabilities and transition probabilities given by the user that builds up the states based off of these until it reaches the desired number of cells in the tree, and then stops. Given the desired distributions for emission, the object will have the "E" a list of state distribution objects assigned to them.
 
