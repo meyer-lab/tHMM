@@ -129,7 +129,7 @@ def get_experiment_time(lineageObj):
             longest = cell.time.endT
     return longest
 
-def track_lineage_growth_histogram(lineageObj, bins):
+def track_lineage_growth_histogram(lineageObj, delta_time):
     """
     This function creates list of lists (as many lists as states)
     that divides the total experiment time
@@ -138,24 +138,45 @@ def track_lineage_growth_histogram(lineageObj, bins):
     observations.
     """
     experiment_time = get_experiment_time(lineageObj)
-    delta_time = experiment_time / bins
-    hist = []
+    bins = int(np.ceil(experiment_time * delta_time))
+    hist = np.zeros(shape=(lineageObj.num_states, bins))
     for state in range(lineageObj.num_states):
-        temp_list = []
         start_time = 0
         end_time = start_time + delta_time
-        while len(temp_list) < bins:
+        for bin_idx in range(bins):
             num_alive = 0
             for cell_idx, cell in enumerate(lineageObj.output_lineage):
                 if cell.state == state and cell.time.startT <= start_time and cell.time.endT >= end_time:
                     num_alive += 1
-            temp_list.append(num_alive)
             start_time += delta_time
             end_time += delta_time
-        hist.append(temp_list)
-    return(hist, delta_time)
+            hist[state,bin_idx] = num_alive
+    return(hist, bins)
                 
-                
+def track_population_growth_histogram(population, delta_time):
+    """
+    This function runs the tracking function on a list of lineages.
+    """
+    collector = []
+    for idx, lineage in enumerate(population):
+        hist, bins = track_lineage_growth_histogram(lineage, delta_time)
+        collector.append(hist)
+    total = []
+    for state in range(population[0].num_states):
+        tmp_array = np.zeros(len(collector[0][0,:]))
+        for idx, hist in enumerate(collector):
+            if len(tmp_array) < len(hist[state,:]):
+                c = hist[state,:].copy()
+                c[:len(tmp_array)] += tmp_array
+                tmp_array = c
+            else:
+                c = tmp_array.copy()
+                c[:len(hist[state,:])] += hist[state,:]
+                tmp_array = c
+        total.append(tmp_array)
+    return(total)
+        
+        
             
                     
         
