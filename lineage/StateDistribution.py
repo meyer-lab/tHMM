@@ -175,11 +175,6 @@ def track_population_growth_histogram(population, delta_time):
                 tmp_array = c
         total.append(tmp_array)
     return(total)
-        
-        
-            
-                    
-        
 
 
 def fate_prune_rule(cell):
