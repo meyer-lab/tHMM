@@ -2,11 +2,14 @@
 This creates Figure 5.
 """
 from .figureCommon import subplotLabel, getSetup
+<<<<<<< HEAD
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import accuracy, accuracyG, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 from ..StateDistribution2 import StateDistribution2
+=======
+>>>>>>> master
 
 import numpy as np
 from matplotlib import rc
@@ -16,6 +19,7 @@ rc('font', **{'family': 'sans-serif', 'sans-serif': ['Helvetica']})
 rc('text', usetex=True)
 
 def makeFigure():
+<<<<<<< HEAD
     """ makes figure 4 """
 
     # Get list of axis objects
@@ -114,3 +118,14 @@ def figure_maker(ax, x, accuracies, tr, pi):
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
 
 
+=======
+    """ makes figure 1 """
+    # Get list of axis objects
+    ax, f = getSetup((7, 6), (3, 4))
+
+    subplotLabel(ax[0], 'A')
+
+    f.tight_layout()
+
+    return f
+>>>>>>> master

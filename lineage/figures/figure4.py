@@ -2,11 +2,14 @@
 This creates Figure 4.
 """
 from .figureCommon import subplotLabel, getSetup
+<<<<<<< HEAD
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import accuracy, accuracyG, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 from ..StateDistribution2 import StateDistribution2
+=======
+>>>>>>> master
 
 import numpy as np
 from matplotlib import rc
@@ -16,9 +19,9 @@ rc('font', **{'family': 'sans-serif', 'sans-serif': ['Helvetica']})
 rc('text', usetex=True)
 
 def makeFigure():
-    """ makes figure 4 """
-
+    """ makes figure 1 """
     # Get list of axis objects
+<<<<<<< HEAD
     ax, f = getSetup((12, 4), (1, 3))
     x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_scale0 = accuracy_increased_cells()
     figure_maker(ax, x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_scale0)
@@ -109,3 +112,12 @@ def figure_maker(ax, x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_sca
     ax[i].axhline(y=gamma_scale0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='b', alpha=0.6)
     ax[i].set_title('Gamma', fontsize=font)
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+=======
+    ax, f = getSetup((7, 6), (3, 4))
+
+    subplotLabel(ax[0], 'A')
+
+    f.tight_layout()
+
+    return f
+>>>>>>> master
