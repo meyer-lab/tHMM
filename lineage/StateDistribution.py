@@ -129,6 +129,7 @@ def get_experiment_time(lineageObj):
             longest = cell.time.endT
     return longest
 
+
 def track_lineage_growth_histogram(lineageObj, delta_time):
     """
     This function creates list of lists (as many lists as states)
@@ -150,9 +151,10 @@ def track_lineage_growth_histogram(lineageObj, delta_time):
                     num_alive += 1
             start_time += delta_time
             end_time += delta_time
-            hist[state,bin_idx] = num_alive
+            hist[state, bin_idx] = num_alive
     return(hist, bins)
-                
+
+
 def track_population_growth_histogram(population, delta_time):
     """
     This function runs the tracking function on a list of lineages.
@@ -163,15 +165,15 @@ def track_population_growth_histogram(population, delta_time):
         collector.append(hist)
     total = []
     for state in range(population[0].num_states):
-        tmp_array = np.zeros(len(collector[0][0,:]))
+        tmp_array = np.zeros(len(collector[0][0, :]))
         for idx, hist in enumerate(collector):
-            if len(tmp_array) < len(hist[state,:]):
-                c = hist[state,:].copy()
+            if len(tmp_array) < len(hist[state, :]):
+                c = hist[state, :].copy()
                 c[:len(tmp_array)] += tmp_array
                 tmp_array = c
             else:
                 c = tmp_array.copy()
-                c[:len(hist[state,:])] += hist[state,:]
+                c[:len(hist[state, :])] += hist[state, :]
                 tmp_array = c
         total.append(tmp_array)
     return(total)
