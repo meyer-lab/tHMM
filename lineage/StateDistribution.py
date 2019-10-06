@@ -140,11 +140,23 @@ def track_lineage_growth_histogram(lineageObj, bins):
     experiment_time = get_experiment_time(lineageObj)
     delta_time = experiment_time / bins
     hist = []
-    for gen_minus_1, level in enumerate(lineageObj.full_list_of_gens[1:]):
-            for state in range(lineageObj.num_states):
-                temp_list = []
-                for cell in level:
-                    if cell.state == state and cell.time.startT 
+    for state in range(lineageObj.num_states):
+        temp_list = []
+        start_time = 0
+        end_time = start_time + delta_time
+        while len(temp_list) < bins:
+            num_alive = 0
+            for cell_idx, cell in enumerate(lineageObj.output_lineage):
+                if cell.state == state and cell.time.startT <= start_time and cell.time.endT >= end_time:
+                    num_alive += 1
+            temp_list.append(num_alive)
+            start_time += delta_time
+            end_time += delta_time
+        hist.append(temp_list)
+    return(hist, delta_time)
+                
+                
+            
                     
         
 
@@ -172,7 +184,7 @@ def time_prune_rule(cell, desired_experiment_time):
     must be removed.
     """
     truther = False
-    if cell.time.endT > desired_experiment_time:
+    if cell.time.startT > desired_experiment_time:
         truther = True  # cell died after the experiment ended
         # subtree must be removed
     return truther
