@@ -39,7 +39,7 @@ class TestModel(unittest.TestCase):
             self.T,
             self.E,
             desired_num_cells=(2**11)-1, 
-            desired_experiment_time=500,
+            desired_experiment_time=1000,
             prune_condition='fate',
             prune_boolean=False)
         self.lineage2 = LineageTree(
@@ -134,8 +134,8 @@ class TestModel(unittest.TestCase):
         A unittest for obtaining the experiment time.
         """
         experiment_time2 = get_experiment_time(self.lineage2)
-        experiment_time3 = get_experiment_time(self.lineage3)
-        self.assertLess(experiment_time2, experiment_time3)
+        experiment_time = get_experiment_time(self.lineage)
+        self.assertLess(experiment_time2, experiment_time)
 
     def test_bernoulli_estimator(self):
         """
