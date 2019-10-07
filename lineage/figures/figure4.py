@@ -11,16 +11,18 @@ from ..StateDistribution2 import StateDistribution2
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-plt.rc('font', **{'family': 'sans-serif', 'sans-serif': ['Helvetica']})
+plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
 plt.rc('text', usetex=True)
-mpl.rcParams.update({'font.size': 60})
+plt.rc('xtick', **{'labelsize':'medium'})
+plt.rc('ytick', **{'labelsize':'medium'})
+
 
 def makeFigure():
     """ makes figure 1 """
     # Get list of axis objects
-    ax, f = getSetup((12, 4), (1, 3))
+    ax, f = getSetup((21, 6), (1, 3))
     x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_scale0 = accuracy_increased_cells()
     figure_maker(ax, x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_scale0)
     
@@ -55,7 +57,7 @@ def accuracy_increased_cells():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-    desired_num_cells = np.logspace(5, 10, num=200, base=2.0)
+    desired_num_cells = np.logspace(5, 12, num=250, base=2.0)
     desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
 
     x = []
@@ -86,29 +88,29 @@ def figure_maker(ax, x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_sca
     i = 0
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
-    ax[i].scatter(x, bern, c='#F9Cb9C', marker="o", alpha=0.75)
-    ax[i].set_ylabel(r'Bernoulli Parameter $p$')
-    ax[i].axhline(y=bern_p0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='#F9Cb9C', alpha=0.6)
+    ax[i].scatter(x, bern, c='#F9Cb9C', marker="o", edgecolors='k', alpha=0.5)
+    ax[i].set_ylabel(r'Bernoulli $p$')
+    ax[i].axhline(y=bern_p0, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('Bernoulli')
     ax[i].grid(linestyle='--')
-    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
-    ax[i].scatter(x, gamma_a , c='#F9Cb9C', marker="o", alpha=0.75)
+    ax[i].scatter(x, gamma_a , c='#F9Cb9C', marker="o", edgecolors='k', alpha=0.5)
     ax[i].set_ylabel(r'Gamma $k$')
-    ax[i].axhline(y=gamma_a0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='#F9Cb9C', alpha=0.6)
+    ax[i].axhline(y=gamma_a0, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('Gamma')
     ax[i].grid(linestyle='--')
-    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
-    ax[i].scatter(x, gamma_scale, c='#F9Cb9C', marker="o", alpha=0.75)
+    ax[i].scatter(x, gamma_scale, c='#F9Cb9C', marker="o", edgecolors='k', alpha=0.5)
     ax[i].set_ylabel(r'Gamma $\theta$')
-    ax[i].axhline(y=gamma_scale0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='#F9Cb9C', alpha=0.6)
+    ax[i].axhline(y=gamma_scale0, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('Gamma')
     ax[i].grid(linestyle='--')
-    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)

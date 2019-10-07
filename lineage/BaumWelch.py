@@ -103,7 +103,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
                     if denom == 0:
                         print(numer)
                         print(gamma_array)
-                    T_holder[state_j, state_k] = numer / denom
+                    T_holder[state_j, state_k] = 0.5 * numer / (denom + np.spacing(1))
 
             tHMMobj.estimate.T = T_holder / T_holder.sum(axis=1)[:, np.newaxis]
 

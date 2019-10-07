@@ -2,28 +2,27 @@
 This creates Figure 4.
 """
 from .figureCommon import subplotLabel, getSetup
-<<<<<<< HEAD
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import accuracy, accuracyG, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 from ..StateDistribution2 import StateDistribution2
-=======
->>>>>>> master
 
 import numpy as np
-from matplotlib import rc
-rc('font', **{'family': 'sans-serif', 'sans-serif': ['Helvetica']})
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
-rc('text', usetex=True)
+plt.rc('text', usetex=True)
+plt.rc('xtick', **{'labelsize':'medium'})
+plt.rc('ytick', **{'labelsize':'medium'})
 
 def makeFigure():
-<<<<<<< HEAD
     """ makes figure 4 """
 
     # Get list of axis objects
-    ax, f = getSetup((12, 4), (1, 3))
+    ax, f = getSetup((21, 6), (1, 3))
     x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1 = accuracy_increased_cells()
     figure_maker(ax, x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1)
     
@@ -34,7 +33,7 @@ def accuracy_increased_cells():
     """ Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
 
     # pi: the initial probability vector
-    piiii = np.array([0.15, 0.85], dtype="float")
+    piiii = np.array([0.6, 0.4], dtype="float")
 
     # T: transition probability matrix
     T = np.array([[0.85, 0.15],
@@ -50,14 +49,14 @@ def accuracy_increased_cells():
     # State 1 parameters "Susceptible"
     state1 = 1
     bern_p1 = 0.88
-    gamma_a1 = 11
-    gamma_scale1 = 1.1
+    gamma_a1 = 10
+    gamma_scale1 = 1
 
     state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-    desired_num_cells = np.logspace(5, 10, num=20, base=2.0)
+    desired_num_cells = np.logspace(5, 12, num=250, base=2.0)
     desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
 
     x = []
@@ -92,7 +91,6 @@ def accuracy_increased_cells():
             gamma_a_total += (tHMMobj.estimate.E[state].gamma_a,)
             gamma_scale_total += (tHMMobj.estimate.E[state].gamma_scale,)
 
-
         bern_unpruned.append(bern_p_total)
         gamma_a_unpruned.append(gamma_a_total)
         gamma_scale_unpruned.append(gamma_scale_total)
@@ -102,57 +100,48 @@ def accuracy_increased_cells():
 
 
 def figure_maker(ax, x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1):
-
-    font = 11
-    font2 = 10
     i = 0
     res = [[i for i, j in bern_unpruned], [j for i, j in bern_unpruned]]
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
-    ax[i].set_xlabel('Number of Cells', fontsize=font2)
-    ax[i].scatter(x, res[0], c='b', marker="o", alpha=0.5)
-    ax[i].scatter(x, res[1], c='r', marker="o", alpha=0.5)   
-    ax[i].set_ylabel('Bern $p$', rotation=90, fontsize=font2)
-    ax[i].axhline(y=bern_p0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, label = 'resistant', color='b', alpha=0.6)
-    ax[i].axhline(y=bern_p1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
-    ax[i].set_title('Bernoulli', fontsize=font)
-    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].set_xlabel('Number of Cells')
+    ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)   
+    ax[i].set_ylabel('Bernoulli $p$')
+    ax[i].set_ylim([0.85,1.1])
+    ax[i].axhline(y=bern_p0, linestyle='--', linewidth=2, label = 'Resistant', color='#F9Cb9C', alpha=1)
+    ax[i].axhline(y=bern_p1, linestyle='--', linewidth=2, label = 'Susceptible', color='#A4C2F4', alpha=1)
+    ax[i].set_title('Bernoulli $p$')
+    ax[i].grid(linestyle='--')
+    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
     res = [[i for i, j in gamma_a_unpruned], [j for i, j in gamma_a_unpruned]]
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
-    ax[i].set_xlabel('Number of Cells', fontsize=font2)
-    ax[i].scatter(x, res[0], c='b', marker="o", alpha=0.5)
-    ax[i].scatter(x, res[1], c='r', marker="o", alpha=0.5)
-    ax[i].set_ylabel(r'Gamma a $\beta$', rotation=90, fontsize=font2)
-    ax[i].axhline(y=gamma_a0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, label = 'resistant', color='b', alpha=0.6)
-    ax[i].axhline(y=gamma_a1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
-    ax[i].set_title('Gamma', fontsize=font)
-    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].set_xlabel('Number of Cells')
+    ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].set_ylabel(r'Gamma $k$')
+    ax[i].set_ylim([5,25])
+    ax[i].axhline(y=gamma_a0, linestyle='--', linewidth=2, label = 'Resistant', color='#F9Cb9C', alpha=1)
+    ax[i].axhline(y=gamma_a1, linestyle='--', linewidth=2, label = 'Susceptible', color='#A4C2F4', alpha=1)
+    ax[i].set_title('Gamma')
+    ax[i].grid(linestyle='--')
+    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
     res = [[i for i, j in gamma_scale_unpruned], [j for i, j in gamma_scale_unpruned]]
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
-    ax[i].set_xlabel('Number of Cells', fontsize=font2)
-    ax[i].scatter(x, res[0], c='b', marker="o", alpha=0.5)
-    ax[i].scatter(x, res[1], c='r', marker="o", alpha=0.5)
-    ax[i].set_ylabel(r'Gamma scale $\alpha$', rotation=90, fontsize=font2)
-    ax[i].axhline(y=gamma_scale0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2,label = 'resistant', color='b', alpha=0.6)
-    ax[i].axhline(y=gamma_scale1, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='r', alpha=0.6)
-    ax[i].set_title('Gamma', fontsize=font)
-    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].set_xlabel('Number of Cells')
+    ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].set_ylabel(r'Gamma scale $\theta$')
+    ax[i].set_ylim([0,7])
+    ax[i].axhline(y=gamma_scale0, linestyle='--', linewidth=2, label = 'Resistant', color='#F9Cb9C', alpha=1)
+    ax[i].axhline(y=gamma_scale1, linestyle='--', linewidth=2, label = 'Susceptible', color='#A4C2F4', alpha=1)
+    ax[i].set_title('Gamma')
+    ax[i].grid(linestyle='--')
+    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
+    ax[i].legend()
 
     
-    
-    
-    
-=======
-    """ makes figure 1 """
-    # Get list of axis objects
-    ax, f = getSetup((7, 6), (3, 4))
 
-    subplotLabel(ax[0], 'A')
-
-    f.tight_layout()
-
-    return f
->>>>>>> master

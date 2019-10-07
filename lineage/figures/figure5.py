@@ -2,28 +2,27 @@
 This creates Figure 5.
 """
 from .figureCommon import subplotLabel, getSetup
-<<<<<<< HEAD
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import accuracy, accuracyG, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 from ..StateDistribution2 import StateDistribution2
-=======
->>>>>>> master
 
 import numpy as np
-from matplotlib import rc
-rc('font', **{'family': 'sans-serif', 'sans-serif': ['Helvetica']})
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
-rc('text', usetex=True)
+plt.rc('text', usetex=True)
+plt.rc('xtick', **{'labelsize':'medium'})
+plt.rc('ytick', **{'labelsize':'medium'})
 
 def makeFigure():
-<<<<<<< HEAD
-    """ makes figure 4 """
+    """ makes figure 5 """
 
     # Get list of axis objects
-    ax, f = getSetup((8, 4), (1, 2))
+    ax, f = getSetup((16, 6), (1, 2))
     x, accuracies, tr, pi = accuracy_increased_cells()
     figure_maker(ax, x, accuracies, tr, pi)
     
@@ -34,7 +33,7 @@ def accuracy_increased_cells():
     """ Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
 
     # pi: the initial probability vector
-    piiii = np.array([0.15, 0.85], dtype="float")
+    piiii = np.array([0.6, 0.4], dtype="float")
 
     # T: transition probability matrix
     T = np.array([[0.85, 0.15],
@@ -57,7 +56,7 @@ def accuracy_increased_cells():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-    desired_num_cells = np.logspace(8, 10, num=10, base=2.0)
+    desired_num_cells = np.logspace(5, 12, num=250, base=2.0)
     desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
 
     x = []
@@ -77,7 +76,7 @@ def accuracy_increased_cells():
         deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
 
         # Collecting the accuracies of the lineages
-        acc1 = accuracy(tHMMobj, all_states)[0]
+        acc1 = accuracy(tHMMobj, all_states)[0]*100
         accuracies.append(acc1)
 
     # Transition and Pi estimates
@@ -94,38 +93,23 @@ def accuracy_increased_cells():
 
 
 def figure_maker(ax, x, accuracies, tr, pi):
-
-    font = 11
-    font2 = 10
     i = 0
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
-    ax[i].set_xlabel('Number of Cells', fontsize=font2)
+    ax[i].set_xlabel('Number of Cells')
     ax[i].set_ylim(0, 110)
-    ax[i].scatter(x, accuracies, c='k', marker="o", label='Accuracy', alpha=0.3)
-    ax[i].axhline(y=100, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)  # linestyle is dashdotdotted
-    ax[i].set_ylabel(r'Accuracy (\%)', rotation=90, fontsize=font2)
-    ax[i].get_yticks()
-    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
-    ax[i].set_title('State Assignment Accuracy', fontsize=font)
+    ax[i].scatter(x, accuracies, c='k', marker="o", label='Accuracy', edgecolors='k', alpha=0.5)
+    ax[i].set_ylabel(r'Accuracy [\%]')
+    ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1) 
+    ax[i].set_title('State Assignment Accuracy')
+    ax[i].grid(linestyle='--')
+    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
-    ax[i].set_xlabel('Number of Cells', fontsize=font2)
-    ax[i].scatter(x, tr, c='k', marker="o", alpha=0.5)
-    ax[i].set_ylabel(r'$||T-T_{est}||_{F}$', rotation=90, fontsize=font2)
-    ax[i].axhline(y=0, linestyle=(0, (3, 5, 1, 5, 1, 5)), linewidth=2, color='k', alpha=0.6)
-    ax[i].set_title('Norm Transition', fontsize=font)
-    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
-
-
-=======
-    """ makes figure 1 """
-    # Get list of axis objects
-    ax, f = getSetup((7, 6), (3, 4))
-
-    subplotLabel(ax[0], 'A')
-
-    f.tight_layout()
-
-    return f
->>>>>>> master
+    ax[i].set_xlabel('Number of Cells')
+    ax[i].scatter(x, tr, c='k', marker="o", edgecolors='k', alpha=0.5)
+    ax[i].set_ylabel(r'$||T-T_{est}||_{F}$')
+    ax[i].axhline(y=0, linestyle='--', linewidth=2, color='k', alpha=1)
+    ax[i].set_title('Transition Matrix Estimation')
+    ax[i].grid(linestyle='--')
+    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
