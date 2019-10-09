@@ -110,7 +110,7 @@ def figure_maker(ax, x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma
     ax[i].set_ylim([0.85,1.1])
     ax[i].axhline(y=bern_p0, linestyle='--', linewidth=2, label = 'Resistant', color='#F9Cb9C', alpha=1)
     ax[i].axhline(y=bern_p1, linestyle='--', linewidth=2, label = 'Susceptible', color='#A4C2F4', alpha=1)
-    ax[i].set_title('Bernoulli $p$')
+    ax[i].set_title('Bernoulli')
     ax[i].grid(linestyle='--')
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 

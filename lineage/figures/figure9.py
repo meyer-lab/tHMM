@@ -9,11 +9,14 @@ from ..StateDistribution import StateDistribution
 from ..StateDistribution2 import StateDistribution2
 
 import numpy as np
-from matplotlib import rc
-rc('font', **{'family': 'sans-serif', 'sans-serif': ['Helvetica']})
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
-rc('text', usetex=True)
+plt.rc('text', usetex=True)
+plt.rc('xtick', **{'labelsize':'medium'})
+plt.rc('ytick', **{'labelsize':'medium'})
 
 def makeFigure():
     """ makes figure 4 """

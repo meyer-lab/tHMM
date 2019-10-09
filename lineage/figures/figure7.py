@@ -61,7 +61,7 @@ def accuracy_increased_cells():
     tr = []
     pi = []
 
-    times = np.linspace(100, 1000, 100)
+    times = np.linspace(100, 1000, 250)
 
     for experiment_time in times:
         # Creating an unpruned and pruned lineage
