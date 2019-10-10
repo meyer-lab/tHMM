@@ -56,7 +56,7 @@ def accuracy_increased_cells():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-    desired_num_cells = np.logspace(5, 12, num=250, base=2.0)
+    desired_num_cells = np.logspace(5, 12, num=25, base=2.0)
     desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
 
     x = []
@@ -91,13 +91,22 @@ def accuracy_increased_cells():
 
     return x, accuracies, tr, pi
 
+def moving_average(a, n=10):
+    ret = np.cumsum(a, dtype=float)
+    ret[n:] = ret[n:] - ret[:-n]
+    return ret[n - 1:] / n
 
 def figure_maker(ax, x, accuracies, tr, pi):
+    
+    x_vs_acc = np.column_stack((x, accuracies))
+    sorted_x_vs_acc = x_vs_acc[np.argsort(x_vs_acc[:, 0])]
+    
     i = 0
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
     ax[i].set_ylim(0, 110)
-    ax[i].scatter(x, accuracies, c='k', marker="o", label='Accuracy', edgecolors='k', alpha=0.5)
+    ax[i].scatter(x, accuracies, c='k', marker="o", label='Accuracy', edgecolors='k', alpha=0.25)
+    ax[i].plot(sorted_x_vs_acc[:, 0][9:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
     ax[i].set_ylabel(r'Accuracy [\%]')
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1) 
     ax[i].set_title('State Assignment Accuracy')
@@ -107,7 +116,7 @@ def figure_maker(ax, x, accuracies, tr, pi):
     i += 1
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
-    ax[i].scatter(x, tr, c='k', marker="o", edgecolors='k', alpha=0.5)
+    ax[i].scatter(x, tr, c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].set_ylabel(r'$||T-T_{est}||_{F}$')
     ax[i].axhline(y=0, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('Transition Matrix Estimation')
