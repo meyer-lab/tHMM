@@ -64,6 +64,8 @@ def accuracy(tHMMobj, all_states):
             tmp = cp.deepcopy(tHMMobj.estimate.E[1])
             tHMMobj.estimate.E[1] = tHMMobj.estimate.E[0]
             tHMMobj.estimate.E[0] = tmp
+            tHMMobj.estimate.T = tHMMobj.estimate.T.transpose()
+            tHMMobj.estimate.pi = np.flip(tHMMobj.estimate.pi)
 
         counter = [1 if a == b else 0 for (a, b) in zip(new_all_states, lin_true_states)]
         counter_holder += (sum(counter))

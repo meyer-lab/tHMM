@@ -58,7 +58,7 @@ def accuracy_increased_cells():
     
     desired_num_cells = 2**12 - 1
     experiment_time = 100
-    num_lineages = list(range(1, 100))
+    num_lineages = list(range(1, 25))
     list_of_lineages = []
 
     for num in num_lineages:
@@ -110,7 +110,7 @@ def accuracy_increased_cells():
     return x, accuracies, tr, pi
 
 
-def moving_average(a, n=20):
+def moving_average(a, n=5):
     ret = np.cumsum(a, dtype=float)
     ret[n:] = ret[n:] - ret[:-n]
     return ret[n - 1:] / n
@@ -131,7 +131,7 @@ def figure_maker(ax, x, accuracies, tr, pi):
     ax[i].set_xlabel('Number of Cells')
     ax[i].set_ylim(0, 110)
     ax[i].scatter(x, accuracies, c='k', marker="o", label='Accuracy', edgecolors='k', alpha=0.25)
-    ax[i].plot(sorted_x_vs_acc[:, 0][19:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
+    ax[i].plot(sorted_x_vs_acc[:, 0][4:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
     ax[i].set_ylabel(r'Accuracy [\%]')
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1) 
     ax[i].set_title('State Assignment Accuracy')
@@ -142,7 +142,7 @@ def figure_maker(ax, x, accuracies, tr, pi):
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[i].set_xlabel('Number of Lineages')
     ax[i].scatter(x, tr, c='k', marker="o", edgecolors='k', alpha=0.25)
-    ax[i].plot(sorted_x_vs_tr[:, 0][19:], moving_average(sorted_x_vs_tr[:, 1]), c='k', label='Moving Average')
+    ax[i].plot(sorted_x_vs_tr[:, 0][4:], moving_average(sorted_x_vs_tr[:, 1]), c='k', label='Moving Average')
     ax[i].set_ylabel(r'$||T-T_{est}||_{F}$')
     ax[i].axhline(y=0, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('Transition Matrix Estimation')
@@ -153,7 +153,7 @@ def figure_maker(ax, x, accuracies, tr, pi):
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[i].set_xlabel('Number of Lineages')
     ax[i].scatter(x, pi, c='k', marker="o", edgecolors='k', alpha=0.25)
-    ax[i].plot(sorted_x_vs_pi[:, 0][19:], moving_average(sorted_x_vs_pi[:, 1]), c='k', label='Moving Average')
+    ax[i].plot(sorted_x_vs_pi[:, 0][4:], moving_average(sorted_x_vs_pi[:, 1]), c='k', label='Moving Average')
     ax[i].set_ylabel(r'$||\pi-\pi_{est}||_{2}$')
     ax[i].axhline(y=0, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title(r'Initial Seeding Density Estimation')
