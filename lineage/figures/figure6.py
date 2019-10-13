@@ -1,5 +1,5 @@
 """
-This creates Figure 4.
+This creates Figure 6.
 """
 from .figureCommon import subplotLabel, getSetup
 from matplotlib.ticker import MaxNLocator
@@ -60,7 +60,6 @@ def accuracy_increased_cells():
     desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
 
     x = []
-    accuracies_unpruned = []
     bern_unpruned = []  
     gamma_a_unpruned = []
     gamma_scale_unpruned = []
@@ -68,7 +67,7 @@ def accuracy_increased_cells():
     
     for num in desired_num_cells:
         # Creating an unpruned and pruned lineage
-        lineage = LineageTree(piiii, T, E, num, desired_experiment_time=1000000, prune_condition='both', prune_boolean=False)
+        lineage = LineageTree(piiii, T, E, num, desired_experiment_time=1000000, prune_condition='fate', prune_boolean=False)
 
         # Setting then into a list or a population of lineages and collecting the length of each lineage
         X1 = [lineage]
@@ -78,8 +77,13 @@ def accuracy_increased_cells():
         deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
 
         # Collecting the accuracies of the lineages
-        acc1 = accuracy(tHMMobj, all_states)[0]
-        accuracies_unpruned.append(acc1)
+        acc1 = accuracy(tHMMobj, all_states)[0]*100
+        while acc1 < 50:
+            # Analyzing the lineages
+            deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
+
+            # Collecting the accuracies of the lineages
+            acc1 = accuracy(tHMMobj, all_states)[0]*100
 
         # Collecting the parameter estimations
         bern_p_total = ()
@@ -102,7 +106,7 @@ def accuracy_increased_cells():
 def figure_maker(ax, x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1):
     i = 0
     res = [[i for i, j in bern_unpruned], [j for i, j in bern_unpruned]]
-    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
+    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
     ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
     ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)   
@@ -110,13 +114,14 @@ def figure_maker(ax, x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma
     ax[i].set_ylim([0.85,1.1])
     ax[i].axhline(y=bern_p0, linestyle='--', linewidth=2, label = 'Resistant', color='#F9Cb9C', alpha=1)
     ax[i].axhline(y=bern_p1, linestyle='--', linewidth=2, label = 'Susceptible', color='#A4C2F4', alpha=1)
-    ax[i].set_title('Bernoulli')
+    ax[i].set_title(r'Bernoulli $p$')
     ax[i].grid(linestyle='--')
+    ax[i].set_xscale('log', basex=2)
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
     res = [[i for i, j in gamma_a_unpruned], [j for i, j in gamma_a_unpruned]]
-    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
+    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
     ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
     ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
@@ -124,22 +129,24 @@ def figure_maker(ax, x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma
     ax[i].set_ylim([5,25])
     ax[i].axhline(y=gamma_a0, linestyle='--', linewidth=2, label = 'Resistant', color='#F9Cb9C', alpha=1)
     ax[i].axhline(y=gamma_a1, linestyle='--', linewidth=2, label = 'Susceptible', color='#A4C2F4', alpha=1)
-    ax[i].set_title('Gamma')
+    ax[i].set_title(r'Gamma $k$')
     ax[i].grid(linestyle='--')
+    ax[i].set_xscale('log', basex=2)
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
     res = [[i for i, j in gamma_scale_unpruned], [j for i, j in gamma_scale_unpruned]]
-    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
+    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
     ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
     ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
-    ax[i].set_ylabel(r'Gamma scale $\theta$')
+    ax[i].set_ylabel(r'Gamma $\theta$')
     ax[i].set_ylim([0,7])
     ax[i].axhline(y=gamma_scale0, linestyle='--', linewidth=2, label = 'Resistant', color='#F9Cb9C', alpha=1)
     ax[i].axhline(y=gamma_scale1, linestyle='--', linewidth=2, label = 'Susceptible', color='#A4C2F4', alpha=1)
-    ax[i].set_title('Gamma')
+    ax[i].set_title(r'Gamma $\theta$')
     ax[i].grid(linestyle='--')
+    ax[i].set_xscale('log', basex=2)
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
     ax[i].legend()
 

@@ -86,9 +86,10 @@ def accuracy_increased_cells():
 def figure_maker(ax, x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_scale0):
     
     i = 0
-    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
+    ax[i].set_xlim((16, int(np.ceil(4* max(x)))))
     ax[i].set_xlabel('Number of Cells')
     ax[i].scatter(x, bern, c='#F9Cb9C', marker="o", edgecolors='k', alpha=0.5)
+    ax[i].set_xscale('log', basex=2)
     ax[i].set_ylabel(r'Bernoulli $p$')
     ax[i].axhline(y=bern_p0, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('Bernoulli')
@@ -96,21 +97,23 @@ def figure_maker(ax, x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_sca
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
-    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
+    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
     ax[i].scatter(x, gamma_a , c='#F9Cb9C', marker="o", edgecolors='k', alpha=0.5)
+    ax[i].set_xscale('log', basex=2)
     ax[i].set_ylabel(r'Gamma $k$')
     ax[i].axhline(y=gamma_a0, linestyle='--', linewidth=2, color='k', alpha=1)
-    ax[i].set_title('Gamma')
+    ax[i].set_title('Gamma $k$')
     ax[i].grid(linestyle='--')
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
-    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
+    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
     ax[i].scatter(x, gamma_scale, c='#F9Cb9C', marker="o", edgecolors='k', alpha=0.5)
+    ax[i].set_xscale('log', basex=2)
     ax[i].set_ylabel(r'Gamma $\theta$')
     ax[i].axhline(y=gamma_scale0, linestyle='--', linewidth=2, color='k', alpha=1)
-    ax[i].set_title('Gamma')
+    ax[i].set_title(r'Gamma $\theta$')
     ax[i].grid(linestyle='--')
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
