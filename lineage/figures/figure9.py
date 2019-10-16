@@ -56,21 +56,17 @@ def accuracy_increased_cells():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
     
-    desired_num_cells = 2**12 - 1
-    experiment_time = 100
-    num_lineages = list(range(1, 25))
+    desired_num_cells = 2**9 - 1
+    experiment_time = 50
+    num_lineages = list(range(1, 75))
     list_of_lineages = []
 
     for num in num_lineages:
         X1 = []
         for lineages in range(num):
             # Creating an unpruned and pruned lineage
-            lineage = LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True)
-            while len(lineage.output_lineage) < 16:
-                lineage = LineageTree(piiii, T, E, (2**12)-1, experiment_time, prune_condition='both', prune_boolean=True)
+            X1.append(LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True))
 
-            # Setting then into a list or a population of lineages and collecting the length of each lineage
-            X1.append(lineage)
         # Adding populations into a holder for analysing
         list_of_lineages.append(X1)
 
@@ -83,8 +79,9 @@ def accuracy_increased_cells():
         # Analyzing the lineages
         deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
         
-        # Collecting how many lineages are in each analysis
-        x.append(len(X1))
+        # Collecting how many cells are in each lineage in each analysis
+        num_cells_holder = [len(lineageObj.output_lineage) for lineageObj in X1]
+        x.append(sum(num_cells_holder))
 
         # Collecting the accuracies of the lineages
         acc1 = accuracy(tHMMobj, all_states)[0]*100
@@ -104,13 +101,14 @@ def accuracy_increased_cells():
 
         pi_mat = tHMMobj.estimate.pi
         t1 = piiii - pi_mat
+        print(len(X1))
         print(piiii, pi_mat, t1)
         pi.append(np.linalg.norm(t1))
 
     return x, accuracies, tr, pi
 
 
-def moving_average(a, n=5):
+def moving_average(a, n=15):
     ret = np.cumsum(a, dtype=float)
     ret[n:] = ret[n:] - ret[:-n]
     return ret[n - 1:] / n
@@ -131,7 +129,7 @@ def figure_maker(ax, x, accuracies, tr, pi):
     ax[i].set_xlabel('Number of Cells')
     ax[i].set_ylim(0, 110)
     ax[i].scatter(x, accuracies, c='k', marker="o", label='Accuracy', edgecolors='k', alpha=0.25)
-    ax[i].plot(sorted_x_vs_acc[:, 0][4:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
+    ax[i].plot(sorted_x_vs_acc[:, 0][14:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
     ax[i].set_ylabel(r'Accuracy [\%]')
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1) 
     ax[i].set_title('State Assignment Accuracy')
@@ -140,9 +138,9 @@ def figure_maker(ax, x, accuracies, tr, pi):
 
     i += 1
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
-    ax[i].set_xlabel('Number of Lineages')
+    ax[i].set_xlabel('Number of Cells')
     ax[i].scatter(x, tr, c='k', marker="o", edgecolors='k', alpha=0.25)
-    ax[i].plot(sorted_x_vs_tr[:, 0][4:], moving_average(sorted_x_vs_tr[:, 1]), c='k', label='Moving Average')
+    ax[i].plot(sorted_x_vs_tr[:, 0][14:], moving_average(sorted_x_vs_tr[:, 1]), c='k', label='Moving Average')
     ax[i].set_ylabel(r'$||T-T_{est}||_{F}$')
     ax[i].axhline(y=0, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('Transition Matrix Estimation')
@@ -151,12 +149,12 @@ def figure_maker(ax, x, accuracies, tr, pi):
     
     i += 1
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
-    ax[i].set_xlabel('Number of Lineages')
+    ax[i].set_xlabel('Number of Cells')
     ax[i].scatter(x, pi, c='k', marker="o", edgecolors='k', alpha=0.25)
-    ax[i].plot(sorted_x_vs_pi[:, 0][4:], moving_average(sorted_x_vs_pi[:, 1]), c='k', label='Moving Average')
+    ax[i].plot(sorted_x_vs_pi[:, 0][14:], moving_average(sorted_x_vs_pi[:, 1]), c='k', label='Moving Average')
     ax[i].set_ylabel(r'$||\pi-\pi_{est}||_{2}$')
     ax[i].axhline(y=0, linestyle='--', linewidth=2, color='k', alpha=1)
-    ax[i].set_title(r'Initial Seeding Density Estimation')
+    ax[i].set_title(r'Initial Seeding Proportion Estimation')
     ax[i].grid(linestyle='--')
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 

@@ -145,7 +145,10 @@ def Viterbi(tHMMobj, deltas, state_ptrs):
     first_state_count = [0]*tHMMobj.numStates
     for num, lineageObj in enumerate(tHMMobj.X):
         first_cell_state = all_states[num][0]
+        print(first_cell_state, lineageObj.output_lineage[0].state)
         first_state_count[first_cell_state] += 1
+    print(first_state_count)
     tHMMobj.estimate.pi = np.array(first_state_count)/sum(first_state_count)
+    print('pi', tHMMobj.estimate.pi)
     
     return all_states
