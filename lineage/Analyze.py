@@ -111,4 +111,31 @@ def accuracyG(tHMMobj, all_states):
     return acuracy_holder
 
 def kl_divergence(p, q):
+    """ Performs KL-divergence as:
+        KL(P||Q) = Integral[ P(x) log(P(x)/Q(x)) ] for continuous distributions,
+        and summation instead of integral, for discrete distributions. """
     return np.sum(np.where(p != 0, p * np.log(p / q), 0))
+
+def KL_analyze(lineageObj):
+    """ Assuming we have 2-state model """
+
+    obs0 = lineageObj.lineage_stats[0].full_lin_cells_obs
+    obs1 = lineageObj.lineage_stats[1].full_lin_cells_obs
+    obs0 = list(zip(*obs0))
+    bern0 = np.asarray(obs0[0])
+    lifetime0 = np.asarray(obs0[1])
+
+    obs1 = list(zip(*obs1))
+    bern1 = np.asarray(obs1[0])
+    lifetime1 = np.asarray(obs1[1])
+
+    size = min(lifetime0.shape, lifetime1.shape)
+    KL_bern = kl_divergence(bern0[:size[0]], bern1[:size[0]])
+    KL_gamma = kl_divergence(lifetime0[:size[0]], lifetime1[:size[0]])
+    return KL_bern, KL_gamma
+    
+        
+        
+        
+        
+    
