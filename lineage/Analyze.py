@@ -109,3 +109,6 @@ def accuracyG(tHMMobj, all_states):
         acuracy_holder.append(100 * acc)
 
     return acuracy_holder
+
+def kl_divergence(p, q):
+    return np.sum(np.where(p != 0, p * np.log(p / q), 0))
