@@ -1,16 +1,17 @@
 """
-This creates Figure 4.
+File: figure4.py
+Authors: Shakthi Visagan, Farnaz Mohammadi
+Purpose: Generates figure 4. 
+
+Figure 4 is the parameter estimation for a single unpruned lineage with no heterogeneity (one true state). 
 """
-from .figureCommon import subplotLabel, getSetup
-from matplotlib.ticker import MaxNLocator
-from ..Analyze import accuracy, accuracyG, Analyze
+from .figureCommon import getSetup
+from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
-from ..StateDistribution2 import StateDistribution2
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
@@ -20,7 +21,7 @@ plt.rc('ytick', **{'labelsize':'medium'})
 
 
 def makeFigure():
-    """ makes figure 1 """
+    """ makes figure 4 """
     # Get list of axis objects
     ax, f = getSetup((21, 6), (1, 3))
     x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_scale0 = accuracy_increased_cells()

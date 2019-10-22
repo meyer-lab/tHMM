@@ -1,16 +1,17 @@
 """
-This creates Figure 5.
+File: figure5.py
+Authors: Shakthi Visagan, Farnaz Mohammadi
+Purpose: Generates figure 5. 
+
+Figure 5 is the accuracy and transition matrix parameter estimation for a single unpruned lineage with heterogeneity (two true states). 
 """
-from .figureCommon import subplotLabel, getSetup
-from matplotlib.ticker import MaxNLocator
-from ..Analyze import accuracy, accuracyG, Analyze
+from .figureCommon import getSetup
+from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
-from ..StateDistribution2 import StateDistribution2
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
@@ -85,7 +86,7 @@ def accuracy_increased_cells():
             acc1 = accuracy(tHMMobj, all_states)[0]*100
         accuracies.append(acc1)
 
-    # Transition and Pi estimates
+        # Transition and Pi estimates
         transition_mat = tHMMobj.estimate.T  # unpruned
 
         temp1 = T - transition_mat
