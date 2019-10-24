@@ -118,22 +118,34 @@ def kl_divergence(p, q):
 
 def KL_analyze():
     """ Assuming we have 2-state model """
-    gamma_a0List = [17.0, 13.0, 10.0]
-    gamma_scale0List = [7.0, 5.0, 3.0]
-    gamma_a1List = [4.0, 7.0, 10.0]
-    gamma_scale1List = [10.0, 8.0, 3.0]
+    pi = np.array([0.6, 0.4], dtype="float")
+
+    # T: transition probability matrix
+    T = np.array([[0.65, 0.35],
+                  [0.35, 0.65]])
+
+    gamma_a0List = [5.0, 10.0, 15.0, 12.0]
+    gamma_scale0List = [2.0, 2.0, 2.0, 3.3]
+    gamma_a1List = [23.0, 20.0, 17.0, 12.0]
+    gamma_scale1List = [3.0, 3.0, 3.0, 3.3]
 
     gammaKL = []
-    for i in range(3):
+    acc = []
+    for i in range(4):
         state_obj0 = StateDistribution(state0, bern_p0, gamma_a0List[i], gamma_loc, gamma_scale0List[i])
         state_obj1 = StateDistribution(state1, bern_p1, gamma_a1List[i], gamma_loc,  gamma_scale1List[i])
 
         E = [state_obj0, state_obj1]
-        lineageObj = LineageTree(pi, T, E, desired_num_cells=2**10 -1, desired_experiment_time=100000, prune_condition='both', prune_boolean=False)
+        lineageObj = LineageTree(pi, T, E, desired_num_cells=2**11 -1, desired_experiment_time=100000, prune_condition='both', prune_boolean=False)
         X = [lineageObj]
         states = [cell.state for cell in lineageObj.output_lineage]
         deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X, 2)
 
+        # find the accuracy
+        temp = accuracy(tHMMobj, all_states)
+        acc.append(temp[0])
+
+        # find the KL divergence
         state0obs=[]
         state1obs=[]
 
@@ -144,8 +156,15 @@ def KL_analyze():
                 state1obs.append(cell.obs[1])
         p=scipy.stats.gamma.pdf(state0obs, a=gamma_a0List[i], loc=gamma_loc, scale=gamma_scale0List[i])
         q=scipy.stats.gamma.pdf(state1obs, a=gamma_a1List[i], loc=gamma_loc, scale=gamma_scale1List[i])
+
         size = min(p.shape[0], q.shape[0])
-        gammaKL.append(kl_divergence(p[0:size], q[0:size]))
+        if size == 0:
+            raise ValueError('the number of cells predicted in one of the states is zero! ')
+        else:
+            pprime = random.sample(list(p), size)
+            qprime = random.sample(list(q), size)
+        gammaKL.append(kl_divergence(np.asarray(pprime), np.asarray(qprime)))
+
     return KLgamma
     
         
