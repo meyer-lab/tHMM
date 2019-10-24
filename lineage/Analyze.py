@@ -116,23 +116,37 @@ def kl_divergence(p, q):
         and summation instead of integral, for discrete distributions. """
     return np.sum(np.where(p != 0, p * np.log(p / q), 0))
 
-def KL_analyze(lineageObj):
+def KL_analyze():
     """ Assuming we have 2-state model """
+    gamma_a0List = [17.0, 13.0, 10.0]
+    gamma_scale0List = [7.0, 5.0, 3.0]
+    gamma_a1List = [4.0, 7.0, 10.0]
+    gamma_scale1List = [10.0, 8.0, 3.0]
 
-    obs0 = lineageObj.lineage_stats[0].full_lin_cells_obs
-    obs1 = lineageObj.lineage_stats[1].full_lin_cells_obs
-    obs0 = list(zip(*obs0))
-    bern0 = np.asarray(obs0[0])
-    lifetime0 = np.asarray(obs0[1])
+    gammaKL = []
+    for i in range(3):
+        state_obj0 = StateDistribution(state0, bern_p0, gamma_a0List[i], gamma_loc, gamma_scale0List[i])
+        state_obj1 = StateDistribution(state1, bern_p1, gamma_a1List[i], gamma_loc,  gamma_scale1List[i])
 
-    obs1 = list(zip(*obs1))
-    bern1 = np.asarray(obs1[0])
-    lifetime1 = np.asarray(obs1[1])
+        E = [state_obj0, state_obj1]
+        lineageObj = LineageTree(pi, T, E, desired_num_cells=2**10 -1, desired_experiment_time=100000, prune_condition='both', prune_boolean=False)
+        X = [lineageObj]
+        states = [cell.state for cell in lineageObj.output_lineage]
+        deltas, state_ptrs, all_states, tHMMobj, NF, LL = Analyze(X, 2)
 
-    size = min(lifetime0.shape, lifetime1.shape)
-    KL_bern = kl_divergence(bern0[:size[0]], bern1[:size[0]])
-    KL_gamma = kl_divergence(lifetime0[:size[0]], lifetime1[:size[0]])
-    return KL_bern, KL_gamma
+        state0obs=[]
+        state1obs=[]
+
+        for indx, cell in enumerate(lineageObj.output_lineage):
+            if all_states[0][indx] == 0:
+                state0obs.append(cell.obs[1])
+            elif all_states[0][indx] == 1:
+                state1obs.append(cell.obs[1])
+        p=scipy.stats.gamma.pdf(state0obs, a=gamma_a0List[i], loc=gamma_loc, scale=gamma_scale0List[i])
+        q=scipy.stats.gamma.pdf(state1obs, a=gamma_a1List[i], loc=gamma_loc, scale=gamma_scale1List[i])
+        size = min(p.shape[0], q.shape[0])
+        gammaKL.append(kl_divergence(p[0:size], q[0:size]))
+    return KLgamma
     
         
         
