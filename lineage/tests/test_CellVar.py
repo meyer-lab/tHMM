@@ -52,7 +52,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(not cell.parent)
         self.assertTrue(cell.gen == 1)
         self.assertTrue(left_cell.gen == 2 and right_cell.gen == 2)
-        self.assertFalse(left_cell.gen == 1 and right_cell.gen == 2)
+        self.assertFalse(left_cell.gen == 1 and right_cell.gen == 2) #new assert
 
         parent_state = 0
         cell = c(
