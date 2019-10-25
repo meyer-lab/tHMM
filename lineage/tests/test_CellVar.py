@@ -52,6 +52,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(not cell.parent)
         self.assertTrue(cell.gen == 1)
         self.assertTrue(left_cell.gen == 2 and right_cell.gen == 2)
+        self.assertFalse(left_cell.gen == 1 and right_cell.gen == 2)
 
         parent_state = 0
         cell = c(
