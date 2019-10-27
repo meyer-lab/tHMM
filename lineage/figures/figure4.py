@@ -21,7 +21,10 @@ plt.rc('ytick', **{'labelsize':'medium'})
 
 
 def makeFigure():
-    """ makes figure 4 """
+    """ 
+    makes figure 4 
+    """
+    
     # Get list of axis objects
     ax, f = getSetup((21, 6), (1, 3))
     x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_scale0 = accuracy_increased_cells()
@@ -31,7 +34,7 @@ def makeFigure():
 
 def accuracy_increased_cells():
     """
-    Calculates parameter estimation for a one state model.
+    Calculates parameter estimation for a one state model over an increasing number of cells in a lineage.
     """
 
     # pi: the initial probability vector
@@ -85,7 +88,9 @@ def accuracy_increased_cells():
 
 
 def figure_maker(ax, x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_scale0):
-    
+    """
+    Makes figure 4.
+    """
     i = 0
     ax[i].set_xlim((16, int(np.ceil(4* max(x)))))
     ax[i].set_xlabel('Number of Cells')
