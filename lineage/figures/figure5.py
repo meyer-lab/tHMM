@@ -1,6 +1,5 @@
 """
 File: figure5.py
-Authors: Shakthi Visagan, Farnaz Mohammadi
 Purpose: Generates figure 5. 
 
 Figure 5 is the accuracy and transition matrix parameter estimation for a single unpruned lineage with heterogeneity (two true states). 

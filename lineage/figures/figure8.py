@@ -1,16 +1,16 @@
 """
-This creates Figure 8.
+File: figure8.py
+Purpose: Generates figure 8. 
+
+Figure 8 is the parameter estimation for a single pruned lineage with heterogeneity (two true states). 
 """
-from .figureCommon import subplotLabel, getSetup
-from matplotlib.ticker import MaxNLocator
-from ..Analyze import accuracy, accuracyG, Analyze
+from .figureCommon import  getSetup
+from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
-from ..StateDistribution2 import StateDistribution2
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
@@ -18,8 +18,11 @@ plt.rc('text', usetex=True)
 plt.rc('xtick', **{'labelsize':'medium'})
 plt.rc('ytick', **{'labelsize':'medium'})
 
+
 def makeFigure():
-    """ makes figure 4 """
+    """
+    Makes figure 8.
+    """
 
     # Get list of axis objects
     ax, f = getSetup((21, 6), (1, 3))
@@ -28,9 +31,10 @@ def makeFigure():
     
     return f
 
-
 def accuracy_increased_cells():
-    """ Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
+    """ 
+    Calculates parameter estimation by increasing the number of cells in a lineage for a two-state model. 
+    """
 
     # pi: the initial probability vector
     piiii = np.array([0.6, 0.4], dtype="float")
@@ -63,12 +67,13 @@ def accuracy_increased_cells():
     gamma_scale_unpruned = []
     
     
-    times = np.linspace(100, 1000, 250)
+    times = np.linspace(100, 1000, 25)
 
     for experiment_time in times:
         # Creating an unpruned and pruned lineage
         lineage = LineageTree(piiii, T, E, (2**12)-1, experiment_time, prune_condition='both', prune_boolean=True)
         while len(lineage.output_lineage) < 16:
+            del lineage
             lineage = LineageTree(piiii, T, E, (2**12)-1, experiment_time, prune_condition='both', prune_boolean=True)
 
         # Setting then into a list or a population of lineages and collecting the length of each lineage
@@ -107,6 +112,9 @@ def accuracy_increased_cells():
 
 
 def figure_maker(ax, x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1):
+    """
+    Makes figure 8.
+    """
     i = 0
     res = [[i for i, j in bern_unpruned], [j for i, j in bern_unpruned]]
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))

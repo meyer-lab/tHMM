@@ -1,6 +1,5 @@
 """
 File: figure6.py
-Authors: Shakthi Visagan, Farnaz Mohammadi
 Purpose: Generates figure 6. 
 
 Figure 6 is the parameter estimation for a single unpruned lineage with heterogeneity (two true states). 

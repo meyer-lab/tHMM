@@ -1,6 +1,5 @@
 """
 File: figure7.py
-Authors: Shakthi Visagan, Farnaz Mohammadi
 Purpose: Generates figure 7. 
 
 Figure 7 is the accuracy and transition matrix parameter estimation for a single pruned lineage with heterogeneity (two true states). 
@@ -12,13 +11,13 @@ from ..StateDistribution import StateDistribution
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
 plt.rc('text', usetex=True)
 plt.rc('xtick', **{'labelsize':'medium'})
 plt.rc('ytick', **{'labelsize':'medium'})
+
 
 def makeFigure():
     """
@@ -73,7 +72,7 @@ def accuracy_increased_cells():
         # Creating an unpruned and pruned lineage
         lineage = LineageTree(piiii, T, E, (2**12)-1, experiment_time, prune_condition='both', prune_boolean=True)
         while len(lineage.output_lineage) < 16:
-            del(lineage)
+            del lineage
             lineage = LineageTree(piiii, T, E, (2**12)-1, experiment_time, prune_condition='both', prune_boolean=True)
 
         # Setting then into a list or a population of lineages and collecting the length of each lineage
@@ -106,12 +105,17 @@ def accuracy_increased_cells():
     return x, accuracies, tr, pi
 
 def moving_average(a, n=50):
+    """
+    Calculates the moving average.
+    """
     ret = np.cumsum(a, dtype=float)
     ret[n:] = ret[n:] - ret[:-n]
     return ret[n - 1:] / n
 
 def figure_maker(ax, x, accuracies, tr, pi):
-    
+    """
+    Makes figure 7.
+    """  
     x_vs_acc = np.column_stack((x, accuracies))
     sorted_x_vs_acc = x_vs_acc[np.argsort(x_vs_acc[:, 0])]
     
