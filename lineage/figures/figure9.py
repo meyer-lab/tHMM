@@ -1,16 +1,16 @@
 """
-This creates Figure 9 which plots with the following characteristics both pruning, 2states, state assignment accuracy.
+File: figure9.py
+Purpose: Generates figure 9. 
+
+Figure 9 is the accuracy and transition matrix parameter estimation for a single pruned lineage with heterogeneity (two true states). 
 """
-from .figureCommon import subplotLabel, getSetup
-from matplotlib.ticker import MaxNLocator
-from ..Analyze import accuracy, accuracyG, Analyze
+from .figureCommon import getSetup
+from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
-from ..StateDistribution2 import StateDistribution2
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
@@ -18,8 +18,11 @@ plt.rc('text', usetex=True)
 plt.rc('xtick', **{'labelsize':'medium'})
 plt.rc('ytick', **{'labelsize':'medium'})
 
+
 def makeFigure():
-    """ makes figure 9 """
+    """
+    Makes figure 9.
+    """
 
     # Get list of axis objects
     ax, f = getSetup((24, 6), (1, 3))
@@ -30,7 +33,9 @@ def makeFigure():
 
 
 def accuracy_increased_cells():
-    """ Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
+    """ 
+    Calculates accuracy and transition rate estimation over an increasing number of cells in a lineage for an pruned two-state model. 
+    """
 
     # pi: the initial probability vector
     piiii = np.array([0.6, 0.4], dtype="float")
@@ -58,7 +63,7 @@ def accuracy_increased_cells():
     
     desired_num_cells = 2**9 - 1
     experiment_time = 50
-    num_lineages = list(range(1, 75))
+    num_lineages = list(range(1, 10))
     list_of_lineages = []
 
     for num in num_lineages:
@@ -101,20 +106,23 @@ def accuracy_increased_cells():
 
         pi_mat = tHMMobj.estimate.pi
         t1 = piiii - pi_mat
-        print(len(X1))
-        print(piiii, pi_mat, t1)
         pi.append(np.linalg.norm(t1))
 
     return x, accuracies, tr, pi
 
 
 def moving_average(a, n=15):
+    """
+    Calculates the moving average.
+    """
     ret = np.cumsum(a, dtype=float)
     ret[n:] = ret[n:] - ret[:-n]
     return ret[n - 1:] / n
 
 def figure_maker(ax, x, accuracies, tr, pi):
-    
+    """
+    Makes figure 8.
+    """  
     x_vs_acc = np.column_stack((x, accuracies))
     sorted_x_vs_acc = x_vs_acc[np.argsort(x_vs_acc[:, 0])]
     
