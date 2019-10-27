@@ -58,7 +58,7 @@ def accuracy_increased_cells():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-    desired_num_cells = np.logspace(5, 12, num=250, base=2.0)
+    desired_num_cells = np.logspace(5, 12, num=25, base=2.0)
     desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
 
     x = []
@@ -93,7 +93,7 @@ def figure_maker(ax, x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_sca
     ax[i].set_xscale('log', basex=2)
     ax[i].set_ylabel(r'Bernoulli $p$')
     ax[i].axhline(y=bern_p0, linestyle='--', linewidth=2, color='k', alpha=1)
-    ax[i].set_title('Bernoulli')
+    ax[i].set_title('Bernoulli $p$')
     ax[i].grid(linestyle='--')
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
