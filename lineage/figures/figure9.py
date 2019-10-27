@@ -1,8 +1,8 @@
 """
 File: figure9.py
-Purpose: Generates figure 9. 
+Purpose: Generates figure 9.
 
-Figure 9 is the accuracy and transition matrix parameter estimation for a group of pruned lineages with heterogeneity (two true states). 
+Figure 9 is the accuracy and transition matrix parameter estimation for a group of pruned lineages with heterogeneity (two true states).
 """
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze
@@ -15,8 +15,8 @@ plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
 plt.rc('text', usetex=True)
-plt.rc('xtick', **{'labelsize':'medium'})
-plt.rc('ytick', **{'labelsize':'medium'})
+plt.rc('xtick', **{'labelsize': 'medium'})
+plt.rc('ytick', **{'labelsize': 'medium'})
 
 
 def makeFigure():
@@ -28,13 +28,13 @@ def makeFigure():
     ax, f = getSetup((24, 6), (1, 3))
     x, accuracies, tr, pi = accuracy_increased_cells()
     figure_maker(ax, x, accuracies, tr, pi)
-    
+
     return f
 
 
 def accuracy_increased_cells():
-    """ 
-    Calculates accuracy and transition rate estimation over an increasing number of cells in a lineage for an pruned two-state model. 
+    """
+    Calculates accuracy and transition rate estimation over an increasing number of cells in a lineage for an pruned two-state model.
     """
 
     # pi: the initial probability vector
@@ -60,7 +60,7 @@ def accuracy_increased_cells():
     state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
-    
+
     desired_num_cells = 2**9 - 1
     experiment_time = 50
     num_lineages = list(range(1, 10))
@@ -83,21 +83,21 @@ def accuracy_increased_cells():
     for idx, X1 in enumerate(list_of_lineages):
         # Analyzing the lineages
         deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
-        
+
         # Collecting how many cells are in each lineage in each analysis
         num_cells_holder = [len(lineageObj.output_lineage) for lineageObj in X1]
         x.append(sum(num_cells_holder))
 
         # Collecting the accuracies of the lineages
-        acc1 = accuracy(tHMMobj, all_states)[0]*100
+        acc1 = accuracy(tHMMobj, all_states)[0] * 100
         while acc1 < 50:
             # Analyzing the lineages
             deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
 
             # Collecting the accuracies of the lineages
-            acc1 = accuracy(tHMMobj, all_states)[0]*100
+            acc1 = accuracy(tHMMobj, all_states)[0] * 100
         accuracies.append(acc1)
-        
+
         # Transition and Pi estimates
         transition_mat = tHMMobj.estimate.T  # unpruned
 
@@ -119,19 +119,20 @@ def moving_average(a, n=15):
     ret[n:] = ret[n:] - ret[:-n]
     return ret[n - 1:] / n
 
+
 def figure_maker(ax, x, accuracies, tr, pi):
     """
     Makes figure 8.
-    """  
+    """
     x_vs_acc = np.column_stack((x, accuracies))
     sorted_x_vs_acc = x_vs_acc[np.argsort(x_vs_acc[:, 0])]
-    
+
     x_vs_tr = np.column_stack((x, tr))
     sorted_x_vs_tr = x_vs_tr[np.argsort(x_vs_tr[:, 0])]
-    
+
     x_vs_pi = np.column_stack((x, pi))
     sorted_x_vs_pi = x_vs_pi[np.argsort(x_vs_pi[:, 0])]
-    
+
     i = 0
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
@@ -139,7 +140,7 @@ def figure_maker(ax, x, accuracies, tr, pi):
     ax[i].scatter(x, accuracies, c='k', marker="o", label='Accuracy', edgecolors='k', alpha=0.25)
     ax[i].plot(sorted_x_vs_acc[:, 0][14:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
     ax[i].set_ylabel(r'Accuracy [\%]')
-    ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1) 
+    ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('State Assignment Accuracy')
     ax[i].grid(linestyle='--')
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
@@ -154,7 +155,7 @@ def figure_maker(ax, x, accuracies, tr, pi):
     ax[i].set_title('Transition Matrix Estimation')
     ax[i].grid(linestyle='--')
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
-    
+
     i += 1
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
@@ -165,4 +166,3 @@ def figure_maker(ax, x, accuracies, tr, pi):
     ax[i].set_title(r'Initial Seeding Proportion Estimation')
     ax[i].grid(linestyle='--')
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
-

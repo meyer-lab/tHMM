@@ -147,7 +147,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                                                       node_parent_m_idx=node_parent_m_idx)
                     fac2 = EL_array[node_parent_m_idx, state_j]
                     fac3 = MSD_array[node_parent_m_idx, state_j]
-                    numer_holder.append( fac1 * fac2 * fac3 )
+                    numer_holder.append(fac1 * fac2 * fac3)
                 NF[num][node_parent_m_idx] = sum(numer_holder)
                 assert NF[num][node_parent_m_idx] > 0.0, "{} and {} and {} and {}".format(NF[num], NF[num][node_parent_m_idx], MSD_array[node_parent_m_idx, :], EL_array[node_parent_m_idx, :])
                 for state_j in range(numStates):

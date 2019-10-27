@@ -1,9 +1,9 @@
 """
 File: figure4.py
 Authors: Shakthi Visagan, Farnaz Mohammadi
-Purpose: Generates figure 4. 
+Purpose: Generates figure 4.
 
-Figure 4 is the parameter estimation for a single unpruned lineage with no heterogeneity (one true state). 
+Figure 4 is the parameter estimation for a single unpruned lineage with no heterogeneity (one true state).
 """
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze
@@ -16,21 +16,22 @@ plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
 plt.rc('text', usetex=True)
-plt.rc('xtick', **{'labelsize':'medium'})
-plt.rc('ytick', **{'labelsize':'medium'})
+plt.rc('xtick', **{'labelsize': 'medium'})
+plt.rc('ytick', **{'labelsize': 'medium'})
 
 
 def makeFigure():
-    """ 
+    """
     Makes figure 4.
     """
-    
+
     # Get list of axis objects
     ax, f = getSetup((21, 6), (1, 3))
     x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_scale0 = accuracy_increased_cells()
     figure_maker(ax, x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_scale0)
-    
+
     return f
+
 
 def accuracy_increased_cells():
     """
@@ -83,7 +84,7 @@ def accuracy_increased_cells():
         bern.append(tHMMobj.estimate.E[0].bern_p)
         gamma_a.append(tHMMobj.estimate.E[0].gamma_a)
         gamma_scale.append(tHMMobj.estimate.E[0].gamma_scale)
-        
+
     return x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_scale0
 
 
@@ -92,7 +93,7 @@ def figure_maker(ax, x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_sca
     Makes figure 4.
     """
     i = 0
-    ax[i].set_xlim((16, int(np.ceil(4* max(x)))))
+    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
     ax[i].scatter(x, bern, c='#F9Cb9C', marker="o", edgecolors='k', alpha=0.5)
     ax[i].set_xscale('log', basex=2)
@@ -105,7 +106,7 @@ def figure_maker(ax, x, bern, bern_p0, gamma_a, gamma_a0, gamma_scale, gamma_sca
     i += 1
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
-    ax[i].scatter(x, gamma_a , c='#F9Cb9C', marker="o", edgecolors='k', alpha=0.5)
+    ax[i].scatter(x, gamma_a, c='#F9Cb9C', marker="o", edgecolors='k', alpha=0.5)
     ax[i].set_xscale('log', basex=2)
     ax[i].set_ylabel(r'Gamma $k$')
     ax[i].axhline(y=gamma_a0, linestyle='--', linewidth=2, color='k', alpha=1)

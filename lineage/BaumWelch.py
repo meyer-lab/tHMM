@@ -115,7 +115,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             # this bins the cells by lineage to the population cell lists
             for ii, state in enumerate(max_state_holder):
                 cell_groups[state].append(lineage[ii])
-        tHMMobj.estimate.pi = pi_estimate/sum(pi_estimate)
+        tHMMobj.estimate.pi = pi_estimate / sum(pi_estimate)
         tHMMobj.estimate.T = T_estimate / T_estimate.sum(axis=1)[:, np.newaxis]
         # after iterating through each lineage, do the population wide E calculation
         for state_j in range(numStates):

@@ -1,8 +1,8 @@
 """
 File: figure5.py
-Purpose: Generates figure 5. 
+Purpose: Generates figure 5.
 
-Figure 5 is the accuracy and transition matrix parameter estimation for a single unpruned lineage with heterogeneity (two true states). 
+Figure 5 is the accuracy and transition matrix parameter estimation for a single unpruned lineage with heterogeneity (two true states).
 """
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze
@@ -15,12 +15,12 @@ plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
 plt.rc('text', usetex=True)
-plt.rc('xtick', **{'labelsize':'medium'})
-plt.rc('ytick', **{'labelsize':'medium'})
+plt.rc('xtick', **{'labelsize': 'medium'})
+plt.rc('ytick', **{'labelsize': 'medium'})
 
 
 def makeFigure():
-    """ 
+    """
     Makes figure 5.
     """
 
@@ -28,12 +28,13 @@ def makeFigure():
     ax, f = getSetup((16, 6), (1, 2))
     x, accuracies, tr, pi = accuracy_increased_cells()
     figure_maker(ax, x, accuracies, tr, pi)
-    
+
     return f
 
+
 def accuracy_increased_cells():
-    """ 
-    Calculates accuracy and transition rate estimation over an increasing number of cells in a lineage for an unpruned two-state model. 
+    """
+    Calculates accuracy and transition rate estimation over an increasing number of cells in a lineage for an unpruned two-state model.
     """
 
     # pi: the initial probability vector
@@ -80,13 +81,13 @@ def accuracy_increased_cells():
         deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
 
         # Collecting the accuracies of the lineages
-        acc1 = accuracy(tHMMobj, all_states)[0]*100
+        acc1 = accuracy(tHMMobj, all_states)[0] * 100
         while acc1 < 50:
             # Analyzing the lineages
             deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
 
             # Collecting the accuracies of the lineages
-            acc1 = accuracy(tHMMobj, all_states)[0]*100
+            acc1 = accuracy(tHMMobj, all_states)[0] * 100
         accuracies.append(acc1)
 
         # Transition and Pi estimates
@@ -101,6 +102,7 @@ def accuracy_increased_cells():
 
     return x, accuracies, tr, pi
 
+
 def moving_average(a, n=50):
     """
     Calculates the moving average.
@@ -109,16 +111,17 @@ def moving_average(a, n=50):
     ret[n:] = ret[n:] - ret[:-n]
     return ret[n - 1:] / n
 
+
 def figure_maker(ax, x, accuracies, tr, pi):
     """
     Makes figure 5.
-    """    
+    """
     x_vs_acc = np.column_stack((x, accuracies))
     sorted_x_vs_acc = x_vs_acc[np.argsort(x_vs_acc[:, 0])]
-    
+
     x_vs_tr = np.column_stack((x, tr))
     sorted_x_vs_tr = x_vs_tr[np.argsort(x_vs_tr[:, 0])]
-    
+
     i = 0
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
@@ -127,7 +130,7 @@ def figure_maker(ax, x, accuracies, tr, pi):
     ax[i].plot(sorted_x_vs_acc[:, 0][49:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
     ax[i].set_xscale('log', basex=2)
     ax[i].set_ylabel(r'Accuracy [\%]')
-    ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1) 
+    ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('State Assignment Accuracy')
     ax[i].grid(linestyle='--')
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)

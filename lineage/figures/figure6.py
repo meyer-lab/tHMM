@@ -1,8 +1,8 @@
 """
 File: figure6.py
-Purpose: Generates figure 6. 
+Purpose: Generates figure 6.
 
-Figure 6 is the parameter estimation for a single unpruned lineage with heterogeneity (two true states). 
+Figure 6 is the parameter estimation for a single unpruned lineage with heterogeneity (two true states).
 """
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze
@@ -15,8 +15,8 @@ plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
 plt.rc('text', usetex=True)
-plt.rc('xtick', **{'labelsize':'medium'})
-plt.rc('ytick', **{'labelsize':'medium'})
+plt.rc('xtick', **{'labelsize': 'medium'})
+plt.rc('ytick', **{'labelsize': 'medium'})
 
 
 def makeFigure():
@@ -28,12 +28,13 @@ def makeFigure():
     ax, f = getSetup((21, 6), (1, 3))
     x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1 = accuracy_increased_cells()
     figure_maker(ax, x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1)
-    
+
     return f
 
+
 def accuracy_increased_cells():
-    """ 
-    Calculates parameter estimation by increasing the number of cells in a lineage for a two-state model. 
+    """
+    Calculates parameter estimation by increasing the number of cells in a lineage for a two-state model.
     """
 
     # pi: the initial probability vector
@@ -64,11 +65,10 @@ def accuracy_increased_cells():
     desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
 
     x = []
-    bern_unpruned = []  
+    bern_unpruned = []
     gamma_a_unpruned = []
     gamma_scale_unpruned = []
-    
-    
+
     for num in desired_num_cells:
         # Creating an unpruned and pruned lineage
         lineage = LineageTree(piiii, T, E, num, desired_experiment_time=1000000, prune_condition='fate', prune_boolean=False)
@@ -81,13 +81,13 @@ def accuracy_increased_cells():
         deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
 
         # Collecting the accuracies of the lineages
-        acc1 = accuracy(tHMMobj, all_states)[0]*100
+        acc1 = accuracy(tHMMobj, all_states)[0] * 100
         while acc1 < 50:
             # Analyzing the lineages
             deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
 
             # Collecting the accuracies of the lineages
-            acc1 = accuracy(tHMMobj, all_states)[0]*100
+            acc1 = accuracy(tHMMobj, all_states)[0] * 100
 
         # Collecting the parameter estimations
         bern_p_total = ()
@@ -103,7 +103,6 @@ def accuracy_increased_cells():
         gamma_a_unpruned.append(gamma_a_total)
         gamma_scale_unpruned.append(gamma_scale_total)
 
-        
     return x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1
 
 
@@ -116,11 +115,11 @@ def figure_maker(ax, x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
     ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
-    ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)   
+    ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
     ax[i].set_ylabel('Bernoulli $p$')
-    ax[i].set_ylim([0.85,1.1])
-    ax[i].axhline(y=bern_p0, linestyle='--', linewidth=2, label = 'Resistant', color='#F9Cb9C', alpha=1)
-    ax[i].axhline(y=bern_p1, linestyle='--', linewidth=2, label = 'Susceptible', color='#A4C2F4', alpha=1)
+    ax[i].set_ylim([0.85, 1.1])
+    ax[i].axhline(y=bern_p0, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
+    ax[i].axhline(y=bern_p1, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
     ax[i].set_title(r'Bernoulli $p$')
     ax[i].grid(linestyle='--')
     ax[i].set_xscale('log', basex=2)
@@ -133,9 +132,9 @@ def figure_maker(ax, x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma
     ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
     ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
     ax[i].set_ylabel(r'Gamma $k$')
-    ax[i].set_ylim([5,25])
-    ax[i].axhline(y=gamma_a0, linestyle='--', linewidth=2, label = 'Resistant', color='#F9Cb9C', alpha=1)
-    ax[i].axhline(y=gamma_a1, linestyle='--', linewidth=2, label = 'Susceptible', color='#A4C2F4', alpha=1)
+    ax[i].set_ylim([5, 25])
+    ax[i].axhline(y=gamma_a0, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
+    ax[i].axhline(y=gamma_a1, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
     ax[i].set_title(r'Gamma $k$')
     ax[i].grid(linestyle='--')
     ax[i].set_xscale('log', basex=2)
@@ -148,14 +147,11 @@ def figure_maker(ax, x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma
     ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
     ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
     ax[i].set_ylabel(r'Gamma $\theta$')
-    ax[i].set_ylim([0,7])
-    ax[i].axhline(y=gamma_scale0, linestyle='--', linewidth=2, label = 'Resistant', color='#F9Cb9C', alpha=1)
-    ax[i].axhline(y=gamma_scale1, linestyle='--', linewidth=2, label = 'Susceptible', color='#A4C2F4', alpha=1)
+    ax[i].set_ylim([0, 7])
+    ax[i].axhline(y=gamma_scale0, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
+    ax[i].axhline(y=gamma_scale1, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
     ax[i].set_title(r'Gamma $\theta$')
     ax[i].grid(linestyle='--')
     ax[i].set_xscale('log', basex=2)
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
     ax[i].legend()
-
-    
-

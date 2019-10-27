@@ -48,7 +48,8 @@ class LineageTree:
         self.E = E
         self.desired_num_cells = desired_num_cells
         E_num_states = len(E)
-        assert pi_num_states == T_num_states == E_num_states, "The number of states in your input Markov probability parameters are mistmatched. Please check that the dimensions and states match. pi {} T {} E {}".format(self.pi,self.T,self.E)
+        assert pi_num_states == T_num_states == E_num_states, "The number of states in your input Markov probability parameters are mistmatched. Please check that the dimensions and states match. pi {} T {} E {}".format(
+            self.pi, self.T, self.E)
         self.num_states = pi_num_states
         self.desired_num_cells = desired_num_cells
         self.desired_experiment_time = desired_experiment_time
