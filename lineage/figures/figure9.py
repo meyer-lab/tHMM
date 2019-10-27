@@ -2,7 +2,7 @@
 File: figure9.py
 Purpose: Generates figure 9. 
 
-Figure 9 is the accuracy and transition matrix parameter estimation for a single pruned lineage with heterogeneity (two true states). 
+Figure 9 is the accuracy and transition matrix parameter estimation for a group of pruned lineages with heterogeneity (two true states). 
 """
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze
