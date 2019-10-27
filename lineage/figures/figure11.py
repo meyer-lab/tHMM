@@ -23,7 +23,7 @@ def makeFigure():
     """
     Makes figure 11.
     """
-    ax, f = getSetup((15, 10), (1, 3))
+    ax, f = getSetup((21, 6), (1, 3))
 
     desred_num_states1, AIC_unpruned1 = AIC_increased_cells1()
     i = 0
@@ -70,15 +70,13 @@ def AIC_increased_cells1():
     E = [state_obj0, state_obj1]
 
     desred_num_states = [1, 2, 3]
-    desired_num_cells = np.logspace(5, 12, num=25, base=2.0)
-    desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
     
-    AIC_unpruned = np.zeros(shape=(len(desired_num_cells), len(desred_num_states)))
+    AIC_unpruned = np.zeros(shape=(6, len(desred_num_states)))
 
-    for idx, num_cells in enumerate(desired_num_cells):
+    for idx in range(6):
         for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
-            lineage_unpruned = LineageTree(pi, T, E, num_cells, 1000000000, prune_condition='fate', prune_boolean=False)
+            lineage_unpruned = LineageTree(pi, T, E, (2**8)-1, 1000000000, prune_condition='fate', prune_boolean=False)
 
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             X1 = [lineage_unpruned]
@@ -122,15 +120,13 @@ def AIC_increased_cells2():
     E = [state_obj0, state_obj1]
 
     desred_num_states = [1, 2, 3]
-    desired_num_cells = np.logspace(5, 12, num=25, base=2.0)
-    desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
     
-    AIC_unpruned = np.zeros(shape=(len(desired_num_cells), len(desred_num_states)))
+    AIC_unpruned = np.zeros(shape=(6, len(desred_num_states)))
 
-    for idx, num_cells in enumerate(desired_num_cells):
+    for idx in range(6):
         for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
-            lineage_unpruned = LineageTree(pi, T, E, num_cells, 1000000000, prune_condition='fate', prune_boolean=False)
+            lineage_unpruned = LineageTree(pi, T, E, (2**8)-1, 1000000000, prune_condition='fate', prune_boolean=False)
 
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             X1 = [lineage_unpruned]
@@ -185,15 +181,13 @@ def AIC_increased_cells3():
     E = [state_obj0, state_obj1, state_obj2]
 
     desred_num_states = [1, 2, 3]
-    desired_num_cells = np.logspace(5, 12, num=25, base=2.0)
-    desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
     
-    AIC_unpruned = np.zeros(shape=(len(desired_num_cells), len(desred_num_states)))
+    AIC_unpruned = np.zeros(shape=(6, len(desred_num_states)))
 
-    for idx, num_cells in enumerate(desired_num_cells):
+    for idx in range(6):
         for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
-            lineage_unpruned = LineageTree(pi, T, E, num_cells, 1000000000, prune_condition='fate', prune_boolean=False)
+            lineage_unpruned = LineageTree(pi, T, E, (2**8)-1, 1000000000, prune_condition='fate', prune_boolean=False)
 
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             X1 = [lineage_unpruned]
@@ -208,10 +202,11 @@ def AIC_increased_cells3():
 
 
 def figure_maker(ax, i, desred_num_states, AIC_unpruned):
+    print(AIC_unpruned)
     i += 0
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(desred_num_states)))))
     ax[i].set_xlabel('Number of States')
-    ax[i].boxplot(AIC_unpruned)
+    ax[i].boxplot(AIC_unpruned.T)
     ax[i].set_ylabel(r'AIC')
     ax[i].get_yticks()
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
