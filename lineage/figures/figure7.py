@@ -1,5 +1,9 @@
 """
-This creates Figure 7 which plots with the following characteristics both pruning, 2states, state assignment accuracy.
+File: figure7.py
+Authors: Shakthi Visagan, Farnaz Mohammadi
+Purpose: Generates figure 7. 
+
+Figure 6 is the parameter estimation for a single unpruned lineage with heterogeneity (two true states). 
 """
 from .figureCommon import subplotLabel, getSetup
 from matplotlib.ticker import MaxNLocator

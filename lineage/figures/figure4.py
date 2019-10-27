@@ -22,7 +22,7 @@ plt.rc('ytick', **{'labelsize':'medium'})
 
 def makeFigure():
     """ 
-    makes figure 4 
+    Makes figure 4.
     """
     
     # Get list of axis objects

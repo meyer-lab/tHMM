@@ -1,9 +1,9 @@
 """
 File: figure6.py
 Authors: Shakthi Visagan, Farnaz Mohammadi
-Purpose: Generates figure 5. 
+Purpose: Generates figure 6. 
 
-Figure 6 is the accuracy and transition matrix parameter estimation for a single unpruned lineage with heterogeneity (two true states). 
+Figure 6 is the parameter estimation for a single unpruned lineage with heterogeneity (two true states). 
 """
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze
@@ -19,8 +19,11 @@ plt.rc('text', usetex=True)
 plt.rc('xtick', **{'labelsize':'medium'})
 plt.rc('ytick', **{'labelsize':'medium'})
 
+
 def makeFigure():
-    """ makes figure 6 """
+    """
+    Makes figure 6 .
+    """
 
     # Get list of axis objects
     ax, f = getSetup((21, 6), (1, 3))
@@ -29,9 +32,10 @@ def makeFigure():
     
     return f
 
-
 def accuracy_increased_cells():
-    """ Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
+    """ 
+    Calculates parameter estimation by increasing the number of cells in a lineage for a two-state model. 
+    """
 
     # pi: the initial probability vector
     piiii = np.array([0.6, 0.4], dtype="float")
@@ -57,7 +61,7 @@ def accuracy_increased_cells():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-    desired_num_cells = np.logspace(5, 12, num=250, base=2.0)
+    desired_num_cells = np.logspace(5, 12, num=25, base=2.0)
     desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
 
     x = []
@@ -105,6 +109,9 @@ def accuracy_increased_cells():
 
 
 def figure_maker(ax, x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1):
+    """
+    Makes figure 6.
+    """
     i = 0
     res = [[i for i, j in bern_unpruned], [j for i, j in bern_unpruned]]
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
