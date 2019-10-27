@@ -34,7 +34,7 @@ def makeFigure():
 
 def accuracy_increased_cells():
     """ 
-    Calculates accuracy and transition rate estimation over an increasing number of cells in a lineage for a two-state model. 
+    Calculates accuracy and transition rate estimation over an increasing number of cells in a lineage for an unpruned two-state model. 
     """
 
     # pi: the initial probability vector

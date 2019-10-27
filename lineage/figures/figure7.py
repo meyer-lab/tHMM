@@ -3,14 +3,12 @@ File: figure7.py
 Authors: Shakthi Visagan, Farnaz Mohammadi
 Purpose: Generates figure 7. 
 
-Figure 6 is the parameter estimation for a single unpruned lineage with heterogeneity (two true states). 
+Figure 7 is the accuracy and transition matrix parameter estimation for a single pruned lineage with heterogeneity (two true states). 
 """
-from .figureCommon import subplotLabel, getSetup
-from matplotlib.ticker import MaxNLocator
-from ..Analyze import accuracy, accuracyG, Analyze
+from .figureCommon import getSetup
+from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
-from ..StateDistribution2 import StateDistribution2
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,7 +21,9 @@ plt.rc('xtick', **{'labelsize':'medium'})
 plt.rc('ytick', **{'labelsize':'medium'})
 
 def makeFigure():
-    """ makes figure 7 """
+    """
+    Makes figure 7.
+    """
 
     # Get list of axis objects
     ax, f = getSetup((16, 6), (1, 2))
@@ -34,7 +34,9 @@ def makeFigure():
 
 
 def accuracy_increased_cells():
-    """ Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
+    """ 
+    Calculates accuracy and transition rate estimation over an increasing number of cells in a lineage for an pruned two-state model. 
+    """
 
     # pi: the initial probability vector
     piiii = np.array([0.6, 0.4], dtype="float")
@@ -65,12 +67,13 @@ def accuracy_increased_cells():
     tr = []
     pi = []
 
-    times = np.linspace(100, 1000, 250)
+    times = np.linspace(100, 1000, 25)
 
     for experiment_time in times:
         # Creating an unpruned and pruned lineage
         lineage = LineageTree(piiii, T, E, (2**12)-1, experiment_time, prune_condition='both', prune_boolean=True)
         while len(lineage.output_lineage) < 16:
+            del(lineage)
             lineage = LineageTree(piiii, T, E, (2**12)-1, experiment_time, prune_condition='both', prune_boolean=True)
 
         # Setting then into a list or a population of lineages and collecting the length of each lineage
