@@ -23,7 +23,7 @@ def makeFigure():
     """
     Makes figure 11.
     """
-    ax, f = getSetup((15, 10), (2, 3))
+    ax, f = getSetup((15, 10), (1, 3))
 
     desred_num_states1, AIC_unpruned1 = AIC_increased_cells1()
     i = 0
@@ -41,7 +41,9 @@ def makeFigure():
 
 
 def AIC_increased_cells1():
-    """ Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
+    """
+    Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a one-state model.
+    """
 
     # pi: the initial probability vector
     pi = np.array([1.0, 0.0], dtype="float")
@@ -68,15 +70,15 @@ def AIC_increased_cells1():
     E = [state_obj0, state_obj1]
 
     desred_num_states = [1, 2, 3]
-    times = np.linspace(100, 1000, 10)
-    desired_num_cells = 2**12 - 1
+    desired_num_cells = np.logspace(5, 12, num=25, base=2.0)
+    desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
+    
+    AIC_unpruned = np.zeros(shape=(len(desired_num_cells), len(desred_num_states)))
 
-    AIC_unpruned = np.zeros(shape=(len(times), len(desred_num_states)))
-
-    for idx, experiment_time in enumerate(times):
+    for idx, num_cells in enumerate(desired_num_cells):
         for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
-            lineage_unpruned = LineageTree(pi, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True)
+            lineage_unpruned = LineageTree(pi, T, E, num_cells, 1000000000, prune_condition='fate', prune_boolean=False)
 
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             X1 = [lineage_unpruned]
@@ -91,7 +93,9 @@ def AIC_increased_cells1():
 
 
 def AIC_increased_cells2():
-    """ Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
+    """
+    Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model.
+    """
 
     # pi: the initial probability vector
     pi = np.array([0.6, 0.4], dtype="float")
@@ -118,15 +122,15 @@ def AIC_increased_cells2():
     E = [state_obj0, state_obj1]
 
     desred_num_states = [1, 2, 3]
-    times = np.linspace(100, 1000, 10)
-    desired_num_cells = 2**11 - 1
+    desired_num_cells = np.logspace(5, 12, num=25, base=2.0)
+    desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
+    
+    AIC_unpruned = np.zeros(shape=(len(desired_num_cells), len(desred_num_states)))
 
-    AIC_unpruned = np.zeros(shape=(len(times), len(desred_num_states)))
-
-    for idx, experiment_time in enumerate(times):
+    for idx, num_cells in enumerate(desired_num_cells):
         for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
-            lineage_unpruned = LineageTree(pi, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True)
+            lineage_unpruned = LineageTree(pi, T, E, num_cells, 1000000000, prune_condition='fate', prune_boolean=False)
 
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             X1 = [lineage_unpruned]
@@ -141,7 +145,9 @@ def AIC_increased_cells2():
 
 
 def AIC_increased_cells3():
-    """ Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model. """
+    """
+    Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a three-state model.
+    """
 
     # pi: the initial probability vector
     pi = np.array([0.5, 0.25, 0.25])
@@ -179,15 +185,15 @@ def AIC_increased_cells3():
     E = [state_obj0, state_obj1, state_obj2]
 
     desred_num_states = [1, 2, 3]
-    times = np.linspace(100, 1000, 10)
-    desired_num_cells = 2**11 - 1
+    desired_num_cells = np.logspace(5, 12, num=25, base=2.0)
+    desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
+    
+    AIC_unpruned = np.zeros(shape=(len(desired_num_cells), len(desred_num_states)))
 
-    AIC_unpruned = np.zeros(shape=(len(times), len(desred_num_states)))
-
-    for idx, experiment_time in enumerate(times):
+    for idx, num_cells in enumerate(desired_num_cells):
         for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
-            lineage_unpruned = LineageTree(pi, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True)
+            lineage_unpruned = LineageTree(pi, T, E, num_cells, 1000000000, prune_condition='fate', prune_boolean=False)
 
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             X1 = [lineage_unpruned]
