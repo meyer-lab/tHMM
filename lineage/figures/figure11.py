@@ -5,7 +5,7 @@ Purpose: Generates figure 11.
 AIC.
 """
 from .figureCommon import getSetup
-from ..Analyze import accuracy, Analyze
+from ..Analyze import accuracy, Analyze, getAIC
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
