@@ -70,10 +70,11 @@ def AIC_increased_cells1():
     E = [state_obj0, state_obj1]
 
     desred_num_states = [1, 2, 3]
+    num_to_evaluate = 20
     
-    AIC_unpruned = np.zeros(shape=(6, len(desred_num_states)))
+    AIC_unpruned = np.zeros(shape=(num_to_evaluate, len(desred_num_states)))
 
-    for idx in range(6):
+    for idx in range(num_to_evaluate):
         for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
             lineage_unpruned = LineageTree(pi, T, E, (2**8)-1, 1000000000, prune_condition='fate', prune_boolean=False)
@@ -120,10 +121,11 @@ def AIC_increased_cells2():
     E = [state_obj0, state_obj1]
 
     desred_num_states = [1, 2, 3]
+    num_to_evaluate = 20
     
-    AIC_unpruned = np.zeros(shape=(6, len(desred_num_states)))
+    AIC_unpruned = np.zeros(shape=(num_to_evaluate, len(desred_num_states)))
 
-    for idx in range(6):
+    for idx in range(num_to_evaluate):
         for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
             lineage_unpruned = LineageTree(pi, T, E, (2**8)-1, 1000000000, prune_condition='fate', prune_boolean=False)
@@ -181,10 +183,11 @@ def AIC_increased_cells3():
     E = [state_obj0, state_obj1, state_obj2]
 
     desred_num_states = [1, 2, 3]
+    num_to_evaluate = 20
     
-    AIC_unpruned = np.zeros(shape=(6, len(desred_num_states)))
+    AIC_unpruned = np.zeros(shape=(num_to_evaluate, len(desred_num_states)))
 
-    for idx in range(6):
+    for idx in range(num_to_evaluate):
         for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
             lineage_unpruned = LineageTree(pi, T, E, (2**8)-1, 1000000000, prune_condition='fate', prune_boolean=False)
@@ -206,7 +209,7 @@ def figure_maker(ax, i, desred_num_states, AIC_unpruned):
     i += 0
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(desred_num_states)))))
     ax[i].set_xlabel('Number of States')
-    ax[i].boxplot(AIC_unpruned.T)
+    ax[i].plot(desred_num_states,AIC_unpruned.T, 'k', alpha=0.5)
     ax[i].set_ylabel(r'AIC')
     ax[i].get_yticks()
     ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
