@@ -4,13 +4,14 @@ Purpose: Generates figure 5.
 
 Figure 5 is the accuracy and transition matrix parameter estimation for a single unpruned lineage with heterogeneity (two true states).
 """
+import numpy as np
+import matplotlib.pyplot as plt
+
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
-import numpy as np
-import matplotlib.pyplot as plt
 plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})

@@ -5,13 +5,14 @@ Purpose: Generates figure 4.
 
 Figure 4 is the parameter estimation for a single unpruned lineage with no heterogeneity (one true state).
 """
+import numpy as np
+import matplotlib.pyplot as plt
+
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
-import numpy as np
-import matplotlib.pyplot as plt
 plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})

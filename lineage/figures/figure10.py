@@ -4,13 +4,14 @@ Purpose: Generates figure 10.
 
 Figure 10 is the parameter estimation for a group of pruned lineages with heterogeneity (two true states).
 """
+import numpy as np
+import matplotlib.pyplot as plt
+
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
-import numpy as np
-import matplotlib.pyplot as plt
 plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})

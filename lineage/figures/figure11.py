@@ -4,13 +4,14 @@ Purpose: Generates figure 11.
 
 AIC.
 """
+import numpy as np
+import matplotlib.pyplot as plt
+
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze, getAIC
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
-import numpy as np
-import matplotlib.pyplot as plt
 plt.rc('font', **{'family': 'sans-serif', 'size': 25})
 # for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
