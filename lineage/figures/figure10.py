@@ -68,13 +68,13 @@ def accuracy_increased_cells():
     list_of_lineages = []
 
     for num in num_lineages:
-        X1 = []
-        for lineages in range(num):
+        population = []
+        for _ in range(num):
             # Creating an unpruned and pruned lineage
-            X1.append(LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True))
+            population.append(LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True))
 
         # Adding populations into a holder for analysing
-        list_of_lineages.append(X1)
+        list_of_lineages.append(population)
 
     x = []
     bern_unpruned = []
