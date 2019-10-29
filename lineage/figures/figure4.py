@@ -1,6 +1,5 @@
 """
 File: figure4.py
-Authors: Shakthi Visagan, Farnaz Mohammadi
 Purpose: Generates figure 4.
 
 Figure 4 is the parameter estimation for a single unpruned lineage with no heterogeneity (one true state).
