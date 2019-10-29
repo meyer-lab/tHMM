@@ -12,13 +12,6 @@ from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
-plt.rc('font', **{'family': 'sans-serif', 'size': 25})
-# for Palatino and other serif fonts use:
-# rc('font',**{'family':'serif','serif':['Palatino']})
-plt.rc('text', usetex=True)
-plt.rc('xtick', **{'labelsize': 'medium'})
-plt.rc('ytick', **{'labelsize': 'medium'})
-
 
 def makeFigure():
     """
