@@ -86,7 +86,6 @@ def accuracy_increased_cells():
         while acc1 < 50:
             # Analyzing the lineages
             deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
-
             # Collecting the accuracies of the lineages
             acc1 = accuracy(tHMMobj, all_states)[0] * 100
 
