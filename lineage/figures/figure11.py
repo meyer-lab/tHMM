@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .figureCommon import getSetup
-from ..Analyze import accuracy, Analyze, getAIC
+from ..Analyze import Analyze, getAIC
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
@@ -83,10 +83,10 @@ def AIC_increased_cells1():
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             X1 = [lineage_unpruned]
             # Analyzing the lineages
-            deltas, _, all_states, tHMMobj, _, LL = Analyze(X1, num_states)
+            _, _, _, tHMMobj, _, LL = Analyze(X1, num_states)
 
             # AIC
-            AIC_ls, LL_ls, AIC_degrees_of_freedom = getAIC(tHMMobj, LL)
+            AIC_ls, _, _ = getAIC(tHMMobj, LL)
             AIC_unpruned[idx, num_states - 1] = (np.mean(AIC_ls))
 
     return desred_num_states, AIC_unpruned
@@ -134,10 +134,10 @@ def AIC_increased_cells2():
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             X1 = [lineage_unpruned]
             # Analyzing the lineages
-            deltas, _, all_states, tHMMobj, _, LL = Analyze(X1, num_states)
+            _, _, _, tHMMobj, _, LL = Analyze(X1, num_states)
 
             # AIC
-            AIC_ls, LL_ls, AIC_degrees_of_freedom = getAIC(tHMMobj, LL)
+            AIC_ls, _, _ = getAIC(tHMMobj, LL)
             AIC_unpruned[idx, num_states - 1] = (np.mean(AIC_ls))
 
     return desred_num_states, AIC_unpruned
@@ -196,10 +196,10 @@ def AIC_increased_cells3():
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             X1 = [lineage_unpruned]
             # Analyzing the lineages
-            deltas, _, all_states, tHMMobj, _, LL = Analyze(X1, num_states)
+            _, _, _, tHMMobj, _, LL = Analyze(X1, num_states)
 
             # AIC
-            AIC_ls, LL_ls, AIC_degrees_of_freedom = getAIC(tHMMobj, LL)
+            AIC_ls, _, _ = getAIC(tHMMobj, LL)
             AIC_unpruned[idx, num_states - 1] = (np.mean(AIC_ls))
 
     return desred_num_states, AIC_unpruned
