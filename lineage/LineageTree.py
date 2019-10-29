@@ -21,13 +21,14 @@ class LineageStateStats:
     def __init__(self, state):
         self.state = state
 
+
 class LineageTree:
     def __init__(self, pi, T, E, desired_num_cells, desired_experiment_time, prune_condition='fate', prune_boolean=True):
         """
-        A class for lineage trees. 
+        A class for lineage trees.
         Every lineage object from this class is a binary tree built based on initial probabilities,
-        transition probabilities, and emissions defined by state distributions given by the user. 
-        Lineages are generated in full (no pruning) by creating cells of different states in a 
+        transition probabilities, and emissions defined by state distributions given by the user.
+        Lineages are generated in full (no pruning) by creating cells of different states in a
         binary fashion utilizing the pi and the transtion probabilities. Cells are then filled with
         observations based on their states by sampling observations from their emission distributions.
         The lineage tree is then pruned based on the prune condition. The value of the boolean in

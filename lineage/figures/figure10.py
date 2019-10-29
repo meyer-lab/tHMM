@@ -65,7 +65,7 @@ def accuracy_increased_cells():
         for _ in range(num):
             # Creating an unpruned and pruned lineage
             tmp_lineage = LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True)
-            if len(tmp_lineage.output_lineage)<10:
+            if len(tmp_lineage.output_lineage) < 10:
                 del tmp_lineage
                 tmp_lineage = LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True)
             population.append(tmp_lineage)
@@ -89,11 +89,11 @@ def accuracy_increased_cells():
             _, _, all_states, tHMMobj, _, _ = Analyze(population, 2)
             # Collecting the accuracies of the lineages
             acc1 = accuracy(tHMMobj, all_states)[0] * 100
-  
+
         # Collecting how many cells are in each lineage in each analysis
         num_cells_holder = [len(lineageObj.output_lineage) for lineageObj in population]
         x.append(sum(num_cells_holder))
-        
+
         # Collecting the parameter estimations
         bern_p_total = ()
         gamma_a_total = ()

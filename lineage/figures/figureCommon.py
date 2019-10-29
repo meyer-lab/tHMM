@@ -4,7 +4,7 @@ from matplotlib import gridspec, pyplot as plt
 
 def getSetup(figsize, gridd):
     """Setup figures."""
-    
+
     plt.rc('font', **{'family': 'sans-serif', 'size': 25})
     # for Palatino and other serif fonts use:
     # rc('font',**{'family':'serif','serif':['Palatino']})
