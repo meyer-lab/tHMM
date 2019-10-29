@@ -27,8 +27,8 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((16, 6), (1, 2))
-    x, accuracies, tr, pi = accuracy_increased_cells()
-    figure_maker(ax, x, accuracies, tr, pi)
+    x, accuracies, tr, _ = accuracy_increased_cells()
+    figure_maker(ax, x, accuracies, tr)
 
     return f
 
@@ -115,9 +115,11 @@ def moving_average(a, n=50):
     return ret[n - 1:] / n
 
 
-def figure_maker(ax, x, accuracies, tr, pi):
+def figure_maker(ax, x, accuracies, tr):
     """
     Makes figure 7.
+    We do not include the estimation of the pi (initial state distributon) vector
+    because it is poorly estimated when we have one lineage.
     """
     x_vs_acc = np.column_stack((x, accuracies))
     sorted_x_vs_acc = x_vs_acc[np.argsort(x_vs_acc[:, 0])]
