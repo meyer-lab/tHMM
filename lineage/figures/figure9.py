@@ -68,46 +68,46 @@ def accuracy_increased_cells():
     list_of_lineages = []
 
     for num in num_lineages:
-        X1 = []
-        for lineages in range(num):
+        population = []
+        for _ in range(num):
             # Creating an unpruned and pruned lineage
-            X1.append(LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True))
+            tmp_lineage = LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True)
+            if len(tmp_lineage.output_lineage)<10:
+                del tmp_lineage
+                tmp_lineage = LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True)
+            population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
-        list_of_lineages.append(X1)
+        list_of_lineages.append(population)
 
     x = []
     accuracies = []
     tr = []
     pi = []
 
-    for idx, X1 in enumerate(list_of_lineages):
+    for population in list_of_lineages:
         # Analyzing the lineages
-        deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
-
-        # Collecting how many cells are in each lineage in each analysis
-        num_cells_holder = [len(lineageObj.output_lineage) for lineageObj in X1]
-        x.append(sum(num_cells_holder))
+        deltas, _, all_states, tHMMobj, _, _ = Analyze(population, 2)
 
         # Collecting the accuracies of the lineages
-        acc1 = accuracy(tHMMobj, all_states)[0] * 100
+        acc1 = accuracy(tHMMobj, all_states)[0]*100
         while acc1 < 50:
             # Analyzing the lineages
-            deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
-
+            deltas, _, all_states, tHMMobj, _, _ = Analyze(population, 2)
             # Collecting the accuracies of the lineages
-            acc1 = accuracy(tHMMobj, all_states)[0] * 100
+            acc1 = accuracy(tHMMobj, all_states)[0]*100
         accuracies.append(acc1)
+        
+        # Collecting how many cells are in each lineage in each analysis
+        num_cells_holder = [len(lineageObj.output_lineage) for lineageObj in population]
+        x.append(sum(num_cells_holder))
 
-        # Transition and Pi estimates
-        transition_mat = tHMMobj.estimate.T  # unpruned
-
-        temp1 = T - transition_mat
-        tr.append(np.linalg.norm(temp1))
+        # Transition and pi estimates
+        transition_mat = tHMMobj.estimate.T
+        tr.append(np.linalg.norm(T - transition_mat))
 
         pi_mat = tHMMobj.estimate.pi
-        t1 = piiii - pi_mat
-        pi.append(np.linalg.norm(t1))
+        pi.append(np.linalg.norm(piiii - pi_mat))
 
     return x, accuracies, tr, pi
 
