@@ -80,6 +80,12 @@ def accuracy_increased_cells():
 
         # Analyzing the lineages
         deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 1)
+        
+        # Collecting the accuracies of the lineages
+        acc1 = accuracy(tHMMobj, all_states)[0] * 100
+        while acc1 < 50:
+            # Analyzing the lineages
+            deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
 
         bern.append(tHMMobj.estimate.E[0].bern_p)
         gamma_a.append(tHMMobj.estimate.E[0].gamma_a)
