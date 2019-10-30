@@ -77,17 +77,17 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
 
     # first stopping condition check
     new_LL_list = calculate_log_likelihood(tHMMobj, NF)
-
     for _ in range(max_iter):
         old_LL_list = new_LL_list
 
         # code for grouping all states in cell lineages
         cell_groups = [[] for state in range(numStates)]
-
+        pi_estimate = np.zeros((numStates), dtype=float)
+        T_estimate = np.zeros((numStates, numStates), dtype=float)
         for num, lineageObj in enumerate(tHMMobj.X):
             lineage = lineageObj.output_lineage
             gamma_array = gammas[num]
-            tHMMobj.estimate.pi = gamma_array[0, :]
+            pi_estimate += gamma_array[0, :]
             T_holder = np.zeros((numStates, numStates), dtype=float)
             for state_j in range(numStates):
                 gamma_array_at_state_j = gamma_array[:, state_j]
@@ -103,9 +103,9 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
                     if denom == 0:
                         print(numer)
                         print(gamma_array)
-                    T_holder[state_j, state_k] = numer / denom
+                    T_holder[state_j, state_k] = (numer + np.spacing(1)) / (denom + np.spacing(1))
 
-            tHMMobj.estimate.T = T_holder / T_holder.sum(axis=1)[:, np.newaxis]
+            T_estimate += T_holder
 
             max_state_holder = []  # a list the size of lineage, that contains max state for each cell
             for ii, cell in enumerate(lineage):
@@ -115,7 +115,8 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             # this bins the cells by lineage to the population cell lists
             for ii, state in enumerate(max_state_holder):
                 cell_groups[state].append(lineage[ii])
-
+        tHMMobj.estimate.pi = pi_estimate / sum(pi_estimate)
+        tHMMobj.estimate.T = T_estimate / T_estimate.sum(axis=1)[:, np.newaxis]
         # after iterating through each lineage, do the population wide E calculation
         for state_j in range(numStates):
             tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator([cell.obs for cell in cell_groups[state_j]])

@@ -39,7 +39,7 @@ class TestModel(unittest.TestCase):
             self.pi,
             self.T,
             self.E,
-            desired_num_cells=(2**11)-1, 
+            desired_num_cells=(2**11) - 1,
             desired_experiment_time=500,
             prune_condition='fate',
             prune_boolean=False)
@@ -47,7 +47,7 @@ class TestModel(unittest.TestCase):
             self.pi,
             self.T,
             self.E,
-            desired_num_cells=(2**11)-1, 
+            desired_num_cells=(2**11) - 1,
             desired_experiment_time=500,
             prune_condition='fate',
             prune_boolean=True)
@@ -55,7 +55,7 @@ class TestModel(unittest.TestCase):
             self.pi,
             self.T,
             self.E,
-            desired_num_cells=(2**11)-1, 
+            desired_num_cells=(2**11) - 1,
             desired_experiment_time=500,
             prune_condition='time',
             prune_boolean=True)
@@ -63,7 +63,7 @@ class TestModel(unittest.TestCase):
             self.pi,
             self.T,
             self.E,
-            desired_num_cells=(2**11)-1, 
+            desired_num_cells=(2**11) - 1,
             desired_experiment_time=500,
             prune_condition='both',
             prune_boolean=True)

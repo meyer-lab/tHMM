@@ -12,6 +12,7 @@ class StateDistribution:
         self.gamma_a = gamma_a
         self.gamma_loc = gamma_loc
         self.gamma_scale = gamma_scale
+        self.params = [self.bern_p, self.gamma_a, self.gamma_loc, self. gamma_scale]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
@@ -226,11 +227,11 @@ def exponential_estimator(exp_obs):
     return (sum(exp_obs) + 50e-10) / (len(exp_obs) + 1e-10)
 
 
-def gamma_estimator0(gamma_obs):
+def gamma_estimator(gamma_obs):
     """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
     N = len(gamma_obs)
     if N == 0:
-        return 10, 1
+        return 10, 0, 1
 
     x_lnx = [x * np.log(x) for x in gamma_obs]
     lnx = [np.log(x) for x in gamma_obs]
@@ -238,23 +239,13 @@ def gamma_estimator0(gamma_obs):
     a_hat = (N * (sum(gamma_obs)) + 1e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
     # gamma_scale
     b_hat = ((1 + 1e-10) / (N**2 + 1e-10)) * (N * (sum(x_lnx)) - (sum(lnx)) * (sum(gamma_obs)))
+    loc = 0
     # bias correction
 #     if N>1:
 #         a_hat = (N /(N - 1)) * a_hat
 #         b_hat = b_hat - (1/N) * (3*b_hat - (2/3) * (b_hat/(b_hat + 1)) - (4/5)* (b_hat)/((1 + b_hat)**2
 
     if b_hat < 1.0 or 50. < a_hat < 5.:
-        return 10, 1
+        return 10, loc, 1
 
-    return a_hat, b_hat
-
-
-def gamma_estimator(gamma_obs):
-    """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
-    N = len(gamma_obs)
-    if N == 0:
-        return 10, 0, 1
-    floc = 0.0
-    a, scale = gamma_estimator0(gamma_obs)
-    #a, loc, scale = sp.gamma.fit(gamma_obs, a=a, floc=floc, scale=scale)
-    return a, floc, scale
+    return a_hat, loc, b_hat

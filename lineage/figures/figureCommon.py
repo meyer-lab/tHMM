@@ -4,11 +4,13 @@ from matplotlib import gridspec, pyplot as plt
 
 def getSetup(figsize, gridd):
     """Setup figures."""
-    sns.set(
-        style="whitegrid",
-        font_scale=0.7,
-        color_codes=True,
-        palette="colorblind")
+
+    plt.rc('font', **{'family': 'sans-serif', 'size': 25})
+    # for Palatino and other serif fonts use:
+    # rc('font',**{'family':'serif','serif':['Palatino']})
+    plt.rc('text', usetex=True)
+    plt.rc('xtick', **{'labelsize': 'medium'})
+    plt.rc('ytick', **{'labelsize': 'medium'})
 
     # Setup plotting space
     f = plt.figure(figsize=figsize)
