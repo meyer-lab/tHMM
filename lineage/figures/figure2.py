@@ -5,7 +5,9 @@ from .figureCommon import subplotLabel, getSetup
 
 
 def makeFigure():
-    """ makes figure 1 """
+    """
+    Makes figure 2.
+    """
     # Get list of axis objects
     ax, f = getSetup((7, 6), (3, 4))
 
