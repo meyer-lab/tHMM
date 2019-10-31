@@ -120,7 +120,7 @@ def get_stationary_distribution(transition_matrix):
     [K0, 1]             = c            9
     B*p.T               = c           10
     
-    However, this is now an over-determined ystem of lineage equations
+    However, this is now an over-determined system of linear equations
     (B now has more rows than the number of elements (K) in p). 
     Linear equation solvers will be unable to proceed.
     To ameliorate this, we can use the normal equations.
