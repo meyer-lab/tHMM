@@ -74,6 +74,74 @@ def accuracy(tHMMobj, all_states):
     return [counter_holder / length_holder]
 
 
+def get_stationary_distribution(transition_matrix):
+    """
+    Obtain the stationary distribution given a transition matrix.
+    The transition matrix should be in the format preferred by Wikipedia.
+    That is, the transition matrix should be square, contain real numbers, 
+    and be right stochastic.
+    This implies that the rows of the transition matrix sum to one (not the columns).
+    This also means that the row index (i) represents the state of the previous step,
+    and the column index (j) represents the state of the next step.
+    If the transition matrix is defined as A, then 
+    
+    A[i,j] = P(child = j | parent = i).
+    
+    Our goal is to find the stationary distribution vector, p, such that
+    
+    pA = p.
+    
+    This is equivalent to finding the distribution of states that is invariant
+    to the Markov transition operation.
+    Remark. Due to our transition matrix being right stochastic, the stationary vector
+    is a row-vector which is left-multiplying the transition matrix. Using the transpose
+    can help with the notation.
+    
+    Notation:
+    .T is the transpose
+    * is the matrix multiplication operation
+    K() is a vector with K number of (), for example,
+    K0 is a vector with K number of 0s
+    K represents the number of states
+    
+    p*A             = p       1
+    (p*A).T         = p.T     2
+    A.T*p.T         = p.T     3
+    A.T*p.T - I*p.T = K0      4
+    (A.T - I)*p.T   = K0      5
+    
+    Our goal is to solve this equation. To obtain non-trivial solutions for p
+    and to contrain the problem, we can add the constraint that the elements of
+    p must sum to 1.
+    
+    [(A.T - I), K1]*p.T = [K0, 1]      6
+    [(A.T - I), K1]     = B            7
+    B*p.T               = [K0, 1]      8
+    [K0, 1]             = c            9
+    B*p.T               = c           10
+    
+    However, this is now an over-determined ystem of lineage equations
+    (B now has more rows than the number of elements (K) in p). 
+    Linear equation solvers will be unable to proceed.
+    To ameliorate this, we can use the normal equations.
+    
+    B.T*B*p.T = B.T*c     11
+    
+    Solving this yields the stationary distribution vector.    
+    We return this solution as a row vector.
+    """
+    A = transition_matrix
+    K = A.shape[0]
+    tmp_A = A.T - np.eye(K) # 5
+    B = np.r_[tmp_A,np.ones((1,K))] # 7
+    BT_B = np.matmul(B.T,B)
+    c = np.zeros((K+1,1)) # 9
+    c[K,0] = 1
+    p = np.linalg.solve(BT_B,np.matmul(B.T,c)).T  # 11
+    assert np.allclose(np.matmul(transition_matrix.T,p.T)-p.T, np.zeros((K,1))) 
+    return p
+
+
 def getAIC(tHMMobj, LL):
     '''
     Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
