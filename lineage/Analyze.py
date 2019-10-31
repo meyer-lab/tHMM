@@ -100,6 +100,7 @@ def get_stationary_distribution(transition_matrix):
     Notation:
     .T is the transpose
     * is the matrix multiplication operation
+    I is the identity matrix of size K
     K() is a vector with K number of (), for example,
     K0 is a vector with K number of 0s
     K represents the number of states
