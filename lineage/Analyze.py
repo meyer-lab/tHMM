@@ -112,7 +112,7 @@ def get_stationary_distribution(transition_matrix):
     (A.T - I)*p.T   = K0      5
     
     Our goal is to solve this equation. To obtain non-trivial solutions for p
-    and to contrain the problem, we can add the constraint that the elements of
+    and to constrain the problem, we can add the constraint that the elements of
     p must sum to 1.
     
     [(A.T - I), K1]*p.T = [K0, 1]      6
@@ -128,7 +128,13 @@ def get_stationary_distribution(transition_matrix):
     
     B.T*B*p.T = B.T*c     11
     
-    Solving this yields the stationary distribution vector.    
+    Solving this yields the stationary distribution vector.  
+    We can then check that the stationary distribution vector
+    remains unchanged by applying the transition matrix to it
+    and obtain the stationary distribution vector again.
+    
+    A.T*p.T=p.T  12
+    
     We return this solution as a row vector.
     """
     A = transition_matrix
@@ -139,7 +145,7 @@ def get_stationary_distribution(transition_matrix):
     c = np.zeros((K+1,1)) # 9
     c[K,0] = 1
     p = np.linalg.solve(BT_B,np.matmul(B.T,c)).T  # 11
-    assert np.allclose(np.matmul(transition_matrix.T,p.T)-p.T, np.zeros((K,1))) 
+    assert np.allclose(np.matmul(transition_matrix.T,p.T), p.T) # 12
     return p
 
 
