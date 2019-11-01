@@ -39,33 +39,33 @@ def makeFigure():
     state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
-    
+
     # creating a population
     population = []
-    desired_experiment_time=300
+    desired_experiment_time = 300
     for i in range(20):
-        population.append(LineageTree(pi, T, E, (2**12)-1, desired_experiment_time=desired_experiment_time, prune_condition='both', prune_boolean=True))
-        
-    delta_time = 0.25 # [hours]
+        population.append(LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=desired_experiment_time, prune_condition='both', prune_boolean=True))
+
+    delta_time = 0.25  # [hours]
     hist = track_population_growth_histogram(population, delta_time)
-    
+
     # Get list of axis objects
     ax, f = getSetup((16, 6), (1, 2))
-    
-    x_0 = [delta_time*i for i in range(len(hist[0]))]
-    x_1 = [delta_time*i for i in range(len(hist[1]))]
-    
+
+    x_0 = [delta_time * i for i in range(len(hist[0]))]
+    x_1 = [delta_time * i for i in range(len(hist[1]))]
+
     ax[0].set_xlabel(r'Time [$\mathrm{hours}$]')
-    ax[0].bar(x_0,hist[0], color='#F9Cb9C', label='Resistant')
-    ax[0].bar(x_1,hist[1], bottom=hist[0], color='#A4C2F4', label='Susceptible')
+    ax[0].bar(x_0, hist[0], color='#F9Cb9C', label='Resistant')
+    ax[0].bar(x_1, hist[1], bottom=hist[0], color='#A4C2F4', label='Susceptible')
     ax[0].axvline(desired_experiment_time, c='k', label='Experiment time')
     ax[0].set_ylabel('Number of alive Cells')
     ax[0].set_title('Population growth over experiment time')
     ax[0].grid(linestyle='--')
-                   
-    y_0 = [a/(a+b) for a,b in zip(hist[0],hist[1])]
-    y_1 = [b/(a+b) for a,b in zip(hist[0],hist[1])]
-                   
+
+    y_0 = [a / (a + b) for a, b in zip(hist[0], hist[1])]
+    y_1 = [b / (a + b) for a, b in zip(hist[0], hist[1])]
+
     ax[1].set_xlabel(r'Time [$\mathrm{hours}$]')
     ax[1].plot(x_0, y_0, color='#F9Cb9C', label='Resistant')
     ax[1].plot(x_1, y_1, color='#A4C2F4', label='Susceptible')
@@ -75,7 +75,7 @@ def makeFigure():
     ax[1].set_title('Population distribution over experiment time')
     ax[1].grid(linestyle='--')
     ax[1].legend()
-    
+
     f.tight_layout()
 
     return f
