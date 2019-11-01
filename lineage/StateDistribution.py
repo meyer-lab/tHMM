@@ -140,7 +140,7 @@ def track_lineage_growth_histogram(lineageObj, delta_time):
     observations.
     """
     experiment_time = get_experiment_time(lineageObj)
-    bins = int(np.ceil(experiment_time * delta_time))
+    bins = int(np.ceil(experiment_time / delta_time))
     hist = np.zeros(shape=(lineageObj.num_states, bins))
     for state in range(lineageObj.num_states):
         start_time = 0
