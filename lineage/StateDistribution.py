@@ -203,7 +203,7 @@ def time_prune_rule(cell, desired_experiment_time):
     must be removed.
     """
     truther = False
-    if cell.time.startT > desired_experiment_time:
+    if cell.time.endT > desired_experiment_time:
         truther = True  # cell died after the experiment ended
         # subtree must be removed
     return truther
