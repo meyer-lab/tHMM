@@ -5,9 +5,8 @@ Purpose: Generates figure 3.
 Figure 3 is the distribution of cells in a state over time.
 """
 import numpy as np
-import matplotlib.pyplot as plt
 
-from .figureCommon import subplotLabel, getSetup
+from .figureCommon import getSetup
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution, track_population_growth_histogram
 
