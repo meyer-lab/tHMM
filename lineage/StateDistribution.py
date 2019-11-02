@@ -131,6 +131,30 @@ def get_experiment_time(lineageObj):
     return longest
 
 
+def track_lineage_generation_histogram(lineageObj, delta_time):
+    """
+    This function creates list of lists (as many lists as states)
+    that collects the number
+    of cells in each state throughout the experiment based on 
+    successive generations.
+    """
+    max_gen = get_experiment_time(lineageObj)
+    bins = int(np.ceil(experiment_time / delta_time))
+    hist = np.zeros(shape=(lineageObj.num_states, bins))
+    for state in range(lineageObj.num_states):
+        start_time = 0
+        end_time = start_time + delta_time
+        for bin_idx in range(bins):
+            num_alive = 0
+            for cell_idx, cell in enumerate(lineageObj.output_lineage):
+                if cell.state == state and cell.time.startT <= start_time and cell.time.endT >= end_time:
+                    num_alive += 1
+            start_time += delta_time
+            end_time += delta_time
+            hist[state, bin_idx] = num_alive
+    return(hist, bins)
+
+
 def track_lineage_growth_histogram(lineageObj, delta_time):
     """
     This function creates list of lists (as many lists as states)
