@@ -25,7 +25,7 @@ def Analyze(X, numStates):
     LL {}:
     """
 
-    for num_tries in range(4):
+    for num_tries in range(1, 5):
         tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
         try:
             fit(tHMMobj, max_iter=300)
