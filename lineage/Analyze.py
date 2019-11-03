@@ -33,6 +33,8 @@ def Analyze(X, numStates):
             break
         except AssertionError:
             print("Caught AssertionError in fitting. Trying again...")
+            if num_tries == 4:
+                raise
 
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
