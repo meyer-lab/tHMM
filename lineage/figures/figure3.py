@@ -62,8 +62,8 @@ def makeFigure():
     ax[0].set_title('Population growth over experiment time')
     ax[0].grid(linestyle='--')
 
-    y_0 = [a / (a + b) for a, b in zip(hist[0], hist[1])]
-    y_1 = [b / (a + b) for a, b in zip(hist[0], hist[1])]
+    y_0 = [a / (a + b) if a+b>0 else 0 for a, b in zip(hist[0], hist[1])]
+    y_1 = [b / (a + b) if a+b>0 else 0 for a, b in zip(hist[0], hist[1])]
 
     ax[1].set_xlabel(r'Time [$\mathrm{hours}$]')
     ax[1].plot(x_0, y_0, color='#F9Cb9C', label='Resistant')
