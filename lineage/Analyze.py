@@ -35,7 +35,7 @@ def Analyze(X, numStates):
             run = False
         except:
             del tHMMobj
-            print("Trying again..."")            
+            print("Trying again...")            
     print("It took {} tries to fit.".format(num_tries))
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
