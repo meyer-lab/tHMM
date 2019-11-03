@@ -25,9 +25,18 @@ def Analyze(X, numStates):
     LL {}:
     """
 
-    tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
-    fit(tHMMobj, max_iter=200)
-
+    run=True
+    num_tries = 0
+    while run:
+        num_tries+=1
+        try:
+            tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
+            fit(tHMMobj, max_iter=200)
+            run = False
+        except:
+            del tHMMobj
+            print("Trying again..."")            
+    print("It took {} tries to fit.".format(num_tries))
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
     all_states = Viterbi(tHMMobj, deltas, state_ptrs)
