@@ -25,8 +25,16 @@ def Analyze(X, numStates):
     LL {}:
     """
 
-    tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
-    fit(tHMMobj, max_iter=200)
+    for num_tries in range(1, 5):
+        tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
+        try:
+            fit(tHMMobj, max_iter=300)
+            print("It took {} tries to fit.".format(num_tries))
+            break
+        except AssertionError:
+            print("Caught AssertionError in fitting. Trying again...")
+            if num_tries == 4:
+                raise
 
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
