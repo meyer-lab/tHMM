@@ -52,7 +52,7 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((16, 16), (2, 2))
-    
+
     # unpruned
 
     x_0_unp = [i for i in range(len(hist_unpruned[0]))]
@@ -66,8 +66,8 @@ def makeFigure():
     ax[0].set_title('Unpruned population growth')
     ax[0].grid(linestyle='--')
 
-    y_0_unp = [a/(a+b) for a, b in zip(hist_unpruned[0], hist_unpruned[1])]
-    y_1_unp = [b/(a+b) for a, b in zip(hist_unpruned[0], hist_unpruned[1])]
+    y_0_unp = [a / (a + b) for a, b in zip(hist_unpruned[0], hist_unpruned[1])]
+    y_1_unp = [b / (a + b) for a, b in zip(hist_unpruned[0], hist_unpruned[1])]
 
     ax[1].set_xlim([-0.01, 12])
     ax[1].set_xlabel(r'Generation')
@@ -78,9 +78,9 @@ def makeFigure():
     ax[1].set_title('Unpruned population distribution')
     ax[1].grid(linestyle='--')
     ax[1].legend()
-    
+
     # pruned
-    
+
     x_0_p = [i for i in range(len(hist_pruned[0]))]
     x_1_p = [i for i in range(len(hist_pruned[1]))]
 
@@ -92,8 +92,8 @@ def makeFigure():
     ax[2].set_title('Pruned population growth')
     ax[2].grid(linestyle='--')
 
-    y_0_p = [a/(a+b) for a, b in zip(hist_pruned[0], hist_pruned[1])]
-    y_1_p = [b/(a+b) for a, b in zip(hist_pruned[0], hist_pruned[1])]
+    y_0_p = [a / (a + b) for a, b in zip(hist_pruned[0], hist_pruned[1])]
+    y_1_p = [b / (a + b) for a, b in zip(hist_pruned[0], hist_pruned[1])]
 
     ax[3].set_xlim([-0.01, 12])
     ax[3].set_xlabel(r'Generation')
