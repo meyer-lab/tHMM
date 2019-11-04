@@ -43,7 +43,7 @@ def makeFigure():
     population_unpruned = []
     population_pruned = []
     desired_experiment_time = 300
-    for i in range(20):
+    for _ in range(20):
         population_unpruned.append(LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=desired_experiment_time, prune_condition='fate', prune_boolean=False))
         population_pruned.append(LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=desired_experiment_time, prune_condition='both', prune_boolean=True))
 
@@ -55,8 +55,8 @@ def makeFigure():
 
     # unpruned
 
-    x_0_unp = [i for i in range(len(hist_unpruned[0]))]
-    x_1_unp = [i for i in range(len(hist_unpruned[1]))]
+    x_0_unp = list(range(len(hist_unpruned[0])))
+    x_1_unp = list(range(len(hist_unpruned[1])))
 
     ax[0].set_xlim([-0.01, 12])
     ax[0].set_xlabel(r'Generation')
@@ -81,8 +81,8 @@ def makeFigure():
 
     # pruned
 
-    x_0_p = [i for i in range(len(hist_pruned[0]))]
-    x_1_p = [i for i in range(len(hist_pruned[1]))]
+    x_0_p = list(range(len(hist_pruned[0])))
+    x_1_p = list(range(len(hist_pruned[1])))
 
     ax[2].set_xlim([-0.01, 12])
     ax[2].set_xlabel(r'Generation')
