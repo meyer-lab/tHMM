@@ -131,6 +131,48 @@ def get_experiment_time(lineageObj):
     return longest
 
 
+def track_lineage_generation_histogram(lineageObj):
+    """
+    This function creates list of lists (as many lists as states)
+    that collects the number
+    of cells in each state throughout the experiment based on
+    successive generations.
+    """
+    max_gen = lineageObj.output_max_gen
+    hist = np.zeros(shape=(lineageObj.num_states, max_gen))
+    for gen_minus_1, level in enumerate(lineageObj.output_list_of_gens[1:]):
+        true_gen = gen_minus_1 + 1  # generations are 1-indexed
+        if true_gen == max_gen:
+            assert gen_minus_1 == hist.shape[1] - 1
+        for state in range(lineageObj.num_states):
+            hist[state, gen_minus_1] = sum([1 if cell.state == state else 0 for cell in level])
+    return(hist)
+
+
+def track_population_generation_histogram(population):
+    """
+    This function runs the tracking function on a list of lineages.
+    """
+    collector = []
+    for idx, lineageObj in enumerate(population):
+        hist = track_lineage_generation_histogram(lineageObj)
+        collector.append(hist)
+    total = []
+    for state in range(population[0].num_states):
+        tmp_array = np.zeros(len(collector[0][0, :]))
+        for idx, hist in enumerate(collector):
+            if len(tmp_array) < len(hist[state, :]):
+                c = hist[state, :].copy()
+                c[:len(tmp_array)] += tmp_array
+                tmp_array = c
+            else:
+                c = tmp_array.copy()
+                c[:len(hist[state, :])] += hist[state, :]
+                tmp_array = c
+        total.append(tmp_array)
+    return(total)
+
+
 def track_lineage_growth_histogram(lineageObj, delta_time):
     """
     This function creates list of lists (as many lists as states)
@@ -140,7 +182,7 @@ def track_lineage_growth_histogram(lineageObj, delta_time):
     observations.
     """
     experiment_time = get_experiment_time(lineageObj)
-    bins = int(np.ceil(experiment_time * delta_time))
+    bins = int(np.ceil(experiment_time / delta_time))
     hist = np.zeros(shape=(lineageObj.num_states, bins))
     for state in range(lineageObj.num_states):
         start_time = 0
@@ -203,7 +245,7 @@ def time_prune_rule(cell, desired_experiment_time):
     must be removed.
     """
     truther = False
-    if cell.time.startT > desired_experiment_time:
+    if cell.time.endT > desired_experiment_time:
         truther = True  # cell died after the experiment ended
         # subtree must be removed
     return truther
