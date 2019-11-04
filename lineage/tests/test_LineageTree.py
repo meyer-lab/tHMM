@@ -207,7 +207,7 @@ class TestModel(unittest.TestCase):
                         num_cells_in_state1 == len(list_of_tuples_of_obs1))
         self.assertTrue(num_cells_in_state1 <= len(self.lineage1.pruned_lin_list)
                         )
-        if len(indices_of_cells_in_state) > 0:
+        if len(indices_of_cells_in_state1) > 0:
             self.assertTrue(max(indices_of_cells_in_state1) <= (2**11 - 1))
 
     def test_full_assign_obs(self):
