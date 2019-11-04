@@ -26,9 +26,9 @@ def Analyze(X, numStates):
     """
 
     for num_tries in range(1, 5):
-        tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
         try:
             fit(tHMMobj, max_iter=300)
+            tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
             print("It took {} tries to fit.".format(num_tries))
             break
         except AssertionError:
