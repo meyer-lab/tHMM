@@ -5,7 +5,6 @@ from .BaumWelch import fit
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
 from .tHMM import tHMM
-from .StateDistribution import get_experiment_time
 
 
 def Analyze(X, numStates):
@@ -180,7 +179,7 @@ def getAIC(tHMMobj, LL):
 
     AIC_ls = []
     LL_ls = []
-    for idx, lineageObj in enumerate(tHMMobj.X):
+    for idx, _ in enumerate(tHMMobj.X):
         AIC_value = -2 * LL[idx] + 2 * AIC_degrees_of_freedom
         AIC_ls.append(AIC_value)
         LL_ls.append(-1 * LL[idx])  # append negative log likelihood
