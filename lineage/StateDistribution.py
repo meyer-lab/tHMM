@@ -12,6 +12,7 @@ class StateDistribution:
         self.gamma_a = gamma_a
         self.gamma_loc = gamma_loc
         self.gamma_scale = gamma_scale
+        self.params = [self.bern_p, self.gamma_a, self.gamma_loc, self. gamma_scale]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
@@ -130,6 +131,48 @@ def get_experiment_time(lineageObj):
     return longest
 
 
+def track_lineage_generation_histogram(lineageObj):
+    """
+    This function creates list of lists (as many lists as states)
+    that collects the number
+    of cells in each state throughout the experiment based on
+    successive generations.
+    """
+    max_gen = lineageObj.output_max_gen
+    hist = np.zeros(shape=(lineageObj.num_states, max_gen))
+    for gen_minus_1, level in enumerate(lineageObj.output_list_of_gens[1:]):
+        true_gen = gen_minus_1 + 1  # generations are 1-indexed
+        if true_gen == max_gen:
+            assert gen_minus_1 == hist.shape[1] - 1
+        for state in range(lineageObj.num_states):
+            hist[state, gen_minus_1] = sum([1 if cell.state == state else 0 for cell in level])
+    return(hist)
+
+
+def track_population_generation_histogram(population):
+    """
+    This function runs the tracking function on a list of lineages.
+    """
+    collector = []
+    for idx, lineageObj in enumerate(population):
+        hist = track_lineage_generation_histogram(lineageObj)
+        collector.append(hist)
+    total = []
+    for state in range(population[0].num_states):
+        tmp_array = np.zeros(len(collector[0][0, :]))
+        for idx, hist in enumerate(collector):
+            if len(tmp_array) < len(hist[state, :]):
+                c = hist[state, :].copy()
+                c[:len(tmp_array)] += tmp_array
+                tmp_array = c
+            else:
+                c = tmp_array.copy()
+                c[:len(hist[state, :])] += hist[state, :]
+                tmp_array = c
+        total.append(tmp_array)
+    return(total)
+
+
 def track_lineage_growth_histogram(lineageObj, delta_time):
     """
     This function creates list of lists (as many lists as states)
@@ -139,7 +182,7 @@ def track_lineage_growth_histogram(lineageObj, delta_time):
     observations.
     """
     experiment_time = get_experiment_time(lineageObj)
-    bins = int(np.ceil(experiment_time * delta_time))
+    bins = int(np.ceil(experiment_time / delta_time))
     hist = np.zeros(shape=(lineageObj.num_states, bins))
     for state in range(lineageObj.num_states):
         start_time = 0
@@ -202,7 +245,7 @@ def time_prune_rule(cell, desired_experiment_time):
     must be removed.
     """
     truther = False
-    if cell.time.startT > desired_experiment_time:
+    if cell.time.endT > desired_experiment_time:
         truther = True  # cell died after the experiment ended
         # subtree must be removed
     return truther
@@ -226,11 +269,11 @@ def exponential_estimator(exp_obs):
     return (sum(exp_obs) + 50e-10) / (len(exp_obs) + 1e-10)
 
 
-def gamma_estimator0(gamma_obs):
+def gamma_estimator(gamma_obs):
     """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
     N = len(gamma_obs)
     if N == 0:
-        return 10, 1
+        return 10, 0, 1
 
     x_lnx = [x * np.log(x) for x in gamma_obs]
     lnx = [np.log(x) for x in gamma_obs]
@@ -238,23 +281,13 @@ def gamma_estimator0(gamma_obs):
     a_hat = (N * (sum(gamma_obs)) + 1e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
     # gamma_scale
     b_hat = ((1 + 1e-10) / (N**2 + 1e-10)) * (N * (sum(x_lnx)) - (sum(lnx)) * (sum(gamma_obs)))
+    loc = 0
     # bias correction
 #     if N>1:
 #         a_hat = (N /(N - 1)) * a_hat
 #         b_hat = b_hat - (1/N) * (3*b_hat - (2/3) * (b_hat/(b_hat + 1)) - (4/5)* (b_hat)/((1 + b_hat)**2
 
     if b_hat < 1.0 or 50. < a_hat < 5.:
-        return 10, 1
+        return 10, loc, 1
 
-    return a_hat, b_hat
-
-
-def gamma_estimator(gamma_obs):
-    """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
-    N = len(gamma_obs)
-    if N == 0:
-        return 10, 0, 1
-    floc = 0.0
-    a, scale = gamma_estimator0(gamma_obs)
-    #a, loc, scale = sp.gamma.fit(gamma_obs, a=a, floc=floc, scale=scale)
-    return a, floc, scale
+    return a_hat, loc, b_hat

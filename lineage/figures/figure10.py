@@ -1,8 +1,8 @@
 """
-File: figure6.py
-Purpose: Generates figure 6.
+File: figure10.py
+Purpose: Generates figure 10.
 
-Figure 6 is the parameter estimation for a single unpruned lineage with heterogeneity (two true states).
+Figure 10 is the parameter estimation for a group of pruned lineages with heterogeneity (two true states).
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,7 +15,7 @@ from ..StateDistribution import StateDistribution
 
 def makeFigure():
     """
-    Makes figure 6.
+    Makes figure 10.
     """
 
     # Get list of axis objects
@@ -55,32 +55,44 @@ def accuracy_increased_cells():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-    desired_num_cells = np.logspace(5, 12, num=25, base=2.0)
-    desired_num_cells = [num_cell - 1 for num_cell in desired_num_cells]
+    desired_num_cells = 2**9 - 1
+    experiment_time = 50
+    num_lineages = list(range(1, 10))
+    list_of_lineages = []
+
+    for num in num_lineages:
+        population = []
+        for _ in range(num):
+            # Creating an unpruned and pruned lineage
+            tmp_lineage = LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True)
+            if len(tmp_lineage.output_lineage) < 10:
+                del tmp_lineage
+                tmp_lineage = LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True)
+            population.append(tmp_lineage)
+
+        # Adding populations into a holder for analysing
+        list_of_lineages.append(population)
 
     x = []
     bern_unpruned = []
     gamma_a_unpruned = []
     gamma_scale_unpruned = []
 
-    for num in desired_num_cells:
-        # Creating an unpruned and pruned lineage
-        lineage = LineageTree(piiii, T, E, num, desired_experiment_time=1000000, prune_condition='fate', prune_boolean=False)
-
-        # Setting then into a list or a population of lineages and collecting the length of each lineage
-        X1 = [lineage]
-        x.append(len(lineage.output_lineage))
-
+    for population in list_of_lineages:
         # Analyzing the lineages
-        _, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
+        _, _, all_states, tHMMobj, _, _ = Analyze(population, 2)
 
         # Collecting the accuracies of the lineages
         acc1 = accuracy(tHMMobj, all_states)[0] * 100
         while acc1 < 50:
             # Analyzing the lineages
-            _, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
+            _, _, all_states, tHMMobj, _, _ = Analyze(population, 2)
             # Collecting the accuracies of the lineages
             acc1 = accuracy(tHMMobj, all_states)[0] * 100
+
+        # Collecting how many cells are in each lineage in each analysis
+        num_cells_holder = [len(lineageObj.output_lineage) for lineageObj in population]
+        x.append(sum(num_cells_holder))
 
         # Collecting the parameter estimations
         bern_p_total = ()
@@ -101,7 +113,7 @@ def accuracy_increased_cells():
 
 def figure_maker(ax, x, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1):
     """
-    Makes figure 6.
+    Makes figure 10.
     """
     i = 0
     res = [[i for i, j in bern_unpruned], [j for i, j in bern_unpruned]]
