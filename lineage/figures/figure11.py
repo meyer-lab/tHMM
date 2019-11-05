@@ -198,7 +198,9 @@ def AIC_increased_cells3():
 
 
 def figure_maker(ax, i, desred_num_states, AIC_unpruned):
-    print(AIC_unpruned)
+    """
+    Makes figure 11.
+    """
     i += 0
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(desred_num_states)))))
     ax[i].set_xlabel('Number of States')
