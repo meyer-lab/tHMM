@@ -19,8 +19,8 @@ def makeFigure():
     pi = np.array([0.6, 0.4], dtype="float")
 
     # T: transition probability matrix
-    T = np.array([[0.65, 0.35],
-                  [0.15, 0.85]], dtype="float")
+    T = np.array([[0.85, 0.15],
+                  [0.35, 0.65]], dtype="float")
 
     # State 0 parameters "Resistant"
     state0 = 0
