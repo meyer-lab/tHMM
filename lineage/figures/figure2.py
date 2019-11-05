@@ -5,9 +5,11 @@ Purpose: Generates figure 2.
 Figure 2 is the distribution of cells in a state over generations (pruned).
 """
 import numpy as np
+from matplotlib.ticker import MaxNLocator
 
 from .figureCommon import getSetup
 from ..LineageTree import LineageTree
+from ..Analyze import get_stationary_distribution
 from ..StateDistribution import StateDistribution, track_population_generation_histogram
 
 
@@ -16,11 +18,13 @@ def makeFigure():
     Makes figure 2.
     """
     # pi: the initial probability vector
-    pi = np.array([0.6, 0.4], dtype="float")
+    pi = np.array([0.3, 0.7], dtype="float")
 
     # T: transition probability matrix
     T = np.array([[0.85, 0.15],
                   [0.35, 0.65]], dtype="float")
+    
+    stationary = get_stationary_distribution(T)
 
     # State 0 parameters "Resistant"
     state0 = 0
@@ -55,24 +59,28 @@ def makeFigure():
 
     # unpruned
 
-    x_0_unp = list(range(len(hist_unpruned[0])))
-    x_1_unp = list(range(len(hist_unpruned[1])))
+    x_0_unp = list(range(1,1+len(hist_unpruned[0])))
+    x_1_unp = list(range(1,1+len(hist_unpruned[1])))
 
-    ax[0].set_xlim([-0.01, 12])
+    ax[0].set_xlim([0.5, 13])
     ax[0].set_xlabel(r'Generation')
     ax[0].bar(x_0_unp, hist_unpruned[0], color='#F9Cb9C', label='Resistant')
     ax[0].bar(x_1_unp, hist_unpruned[1], bottom=hist_unpruned[0], color='#A4C2F4', label='Susceptible')
+    ax[0].xaxis.set_major_locator(MaxNLocator(integer=True))
     ax[0].set_ylabel('Number of alive cells')
     ax[0].set_title('Unpruned population growth')
     ax[0].grid(linestyle='--')
 
-    y_0_unp = [a / (a + b) for a, b in zip(hist_unpruned[0], hist_unpruned[1])]
-    y_1_unp = [b / (a + b) for a, b in zip(hist_unpruned[0], hist_unpruned[1])]
+    y_0_unp = [a/(a+b) for a, b in zip(hist_unpruned[0], hist_unpruned[1])]
+    y_1_unp = [b/(a+b) for a, b in zip(hist_unpruned[0], hist_unpruned[1])]
 
-    ax[1].set_xlim([-0.01, 12])
+    ax[1].set_xlim([0.5, 13])
     ax[1].set_xlabel(r'Generation')
     ax[1].plot(x_0_unp, y_0_unp, color='#F9Cb9C', label='Resistant')
     ax[1].plot(x_1_unp, y_1_unp, color='#A4C2F4', label='Susceptible')
+    ax[1].xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax[1].axhline(stationary[0][0], color='#F9Cb9C', ls='--', label='Resistant Stationary')
+    ax[1].axhline(stationary[0][1], color='#A4C2F4', ls='--', label='Susceptible Stationary')
     ax[1].set_ylabel('Proportion of alive cells')
     ax[1].set_ylim([-0.01, 1.01])
     ax[1].set_title('Unpruned population distribution')
@@ -81,24 +89,26 @@ def makeFigure():
 
     # pruned
 
-    x_0_p = list(range(len(hist_pruned[0])))
-    x_1_p = list(range(len(hist_pruned[1])))
+    x_0_p = list(range(1,1+len(hist_pruned[0])))
+    x_1_p = list(range(1,1+len(hist_pruned[1])))
 
-    ax[2].set_xlim([-0.01, 12])
+    ax[2].set_xlim([0.5, 13])
     ax[2].set_xlabel(r'Generation')
     ax[2].bar(x_0_p, hist_pruned[0], color='#F9Cb9C', label='Resistant')
     ax[2].bar(x_1_p, hist_pruned[1], bottom=hist_pruned[0], color='#A4C2F4', label='Susceptible')
+    ax[2].xaxis.set_major_locator(MaxNLocator(integer=True))
     ax[2].set_ylabel('Number of alive cells')
     ax[2].set_title('Pruned population growth')
     ax[2].grid(linestyle='--')
 
-    y_0_p = [a / (a + b) for a, b in zip(hist_pruned[0], hist_pruned[1])]
-    y_1_p = [b / (a + b) for a, b in zip(hist_pruned[0], hist_pruned[1])]
+    y_0_p = [a/(a+b) for a, b in zip(hist_pruned[0], hist_pruned[1])]
+    y_1_p = [b/(a+b) for a, b in zip(hist_pruned[0], hist_pruned[1])]
 
-    ax[3].set_xlim([-0.01, 12])
+    ax[3].set_xlim([0.5, 13])
     ax[3].set_xlabel(r'Generation')
     ax[3].plot(x_0_p, y_0_p, color='#F9Cb9C', label='Resistant')
     ax[3].plot(x_1_p, y_1_p, color='#A4C2F4', label='Susceptible')
+    ax[3].xaxis.set_major_locator(MaxNLocator(integer=True))
     ax[3].set_ylabel('Proportion of alive cells')
     ax[3].set_ylim([-0.01, 1.01])
     ax[3].set_title('Pruned population distribution')

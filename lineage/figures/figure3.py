@@ -16,11 +16,11 @@ def makeFigure():
     Makes figure 3.
     """
     # pi: the initial probability vector
-    pi = np.array([0.6, 0.4], dtype="float")
+    pi = np.array([0.3, 0.7], dtype="float")
 
     # T: transition probability matrix
-    T = np.array([[0.75, 0.25],
-                  [0.15, 0.85]], dtype="float")
+    T = np.array([[0.85, 0.15],
+                  [0.35, 0.65]], dtype="float")
 
     # State 0 parameters "Resistant"
     state0 = 0
@@ -56,8 +56,8 @@ def makeFigure():
 
     # unpruned
 
-    x_0_unp = [delta_time * i for i in range(len(hist_unpruned[0]))]
-    x_1_unp = [delta_time * i for i in range(len(hist_unpruned[1]))]
+    x_0_unp = [delta_time*i for i in range(len(hist_unpruned[0]))]
+    x_1_unp = [delta_time*i for i in range(len(hist_unpruned[1]))]
 
     ax[0].set_xlabel(r'Time [$\mathrm{hours}$]')
     ax[0].bar(x_0_unp, hist_unpruned[0], color='#F9Cb9C', label='Resistant')
@@ -66,8 +66,8 @@ def makeFigure():
     ax[0].set_title('Unpruned population growth')
     ax[0].grid(linestyle='--')
 
-    y_0_unp = [a / (a + b) if a + b > 0 else 0 for a, b in zip(hist_unpruned[0], hist_unpruned[1])]
-    y_1_unp = [b / (a + b) if a + b > 0 else 0 for a, b in zip(hist_unpruned[0], hist_unpruned[1])]
+    y_0_unp = [a/(a+b) if a+b>0 else 0 for a, b in zip(hist_unpruned[0], hist_unpruned[1])]
+    y_1_unp = [b/(a+b) if a+b>0 else 0 for a, b in zip(hist_unpruned[0], hist_unpruned[1])]
 
     ax[1].set_xlabel(r'Time [$\mathrm{hours}$]')
     ax[1].plot(x_0_unp, y_0_unp, color='#F9Cb9C', label='Resistant')
@@ -80,8 +80,8 @@ def makeFigure():
 
     # pruned
 
-    x_0_p = [delta_time * i for i in range(len(hist_pruned[0]))]
-    x_1_p = [delta_time * i for i in range(len(hist_pruned[1]))]
+    x_0_p = [delta_time*i for i in range(len(hist_pruned[0]))]
+    x_1_p = [delta_time*i for i in range(len(hist_pruned[1]))]
 
     ax[2].set_xlabel(r'Time [$\mathrm{hours}$]')
     ax[2].bar(x_0_p, hist_pruned[0], color='#F9Cb9C', label='Resistant')
@@ -90,8 +90,8 @@ def makeFigure():
     ax[2].set_title('Pruned population growth')
     ax[2].grid(linestyle='--')
 
-    y_0_p = [a / (a + b) if a + b > 0 else 0 for a, b in zip(hist_pruned[0], hist_pruned[1])]
-    y_1_p = [b / (a + b) if a + b > 0 else 0 for a, b in zip(hist_pruned[0], hist_pruned[1])]
+    y_0_p = [a/(a+b) if a+b>0 else 0 for a, b in zip(hist_pruned[0], hist_pruned[1])]
+    y_1_p = [b/(a+b) if a+b>0 else 0 for a, b in zip(hist_pruned[0], hist_pruned[1])]
 
     ax[3].set_xlabel(r'Time [$\mathrm{hours}$]')
     ax[3].plot(x_0_p, y_0_p, color='#F9Cb9C', label='Resistant')
