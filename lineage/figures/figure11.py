@@ -5,7 +5,6 @@ Purpose: Generates figure 11.
 AIC.
 """
 import numpy as np
-import matplotlib.pyplot as plt
 
 from .figureCommon import getSetup
 from ..Analyze import Analyze, getAIC
