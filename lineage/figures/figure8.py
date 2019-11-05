@@ -5,7 +5,6 @@ Purpose: Generates figure 8.
 Figure 8 is the parameter estimation for a single pruned lineage with heterogeneity (two true states).
 """
 import numpy as np
-import matplotlib.pyplot as plt
 
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze
@@ -73,7 +72,7 @@ def accuracy_increased_cells():
         x.append(len(lineage.output_lineage))
 
         # Analyzing the lineages
-        deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
+        _, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
 
         # Collecting the accuracies of the lineages
         acc1 = accuracy(tHMMobj, all_states)[0] * 100
