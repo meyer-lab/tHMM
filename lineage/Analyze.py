@@ -227,6 +227,7 @@ def accuracyG(tHMMobj, all_states):
 
     return acuracy_holder
 
+
 def kl_divergence(p, q):
     """ Performs KL-divergence as:
         KL(P||Q) = Integral[ P(x) log(P(x)/Q(x)) ] for continuous distributions,
