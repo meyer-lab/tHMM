@@ -24,7 +24,6 @@ def makeFigure():
 
     return f
 
-
 def KLdivergence():
     """ Assuming we have 2-state model """
 
@@ -44,13 +43,13 @@ def KLdivergence():
     gammaKL_total = []
     acc1 = []
     acc_total = []
-    acc = []
+    acc=[]
 
     assert len(a0) == len(scale0) == len(a1) == len(scale1), "the length of the parameters are not the same!"
 
     for i in range(len(a0)):
         state_obj0 = StateDistribution(state0, bern_p0, a0[i], gamma_loc, scale0[i])
-        state_obj1 = StateDistribution(state1, bern_p1, a1[i], gamma_loc, scale1[i])
+        state_obj1 = StateDistribution(state1, bern_p1, a1[i], gamma_loc,  scale1[i])
 
         E = [state_obj0, state_obj1]
         lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000, prune_condition='both', prune_boolean=True)
@@ -61,8 +60,8 @@ def KLdivergence():
         _, obs0 = list(zip(*lineage.lineage_stats[0].full_lin_cells_obs))
         _, obs1 = list(zip(*lineage.lineage_stats[1].full_lin_cells_obs))
 
-        p = scipy.stats.gamma.pdf(obs0, a=a0[i], loc=gamma_loc, scale=scale0[i])
-        q = scipy.stats.gamma.pdf(obs1, a=a0[i], loc=gamma_loc, scale=scale1[i])
+        p=scipy.stats.gamma.pdf(obs0, a=a0[i], loc=gamma_loc, scale=scale0[i])
+        q=scipy.stats.gamma.pdf(obs1, a=a0[i], loc=gamma_loc, scale=scale1[i])
 
         size = min(p.shape[0], q.shape[0])
         if size == 0:
@@ -84,23 +83,22 @@ def KLdivergence():
     gammaKL_total.append(gammaKL1)
 
     for j in range(4):
-        tmp = np.sum(acc1[j:10 * (j + 1)]) / len(acc1[j:10 * (j + 1)])
+        tmp = np.sum(acc1[j:10*(j+1)])/len(acc1[j:10*(j+1)])
         acc.append(tmp)
     return acc, gammaKL_total
 
 
-def figure_maker(ax, x, KL_gamma, accuracy)
+def figure_maker(ax, x,KL_gamma, accuracy):
 
-
-i = 0
+    i = 0
 #     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
-ax[i].set_xlabel('KL divergence')
-ax[i].set_ylim(0, 110)
-ax[i].scatter(KL_gamma, accuracy, c='k', marker="o", edgecolors='k', alpha=0.25)
-ax[i].plot(KL_gamma, accuracy, c='k')
+    ax[i].set_xlabel('KL divergence')
+    ax[i].set_ylim(0, 110)
+    ax[i].scatter(KL_gamma, accuracy, c='k', marker="o", edgecolors='k', alpha=0.25)
+    ax[i].plot(KL_gamma, accuracy, c='k')
 #     ax[i].set_xscale('log', basex=2)
-ax[i].set_ylabel(r'Accuracy [\%]')
-ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
-ax[i].set_title('KL divergence for two state model')
-ax[i].grid(linestyle='--')
-ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
+    ax[i].set_ylabel(r'Accuracy [\%]')
+    ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
+    ax[i].set_title('KL divergence for two state model')
+    ax[i].grid(linestyle='--')
+    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
