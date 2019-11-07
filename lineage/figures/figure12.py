@@ -92,8 +92,8 @@ def KLdivergence():
 
         X = [lineage]
         states = [cell.state for cell in lineage.output_lineage]
-        num_iter=10 # for every KL value, it runs the model 10 times
-        # to get the accuracy and returns the average accuracy for 10 iterations.
+        num_iter=5 # for every KL value, it runs the model 5 times
+        # to get the accuracy and returns the average accuracy for 5 iterations.
         for j in range(num_iter):
             _, _, all_states, tHMMobj, _, _ = Analyze(X, 2)
 
@@ -124,37 +124,37 @@ def distributionPlot():
     a1 = np.linspace(30.0, 17.0, 10)
     scale1 = 10*([3.0])
 
-    dist1 = np.concatenate((sp.gamma.rvs(a=a0[0], loc=gamma_loc, scale=scale0[0], 
-                         size=500), sp.gamma.rvs(a=a1[0], loc=gamma_loc,
-                         scale=scale1[0], 
-                         size=500), sp.gamma.rvs(a=a0[1], 
-                         loc=gamma_loc, scale=scale0[1], 
-                         size=500), sp.gamma.rvs(a=a1[1], 
-                         loc=gamma_loc, scale=scale1[1], 
-                         size=500), sp.gamma.rvs(a=a0[2],
-                         loc=gamma_loc, scale=scale0[2], size=500), 
-                         sp.gamma.rvs(a=a1[2], loc=gamma_loc,
-                         scale=scale1[2], size=500), sp.gamma.rvs(a=a0[3],
-                         loc=gamma_loc, scale=scale0[3], size=500),
-                         sp.gamma.rvs(a=a1[3], loc=gamma_loc,
-                         scale=scale1[3], size=500),sp.gamma.rvs(a=a0[4],
-                         loc=gamma_loc, scale=scale0[4], size=500),
-                         sp.gamma.rvs(a=a1[4], loc=gamma_loc,
-                         scale=scale1[4], size=500),
-                         sp.gamma.rvs(a=a0[5], loc=gamma_loc,
-                         scale=scale0[5], size=500), sp.gamma.rvs(a=a1[5],
-                         loc=gamma_loc, scale=scale1[5], size=500),
-                         sp.gamma.rvs(a=a0[6], loc=gamma_loc, scale=scale0[6],
-                         size=500), sp.gamma.rvs(a=a1[6], loc=gamma_loc,
-                         scale=scale1[6], size=500), sp.gamma.rvs(a=a0[7],
-                         loc=gamma_loc, scale=scale0[7], size=500), 
-                         sp.gamma.rvs(a=a1[7], loc=gamma_loc, scale=scale1[7],
-                         size=500), sp.gamma.rvs(a=a0[8], loc=gamma_loc,
-                         scale=scale0[8], size=500), sp.gamma.rvs(a=a1[8],
-                         loc=gamma_loc, scale=scale1[8], size=500),
-                         sp.gamma.rvs(a=a0[9], loc=gamma_loc, scale=scale0[9],
+    dist1 = np.concatenate((sp.gamma.rvs(a=a0[9], loc=gamma_loc, scale=scale0[9], 
                          size=500), sp.gamma.rvs(a=a1[9], loc=gamma_loc,
-                         scale=scale1[9], size=500)))
+                         scale=scale1[9], 
+                         size=500), sp.gamma.rvs(a=a0[8], 
+                         loc=gamma_loc, scale=scale0[8], 
+                         size=500), sp.gamma.rvs(a=a1[8], 
+                         loc=gamma_loc, scale=scale1[8], 
+                         size=500), sp.gamma.rvs(a=a0[7],
+                         loc=gamma_loc, scale=scale0[7], size=500), 
+                         sp.gamma.rvs(a=a1[7], loc=gamma_loc,
+                         scale=scale1[7], size=500), sp.gamma.rvs(a=a0[6],
+                         loc=gamma_loc, scale=scale0[6], size=500),
+                         sp.gamma.rvs(a=a1[6], loc=gamma_loc,
+                         scale=scale1[6], size=500),sp.gamma.rvs(a=a0[5],
+                         loc=gamma_loc, scale=scale0[5], size=500),
+                         sp.gamma.rvs(a=a1[5], loc=gamma_loc,
+                         scale=scale1[5], size=500),
+                         sp.gamma.rvs(a=a0[4], loc=gamma_loc,
+                         scale=scale0[4], size=500), sp.gamma.rvs(a=a1[4],
+                         loc=gamma_loc, scale=scale1[4], size=500),
+                         sp.gamma.rvs(a=a0[3], loc=gamma_loc, scale=scale0[3],
+                         size=500), sp.gamma.rvs(a=a1[3], loc=gamma_loc,
+                         scale=scale1[3], size=500), sp.gamma.rvs(a=a0[2],
+                         loc=gamma_loc, scale=scale0[2], size=500), 
+                         sp.gamma.rvs(a=a1[2], loc=gamma_loc, scale=scale1[2],
+                         size=500), sp.gamma.rvs(a=a0[1], loc=gamma_loc,
+                         scale=scale0[1], size=500), sp.gamma.rvs(a=a1[1],
+                         loc=gamma_loc, scale=scale1[1], size=500),
+                         sp.gamma.rvs(a=a0[0], loc=gamma_loc, scale=scale0[0],
+                         size=500), sp.gamma.rvs(a=a1[0], loc=gamma_loc,
+                         scale=scale1[0], size=500)))
     
     dists = pd.DataFrame(columns = ['lifetime [hr]', 'distributions'])
     dists['lifetime [hr]']=dist1
