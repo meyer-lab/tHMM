@@ -8,9 +8,12 @@ for a two state model. It plots the KL-divergence against accuracy.
 import numpy as np
 import random
 import scipy.stats as sp
+import pandas as pd
+import seaborn as sns
+sns.set(style="whitegrid", palette="pastel", color_codes=True)
 
 from .figureCommon import getSetup
-from ..Analyze import accuracy, Analyze, kl_divergence
+from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
@@ -21,7 +24,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((8, 6), (1, 1))
+    ax, f = getSetup((16, 6), (1, 2))
     accuracy, KL_gamma = KLdivergence()
     figure_maker(ax, accuracy, KL_gamma)
 
@@ -43,9 +46,7 @@ def KLdivergence():
     bern_p0 = 0.99
     bern_p1 = 0.88
     a0 = np.linspace(5.0, 17.0, 10)
-#     a0 = [5.0, 10.0, 15.0, 12.0]
     scale0 = 10*([2.0])
-#     a1 = [23.0, 20.0, 17.0, 12.0]
     a1 = np.linspace(30.0, 17.0, 10)
     scale1 = 10*([3.0])
 
@@ -85,7 +86,7 @@ def KLdivergence():
         else:
             pprime = random.sample(list(p), size)
             qprime = random.sample(list(q), size)
-        gammaKL1.append(kl_divergence(np.asarray(pprime), np.asarray(qprime)))
+        gammaKL1.append(sp.entropy(np.asarray(pprime), np.asarray(qprime)))
 
         X = [lineage]
         states = [cell.state for cell in lineage.output_lineage]
@@ -107,14 +108,12 @@ def KLdivergence():
 def figure_maker(ax, accuracy, KL_gamma):
 
     i = 0
-#     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('KL divergence')
     ax[i].set_ylim(0, 110)
+    ax[i].set_xlim(0, max(KL_gamma))
     ax[i].scatter(KL_gamma, accuracy, c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].plot(KL_gamma, accuracy, c='k')
-#     ax[i].set_xscale('log', basex=2)
     ax[i].set_ylabel(r'Accuracy [\%]')
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('KL divergence for two state model')
     ax[i].grid(linestyle='--')
-    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
