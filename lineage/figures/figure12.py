@@ -22,8 +22,8 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((8, 6), (1, 1))
-    acc, gammaKL_total = KLdivergence()
-    figure_maker(ax, acc, gammaKL_total)
+    accuracy, KL_gamma = KLdivergence()
+    figure_maker(ax, accuracy, KL_gamma)
 
     return f
 
@@ -104,7 +104,7 @@ def KLdivergence():
         acc.append(tmp)
     return acc, gammaKL_total[0]
 
-def figure_maker(ax, KL_gamma, accuracy):
+def figure_maker(ax, accuracy, KL_gamma):
 
     i = 0
 #     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
