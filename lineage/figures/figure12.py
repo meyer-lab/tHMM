@@ -2,9 +2,12 @@
 File: figure12.py
 Purpose: Generates figure 12.
 
-Figure 12 is the KL divergence for different sets of parameters for a two state model. It plots the KL-divergence against accuracy.
+Figure 12 is the KL divergence for different sets of parameters
+for a two state model. It plots the KL-divergence against accuracy.
 """
 import numpy as np
+import random
+import scipy.stats as sp
 
 from .figureCommon import getSetup
 from ..Analyze import accuracy, Analyze, kl_divergence
@@ -34,38 +37,51 @@ def KLdivergence():
     T = np.array([[0.50, 0.50],
                   [0.50, 0.50]])
 
-    a0 = [5.0, 10.0, 15.0, 12.0]
-    scale0 = [2.0, 2.0, 2.0, 3.3]
-    a1 = [23.0, 20.0, 17.0, 12.0]
-    scale1 = [3.0, 3.0, 3.0, 3.3]
+    state0 = 0
+    state1 = 1
+    gamma_loc = 0
+    bern_p0 = 0.99
+    bern_p1 = 0.88
+    a0 = np.linspace(5.0, 17.0, 10)
+#     a0 = [5.0, 10.0, 15.0, 12.0]
+    scale0 = 10*([2.0])
+#     a1 = [23.0, 20.0, 17.0, 12.0]
+    a1 = np.linspace(30.0, 17.0, 10)
+    scale1 = 10*([3.0])
 
     gammaKL1 = []
     gammaKL_total = []
     acc1 = []
     acc_total = []
-    acc=[]
+    acc = []
 
-    assert len(a0) == len(scale0) == len(a1) == len(scale1), "the length of the parameters are not the same!"
+    assert len(a0) == len(scale0) == len(a1) == len(scale1),"the length of the parameters are not the same!"
 
-    for i in range(len(a0)):
+    for i in range(a0.shape[0]):
         state_obj0 = StateDistribution(state0, bern_p0, a0[i], gamma_loc, scale0[i])
-        state_obj1 = StateDistribution(state1, bern_p1, a1[i], gamma_loc,  scale1[i])
+        state_obj1 = StateDistribution(state1, bern_p1, a1[i], gamma_loc, scale1[i])
 
         E = [state_obj0, state_obj1]
-        lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000, prune_condition='both', prune_boolean=True)
-        while len(lineage.output_lineage) < 32:
+        lineage = LineageTree(pi, T, E, (2**12) - 1,
+                              desired_experiment_time=600, 
+                              prune_condition='both',
+                              prune_boolean=True)
+        while len(lineage.output_lineage) < 16:
             del lineage
-            lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000, prune_condition='both', prune_boolean=True)
+            lineage = LineageTree(pi, T, E, (2**12) - 1,
+                                  desired_experiment_time=600,
+                                  prune_condition='both',
+                                  prune_boolean=True)
 
         _, obs0 = list(zip(*lineage.lineage_stats[0].full_lin_cells_obs))
         _, obs1 = list(zip(*lineage.lineage_stats[1].full_lin_cells_obs))
 
-        p=scipy.stats.gamma.pdf(obs0, a=a0[i], loc=gamma_loc, scale=scale0[i])
-        q=scipy.stats.gamma.pdf(obs1, a=a0[i], loc=gamma_loc, scale=scale1[i])
+        p=sp.gamma.pdf(obs0, a=a0[i], loc=gamma_loc, scale=scale0[i])
+        q=sp.gamma.pdf(obs1, a=a0[i], loc=gamma_loc, scale=scale1[i])
 
         size = min(p.shape[0], q.shape[0])
         if size == 0:
-            raise ValueError('the number of cells predicted in one of the states is zero! ')
+            raise ValueError('the number of cells predicted in one of the states is zero!')
         else:
             pprime = random.sample(list(p), size)
             qprime = random.sample(list(q), size)
@@ -73,7 +89,8 @@ def KLdivergence():
 
         X = [lineage]
         states = [cell.state for cell in lineage.output_lineage]
-        for j in range(10):
+        num_iter=10
+        for j in range(num_iter):
             _, _, all_states, tHMMobj, _, _ = Analyze(X, 2)
 
             # find the accuracy
@@ -82,13 +99,12 @@ def KLdivergence():
             acc1.append(temp)
     gammaKL_total.append(gammaKL1)
 
-    for j in range(4):
-        tmp = np.sum(acc1[j:10*(j+1)])/len(acc1[j:10*(j+1)])
+    for j in range(10):
+        tmp = np.sum(acc1[j:num_iter*(j+1)])/len(acc1[j:num_iter*(j+1)])
         acc.append(tmp)
-    return acc, gammaKL_total
+    return acc, gammaKL_total[0]
 
-
-def figure_maker(ax, x,KL_gamma, accuracy):
+def figure_maker(ax, KL_gamma, accuracy):
 
     i = 0
 #     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
