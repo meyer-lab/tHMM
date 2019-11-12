@@ -13,13 +13,13 @@ class TestModel(unittest.TestCase):
         left_state = 0
         right_state = 1
 
-        cell_left = c(
+        cell_left = c( 
             state=left_state,
             left=None,
             right=None,
             parent=None,
             gen=1)
-        cell_right = c(
+        cell_right = c( 
             state=right_state,
             left=None,
             right=None,
@@ -31,8 +31,8 @@ class TestModel(unittest.TestCase):
 
     def test_cell_divide(self):
         """ Tests the division of the cells. """
-        T = np.array([[1.0, 0.0],
-                      [0.0, 1.0]])
+        T = np.array([[1.0, 0.0], 
+                      [0.0, 1.0]]) #cell will remain in its state
 
         parent_state = 1
         cell = c(
@@ -40,13 +40,13 @@ class TestModel(unittest.TestCase):
             left=None,
             right=None,
             parent=None,
-            gen=1)
+            gen=1) #this is the parent cell
         left_cell, right_cell = cell._divide(T)
         # the probability of switching states is 0
-        self.assertTrue(left_cell.state == 1)
-        self.assertTrue(right_cell.state == 1)
+        self.assertTrue(left_cell.state == 1) #left cell == 0, should return false
+        self.assertTrue(right_cell.state == 1) #right cell == 1, should return true
         self.assertTrue(
-            right_cell.parent is cell and left_cell.parent is cell)
+            right_cell.parent is cell and left_cell.parent is cell) 
         self.assertTrue(
             cell.left is left_cell and cell.right is right_cell)
         self.assertTrue(not cell.parent)
@@ -64,19 +64,19 @@ class TestModel(unittest.TestCase):
         left_cell, right_cell = cell._divide(T)
         # the probability of switching states is 0
         self.assertTrue(left_cell.state == 0)
-        self.assertTrue(right_cell.state == 0)
+        self.assertTrue(right_cell.state == 0) #cells didn't divide
         self.assertTrue(
-            right_cell.parent is cell and left_cell.parent is cell)
+            right_cell.parent is cell and left_cell.parent is cell) #cell is still the parent
         self.assertTrue(
             cell.left is left_cell and cell.right is right_cell)
-        self.assertTrue(not cell.parent)
+        self.assertTrue(not cell.parent) #not sure what this means
         self.assertTrue(cell.gen == 1)
-        self.assertTrue(left_cell.gen == 2 and right_cell.gen == 2)
+        self.assertTrue(left_cell.gen == 2 and right_cell.gen == 2) #cells divided
 
     def test_isParent(self):
         """ Tests the parent relationships of cells. """
         T = np.array([[1.0, 0.0],
-                      [0.0, 1.0]])
+                      [0.0, 1.0]]) #cells will not change states
 
         parent_state = 1
         cell = c(
