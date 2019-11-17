@@ -292,12 +292,41 @@ class TestModel(unittest.TestCase):
         
         parent_state = 0
         left_state, right_state = _double (parent_state, T)
+        #generates random number that represents probability of switching states
+        randomNum = random.random() 
+        #if probability is less than or equal to 0.58, cell will stay in state 0
+        if (randomNum <= T[0][0]) 
+        self.assertTrue(left_state == 0 && right_state == 0)
+        #probability cell will switch from state 0 to 1 
+        if (randomNum > T[0][0] && randomNum =< T[0][0]+T[0][1])
+        self.assertTrue (left_state == 1 && right_state == 1)
+        #probability cell will switch from state 0 to 2
+        if (randomNum > T[0][0] + T[0][1] && randomNum < 1)
+        self.assertTrue (left_state == 2 && right_state == 2)
         
         parent_state = 1
         left_state, right_state = _double (parent_state, T)
+        randomNum = random.random()
+        #probability cell will transition from state 1 to 0
+        if(randomNum <= T[1][0])
+        self.assertTrue (left_state == 0 && right_state == 0)
+        #probability cell will remain in state 1
+        if (randomNum > T[1][0] && randomNum =< T[1][0]+T[1][1])
+        self.assertTrue (left_state == 1 & right_state == 1)
+        #probability cell will transition from state 1 to 2
+        if(randomNum > T[1][0]+T[1][1] && randomNum < 1)
+        self.assertTrue (left_state == 2 && right_state == 2)
+        
         
         parent_state = 2
         left_state, right_state = _double (parent_state, T)
+        randomNum = random.random()
+        #probability cell will transition from 2 to 0
+        if (randomNum <= T[2][0])
+        self.assertTrue (left_state == 0 & right_state == 1)
         #0% probability of transitioning from state 2 to 1
         self.assertFalse (left_state == 1) 
         self.assertFalse (right_state == 1)
+        #probability cell will remain in state 2
+        if (randomNum > T[2][0]+T[2][1] && RandomNum < 1)
+        self.assertTrue (left_state == 2 &I & right_state == 2)
