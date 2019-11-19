@@ -24,7 +24,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((16, 6), (1, 2))
+    ax, f = getSetup((20, 6), (1, 2))
     accuracy, KL_gamma = KLdivergence()
     dists = distributionPlot()
     figure_maker(ax, accuracy, KL_gamma, dists)
@@ -181,6 +181,6 @@ def figure_maker(ax, accuracy, KL_gamma, dists):
     i += 1
 
     sns.violinplot(x="distributions", y="lifetime [hr]",
-               split=True, inner="quart",
-               data=dists, ax=ax[i], hue = "hues")
+               inner="quart", palette="muted", 
+                   hue = "hues", data=dists, ax=ax[i])
     sns.despine(left=True, ax=ax[i])
