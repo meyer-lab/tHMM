@@ -156,10 +156,13 @@ def distributionPlot():
                          size=500), sp.gamma.rvs(a=a1[0], loc=gamma_loc,
                          scale=scale1[0], size=500)))
     
-    dists = pd.DataFrame(columns = ['lifetime [hr]', 'distributions'])
+    dists = pd.DataFrame(columns = ['lifetime [hr]', 'distributions', 'hues'])
     dists['lifetime [hr]']=dist1
     dists['distributions']=1000*(['d1']) + 1000*(['d2']) + 1000*(['d3']) + 1000*(['d4']) + \
     1000*(['d5']) + 1000*(['d6']) + 1000*(['d7']) + 1000*(['d8']) + 1000*(['d9']) + 1000*(['d10'])
+    dists['hues'] = 500*[1] + 500*[2] + 500*[3] + 500*[4] + 500*[5] + 500*[6] + 500*[7] + \
+    500*[8] + 500*[9] + 1000*[10] + 500*[9] + 500*[8] + 500*[7] + 500*[6] + 500*[5] +\
+    500*[4] + 500*[3] + 500*[2] + 500*[1] 
     return dists
 
 
@@ -179,5 +182,5 @@ def figure_maker(ax, accuracy, KL_gamma, dists):
 
     sns.violinplot(x="distributions", y="lifetime [hr]",
                split=True, inner="quart",
-               data=dists, ax=ax[i])
+               data=dists, ax=ax[i], hue = "hues")
     sns.despine(left=True, ax=ax[i])
