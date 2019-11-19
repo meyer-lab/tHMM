@@ -147,24 +147,17 @@ class TestModel(unittest.TestCase):
             right=None,
             parent=None,
             gen=1)
-        #new assert
         self.assertTrue(cell._isRootParent())
-        #new assert
         self.assertTrue(cell._isLeaf()) 
-        #new assert
-        self.assertFalse(left_cell._isLeaf() and right_cell.isLeaf()) 
         #cell divides
-        left_cell, right_cell = cell._divide(T) 
-        #new assert
+        left_cell, right_cell = cell._divide(T)
         self.assertFalse(left_cell._isRootParent() and right_cell._isRootParent())
         #tests if cell is root parent
         self.assertTrue(cell._isRootParent()) 
         #returns false because divided cells aren't root parent
         self.assertFalse(left_cell._isRootParent() 
                          and right_cell._isRootParent())
-         #new assert
         self.assertTrue(left_cell._isLeaf() and right_cell._isLeaf())
-        #new assert
         self.assertFalse(cell._isLeaf()) 
         
     
@@ -226,7 +219,7 @@ class TestModel(unittest.TestCase):
         #cell hasn't divided, is root cell
         self.assertTrue(cell._get_root_cell() is cell) 
         left_cell, right_cell = cell._divide(T)
-        #if cell divides then cell is no longer root?
+        #given the left/right cell, gets the root cell
         self.assertTrue(left_cell._get_root_cell()
                         is cell and right_cell._get_root_cell() is cell) 
 
@@ -246,12 +239,14 @@ class TestModel(unittest.TestCase):
         self.assertTrue(left_state == 1) 
         self.assertTrue(right_state == 1)
         
-    #new function
+    
     def test_cell_state_change1 (self):
-        "Tests what will happen when probability of switching states is 100%"
+        """
+        Tests what will happen when probability of switching states is 100%
+        """
         #transition matrix, valid matrix
-        T = np.array([0.0, 1.0,
-                      1.0, 0.0])
+        T = np.array([[0.0, 1.0],
+                      [1.0, 0.0]])
         #cells should transition states from parent to daughter
         parent_state = 0
         left_state, right_state = _double (parent_state, T)
@@ -263,12 +258,15 @@ class TestModel(unittest.TestCase):
         self.assertTrue(left_state == 0)
         self.assertTrue(right_state == 0)
         
-    #new function
+
     def test_cell_state_change2 (self):
-        "Tests what will happen when probability from switching from state 0 to 1 is 100% and probability from switching from    state 1 to 0 is 0%"
+        """
+        Tests what will happen when probability from switching from state 0 to 1 is 100% 
+        and probability from switching from state 1 to 0 is 0%
+        """
         #transition matrix
-        T = np.array([0.0, 1.0,
-                      0.0, 0.0])
+        T = np.array([[0.0, 1.0],
+                      [0.0, 1.0]])
         
         parent_state = 0
         left_state, right_state = _double (parent_state, T)
@@ -279,54 +277,55 @@ class TestModel(unittest.TestCase):
         left_state, right_state = _double(parent_state, T)
         self.assertFalse(left_state == 0)
         self.assertFalse(right_state == 0)
-        print 'works'
+
         
         
-    #new function
-    def test_cell_state_change3 (self):
-        "Tests the transition states for SUM159"
-        #transition matrix
-        T = np.array([0.58, 0.07, 0.35
-                      0.04, 0.47, 0.49
-                      0.01, 0.0, 0.99])
-        
-        parent_state = 0
-        left_state, right_state = _double (parent_state, T)
-        #generates random number that represents probability of switching states
-        randomNum = random.random() 
-        #if probability is less than or equal to 0.58, cell will stay in state 0
-        if (randomNum <= T[0][0]) 
-        self.assertTrue(left_state == 0 && right_state == 0)
-        #probability cell will switch from state 0 to 1 
-        if (randomNum > T[0][0] && randomNum =< T[0][0]+T[0][1])
-        self.assertTrue (left_state == 1 && right_state == 1)
-        #probability cell will switch from state 0 to 2
-        if (randomNum > T[0][0] + T[0][1] && randomNum < 1)
-        self.assertTrue (left_state == 2 && right_state == 2)
-        
-        parent_state = 1
-        left_state, right_state = _double (parent_state, T)
-        randomNum = random.random()
-        #probability cell will transition from state 1 to 0
-        if(randomNum <= T[1][0])
-        self.assertTrue (left_state == 0 && right_state == 0)
-        #probability cell will remain in state 1
-        if (randomNum > T[1][0] && randomNum =< T[1][0]+T[1][1])
-        self.assertTrue (left_state == 1 & right_state == 1)
-        #probability cell will transition from state 1 to 2
-        if(randomNum > T[1][0]+T[1][1] && randomNum < 1)
-        self.assertTrue (left_state == 2 && right_state == 2)
-        
-        
-        parent_state = 2
-        left_state, right_state = _double (parent_state, T)
-        randomNum = random.random()
-        #probability cell will transition from 2 to 0
-        if (randomNum <= T[2][0])
-        self.assertTrue (left_state == 0 & right_state == 1)
-        #0% probability of transitioning from state 2 to 1
-        self.assertFalse (left_state == 1) 
-        self.assertFalse (right_state == 1)
-        #probability cell will remain in state 2
-        if (randomNum > T[2][0]+T[2][1] && RandomNum < 1)
-        self.assertTrue (left_state == 2 &I & right_state == 2)
+#     #new function
+#     def test_cell_state_change3 (self):
+#         "Tests the transition states for SUM159"
+#         #transition matrix
+#         T = np.array([[0.58, 0.07, 0.35],
+#                       [0.04, 0.47, 0.49],
+#                       [0.01, 0.0, 0.99]])
+
+#         parent_state = 0
+#         left_state, right_state = _double (parent_state, T)
+#         #generates random number that represents probability of switching states
+#         randomNum = random.random() 
+#         #if probability is less than or equal to 0.58, cell will stay in state 0
+#         if (randomNum <= T[0][0]): 
+#             self.assertTrue(left_state == 0 and right_state == 0)
+#         #probability cell will switch from state 0 to 1 
+#         if (randomNum > T[0][0] and randomNum <= T[0][0]+T[0][1]):
+#             self.assertTrue (left_state == 1 and right_state == 1)
+#         #probability cell will switch from state 0 to 2
+#         if (randomNum > T[0][0] + T[0][1] and randomNum < 1):
+#             self.assertTrue (left_state == 2 and right_state == 2)
+
+#         parent_state = 1
+#         left_state, right_state = _double (parent_state, T)
+#         randomNum = random.random()
+#         #probability cell will transition from state 1 to 0
+#         if(randomNum <= T[1][0]):
+#             self.assertTrue (left_state == 0 and right_state == 0)
+#         #probability cell will remain in state 1
+#         if (randomNum > T[1][0] and randomNum =< T[1][0]+T[1][1]):
+#             self.assertTrue (left_state == 1 and right_state == 1)
+#         #probability cell will transition from state 1 to 2
+#         if(randomNum > T[1][0]+T[1][1] and randomNum < 1):
+#             self.assertTrue (left_state == 2 and right_state == 2)
+
+
+#         parent_state = 2
+#         left_state, right_state = _double (parent_state, T)
+#         randomNum = random.random()
+#         #probability cell will transition from 2 to 0
+#         if (randomNum <= T[2][0]):
+#             self.assertTrue (left_state == 0 and right_state == 0)
+#         #0% probability of transitioning from state 2 to 1
+#         self.assertFalse (left_state == 1) 
+#         self.assertFalse (right_state == 1)
+#         #probability cell will remain in state 2
+#         if (randomNum > T[2][0]+T[2][1] and RandomNum < 1):
+#             self.assertTrue (left_state == 2 and right_state == 2)
+
