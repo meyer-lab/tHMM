@@ -160,9 +160,7 @@ def distributionPlot():
     dists['lifetime [hr]']=dist1
     dists['distributions']=1000*(['d1']) + 1000*(['d2']) + 1000*(['d3']) + 1000*(['d4']) + \
     1000*(['d5']) + 1000*(['d6']) + 1000*(['d7']) + 1000*(['d8']) + 1000*(['d9']) + 1000*(['d10'])
-    dists['hues'] = 500*[1] + 500*[2] + 500*[3] + 500*[4] + 500*[5] + 500*[6] + 500*[7] + \
-    500*[8] + 500*[9] + 1000*[10] + 500*[9] + 500*[8] + 500*[7] + 500*[6] + 500*[5] +\
-    500*[4] + 500*[3] + 500*[2] + 500*[1] 
+    dists['hues'] = 5000*[1] + 5000*[2]
     return dists
 
 
@@ -182,5 +180,5 @@ def figure_maker(ax, accuracy, KL_gamma, dists):
 
     sns.violinplot(x="distributions", y="lifetime [hr]",
                inner="quart", palette="muted", 
-                   hue = "hues", data=dists, ax=ax[i])
+               split=True, hue="hues", data=dists, ax=ax[i])
     sns.despine(left=True, ax=ax[i])
