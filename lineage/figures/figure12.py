@@ -57,11 +57,19 @@ def KLdivergence():
     acc_total = []
     acc = []
 
-    assert len(a0) == len(scale0) == len(a1) == len(scale1), "the length of the parameters are not the same!"
+    assert len(a0) == len(scale0) == len(a1) == len(scale1), "parameter length problem!"
 
     for i in range(a0.shape[0]):
-        state_obj0 = StateDistribution(state0, bern_p0, a0[i], gamma_loc, scale0[i])
-        state_obj1 = StateDistribution(state1, bern_p1, a1[i], gamma_loc, scale1[i])
+        state_obj0 = StateDistribution(state0, 
+                                       bern_p0, 
+                                       a0[i], 
+                                       gamma_loc, 
+                                       scale0[i])
+        state_obj1 = StateDistribution(state1, 
+                                       bern_p1, 
+                                       a1[i], 
+                                       gamma_loc,
+                                       scale1[i])
 
         E = [state_obj0, state_obj1]
         lineage = LineageTree(pi, T, E, (2**12) - 1,
@@ -104,7 +112,8 @@ def KLdivergence():
     gammaKL_total.append(gammaKL1)
 
     for j in range(10):
-        tmp = np.sum(acc1[j:num_iter * (j + 1)]) / len(acc1[j:num_iter * (j + 1)])
+        tmp = np.sum(acc1[j:num_iter * (j + 1)]) \
+        / len(acc1[j:num_iter * (j + 1)])
         acc.append(tmp)
     return acc, gammaKL_total[0]
 
@@ -132,19 +141,21 @@ def distributionPlot():
                                                                  loc=gamma_loc, scale=scale1[8], size=500),
                             sp.gamma.rvs(a=a0[7], loc=gamma_loc, scale=scale0[7], size=500),
                             sp.gamma.rvs(a=a1[7], loc=gamma_loc,
-                                         scale=scale1[7], size=500), sp.gamma.rvs(a=a0[6],
-                                                                                  loc=gamma_loc, scale=scale0[6], size=500),
+                                         scale=scale1[7], size=500), 
+                            sp.gamma.rvs(a=a0[6], loc=gamma_loc, scale=scale0[6], size=500),
                             sp.gamma.rvs(a=a1[6], loc=gamma_loc,
-                                         scale=scale1[6], size=500), sp.gamma.rvs(a=a0[5],
-                                                                                  loc=gamma_loc, scale=scale0[5], size=500),
+                                         scale=scale1[6], size=500), 
+                            sp.gamma.rvs(a=a0[5], loc=gamma_loc, scale=scale0[5], size=500),
                             sp.gamma.rvs(a=a1[5], loc=gamma_loc,
                                          scale=scale1[5], size=500),
                             sp.gamma.rvs(a=a0[4], loc=gamma_loc,
-                                         scale=scale0[4], size=500), sp.gamma.rvs(a=a1[4],
-                                                                                  loc=gamma_loc, scale=scale1[4], size=500),
-                            sp.gamma.rvs(a=a0[3], loc=gamma_loc, scale=scale0[3],
-                                         size=500), sp.gamma.rvs(a=a1[3], loc=gamma_loc,
-                                                                 scale=scale1[3], size=500), 
+                                         scale=scale0[4], size=500), 
+                            sp.gamma.rvs(a=a1[4], loc=gamma_loc, 
+                                         scale=scale1[4], size=500),
+                            sp.gamma.rvs(a=a0[3], loc=gamma_loc, 
+                                         scale=scale0[3], size=500), 
+                            sp.gamma.rvs(a=a1[3], loc=gamma_loc,
+                                        scale=scale1[3], size=500), 
                             sp.gamma.rvs(a=a0[2],
                                          loc=gamma_loc, scale=scale0[2], size=500),
                             sp.gamma.rvs(a=a1[2], loc=gamma_loc, scale=scale1[2],
