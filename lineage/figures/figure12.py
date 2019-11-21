@@ -9,6 +9,7 @@ from ..StateDistribution import StateDistribution
 from ..LineageTree import LineageTree
 from ..Analyze import accuracy, Analyze
 from .figureCommon import getSetup
+import itertools
 import numpy as np
 import random
 import scipy.stats as sp
@@ -133,21 +134,19 @@ def distributionPlot():
     a1 = np.linspace(30.0, 17.0, 10)
     scale1 = 3.0
     total = []
-
     for i in range(10):
-        a = pd.DataFrame(sp.gamma.rvs(a=a0[9-i], loc=gamma_loc,
-                                      scale=scale0,
-                                      size=500))
-        b = pd.DataFrame(sp.gamma.rvs(a=a1[9-i], loc=gamma_loc,
+        a = list(sp.gamma.rvs(a=a0[9-i], loc=gamma_loc,
+                                          scale=scale0,
+                                          size=500))
+        total.append(a)
+        b = list(sp.gamma.rvs(a=a1[9-i], loc=gamma_loc,
                                       scale=scale1,
                                       size=500))
-        c = a.append(b)
-        total.append(c)
+        total.append(b)
 
-    total = pd.concat(total)
+    TOdf = list(itertools.chain.from_iterable(total))
 
-    dists = pd.DataFrame(columns=['lifetime [hr]', 'distributions', 'hues'])
-    dists['lifetime [hr]'] = total
+    dists = pd.DataFrame(columns=['distributions', 'hues'])
     dists['distributions'] = 1000 * (['d1']) + 1000 * (['d2']) + \
         1000 * (['d3']) + 1000 * (['d4']) + 1000 * (['d5']) + \
         1000 * (['d6']) + 1000 * (['d7']) + 1000 * (['d8']) + \
@@ -157,6 +156,7 @@ def distributionPlot():
         + 500 * [1] + 500 * [2] + 500 * [1] + 500 * [2] + \
         500 * [1] + 500 * [2] + 500 * [1] + 500 * [2] + 500 * [1] + 500 * [2] \
         + 500 * [1] + 500 * [2]
+    dists['lifetime [hr]'] = TOdf
     return dists
 
 
