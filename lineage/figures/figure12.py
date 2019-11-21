@@ -57,7 +57,7 @@ def KLdivergence():
     acc_total = []
     acc = []
 
-    assert len(a0) == len(scale0) == len(a1) == len(scale1), "parameter length problem!"
+    assert len(a0) == len(scale0) == len(a1) == len(scale1)
 
     for i in range(a0.shape[0]):
         state_obj0 = StateDistribution(state0,
@@ -91,7 +91,7 @@ def KLdivergence():
 
         size = min(p.shape[0], q.shape[0])
         if size == 0:
-            raise ValueError('the number of cells predicted in one of the states is zero!')
+            raise ValueError('# of cells in one of the states is zero!')
         else:
             pprime = random.sample(list(p), size)
             qprime = random.sample(list(q), size)
@@ -101,7 +101,7 @@ def KLdivergence():
         X = [lineage]
         states = [cell.state for cell in lineage.output_lineage]
         num_iter = 5  # for every KL value, it runs the model 5 times
-        # to get the accuracy and returns the average accuracy for 5 iterations.
+        # accuracy and returns the avg accuracy for 5 iters
         for j in range(num_iter):
             _, _, all_states, tHMMobj, _, _ = Analyze(X, 2)
 
@@ -172,10 +172,10 @@ def distributionPlot():
                                          scale=scale1[2], size=500),
                             sp.gamma.rvs(a=a0[1], loc=gamma_loc,
                                          scale=scale0[1], size=500),
-                            sp.gamma.rvs(a=a1[1],
-                                         loc=gamma_loc, scale=scale1[1], size=500),
-                            sp.gamma.rvs(a=a0[0], loc=gamma_loc, scale=scale0[0],
-                                         size=500),
+                            sp.gamma.rvs(a=a1[1], loc=gamma_loc, 
+                                         scale=scale1[1], size=500),
+                            sp.gamma.rvs(a=a0[0], loc=gamma_loc,
+                                         scale=scale0[0], size=500),
                             sp.gamma.rvs(a=a1[0], loc=gamma_loc,
                                          scale=scale1[0], size=500)))
 
