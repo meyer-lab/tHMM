@@ -230,7 +230,7 @@ def accuracyG(tHMMobj, all_states):
 
 def kl_divergence(p, q):
     """ Performs KL-divergence as:
-        KL(P||Q) = Integral[ P(x) log(P(x)/Q(x)) ] 
+        KL(P||Q) = Integral[ P(x) log(P(x)/Q(x)) ]
         for continuous distributions,
         and summation instead of integral, for discrete distributions. """
     return np.sum(np.where(p != 0, p * np.log(p / q), 0))
