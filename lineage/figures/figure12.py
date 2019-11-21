@@ -129,58 +129,25 @@ def distributionPlot():
     bern_p0 = 0.99
     bern_p1 = 0.88
     a0 = np.linspace(5.0, 17.0, 10)
-    scale0 = 10 * ([2.0])
+    scale0 = 2.0
     a1 = np.linspace(30.0, 17.0, 10)
-    scale1 = 10 * ([3.0])
+    scale1 = 3.0
+    total = []
 
-    dist1 = np.concatenate((sp.gamma.rvs(a=a0[9], loc=gamma_loc,
-                                         scale=scale0[9],
-                                         size=500),
-                            sp.gamma.rvs(a=a1[9], loc=gamma_loc,
-                                         scale=scale1[9],
-                                         size=500),
-                            sp.gamma.rvs(a=a0[8], loc=gamma_loc,
-                                         scale=scale0[8],
-                                         size=500),
-                            sp.gamma.rvs(a=a1[8],
-                                         loc=gamma_loc, scale=scale1[8],
-                                         size=500),
-                            sp.gamma.rvs(a=a0[7], loc=gamma_loc,
-                                         scale=scale0[7], size=500),
-                            sp.gamma.rvs(a=a1[7], loc=gamma_loc,
-                                         scale=scale1[7], size=500),
-                            sp.gamma.rvs(a=a0[6], loc=gamma_loc,
-                                         scale=scale0[6], size=500),
-                            sp.gamma.rvs(a=a1[6], loc=gamma_loc,
-                                         scale=scale1[6], size=500),
-                            sp.gamma.rvs(a=a0[5], loc=gamma_loc,
-                                         scale=scale0[5], size=500),
-                            sp.gamma.rvs(a=a1[5], loc=gamma_loc,
-                                         scale=scale1[5], size=500),
-                            sp.gamma.rvs(a=a0[4], loc=gamma_loc,
-                                         scale=scale0[4], size=500),
-                            sp.gamma.rvs(a=a1[4], loc=gamma_loc,
-                                         scale=scale1[4], size=500),
-                            sp.gamma.rvs(a=a0[3], loc=gamma_loc,
-                                         scale=scale0[3], size=500),
-                            sp.gamma.rvs(a=a1[3], loc=gamma_loc,
-                                         scale=scale1[3], size=500),
-                            sp.gamma.rvs(a=a0[2],
-                                         loc=gamma_loc, scale=scale0[2],
-                                         size=500),
-                            sp.gamma.rvs(a=a1[2], loc=gamma_loc,
-                                         scale=scale1[2], size=500),
-                            sp.gamma.rvs(a=a0[1], loc=gamma_loc,
-                                         scale=scale0[1], size=500),
-                            sp.gamma.rvs(a=a1[1], loc=gamma_loc, 
-                                         scale=scale1[1], size=500),
-                            sp.gamma.rvs(a=a0[0], loc=gamma_loc,
-                                         scale=scale0[0], size=500),
-                            sp.gamma.rvs(a=a1[0], loc=gamma_loc,
-                                         scale=scale1[0], size=500)))
+    for i in range(10):
+        a = pd.DataFrame(sp.gamma.rvs(a=a0[9-i], loc=gamma_loc,
+                                      scale=scale0,
+                                      size=500))
+        b = pd.DataFrame(sp.gamma.rvs(a=a1[9-i], loc=gamma_loc,
+                                      scale=scale1,
+                                      size=500))
+        c = a.append(b)
+        total.append(c)
+
+    total = pd.concat(total)
 
     dists = pd.DataFrame(columns=['lifetime [hr]', 'distributions', 'hues'])
-    dists['lifetime [hr]'] = dist1
+    dists['lifetime [hr]'] = total
     dists['distributions'] = 1000 * (['d1']) + 1000 * (['d2']) + \
         1000 * (['d3']) + 1000 * (['d4']) + 1000 * (['d5']) + \
         1000 * (['d6']) + 1000 * (['d7']) + 1000 * (['d8']) + \
