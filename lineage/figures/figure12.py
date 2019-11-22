@@ -5,16 +5,17 @@ Purpose: Generates figure 12.
 Figure 12 is the KL divergence for different sets of parameters
 for a two state model. It plots the KL-divergence against accuracy.
 """
-from ..StateDistribution import StateDistribution
-from ..LineageTree import LineageTree
-from ..Analyze import accuracy, Analyze
-from .figureCommon import getSetup
 import itertools
 import numpy as np
 import random
 import scipy.stats as sp
 import pandas as pd
 import seaborn as sns
+from ..StateDistribution import StateDistribution
+from ..LineageTree import LineageTree
+from ..Analyze import accuracy, Analyze
+from .figureCommon import getSetup
+
 sns.set(style="whitegrid", palette="pastel", color_codes=True)
 
 
