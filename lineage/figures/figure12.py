@@ -94,7 +94,7 @@ def KLdivergence():
         assert size > 0, "pdf array for KL is empty"
         pprime = random.sample(list(p), size)
         qprime = random.sample(list(q), size)
-            # find the KL divergence
+        # find the KL divergence
         gammaKL1.append(sp.entropy(np.asarray(pprime), np.asarray(qprime)))
 
         X = [lineage]
@@ -163,7 +163,8 @@ def figure_maker(ax, accuracyyy, KL_gamma, dists):
     ax[i].set_xlabel('KL divergence')
     ax[i].set_ylim(0, 110)
     ax[i].set_xlim(0, 1.07 * max(KL_gamma))
-    ax[i].scatter(KL_gamma, accuracyyy, c='k', marker="o", edgecolors='k', alpha=0.25)
+    ax[i].scatter(KL_gamma, accuracyyy, \
+                  c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].set_ylabel(r'Accuracy [\%]')
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('KL divergence for two state model')
