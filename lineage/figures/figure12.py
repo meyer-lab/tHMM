@@ -98,7 +98,7 @@ def KLdivergence():
         gammaKL1.append(sp.entropy(np.asarray(pprime), np.asarray(qprime)))
 
         X = [lineage]
-        num_iter = 5  # for every KL value, it runs the model 5 times
+        num_iter = 2  # for every KL value, it runs the model 5 times
         # accuracy and returns the avg accuracy for 5 iters
         for j in range(num_iter):
             _, _, all_states, tHMMobj, _, _ = Analyze(X, 2)
