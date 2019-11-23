@@ -1,7 +1,6 @@
 '''Calls the tHMM functions and outputs the parameters needed to generate the Figures'''
 import copy as cp
 import numpy as np
-import random
 from .BaumWelch import fit
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
@@ -47,6 +46,8 @@ def Analyze(X, numStates):
 
 
 def accuracy(tHMMobj, all_states):
+    """ This function calculates the accuracy
+    given estimated and true states. """
     counter_holder = 0
     length_holder = 0
     for num, lineageObj in enumerate(tHMMobj.X):
