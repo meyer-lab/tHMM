@@ -59,7 +59,7 @@ def KLdivergence():
     acc = []
 
     assert len(a0) == len(scale0) == len(a1) == len(scale1)
-    a0Range = a0.shape[0]
+    a0Range = np.int(a0.shape[0])
     for i in range(a0Range):
         state_obj0 = StateDistribution(state0,
                                        bern_p0,

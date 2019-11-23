@@ -9,9 +9,12 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, 
     '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
 
     # check the child-parent relationship
-    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx], "Something wrong with your parent-daughter linkage when trying to use the zeta-related functions... Check again that your lineage is constructed clearly."
+    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx], "Something wrong with your \
+    parent-daughter linkage when trying to use the zeta-related functions... \
+    Check again that your lineage is constructed clearly."
     # if the child-parent relationship is correct, then the child must
-    assert lineage[node_child_n_idx]._isChild(), "Something wrong with your parent-daughter linkage when trying to use the zeta-related functions... Check again that your lineage is constructed clearly."
+    assert lineage[node_child_n_idx]._isChild(), "Something wrong with your parent-daughter linkage\
+    when trying to use the zeta-related functions... Check again that your lineage is constructed clearly."
     # either be the left daughter or the right daughter
 
     beta_child_state_k = beta_array[node_child_n_idx, child_state_k]
