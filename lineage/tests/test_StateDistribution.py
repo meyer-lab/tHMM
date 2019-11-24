@@ -154,7 +154,7 @@ class TestModel(unittest.TestCase):
         to the result of scipy random variable generator.
         """
         exp_obs = sp.expon.rvs(
-            scale=50, size=1000)  # exponential observations
+            scale=50, size=1500)  # exponential observations
         self.assertTrue(45 <= exponential_estimator(
             exp_obs) <= 55)  # +/- 5 of beta
 
