@@ -42,11 +42,35 @@ class StateDistribution2:
 
         assert not math.isnan(gamma_llG1), "{} {} {} {} {}".format(tuple_of_obs[1], gamma_llG1, self.gamma_a1, self.gamma_loc, self.gamma_scale1)
         if bern_ll == 0 or np.exp(gamma_llG1) == 0:
-            print(tuple_of_obs[1], ',', gamma_llG1, ',', self.gamma_a1, ',', self.gamma_loc, ',', self.gamma_scale1, tuple_of_obs[0], bern_ll, self.bern_p)
+            print(
+                tuple_of_obs[1],
+                ',',
+                gamma_llG1,
+                ',',
+                self.gamma_a1,
+                ',',
+                self.gamma_loc,
+                ',',
+                self.gamma_scale1,
+                tuple_of_obs[0],
+                bern_ll,
+                self.bern_p)
 
         assert not math.isnan(gamma_llG2), "{} {} {} {} {}".format(tuple_of_obs[2], gamma_llG2, self.gamma_a2, self.gamma_loc, self.gamma_scale2)
         if bern_ll == 0 or np.exp(gamma_llG2) == 0:
-            print(tuple_of_obs[2], ',', gamma_llG2, ',', self.gamma_a2, ',', self.gamma_loc, ',', self.gamma_scale2, tuple_of_obs[0], bern_ll, self.bern_p)
+            print(
+                tuple_of_obs[2],
+                ',',
+                gamma_llG2,
+                ',',
+                self.gamma_a2,
+                ',',
+                self.gamma_loc,
+                ',',
+                self.gamma_scale2,
+                tuple_of_obs[0],
+                bern_ll,
+                self.bern_p)
 
         return bern_ll * gamma_llG1 * gamma_llG2
 
@@ -84,7 +108,12 @@ class StateDistribution2:
         return state_estimate_obj
 
     def __repr__(self):
-        return "State object w/ parameters: {}, {}, {}, {}, {}, {}.".format(self.bern_p, self.gamma_a1, self.gamma_loc, self.gamma_scale1, self.gamma_a2, self.gamma_scale2)
+        return "State object w/ parameters: {}, {}, {}, {}, {}, {}.".format(self.bern_p,
+                                                                            self.gamma_a1,
+                                                                            self.gamma_loc,
+                                                                            self.gamma_scale1,
+                                                                            self.gamma_a2,
+                                                                            self.gamma_scale2)
 
 
 def prune_rule(cell):

@@ -48,7 +48,8 @@ def get_leaf_Normalizing_Factors(tHMMobj):
             # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
             # the sum of the joint probabilities is the marginal probability
             NF_array[leaf_cell_idx] = np.sum(MSD_array[leaf_cell_idx, :] * EL_array[leaf_cell_idx, :])  # def of conditional prob
-            assert NF_array[leaf_cell_idx] > 0.0, "{} and {} and {} and {}".format(NF_array, NF_array[leaf_cell_idx], MSD_array[leaf_cell_idx, :], EL_array[leaf_cell_idx, :])
+            assert NF_array[leaf_cell_idx] > 0.0, "{} and {} and {} and {}".format(
+                NF_array, NF_array[leaf_cell_idx], MSD_array[leaf_cell_idx, :], EL_array[leaf_cell_idx, :])
         NF.append(NF_array)
     return NF
 
@@ -149,7 +150,8 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                     fac3 = MSD_array[node_parent_m_idx, state_j]
                     numer_holder.append(fac1 * fac2 * fac3)
                 NF[num][node_parent_m_idx] = sum(numer_holder)
-                assert NF[num][node_parent_m_idx] > 0.0, "{} and {} and {} and {}".format(NF[num], NF[num][node_parent_m_idx], MSD_array[node_parent_m_idx, :], EL_array[node_parent_m_idx, :])
+                assert NF[num][node_parent_m_idx] > 0.0, "{} and {} and {} and {}".format(
+                    NF[num], NF[num][node_parent_m_idx], MSD_array[node_parent_m_idx, :], EL_array[node_parent_m_idx, :])
                 for state_j in range(numStates):
                     betas[num][node_parent_m_idx, state_j] = numer_holder[state_j] / NF[num][node_parent_m_idx]
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
