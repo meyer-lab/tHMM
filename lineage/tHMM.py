@@ -40,9 +40,6 @@ class tHMM:
         self.EL = self.get_Emission_Likelihoods()  # full Emission Likelihood holder
 
 
-##---------------------------- Marginal State Distribution ------------------------------##
-
-
     def get_Marginal_State_Distributions(self):
         '''
         Marginal State Distribution (MSD) matrix and recursion.
@@ -95,8 +92,6 @@ class tHMM:
                 MSD_row_sums, 1.0), "The Marginal State Distribution for your cells, P(z_k = k), for all states k in numStates, are not adding up to 1!"
         return MSD
 
-
-##--------------------------- Emission Likelihood --------------------------------##
 
     def get_Emission_Likelihoods(self):
         '''
