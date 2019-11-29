@@ -21,12 +21,11 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: autopep8 action fixes
-          author-email: peter-evans@users.noreply.github.com
-          author-name: Peter Evans
+          author-email: aarmey@users.noreply.github.com
+          author-name: Aaron Meyer
           title: Fixes by autopep8 action
           body: This is an auto-generated PR with fixes by autopep8.
           labels: autopep8, automated pr
-          reviewers: peter-evans
           branch: ${{ steps.vars.outputs.branch-name }}
           branch-suffix: none
       - name: Fail if autopep8 made changes
