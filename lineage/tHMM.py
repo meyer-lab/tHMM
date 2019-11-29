@@ -71,7 +71,8 @@ class tHMM:
 
         for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
             MSD_0_row_sum = np.sum(MSD[num][0])
-            assert np.isclose(MSD_0_row_sum, 1.), "The Marginal State Distribution for your root cells, P(z_1 = k), for all states k in numStates, are not adding up to 1!"
+            assert np.isclose(
+                MSD_0_row_sum, 1.), "The Marginal State Distribution for your root cells, P(z_1 = k), for all states k in numStates, are not adding up to 1!"
 
         for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
             lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
@@ -89,7 +90,8 @@ class tHMM:
                         MSD[num][current_cell_idx, state_k] = temp_sum_holder
             MSD_row_sums = np.sum(MSD[num], axis=1)
 
-            assert np.allclose(MSD_row_sums, 1.0), "The Marginal State Distribution for your cells, P(z_k = k), for all states k in numStates, are not adding up to 1!"
+            assert np.allclose(
+                MSD_row_sums, 1.0), "The Marginal State Distribution for your cells, P(z_k = k), for all states k in numStates, are not adding up to 1!"
         return MSD
 
 

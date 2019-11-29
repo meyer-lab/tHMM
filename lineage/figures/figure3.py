@@ -44,8 +44,24 @@ def makeFigure():
     population_pruned = []
     desired_experiment_time = 300
     for i in range(20):
-        population_unpruned.append(LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=desired_experiment_time, prune_condition='fate', prune_boolean=False))
-        population_pruned.append(LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=desired_experiment_time, prune_condition='both', prune_boolean=True))
+        population_unpruned.append(
+            LineageTree(
+                pi,
+                T,
+                E,
+                (2**12) - 1,
+                desired_experiment_time=desired_experiment_time,
+                prune_condition='fate',
+                prune_boolean=False))
+        population_pruned.append(
+            LineageTree(
+                pi,
+                T,
+                E,
+                (2**12) - 1,
+                desired_experiment_time=desired_experiment_time,
+                prune_condition='both',
+                prune_boolean=True))
 
     delta_time = 0.1
     hist_unpruned = track_population_growth_histogram(population_unpruned, delta_time)
