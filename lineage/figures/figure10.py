@@ -84,11 +84,6 @@ def accuracy_increased_cells():
 
         # Collecting the accuracies of the lineages
         acc1 = accuracy(tHMMobj, all_states)[0] * 100
-        while acc1 < 50:
-            # Analyzing the lineages
-            _, _, all_states, tHMMobj, _, _ = Analyze(population, 2)
-            # Collecting the accuracies of the lineages
-            acc1 = accuracy(tHMMobj, all_states)[0] * 100
 
         # Collecting how many cells are in each lineage in each analysis
         num_cells_holder = [len(lineageObj.output_lineage) for lineageObj in population]

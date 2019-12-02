@@ -144,9 +144,9 @@ def AIC_increased_cells3():
     pi = np.array([0.5, 0.25, 0.25])
 
     # T: transition probability matrix
-    T = np.array([[0.65, 0.35, 0.00],
+    T = np.array([[0.55, 0.35, 0.10],
                   [0.20, 0.40, 0.40],
-                  [0.00, 0.10, 0.90]])
+                  [0.30, 0.10, 0.60]])
 
     # E: states are defined as StateDistribution objects
 
