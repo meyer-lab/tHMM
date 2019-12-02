@@ -7,7 +7,7 @@ from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_n
 from .tHMM import tHMM
 
 
-def Analyze(X, numStates):
+def preAnalyze(X, numStates):
     """Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
     Args:
     -----
@@ -42,7 +42,23 @@ def Analyze(X, numStates):
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
     LL = calculate_log_likelihood(tHMMobj, NF)
-    return(deltas, state_ptrs, all_states, tHMMobj, NF, LL)
+    return deltas, state_ptrs, all_states, tHMMobj, NF, LL
+
+
+def Analyze(X, numStates):
+    deltas, state_ptrs, all_states, tHMMobj, NF, LL = preAnalyze(X, numStates)  
+    
+    for _ in range(1,5):
+        tmp_deltas, tmp_state_ptrs, tmp_all_states, tmp_tHMMobj, tmp_NF, tmp_LL = preAnalyze(X, numStates)
+        if tmp_LL > LL:
+            deltas = tmp_deltas
+            state_ptrs = tmp_state_ptrs
+            all_states = tmp_all_states
+            tHMMobj = tmp_tHMMobj
+            NF = tmp_NF
+            LL = tmp_LL
+            
+    return deltas, state_ptrs, all_states, tHMMobj, NF, LL
 
 
 def accuracy(tHMMobj, all_states):
@@ -92,7 +108,7 @@ def get_stationary_distribution(transition_matrix):
     This implies that the rows of the transition matrix sum to one (not the columns).
     This also means that the row index (i) represents the state of the previous step,
     and the column index (j) represents the state of the next step.
-    If the transition matrix is defined as A, then
+    If the transition matrix is defined as A, then the element of the A matrix
 
     A[i,j] = P(child = j | parent = i).
 
@@ -107,7 +123,7 @@ def get_stationary_distribution(transition_matrix):
     can help with the notation.
 
     Notation:
-    .T is the transpose
+    ().T is the transpose of ()
     * is the matrix multiplication operation
     I is the identity matrix of size K
     K() is a vector with K number of (), for example,
