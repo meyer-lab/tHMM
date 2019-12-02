@@ -5,6 +5,7 @@ Purpose: Generates figure 2.
 Figure 2 is the distribution of cells in a state over generations (pruned) and over time.
 """
 import numpy as np
+from matplotlib.ticker import MaxNLocator
 
 from .figureCommon import getSetup
 from ..LineageTree import LineageTree
@@ -54,12 +55,16 @@ def makeFigure():
     ax, f = getSetup((16, 16), (2, 2))
 
     # generations
+    
+    x0_gen = [i+1 for i in list(range(len(hist_gen_pruned[0])))]
+    x1_gen = [i+1 for i in list(range(len(hist_gen_pruned[1])))]
 
     i=0
-    ax[i].set_xlim([-0.01, 12])
+    ax[i].set_xlim([-0.01, 13])
+    ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
     ax[i].set_xlabel(r'Generation')
-    ax[i].bar(list(range(len(hist_gen_pruned[0]))), hist_gen_pruned[0], color='#F9Cb9C', label='Resistant')
-    ax[i].bar(list(range(len(hist_gen_pruned[1]))), hist_gen_pruned[1], bottom=hist_gen_pruned[0], color='#A4C2F4', label='Susceptible')
+    ax[i].bar(x0_gen, hist_gen_pruned[0], color='#F9Cb9C', label='Resistant')
+    ax[i].bar(x1_gen, hist_gen_pruned[1], bottom=hist_gen_pruned[0], color='#A4C2F4', label='Susceptible')
     ax[i].set_ylabel('Number of alive cells')
     ax[i].set_title('Pruned population growth')
     ax[i].grid(linestyle='--')
@@ -68,10 +73,11 @@ def makeFigure():
     y_1_gen_p = [b / (a + b) for a, b in zip(hist_gen_pruned[0], hist_gen_pruned[1])]
 
     i+=1
-    ax[i].set_xlim([-0.01, 12])
+    ax[i].set_xlim([-0.01, 13])
+    ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
     ax[i].set_xlabel(r'Generation')
-    ax[i].plot(list(range(len(hist_gen_pruned[0]))), y_0_gen_p, color='#F9Cb9C', label='Resistant')
-    ax[i].plot(list(range(len(hist_gen_pruned[1]))), y_1_gen_p, color='#A4C2F4', label='Susceptible')
+    ax[i].plot(x0_gen, y_0_gen_p, color='#F9Cb9C', label='Resistant')
+    ax[i].plot(x1_gen, y_1_gen_p, color='#A4C2F4', label='Susceptible')
     ax[i].set_ylabel('Proportion of alive cells')
     ax[i].set_ylim([-0.01, 1.01])
     ax[i].set_title('Pruned population distribution')
