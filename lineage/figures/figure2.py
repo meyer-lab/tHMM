@@ -55,11 +55,11 @@ def makeFigure():
     ax, f = getSetup((16, 16), (2, 2))
 
     # generations
-    
-    x0_gen = [i+1 for i in list(range(len(hist_gen_pruned[0])))]
-    x1_gen = [i+1 for i in list(range(len(hist_gen_pruned[1])))]
 
-    i=0
+    x0_gen = [i + 1 for i in list(range(len(hist_gen_pruned[0])))]
+    x1_gen = [i + 1 for i in list(range(len(hist_gen_pruned[1])))]
+
+    i = 0
     ax[i].set_xlim([-0.01, 13])
     ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
     ax[i].set_xlabel(r'Generation')
@@ -72,7 +72,7 @@ def makeFigure():
     y_0_gen_p = [a / (a + b) for a, b in zip(hist_gen_pruned[0], hist_gen_pruned[1])]
     y_1_gen_p = [b / (a + b) for a, b in zip(hist_gen_pruned[0], hist_gen_pruned[1])]
 
-    i+=1
+    i += 1
     ax[i].set_xlim([-0.01, 13])
     ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
     ax[i].set_xlabel(r'Generation')
@@ -83,10 +83,10 @@ def makeFigure():
     ax[i].set_title('Pruned population distribution')
     ax[i].grid(linestyle='--')
     ax[i].legend()
-    
+
     # time
-    
-    i+=1
+
+    i += 1
     ax[i].set_xlabel(r'Time [$\mathrm{hours}$]')
     ax[i].bar([delta_time * i for i in range(len(hist_tim_pruned[0]))], hist_tim_pruned[0], color='#F9Cb9C', label='Resistant')
     ax[i].bar([delta_time * i for i in range(len(hist_tim_pruned[1]))], hist_tim_pruned[1], bottom=hist_tim_pruned[0], color='#A4C2F4', label='Susceptible')
@@ -98,7 +98,7 @@ def makeFigure():
     y_0_p = [a / (a + b) if a + b > 0 else 0 for a, b in zip(hist_tim_pruned[0], hist_tim_pruned[1])]
     y_1_p = [b / (a + b) if a + b > 0 else 0 for a, b in zip(hist_tim_pruned[0], hist_tim_pruned[1])]
 
-    i+=1
+    i += 1
     ax[i].set_xlabel(r'Time [$\mathrm{hours}$]')
     ax[i].plot([delta_time * i for i in range(len(hist_tim_pruned[0]))], y_0_p, color='#F9Cb9C', label='Resistant')
     ax[i].plot([delta_time * i for i in range(len(hist_tim_pruned[1]))], y_1_p, color='#A4C2F4', label='Susceptible')
