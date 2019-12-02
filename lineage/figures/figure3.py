@@ -17,4 +17,3 @@ def makeFigure():
     ax, f = getSetup((21, 6), (1, 3))
 
     return f
-  

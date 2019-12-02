@@ -45,8 +45,15 @@ def makeFigure():
     desired_num_cells = (2**12) - 1
     desired_experiment_time = 300
     for _ in range(20):
-        population_pruned.append(LineageTree(pi, T, E, desired_num_cells, desired_experiment_time=desired_experiment_time, prune_condition='both', prune_boolean=True))
-
+        population_pruned.append(
+            LineageTree(
+                pi,
+                T,
+                E,
+                desired_num_cells,
+                desired_experiment_time=desired_experiment_time,
+                prune_condition='both',
+                prune_boolean=True))
 
     hist_gen_pruned = track_population_generation_histogram(population_pruned)
     delta_time = 0.1
@@ -90,7 +97,8 @@ def makeFigure():
     i += 1
     ax[i].set_xlabel(r'Time [$\mathrm{hours}$]')
     ax[i].bar([delta_time * i for i in range(len(hist_tim_pruned[0]))], hist_tim_pruned[0], color='#F9Cb9C', label='Resistant')
-    ax[i].bar([delta_time * i for i in range(len(hist_tim_pruned[1]))], hist_tim_pruned[1], bottom=hist_tim_pruned[0], color='#A4C2F4', label='Susceptible')
+    ax[i].bar([delta_time * i for i in range(len(hist_tim_pruned[1]))], hist_tim_pruned[1],
+              bottom=hist_tim_pruned[0], color='#A4C2F4', label='Susceptible')
     ax[i].set_ylabel('Number of alive cells')
     ax[i].set_title('Pruned population growth')
     ax[i].set_xlim([-0.01, 300])
