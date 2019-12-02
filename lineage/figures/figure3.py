@@ -1,7 +1,6 @@
 """
 File: figure3.py
 Purpose: Generates figure 3.
-
 """
 import numpy as np
 import matplotlib.pyplot as plt
