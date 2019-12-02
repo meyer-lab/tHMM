@@ -47,6 +47,7 @@ def makeFigure():
     for _ in range(20):
         population_pruned.append(LineageTree(pi, T, E, desired_num_cells, desired_experiment_time=desired_experiment_time, prune_condition='both', prune_boolean=True))
 
+
     hist_gen_pruned = track_population_generation_histogram(population_pruned)
     delta_time = 0.1
     hist_tim_pruned = track_population_growth_histogram(population_pruned, delta_time)

@@ -46,6 +46,8 @@ def Analyze(X, numStates):
 
 
 def accuracy(tHMMobj, all_states):
+    """ This function calculates the accuracy
+    given estimated and true states. """
     counter_holder = 0
     length_holder = 0
     for num, lineageObj in enumerate(tHMMobj.X):
