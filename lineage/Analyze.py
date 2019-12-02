@@ -46,9 +46,9 @@ def preAnalyze(X, numStates):
 
 
 def Analyze(X, numStates):
-    deltas, state_ptrs, all_states, tHMMobj, NF, LL = preAnalyze(X, numStates)  
-    
-    for _ in range(1,5):
+    deltas, state_ptrs, all_states, tHMMobj, NF, LL = preAnalyze(X, numStates)
+
+    for _ in range(1, 5):
         tmp_deltas, tmp_state_ptrs, tmp_all_states, tmp_tHMMobj, tmp_NF, tmp_LL = preAnalyze(X, numStates)
         if tmp_LL > LL:
             deltas = tmp_deltas
@@ -57,7 +57,7 @@ def Analyze(X, numStates):
             tHMMobj = tmp_tHMMobj
             NF = tmp_NF
             LL = tmp_LL
-            
+
     return deltas, state_ptrs, all_states, tHMMobj, NF, LL
 
 
