@@ -28,11 +28,10 @@ def preAnalyze(X, numStates):
         try:
             tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
             fit(tHMMobj, max_iter=300)
-            print("It took {} tries to fit.".format(num_tries))
             break
         except AssertionError:
-            print("Caught AssertionError in fitting. Trying again...")
             if num_tries == 4:
+                print("Caught AssertionError in fitting after multiple ({}) runs. Fitting is breaking after trying {} times. Consider inspecting the length of your lineages.".format(num_tries))
                 raise
 
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
@@ -195,14 +194,9 @@ def getAIC(tHMMobj, LL):
     number_of_parameters = len(tHMMobj.estimate.E[0].params)
     AIC_degrees_of_freedom = numStates**2 + numStates * number_of_parameters - 1
 
-    AIC_ls = []
-    LL_ls = []
-    for idx, _ in enumerate(tHMMobj.X):
-        AIC_value = -2 * LL[idx] + 2 * AIC_degrees_of_freedom
-        AIC_ls.append(AIC_value)
-        LL_ls.append(-1 * LL[idx])  # append negative log likelihood
+    AIC_value = -2 * LL + 2 * AIC_degrees_of_freedom
 
-    return(AIC_ls, LL_ls, AIC_degrees_of_freedom)  # no longer returning relative to zero
+    return(AIC_value, AIC_degrees_of_freedom)  # no longer returning relative to zero
 
 
 # -------------------- when we have G1 and G2

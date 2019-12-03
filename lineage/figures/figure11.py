@@ -78,8 +78,8 @@ def AIC_increased_cells1():
             _, _, _, tHMMobj, _, LL = Analyze(X1, num_states)
 
             # AIC
-            AIC_ls, _, _ = getAIC(tHMMobj, LL)
-            AIC_unpruned[idx, num_states - 1] = (np.mean(AIC_ls))
+            AIC, _ = getAIC(tHMMobj, LL)
+            AIC_unpruned[idx, num_states - 1] = AIC
 
     return desred_num_states, AIC_unpruned
 
@@ -129,8 +129,8 @@ def AIC_increased_cells2():
             _, _, _, tHMMobj, _, LL = Analyze(X1, num_states)
 
             # AIC
-            AIC_ls, _, _ = getAIC(tHMMobj, LL)
-            AIC_unpruned[idx, num_states - 1] = (np.mean(AIC_ls))
+            AIC, _ = getAIC(tHMMobj, LL)
+            AIC_unpruned[idx, num_states - 1] = AIC
 
     return desred_num_states, AIC_unpruned
 
@@ -191,8 +191,8 @@ def AIC_increased_cells3():
             _, _, _, tHMMobj, _, LL = Analyze(X1, num_states)
 
             # AIC
-            AIC_ls, _, _ = getAIC(tHMMobj, LL)
-            AIC_unpruned[idx, num_states - 1] = (np.mean(AIC_ls))
+            AIC, _ = getAIC(tHMMobj, LL)
+            AIC_unpruned[idx, num_states - 1] = AIC
 
     return desred_num_states, AIC_unpruned
 
