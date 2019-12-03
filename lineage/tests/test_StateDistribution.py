@@ -7,7 +7,9 @@ from ..LineageTree import LineageTree
 
 
 class TestModel(unittest.TestCase):
-    """Here are the unit tests."""
+    """
+    Unit test class for state distributions.
+    """
 
     def setUp(self):
         # ingredients for LineageTree!

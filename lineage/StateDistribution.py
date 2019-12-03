@@ -38,7 +38,19 @@ class StateDistribution:
 
         assert not math.isnan(gamma_ll), "{} {} {} {} {}".format(tuple_of_obs[1], gamma_ll, self.gamma_a, self.gamma_loc, self.gamma_scale)
         if bern_ll == 0 or np.exp(gamma_ll) == 0:
-            print(tuple_of_obs[1], ',', gamma_ll, ',', self.gamma_a, ',', self.gamma_loc, ',', self.gamma_scale, tuple_of_obs[0], bern_ll, self.bern_p)
+            print(
+                tuple_of_obs[1],
+                ',',
+                gamma_ll,
+                ',',
+                self.gamma_a,
+                ',',
+                self.gamma_loc,
+                ',',
+                self.gamma_scale,
+                tuple_of_obs[0],
+                bern_ll,
+                self.bern_p)
 
         return bern_ll * gamma_ll
 

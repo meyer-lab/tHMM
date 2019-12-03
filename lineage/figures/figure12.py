@@ -130,11 +130,11 @@ def distributionPlot():
     scale1 = 3.0
     total = []
     for i in range(10):
-        a = list(sp.gamma.rvs(a=a0[9-i], loc=gamma_loc,
+        a = list(sp.gamma.rvs(a=a0[9 - i], loc=gamma_loc,
                               scale=scale0,
                               size=500))
         total.append(a)
-        b = list(sp.gamma.rvs(a=a1[9-i], loc=gamma_loc,
+        b = list(sp.gamma.rvs(a=a1[9 - i], loc=gamma_loc,
                               scale=scale1,
                               size=500))
         total.append(b)
@@ -163,7 +163,7 @@ def figure_maker(ax, accuracyyy, KL_gamma, dists):
     ax[i].set_xlabel('KL divergence')
     ax[i].set_ylim(0, 110)
     ax[i].set_xlim(0, 1.07 * max(KL_gamma))
-    ax[i].scatter(KL_gamma, accuracyyy, \
+    ax[i].scatter(KL_gamma, accuracyyy,
                   c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].set_ylabel(r'Accuracy [\%]')
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
