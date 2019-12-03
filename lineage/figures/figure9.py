@@ -292,4 +292,3 @@ def figure_maker(ax, x, accuracies, tr, pi, x2, bern_unpruned, bern_p0, bern_p1,
     ax[i].set_xscale('log', basex=2)
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
     ax[i].legend()
-    
