@@ -10,6 +10,7 @@ class TestModel(unittest.TestCase):
     """
     Unit test class for the cell class.
     """
+
     def test_cellVar(self):
         """ Make sure cell state assignment is correct. """
         left_state = 0

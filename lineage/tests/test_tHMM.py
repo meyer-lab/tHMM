@@ -12,6 +12,7 @@ class TestModel(unittest.TestCase):
     """
     Unit test class for the tHMM model.
     """
+
     def setUp(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
 

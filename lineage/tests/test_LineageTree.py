@@ -10,6 +10,7 @@ class TestModel(unittest.TestCase):
     """
     Unit test class for lineages.
     """
+
     def setUp(self):
         """
         Setting up lineages for testing.
