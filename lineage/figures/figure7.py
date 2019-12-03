@@ -26,7 +26,7 @@ def makeFigure():
     return f
 
 
-def accuracy_increased_cells():
+def accuracy_increased_cells7():
     """
     Calculates accuracy and transition rate estimation over an increasing number of cells in a lineage for an pruned two-state model.
     """
