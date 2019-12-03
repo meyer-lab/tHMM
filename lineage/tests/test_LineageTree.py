@@ -7,8 +7,13 @@ from ..StateDistribution import StateDistribution, get_experiment_time
 
 
 class TestModel(unittest.TestCase):
-
+    """
+    Unit test class for lineages.
+    """
     def setUp(self):
+        """
+        Setting up lineages for testing.
+        """
         # pi: the initial probability vector
         self.pi = np.array([0.75, 0.25])
 
