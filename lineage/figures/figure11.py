@@ -39,11 +39,11 @@ def AIC_increased_cells1():
     """
 
     # pi: the initial probability vector
-    pi = np.array([1.0, 0.0], dtype="float")
+    pi = np.array([0.5, 0.5], dtype="float")
 
     # T: transition probability matrix
-    T = np.array([[1.0, 0.0],
-                  [0.0, 1.0]], dtype="float")
+    T = np.array([[0.5, 0.5],
+                  [0.5, 0.5]], dtype="float")
 
     # State 0 parameters "Resistant"
     state0 = 0
@@ -52,11 +52,11 @@ def AIC_increased_cells1():
     gamma_loc = 0
     gamma_scale0 = 5
 
-    # State 1 parameters "Susceptible"
+    # State 0 parameters "Resistant"
     state1 = 1
-    bern_p1 = 0.88
-    gamma_a1 = 10
-    gamma_scale1 = 1
+    bern_p1 = 0.99
+    gamma_a1 = 20
+    gamma_scale1 = 5
 
     state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
@@ -90,11 +90,11 @@ def AIC_increased_cells2():
     """
 
     # pi: the initial probability vector
-    pi = np.array([0.6, 0.4], dtype="float")
+    pi = np.array([0.5, 0.5], dtype="float")
 
     # T: transition probability matrix
-    T = np.array([[0.85, 0.15],
-                  [0.15, 0.85]], dtype="float")
+    T = np.array([[0.5, 0.5],
+                  [0.5, 0.5]], dtype="float")
 
     # State 0 parameters "Resistant"
     state0 = 0
@@ -141,12 +141,12 @@ def AIC_increased_cells3():
     """
 
     # pi: the initial probability vector
-    pi = np.array([0.5, 0.25, 0.25])
+    pi = np.array([1./3, 1./3, 1./3])
 
     # T: transition probability matrix
-    T = np.array([[0.55, 0.35, 0.10],
-                  [0.20, 0.40, 0.40],
-                  [0.30, 0.10, 0.60]])
+    T = np.array([[1./3, 1./3, 1./3],
+                  [1./3, 1./3, 1./3],
+                  [1./3, 1./3, 1./3]])
 
     # E: states are defined as StateDistribution objects
 
