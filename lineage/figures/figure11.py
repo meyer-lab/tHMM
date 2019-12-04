@@ -203,7 +203,7 @@ def figure_maker(ax, i, desired_num_states, AIC_unpruned):
     Makes figure 11.
     """
     i += 0
-    ax[i].set_xlim((0, int(np.ceil(1.1 * max(desred_num_states)))))
+    ax[i].set_xlim((0, int(np.ceil(1.1 * max(desired_num_states)))))
     ax[i].set_xlabel('Number of States')
     ax[i].plot(desired_num_states, AIC_unpruned.T, 'k', alpha=0.5)
     ax[i].set_ylabel(r'AIC')
