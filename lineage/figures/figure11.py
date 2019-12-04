@@ -5,6 +5,7 @@ Purpose: Generates figure 11.
 AIC.
 """
 import numpy as np
+from matplotlib.ticker import MaxNLocator
 
 from .figureCommon import getSetup
 from ..Analyze import Analyze, getAIC
@@ -197,15 +198,14 @@ def AIC_increased_cells3():
     return desred_num_states, AIC_unpruned
 
 
-def figure_maker(ax, i, desred_num_states, AIC_unpruned):
+def figure_maker(ax, i, desired_num_states, AIC_unpruned):
     """
     Makes figure 11.
     """
     i += 0
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(desred_num_states)))))
     ax[i].set_xlabel('Number of States')
-    ax[i].plot(desred_num_states, AIC_unpruned.T, 'k', alpha=0.5)
+    ax[i].plot(desired_num_states, AIC_unpruned.T, 'k', alpha=0.5)
     ax[i].set_ylabel(r'AIC')
-    ax[i].get_yticks()
-    ax[i].tick_params(axis='both', which='major', labelsize=10, grid_alpha=0.25)
+    ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
     ax[i].set_title('State Assignment AIC')
