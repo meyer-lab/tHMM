@@ -206,4 +206,4 @@ def calculate_log_likelihood(tHMMobj, NF):
         ll_per_num = sum(np.log(NF[num]))
         LL.append(ll_per_num)
 
-    return LL
+    return sum(LL)
