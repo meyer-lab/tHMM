@@ -142,12 +142,12 @@ def AIC_increased_cells3():
     """
 
     # pi: the initial probability vector
-    pi = np.array([1./3, 1./3, 1./3])
+    pi = np.array([1. / 3, 1. / 3, 1. / 3])
 
     # T: transition probability matrix
-    T = np.array([[1./3, 1./3, 1./3],
-                  [1./3, 1./3, 1./3],
-                  [1./3, 1./3, 1./3]])
+    T = np.array([[1. / 3, 1. / 3, 1. / 3],
+                  [1. / 3, 1. / 3, 1. / 3],
+                  [1. / 3, 1. / 3, 1. / 3]])
 
     # E: states are defined as StateDistribution objects
 
