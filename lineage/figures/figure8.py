@@ -6,7 +6,7 @@ Figure 8 is the parameter estimation for a single pruned lineage with heterogene
 """
 import numpy as np
 
-from .figureCommon import getSetup
+from .figureCommon import getSetup, moving_average
 from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
@@ -36,7 +36,7 @@ def accuracy_increased_cells7():
     piiii = np.array([0.6, 0.4], dtype="float")
 
     # T: transition probability matrix
-    T = np.array([[0.85, 0.15],
+    T = np.array([[0.75, 0.25],
                   [0.15, 0.85]], dtype="float")
 
     # State 0 parameters "Resistant"
@@ -60,6 +60,9 @@ def accuracy_increased_cells7():
     accuracies = []
     tr = []
     pi = []
+    bern_pruned = []
+    gamma_a_pruned = []
+    gamma_scale_pruned = []
 
     times = np.linspace(100, 1000, 25)
 
@@ -87,7 +90,7 @@ def accuracy_increased_cells7():
             acc1 = accuracy(tHMMobj, all_states)[0] * 100
         accuracies.append(acc1)
 
-    # Transition and Pi estimates
+        # Transition and Pi estimates
         transition_mat = tHMMobj.estimate.T  # unpruned
 
         temp1 = T - transition_mat
@@ -96,71 +99,7 @@ def accuracy_increased_cells7():
         pi_mat = tHMMobj.estimate.pi
         t1 = piiii - pi_mat
         pi.append(np.linalg.norm(t1))
-
-    return x, accuracies, tr, pi
-
-
-def moving_average(a, n=50):
-    """
-    Calculates the moving average.
-    """
-    ret = np.cumsum(a, dtype=float)
-    ret[n:] = ret[n:] - ret[:-n]
-    return ret[n - 1:] / n
-
-
-def accuracy_increased_cells8():
-    """
-    Calculates parameter estimation by increasing the number of cells in a lineage for a two-state model.
-    """
-
-    # pi: the initial probability vector
-    piiii = np.array([0.6, 0.4], dtype="float")
-
-    # T: transition probability matrix
-    T = np.array([[0.85, 0.15],
-                  [0.15, 0.85]], dtype="float")
-
-    # State 0 parameters "Resistant"
-    state0 = 0
-    bern_p0 = 0.99
-    gamma_a0 = 20
-    gamma_loc = 0
-    gamma_scale0 = 5
-
-    # State 1 parameters "Susceptible"
-    state1 = 1
-    bern_p1 = 0.88
-    gamma_a1 = 10
-    gamma_scale1 = 1
-
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
-    E = [state_obj0, state_obj1]
-
-    x = []
-    bern_pruned = []
-    gamma_a_pruned = []
-    gamma_scale_pruned = []
-
-    times = np.linspace(100, 1000, 25)
-
-    for experiment_time in times:
-        lineage = LineageTree(piiii, T, E, (2**12) - 1, experiment_time, prune_condition='both', prune_boolean=True)
-        while len(lineage.output_lineage) < 16:
-            del lineage
-            lineage = LineageTree(piiii, T, E, (2**12) - 1, experiment_time, prune_condition='both', prune_boolean=True)
-
-        # Setting then into a list or a population of lineages and collecting the length of each lineage
-        X1 = [lineage]
-        x.append(len(lineage.output_lineage))
-
-        # Analyzing the lineages
-        _, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
-
-        # Collecting the accuracies of the lineages
-        acc1 = accuracy(tHMMobj, all_states)[0] * 100
-
+        
         # Collecting the parameter estimations
         bern_p_total = ()
         gamma_a_total = ()
@@ -175,7 +114,11 @@ def accuracy_increased_cells8():
         gamma_a_pruned.append(gamma_a_total)
         gamma_scale_pruned.append(gamma_scale_total)
 
-    return x, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1
+    return x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1
+
+
+
+
 
 
 def figure_maker(ax, x, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1, x7, accuracies, tr):
@@ -189,7 +132,7 @@ def figure_maker(ax, x, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0,
     ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
     ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
     ax[i].set_ylabel('Bernoulli $p$')
-    ax[i].set_ylim([0.85, 1.1])
+    ax[i].set_ylim([0.85, 1.01])
     ax[i].axhline(y=bern_p0, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
     ax[i].axhline(y=bern_p1, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
     ax[i].set_title(r'Bernoulli $p$')

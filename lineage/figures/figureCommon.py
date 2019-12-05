@@ -24,6 +24,15 @@ def getSetup(figsize, gridd):
     return (ax, f)
 
 
+def moving_average(a, n=50):
+    """
+    Calculates the moving average.
+    """
+    ret = np.cumsum(a, dtype=float)
+    ret[n:] = ret[n:] - ret[:-n]
+    return ret[n - 1:] / n
+
+
 def subplotLabel(ax, letter, hstretch=1):
     """Sublot labels"""
     ax.text(-0.2 / hstretch, 1.2, letter, transform=ax.transAxes,
