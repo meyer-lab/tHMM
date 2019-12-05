@@ -243,6 +243,7 @@ def figure_maker(ax, x, accuracies, tr, pi, x2, bern_unpruned, bern_p0, bern_p1,
     ax[i].grid(linestyle='--')
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
+    i += 1
     res = [[i for i, j in bern_unpruned], [j for i, j in bern_unpruned]]
     ax[i].set_xlim((16, int(np.ceil(4 * max(x2)))))
     ax[i].set_xlabel('Number of Cells')
