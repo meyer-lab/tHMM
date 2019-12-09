@@ -81,7 +81,7 @@ def accuracy_increased_cells():
     accuracies = []
     tr = []
     pi = []
-    
+
     for population in list_of_lineages:
         # Analyzing the lineages
         deltas, _, all_states, tHMMobj, _, _ = Analyze(population, 2)
