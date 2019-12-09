@@ -19,15 +19,15 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((21, 12), (2, 3))
-    x7, accuracies, tr, _ = accuracy_increased_cells7()
-    x, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1 = accuracy_increased_cells8()
-    figure_maker(ax, x, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1, x7, accuracies, tr)
+#     f.subplot2grid(shape, loc, rowspan=1, colspan=1)
+    x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1 = accuracy_increased_cells()
+    figure_maker(ax, x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1)
     f.tight_layout()
 
     return f
 
 
-def accuracy_increased_cells7():
+def accuracy_increased_cells():
     """
     Calculates accuracy and transition rate estimation over an increasing number of cells in a lineage for an pruned two-state model.
     """
@@ -117,11 +117,7 @@ def accuracy_increased_cells7():
     return x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1
 
 
-
-
-
-
-def figure_maker(ax, x, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1, x7, accuracies, tr):
+def figure_maker(ax, x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1):
     """
     Makes figure 8.
     """
@@ -171,17 +167,17 @@ def figure_maker(ax, x, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0,
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
     ax[i].legend()
 
-    x_vs_acc = np.column_stack((x7, accuracies))
+    x_vs_acc = np.column_stack((x, accuracies))
     sorted_x_vs_acc = x_vs_acc[np.argsort(x_vs_acc[:, 0])]
 
-    x_vs_tr = np.column_stack((x7, tr))
+    x_vs_tr = np.column_stack((x, tr))
     sorted_x_vs_tr = x_vs_tr[np.argsort(x_vs_tr[:, 0])]
 
     i += 1
-    ax[i].set_xlim((16, int(np.ceil(4 * max(x7)))))
+    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
     ax[i].set_ylim(0, 110)
-    ax[i].scatter(x7, accuracies, c='k', marker="o", label='Accuracy', edgecolors='k', alpha=0.25)
+    ax[i].scatter(x, accuracies, c='k', marker="o", label='Accuracy', edgecolors='k', alpha=0.25)
     ax[i].plot(sorted_x_vs_acc[:, 0][49:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
     ax[i].set_xscale('log', basex=2)
     ax[i].set_ylabel(r'Accuracy [\%]')
@@ -191,9 +187,9 @@ def figure_maker(ax, x, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0,
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
-    ax[i].set_xlim((16, int(np.ceil(4 * max(x7)))))
+    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
-    ax[i].scatter(x7, tr, c='k', marker="o", edgecolors='k', alpha=0.25)
+    ax[i].scatter(x, tr, c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].plot(sorted_x_vs_tr[:, 0][49:], moving_average(sorted_x_vs_tr[:, 1]), c='k', label='Moving Average')
     ax[i].set_xscale('log', basex=2)
     ax[i].set_ylabel(r'$||T-T_{est}||_{F}$')
