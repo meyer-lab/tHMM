@@ -1,4 +1,5 @@
 import seaborn as sns
+import numpy as np
 from matplotlib import gridspec, pyplot as plt
 
 

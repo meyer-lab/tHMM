@@ -7,7 +7,7 @@ Figure 9 is the accuracy and transition matrix parameter estimation for a group 
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .figureCommon import getSetup
+from .figureCommon import getSetup, moving_average
 from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
@@ -121,15 +121,6 @@ def accuracy_increased_cells():
         gamma_scale_unpruned.append(gamma_scale_total)
 
     return x, accuracies, tr, pi, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1
-
-
-def moving_average(a, n=15):
-    """
-    Calculates the moving average.
-    """
-    ret = np.cumsum(a, dtype=float)
-    ret[n:] = ret[n:] - ret[:-n]
-    return ret[n - 1:] / n
 
 
 def figure_maker(ax, x, accuracies, tr, pi, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1):
