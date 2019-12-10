@@ -14,7 +14,7 @@ from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
 
-def makeFigure():
+def makeFigure9():
     """
     Makes figure 9 and 10.
     """

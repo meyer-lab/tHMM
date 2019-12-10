@@ -14,7 +14,7 @@ from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
 
-def getSetup(figsize):
+def getSetup8(figsize):
     """Setup figures."""
 
     plt.rc('font', **{'family': 'sans-serif', 'size': 25})
@@ -38,13 +38,13 @@ def getSetup(figsize):
     return (ax, f)
 
 
-def makeFigure():
+def makeFigure8():
     """
     Makes figures 7 & 8.
     """
 
     # Get list of axis objects
-    ax, f = getSetup((21, 12))
+    ax, f = getSetup8((21, 12))
 #     f.subplot2grid(shape, loc, rowspan=1, colspan=1)
     x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1 = accuracy_increased_cells()
     figure_maker(ax, x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1)
