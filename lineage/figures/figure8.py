@@ -6,12 +6,35 @@ for a single pruned lineage with heterogeneity (two true states).
 Figure 8 is the parameter estimation for a single pruned lineage with heterogeneity (two true states).
 """
 import numpy as np
+from matplotlib import gridspec, pyplot as plt
 
-from .figureCommon import getSetup, moving_average
+from .figureCommon import moving_average
 from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
+def getSetup(figsize):
+    """Setup figures."""
+
+    plt.rc('font', **{'family': 'sans-serif', 'size': 25})
+    # for Palatino and other serif fonts use:
+    # rc('font',**{'family':'serif','serif':['Palatino']})
+    plt.rc('text', usetex=True)
+    plt.rc('xtick', **{'labelsize': 'medium'})
+    plt.rc('ytick', **{'labelsize': 'medium'})
+
+    # Setup plotting space
+    f = plt.figure(figsize=figsize)
+
+    # Make grid
+    gs1 = gridspec.GridSpec(2, 6, figure=f)
+
+    # Get list of axis objects
+    ax = [f.add_subplot(gs1[0, 0:2]), f.add_subplot(gs1[0, 2:4]),
+         f.add_subplot(gs1[0, 4:6]), f.add_subplot(gs1[-1, 1:3]),
+         f.add_subplot(gs1[-1, 3:5])]
+
+    return (ax, f)
 
 def makeFigure():
     """
@@ -19,7 +42,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((21, 12), (2, 3))
+    ax, f = getSetup((21, 12))
 #     f.subplot2grid(shape, loc, rowspan=1, colspan=1)
     x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1 = accuracy_increased_cells()
     figure_maker(ax, x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1)
