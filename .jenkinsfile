@@ -18,7 +18,7 @@ pipeline {
     }
     stage('Test/Build/Lint') {
       steps {
-        sh 'make all -j 4'
+        sh 'make all -j 12'
         archiveArtifacts artifacts: 'output/manuscript.pdf, output/*.svg', onlyIfSuccessful: true
         cobertura coberturaReportFile: 'coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
         recordIssues qualityGates: [[threshold: 90, type: 'TOTAL', unstable: true]], tools: [pyLint(pattern: 'pylint.log')]
