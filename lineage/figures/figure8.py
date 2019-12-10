@@ -1,7 +1,7 @@
 """
 File: figure8.py
 Purpose: Generates figure 7 and 8.
-Figure 7 is the accuracy and transition matrix parameter estimation 
+Figure 7 is the accuracy and transition matrix parameter estimation
 for a single pruned lineage with heterogeneity (two true states).
 Figure 8 is the parameter estimation for a single pruned lineage with heterogeneity (two true states).
 """
@@ -12,6 +12,7 @@ from .figureCommon import moving_average
 from ..Analyze import accuracy, Analyze
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
+
 
 def getSetup(figsize):
     """Setup figures."""
@@ -31,10 +32,11 @@ def getSetup(figsize):
 
     # Get list of axis objects
     ax = [f.add_subplot(gs1[0, 0:2]), f.add_subplot(gs1[0, 2:4]),
-         f.add_subplot(gs1[0, 4:6]), f.add_subplot(gs1[-1, 1:3]),
-         f.add_subplot(gs1[-1, 3:5])]
+          f.add_subplot(gs1[0, 4:6]), f.add_subplot(gs1[-1, 1:3]),
+          f.add_subplot(gs1[-1, 3:5])]
 
     return (ax, f)
+
 
 def makeFigure():
     """
