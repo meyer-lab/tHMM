@@ -99,7 +99,7 @@ def accuracy_increased_cells():
         pi_mat = tHMMobj.estimate.pi
         t1 = piiii - pi_mat
         pi.append(np.linalg.norm(t1))
-        
+
         # Collecting the parameter estimations
         bern_p_total = ()
         gamma_a_total = ()
