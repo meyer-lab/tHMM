@@ -1,8 +1,9 @@
 """
 File: figure9.py
-Purpose: Generates figure 9.
+Purpose: Generates figure 9 and 10.
 
 Figure 9 is the accuracy and transition matrix parameter estimation for a group of pruned lineages with heterogeneity (two true states).
+Figure 10 is the parameter estimation for a group of pruned lineages with heterogeneity (two true states).
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,7 +16,7 @@ from ..StateDistribution import StateDistribution
 
 def makeFigure():
     """
-    Makes figure 9.
+    Makes figure 9 and 10.
     """
 
     # Get list of axis objects
@@ -125,7 +126,7 @@ def accuracy_increased_cells():
 
 def figure_maker(ax, x, accuracies, tr, pi, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1):
     """
-    Makes figure 8.
+    Makes figure 9 and 10.
     """
     x_vs_acc = np.column_stack((x, accuracies))
     sorted_x_vs_acc = x_vs_acc[np.argsort(x_vs_acc[:, 0])]
