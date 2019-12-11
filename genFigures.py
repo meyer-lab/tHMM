@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
+from lineage.figures.figure12 import makeFigure5
+from lineage.figures.figure11 import makeFigure4
+from lineage.figures.figure9 import makeFigure3
+from lineage.figures.figure8 import makeFigure2
+from lineage.figures.figure2 import makeFigure1
 import multiprocessing
 import sys
 import matplotlib
 matplotlib.use('AGG')
 
-from lineage.figures.figure2 import makeFigure1
-from lineage.figures.figure8 import makeFigure2
-from lineage.figures.figure9 import makeFigure3
-from lineage.figures.figure11 import makeFigure4
-from lineage.figures.figure12 import makeFigure5
 
 fdir = './output/'
 pool = multiprocessing.Pool(multiprocessing.cpu_count())
