@@ -19,7 +19,7 @@ from .figureCommon import getSetup
 sns.set(style="whitegrid", palette="pastel", color_codes=True)
 
 
-def makeFigure12():
+def makeFigure5():
     """
     Makes figure 12.
     """

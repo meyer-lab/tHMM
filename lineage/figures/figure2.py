@@ -12,7 +12,7 @@ from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution, track_population_generation_histogram, track_population_growth_histogram
 
 
-def makeFigure2():
+def makeFigure1():
     """
     Makes figure 2.
     """

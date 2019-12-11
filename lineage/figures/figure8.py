@@ -38,7 +38,7 @@ def getSetup8(figsize):
     return (ax, f)
 
 
-def makeFigure8():
+def makeFigure2():
     """
     Makes figures 7 & 8.
     """

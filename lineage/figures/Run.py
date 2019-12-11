@@ -1,26 +1,42 @@
-from multiprocessing import Process
+from multiprocessing import Pool
+import sys
+import matplotlib
+matplotlib.use('AGG')
 
-from .figure2 import makeFigure2
-from .figure8 import makeFigure8
-from .figure9 import makeFigure9
-from .figure11 import makeFigure11
-from .figure12 import makeFigure12
+from .figure2 import makeFigure1
+from .figure8 import makeFigure2
+from .figure9 import makeFigure3
+from .figure11 import makeFigure4
+from .figure12 import makeFigure5
 
-def RunAll():
-    p1 = Process(target=makeFigure2)
-    p2 = Process(target=makeFigure8)
-    p3 = Process(target=makeFigure9)
-    p4 = Process(target=makeFigure11)
-    p5 = Process(target=makeFigure12)
+def Run():
+    fdir = './output/'
+    pool = multiprocessing.Pool( args.numProcessors )
 
-    p1.start()
-    p2.start()
-    p3.start()
-    p4.start()
-    p5.start()
+    for i in range(1,5):
+        result = pool.apply_async(eval('makeFigure'+ str(i)))
+        result.savefig(fdir + 'figure' + str(i) + '.svg', dpi=result.dpi, bbox_inches='tight', pad_inches=0)
 
-    p1.join()
-    p2.join()
-    p3.join()
-    p4.join()
-    p5.join()
+        print('figure' + str(i) + ' is done.')
+
+# def Run():
+    
+#     pool = multiprocessing.Pool( args.numProcessors )
+    
+#     p1 = Process(target=makeFigure2)
+#     p2 = Process(target=makeFigure8)
+#     p3 = Process(target=makeFigure9)
+#     p4 = Process(target=makeFigure11)
+#     p5 = Process(target=makeFigure12)
+
+#     P = [p1, p2, p3, p4, p5]
+#     p1.start()
+#     print("starting p1")
+#     p2.start()
+#     print("starting p2")
+#     p3.start()
+#     print("starting p3")
+#     p4.start()
+#     print("starting p4")
+#     p5.start()
+#     print("starting p5")
