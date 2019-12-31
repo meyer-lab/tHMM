@@ -1,4 +1,5 @@
 import seaborn as sns
+import numpy as np
 from matplotlib import gridspec, pyplot as plt
 
 
@@ -22,6 +23,15 @@ def getSetup(figsize, gridd):
     ax = [f.add_subplot(gs1[x]) for x in range(gridd[0] * gridd[1])]
 
     return (ax, f)
+
+
+def moving_average(a, n=50):
+    """
+    Calculates the moving average.
+    """
+    ret = np.cumsum(a, dtype=float)
+    ret[n:] = ret[n:] - ret[:-n]
+    return ret[n - 1:] / n
 
 
 def subplotLabel(ax, letter, hstretch=1):
