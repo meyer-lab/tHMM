@@ -59,8 +59,7 @@ def KLdivergence():
     acc = []
 
     assert len(a0) == len(scale0) == len(a1) == len(scale1)
-    a0Range = np.int(a0.shape[0])
-    for i in range(a0Range):
+    for i in range(len(a0)):
         state_obj0 = StateDistribution(state0,
                                        bern_p0,
                                        a0[i],
@@ -98,8 +97,8 @@ def KLdivergence():
         gammaKL1.append(sp.entropy(np.asarray(pprime), np.asarray(qprime)))
 
         X = [lineage]
-        num_iter = 2  # for every KL value, it runs the model 5 times
-        # accuracy and returns the avg accuracy for 5 iters
+        num_iter = 2  # for every KL value, it runs the model 2 times
+        # accuracy and returns the avg accuracy for 2 iters
         for j in range(num_iter):
             _, _, all_states, tHMMobj, _, _ = Analyze(X, 2)
 
@@ -130,11 +129,11 @@ def distributionPlot():
     scale1 = 3.0
     total = []
     for i in range(10):
-        a = list(sp.gamma.rvs(a=a0[9-i], loc=gamma_loc,
+        a = list(sp.gamma.rvs(a=a0[9 - i], loc=gamma_loc,
                               scale=scale0,
                               size=500))
         total.append(a)
-        b = list(sp.gamma.rvs(a=a1[9-i], loc=gamma_loc,
+        b = list(sp.gamma.rvs(a=a1[9 - i], loc=gamma_loc,
                               scale=scale1,
                               size=500))
         total.append(b)
@@ -163,7 +162,7 @@ def figure_maker(ax, accuracyyy, KL_gamma, dists):
     ax[i].set_xlabel('KL divergence')
     ax[i].set_ylim(0, 110)
     ax[i].set_xlim(0, 1.07 * max(KL_gamma))
-    ax[i].scatter(KL_gamma, accuracyyy, \
+    ax[i].scatter(KL_gamma, accuracyyy,
                   c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].set_ylabel(r'Accuracy [\%]')
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)

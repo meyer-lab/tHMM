@@ -9,6 +9,9 @@ from ..tHMM import tHMM
 
 
 class TestModel(unittest.TestCase):
+    """
+    Unit test class for the tHMM model.
+    """
 
     def setUp(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
@@ -46,15 +49,15 @@ class TestModel(unittest.TestCase):
         betas_before = get_leaf_betas(tHMMobj, NF_before)
         get_nonleaf_NF_and_betas(tHMMobj, NF_before, betas_before)
         LL_before = calculate_log_likelihood(tHMMobj, NF_before)
-        self.assertTrue(np.isfinite(LL_before[0]))
+        self.assertTrue(np.isfinite(LL_before))
 
         # Get the likelihoods after fitting
         tHMMobj_after, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
         LL_after = calculate_log_likelihood(tHMMobj_after, NF_after)
-        self.assertTrue(np.isfinite(LL_after[0]))
-        self.assertTrue(np.isfinite(new_LL_list_after[0]))
+        self.assertTrue(np.isfinite(LL_after))
+        self.assertTrue(np.isfinite(new_LL_list_after))
 
-        self.assertGreater(LL_after[0], LL_before[0])
+        self.assertGreater(LL_after, LL_before)
 
     def test_init_paramlist(self):
         '''

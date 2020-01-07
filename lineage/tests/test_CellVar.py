@@ -7,6 +7,9 @@ from ..CellVar import CellVar as c, _double
 # pylint: disable=protected-access
 
 class TestModel(unittest.TestCase):
+    """
+    Unit test class for the cell class.
+    """
 
     def test_cellVar(self):
         """ Make sure cell state assignment is correct. """

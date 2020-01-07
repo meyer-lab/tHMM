@@ -1,7 +1,7 @@
 pipeline {
   agent { label 'docker' }
   options {
-    timeout(time: 1, unit: 'HOURS')
+    timeout(time: 4, unit: 'HOURS')
   }
   stages {
     stage('Clean/Setup') {
@@ -18,6 +18,9 @@ pipeline {
     }
     stage('Test/Build/Lint') {
       steps {
+        lock ('manubot') {
+          sh 'make output/manuscript.md'
+        }
         sh 'make all -j 4'
         archiveArtifacts artifacts: 'output/manuscript.pdf, output/*.svg', onlyIfSuccessful: true
         cobertura coberturaReportFile: 'coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
