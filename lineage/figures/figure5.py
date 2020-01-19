@@ -76,7 +76,7 @@ def AIC_increased_cells1():
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             X1 = [lineage_unpruned]
             # Analyzing the lineages
-            _, _, _, tHMMobj, _, LL = Analyze(X1, num_states)
+            _, _, _, tHMMobj, _, LL, accuracies = Analyze(X1, num_states)
 
             # AIC
             AIC, _ = getAIC(tHMMobj, LL)

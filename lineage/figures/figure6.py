@@ -100,7 +100,7 @@ def KLdivergence():
         num_iter = 2  # for every KL value, it runs the model 2 times
         # accuracy and returns the avg accuracy for 2 iters
         for j in range(num_iter):
-            _, _, all_states, tHMMobj, _, _ = Analyze(X, 2)
+            _, _, all_states, tHMMobj, _, _, _ = Analyze(X, 2)
 
             # find the accuracy
             temp = accuracy(tHMMobj, all_states)[0] * 100
