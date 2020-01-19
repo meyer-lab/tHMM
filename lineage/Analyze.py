@@ -56,8 +56,10 @@ def Analyze(X, numStates):
             tHMMobj = tmp_tHMMobj
             NF = tmp_NF
             LL = tmp_LL
+            
+    accuracies = accuracy(tHMMobj, all_states)
 
-    return deltas, state_ptrs, all_states, tHMMobj, NF, LL
+    return deltas, state_ptrs, all_states, tHMMobj, NF, LL, accuracies
 
 
 def accuracy(tHMMobj, all_states):
