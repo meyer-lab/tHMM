@@ -67,7 +67,8 @@ def accuracy(tHMMobj):
     This function calculates the accuracy
     given estimated and true states.
     """
-    
+    # Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
+    accuracies_dict = {}
     
  
 
