@@ -63,13 +63,12 @@ def Analyze(X, numStates):
     return deltas, state_ptrs, pred_states_by_lineage, tHMMobj, NF, LL
 
 
-def accuracy(tHMMobj, pred_states_by_lineage):
+def results(tHMMobj, pred_states_by_lineage):
     """ 
-    This function calculates the accuracy
-    given estimated and true states.
+    This function calculates several results of fitting a synthetic lineage.
     """
     ## Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
-    accuracies_dict = {}
+    results_dict = {}
     
     ## Calculate the predicted states prior to switching their label
     true_states = [cell.state for cell in lineage_obj.output_lineage for lineage_obj in tHMMobj.X]
@@ -79,25 +78,25 @@ def accuracy(tHMMobj, pred_states_by_lineage):
     ## predicted state labels based on their underlying distributions
     
     # 1.1. mutual information score 
-    accuracies_dict["mutual_info_score"] = metrics.mutual_info_score(true_states, pred_states)
+    results_dict["mutual_info_score"] = metrics.mutual_info_score(true_states, pred_states)
     
     # 1.2. normalized mutual information score
-    accuracies_dict["mutual_info_score"] = metrics.normalized_mutual_info_score(true_states, pred_states)
+    results_dict["mutual_info_score"] = metrics.normalized_mutual_info_score(true_states, pred_states)
     
     # 1.3. adjusted mutual information score
-    accuracies_dict["adjusted_mutual_info_score"] = metrics.adjusted_mutual_info_score(true_states, pred_states)
+    results_dict["adjusted_mutual_info_score"] = metrics.adjusted_mutual_info_score(true_states, pred_states)
     
     # 1.4. adjusted Rand index
-    accuracies_dict["adjusted_rand_score"] = metrics.adjusted_rand_score(true_states, pred_states)
+    results_dict["adjusted_rand_score"] = metrics.adjusted_rand_score(true_states, pred_states)
     
     # 1.5. V-measure cluster labeling score
-    accuracies_dict["v_measure_score"] = metrics.v_measure_score(true_states, pred_states)
+    results_dict["v_measure_score"] = metrics.v_measure_score(true_states, pred_states)
     
     # 1.6. homogeneity metric
-    accuracies_dict["homogeneity_score"] = metrics.homogeneity_score(true_states, pred_states)
+    results_dict["homogeneity_score"] = metrics.homogeneity_score(true_states, pred_states)
     
     # 1.7. completeness metric
-    accuracies_dict["completeness_score"] = metrics.completeness_score(true_states, pred_states)
+    results_dict["completeness_score"] = metrics.completeness_score(true_states, pred_states)
     
     ## 2. Switch the underlying state labels based on the KL-divergence of the underlying states' distributions 
     
@@ -115,22 +114,46 @@ def accuracy(tHMMobj, pred_states_by_lineage):
             q = [tHMMobj.X[0].E[state_true].estimator(x) for x in obs_by_state[state_pred]]
             switcher_array[state_pred,state_true] = entropy(p,q)
             
-    accuracies_dict["switcher_array"] = switcher_array
+    results_dict["switcher_array"] = switcher_array
     
-    switcher_map = [0]*tHMMobj.numStates
+    # Create switcher map based on the minimal entropies in the switcher array
+    
+    switcher_map = np.zeros((tHMMobj.numStates,1))
     
     for row in in tHMMobj.numStates:
         switcher_row = list(switcher_array[row,:])
         switcher_map[row] = switcher_row.index(min(switcher_row))
         
-    for idx, switch_to in enumerate(switcher_map):
-        if switcher_map.count(switch_to)>1 or switcher_map.count(switch_to)==0:
-            
+    results_dict["switcher_map"] = switcher_map
+    
+    # Rearrange the values in the transition matrix
+    temp_T = tHMMobj.estimate.T
+    for row_idx in tHMMobj.numStates:
+        for col_idx in tHMMobj.numStates:
+            temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx],switcher_map[col_idx]]
+    
+    results_dict["switched_transition_matrix"] = temp_T
+    
+    # Rearrange the values in the pi vector
+    temp_pi = tHMMobj.estimate.pi
+    for val_idx in tHMMobj.numStates:
+        temp_pi[val_idx] = tHMMobj.estimate.pi[switcher_map[val_idx]]
         
+    results_dict["switched_pi_vector"] = temp_pi
     
+    # Rearrange the emissions list
+    temp_emissions = [None]*tHMMobj.numStates
+    for val_idx in tHMMobj.numStates:
+        temp_emissions[val_idx] = tHMMobj.estimate.E[switcher_map[val_idx]]
     
+    results_dict["switched_emissions"] = temp_emissions
+    
+    ## 3. Calculate accuracy after switching states
+    pred_states_switched = [switcher_map[state] for state in pred_states]
+    results_dict["accuracy_before_switching"] = sum([int(i==j) for i, j in zip(pred_states, true_states)])
+    results_dict["accuracy_after_switching"] = sum([int(i==j) for i, j in zip(pred_states_switched, true_states)])
  
-    return accuracies_dict
+    return results_dict
 
 
 def get_stationary_distribution(transition_matrix):
