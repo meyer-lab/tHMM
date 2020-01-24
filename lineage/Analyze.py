@@ -58,22 +58,41 @@ def Analyze(X, numStates):
             LL = tmp_LL
             
 
-
     return deltas, state_ptrs, all_states, tHMMobj, NF, LL
 
 
-def accuracy(tHMMobj):
+def accuracy(tHMMobj, tmp_all_states):
     """ 
     This function calculates the accuracy
     given estimated and true states.
     """
-    # Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
+    ## Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
     accuracies_dict = {}
     
-    # 1. Calculate the mutual information score between the true states and the predicted states prior to switching the
-    # predicted state labels based on their underlying distributions
+    ## Calculate the predicted states prior to switching their label
+    for lineage_idx, lineage_obj in enumerate(tHMMobj.X):
+        lin_true_states = [cell.state for cell in lineageObj.output_lineage]
+        
     
     
+    ## 1. Calculate some cluster labeling scores between the true states and the predicted states prior to switching the 
+    ## predicted state labels based on their underlying distributions.
+    
+    # 1.1. mutual information score 
+    
+    # 1.2. normalized mutual information score
+    
+    # 1.3. adjusted mutual information score
+    
+    # 1.4. adjusted Rand index
+    
+    # 1.5. V-measure cluster labeling score
+    
+    # 1.6. homogeneity metric
+    
+    # 1.7. completeness metric
+    
+    ## 2. Switch the underlying state labels based on the KL-divergence of the underlying states' distributions 
  
 
     return [counter_holder / length_holder]
