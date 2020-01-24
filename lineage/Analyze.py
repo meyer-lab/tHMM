@@ -101,7 +101,34 @@ def accuracy(tHMMobj, pred_states_by_lineage):
     
     ## 2. Switch the underlying state labels based on the KL-divergence of the underlying states' distributions 
     
-    # 
+    # First collect all the observations from the entire population across the lineages ordered by state
+    obs_by_state = []
+    for state in tHMMobj.numStates:
+        obs_by_state.append([obs for obs in lineage.lineage_stats[state].full_lin_cells_obs for lineage in tHMMobj.X])
+    
+    # Array to hold divergence values
+    switcher_array = np.zeros((tHMMobj.numStates,tHMMobj.numStates), dtype="float")
+    
+    for state_pred in tHMMobj.numStates:
+        for state_true in tHMMobj.numStates:
+            p = [tHMMobj.estimate.E[state_pred].estimator(y) for y in obs_by_state[state_pred]]
+            q = [tHMMobj.X[0].E[state_true].estimator(x) for x in obs_by_state[state_pred]]
+            switcher_array[state_pred,state_true] = entropy(p,q)
+            
+    accuracies_dict["switcher_array"] = switcher_array
+    
+    switcher_map = [0]*tHMMobj.numStates
+    
+    for row in in tHMMobj.numStates:
+        switcher_row = list(switcher_array[row,:])
+        switcher_map[row] = switcher_row.index(min(switcher_row))
+        
+    for idx, switch_to in enumerate(switcher_map):
+        if switcher_map.count(switch_to)>1 or switcher_map.count(switch_to)==0:
+            
+        
+    
+    
  
     return accuracies_dict
 
