@@ -37,32 +37,32 @@ def preAnalyze(X, numStates):
 
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
-    pred_states = Viterbi(tHMMobj, deltas, state_ptrs)
+    pred_states_by_lineage = Viterbi(tHMMobj, deltas, state_ptrs)
     NF = get_leaf_Normalizing_Factors(tHMMobj)
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
     LL = calculate_log_likelihood(tHMMobj, NF)
-    return deltas, state_ptrs, pred_states, tHMMobj, NF, LL
+    return deltas, state_ptrs, pred_states_by_lineage, tHMMobj, NF, LL
 
 
 def Analyze(X, numStates):
-    deltas, state_ptrs, pred_states, tHMMobj, NF, LL = preAnalyze(X, numStates)
+    deltas, state_ptrs, pred_states_by_lineage, tHMMobj, NF, LL = preAnalyze(X, numStates)
 
     for _ in range(1, 5):
-        tmp_deltas, tmp_state_ptrs, tmp_all_states, tmp_tHMMobj, tmp_NF, tmp_LL = preAnalyze(X, numStates)
+        tmp_deltas, tmp_state_ptrs, tmp_pred_states_by_lineage, tmp_tHMMobj, tmp_NF, tmp_LL = preAnalyze(X, numStates)
         if tmp_LL > LL:
             deltas = tmp_deltas
             state_ptrs = tmp_state_ptrs
-            all_states = tmp_pred_states
+            pred_states_by_lineage = tmp_pred_states_by_lineage
             tHMMobj = tmp_tHMMobj
             NF = tmp_NF
             LL = tmp_LL
             
 
-    return deltas, state_ptrs, pred_states, tHMMobj, NF, LL
+    return deltas, state_ptrs, pred_states_by_lineage, tHMMobj, NF, LL
 
 
-def accuracy(tHMMobj, pred_states):
+def accuracy(tHMMobj, pred_states_by_lineage):
     """ 
     This function calculates the accuracy
     given estimated and true states.
@@ -70,8 +70,8 @@ def accuracy(tHMMobj, pred_states):
     ## Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
     accuracies_dict = {}
     
-    true_states_sublist_holder = []
     ## Calculate the predicted states prior to switching their label
+    true_states_sublist_holder = []
     for lineage_idx, lineage_obj in enumerate(tHMMobj.X):
         true_states_sublist_holder.append([cell.state for cell in lineage_obj.output_lineage])
     true_states = [state for state in sublist for sublist in true_states_sublist_holder]
@@ -80,18 +80,22 @@ def accuracy(tHMMobj, pred_states):
     ## predicted state labels based on their underlying distributions
     
     # 1.1. mutual information score 
-    
     accuracies_dict["mutual_info_score"] = metrics.mutual_info_score(true_states, pred_states)
     
     # 1.2. normalized mutual information score
+    accuracies_dict["mutual_info_score"] = metrics.normalized_mutual_info_score(true_states, pred_states)
     
     # 1.3. adjusted mutual information score
+    accuracies_dict["adjusted_mutual_info_score"] = metrics.adjusted_mutual_info_score(true_states, pred_states)
     
     # 1.4. adjusted Rand index
+    accuracies_dict["adjusted_rand_score"] = metrics.adjusted_rand_score(true_states, pred_states)
     
     # 1.5. V-measure cluster labeling score
+    accuracies_dict["v_measure_score"] = metrics.v_measure_score(true_states, pred_states)
     
     # 1.6. homogeneity metric
+    accuracies_dict["homogeneity_score"] = metrics.homogeneity_score(true_states, pred_states)
     
     # 1.7. completeness metric
     
