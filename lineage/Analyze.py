@@ -71,10 +71,8 @@ def accuracy(tHMMobj, pred_states_by_lineage):
     accuracies_dict = {}
     
     ## Calculate the predicted states prior to switching their label
-    true_states_sublist_holder = []
-    for lineage_idx, lineage_obj in enumerate(tHMMobj.X):
-        true_states_sublist_holder.append([cell.state for cell in lineage_obj.output_lineage])
-    true_states = [state for state in sublist for sublist in true_states_sublist_holder]
+    true_states = [cell.state for cell in lineage_obj.output_lineage for lineage_obj in tHMMobj.X]
+    pred_states = [state for state in sublist for sublist in pred_states_by_lineage]
     
     ## 1. Calculate some cluster labeling scores between the true states and the predicted states prior to switching the 
     ## predicted state labels based on their underlying distributions
@@ -98,10 +96,10 @@ def accuracy(tHMMobj, pred_states_by_lineage):
     accuracies_dict["homogeneity_score"] = metrics.homogeneity_score(true_states, pred_states)
     
     # 1.7. completeness metric
+    accuracies_dict["completeness_score"] = metrics.completeness_score(true_states, pred_states)
     
     ## 2. Switch the underlying state labels based on the KL-divergence of the underlying states' distributions 
  
-
     return accuracies_dict
 
 
