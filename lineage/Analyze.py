@@ -70,6 +70,10 @@ def accuracy(tHMMobj):
     # Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
     accuracies_dict = {}
     
+    # 1. Calculate the mutual information score between the true states and the predicted states prior to switching the
+    # predicted state labels based on their underlying distributions
+    
+    
  
 
     return [counter_holder / length_holder]
