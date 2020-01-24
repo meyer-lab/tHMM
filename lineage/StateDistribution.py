@@ -68,8 +68,6 @@ class StateDistribution:
         # if this function runs again.
         return state_estimate_obj
     
-    def kl_divergence
-
     def __repr__(self):
         return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_loc, self.gamma_scale)
 

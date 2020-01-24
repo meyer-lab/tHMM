@@ -120,7 +120,7 @@ def results(tHMMobj, pred_states_by_lineage):
     
     switcher_map = np.zeros((tHMMobj.numStates,1))
     
-    for row in in tHMMobj.numStates:
+    for row in tHMMobj.numStates:
         switcher_row = list(switcher_array[row,:])
         switcher_map[row] = switcher_row.index(min(switcher_row))
         
