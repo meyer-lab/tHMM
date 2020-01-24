@@ -6,6 +6,8 @@ from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
 from .tHMM import tHMM
 from sklearn import metrics
+from scipy.stats import entropy
+
 
 
 def preAnalyze(X, numStates):
@@ -98,6 +100,8 @@ def accuracy(tHMMobj, pred_states_by_lineage):
     accuracies_dict["completeness_score"] = metrics.completeness_score(true_states, pred_states)
     
     ## 2. Switch the underlying state labels based on the KL-divergence of the underlying states' distributions 
+    
+    # 
  
     return accuracies_dict
 
@@ -201,43 +205,3 @@ def getAIC(tHMMobj, LL):
     AIC_value = -2 * LL + 2 * AIC_degrees_of_freedom
 
     return(AIC_value, AIC_degrees_of_freedom)  # no longer returning relative to zero
-
-
-# -------------------- when we have G1 and G2
-def accuracyG(tHMMobj, all_states):
-    acuracy_holder = []
-    for num, lineageObj in enumerate(tHMMobj.X):
-        lin_true_states = [cell.state for cell in lineageObj.output_lineage]
-
-        bern_diff = np.zeros((lineageObj.num_states))
-        gamma_aG1_diff = np.zeros((lineageObj.num_states))
-        gamma_scaleG1_diff = np.zeros((lineageObj.num_states))
-        gamma_aG2_diff = np.zeros((lineageObj.num_states))
-        gamma_scaleG2_diff = np.zeros((lineageObj.num_states))
-        for state in range(lineageObj.num_states):
-            bern_diff[state] = abs(tHMMobj.estimate.E[state].bern_p - lineageObj.E[0].bern_p)
-            gamma_aG1_diff[state] = abs(tHMMobj.estimate.E[state].gamma_a1 - lineageObj.E[0].gamma_a1)
-            gamma_scaleG1_diff[state] = abs(tHMMobj.estimate.E[state].gamma_scale1 - lineageObj.E[0].gamma_scale1)
-            gamma_aG2_diff[state] = abs(tHMMobj.estimate.E[state].gamma_a2 - lineageObj.E[0].gamma_a2)
-            gamma_scaleG2_diff[state] = abs(tHMMobj.estimate.E[state].gamma_scale2 - lineageObj.E[0].gamma_scale2)
-
-        bern_diff = bern_diff / sum(bern_diff)
-        gamma_aG1_diff = gamma_aG1_diff / sum(gamma_aG1_diff)
-        gamma_scaleG1_diff = gamma_scaleG1_diff / sum(gamma_scaleG1_diff)
-        gamma_aG2_diff = gamma_aG2_diff / sum(gamma_aG2_diff)
-        gamma_scaleG2_diff = gamma_scaleG2_diff / sum(gamma_scaleG2_diff)
-
-        total_errs = bern_diff + gamma_aG1_diff + gamma_scaleG1_diff + gamma_aG2_diff + gamma_scaleG2_diff
-        if total_errs[0] <= total_errs[1]:
-            new_all_states = all_states[num]
-        else:
-            new_all_states = [not(x) for x in all_states[num]]
-            tmp = cp.deepcopy(tHMMobj.estimate.E[1])
-            tHMMobj.estimate.E[1] = tHMMobj.estimate.E[0]
-            tHMMobj.estimate.E[0] = tmp
-
-        counter = [1 if a == b else 0 for (a, b) in zip(new_all_states, lin_true_states)]
-        acc = sum(counter) / len(lin_true_states)
-        acuracy_holder.append(100 * acc)
-
-    return acuracy_holder
