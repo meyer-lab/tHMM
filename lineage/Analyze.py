@@ -5,6 +5,7 @@ from .BaumWelch import fit
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
 from .tHMM import tHMM
+from sklearn import metrics
 
 
 def preAnalyze(X, numStates):
@@ -36,32 +37,32 @@ def preAnalyze(X, numStates):
 
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
-    all_states = Viterbi(tHMMobj, deltas, state_ptrs)
+    pred_states = Viterbi(tHMMobj, deltas, state_ptrs)
     NF = get_leaf_Normalizing_Factors(tHMMobj)
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
     LL = calculate_log_likelihood(tHMMobj, NF)
-    return deltas, state_ptrs, all_states, tHMMobj, NF, LL
+    return deltas, state_ptrs, pred_states, tHMMobj, NF, LL
 
 
 def Analyze(X, numStates):
-    deltas, state_ptrs, all_states, tHMMobj, NF, LL = preAnalyze(X, numStates)
+    deltas, state_ptrs, pred_states, tHMMobj, NF, LL = preAnalyze(X, numStates)
 
     for _ in range(1, 5):
         tmp_deltas, tmp_state_ptrs, tmp_all_states, tmp_tHMMobj, tmp_NF, tmp_LL = preAnalyze(X, numStates)
         if tmp_LL > LL:
             deltas = tmp_deltas
             state_ptrs = tmp_state_ptrs
-            all_states = tmp_all_states
+            all_states = tmp_pred_states
             tHMMobj = tmp_tHMMobj
             NF = tmp_NF
             LL = tmp_LL
             
 
-    return deltas, state_ptrs, all_states, tHMMobj, NF, LL
+    return deltas, state_ptrs, pred_states, tHMMobj, NF, LL
 
 
-def accuracy(tHMMobj, tmp_all_states):
+def accuracy(tHMMobj, pred_states):
     """ 
     This function calculates the accuracy
     given estimated and true states.
@@ -69,16 +70,18 @@ def accuracy(tHMMobj, tmp_all_states):
     ## Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
     accuracies_dict = {}
     
+    true_states_sublist_holder = []
     ## Calculate the predicted states prior to switching their label
     for lineage_idx, lineage_obj in enumerate(tHMMobj.X):
-        lin_true_states = [cell.state for cell in lineageObj.output_lineage]
-        
-    
+        true_states_sublist_holder.append([cell.state for cell in lineage_obj.output_lineage])
+    true_states = [state for state in sublist for sublist in true_states_sublist_holder]
     
     ## 1. Calculate some cluster labeling scores between the true states and the predicted states prior to switching the 
-    ## predicted state labels based on their underlying distributions.
+    ## predicted state labels based on their underlying distributions
     
     # 1.1. mutual information score 
+    
+    accuracies_dict["mutual_info_score"] = metrics.mutual_info_score(true_states, pred_states)
     
     # 1.2. normalized mutual information score
     
@@ -95,7 +98,7 @@ def accuracy(tHMMobj, tmp_all_states):
     ## 2. Switch the underlying state labels based on the KL-divergence of the underlying states' distributions 
  
 
-    return [counter_holder / length_holder]
+    return accuracies_dict
 
 
 def get_stationary_distribution(transition_matrix):
