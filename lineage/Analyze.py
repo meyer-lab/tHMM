@@ -133,6 +133,7 @@ def results(tHMMobj, pred_states_by_lineage):
             temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx],switcher_map[col_idx]]
     
     results_dict["switched_transition_matrix"] = temp_T
+    results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T-tHMMobj.estimate.T)
     
     # Rearrange the values in the pi vector
     temp_pi = tHMMobj.estimate.pi
@@ -140,6 +141,7 @@ def results(tHMMobj, pred_states_by_lineage):
         temp_pi[val_idx] = tHMMobj.estimate.pi[switcher_map[val_idx]]
         
     results_dict["switched_pi_vector"] = temp_pi
+    results_dict["pi_vector_norm"] = np.linalg.norm(temp_pi-tHMMobj.estimate.pi)
     
     # Rearrange the emissions list
     temp_emissions = [None]*tHMMobj.numStates

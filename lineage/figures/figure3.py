@@ -1,9 +1,9 @@
 """
-File: figure8.py
-Purpose: Generates figure 7 and 8.
-Figure 7 is the accuracy and transition matrix parameter estimation
-for a single pruned lineage with heterogeneity (two true states).
-Figure 8 is the parameter estimation for a single pruned lineage with heterogeneity (two true states).
+File: figure3.py
+Purpose: Generates figure 3.
+Figure 3 analyzes heterogeneous (2 state), pruned (by both time and fate), single lineages
+(no more than one lineage per population) with at least 16 cells over increasing experimental
+times.
 """
 import numpy as np
 from matplotlib import gridspec, pyplot as plt
@@ -82,16 +82,10 @@ def accuracy_increased_cells():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-    x = []
-    accuracies = []
-    tr = []
-    pi = []
-    bern_pruned = []
-    gamma_a_pruned = []
-    gamma_scale_pruned = []
 
+    # Creating a list of populations to analyze over
     times = np.linspace(100, 1000, 25)
-
+    list_of_populations = []
     for experiment_time in times:
         # Creating an unpruned and pruned lineage
         lineage = LineageTree(piiii, T, E, (2**12) - 1, experiment_time, prune_condition='both', prune_boolean=True)
@@ -100,31 +94,14 @@ def accuracy_increased_cells():
             lineage = LineageTree(piiii, T, E, (2**12) - 1, experiment_time, prune_condition='both', prune_boolean=True)
 
         # Setting then into a list or a population of lineages and collecting the length of each lineage
-        X1 = [lineage]
-        x.append(len(lineage.output_lineage))
+        list_of_populations.append([lineage])
 
-        # Analyzing the lineages
-        deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
+        
+    # TODO: Analyzing the lineages in the list of populations (parallelized function)
 
-        # Collecting the accuracies of the lineages
-        acc1 = accuracy(tHMMobj, all_states)[0] * 100
-        while acc1 < 50:
-            # Analyzing the lineages
-            deltas, _, all_states, tHMMobj, _, _ = Analyze(X1, 2)
+    # TODO: Collecting the results of analyzing the lineages 
 
-            # Collecting the accuracies of the lineages
-            acc1 = accuracy(tHMMobj, all_states)[0] * 100
-        accuracies.append(acc1)
 
-        # Transition and Pi estimates
-        transition_mat = tHMMobj.estimate.T  # unpruned
-
-        temp1 = T - transition_mat
-        tr.append(np.linalg.norm(temp1))
-
-        pi_mat = tHMMobj.estimate.pi
-        t1 = piiii - pi_mat
-        pi.append(np.linalg.norm(t1))
 
         # Collecting the parameter estimations
         bern_p_total = ()
