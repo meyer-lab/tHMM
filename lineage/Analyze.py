@@ -58,9 +58,7 @@ def Analyze(X, numStates):
             NF = tmp_NF
             LL = tmp_LL
             
-    accuracies = accuracy(tHMMobj, pred_states_by_lineage)
-
-    return deltas, state_ptrs, pred_states_by_lineage, tHMMobj, NF, LL, accuracies
+    return deltas, state_ptrs, pred_states_by_lineage, tHMMobj, NF, LL
 
 
 def accuracy(tHMMobj, pred_states_by_lineage):
