@@ -46,8 +46,8 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((21, 12))
 #     f.subplot2grid(shape, loc, rowspan=1, colspan=1)
-    x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1 = accuracy_increased_cells()
-    figure_maker(ax, x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1)
+    accuracy_increased_cells()
+    #figure_maker(ax, x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1)
     f.tight_layout()
 
     return f
@@ -102,25 +102,9 @@ def accuracy_increased_cells():
     # TODO: Collecting the results of analyzing the lineages 
 
 
+    return 
 
-        # Collecting the parameter estimations
-        bern_p_total = ()
-        gamma_a_total = ()
-        gamma_scale_total = ()
-
-        for state in range(tHMMobj.numStates):
-            bern_p_total += (tHMMobj.estimate.E[state].bern_p,)
-            gamma_a_total += (tHMMobj.estimate.E[state].gamma_a,)
-            gamma_scale_total += (tHMMobj.estimate.E[state].gamma_scale,)
-
-        bern_pruned.append(bern_p_total)
-        gamma_a_pruned.append(gamma_a_total)
-        gamma_scale_pruned.append(gamma_scale_total)
-
-    return x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1
-
-
-def figure_maker(ax, x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1):
+def figure_maker():
     """
     Makes figure 8.
     """
