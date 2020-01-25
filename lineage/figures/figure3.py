@@ -82,18 +82,18 @@ def accuracy_increased_cells():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-
     # Creating a list of populations to analyze over
     times = np.linspace(100, 1000, 25)
     list_of_populations = []
     for experiment_time in times:
         # Creating an unpruned and pruned lineage
         lineage = LineageTree(piiii, T, E, (2**12) - 1, experiment_time, prune_condition='both', prune_boolean=True)
+        
         while len(lineage.output_lineage) < 16:
             del lineage
             lineage = LineageTree(piiii, T, E, (2**12) - 1, experiment_time, prune_condition='both', prune_boolean=True)
 
-        # Setting then into a list or a population of lineages and collecting the length of each lineage
+        # Adding populations into a holder for analysing
         list_of_populations.append([lineage])
 
         
@@ -106,7 +106,7 @@ def accuracy_increased_cells():
 
 def figure_maker():
     """
-    Makes figure 8.
+    Makes figure 3.
     """
     i = 0
     res = [[i for i, j in bern_pruned], [j for i, j in bern_pruned]]

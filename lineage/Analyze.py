@@ -74,6 +74,8 @@ def results(tHMMobj, pred_states_by_lineage):
     true_states = [cell.state for cell in lineage_obj.output_lineage for lineage_obj in tHMMobj.X]
     pred_states = [state for state in sublist for sublist in pred_states_by_lineage]
     
+    results_dict["total_number_of_cells"] = length(pred_states)
+    
     ## 1. Calculate some cluster labeling scores between the true states and the predicted states prior to switching the 
     ## predicted state labels based on their underlying distributions
     

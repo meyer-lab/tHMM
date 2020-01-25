@@ -1,9 +1,9 @@
 """
-File: figure9.py
-Purpose: Generates figure 9 and 10.
-
-Figure 9 is the accuracy and transition matrix parameter estimation for a group of pruned lineages with heterogeneity (two true states).
-Figure 10 is the parameter estimation for a group of pruned lineages with heterogeneity (two true states).
+File: figure4.py
+Purpose: Generates figure 4.
+Figure 3 analyzes heterogeneous (2 state), pruned (by both time and fate), populations of lineages
+(more than one lineage per populations) with at least 10 cells per lineage over increasing 
+number of lineages per population.
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -59,9 +59,10 @@ def accuracy_increased_cells():
 
     desired_num_cells = 2**9 - 1
     experiment_time = 50
+    
+    # Creating a list of populations to analyze over
     num_lineages = list(range(1, 10))
     list_of_lineages = []
-
     for num in num_lineages:
         population = []
         for _ in range(num):
@@ -71,62 +72,19 @@ def accuracy_increased_cells():
                 del tmp_lineage
                 tmp_lineage = LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True)
             population.append(tmp_lineage)
-
         # Adding populations into a holder for analysing
         list_of_lineages.append(population)
-
-    x = []
-    bern_unpruned = []
-    gamma_a_unpruned = []
-    gamma_scale_unpruned = []
-    accuracies = []
-    tr = []
-    pi = []
-
-    for population in list_of_lineages:
-        # Analyzing the lineages
-        deltas, _, all_states, tHMMobj, _, _ = Analyze(population, 2)
-
-        # Collecting the accuracies of the lineages
-        acc1 = accuracy(tHMMobj, all_states)[0] * 100
-        while acc1 < 50:
-            # Analyzing the lineages
-            _, _, all_states, tHMMobj, _, _ = Analyze(population, 2)
-            # Collecting the accuracies of the lineages
-            acc1 = accuracy(tHMMobj, all_states)[0] * 100
-
-        accuracies.append(acc1)
-        # Collecting how many cells are in each lineage in each analysis
-        num_cells_holder = [len(lineageObj.output_lineage) for lineageObj in population]
-        x.append(sum(num_cells_holder))
-
-        # Transition and pi estimates
-        transition_mat = tHMMobj.estimate.T
-        tr.append(np.linalg.norm(T - transition_mat))
-
-        pi_mat = tHMMobj.estimate.pi
-        pi.append(np.linalg.norm(piiii - pi_mat))
-
-        # Collecting the parameter estimations
-        bern_p_total = ()
-        gamma_a_total = ()
-        gamma_scale_total = ()
-
-        for state in range(tHMMobj.numStates):
-            bern_p_total += (tHMMobj.estimate.E[state].bern_p,)
-            gamma_a_total += (tHMMobj.estimate.E[state].gamma_a,)
-            gamma_scale_total += (tHMMobj.estimate.E[state].gamma_scale,)
-
-        bern_unpruned.append(bern_p_total)
-        gamma_a_unpruned.append(gamma_a_total)
-        gamma_scale_unpruned.append(gamma_scale_total)
-
-    return x, accuracies, tr, pi, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1
+    
+    # TODO: Analyzing the lineages in the list of populations (parallelized function)
+    
+    # TODO: Collecting the results of analyzing the lineages 
 
 
-def figure_maker(ax, x, accuracies, tr, pi, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1):
+    return 
+
+def figure_maker():
     """
-    Makes figure 9 and 10.
+    Makes figure 4.
     """
     x_vs_acc = np.column_stack((x, accuracies))
     sorted_x_vs_acc = x_vs_acc[np.argsort(x_vs_acc[:, 0])]
