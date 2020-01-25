@@ -60,28 +60,14 @@ def KLdivergence():
 
     assert len(a0) == len(scale0) == len(a1) == len(scale1)
     for i in range(len(a0)):
-        state_obj0 = StateDistribution(state0,
-                                       bern_p0,
-                                       a0[i],
-                                       gamma_loc,
-                                       scale0[i])
-        state_obj1 = StateDistribution(state1,
-                                       bern_p1,
-                                       a1[i],
-                                       gamma_loc,
-                                       scale1[i])
+        state_obj0 = StateDistribution(state0, bern_p0, a0[i], gamma_loc, scale0[i])
+        state_obj1 = StateDistribution(state1, bern_p1, a1[i], gamma_loc, scale1[i])
 
         E = [state_obj0, state_obj1]
-        lineage = LineageTree(pi, T, E, (2**12) - 1,
-                              desired_experiment_time=600,
-                              prune_condition='both',
-                              prune_boolean=True)
+        lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=600, prune_condition='both', prune_boolean=True)
         while len(lineage.output_lineage) < 16:
             del lineage
-            lineage = LineageTree(pi, T, E, (2**12) - 1,
-                                  desired_experiment_time=600,
-                                  prune_condition='both',
-                                  prune_boolean=True)
+            lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=600, prune_condition='both', prune_boolean=True)
 
         _, obs0 = list(zip(*lineage.lineage_stats[0].full_lin_cells_obs))
         _, obs1 = list(zip(*lineage.lineage_stats[1].full_lin_cells_obs))
