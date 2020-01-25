@@ -1,7 +1,7 @@
 """
 File: figure4.py
 Purpose: Generates figure 4.
-Figure 3 analyzes heterogeneous (2 state), pruned (by both time and fate), populations of lineages
+Figure 4 analyzes heterogeneous (2 state), pruned (by both time and fate), populations of lineages
 (more than one lineage per populations) with at least 10 cells per lineage over increasing 
 number of lineages per population.
 """
@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .figureCommon import getSetup, moving_average
-from ..Analyze import accuracy, Analyze
+from ..Analyze import get_results, run_Analyze_over
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 

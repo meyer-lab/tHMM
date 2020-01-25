@@ -9,7 +9,7 @@ import numpy as np
 from matplotlib import gridspec, pyplot as plt
 
 from .figureCommon import moving_average
-from ..Analyze import accuracy, Analyze
+from ..Analyze import get_results, run_Analyze_over
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 

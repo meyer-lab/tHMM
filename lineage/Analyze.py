@@ -81,7 +81,7 @@ def run_Analyze_over(list_of_populations, num_states):
     """
 
 
-def results(tHMMobj, pred_states_by_lineage):
+def get_results(tHMMobj, pred_states_by_lineage):
     """ 
     This function calculates several results of fitting a synthetic lineage.
     """

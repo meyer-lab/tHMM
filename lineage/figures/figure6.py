@@ -13,7 +13,7 @@ import pandas as pd
 import seaborn as sns
 from ..StateDistribution import StateDistribution
 from ..LineageTree import LineageTree
-from ..Analyze import accuracy, Analyze
+from ..Analyze import get_results, run_Analyze_over
 from .figureCommon import getSetup
 
 sns.set(style="whitegrid", palette="pastel", color_codes=True)
