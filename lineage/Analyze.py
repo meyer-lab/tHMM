@@ -63,6 +63,24 @@ def Analyze(X, numStates):
     return deltas, state_ptrs, pred_states_by_lineage, tHMMobj, NF, LL
 
 
+def run_Analyze_over(list_of_populations, num_states):
+    """
+    A function that can be parallelized to speed up figure creation.
+    
+    This function is the outermost for-loop we (and most users)
+    will end up using when analyzing heterogenous populations or
+    lineages.
+    
+    Analyze is the bottleneck in the figure creation process. The
+    rest of the code involved in figure creation deals with collecting
+    and computing certain statistics, most of which can be done in an 
+    additional for loop over the results from Analyze.
+    
+    This function takes as input:
+    list_of_populations: a list of populations that contain lineages
+    """
+
+
 def results(tHMMobj, pred_states_by_lineage):
     """ 
     This function calculates several results of fitting a synthetic lineage.
