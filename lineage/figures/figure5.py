@@ -1,6 +1,6 @@
 """
-File: figure11.py
-Purpose: Generates figure 11.
+File: figure5.py
+Purpose: Generates figure 5.
 
 AIC.
 """
@@ -67,20 +67,16 @@ def AIC_increased_cells1():
     num_to_evaluate = 20
 
     AIC_unpruned = np.zeros(shape=(num_to_evaluate, len(desred_num_states)))
-
+    list_of_populations = []
     for idx in range(num_to_evaluate):
         for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
             lineage_unpruned = LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False)
 
             # Setting then into a list or a population of lineages and collecting the length of each lineage
-            X1 = [lineage_unpruned]
-            # Analyzing the lineages
-            _, _, _, tHMMobj, _, LL = Analyze(X1, num_states)
-
-            # AIC
-            AIC, _ = getAIC(tHMMobj, LL)
-            AIC_unpruned[idx, num_states - 1] = AIC
+            list_of_populations.append([lineage_unpruned])
+            
+    # TODO: Analyze the lineages in the list of populations
 
     return desred_num_states, AIC_unpruned
 
@@ -118,20 +114,16 @@ def AIC_increased_cells2():
     num_to_evaluate = 20
 
     AIC_unpruned = np.zeros(shape=(num_to_evaluate, len(desred_num_states)))
-
+    list_of_populations = []
     for idx in range(num_to_evaluate):
         for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
             lineage_unpruned = LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False)
 
             # Setting then into a list or a population of lineages and collecting the length of each lineage
-            X1 = [lineage_unpruned]
-            # Analyzing the lineages
-            _, _, _, tHMMobj, _, LL = Analyze(X1, num_states)
-
-            # AIC
-            AIC, _ = getAIC(tHMMobj, LL)
-            AIC_unpruned[idx, num_states - 1] = AIC
+            list_of_populations.append([lineage_unpruned])
+    
+    # TODO: Analyze the lineages in the list of populations
 
     return desred_num_states, AIC_unpruned
 
@@ -180,20 +172,16 @@ def AIC_increased_cells3():
     num_to_evaluate = 20
 
     AIC_unpruned = np.zeros(shape=(num_to_evaluate, len(desred_num_states)))
-
+    list_of_populations = []
     for idx in range(num_to_evaluate):
         for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
             lineage_unpruned = LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False)
 
             # Setting then into a list or a population of lineages and collecting the length of each lineage
-            X1 = [lineage_unpruned]
-            # Analyzing the lineages
-            _, _, _, tHMMobj, _, LL = Analyze(X1, num_states)
-
-            # AIC
-            AIC, _ = getAIC(tHMMobj, LL)
-            AIC_unpruned[idx, num_states - 1] = AIC
+            list_of_populations.append([lineage_unpruned])
+    
+    # TODO: Analyze the lineages in the list of populations
 
     return desred_num_states, AIC_unpruned
 

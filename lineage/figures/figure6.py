@@ -1,6 +1,6 @@
 """
-File: figure12.py
-Purpose: Generates figure 12.
+File: figure6.py
+Purpose: Generates figure 6.
 
 Figure 12 is the KL divergence for different sets of parameters
 for a two state model. It plots the KL-divergence against accuracy.
