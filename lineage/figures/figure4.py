@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .figureCommon import getSetup, moving_average
-from ..Analyze import get_results, run_Analyze_over
+from ..Analyze import run_Analyze_over, run_Results_over
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
@@ -21,8 +21,8 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((24, 12), (2, 3))
-    x, accuracies, tr, pi, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1 = accuracy_increased_cells()
-    figure_maker(ax, x, accuracies, tr, pi, bern_unpruned, bern_p0, bern_p1, gamma_a_unpruned, gamma_a0, gamma_a1, gamma_scale_unpruned, gamma_scale0, gamma_scale1)
+    x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr, pi = accuracy_increased_cells()
+    figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr, pi)
     f.tight_layout()
 
     return f
@@ -61,8 +61,8 @@ def accuracy_increased_cells():
     experiment_time = 50
     
     # Creating a list of populations to analyze over
-    num_lineages = list(range(1, 10))
-    list_of_lineages = []
+    num_lineages = list(range(1, 12))
+    list_of_populations = []
     for num in num_lineages:
         population = []
         for _ in range(num):
@@ -73,34 +73,104 @@ def accuracy_increased_cells():
                 tmp_lineage = LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True)
             population.append(tmp_lineage)
         # Adding populations into a holder for analysing
-        list_of_lineages.append(population)
+        list_of_populations.append(population)
     
-    # TODO: Analyzing the lineages in the list of populations (parallelized function)
+    # Analyzing the lineages in the list of populations (parallelized function)
+    output = run_Analyze_over(list_of_populations, 2)
+
+    # Collecting the results of analyzing the lineages 
+    results_holder = run_Results_over(output)
     
-    # TODO: Collecting the results of analyzing the lineages 
+    # Collect necessary things to plot
+    x = []
+    bern_p0_est = []
+    bern_p1_est = []
+    gamma_a0_est = []
+    gamma_a1_est = []
+    gamma_scale0_est = []
+    gamma_scale1_est = []
+    accuracies = []
+    tr = []
+    pi = []
+    
+    for results_dict in results_holder:
+        x.append(results_dict["total_number_of_cells"])
+        accuracies.append(results_dict["accuracy_after_switching"])
+        tr.append(results_dict["transition_matrix_norm"])
+        pi.append(results_dict["pi_vector_norm"])
+        bern_p0_est.append(results_dict["param_estimates"][0][0])
+        bern_p1_est.append(results_dict["param_estimates"][1][0])
+        gamma_a0_est.append(results_dict["param_estimates"][0][1])
+        gamma_a1_est.append(results_dict["param_estimates"][1][1])
+        gamma_scale0_est.append(results_dict["param_estimates"][0][3])
+        gamma_scale1_est.append(results_dict["param_estimates"][1][3])
 
+    return x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr, pi
 
-    return 
-
-def figure_maker():
+def figure_maker(x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr, pi):
     """
     Makes figure 4.
     """
+    
+    i = 0
+    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
+    ax[i].set_xlabel('Number of Cells')
+    ax[i].scatter(x, bern_p0_est, c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].scatter(x, bern_p1_est, c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].set_ylabel('Bernoulli $p$')
+    ax[i].set_ylim([0.85, 1.01])
+    ax[i].axhline(y=bern_p0_true, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
+    ax[i].axhline(y=bern_p1_true, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
+    ax[i].set_title(r'Bernoulli $p$')
+    ax[i].grid(linestyle='--')
+    ax[i].set_xscale('log', basex=2)
+    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
+
+    i += 1
+    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
+    ax[i].set_xlabel('Number of Cells')
+    ax[i].scatter(x, gamma_a0_est, c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].scatter(x, gamma_a1_est, c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].set_ylabel(r'Gamma $k$')
+    ax[i].set_ylim([5, 25])
+    ax[i].axhline(y=gamma_a0_true, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
+    ax[i].axhline(y=gamma_a1_true, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
+    ax[i].set_title(r'Gamma $k$')
+    ax[i].grid(linestyle='--')
+    ax[i].set_xscale('log', basex=2)
+    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
+
+    i += 1
+    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
+    ax[i].set_xlabel('Number of Cells')
+    ax[i].scatter(x, gamma_scale0_est, c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].scatter(x, gamma_scale1_est, c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].set_ylabel(r'Gamma $\theta$')
+    ax[i].set_ylim([0, 7])
+    ax[i].axhline(y=gamma_scale0_true, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
+    ax[i].axhline(y=gamma_scale1_true, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
+    ax[i].set_title(r'Gamma $\theta$')
+    ax[i].grid(linestyle='--')
+    ax[i].set_xscale('log', basex=2)
+    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
+    ax[i].legend()
+
     x_vs_acc = np.column_stack((x, accuracies))
     sorted_x_vs_acc = x_vs_acc[np.argsort(x_vs_acc[:, 0])]
 
     x_vs_tr = np.column_stack((x, tr))
     sorted_x_vs_tr = x_vs_tr[np.argsort(x_vs_tr[:, 0])]
-
+    
     x_vs_pi = np.column_stack((x, pi))
     sorted_x_vs_pi = x_vs_pi[np.argsort(x_vs_pi[:, 0])]
 
-    i = 0
-    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
+    i += 1
+    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
     ax[i].set_ylim(0, 110)
     ax[i].scatter(x, accuracies, c='k', marker="o", label='Accuracy', edgecolors='k', alpha=0.25)
-    ax[i].plot(sorted_x_vs_acc[:, 0][14:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
+    ax[i].plot(sorted_x_vs_acc[:, 0][49:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
+    ax[i].set_xscale('log', basex=2)
     ax[i].set_ylabel(r'Accuracy [\%]')
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('State Assignment Accuracy')
@@ -108,69 +178,25 @@ def figure_maker():
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
-    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
+    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
     ax[i].scatter(x, tr, c='k', marker="o", edgecolors='k', alpha=0.25)
-    ax[i].plot(sorted_x_vs_tr[:, 0][14:], moving_average(sorted_x_vs_tr[:, 1]), c='k', label='Moving Average')
+    ax[i].plot(sorted_x_vs_tr[:, 0][49:], moving_average(sorted_x_vs_tr[:, 1]), c='k', label='Moving Average')
+    ax[i].set_xscale('log', basex=2)
     ax[i].set_ylabel(r'$||T-T_{est}||_{F}$')
     ax[i].axhline(y=0, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('Transition Matrix Estimation')
     ax[i].grid(linestyle='--')
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
-
+    
     i += 1
-    ax[i].set_xlim((0, int(np.ceil(1.1 * max(x)))))
+    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
     ax[i].scatter(x, pi, c='k', marker="o", edgecolors='k', alpha=0.25)
-    ax[i].plot(sorted_x_vs_pi[:, 0][14:], moving_average(sorted_x_vs_pi[:, 1]), c='k', label='Moving Average')
-    ax[i].set_ylabel(r'$||\pi-\pi_{est}||_{2}$')
+    ax[i].plot(sorted_x_vs_pi[:, 0][49:], moving_average(sorted_x_vs_pi[:, 1]), c='k', label='Moving Average')
+    ax[i].set_xscale('log', basex=2)
+    ax[i].set_ylabel(r'$||T-T_{est}||_{F}$')
     ax[i].axhline(y=0, linestyle='--', linewidth=2, color='k', alpha=1)
-    ax[i].set_title(r'Initial Seeding Proportion Estimation')
+    ax[i].set_title('Transition Matrix Estimation')
     ax[i].grid(linestyle='--')
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
-
-    i += 1
-    res = [[i for i, j in bern_unpruned], [j for i, j in bern_unpruned]]
-    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
-    ax[i].set_xlabel('Number of Cells')
-    ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
-    ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
-    ax[i].set_ylabel('Bernoulli $p$')
-    ax[i].set_ylim([0.85, 1.1])
-    ax[i].axhline(y=bern_p0, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
-    ax[i].axhline(y=bern_p1, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
-    ax[i].set_title(r'Bernoulli $p$')
-    ax[i].grid(linestyle='--')
-    ax[i].set_xscale('log', basex=2)
-    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
-
-    i += 1
-    res = [[i for i, j in gamma_a_unpruned], [j for i, j in gamma_a_unpruned]]
-    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
-    ax[i].set_xlabel('Number of Cells')
-    ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
-    ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
-    ax[i].set_ylabel(r'Gamma $k$')
-    ax[i].set_ylim([5, 25])
-    ax[i].axhline(y=gamma_a0, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
-    ax[i].axhline(y=gamma_a1, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
-    ax[i].set_title(r'Gamma $k$')
-    ax[i].grid(linestyle='--')
-    ax[i].set_xscale('log', basex=2)
-    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
-
-    i += 1
-    res = [[i for i, j in gamma_scale_unpruned], [j for i, j in gamma_scale_unpruned]]
-    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
-    ax[i].set_xlabel('Number of Cells')
-    ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
-    ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
-    ax[i].set_ylabel(r'Gamma $\theta$')
-    ax[i].set_ylim([0, 7])
-    ax[i].axhline(y=gamma_scale0, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
-    ax[i].axhline(y=gamma_scale1, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
-    ax[i].set_title(r'Gamma $\theta$')
-    ax[i].grid(linestyle='--')
-    ax[i].set_xscale('log', basex=2)
-    ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
-    ax[i].legend()

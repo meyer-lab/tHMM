@@ -83,7 +83,7 @@ def accuracy_increased_cells():
     E = [state_obj0, state_obj1]
 
     # Creating a list of populations to analyze over
-    times = np.linspace(100, 1000, 25)
+    times = np.linspace(100, 1000, 12)
     list_of_populations = []
     for experiment_time in times:
         # Creating an unpruned and pruned lineage
@@ -126,7 +126,7 @@ def accuracy_increased_cells():
 
     return x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr
 
-def figure_maker(x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr):
+def figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr):
     """
     Makes figure 3.
     """
@@ -147,7 +147,7 @@ def figure_maker(x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_
     i += 1
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
-    ax[i].scatter(x, gamma_a0_est[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].scatter(x, gamma_a0_est, c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
     ax[i].scatter(x, gamma_a1_est, c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
     ax[i].set_ylabel(r'Gamma $k$')
     ax[i].set_ylim([5, 25])

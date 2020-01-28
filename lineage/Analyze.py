@@ -46,13 +46,10 @@ def Analyze(X, numStates):
     tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, numStates)
 
     for _ in range(1, 5):
-        tmp_deltas, tmp_state_ptrs, tmp_pred_states_by_lineage, tmp_tHMMobj, tmp_NF, tmp_LL = preAnalyze(X, numStates)
+        tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, numStates)
         if tmp_LL > LL:
-            deltas = tmp_deltas
-            state_ptrs = tmp_state_ptrs
-            pred_states_by_lineage = tmp_pred_states_by_lineage
             tHMMobj = tmp_tHMMobj
-            NF = tmp_NF
+            pred_states_by_lineage = tmp_pred_states_by_lineage
             LL = tmp_LL
             
     return tHMMobj, pred_states_by_lineage, LL
@@ -92,8 +89,8 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["AIC"], results_dict["AIC_DoF"] = getAIC(tHMMobj, LL)
     
     ## Calculate the predicted states prior to switching their label
-    true_states = [cell.state for cell in lineage_obj.output_lineage for lineage_obj in tHMMobj.X]
-    pred_states = [state for state in sublist for sublist in pred_states_by_lineage]
+    true_states = [cell.state for lineage_obj in tHMMobj.X for cell in lineage_obj.output_lineage ]
+    pred_states = [state for sublist in pred_states_by_lineage for state in sublist]
     
     results_dict["total_number_of_cells"] = len(pred_states)
     
@@ -125,25 +122,25 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     
     # First collect all the observations from the entire population across the lineages ordered by state
     obs_by_state = []
-    for state in tHMMobj.numStates:
-        obs_by_state.append([obs for obs in lineage.lineage_stats[state].full_lin_cells_obs for lineage in tHMMobj.X])
+    for state in range(tHMMobj.numStates):
+        obs_by_state.append([obs for lineage in tHMMobj.X for obs in lineage.lineage_stats[state].full_lin_cells_obs])
     
     # Array to hold divergence values
     switcher_array = np.zeros((tHMMobj.numStates,tHMMobj.numStates), dtype="float")
     
-    for state_pred in tHMMobj.numStates:
-        for state_true in tHMMobj.numStates:
-            p = [tHMMobj.estimate.E[state_pred].estimator(y) for y in obs_by_state[state_pred]]
-            q = [tHMMobj.X[0].E[state_true].estimator(x) for x in obs_by_state[state_pred]]
+    for state_pred in range(tHMMobj.numStates):
+        for state_true in range(tHMMobj.numStates):
+            p = [tHMMobj.estimate.E[state_pred].pdf(y) for y in obs_by_state[state_pred]]
+            q = [tHMMobj.X[0].E[state_true].pdf(x) for x in obs_by_state[state_pred]]
             switcher_array[state_pred,state_true] = (entropy(p,q)+entropy(q,p))/2
             
     results_dict["switcher_array"] = switcher_array
     
     # Create switcher map based on the minimal entropies in the switcher array
     
-    switcher_map = np.zeros((tHMMobj.numStates,1))
+    switcher_map = [None]*tHMMobj.numStates
     
-    for row in tHMMobj.numStates:
+    for row in range(tHMMobj.numStates):
         switcher_row = list(switcher_array[row,:])
         switcher_map[row] = switcher_row.index(min(switcher_row))
         
@@ -151,8 +148,8 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     
     # Rearrange the values in the transition matrix
     temp_T = tHMMobj.estimate.T
-    for row_idx in tHMMobj.numStates:
-        for col_idx in tHMMobj.numStates:
+    for row_idx in range(tHMMobj.numStates):
+        for col_idx in range(tHMMobj.numStates):
             temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx],switcher_map[col_idx]]
     
     results_dict["switched_transition_matrix"] = temp_T
@@ -162,7 +159,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     
     # Rearrange the values in the pi vector
     temp_pi = tHMMobj.estimate.pi
-    for val_idx in tHMMobj.numStates:
+    for val_idx in range(tHMMobj.numStates):
         temp_pi[val_idx] = tHMMobj.estimate.pi[switcher_map[val_idx]]
         
     results_dict["switched_pi_vector"] = temp_pi
@@ -170,21 +167,20 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     
     # Rearrange the emissions list
     temp_emissions = [None]*tHMMobj.numStates
-    for val_idx in tHMMobj.numStates:
+    for val_idx in range(tHMMobj.numStates):
         temp_emissions[val_idx] = tHMMobj.estimate.E[switcher_map[val_idx]]
     
     results_dict["switched_emissions"] = temp_emissions
     
     # Get the estimated parameter values
     results_dict["param_estimates"] = []
-    for val_idx in tHMMobj.numStates:
+    for val_idx in range(tHMMobj.numStates):
         results_dict["param_estimates"].append(temp_emissions[val_idx].params)
-        
     
     ## 3. Calculate accuracy after switching states
     pred_states_switched = [switcher_map[state] for state in pred_states]
-    results_dict["accuracy_before_switching"] = sum([int(i==j) for i, j in zip(pred_states, true_states)])
-    results_dict["accuracy_after_switching"] = sum([int(i==j) for i, j in zip(pred_states_switched, true_states)])
+    results_dict["accuracy_before_switching"] = 100*sum([int(i==j) for i, j in zip(pred_states, true_states)])/len(true_states)
+    results_dict["accuracy_after_switching"] = 100*sum([int(i==j) for i, j in zip(pred_states_switched, true_states)])/len(true_states)
  
     return results_dict
 
@@ -273,7 +269,7 @@ def get_stationary_distribution(transition_matrix):
     c = np.zeros((K + 1, 1))  # 9
     c[K, 0] = 1
     p = np.linalg.solve(BT_B, np.matmul(B.T, c)).T  # 11
-    assert np.allclose(np.matmul(transition_matrix.T, p.T), p.T)  # 12
+    # assert np.allclose(np.matmul(transition_matrix.T, p.T), p.T)  # 12
     return p
 
 
