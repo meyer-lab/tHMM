@@ -19,12 +19,7 @@ def preAnalyze(X, numStates):
 
     Returns:
     --------
-    deltas {}:
-    state_ptrs {}:
-    all_states {}:
     tHMMobj {obj}:
-    NF {vector}: A N x 1 matrix, each element is for each cell which is basically marginal observation distribution.
-    LL {}:
     """
 
     for num_tries in range(1, 5):
@@ -37,18 +32,18 @@ def preAnalyze(X, numStates):
                 print("Caught AssertionError in fitting after multiple ({}) runs. Fitting is breaking after trying {} times. Consider inspecting the length of your lineages.".format(num_tries))
                 raise
 
-    deltas, state_ptrs = get_leaf_deltas(tHMMobj)  # gets the deltas matrix
+    deltas, state_ptrs = get_leaf_deltas(tHMMobj) 
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
     pred_states_by_lineage = Viterbi(tHMMobj, deltas, state_ptrs)
     NF = get_leaf_Normalizing_Factors(tHMMobj)
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
     LL = calculate_log_likelihood(tHMMobj, NF)
-    return deltas, state_ptrs, pred_states_by_lineage, tHMMobj, NF, LL
+    return tHMMobj, pred_states_by_lineage, LL
 
 
 def Analyze(X, numStates):
-    deltas, state_ptrs, pred_states_by_lineage, tHMMobj, NF, LL = preAnalyze(X, numStates)
+    tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, numStates)
 
     for _ in range(1, 5):
         tmp_deltas, tmp_state_ptrs, tmp_pred_states_by_lineage, tmp_tHMMobj, tmp_NF, tmp_LL = preAnalyze(X, numStates)
@@ -60,7 +55,7 @@ def Analyze(X, numStates):
             NF = tmp_NF
             LL = tmp_LL
             
-    return deltas, state_ptrs, pred_states_by_lineage, tHMMobj, NF, LL
+    return tHMMobj, pred_states_by_lineage, LL
 
 
 def run_Analyze_over(list_of_populations, num_states):
@@ -80,21 +75,27 @@ def run_Analyze_over(list_of_populations, num_states):
     list_of_populations: a list of populations that contain lineages
     num_states: an integer number of states to identify (a hyper-parameter of our model)
     """
-    
+    output = []
+    for population_idx, population in enumerate(list_of_populations):
+        output.append(Analyze(population, num_states))
+    return output    
 
 
-def get_results(tHMMobj, pred_states_by_lineage):
+def Results(tHMMobj, pred_states_by_lineage, LL):
     """ 
     This function calculates several results of fitting a synthetic lineage.
     """
     ## Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
     results_dict = {}
+    results_dict["total_number_of_lineages"] = len(tHMMobj.X)
+    results_dict["LL"] = LL
+    results_dict["AIC"], results_dict["AIC_DoF"] = getAIC(tHMMobj, LL)
     
     ## Calculate the predicted states prior to switching their label
     true_states = [cell.state for cell in lineage_obj.output_lineage for lineage_obj in tHMMobj.X]
     pred_states = [state for state in sublist for sublist in pred_states_by_lineage]
     
-    results_dict["total_number_of_cells"] = length(pred_states)
+    results_dict["total_number_of_cells"] = len(pred_states)
     
     ## 1. Calculate some cluster labeling scores between the true states and the predicted states prior to switching the 
     ## predicted state labels based on their underlying distributions
@@ -174,12 +175,31 @@ def get_results(tHMMobj, pred_states_by_lineage):
     
     results_dict["switched_emissions"] = temp_emissions
     
+    # Get the estimated parameter values
+    results_dict["param_estimates"] = []
+    for val_idx in tHMMobj.numStates:
+        results_dict["param_estimates"].append(temp_emissions[val_idx].params)
+        
+    
     ## 3. Calculate accuracy after switching states
     pred_states_switched = [switcher_map[state] for state in pred_states]
     results_dict["accuracy_before_switching"] = sum([int(i==j) for i, j in zip(pred_states, true_states)])
     results_dict["accuracy_after_switching"] = sum([int(i==j) for i, j in zip(pred_states_switched, true_states)])
  
     return results_dict
+
+
+def run_Results_over(output):
+    """
+    A function that can be parallelized to speed up figure creation
+    
+    This function takes as input:
+    output: a list of tuples from the results of running run_Analyze_over
+    """
+    results_holder = []
+    for output_idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
+        results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL))
+    return(results_holder)
 
 
 def get_stationary_distribution(transition_matrix):
@@ -280,4 +300,4 @@ def getAIC(tHMMobj, LL):
 
     AIC_value = -2 * LL + 2 * AIC_degrees_of_freedom
 
-    return(AIC_value, AIC_degrees_of_freedom)  # no longer returning relative to zero
+    return AIC_value, AIC_degrees_of_freedom  

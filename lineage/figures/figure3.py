@@ -9,7 +9,7 @@ import numpy as np
 from matplotlib import gridspec, pyplot as plt
 
 from .figureCommon import moving_average
-from ..Analyze import get_results, run_Analyze_over
+from ..Analyze import run_Analyze_over, run_Results_over
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
@@ -46,8 +46,8 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((21, 12))
 #     f.subplot2grid(shape, loc, rowspan=1, colspan=1)
-    accuracy_increased_cells()
-    #figure_maker(ax, x, accuracies, tr, pi, bern_pruned, bern_p0, bern_p1, gamma_a_pruned, gamma_a0, gamma_a1, gamma_scale_pruned, gamma_scale0, gamma_scale1)
+    x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr = accuracy_increased_cells()
+    figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr)
     f.tight_layout()
 
     return f
@@ -67,19 +67,19 @@ def accuracy_increased_cells():
 
     # State 0 parameters "Resistant"
     state0 = 0
-    bern_p0 = 0.99
-    gamma_a0 = 20
-    gamma_loc = 0
-    gamma_scale0 = 5
+    bern_p0_true = 0.99
+    gamma_a0_true = 20
+    gamma_loc_true = 0
+    gamma_scale0_true = 5
 
     # State 1 parameters "Susceptible"
     state1 = 1
-    bern_p1 = 0.88
-    gamma_a1 = 10
-    gamma_scale1 = 1
+    bern_p1_true = 0.88
+    gamma_a1_true = 10
+    gamma_scale1_true = 1
 
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
+    state_obj0 = StateDistribution(state0, bern_p0_true, gamma_a0_true, gamma_loc_true, gamma_scale0_true)
+    state_obj1 = StateDistribution(state1, bern_p1_true, gamma_a1_true, gamma_loc_true, gamma_scale1_true)
     E = [state_obj0, state_obj1]
 
     # Creating a list of populations to analyze over
@@ -96,58 +96,77 @@ def accuracy_increased_cells():
         # Adding populations into a holder for analysing
         list_of_populations.append([lineage])
 
-        
-    # TODO: Analyzing the lineages in the list of populations (parallelized function)
+    # Analyzing the lineages in the list of populations (parallelized function)
+    output = run_Analyze_over(list_of_populations, 2)
 
-    # TODO: Collecting the results of analyzing the lineages 
+    # Collecting the results of analyzing the lineages 
+    results_holder = run_Results_over(output)
+    
+    # Collect necessary things to plot
+    x = []
+    bern_p0_est = []
+    bern_p1_est = []
+    gamma_a0_est = []
+    gamma_a1_est = []
+    gamma_scale0_est = []
+    gamma_scale1_est = []
+    accuracies = []
+    tr = []
+    
+    for results_dict in results_holder:
+        x.append(results_dict["total_number_of_cells"])
+        accuracies.append(results_dict["accuracy_after_switching"])
+        tr.append(results_dict["transition_matrix_norm"])
+        bern_p0_est.append(results_dict["param_estimates"][0][0])
+        bern_p1_est.append(results_dict["param_estimates"][1][0])
+        gamma_a0_est.append(results_dict["param_estimates"][0][1])
+        gamma_a1_est.append(results_dict["param_estimates"][1][1])
+        gamma_scale0_est.append(results_dict["param_estimates"][0][3])
+        gamma_scale1_est.append(results_dict["param_estimates"][1][3])
 
+    return x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr
 
-    return 
-
-def figure_maker():
+def figure_maker(x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr):
     """
     Makes figure 3.
     """
     i = 0
-    res = [[i for i, j in bern_pruned], [j for i, j in bern_pruned]]
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
-    ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
-    ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].scatter(x, bern_p0_est, c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].scatter(x, bern_p1_est, c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
     ax[i].set_ylabel('Bernoulli $p$')
     ax[i].set_ylim([0.85, 1.01])
-    ax[i].axhline(y=bern_p0, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
-    ax[i].axhline(y=bern_p1, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
+    ax[i].axhline(y=bern_p0_true, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
+    ax[i].axhline(y=bern_p1_true, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
     ax[i].set_title(r'Bernoulli $p$')
     ax[i].grid(linestyle='--')
     ax[i].set_xscale('log', basex=2)
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
-    res = [[i for i, j in gamma_a_pruned], [j for i, j in gamma_a_pruned]]
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
-    ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
-    ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].scatter(x, gamma_a0_est[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].scatter(x, gamma_a1_est, c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
     ax[i].set_ylabel(r'Gamma $k$')
     ax[i].set_ylim([5, 25])
-    ax[i].axhline(y=gamma_a0, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
-    ax[i].axhline(y=gamma_a1, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
+    ax[i].axhline(y=gamma_a0_true, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
+    ax[i].axhline(y=gamma_a1_true, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
     ax[i].set_title(r'Gamma $k$')
     ax[i].grid(linestyle='--')
     ax[i].set_xscale('log', basex=2)
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
-    res = [[i for i, j in gamma_scale_pruned], [j for i, j in gamma_scale_pruned]]
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
-    ax[i].scatter(x, res[0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
-    ax[i].scatter(x, res[1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].scatter(x, gamma_scale0_est, c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
+    ax[i].scatter(x, gamma_scale1_est, c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
     ax[i].set_ylabel(r'Gamma $\theta$')
     ax[i].set_ylim([0, 7])
-    ax[i].axhline(y=gamma_scale0, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
-    ax[i].axhline(y=gamma_scale1, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
+    ax[i].axhline(y=gamma_scale0_true, linestyle='--', linewidth=2, label='Resistant', color='#F9Cb9C', alpha=1)
+    ax[i].axhline(y=gamma_scale1_true, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
     ax[i].set_title(r'Gamma $\theta$')
     ax[i].grid(linestyle='--')
     ax[i].set_xscale('log', basex=2)
