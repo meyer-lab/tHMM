@@ -40,7 +40,7 @@ def getSetup(figsize):
 
 def makeFigure():
     """
-    Makes figures 7 & 8.
+    Makes figures 3.
     """
 
     # Get list of axis objects

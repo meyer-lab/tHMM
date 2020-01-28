@@ -78,7 +78,9 @@ def run_Analyze_over(list_of_populations, num_states):
     
     This function takes as input:
     list_of_populations: a list of populations that contain lineages
+    num_states: an integer number of states to identify (a hyper-parameter of our model)
     """
+    
 
 
 def get_results(tHMMobj, pred_states_by_lineage):
@@ -132,7 +134,7 @@ def get_results(tHMMobj, pred_states_by_lineage):
         for state_true in tHMMobj.numStates:
             p = [tHMMobj.estimate.E[state_pred].estimator(y) for y in obs_by_state[state_pred]]
             q = [tHMMobj.X[0].E[state_true].estimator(x) for x in obs_by_state[state_pred]]
-            switcher_array[state_pred,state_true] = entropy(p,q)
+            switcher_array[state_pred,state_true] = (entropy(p,q)+entropy(q,p))/2
             
     results_dict["switcher_array"] = switcher_array
     
