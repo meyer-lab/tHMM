@@ -37,31 +37,31 @@ def accuracy_increased_cells():
     piiii = np.array([0.6, 0.4], dtype="float")
 
     # T: transition probability matrix
-    T = np.array([[0.85, 0.15],
+    T = np.array([[0.75, 0.25],
                   [0.15, 0.85]], dtype="float")
 
     # State 0 parameters "Resistant"
     state0 = 0
-    bern_p0 = 0.99
-    gamma_a0 = 20
-    gamma_loc = 0
-    gamma_scale0 = 5
+    bern_p0_true = 0.99
+    gamma_a0_true = 20
+    gamma_loc_true = 0
+    gamma_scale0_true = 5
 
     # State 1 parameters "Susceptible"
     state1 = 1
-    bern_p1 = 0.88
-    gamma_a1 = 10
-    gamma_scale1 = 1
+    bern_p1_true = 0.88
+    gamma_a1_true = 10
+    gamma_scale1_true = 1
 
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
+    state_obj0 = StateDistribution(state0, bern_p0_true, gamma_a0_true, gamma_loc_true, gamma_scale0_true)
+    state_obj1 = StateDistribution(state1, bern_p1_true, gamma_a1_true, gamma_loc_true, gamma_scale1_true)
     E = [state_obj0, state_obj1]
 
     desired_num_cells = 2**9 - 1
     experiment_time = 50
     
     # Creating a list of populations to analyze over
-    num_lineages = list(range(1, 12))
+    num_lineages = list(range(1, 50))
     list_of_populations = []
     for num in num_lineages:
         population = []
@@ -107,7 +107,7 @@ def accuracy_increased_cells():
 
     return x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr, pi
 
-def figure_maker(x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr, pi):
+def figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr, pi):
     """
     Makes figure 4.
     """

@@ -83,7 +83,7 @@ def accuracy_increased_cells():
     E = [state_obj0, state_obj1]
 
     # Creating a list of populations to analyze over
-    times = np.linspace(100, 1000, 12)
+    times = np.linspace(100, 1000, 50)
     list_of_populations = []
     for experiment_time in times:
         # Creating an unpruned and pruned lineage
