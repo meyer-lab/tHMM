@@ -44,7 +44,6 @@ def KLdivergence():
     a1 = np.linspace(30.0, 17.0, 10)
     
     kl_divs = []
-    gammaKL_total = []
     acc1 = []
     acc = []
 
@@ -70,10 +69,8 @@ def KLdivergence():
         q = [tHMMobj.X[0].E[1].pdf(x) for x in obs_by_state[1]]
 
         kl_divs.append(entropy(p,q)+entropy(q,p))        
-    
-    
-    gammaKL_total.append(gammaKL1)
-
+        
+        
     for j in range(10):
         tmp = np.sum(acc1[j:num_iter * (j + 1)]) \
             / len(acc1[j:num_iter * (j + 1)])
