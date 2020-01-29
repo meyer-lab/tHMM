@@ -8,7 +8,7 @@ import numpy as np
 from matplotlib.ticker import MaxNLocator
 
 from .figureCommon import getSetup
-from ..Analyze import Analyze, getAIC
+from ..Analyze import getAIC, run_Analyze_over
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
@@ -83,9 +83,9 @@ def AIC_increased_cells1():
         # Analyze the lineages in the list of populations
         output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
         # Collecting the results of analyzing the lineages 
-        results_holder = run_Results_over(output)
-        for results_dict in results_holder:
-            tmp_AIC_holder_by_state.append(results_dict["AIC"])
+        for idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
+            AIC, AIC_DoF = getAIC(tHMMobj, LL)
+            tmp_AIC_holder_by_state.append(AIC)
         
         AIC_holder.append(tmp_AIC_holder_by_state)
 
@@ -141,9 +141,9 @@ def AIC_increased_cells2():
         # Analyze the lineages in the list of populations
         output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
         # Collecting the results of analyzing the lineages 
-        results_holder = run_Results_over(output)
-        for results_dict in results_holder:
-            tmp_AIC_holder_by_state.append(results_dict["AIC"])
+        for idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
+            AIC, AIC_DoF = getAIC(tHMMobj, LL)
+            tmp_AIC_holder_by_state.append(AIC)
         
         AIC_holder.append(tmp_AIC_holder_by_state)
 
@@ -210,9 +210,9 @@ def AIC_increased_cells3():
         # Analyze the lineages in the list of populations
         output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
         # Collecting the results of analyzing the lineages 
-        results_holder = run_Results_over(output)
-        for results_dict in results_holder:
-            tmp_AIC_holder_by_state.append(results_dict["AIC"])
+        for idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
+            AIC, AIC_DoF = getAIC(tHMMobj, LL)
+            tmp_AIC_holder_by_state.append(AIC)
         
         AIC_holder.append(tmp_AIC_holder_by_state)
 
@@ -226,7 +226,7 @@ def figure_maker(ax, i, desired_num_states, AIC_holder):
     i += 0
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(desired_num_states)))))
     ax[i].set_xlabel('Number of States')
-    ax[i].plot(desired_num_states, AIC_unpruned.T, 'k', alpha=0.5)
+    ax[i].plot(desired_num_states, np.array(AIC_holder), 'k', alpha=0.5)
     ax[i].set_ylabel(r'AIC')
     ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
     ax[i].set_title('State Assignment AIC')

@@ -59,9 +59,8 @@ def run_Analyze_over(list_of_populations, num_states):
     """
     A function that can be parallelized to speed up figure creation.
     
-    This function is the outermost for-loop we (and most users)
-    will end up using when analyzing heterogenous populations or
-    lineages.
+    This function is the outermost for-loop we will end up using
+    when analyzing heterogenous populations or lineages.
     
     Analyze is the bottleneck in the figure creation process. The
     rest of the code involved in figure creation deals with collecting
@@ -86,7 +85,6 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict = {}
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
-    results_dict["AIC"], results_dict["AIC_DoF"] = getAIC(tHMMobj, LL)
     
     ## Calculate the predicted states prior to switching their label
     true_states = [cell.state for lineage_obj in tHMMobj.X for cell in lineage_obj.output_lineage ]
@@ -132,7 +130,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         for state_true in range(tHMMobj.numStates):
             p = [tHMMobj.estimate.E[state_pred].pdf(y) for y in obs_by_state[state_pred]]
             q = [tHMMobj.X[0].E[state_true].pdf(x) for x in obs_by_state[state_pred]]
-            switcher_array[state_pred,state_true] = (entropy(p,q)+entropy(q,p))/2
+            switcher_array[state_pred,state_true] = (entropy(p,q)+entropy(q,p))
             
     results_dict["switcher_array"] = switcher_array
     

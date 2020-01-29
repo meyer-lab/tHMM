@@ -8,16 +8,13 @@ for a two state model. It plots the KL-divergence against accuracy.
 import itertools
 import random
 import numpy as np
-import scipy.stats as sp
+from scipy.stats import entropy
 import pandas as pd
 import seaborn as sns
 from ..StateDistribution import StateDistribution
 from ..LineageTree import LineageTree
 from ..Analyze import get_results, run_Analyze_over
 from .figureCommon import getSetup
-
-sns.set(style="whitegrid", palette="pastel", color_codes=True)
-
 
 def makeFigure():
     """
@@ -43,55 +40,38 @@ def KLdivergence():
     T = np.array([[0.50, 0.50],
                   [0.50, 0.50]])
 
-    state0 = 0
-    state1 = 1
-    gamma_loc = 0
-    bern_p0 = 0.99
-    bern_p1 = 0.88
     a0 = np.linspace(5.0, 17.0, 10)
-    scale0 = 10 * ([2.0])
     a1 = np.linspace(30.0, 17.0, 10)
-    scale1 = 10 * ([3.0])
-
-    gammaKL1 = []
+    
+    kl_divs = []
     gammaKL_total = []
     acc1 = []
     acc = []
 
-    assert len(a0) == len(scale0) == len(a1) == len(scale1)
-    for i in range(len(a0)):
-        state_obj0 = StateDistribution(state0, bern_p0, a0[i], gamma_loc, scale0[i])
-        state_obj1 = StateDistribution(state1, bern_p1, a1[i], gamma_loc, scale1[i])
+    list_of_populations = []
+    for idx, a0 in enumerate(a0):
+        state_obj0 = StateDistribution(0, 0.99, a0[i], gamma_loc, 10)
+        state_obj1 = StateDistribution(1, 0.88, a1[i], gamma_loc, 10)
 
         E = [state_obj0, state_obj1]
         lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=600, prune_condition='both', prune_boolean=True)
         while len(lineage.output_lineage) < 16:
             del lineage
             lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=600, prune_condition='both', prune_boolean=True)
+        list_of_populations.append([lineage])
 
-        _, obs0 = list(zip(*lineage.lineage_stats[0].full_lin_cells_obs))
-        _, obs1 = list(zip(*lineage.lineage_stats[1].full_lin_cells_obs))
+        # First collect all the observations from the entire population across the lineages ordered by state
+        obs_by_state = []
+        for state in range(tHMMobj.numStates):
+            obs_by_state.append([obs for lineage in tHMMobj.X for obs in lineage.lineage_stats[state].full_lin_cells_obs])
+        
+        # Calculate their PDFs for input to the symmetric KL
+        p = [tHMMobj.X[0].E[0].pdf(y) for y in obs_by_state[0]]
+        q = [tHMMobj.X[0].E[1].pdf(x) for x in obs_by_state[1]]
 
-        p = sp.gamma.pdf(obs0, a=a0[i], loc=gamma_loc, scale=scale0[i])
-        q = sp.gamma.pdf(obs1, a=a0[i], loc=gamma_loc, scale=scale1[i])
-
-        size = min(p.shape[0], q.shape[0])
-        assert size > 0, "pdf array for KL is empty"
-        pprime = random.sample(list(p), size)
-        qprime = random.sample(list(q), size)
-        # find the KL divergence
-        gammaKL1.append(sp.entropy(np.asarray(pprime), np.asarray(qprime)))
-
-        X = [lineage]
-        num_iter = 2  # for every KL value, it runs the model 2 times
-        # accuracy and returns the avg accuracy for 2 iters
-        for j in range(num_iter):
-            _, _, all_states, tHMMobj, _, _ = Analyze(X, 2)
-
-            # find the accuracy
-            temp = accuracy(tHMMobj, all_states)[0] * 100
-
-            acc1.append(temp)
+        kl_divs.append(entropy(p,q)+entropy(q,p))        
+    
+    
     gammaKL_total.append(gammaKL1)
 
     for j in range(10):
