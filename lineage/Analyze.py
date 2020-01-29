@@ -282,7 +282,7 @@ def getAIC(tHMMobj, LL):
     Args:
     -----
         tHMMobj (obj): the tHMM class which has been built.
-        LL (list): a list containing log-likelihood values of Normalizing Factors for each lineage.
+        LL : 
     Returns:
     --------
         AIC_ls (list): containing AIC values relative to 0 for each lineage.
@@ -294,6 +294,6 @@ def getAIC(tHMMobj, LL):
     number_of_parameters = len(tHMMobj.estimate.E[0].params)
     AIC_degrees_of_freedom = numStates**2 + numStates * number_of_parameters - 1
 
-    AIC_value = -2 * LL + 2 * AIC_degrees_of_freedom
+    AIC_value = -2 * np.log(LL) + 2 * AIC_degrees_of_freedom
 
     return AIC_value, AIC_degrees_of_freedom  

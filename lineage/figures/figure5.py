@@ -19,17 +19,17 @@ def makeFigure():
     """
     ax, f = getSetup((21, 6), (1, 3))
 
-    desred_num_states1, AIC_unpruned1 = AIC_increased_cells1()
+    desred_num_states1, AIC_holder1 = AIC_increased_cells1()
     i = 0
-    figure_maker(ax, i, desred_num_states1, AIC_unpruned1)
+    figure_maker(ax, i, desred_num_states1, AIC_holder1)
 
-    desred_num_states2, AIC_unpruned2 = AIC_increased_cells2()
+    desred_num_states2, AIC_holder2 = AIC_increased_cells2()
     i = 1
-    figure_maker(ax, i, desred_num_states2, AIC_unpruned2)
+    figure_maker(ax, i, desred_num_states2, AIC_holder2)
 
-    desred_num_states3, AIC_unpruned3 = AIC_increased_cells3()
+    desred_num_states3, AIC_holder3= AIC_increased_cells3()
     i = 2
-    figure_maker(ax, i, desred_num_states3, AIC_unpruned3)
+    figure_maker(ax, i, desred_num_states3, AIC_holder3)
 
     return f
 
@@ -75,10 +75,21 @@ def AIC_increased_cells1():
 
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             list_of_populations.append([lineage_unpruned])
-            
-    # TODO: Analyze the lineages in the list of populations
+    
+    desred_num_states = [1, 2, 3]
+    AIC_holder = []
+    for num_states_to_evaluate in desred_num_states:
+        tmp_AIC_holder_by_state = []
+        # Analyze the lineages in the list of populations
+        output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
+        # Collecting the results of analyzing the lineages 
+        results_holder = run_Results_over(output)
+        for results_dict in results_holder:
+            tmp_AIC_holder_by_state.append(results_dict["AIC"])
+        
+        AIC_holder.append(tmp_AIC_holder_by_state)
 
-    return desred_num_states, AIC_unpruned
+    return desred_num_states, AIC_holder
 
 
 def AIC_increased_cells2():
@@ -123,9 +134,20 @@ def AIC_increased_cells2():
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             list_of_populations.append([lineage_unpruned])
     
-    # TODO: Analyze the lineages in the list of populations
+    desred_num_states = [1, 2, 3]
+    AIC_holder = []
+    for num_states_to_evaluate in desred_num_states:
+        tmp_AIC_holder_by_state = []
+        # Analyze the lineages in the list of populations
+        output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
+        # Collecting the results of analyzing the lineages 
+        results_holder = run_Results_over(output)
+        for results_dict in results_holder:
+            tmp_AIC_holder_by_state.append(results_dict["AIC"])
+        
+        AIC_holder.append(tmp_AIC_holder_by_state)
 
-    return desred_num_states, AIC_unpruned
+    return desred_num_states, AIC_holder
 
 
 def AIC_increased_cells3():
@@ -181,12 +203,23 @@ def AIC_increased_cells3():
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             list_of_populations.append([lineage_unpruned])
     
-    # TODO: Analyze the lineages in the list of populations
+    desred_num_states = [1, 2, 3]
+    AIC_holder = []
+    for num_states_to_evaluate in desred_num_states:
+        tmp_AIC_holder_by_state = []
+        # Analyze the lineages in the list of populations
+        output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
+        # Collecting the results of analyzing the lineages 
+        results_holder = run_Results_over(output)
+        for results_dict in results_holder:
+            tmp_AIC_holder_by_state.append(results_dict["AIC"])
+        
+        AIC_holder.append(tmp_AIC_holder_by_state)
 
-    return desred_num_states, AIC_unpruned
+    return desred_num_states, AIC_holder
 
 
-def figure_maker(ax, i, desired_num_states, AIC_unpruned):
+def figure_maker(ax, i, desired_num_states, AIC_holder):
     """
     Makes figure 11.
     """
