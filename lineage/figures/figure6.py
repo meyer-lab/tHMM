@@ -23,8 +23,8 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((20, 6), (1, 2))
-    accuracyy, KL_gamma = KLdivergence()
-    figure_maker(ax, accuracyy, KL_gamma, dists)
+    accuracies, kl_divs, dists = KLdivergence()
+    figure_maker(ax, accuracies, kl_divs, dists)
 
     return f
 
@@ -45,7 +45,7 @@ def KLdivergence():
     
     kl_divs = []
 
-    dists = pd.DataFrame(columns=["Lifetimes [hrs]", "Distributions", "Hues"])
+    dists = pd.DataFrame(columns=["Lifetimes [hr]", "Distributions", "Hues"])
     list_of_populations = []
     for idx, a0 in enumerate(a0):
         state_obj0 = StateDistribution(0, 0.99, a0, 0, 2)
@@ -69,15 +69,22 @@ def KLdivergence():
 
         KL_value = entropy(p,q)+entropy(q,p)
         kl_divs.append(KL_value)
-        dists["Lifetimes [hrs]"] += obs_by_state_rand_sampled[0] + obs_by_state_rand_sampled[1]
+        dists["Lifetimes [hr]"] += obs_by_state_rand_sampled[0] + obs_by_state_rand_sampled[1]
         dists["Distributions"] += ["{}".format(KL_value)]*500*2
         dists["Hues"] += [1]*500 + [2]*500
         
-        
-    return kl_divs, dists
+    # Analyzing the lineages in the list of populations (parallelized function)
+    output = run_Analyze_over(list_of_populations, 2)
+
+    # Collecting the results of analyzing the lineages 
+    results_holder = run_Results_over(output)
+    
+    accuracies = [results_dict["accuracy_after_switching"] for results_dict in results_holder]
+
+    return accuracies, kl_divs, dists
 
 
-def figure_maker(ax, accuracyyy, KL_gamma, dists):
+def figure_maker(ax, accuracies, kl_divs, dists):
     """ makes the figure showing
     distributions get farther """
 
@@ -85,12 +92,12 @@ def figure_maker(ax, accuracyyy, KL_gamma, dists):
     ax[i].set_xlabel('KL divergence')
     ax[i].set_ylim(0, 110)
     ax[i].set_xlim(0, 1.07 * max(KL_gamma))
-    ax[i].scatter(KL_gamma, accuracyyy, c='k', marker="o", edgecolors='k', alpha=0.25)
+    ax[i].scatter(kl_divs, accuracies, c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].set_ylabel(r'Accuracy [\%]')
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('KL divergence for two state model')
     ax[i].grid(linestyle='--')
 
     i += 1
-    sns.violinplot(x="distributions", y="lifetime [hr]", inner="quart", palette="muted", split=True, hue="hues", data=dists, ax=ax[i])
+    sns.violinplot(x="Distributions", y="Lifetimes [hr]", inner="quart", palette="muted", split=True, hue="Hues", data=dists, ax=ax[i])
     sns.despine(left=True, ax=ax[i])
