@@ -9,7 +9,6 @@ from sklearn import metrics
 from scipy.stats import entropy
 
 
-
 def preAnalyze(X, numStates):
     """Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
     Args:
@@ -32,7 +31,7 @@ def preAnalyze(X, numStates):
                 print("Caught AssertionError in fitting after multiple ({}) runs. Fitting is breaking after trying {} times. Consider inspecting the length of your lineages.".format(num_tries))
                 raise
 
-    deltas, state_ptrs = get_leaf_deltas(tHMMobj) 
+    deltas, state_ptrs = get_leaf_deltas(tHMMobj)
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
     pred_states_by_lineage = Viterbi(tHMMobj, deltas, state_ptrs)
     NF = get_leaf_Normalizing_Factors(tHMMobj)
@@ -51,22 +50,22 @@ def Analyze(X, numStates):
             tHMMobj = tmp_tHMMobj
             pred_states_by_lineage = tmp_pred_states_by_lineage
             LL = tmp_LL
-            
+
     return tHMMobj, pred_states_by_lineage, LL
 
 
 def run_Analyze_over(list_of_populations, num_states):
     """
     A function that can be parallelized to speed up figure creation.
-    
+
     This function is the outermost for-loop we will end up using
     when analyzing heterogenous populations or lineages.
-    
+
     Analyze is the bottleneck in the figure creation process. The
     rest of the code involved in figure creation deals with collecting
-    and computing certain statistics, most of which can be done in an 
+    and computing certain statistics, most of which can be done in an
     additional for loop over the results from Analyze.
-    
+
     This function takes as input:
     list_of_populations: a list of populations that contain lineages
     num_states: an integer number of states to identify (a hyper-parameter of our model)
@@ -74,119 +73,119 @@ def run_Analyze_over(list_of_populations, num_states):
     output = []
     for population_idx, population in enumerate(list_of_populations):
         output.append(Analyze(population, num_states))
-    return output    
+    return output
 
 
 def Results(tHMMobj, pred_states_by_lineage, LL):
-    """ 
+    """
     This function calculates several results of fitting a synthetic lineage.
     """
-    ## Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
+    # Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
     results_dict = {}
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
-    
-    ## Calculate the predicted states prior to switching their label
-    true_states = [cell.state for lineage_obj in tHMMobj.X for cell in lineage_obj.output_lineage ]
+
+    # Calculate the predicted states prior to switching their label
+    true_states = [cell.state for lineage_obj in tHMMobj.X for cell in lineage_obj.output_lineage]
     pred_states = [state for sublist in pred_states_by_lineage for state in sublist]
-    
+
     results_dict["total_number_of_cells"] = len(pred_states)
-    
-    ## 1. Calculate some cluster labeling scores between the true states and the predicted states prior to switching the 
-    ## predicted state labels based on their underlying distributions
-    
-    # 1.1. mutual information score 
+
+    # 1. Calculate some cluster labeling scores between the true states and the predicted states prior to switching the
+    # predicted state labels based on their underlying distributions
+
+    # 1.1. mutual information score
     results_dict["mutual_info_score"] = metrics.mutual_info_score(true_states, pred_states)
-    
+
     # 1.2. normalized mutual information score
     results_dict["mutual_info_score"] = metrics.normalized_mutual_info_score(true_states, pred_states)
-    
+
     # 1.3. adjusted mutual information score
     results_dict["adjusted_mutual_info_score"] = metrics.adjusted_mutual_info_score(true_states, pred_states)
-    
+
     # 1.4. adjusted Rand index
     results_dict["adjusted_rand_score"] = metrics.adjusted_rand_score(true_states, pred_states)
-    
+
     # 1.5. V-measure cluster labeling score
     results_dict["v_measure_score"] = metrics.v_measure_score(true_states, pred_states)
-    
+
     # 1.6. homogeneity metric
     results_dict["homogeneity_score"] = metrics.homogeneity_score(true_states, pred_states)
-    
+
     # 1.7. completeness metric
     results_dict["completeness_score"] = metrics.completeness_score(true_states, pred_states)
-    
-    ## 2. Switch the underlying state labels based on the KL-divergence of the underlying states' distributions 
-    
+
+    # 2. Switch the underlying state labels based on the KL-divergence of the underlying states' distributions
+
     # First collect all the observations from the entire population across the lineages ordered by state
     obs_by_state = []
     for state in range(tHMMobj.numStates):
         obs_by_state.append([obs for lineage in tHMMobj.X for obs in lineage.lineage_stats[state].full_lin_cells_obs])
-    
+
     # Array to hold divergence values
-    switcher_array = np.zeros((tHMMobj.numStates,tHMMobj.numStates), dtype="float")
-    
+    switcher_array = np.zeros((tHMMobj.numStates, tHMMobj.numStates), dtype="float")
+
     for state_pred in range(tHMMobj.numStates):
         for state_true in range(tHMMobj.numStates):
             p = [tHMMobj.estimate.E[state_pred].pdf(y) for y in obs_by_state[state_pred]]
             q = [tHMMobj.X[0].E[state_true].pdf(x) for x in obs_by_state[state_pred]]
-            switcher_array[state_pred,state_true] = (entropy(p,q)+entropy(q,p))
-            
+            switcher_array[state_pred, state_true] = (entropy(p, q) + entropy(q, p))
+
     results_dict["switcher_array"] = switcher_array
-    
+
     # Create switcher map based on the minimal entropies in the switcher array
-    
-    switcher_map = [None]*tHMMobj.numStates
-    
+
+    switcher_map = [None] * tHMMobj.numStates
+
     for row in range(tHMMobj.numStates):
-        switcher_row = list(switcher_array[row,:])
+        switcher_row = list(switcher_array[row, :])
         switcher_map[row] = switcher_row.index(min(switcher_row))
-        
+
     results_dict["switcher_map"] = switcher_map
-    
+
     # Rearrange the values in the transition matrix
     temp_T = tHMMobj.estimate.T
     for row_idx in range(tHMMobj.numStates):
         for col_idx in range(tHMMobj.numStates):
-            temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx],switcher_map[col_idx]]
-    
+            temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx], switcher_map[col_idx]]
+
     results_dict["switched_transition_matrix"] = temp_T
-    results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T-tHMMobj.X[0].T)
+    results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
     results_dict["true_stationary_distribution"] = get_stationary_distribution(tHMMobj.X[0].T)
     results_dict["estimated_stationary_distribution"] = get_stationary_distribution(temp_T)
-    
+
     # Rearrange the values in the pi vector
     temp_pi = tHMMobj.estimate.pi
     for val_idx in range(tHMMobj.numStates):
         temp_pi[val_idx] = tHMMobj.estimate.pi[switcher_map[val_idx]]
-        
+
     results_dict["switched_pi_vector"] = temp_pi
-    results_dict["pi_vector_norm"] = np.linalg.norm(temp_pi-tHMMobj.X[0].pi)
-    
+    results_dict["pi_vector_norm"] = np.linalg.norm(temp_pi - tHMMobj.X[0].pi)
+
     # Rearrange the emissions list
-    temp_emissions = [None]*tHMMobj.numStates
+    temp_emissions = [None] * tHMMobj.numStates
     for val_idx in range(tHMMobj.numStates):
         temp_emissions[val_idx] = tHMMobj.estimate.E[switcher_map[val_idx]]
-    
+
     results_dict["switched_emissions"] = temp_emissions
-    
+
     # Get the estimated parameter values
     results_dict["param_estimates"] = []
     for val_idx in range(tHMMobj.numStates):
         results_dict["param_estimates"].append(temp_emissions[val_idx].params)
-    
-    ## 3. Calculate accuracy after switching states
+
+    # 3. Calculate accuracy after switching states
     pred_states_switched = [switcher_map[state] for state in pred_states]
-    results_dict["accuracy_before_switching"] = 100*sum([int(i==j) for i, j in zip(pred_states, true_states)])/len(true_states)
-    results_dict["accuracy_after_switching"] = 100*sum([int(i==j) for i, j in zip(pred_states_switched, true_states)])/len(true_states)
- 
+    results_dict["accuracy_before_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states, true_states)]) / len(true_states)
+    results_dict["accuracy_after_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states_switched, true_states)]) / len(true_states)
+
     return results_dict
 
 
 def run_Results_over(output):
     """
     A function that can be parallelized to speed up figure creation
-    
+
     This function takes as input:
     output: a list of tuples from the results of running run_Analyze_over
     """
@@ -280,7 +279,7 @@ def getAIC(tHMMobj, LL):
     Args:
     -----
         tHMMobj (obj): the tHMM class which has been built.
-        LL : 
+        LL :
     Returns:
     --------
         AIC_value : containing AIC values relative to 0 for each lineage.
@@ -291,6 +290,6 @@ def getAIC(tHMMobj, LL):
     number_of_parameters = len(tHMMobj.estimate.E[0].params)
     AIC_degrees_of_freedom = numStates**2 + numStates * number_of_parameters - 1
 
-    AIC_value = -2 * np.log(LL) + 2 * AIC_degrees_of_freedom
+    AIC_value = -2 * LL + 2 * AIC_degrees_of_freedom
 
-    return AIC_value, AIC_degrees_of_freedom  
+    return AIC_value, AIC_degrees_of_freedom

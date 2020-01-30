@@ -24,6 +24,7 @@ def getSetup(figsize, gridd):
 
     return (ax, f)
 
+
 def moving_average(a, n=50):
     """
     Calculates the moving average.

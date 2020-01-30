@@ -15,6 +15,7 @@ from ..LineageTree import LineageTree
 from ..Analyze import run_Results_over, run_Analyze_over
 from .figureCommon import getSetup
 
+
 def makeFigure():
     """
     Makes figure 12.
@@ -39,12 +40,15 @@ def KLdivergence():
                   [0.50, 0.50]])
 
     a0 = np.linspace(5.0, 20.0, 10)
-    
+
     state_obj1 = StateDistribution(1, 0.88, 4, 0, 3)
-    
+
     kl_divs = []
 
     dists = pd.DataFrame(columns=["Lifetimes [hr]", "Distributions", "Hues"])
+    tmp_lifetimes = []
+    tmp_distributions = []
+    tmp_hues = []
     list_of_populations = []
     for idx, a0 in enumerate(a0):
         state_obj0 = StateDistribution(0, 0.99, a0, 0, 2)
@@ -58,26 +62,30 @@ def KLdivergence():
 
         # First collect all the observations from the entire population across the lineages ordered by state
         obs_by_state_rand_sampled = []
-        for state in range(tHMMobj.numStates):
+        for state in range(len(E)):
             full_list = [obs for obs in lineage.lineage_stats[state].full_lin_cells_obs]
-            obs_by_state_rand_sampled = random.sample(full_list, 500)
-        
-        # Calculate their PDFs for input to the symmetric KL
-        p = [tHMMobj.X[0].E[0].pdf(y) for y in obs_by_state_rand_sampled[0]]
-        q = [tHMMobj.X[0].E[1].pdf(x) for x in obs_by_state_rand_sampled[1]]
+            obs_by_state_rand_sampled.append(random.sample(full_list, 500))
 
-        KL_value = entropy(p,q)+entropy(q,p)
+        # Calculate their PDFs for input to the symmetric KL
+        p = [E[0].pdf(y) for y in obs_by_state_rand_sampled[0]]
+        q = [E[1].pdf(x) for x in obs_by_state_rand_sampled[1]]
+
+        KL_value = entropy(p, q) + entropy(q, p)
         kl_divs.append(KL_value)
-        dists["Lifetimes [hr]"] += obs_by_state_rand_sampled[0] + obs_by_state_rand_sampled[1]
-        dists["Distributions"] += ["{}".format(KL_value)]*500*2
-        dists["Hues"] += [1]*500 + [2]*500
-        
+        tmp_lifetimes.append(([b for a, b in obs_by_state_rand_sampled[0]] + [b for a, b in obs_by_state_rand_sampled[1]]))
+        tmp_distributions.append(["{}".format(KL_value)] * 500 * 2)
+        tmp_hues.append([1] * 500 + [2] * 500)
+
+    dists["Lifetimes [hr]"] = sum(tmp_lifetimes, [])
+    dists["Distributions"] = sum(tmp_distributions, [])
+    dists["Hues"] = sum(tmp_hues, [])
+
     # Analyzing the lineages in the list of populations (parallelized function)
     output = run_Analyze_over(list_of_populations, 2)
 
-    # Collecting the results of analyzing the lineages 
+    # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)
-    
+
     accuracies = [results_dict["accuracy_after_switching"] for results_dict in results_holder]
 
     return accuracies, kl_divs, dists

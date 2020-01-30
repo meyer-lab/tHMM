@@ -27,7 +27,7 @@ def makeFigure():
     i = 1
     figure_maker(ax, i, desred_num_states2, AIC_holder2)
 
-    desred_num_states3, AIC_holder3= AIC_increased_cells3()
+    desred_num_states3, AIC_holder3 = AIC_increased_cells3()
     i = 2
     figure_maker(ax, i, desred_num_states3, AIC_holder3)
 
@@ -75,18 +75,18 @@ def AIC_increased_cells1():
 
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             list_of_populations.append([lineage_unpruned])
-    
+
     desred_num_states = [1, 2, 3]
     AIC_holder = []
     for num_states_to_evaluate in desred_num_states:
         tmp_AIC_holder_by_state = []
         # Analyze the lineages in the list of populations
         output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
-        # Collecting the results of analyzing the lineages 
+        # Collecting the results of analyzing the lineages
         for idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
             AIC, AIC_DoF = getAIC(tHMMobj, LL)
             tmp_AIC_holder_by_state.append(AIC)
-        
+
         AIC_holder.append(tmp_AIC_holder_by_state)
 
     return desred_num_states, AIC_holder
@@ -133,18 +133,18 @@ def AIC_increased_cells2():
 
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             list_of_populations.append([lineage_unpruned])
-    
+
     desred_num_states = [1, 2, 3]
     AIC_holder = []
     for num_states_to_evaluate in desred_num_states:
         tmp_AIC_holder_by_state = []
         # Analyze the lineages in the list of populations
         output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
-        # Collecting the results of analyzing the lineages 
+        # Collecting the results of analyzing the lineages
         for idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
             AIC, AIC_DoF = getAIC(tHMMobj, LL)
             tmp_AIC_holder_by_state.append(AIC)
-        
+
         AIC_holder.append(tmp_AIC_holder_by_state)
 
     return desred_num_states, AIC_holder
@@ -156,12 +156,12 @@ def AIC_increased_cells3():
     """
 
     # pi: the initial probability vector
-    pi = np.array([1./3, 1./3, 1./3])
+    pi = np.array([1. / 3, 1. / 3, 1. / 3])
 
     # T: transition probability matrix
-    T = np.array([[1./3, 1./3, 1./3],
-                  [1./3, 1./3, 1./3],
-                  [1./3, 1./3, 1./3]])
+    T = np.array([[1. / 3, 1. / 3, 1. / 3],
+                  [1. / 3, 1. / 3, 1. / 3],
+                  [1. / 3, 1. / 3, 1. / 3]])
 
     # E: states are defined as StateDistribution objects
 
@@ -202,18 +202,18 @@ def AIC_increased_cells3():
 
             # Setting then into a list or a population of lineages and collecting the length of each lineage
             list_of_populations.append([lineage_unpruned])
-    
+
     desred_num_states = [1, 2, 3]
     AIC_holder = []
     for num_states_to_evaluate in desred_num_states:
         tmp_AIC_holder_by_state = []
         # Analyze the lineages in the list of populations
         output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
-        # Collecting the results of analyzing the lineages 
+        # Collecting the results of analyzing the lineages
         for idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
             AIC, AIC_DoF = getAIC(tHMMobj, LL)
             tmp_AIC_holder_by_state.append(AIC)
-        
+
         AIC_holder.append(tmp_AIC_holder_by_state)
 
     return desred_num_states, AIC_holder

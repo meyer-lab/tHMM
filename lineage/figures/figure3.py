@@ -47,7 +47,8 @@ def makeFigure():
     ax, f = getSetup((21, 12))
 #     f.subplot2grid(shape, loc, rowspan=1, colspan=1)
     x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr = accuracy_increased_cells()
-    figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr)
+    figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true,
+                 gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr)
     f.tight_layout()
 
     return f
@@ -88,7 +89,7 @@ def accuracy_increased_cells():
     for experiment_time in times:
         # Creating an unpruned and pruned lineage
         lineage = LineageTree(piiii, T, E, (2**12) - 1, experiment_time, prune_condition='both', prune_boolean=True)
-        
+
         while len(lineage.output_lineage) < 16:
             del lineage
             lineage = LineageTree(piiii, T, E, (2**12) - 1, experiment_time, prune_condition='both', prune_boolean=True)
@@ -99,9 +100,9 @@ def accuracy_increased_cells():
     # Analyzing the lineages in the list of populations (parallelized function)
     output = run_Analyze_over(list_of_populations, 2)
 
-    # Collecting the results of analyzing the lineages 
+    # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)
-    
+
     # Collect necessary things to plot
     x = []
     bern_p0_est = []
@@ -112,7 +113,7 @@ def accuracy_increased_cells():
     gamma_scale1_est = []
     accuracies = []
     tr = []
-    
+
     for results_dict in results_holder:
         x.append(results_dict["total_number_of_cells"])
         accuracies.append(results_dict["accuracy_after_switching"])
@@ -126,7 +127,9 @@ def accuracy_increased_cells():
 
     return x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr
 
-def figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr):
+
+def figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true,
+                 gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr):
     """
     Makes figure 3.
     """

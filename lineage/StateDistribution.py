@@ -67,7 +67,7 @@ class StateDistribution:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
         return state_estimate_obj
-    
+
     def __repr__(self):
         return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_loc, self.gamma_scale)
 

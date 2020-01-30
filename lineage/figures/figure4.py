@@ -2,7 +2,7 @@
 File: figure4.py
 Purpose: Generates figure 4.
 Figure 4 analyzes heterogeneous (2 state), pruned (by both time and fate), populations of lineages
-(more than one lineage per populations) with at least 10 cells per lineage over increasing 
+(more than one lineage per populations) with at least 10 cells per lineage over increasing
 number of lineages per population.
 """
 import numpy as np
@@ -22,7 +22,8 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((24, 12), (2, 3))
     x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr, pi = accuracy_increased_cells()
-    figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr, pi)
+    figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true,
+                 gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr, pi)
     f.tight_layout()
 
     return f
@@ -59,7 +60,7 @@ def accuracy_increased_cells():
 
     desired_num_cells = 2**9 - 1
     experiment_time = 50
-    
+
     # Creating a list of populations to analyze over
     num_lineages = list(range(1, 50))
     list_of_populations = []
@@ -74,13 +75,13 @@ def accuracy_increased_cells():
             population.append(tmp_lineage)
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
-    
+
     # Analyzing the lineages in the list of populations (parallelized function)
     output = run_Analyze_over(list_of_populations, 2)
 
-    # Collecting the results of analyzing the lineages 
+    # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)
-    
+
     # Collect necessary things to plot
     x = []
     bern_p0_est = []
@@ -92,7 +93,7 @@ def accuracy_increased_cells():
     accuracies = []
     tr = []
     pi = []
-    
+
     for results_dict in results_holder:
         x.append(results_dict["total_number_of_cells"])
         accuracies.append(results_dict["accuracy_after_switching"])
@@ -107,11 +108,13 @@ def accuracy_increased_cells():
 
     return x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr, pi
 
-def figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr, pi):
+
+def figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true,
+                 gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr, pi):
     """
     Makes figure 4.
     """
-    
+
     i = 0
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
@@ -160,7 +163,7 @@ def figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, ga
 
     x_vs_tr = np.column_stack((x, tr))
     sorted_x_vs_tr = x_vs_tr[np.argsort(x_vs_tr[:, 0])]
-    
+
     x_vs_pi = np.column_stack((x, pi))
     sorted_x_vs_pi = x_vs_pi[np.argsort(x_vs_pi[:, 0])]
 
@@ -188,7 +191,7 @@ def figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, ga
     ax[i].set_title('Transition Matrix Estimation')
     ax[i].grid(linestyle='--')
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
-    
+
     i += 1
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel('Number of Cells')
