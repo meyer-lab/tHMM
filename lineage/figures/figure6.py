@@ -39,9 +39,9 @@ def KLdivergence():
     T = np.array([[0.50, 0.50],
                   [0.50, 0.50]])
 
-    a0 = np.linspace(5.0, 20.0, 10)
+    a0 = np.linspace(5.0, 50.0, 10)
 
-    state_obj1 = StateDistribution(1, 0.88, 4, 0, 3)
+    state_obj0 = StateDistribution(1, 0.88, 4, 0, 3)
 
     kl_divs = []
 
@@ -98,7 +98,7 @@ def figure_maker(ax, accuracies, kl_divs, dists):
     i = 0
     ax[i].set_xlabel('KL divergence')
     ax[i].set_ylim(0, 110)
-    ax[i].set_xlim(0, 1.07 * max(KL_gamma))
+    ax[i].set_xlim(0, 1.07 * max(kl_divs))
     ax[i].scatter(kl_divs, accuracies, c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].set_ylabel(r'Accuracy [\%]')
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
