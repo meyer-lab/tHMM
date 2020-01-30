@@ -283,8 +283,7 @@ def getAIC(tHMMobj, LL):
         LL : 
     Returns:
     --------
-        AIC_ls (list): containing AIC values relative to 0 for each lineage.
-        LL_ls (list): containing LL values relative to 0 for each lineage.
+        AIC_value : containing AIC values relative to 0 for each lineage.
         AIC_degrees_of_freedom : the degrees of freedom in AIC calculation (numStates**2 + numStates * number_of_parameters - 1) - same for each lineage
     '''
     numStates = tHMMobj.numStates
