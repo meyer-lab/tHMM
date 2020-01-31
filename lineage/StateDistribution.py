@@ -33,7 +33,7 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        bern_ll = sp.bernoulli.pmf(k=tuple_of_obs[0], p=self.bern_p)  # bernoulli likelihood
+        bern_ll = np.power(self.bern_p, np.sum(tuple_of_obs[0] == 1)) * np.power(1.0 - self.bern_p, np.sum(tuple_of_obs[0] == 0))
         gamma_ll = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a, loc=self.gamma_loc, scale=self.gamma_scale)  # gamma likelihood
 
         assert not math.isnan(gamma_ll), "{} {} {} {} {}".format(tuple_of_obs[1], gamma_ll, self.gamma_a, self.gamma_loc, self.gamma_scale)
