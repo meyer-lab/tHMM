@@ -1,5 +1,5 @@
 '''Calls the tHMM functions and outputs the parameters needed to generate the Figures'''
-import copy as cp
+from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 from .BaumWelch import fit
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
@@ -189,10 +189,17 @@ def run_Results_over(output):
     This function takes as input:
     output: a list of tuples from the results of running run_Analyze_over
     """
-    results_holder = []
-    for output_idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
-        results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL))
-    return(results_holder)
+    exe = ThreadPoolExecutor()
+
+    prom_holder = []
+    for output_idx, data in enumerate(output):
+        prom_holder.append(exe.submit(Results, *data))
+
+    res_holder = []
+    for _, prom in enumerate(prom_holder):
+        res_holder.append(prom.result())
+
+    return res_holder
 
 
 def get_stationary_distribution(transition_matrix):
