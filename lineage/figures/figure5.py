@@ -83,7 +83,7 @@ def AIC_increased_cells1():
 
         AIC_holder.append(tmp_AIC_holder_by_state)
 
-    return desred_num_states, AIC_holder
+    return desired_num_states, AIC_holder
 
 
 def AIC_increased_cells2():
@@ -135,7 +135,7 @@ def AIC_increased_cells2():
 
         AIC_holder.append(tmp_AIC_holder_by_state)
 
-    return desred_num_states, AIC_holder
+    return desired_num_states, AIC_holder
 
 
 def AIC_increased_cells3():
@@ -198,7 +198,7 @@ def AIC_increased_cells3():
 
         AIC_holder.append(tmp_AIC_holder_by_state)
 
-    return desred_num_states, AIC_holder
+    return desired_num_states, AIC_holder
 
 
 def figure_maker(ax, i, desired_num_states, AIC_holder):
