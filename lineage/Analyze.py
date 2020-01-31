@@ -189,15 +189,8 @@ def run_Results_over(output):
     This function takes as input:
     output: a list of tuples from the results of running run_Analyze_over
     """
-    exe = ThreadPoolExecutor()
-
-    prom_holder = []
-    for output_idx, data in enumerate(output):
-        prom_holder.append(exe.submit(Results, *data))
-
-    res_holder = []
-    for _, prom in enumerate(prom_holder):
-        res_holder.append(prom.result())
+    with ThreadPoolExecutor() as e:
+        res_holder = e.map(Results, output)
 
     return res_holder
 
