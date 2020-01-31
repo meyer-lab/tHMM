@@ -1,5 +1,5 @@
 '''Calls the tHMM functions and outputs the parameters needed to generate the Figures'''
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 from .BaumWelch import fit
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
@@ -189,7 +189,7 @@ def run_Results_over(output):
     This function takes as input:
     output: a list of tuples from the results of running run_Analyze_over
     """
-    with ThreadPoolExecutor() as e:
+    with ProcessPoolExecutor() as e:
         res_holder = e.map(Results, output)
 
     return res_holder
