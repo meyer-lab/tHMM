@@ -36,10 +36,10 @@ def KLdivergence():
     pi = np.array([0.5, 0.5], dtype="float")
 
     # T: transition probability matrix
-    T = np.array([[0.50, 0.50],
-                  [0.50, 0.50]])
+    T = np.array([[0.66, 0.33],
+                  [0.33, 0.66]])
 
-    a0 = np.linspace(5.0, 50.0, 3)
+    a0 = np.logspace(3, 5, 5, base=2)
 
     state_obj0 = StateDistribution(1, 0.88, 4, 0, 3)
 
@@ -54,17 +54,17 @@ def KLdivergence():
         state_obj1 = StateDistribution(0, 0.99, a0, 0, 2)
 
         E = [state_obj0, state_obj1]
-        lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=600, prune_condition='fate', prune_boolean=False)
+        lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000000000, prune_condition='fate', prune_boolean=False)
         while len(lineage.output_lineage) < 16:
             del lineage
-            lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=600, prune_condition='fate', prune_boolean=False)
+            lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000000000, prune_condition='fate', prune_boolean=False)
         list_of_populations_unsort.append([lineage])
 
         # First collect all the observations from the entire population across the lineages ordered by state
         obs_by_state_rand_sampled = []
         for state in range(len(E)):
             full_list = [obs for obs in lineage.lineage_stats[state].full_lin_cells_obs]
-            obs_by_state_rand_sampled.append(random.sample(full_list, 500))
+            obs_by_state_rand_sampled.append(random.sample(full_list, 750))
 
         # Calculate their PDFs for input to the symmetric KL
         p = [E[0].pdf(y) for y in obs_by_state_rand_sampled[0]]
@@ -73,8 +73,8 @@ def KLdivergence():
         KL_value = entropy(p, q) + entropy(q, p)
         kl_divs.append(KL_value)
         tmp_lifetimes.append(([b for a, b in obs_by_state_rand_sampled[0]] + [b for a, b in obs_by_state_rand_sampled[1]]))
-        tmp_distributions.append(["{}".format(round(KL_value))] * 500 * 2)
-        tmp_hues.append([1] * 500 + [2] * 500)
+        tmp_distributions.append(["{}".format(round(a0,2))] * 750 * 2)
+        tmp_hues.append([1] * 750 + [2] * 750)
         
     # Change the order of lists 
     indices = np.argsort(kl_divs)
