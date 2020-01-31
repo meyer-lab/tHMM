@@ -7,7 +7,7 @@ for a two state model. It plots the KL-divergence against accuracy.
 """
 import random
 import numpy as np
-from scipy.stats import entropy
+from scipy.stats import wasserstein_distance
 import pandas as pd
 import seaborn as sns
 from ..StateDistribution import StateDistribution
@@ -23,13 +23,13 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((20, 6), (1, 2))
-    accuracies, kl_divs, dists = KLdivergence()
+    accuracies, kl_divs, dists = wasserstein()
     figure_maker(ax, accuracies, kl_divs, dists)
 
     return f
 
 
-def KLdivergence():
+def wasserstein():
     """ Assuming we have 2-state model """
 
     # pi: the initial probability vector
@@ -39,11 +39,11 @@ def KLdivergence():
     T = np.array([[0.66, 0.33],
                   [0.33, 0.66]])
 
-    a0 = np.logspace(3, 5, 5, base=2)
+    a0 = np.logspace(2, 5, 5, base=2)
 
-    state_obj0 = StateDistribution(1, 0.88, 4, 0, 3)
+    state_obj0 = StateDistribution(1, 0.99, 4, 0, 3)
 
-    kl_divs = []
+    w_divs = []
 
     dists = pd.DataFrame(columns=["Lifetimes [hr]", "Distributions", "Hues"])
     tmp_lifetimes = []
@@ -70,7 +70,7 @@ def KLdivergence():
         p = [E[0].pdf(y) for y in obs_by_state_rand_sampled[0]]
         q = [E[1].pdf(x) for x in obs_by_state_rand_sampled[1]]
 
-        KL_value = entropy(p, q) + entropy(q, p)
+        w_value = wasserstein_distance()
         kl_divs.append(KL_value)
         tmp_lifetimes.append(([b for a, b in obs_by_state_rand_sampled[0]] + [b for a, b in obs_by_state_rand_sampled[1]]))
         tmp_distributions.append(["{}".format(round(a0,2))] * 750 * 2)
