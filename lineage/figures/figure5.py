@@ -1,6 +1,6 @@
 """
-File: figure11.py
-Purpose: Generates figure 11.
+File: figure5.py
+Purpose: Generates figure 5.
 
 AIC.
 """
@@ -8,7 +8,7 @@ import numpy as np
 from matplotlib.ticker import MaxNLocator
 
 from .figureCommon import getSetup
-from ..Analyze import Analyze, getAIC
+from ..Analyze import getAIC, run_Analyze_over
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
@@ -19,17 +19,17 @@ def makeFigure():
     """
     ax, f = getSetup((21, 6), (1, 3))
 
-    desred_num_states1, AIC_unpruned1 = AIC_increased_cells1()
+    desred_num_states1, AIC_holder1 = AIC_increased_cells1()
     i = 0
-    figure_maker(ax, i, desred_num_states1, AIC_unpruned1)
+    figure_maker(ax, i, desred_num_states1, AIC_holder1)
 
-    desred_num_states2, AIC_unpruned2 = AIC_increased_cells2()
+    desred_num_states2, AIC_holder2 = AIC_increased_cells2()
     i = 1
-    figure_maker(ax, i, desred_num_states2, AIC_unpruned2)
+    figure_maker(ax, i, desred_num_states2, AIC_holder2)
 
-    desred_num_states3, AIC_unpruned3 = AIC_increased_cells3()
+    desred_num_states3, AIC_holder3 = AIC_increased_cells3()
     i = 2
-    figure_maker(ax, i, desred_num_states3, AIC_unpruned3)
+    figure_maker(ax, i, desred_num_states3, AIC_holder3)
 
     return f
 
@@ -63,26 +63,27 @@ def AIC_increased_cells1():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-    desred_num_states = [1, 2, 3]
-    num_to_evaluate = 20
+    desired_num_states = [1, 2, 3]
+    num_to_evaluate = 10
 
-    AIC_unpruned = np.zeros(shape=(num_to_evaluate, len(desred_num_states)))
-
+    list_of_populations = []
     for idx in range(num_to_evaluate):
-        for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
-            lineage_unpruned = LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False)
+            list_of_populations.append(LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False))
 
-            # Setting then into a list or a population of lineages and collecting the length of each lineage
-            X1 = [lineage_unpruned]
-            # Analyzing the lineages
-            _, _, _, tHMMobj, _, LL = Analyze(X1, num_states)
-
-            # AIC
+    AIC_holder = []
+    for num_states_to_evaluate in desired_num_states:
+        tmp_AIC_holder_by_state = []
+        # Analyze the lineages in the list of populations
+        output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
+        # Collecting the results of analyzing the lineages
+        for idx, (tHMMobj, _, LL) in enumerate(output):
             AIC, _ = getAIC(tHMMobj, LL)
-            AIC_unpruned[idx, num_states - 1] = AIC
+            tmp_AIC_holder_by_state.append(AIC)
 
-    return desred_num_states, AIC_unpruned
+        AIC_holder.append(tmp_AIC_holder_by_state)
+
+    return desired_num_states, AIC_holder
 
 
 def AIC_increased_cells2():
@@ -114,26 +115,27 @@ def AIC_increased_cells2():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-    desred_num_states = [1, 2, 3]
-    num_to_evaluate = 20
+    desired_num_states = [1, 2, 3]
+    num_to_evaluate = 10
 
-    AIC_unpruned = np.zeros(shape=(num_to_evaluate, len(desred_num_states)))
-
+    list_of_populations = []
     for idx in range(num_to_evaluate):
-        for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
-            lineage_unpruned = LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False)
+            list_of_populations.append(LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False))
 
-            # Setting then into a list or a population of lineages and collecting the length of each lineage
-            X1 = [lineage_unpruned]
-            # Analyzing the lineages
-            _, _, _, tHMMobj, _, LL = Analyze(X1, num_states)
-
-            # AIC
+    AIC_holder = []
+    for num_states_to_evaluate in desired_num_states:
+        tmp_AIC_holder_by_state = []
+        # Analyze the lineages in the list of populations
+        output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
+        # Collecting the results of analyzing the lineages
+        for idx, (tHMMobj, _, LL) in enumerate(output):
             AIC, _ = getAIC(tHMMobj, LL)
-            AIC_unpruned[idx, num_states - 1] = AIC
+            tmp_AIC_holder_by_state.append(AIC)
 
-    return desred_num_states, AIC_unpruned
+        AIC_holder.append(tmp_AIC_holder_by_state)
+
+    return desired_num_states, AIC_holder
 
 
 def AIC_increased_cells3():
@@ -176,36 +178,37 @@ def AIC_increased_cells3():
 
     E = [state_obj0, state_obj1, state_obj2]
 
-    desred_num_states = [1, 2, 3]
-    num_to_evaluate = 20
+    desired_num_states = [1, 2, 3]
+    num_to_evaluate = 10
 
-    AIC_unpruned = np.zeros(shape=(num_to_evaluate, len(desred_num_states)))
-
+    list_of_populations = []
     for idx in range(num_to_evaluate):
-        for num_states in desred_num_states:
             # Creating an unpruned and pruned lineage
-            lineage_unpruned = LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False)
+            list_of_populations.append(LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False))
 
-            # Setting then into a list or a population of lineages and collecting the length of each lineage
-            X1 = [lineage_unpruned]
-            # Analyzing the lineages
-            _, _, _, tHMMobj, _, LL = Analyze(X1, num_states)
-
-            # AIC
+    AIC_holder = []
+    for num_states_to_evaluate in desired_num_states:
+        tmp_AIC_holder_by_state = []
+        # Analyze the lineages in the list of populations
+        output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
+        # Collecting the results of analyzing the lineages
+        for idx, (tHMMobj, _, LL) in enumerate(output):
             AIC, _ = getAIC(tHMMobj, LL)
-            AIC_unpruned[idx, num_states - 1] = AIC
+            tmp_AIC_holder_by_state.append(AIC)
 
-    return desred_num_states, AIC_unpruned
+        AIC_holder.append(tmp_AIC_holder_by_state)
+
+    return desired_num_states, AIC_holder
 
 
-def figure_maker(ax, i, desired_num_states, AIC_unpruned):
+def figure_maker(ax, i, desired_num_states, AIC_holder):
     """
     Makes figure 11.
     """
     i += 0
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(desired_num_states)))))
     ax[i].set_xlabel('Number of States')
-    ax[i].plot(desired_num_states, AIC_unpruned.T, 'k', alpha=0.5)
+    ax[i].plot(desired_num_states, np.array(AIC_holder), 'k', alpha=0.5)
     ax[i].set_ylabel(r'AIC')
     ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
     ax[i].set_title('State Assignment AIC')

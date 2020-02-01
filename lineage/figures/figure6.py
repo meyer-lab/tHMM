@@ -1,22 +1,19 @@
 """
-File: figure12.py
-Purpose: Generates figure 12.
+File: figure6.py
+Purpose: Generates figure 6.
 
 Figure 12 is the KL divergence for different sets of parameters
 for a two state model. It plots the KL-divergence against accuracy.
 """
-import itertools
 import random
 import numpy as np
-import scipy.stats as sp
+from scipy.stats import wasserstein_distance
 import pandas as pd
 import seaborn as sns
 from ..StateDistribution import StateDistribution
 from ..LineageTree import LineageTree
-from ..Analyze import accuracy, Analyze
+from ..Analyze import run_Results_over, run_Analyze_over
 from .figureCommon import getSetup
-
-sns.set(style="whitegrid", palette="pastel", color_codes=True)
 
 
 def makeFigure():
@@ -26,152 +23,90 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((20, 6), (1, 2))
-    accuracyy, KL_gamma = KLdivergence()
-    dists = distributionPlot()
-    figure_maker(ax, accuracyy, KL_gamma, dists)
+    accuracies, w_divs_to_use, dists = wasserstein()
+    figure_maker(ax, accuracies, w_divs_to_use, dists)
 
     return f
 
 
-def KLdivergence():
+def wasserstein():
     """ Assuming we have 2-state model """
 
     # pi: the initial probability vector
     pi = np.array([0.5, 0.5], dtype="float")
 
     # T: transition probability matrix
-    T = np.array([[0.50, 0.50],
-                  [0.50, 0.50]])
+    T = np.array([[0.66, 0.33],
+                  [0.33, 0.66]])
 
-    state0 = 0
-    state1 = 1
-    gamma_loc = 0
-    bern_p0 = 0.99
-    bern_p1 = 0.88
-    a0 = np.linspace(5.0, 17.0, 10)
-    scale0 = 10 * ([2.0])
-    a1 = np.linspace(30.0, 17.0, 10)
-    scale1 = 10 * ([3.0])
+    a0 = np.logspace(2, 5, 5, base=2)
 
-    gammaKL1 = []
-    gammaKL_total = []
-    acc1 = []
-    acc = []
+    state_obj0 = StateDistribution(1, 0.99, 4, 0, 3)
 
-    assert len(a0) == len(scale0) == len(a1) == len(scale1)
-    for i in range(len(a0)):
-        state_obj0 = StateDistribution(state0,
-                                       bern_p0,
-                                       a0[i],
-                                       gamma_loc,
-                                       scale0[i])
-        state_obj1 = StateDistribution(state1,
-                                       bern_p1,
-                                       a1[i],
-                                       gamma_loc,
-                                       scale1[i])
+    w_divs = []
+
+    dists = pd.DataFrame(columns=["Lifetimes [hr]", "Distributions", "Hues"])
+    tmp_lifetimes = []
+    tmp_distributions = []
+    tmp_hues = []
+    list_of_populations_unsort = []
+    for idx, a0 in enumerate(a0):
+        state_obj1 = StateDistribution(0, 0.99, a0, 0, 3)
 
         E = [state_obj0, state_obj1]
-        lineage = LineageTree(pi, T, E, (2**12) - 1,
-                              desired_experiment_time=600,
-                              prune_condition='both',
-                              prune_boolean=True)
+        lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000000000, prune_condition='fate', prune_boolean=False)
         while len(lineage.output_lineage) < 16:
             del lineage
-            lineage = LineageTree(pi, T, E, (2**12) - 1,
-                                  desired_experiment_time=600,
-                                  prune_condition='both',
-                                  prune_boolean=True)
+            lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000000000, prune_condition='fate', prune_boolean=False)
+        list_of_populations_unsort.append([lineage])
 
-        _, obs0 = list(zip(*lineage.lineage_stats[0].full_lin_cells_obs))
-        _, obs1 = list(zip(*lineage.lineage_stats[1].full_lin_cells_obs))
+        # First collect all the observations from the entire population across the lineages ordered by state
+        obs_by_state_rand_sampled = []
+        for state in range(len(E)):
+            full_list = [obs for obs in lineage.lineage_stats[state].full_lin_cells_obs]
+            obs_by_state_rand_sampled.append(random.sample(full_list, 750))
 
-        p = sp.gamma.pdf(obs0, a=a0[i], loc=gamma_loc, scale=scale0[i])
-        q = sp.gamma.pdf(obs1, a=a0[i], loc=gamma_loc, scale=scale1[i])
+        w_value = wasserstein_distance(obs_by_state_rand_sampled[0], obs_by_state_rand_sampled[1])
+        w_divs.append(w_value)
+        tmp_lifetimes.append(([b for a, b in obs_by_state_rand_sampled[0]] + [b for a, b in obs_by_state_rand_sampled[1]]))
+        tmp_distributions.append(["{}".format(round(a0,2))] * 750 * 2)
+        tmp_hues.append([1] * 750 + [2] * 750)
+        
+    # Change the order of lists 
+    indices = np.argsort(w_divs)
+    
+    w_divs_to_use = [w_divs[idx] for idx in indices]
 
-        size = min(p.shape[0], q.shape[0])
-        assert size > 0, "pdf array for KL is empty"
-        pprime = random.sample(list(p), size)
-        qprime = random.sample(list(q), size)
-        # find the KL divergence
-        gammaKL1.append(sp.entropy(np.asarray(pprime), np.asarray(qprime)))
+    dists["Lifetimes [hr]"] = sum([tmp_lifetimes[idx] for idx in indices], [])
+    dists["Distributions"] = sum([tmp_distributions[idx] for idx in indices], [])
+    dists["Hues"] = sum(tmp_hues, [])
+    list_of_populations = [list_of_populations_unsort[idx] for idx in indices]
 
-        X = [lineage]
-        num_iter = 2  # for every KL value, it runs the model 2 times
-        # accuracy and returns the avg accuracy for 2 iters
-        for j in range(num_iter):
-            _, _, all_states, tHMMobj, _, _ = Analyze(X, 2)
+    # Analyzing the lineages in the list of populations (parallelized function)
+    output = run_Analyze_over(list_of_populations, 2)
 
-            # find the accuracy
-            temp = accuracy(tHMMobj, all_states)[0] * 100
+    # Collecting the results of analyzing the lineages
+    results_holder = run_Results_over(output)
 
-            acc1.append(temp)
-    gammaKL_total.append(gammaKL1)
+    accuracies = [results_dict["accuracy_after_switching"] for results_dict in results_holder]
 
-    for j in range(10):
-        tmp = np.sum(acc1[j:num_iter * (j + 1)]) \
-            / len(acc1[j:num_iter * (j + 1)])
-        acc.append(tmp)
-    return acc, gammaKL_total[0]
-
-
-def distributionPlot():
-    """ Here we plot the distributions used in the KL divergence plot
-    to show how far the distributions are for each point.
-    For 10 distributions, 500 random variables are generated
-    and to be used by the violinplot they are concatenated in
-    "lifetime" column of the DataFrame, and to separate them,
-    there is another column named "distributions". """
-    gamma_loc = 0
-    a0 = np.linspace(5.0, 17.0, 10)
-    scale0 = 2.0
-    a1 = np.linspace(30.0, 17.0, 10)
-    scale1 = 3.0
-    total = []
-    for i in range(10):
-        a = list(sp.gamma.rvs(a=a0[9 - i], loc=gamma_loc,
-                              scale=scale0,
-                              size=500))
-        total.append(a)
-        b = list(sp.gamma.rvs(a=a1[9 - i], loc=gamma_loc,
-                              scale=scale1,
-                              size=500))
-        total.append(b)
-
-    TOdf = list(itertools.chain.from_iterable(total))
-
-    dists = pd.DataFrame(columns=['distributions', 'hues'])
-    dists['distributions'] = 1000 * (['d1']) + 1000 * (['d2']) + \
-        1000 * (['d3']) + 1000 * (['d4']) + 1000 * (['d5']) + \
-        1000 * (['d6']) + 1000 * (['d7']) + 1000 * (['d8']) + \
-        1000 * (['d9']) + 1000 * (['d10'])
-    dists['hues'] = 500 * [1] + 500 * [2] + 500 * [1] + \
-        500 * [2] + 500 * [1] + 500 * [2] + 500 * [1] + 500 * [2] \
-        + 500 * [1] + 500 * [2] + 500 * [1] + 500 * [2] + \
-        500 * [1] + 500 * [2] + 500 * [1] + 500 * [2] + 500 * [1] + 500 * [2] \
-        + 500 * [1] + 500 * [2]
-    dists['lifetime [hr]'] = TOdf
-    return dists
+    return accuracies, w_divs_to_use, dists
 
 
-def figure_maker(ax, accuracyyy, KL_gamma, dists):
+def figure_maker(ax, accuracies, kl_divs, dists):
     """ makes the figure showing
     distributions get farther """
 
     i = 0
     ax[i].set_xlabel('KL divergence')
     ax[i].set_ylim(0, 110)
-    ax[i].set_xlim(0, 1.07 * max(KL_gamma))
-    ax[i].scatter(KL_gamma, accuracyyy,
-                  c='k', marker="o", edgecolors='k', alpha=0.25)
+    ax[i].set_xlim(0, 1.07 * max(kl_divs))
+    ax[i].scatter(kl_divs, accuracies, c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].set_ylabel(r'Accuracy [\%]')
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('KL divergence for two state model')
     ax[i].grid(linestyle='--')
 
     i += 1
-
-    sns.violinplot(x="distributions", y="lifetime [hr]",
-                   inner="quart", palette="muted",
-                   split=True, hue="hues", data=dists, ax=ax[i])
+    sns.violinplot(x="Distributions", y="Lifetimes [hr]", inner="quart", palette="muted", split=True, hue="Hues", data=dists, ax=ax[i])
     sns.despine(left=True, ax=ax[i])

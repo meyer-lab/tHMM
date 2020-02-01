@@ -1,4 +1,8 @@
-import seaborn as sns
+"""
+Contains utilities and functions that are commonly used or shared amongst
+the figure creation files.
+"""
+
 import numpy as np
 from matplotlib import gridspec, pyplot as plt
 
