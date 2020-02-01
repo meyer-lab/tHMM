@@ -70,12 +70,17 @@ def run_Analyze_over(list_of_populations, num_states):
     list_of_populations: a list of populations that contain lineages
     num_states: an integer number of states to identify (a hyper-parameter of our model)
     """
-    input_args = [(population, num_states) for population in list_of_populations]
-    print(input_args[0])
-    with ProcessPoolExecutor() as d:
-        res = d.starmap(Analyze, input_args)
+    exe = ProcessPoolExecutor()
 
-    return res
+    prom_holder = []
+    for _, population in enumerate(list_of_populations):
+        prom_holder.append(exe.submit(Analyze, population, num_states))
+
+    output = []
+    for _, prom in enumerate(prom_holder):
+        output.append(prom.result())
+
+    return output
 
 
 
