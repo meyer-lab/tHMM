@@ -68,8 +68,8 @@ def AIC_increased_cells1():
 
     list_of_populations = []
     for idx in range(num_to_evaluate):
-            # Creating an unpruned and pruned lineage
-            list_of_populations.append([LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False)])
+        # Creating an unpruned and pruned lineage
+        list_of_populations.append([LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False)])
 
     AIC_holder = []
     for num_states_to_evaluate in desired_num_states:
