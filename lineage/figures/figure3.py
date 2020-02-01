@@ -46,7 +46,11 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((21, 12))
 #     f.subplot2grid(shape, loc, rowspan=1, colspan=1)
-    x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr = accuracy_increased_cells()
+    x, \
+    bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, \
+    gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, \
+    gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, \
+    accuracies, tr = accuracy_increased_cells()
     figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true,
                  gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr)
     f.tight_layout()
