@@ -7,11 +7,7 @@ for a two state model. It plots the KL-divergence against accuracy.
 """
 import random
 import numpy as np
-<<<<<<< HEAD
-from scipy.stats import entropy
-=======
 from scipy.stats import wasserstein_distance
->>>>>>> master
 import pandas as pd
 import seaborn as sns
 from ..StateDistribution import StateDistribution
