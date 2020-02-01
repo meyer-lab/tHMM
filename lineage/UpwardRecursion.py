@@ -200,10 +200,9 @@ def calculate_log_likelihood(tHMMobj, NF):
     '''
     Calculates log likelihood of NF for each lineage.
     '''
-    LL = []
+    LL = 0.0
 
     for num, _ in enumerate(tHMMobj.X):  # for each lineage in our Population
-        ll_per_num = sum(np.log(NF[num]))
-        LL.append(ll_per_num)
+        LL += sum(np.log(NF[num]))
 
-    return sum(LL)
+    return LL
