@@ -130,7 +130,6 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
             p = [tHMMobj.estimate.E[state_pred].pdf(y) for y in obs_by_state[state_pred]]
             q = [tHMMobj.X[0].E[state_true].pdf(x) for x in obs_by_state[state_pred]]
             switcher_array[state_pred, state_true] = (entropy(p, q) + entropy(q, p))
-<<<<<<< HEAD
 
     results_dict["switcher_array"] = switcher_array
 
@@ -194,71 +193,6 @@ def run_Results_over(output):
         res_holder = e.map(Results, output)
 
     return res_holder
-=======
-
-    results_dict["switcher_array"] = switcher_array
-
-    # Create switcher map based on the minimal entropies in the switcher array
-
-    switcher_map = [None] * tHMMobj.numStates
-
-    for row in range(tHMMobj.numStates):
-        switcher_row = list(switcher_array[row, :])
-        switcher_map[row] = switcher_row.index(min(switcher_row))
-
-    results_dict["switcher_map"] = switcher_map
-
-    # Rearrange the values in the transition matrix
-    temp_T = tHMMobj.estimate.T
-    for row_idx in range(tHMMobj.numStates):
-        for col_idx in range(tHMMobj.numStates):
-            temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx], switcher_map[col_idx]]
-
-    results_dict["switched_transition_matrix"] = temp_T
-    results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
-    results_dict["true_stationary_distribution"] = get_stationary_distribution(tHMMobj.X[0].T)
-    results_dict["estimated_stationary_distribution"] = get_stationary_distribution(temp_T)
-
-    # Rearrange the values in the pi vector
-    temp_pi = tHMMobj.estimate.pi
-    for val_idx in range(tHMMobj.numStates):
-        temp_pi[val_idx] = tHMMobj.estimate.pi[switcher_map[val_idx]]
-
-    results_dict["switched_pi_vector"] = temp_pi
-    results_dict["pi_vector_norm"] = np.linalg.norm(temp_pi - tHMMobj.X[0].pi)
-
-    # Rearrange the emissions list
-    temp_emissions = [None] * tHMMobj.numStates
-    for val_idx in range(tHMMobj.numStates):
-        temp_emissions[val_idx] = tHMMobj.estimate.E[switcher_map[val_idx]]
-
-    results_dict["switched_emissions"] = temp_emissions
-
-    # Get the estimated parameter values
-    results_dict["param_estimates"] = []
-    for val_idx in range(tHMMobj.numStates):
-        results_dict["param_estimates"].append(temp_emissions[val_idx].params)
-
-    # 3. Calculate accuracy after switching states
-    pred_states_switched = [switcher_map[state] for state in pred_states]
-    results_dict["accuracy_before_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states, true_states)]) / len(true_states)
-    results_dict["accuracy_after_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states_switched, true_states)]) / len(true_states)
-
-    return results_dict
-
-
-def run_Results_over(output):
-    """
-    A function that can be parallelized to speed up figure creation
-
-    This function takes as input:
-    output: a list of tuples from the results of running run_Analyze_over
-    """
-    results_holder = []
-    for output_idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
-        results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL))
-    return(results_holder)
->>>>>>> master
 
 
 def get_stationary_distribution(transition_matrix):
