@@ -73,7 +73,7 @@ def run_Analyze_over(list_of_populations, num_states):
     input_args = [(population, num_states) for population in list_of_populations]
     print(input_args[0])
     with ProcessPoolExecutor() as d:
-        res = d.map(Analyze, input_args)
+        res = d.starmap(Analyze, input_args)
 
     return res
 
@@ -193,7 +193,7 @@ def run_Results_over(output):
     output: a list of tuples from the results of running run_Analyze_over
     """
     with ProcessPoolExecutor() as e:
-        res_holder = e.map(Results, output)
+        res_holder = e.starmap(Results, output)
 
     return res_holder
 
