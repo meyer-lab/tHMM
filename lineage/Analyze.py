@@ -159,8 +159,6 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
 
     results_dict["switched_transition_matrix"] = temp_T
     results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
-    results_dict["true_stationary_distribution"] = get_stationary_distribution(tHMMobj.X[0].T)
-    results_dict["estimated_stationary_distribution"] = get_stationary_distribution(temp_T)
 
     # Rearrange the values in the pi vector
     temp_pi = tHMMobj.estimate.pi
@@ -274,7 +272,7 @@ def get_stationary_distribution(transition_matrix):
     c = np.zeros((K + 1, 1))  # 9
     c[K, 0] = 1
     p = np.linalg.solve(BT_B, np.matmul(B.T, c)).T  # 11
-    # assert np.allclose(np.matmul(transition_matrix.T, p.T), p.T)  # 12
+    assert np.allclose(np.matmul(transition_matrix.T, p.T), p.T)  # 12
     return p
 
 
