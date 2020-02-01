@@ -69,12 +69,12 @@ def wasserstein():
         w_value = wasserstein_distance(obs_by_state_rand_sampled[0], obs_by_state_rand_sampled[1])
         w_divs.append(w_value)
         tmp_lifetimes.append(([b for a, b in obs_by_state_rand_sampled[0]] + [b for a, b in obs_by_state_rand_sampled[1]]))
-        tmp_distributions.append(["{}".format(round(a0,2))] * 750 * 2)
+        tmp_distributions.append(["{}".format(round(a0, 2))] * 750 * 2)
         tmp_hues.append([1] * 750 + [2] * 750)
-        
-    # Change the order of lists 
+
+    # Change the order of lists
     indices = np.argsort(w_divs)
-    
+
     w_divs_to_use = [w_divs[idx] for idx in indices]
 
     dists["Lifetimes [hr]"] = sum([tmp_lifetimes[idx] for idx in indices], [])
