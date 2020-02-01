@@ -9,7 +9,7 @@ from sklearn import metrics
 from scipy.stats import entropy
 
 
-def preAnalyze(X, numStates):
+def preAnalyze(X, num_states):
     """Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
     Args:
     -----
@@ -23,7 +23,7 @@ def preAnalyze(X, numStates):
 
     for num_tries in range(1, 5):
         try:
-            tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
+            tHMMobj = tHMM(X, numStates=num_states)  # build the tHMM class with X
             fit(tHMMobj, max_iter=300)
             break
         except AssertionError:
@@ -41,11 +41,11 @@ def preAnalyze(X, numStates):
     return tHMMobj, pred_states_by_lineage, LL
 
 
-def Analyze(X, numStates):
-    tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, numStates)
+def Analyze(X, num_states):
+    tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, num_states)
 
     for _ in range(1, 5):
-        tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, numStates)
+        tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, num_states)
         if tmp_LL > LL:
             tHMMobj = tmp_tHMMobj
             pred_states_by_lineage = tmp_pred_states_by_lineage
@@ -71,6 +71,7 @@ def run_Analyze_over(list_of_populations, num_states):
     num_states: an integer number of states to identify (a hyper-parameter of our model)
     """
     input_args = [(population, num_states) for population in list_of_populations]
+    print(input_args[0])
     with ProcessPoolExecutor() as d:
         res = d.map(Analyze, input_args)
 
