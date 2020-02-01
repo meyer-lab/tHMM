@@ -193,14 +193,14 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
 def run_Results_over(output):
     """
     A function that can be parallelized to speed up figure creation
-
     This function takes as input:
     output: a list of tuples from the results of running run_Analyze_over
     """
-    with ProcessPoolExecutor() as e:
-        res_holder = e.starmap(Results, output)
+    results_holder = []
+    for output_idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
+        results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL))
 
-    return res_holder
+    return results_holder
 
 
 def get_stationary_distribution(transition_matrix):
