@@ -27,13 +27,8 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((20, 6), (1, 2))
-<<<<<<< HEAD
-    accuracies, kl_divs, dists = KLdivergence()
-    figure_maker(ax, accuracies, kl_divs, dists)
-=======
     accuracies, w_divs_to_use, dists = wasserstein()
     figure_maker(ax, accuracies, w_divs_to_use, dists)
->>>>>>> master
 
     return f
 
@@ -48,19 +43,11 @@ def wasserstein():
     T = np.array([[0.66, 0.33],
                   [0.33, 0.66]])
 
-<<<<<<< HEAD
-    a0 = np.logspace(3, 5, 5, base=2)
-
-    state_obj0 = StateDistribution(1, 0.88, 4, 0, 3)
-
-    kl_divs = []
-=======
     a0 = np.logspace(2, 5, 5, base=2)
 
     state_obj0 = StateDistribution(1, 0.99, 4, 0, 3)
 
     w_divs = []
->>>>>>> master
 
     dists = pd.DataFrame(columns=["Lifetimes [hr]", "Distributions", "Hues"])
     tmp_lifetimes = []
@@ -68,11 +55,7 @@ def wasserstein():
     tmp_hues = []
     list_of_populations_unsort = []
     for idx, a0 in enumerate(a0):
-<<<<<<< HEAD
-        state_obj1 = StateDistribution(0, 0.99, a0, 0, 2)
-=======
         state_obj1 = StateDistribution(0, 0.99, a0, 0, 3)
->>>>>>> master
 
         E = [state_obj0, state_obj1]
         lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000000000, prune_condition='fate', prune_boolean=False)
@@ -87,31 +70,16 @@ def wasserstein():
             full_list = [obs for obs in lineage.lineage_stats[state].full_lin_cells_obs]
             obs_by_state_rand_sampled.append(random.sample(full_list, 750))
 
-<<<<<<< HEAD
-        # Calculate their PDFs for input to the symmetric KL
-        p = [E[0].pdf(y) for y in obs_by_state_rand_sampled[0]]
-        q = [E[1].pdf(x) for x in obs_by_state_rand_sampled[1]]
-
-        KL_value = entropy(p, q) + entropy(q, p)
-        kl_divs.append(KL_value)
-=======
         w_value = wasserstein_distance(obs_by_state_rand_sampled[0], obs_by_state_rand_sampled[1])
         w_divs.append(w_value)
->>>>>>> master
         tmp_lifetimes.append(([b for a, b in obs_by_state_rand_sampled[0]] + [b for a, b in obs_by_state_rand_sampled[1]]))
         tmp_distributions.append(["{}".format(round(a0,2))] * 750 * 2)
         tmp_hues.append([1] * 750 + [2] * 750)
         
     # Change the order of lists 
-<<<<<<< HEAD
-    indices = np.argsort(kl_divs)
-    
-    kl_divs_to_use = [kl_divs[idx] for idx in indices]
-=======
     indices = np.argsort(w_divs)
     
     w_divs_to_use = [w_divs[idx] for idx in indices]
->>>>>>> master
 
     dists["Lifetimes [hr]"] = sum([tmp_lifetimes[idx] for idx in indices], [])
     dists["Distributions"] = sum([tmp_distributions[idx] for idx in indices], [])
@@ -126,11 +94,7 @@ def wasserstein():
 
     accuracies = [results_dict["accuracy_after_switching"] for results_dict in results_holder]
 
-<<<<<<< HEAD
-    return accuracies, kl_divs, dists
-=======
     return accuracies, w_divs_to_use, dists
->>>>>>> master
 
 
 def figure_maker(ax, accuracies, kl_divs, dists):

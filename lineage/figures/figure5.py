@@ -63,47 +63,20 @@ def AIC_increased_cells1():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-<<<<<<< HEAD
-    desred_num_states = [1, 2, 3]
-    num_to_evaluate = 20
-
-    AIC_unpruned = np.zeros(shape=(num_to_evaluate, len(desred_num_states)))
-=======
     desired_num_states = [1, 2, 3]
     num_to_evaluate = 10
 
->>>>>>> master
     list_of_populations = []
     for idx in range(num_to_evaluate):
             # Creating an unpruned and pruned lineage
-<<<<<<< HEAD
-            lineage_unpruned = LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False)
-
-            # Setting then into a list or a population of lineages and collecting the length of each lineage
-            list_of_populations.append([lineage_unpruned])
-
-    desred_num_states = [1, 2, 3]
-    AIC_holder = []
-    for num_states_to_evaluate in desred_num_states:
-=======
             list_of_populations.append(LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False))
 
     AIC_holder = []
     for num_states_to_evaluate in desired_num_states:
->>>>>>> master
         tmp_AIC_holder_by_state = []
         # Analyze the lineages in the list of populations
         output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
         # Collecting the results of analyzing the lineages
-<<<<<<< HEAD
-        for idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
-            AIC, AIC_DoF = getAIC(tHMMobj, LL)
-            tmp_AIC_holder_by_state.append(AIC)
-
-        AIC_holder.append(tmp_AIC_holder_by_state)
-
-    return desred_num_states, AIC_holder
-=======
         for idx, (tHMMobj, _, LL) in enumerate(output):
             AIC, _ = getAIC(tHMMobj, LL)
             tmp_AIC_holder_by_state.append(AIC)
@@ -111,7 +84,6 @@ def AIC_increased_cells1():
         AIC_holder.append(tmp_AIC_holder_by_state)
 
     return desired_num_states, AIC_holder
->>>>>>> master
 
 
 def AIC_increased_cells2():
@@ -143,47 +115,20 @@ def AIC_increased_cells2():
     state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
     E = [state_obj0, state_obj1]
 
-<<<<<<< HEAD
-    desred_num_states = [1, 2, 3]
-    num_to_evaluate = 20
-
-    AIC_unpruned = np.zeros(shape=(num_to_evaluate, len(desred_num_states)))
-=======
     desired_num_states = [1, 2, 3]
     num_to_evaluate = 10
 
->>>>>>> master
     list_of_populations = []
     for idx in range(num_to_evaluate):
             # Creating an unpruned and pruned lineage
-<<<<<<< HEAD
-            lineage_unpruned = LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False)
-
-            # Setting then into a list or a population of lineages and collecting the length of each lineage
-            list_of_populations.append([lineage_unpruned])
-
-    desred_num_states = [1, 2, 3]
-    AIC_holder = []
-    for num_states_to_evaluate in desred_num_states:
-=======
             list_of_populations.append(LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False))
 
     AIC_holder = []
     for num_states_to_evaluate in desired_num_states:
->>>>>>> master
         tmp_AIC_holder_by_state = []
         # Analyze the lineages in the list of populations
         output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
         # Collecting the results of analyzing the lineages
-<<<<<<< HEAD
-        for idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
-            AIC, AIC_DoF = getAIC(tHMMobj, LL)
-            tmp_AIC_holder_by_state.append(AIC)
-
-        AIC_holder.append(tmp_AIC_holder_by_state)
-
-    return desred_num_states, AIC_holder
-=======
         for idx, (tHMMobj, _, LL) in enumerate(output):
             AIC, _ = getAIC(tHMMobj, LL)
             tmp_AIC_holder_by_state.append(AIC)
@@ -191,7 +136,6 @@ def AIC_increased_cells2():
         AIC_holder.append(tmp_AIC_holder_by_state)
 
     return desired_num_states, AIC_holder
->>>>>>> master
 
 
 def AIC_increased_cells3():
@@ -234,54 +178,27 @@ def AIC_increased_cells3():
 
     E = [state_obj0, state_obj1, state_obj2]
 
-<<<<<<< HEAD
-    desred_num_states = [1, 2, 3]
-    num_to_evaluate = 20
-
-    AIC_unpruned = np.zeros(shape=(num_to_evaluate, len(desred_num_states)))
-=======
     desired_num_states = [1, 2, 3]
     num_to_evaluate = 10
 
->>>>>>> master
     list_of_populations = []
     for idx in range(num_to_evaluate):
             # Creating an unpruned and pruned lineage
-<<<<<<< HEAD
-            lineage_unpruned = LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False)
-
-            # Setting then into a list or a population of lineages and collecting the length of each lineage
-            list_of_populations.append([lineage_unpruned])
-
-    desred_num_states = [1, 2, 3]
-    AIC_holder = []
-    for num_states_to_evaluate in desred_num_states:
-=======
             list_of_populations.append(LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False))
 
     AIC_holder = []
     for num_states_to_evaluate in desired_num_states:
->>>>>>> master
         tmp_AIC_holder_by_state = []
         # Analyze the lineages in the list of populations
         output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
         # Collecting the results of analyzing the lineages
-<<<<<<< HEAD
-        for idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
-            AIC, AIC_DoF = getAIC(tHMMobj, LL)
-=======
         for idx, (tHMMobj, _, LL) in enumerate(output):
             AIC, _ = getAIC(tHMMobj, LL)
->>>>>>> master
             tmp_AIC_holder_by_state.append(AIC)
 
         AIC_holder.append(tmp_AIC_holder_by_state)
 
-<<<<<<< HEAD
-    return desred_num_states, AIC_holder
-=======
     return desired_num_states, AIC_holder
->>>>>>> master
 
 
 def figure_maker(ax, i, desired_num_states, AIC_holder):
