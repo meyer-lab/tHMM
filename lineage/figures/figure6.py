@@ -67,6 +67,7 @@ def wasserstein():
             obs_by_state_rand_sampled.append(random.sample(full_list, 750))
 
         w_value = wasserstein_distance(obs_by_state_rand_sampled[0], obs_by_state_rand_sampled[1])
+        print(obs_by_state_rand_sampled[0])
         w_divs.append(w_value)
         tmp_lifetimes.append(([b for a, b in obs_by_state_rand_sampled[0]] + [b for a, b in obs_by_state_rand_sampled[1]]))
         tmp_distributions.append(["{}".format(round(a0,2))] * 750 * 2)
