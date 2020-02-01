@@ -70,10 +70,11 @@ def run_Analyze_over(list_of_populations, num_states):
     list_of_populations: a list of populations that contain lineages
     num_states: an integer number of states to identify (a hyper-parameter of our model)
     """
-    output = []
-    for population_idx, population in enumerate(list_of_populations):
-        output.append(Analyze(population, num_states))
-    return output
+    
+    with ProcessPoolExecutor() as e:
+        res_holder = e.map(Analyze, args)
+
+    return res_holder
 
 
 def Results(tHMMobj, pred_states_by_lineage, LL):
