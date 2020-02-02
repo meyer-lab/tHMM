@@ -64,7 +64,6 @@ class TestModel(unittest.TestCase):
         labels and sizes.
         '''
         t = tHMM(self.X, numStates=2)  # build the tHMM class with X
-        print(t.estimate.pi.shape)
         self.assertEqual(t.estimate.pi.shape[0], 2)  # make sure shape is numStates
         self.assertEqual(t.estimate.T.shape[0], 2)  # make sure shape is numStates
         self.assertEqual(t.estimate.T.shape[1], 2)  # make sure shape is numStates

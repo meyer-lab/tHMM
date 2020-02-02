@@ -1,5 +1,6 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
 import numpy as np
+import scipy as scip
 import scipy.stats as sp
 import math
 
@@ -11,7 +12,6 @@ class StateDistribution:
         self.bern_p = bern_p
         self.gamma_a = gamma_a
         self.gamma_scale = gamma_scale
-        self.params = [self.bern_p, self.gamma_a, self. gamma_scale]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
@@ -33,7 +33,9 @@ class StateDistribution:
         # the individual observation likelihoods.
 
         bern_ll = sp.bernoulli.pmf(k=tuple_of_obs[0], p=self.bern_p)  # bernoulli likelihood
-        gamma_ll = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)  # gamma likelihood
+
+        gxx = np.array(tuple_of_obs[1]) / self.gamma_scale
+        gamma_ll = np.prod(np.power(gxx, self.gamma_a - 1.0) * np.exp(-gxx) / scip.special.gamma(self.gamma_a))
 
         assert not math.isnan(gamma_ll), "{} {} {} {} {}".format(tuple_of_obs[1], gamma_ll, self.gamma_a, self.gamma_scale)
 
