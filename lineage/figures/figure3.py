@@ -74,7 +74,6 @@ def accuracy_increased_cells():
     state0 = 0
     bern_p0_true = 0.99
     gamma_a0_true = 20
-    gamma_loc_true = 0
     gamma_scale0_true = 5
 
     # State 1 parameters "Susceptible"
@@ -83,8 +82,8 @@ def accuracy_increased_cells():
     gamma_a1_true = 10
     gamma_scale1_true = 1
 
-    state_obj0 = StateDistribution(state0, bern_p0_true, gamma_a0_true, gamma_loc_true, gamma_scale0_true)
-    state_obj1 = StateDistribution(state1, bern_p1_true, gamma_a1_true, gamma_loc_true, gamma_scale1_true)
+    state_obj0 = StateDistribution(state0, bern_p0_true, gamma_a0_true, gamma_scale0_true)
+    state_obj1 = StateDistribution(state1, bern_p1_true, gamma_a1_true, gamma_scale1_true)
     E = [state_obj0, state_obj1]
 
     # Creating a list of populations to analyze over
