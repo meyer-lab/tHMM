@@ -124,8 +124,8 @@ def accuracy_increased_cells():
         bern_p1_est.append(results_dict["param_estimates"][1][0])
         gamma_a0_est.append(results_dict["param_estimates"][0][1])
         gamma_a1_est.append(results_dict["param_estimates"][1][1])
-        gamma_scale0_est.append(results_dict["param_estimates"][0][3])
-        gamma_scale1_est.append(results_dict["param_estimates"][1][3])
+        gamma_scale0_est.append(results_dict["param_estimates"][0][2])
+        gamma_scale1_est.append(results_dict["param_estimates"][1][2])
 
     return x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr
 
