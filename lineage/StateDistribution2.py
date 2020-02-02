@@ -39,34 +39,6 @@ class StateDistribution2:
         gamma_llG1 = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a1, scale=self.gamma_scale1)  # gamma likelihood for G1
         gamma_llG2 = sp.gamma.pdf(x=tuple_of_obs[2], a=self.gamma_a2, scale=self.gamma_scale2)  # gamma likelihood for G2
 
-        assert not math.isnan(gamma_llG1), "{} {} {} {} {}".format(tuple_of_obs[1], gamma_llG1, self.gamma_a1, self.gamma_scale1)
-        if bern_ll == 0 or np.exp(gamma_llG1) == 0:
-            print(
-                tuple_of_obs[1],
-                ',',
-                gamma_llG1,
-                ',',
-                self.gamma_a1,
-                ',',
-                self.gamma_scale1,
-                tuple_of_obs[0],
-                bern_ll,
-                self.bern_p)
-
-        assert not math.isnan(gamma_llG2), "{} {} {} {} {}".format(tuple_of_obs[2], gamma_llG2, self.gamma_a2, self.gamma_scale2)
-        if bern_ll == 0 or np.exp(gamma_llG2) == 0:
-            print(
-                tuple_of_obs[2],
-                ',',
-                gamma_llG2,
-                ',',
-                self.gamma_a2,
-                ',',
-                self.gamma_scale2,
-                tuple_of_obs[0],
-                bern_ll,
-                self.bern_p)
-
         return bern_ll * gamma_llG1 * gamma_llG2
 
     def estimator(self, list_of_tuples_of_obs):

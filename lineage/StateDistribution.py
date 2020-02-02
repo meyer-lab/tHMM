@@ -39,8 +39,6 @@ class StateDistribution:
         gxx = np.array(tuple_of_obs[1]) / self.gamma_scale
         gamma_ll = np.prod(np.power(gxx, self.gamma_a - 1.0) * np.exp(-gxx) / scip.special.gamma(self.gamma_a))
 
-        assert not math.isnan(gamma_ll), "{} {} {} {} {}".format(tuple_of_obs[1], gamma_ll, self.gamma_a, self.gamma_scale)
-
         return bern_ll * gamma_ll
 
     def estimator(self, list_of_tuples_of_obs):
