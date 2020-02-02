@@ -117,6 +117,4 @@ def makeFigure():
     ax[i].grid(linestyle='--')
     ax[i].legend()
 
-    f.tight_layout()
-
     return f

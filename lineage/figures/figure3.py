@@ -53,7 +53,6 @@ def makeFigure():
         accuracies, tr = accuracy_increased_cells()
     figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true,
                  gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr)
-    f.tight_layout()
 
     return f
 
