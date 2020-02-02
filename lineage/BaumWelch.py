@@ -35,12 +35,11 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, 
 
 def get_all_gammas(lineageObj, gamma_array_at_state_j):
     '''sum of the list of all the gamma parent child for all the parent child relationships'''
-    lineage = lineageObj.output_lineage
     holder = 0.0
     for level in lineageObj.output_list_of_gens[1:]:  # get all the gammas but not the ones at the last level
         for cell in level:
             if not cell._isLeaf():
-                cell_idx = lineage.index(cell)
+                cell_idx = lineageObj.output_lineage.index(cell)
                 holder += gamma_array_at_state_j[cell_idx]
 
     return holder
