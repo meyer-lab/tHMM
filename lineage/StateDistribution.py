@@ -2,7 +2,6 @@
 import numpy as np
 import scipy as scip
 import scipy.stats as sp
-import math
 
 
 class StateDistribution:
@@ -12,6 +11,7 @@ class StateDistribution:
         self.bern_p = bern_p
         self.gamma_a = gamma_a
         self.gamma_scale = gamma_scale
+        self.params = [self.bern_p, self.gamma_a, self.gamma_loc, self. gamma_scale]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
@@ -226,11 +226,7 @@ def fate_prune_rule(cell):
     (index 0) is a measure of the cell's fate (1 being alive, 0 being dead).
     Clearly if a cell has died, its subtree must be removed.
     """
-    truther = False
-    if cell.obs[0] == 0:
-        truther = True  # cell has died
-        # subtree must be removed
-    return truther
+    return cell.obs[0] == 0
 
 
 def time_prune_rule(cell, desired_experiment_time):
@@ -241,11 +237,7 @@ def time_prune_rule(cell, desired_experiment_time):
     If a cell has lived beyond a certain experiment time, then its subtree
     must be removed.
     """
-    truther = False
-    if cell.time.endT > desired_experiment_time:
-        truther = True  # cell died after the experiment ended
-        # subtree must be removed
-    return truther
+    return cell.time.endT > desired_experiment_time
 
 # Because parameter estimation requires that estimators be written or imported,
 # the user should be able to provide
