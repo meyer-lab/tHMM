@@ -34,7 +34,7 @@ class StateDistribution:
 
         nPos = np.sum(np.array(tuple_of_obs[0]) == 1)
         nNeg = np.sum(np.array(tuple_of_obs[0]) == 0)
-        bern_ll = np.prod(self.bern_p**nPos * (1.0 - self.bern_p)**nNeg)
+        bern_ll = np.prod(self.bern_p ** nPos * (1.0 - self.bern_p) ** nNeg)
 
         gxx = np.array(tuple_of_obs[1]) / self.gamma_scale
         gamma_ll = np.prod(np.power(gxx, self.gamma_a - 1.0) * np.exp(-gxx) / scip.special.gamma(self.gamma_a))
@@ -58,10 +58,7 @@ class StateDistribution:
         bern_p_estimate = bernoulli_estimator(bern_obs)
         gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
 
-        state_estimate_obj = StateDistribution(state=self.state,
-                                               bern_p=bern_p_estimate,
-                                               gamma_a=gamma_a_estimate,
-                                               gamma_scale=gamma_scale_estimate)
+        state_estimate_obj = StateDistribution(state=self.state, bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
@@ -105,9 +102,7 @@ def assign_times(lineageObj):
                 cell.time = Time(0, cell.obs[1], cell.obs[1])
         else:
             for cell in level:
-                cell.time = Time(cell.parent.time.endT,
-                                 cell.obs[1],
-                                 cell.parent.time.endT + cell.obs[1])
+                cell.time = Time(cell.parent.time.endT, cell.obs[1], cell.parent.time.endT + cell.obs[1])
 
 
 def get_experiment_time(lineageObj):
@@ -140,7 +135,7 @@ def track_lineage_generation_histogram(lineageObj):
             assert gen_minus_1 == hist.shape[1] - 1
         for state in range(lineageObj.num_states):
             hist[state, gen_minus_1] = sum([1 if cell.state == state else 0 for cell in level])
-    return(hist)
+    return hist
 
 
 def track_population_generation_histogram(population):
@@ -157,11 +152,11 @@ def track_population_generation_histogram(population):
         for idx, hist in enumerate(collector):
             if len(tmp_array) < len(hist[state, :]):
                 c = hist[state, :].copy()
-                c[:len(tmp_array)] += tmp_array
+                c[: len(tmp_array)] += tmp_array
                 tmp_array = c
             else:
                 c = tmp_array.copy()
-                c[:len(hist[state, :])] += hist[state, :]
+                c[: len(hist[state, :])] += hist[state, :]
                 tmp_array = c
         total.append(tmp_array)
 
@@ -190,7 +185,7 @@ def track_lineage_growth_histogram(lineageObj, delta_time):
             start_time += delta_time
             end_time += delta_time
             hist[state, bin_idx] = num_alive
-    return(hist, bins)
+    return (hist, bins)
 
 
 def track_population_growth_histogram(population, delta_time):
@@ -207,14 +202,14 @@ def track_population_growth_histogram(population, delta_time):
         for idx, hist in enumerate(collector):
             if len(tmp_array) < len(hist[state, :]):
                 c = hist[state, :].copy()
-                c[:len(tmp_array)] += tmp_array
+                c[: len(tmp_array)] += tmp_array
                 tmp_array = c
             else:
                 c = tmp_array.copy()
-                c[:len(hist[state, :])] += hist[state, :]
+                c[: len(hist[state, :])] += hist[state, :]
                 tmp_array = c
         total.append(tmp_array)
-    return(total)
+    return total
 
 
 def fate_prune_rule(cell):
@@ -236,6 +231,7 @@ def time_prune_rule(cell, desired_experiment_time):
     must be removed.
     """
     return cell.time.endT > desired_experiment_time
+
 
 # Because parameter estimation requires that estimators be written or imported,
 # the user should be able to provide
@@ -263,9 +259,9 @@ def gamma_estimator(gamma_obs):
     # gamma_a
     a_hat = (N * (sum(gamma_obs)) + 1e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
     # gamma_scale
-    b_hat = ((1 + 1e-10) / (N**2 + 1e-10)) * (N * (sum(x_lnx)) - (sum(lnx)) * (sum(gamma_obs)))
+    b_hat = ((1 + 1e-10) / (N ** 2 + 1e-10)) * (N * (sum(x_lnx)) - (sum(lnx)) * (sum(gamma_obs)))
 
-    if b_hat < 1.0 or 50. < a_hat < 5.:
+    if b_hat < 1.0 or 50.0 < a_hat < 5.0:
         return 10, 1
 
     return a_hat, b_hat
