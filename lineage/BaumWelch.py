@@ -82,7 +82,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
     get_nonroot_gammas(tHMMobj, gammas, betas)
 
     # first stopping condition check
-    new_LL_list = calculate_log_likelihood(tHMMobj, NF)
+    new_LL_list = calculate_log_likelihood(NF)
     for _ in range(max_iter):
         old_LL_list = new_LL_list
 
@@ -135,7 +135,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
         get_nonroot_gammas(tHMMobj, gammas, betas)
 
         # tolerance checking
-        new_LL_list = calculate_log_likelihood(tHMMobj, NF)
+        new_LL_list = calculate_log_likelihood(NF)
 
         if np.allclose(np.array(old_LL_list), np.array(new_LL_list), atol=tolerance):
             return(tHMMobj, NF, betas, gammas, new_LL_list)

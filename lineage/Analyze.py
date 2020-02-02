@@ -37,7 +37,7 @@ def preAnalyze(X, num_states):
     NF = get_leaf_Normalizing_Factors(tHMMobj)
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
-    LL = calculate_log_likelihood(tHMMobj, NF)
+    LL = calculate_log_likelihood(NF)
     return tHMMobj, pred_states_by_lineage, LL
 
 
