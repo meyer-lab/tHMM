@@ -11,7 +11,7 @@ class StateDistribution:
         self.bern_p = bern_p
         self.gamma_a = gamma_a
         self.gamma_scale = gamma_scale
-        self.params = [self.bern_p, self.gamma_a, self.gamma_loc, self. gamma_scale]
+        self.params = [self.bern_p, self.gamma_a, self.gamma_loc, self.gamma_scale]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
@@ -73,10 +73,7 @@ class StateDistribution:
 
 
 def tHMM_E_init(state):
-    return StateDistribution(state,
-                             0.9,
-                             10 * (np.random.uniform()),
-                             1)
+    return StateDistribution(state, 0.9, 10 * (np.random.uniform()), 1)
 
 
 class Time:
@@ -167,7 +164,8 @@ def track_population_generation_histogram(population):
                 c[:len(hist[state, :])] += hist[state, :]
                 tmp_array = c
         total.append(tmp_array)
-    return(total)
+
+    return total
 
 
 def track_lineage_growth_histogram(lineageObj, delta_time):
@@ -256,6 +254,7 @@ def bernoulli_estimator(bern_obs):
 def gamma_estimator(gamma_obs):
     """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
     N = len(gamma_obs)
+
     if N == 0:
         return 10, 1
 
@@ -265,10 +264,6 @@ def gamma_estimator(gamma_obs):
     a_hat = (N * (sum(gamma_obs)) + 1e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
     # gamma_scale
     b_hat = ((1 + 1e-10) / (N**2 + 1e-10)) * (N * (sum(x_lnx)) - (sum(lnx)) * (sum(gamma_obs)))
-    # bias correction
-#     if N>1:
-#         a_hat = (N /(N - 1)) * a_hat
-#         b_hat = b_hat - (1/N) * (3*b_hat - (2/3) * (b_hat/(b_hat + 1)) - (4/5)* (b_hat)/((1 + b_hat)**2
 
     if b_hat < 1.0 or 50. < a_hat < 5.:
         return 10, 1
