@@ -6,13 +6,10 @@ from .UpwardRecursion import beta_parent_child_func
 
 def get_root_gammas(tHMMobj, betas):
     '''need the first gamma terms in the baum welch, which are just the beta values of the root nodes.'''
-    numStates = tHMMobj.numStates
-
     gammas = []
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        lineage = lineageObj.output_lineage
-        gamma_array = np.zeros((len(lineage), numStates))
+        gamma_array = np.zeros((len(lineageObj.output_lineage), tHMMobj.numStates))
 
         gamma_array[0, :] = betas[num][0, :]
         assert np.isclose(np.sum(gamma_array[0]), 1.)
