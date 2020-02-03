@@ -26,7 +26,6 @@ class TestModel(unittest.TestCase):
         state0 = 0
         bern_p0 = 0.95
         gamma_a0 = 20
-        gamma_loc = 0
         gamma_scale0 = 5
 
         # State 1 parameters "Susciptible"
@@ -35,8 +34,8 @@ class TestModel(unittest.TestCase):
         gamma_a1 = 10
         gamma_scale1 = 1
 
-        state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
-        state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
+        state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
+        state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
         self.E = [state_obj0, state_obj1]
         # Using an unpruned lineage to avoid unforseen issues
         self.X = [LineageTree(pi, T, self.E, desired_num_cells=(2**11) - 1, desired_experiment_time=500, prune_condition='die',
@@ -65,7 +64,6 @@ class TestModel(unittest.TestCase):
         labels and sizes.
         '''
         t = tHMM(self.X, numStates=2)  # build the tHMM class with X
-        print(t.estimate.pi.shape)
         self.assertEqual(t.estimate.pi.shape[0], 2)  # make sure shape is numStates
         self.assertEqual(t.estimate.T.shape[0], 2)  # make sure shape is numStates
         self.assertEqual(t.estimate.T.shape[1], 2)  # make sure shape is numStates

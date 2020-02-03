@@ -1,24 +1,22 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
 import numpy as np
 import scipy.stats as sp
-import math
 
 
 class StateDistribution:
-    def __init__(self, state, bern_p, gamma_a, gamma_loc, gamma_scale):  # user has to identify what parameters to use for each state
+    def __init__(self, state, bern_p, gamma_a, gamma_scale):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.state = state
         self.bern_p = bern_p
         self.gamma_a = gamma_a
-        self.gamma_loc = gamma_loc
         self.gamma_scale = gamma_scale
-        self.params = [self.bern_p, self.gamma_a, self.gamma_loc, self. gamma_scale]
+        self.params = [self.bern_p, self.gamma_a, self.gamma_scale]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
-        gamma_obs = sp.gamma.rvs(a=self.gamma_a, loc=self.gamma_loc, scale=self.gamma_scale, size=size)  # gamma observations
+        gamma_obs = sp.gamma.rvs(a=self.gamma_a, scale=self.gamma_scale, size=size)  # gamma observations
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         list_of_tuple_of_obs = list(zip(bern_obs, gamma_obs))
@@ -34,9 +32,7 @@ class StateDistribution:
         # the individual observation likelihoods.
 
         bern_ll = sp.bernoulli.pmf(k=tuple_of_obs[0], p=self.bern_p)  # bernoulli likelihood
-        gamma_ll = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a, loc=self.gamma_loc, scale=self.gamma_scale)  # gamma likelihood
-
-        assert not math.isnan(gamma_ll), "{} {} {} {} {}".format(tuple_of_obs[1], gamma_ll, self.gamma_a, self.gamma_loc, self.gamma_scale)
+        gamma_ll = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)  # gamma likelihood
 
         return bern_ll * gamma_ll
 
@@ -55,13 +51,9 @@ class StateDistribution:
             gamma_obs = []
 
         bern_p_estimate = bernoulli_estimator(bern_obs)
-        gamma_a_estimate, gamma_loc_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
+        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
 
-        state_estimate_obj = StateDistribution(state=self.state,
-                                               bern_p=bern_p_estimate,
-                                               gamma_a=gamma_a_estimate,
-                                               gamma_loc=gamma_loc_estimate,
-                                               gamma_scale=gamma_scale_estimate)
+        state_estimate_obj = StateDistribution(state=self.state, bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
@@ -69,15 +61,11 @@ class StateDistribution:
         return state_estimate_obj
 
     def __repr__(self):
-        return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_loc, self.gamma_scale)
+        return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_scale)
 
 
 def tHMM_E_init(state):
-    return StateDistribution(state,
-                             0.9,
-                             10 * (np.random.uniform()),
-                             0,
-                             1)
+    return StateDistribution(state, 0.9, 10 * (np.random.uniform()), 1)
 
 
 class Time:
@@ -109,9 +97,7 @@ def assign_times(lineageObj):
                 cell.time = Time(0, cell.obs[1], cell.obs[1])
         else:
             for cell in level:
-                cell.time = Time(cell.parent.time.endT,
-                                 cell.obs[1],
-                                 cell.parent.time.endT + cell.obs[1])
+                cell.time = Time(cell.parent.time.endT, cell.obs[1], cell.parent.time.endT + cell.obs[1])
 
 
 def get_experiment_time(lineageObj):
@@ -144,7 +130,7 @@ def track_lineage_generation_histogram(lineageObj):
             assert gen_minus_1 == hist.shape[1] - 1
         for state in range(lineageObj.num_states):
             hist[state, gen_minus_1] = sum([1 if cell.state == state else 0 for cell in level])
-    return(hist)
+    return hist
 
 
 def track_population_generation_histogram(population):
@@ -161,14 +147,15 @@ def track_population_generation_histogram(population):
         for idx, hist in enumerate(collector):
             if len(tmp_array) < len(hist[state, :]):
                 c = hist[state, :].copy()
-                c[:len(tmp_array)] += tmp_array
+                c[: len(tmp_array)] += tmp_array
                 tmp_array = c
             else:
                 c = tmp_array.copy()
-                c[:len(hist[state, :])] += hist[state, :]
+                c[: len(hist[state, :])] += hist[state, :]
                 tmp_array = c
         total.append(tmp_array)
-    return(total)
+
+    return total
 
 
 def track_lineage_growth_histogram(lineageObj, delta_time):
@@ -193,7 +180,7 @@ def track_lineage_growth_histogram(lineageObj, delta_time):
             start_time += delta_time
             end_time += delta_time
             hist[state, bin_idx] = num_alive
-    return(hist, bins)
+    return (hist, bins)
 
 
 def track_population_growth_histogram(population, delta_time):
@@ -210,14 +197,14 @@ def track_population_growth_histogram(population, delta_time):
         for idx, hist in enumerate(collector):
             if len(tmp_array) < len(hist[state, :]):
                 c = hist[state, :].copy()
-                c[:len(tmp_array)] += tmp_array
+                c[: len(tmp_array)] += tmp_array
                 tmp_array = c
             else:
                 c = tmp_array.copy()
-                c[:len(hist[state, :])] += hist[state, :]
+                c[: len(hist[state, :])] += hist[state, :]
                 tmp_array = c
         total.append(tmp_array)
-    return(total)
+    return total
 
 
 def fate_prune_rule(cell):
@@ -227,11 +214,7 @@ def fate_prune_rule(cell):
     (index 0) is a measure of the cell's fate (1 being alive, 0 being dead).
     Clearly if a cell has died, its subtree must be removed.
     """
-    truther = False
-    if cell.obs[0] == 0:
-        truther = True  # cell has died
-        # subtree must be removed
-    return truther
+    return cell.obs[0] == 0
 
 
 def time_prune_rule(cell, desired_experiment_time):
@@ -242,11 +225,8 @@ def time_prune_rule(cell, desired_experiment_time):
     If a cell has lived beyond a certain experiment time, then its subtree
     must be removed.
     """
-    truther = False
-    if cell.time.endT > desired_experiment_time:
-        truther = True  # cell died after the experiment ended
-        # subtree must be removed
-    return truther
+    return cell.time.endT > desired_experiment_time
+
 
 # Because parameter estimation requires that estimators be written or imported,
 # the user should be able to provide
@@ -262,30 +242,21 @@ def bernoulli_estimator(bern_obs):
     return (sum(bern_obs) + 1e-10) / (len(bern_obs) + 2e-10)
 
 
-def exponential_estimator(exp_obs):
-    """ Trivial exponential """
-    return (sum(exp_obs) + 50e-10) / (len(exp_obs) + 1e-10)
-
-
 def gamma_estimator(gamma_obs):
     """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
     N = len(gamma_obs)
+
     if N == 0:
-        return 10, 0, 1
+        return 10, 1
 
     x_lnx = [x * np.log(x) for x in gamma_obs]
     lnx = [np.log(x) for x in gamma_obs]
     # gamma_a
     a_hat = (N * (sum(gamma_obs)) + 1e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
     # gamma_scale
-    b_hat = ((1 + 1e-10) / (N**2 + 1e-10)) * (N * (sum(x_lnx)) - (sum(lnx)) * (sum(gamma_obs)))
-    loc = 0
-    # bias correction
-#     if N>1:
-#         a_hat = (N /(N - 1)) * a_hat
-#         b_hat = b_hat - (1/N) * (3*b_hat - (2/3) * (b_hat/(b_hat + 1)) - (4/5)* (b_hat)/((1 + b_hat)**2
+    b_hat = ((1 + 1e-10) / (N ** 2 + 1e-10)) * (N * (sum(x_lnx)) - (sum(lnx)) * (sum(gamma_obs)))
 
-    if b_hat < 1.0 or 50. < a_hat < 5.:
-        return 10, loc, 1
+    if b_hat < 1.0 or 50.0 < a_hat < 5.0:
+        return 10, 1
 
-    return a_hat, loc, b_hat
+    return a_hat, b_hat

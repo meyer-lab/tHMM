@@ -4,13 +4,13 @@ SHELL := /bin/bash
 
 all: output/manuscript.html output/manuscript.pdf coverage.xml pylint.log
 
-flist = 1 2
+flist = 1 2 3
 
 venv: venv/bin/activate
 
 venv/bin/activate: requirements.txt
 	test -d venv || virtualenv venv
-	. venv/bin/activate && pip install -Ur requirements.txt
+	. venv/bin/activate && pip install -Uqr requirements.txt
 	touch venv/bin/activate
 
 output/figure%.svg: venv genFigures.py 

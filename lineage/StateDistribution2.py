@@ -6,12 +6,11 @@ from .StateDistribution import gamma_estimator, bernoulli_estimator
 
 
 class StateDistribution2:
-    def __init__(self, state, bern_p, gamma_a1, gamma_loc, gamma_scale1, gamma_a2, gamma_scale2):  # user has to identify what parameters to use for each state
+    def __init__(self, state, bern_p, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.state = state
         self.bern_p = bern_p
         self.gamma_a1 = gamma_a1
-        self.gamma_loc = gamma_loc
         self.gamma_scale1 = gamma_scale1
         self.gamma_a2 = gamma_a2
         self.gamma_scale2 = gamma_scale2
@@ -20,8 +19,8 @@ class StateDistribution2:
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
-        gamma_obsG1 = sp.gamma.rvs(a=self.gamma_a1, loc=self.gamma_loc, scale=self.gamma_scale1, size=size)  # gamma observations
-        gamma_obsG2 = sp.gamma.rvs(a=self.gamma_a2, loc=self.gamma_loc, scale=self.gamma_scale2, size=size)
+        gamma_obsG1 = sp.gamma.rvs(a=self.gamma_a1, scale=self.gamma_scale1, size=size)  # gamma observations
+        gamma_obsG2 = sp.gamma.rvs(a=self.gamma_a2, scale=self.gamma_scale2, size=size)
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         list_of_tuple_of_obs = list(zip(bern_obs, gamma_obsG1, gamma_obsG2))
@@ -37,40 +36,8 @@ class StateDistribution2:
         # the individual observation likelihoods.
 
         bern_ll = sp.bernoulli.pmf(k=tuple_of_obs[0], p=self.bern_p)  # bernoulli likelihood
-        gamma_llG1 = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a1, loc=self.gamma_loc, scale=self.gamma_scale1)  # gamma likelihood for G1
-        gamma_llG2 = sp.gamma.pdf(x=tuple_of_obs[2], a=self.gamma_a2, loc=self.gamma_loc, scale=self.gamma_scale2)  # gamma likelihood for G2
-
-        assert not math.isnan(gamma_llG1), "{} {} {} {} {}".format(tuple_of_obs[1], gamma_llG1, self.gamma_a1, self.gamma_loc, self.gamma_scale1)
-        if bern_ll == 0 or np.exp(gamma_llG1) == 0:
-            print(
-                tuple_of_obs[1],
-                ',',
-                gamma_llG1,
-                ',',
-                self.gamma_a1,
-                ',',
-                self.gamma_loc,
-                ',',
-                self.gamma_scale1,
-                tuple_of_obs[0],
-                bern_ll,
-                self.bern_p)
-
-        assert not math.isnan(gamma_llG2), "{} {} {} {} {}".format(tuple_of_obs[2], gamma_llG2, self.gamma_a2, self.gamma_loc, self.gamma_scale2)
-        if bern_ll == 0 or np.exp(gamma_llG2) == 0:
-            print(
-                tuple_of_obs[2],
-                ',',
-                gamma_llG2,
-                ',',
-                self.gamma_a2,
-                ',',
-                self.gamma_loc,
-                ',',
-                self.gamma_scale2,
-                tuple_of_obs[0],
-                bern_ll,
-                self.bern_p)
+        gamma_llG1 = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a1, scale=self.gamma_scale1)  # gamma likelihood for G1
+        gamma_llG2 = sp.gamma.pdf(x=tuple_of_obs[2], a=self.gamma_a2, scale=self.gamma_scale2)  # gamma likelihood for G2
 
         return bern_ll * gamma_llG1 * gamma_llG2
 
@@ -91,13 +58,12 @@ class StateDistribution2:
             gamma_obsG2 = []
 
         bern_p_estimate = bernoulli_estimator(bern_obs)
-        gamma_a1_estimate, gamma_loc_estimate, gamma_scale1_estimate = gamma_estimator(gamma_obsG1)
-        gamma_a2_estimate, gamma_loc_estimate, gamma_scale2_estimate = gamma_estimator(gamma_obsG2)
+        gamma_a1_estimate, gamma_scale1_estimate = gamma_estimator(gamma_obsG1)
+        gamma_a2_estimate, gamma_scale2_estimate = gamma_estimator(gamma_obsG2)
 
         state_estimate_obj = StateDistribution2(state=self.state,
                                                 bern_p=bern_p_estimate,
                                                 gamma_a1=gamma_a1_estimate,
-                                                gamma_loc=gamma_loc_estimate,
                                                 gamma_scale1=gamma_scale1_estimate,
                                                 gamma_a2=gamma_a2_estimate,
                                                 gamma_scale2=gamma_scale2_estimate)
@@ -110,7 +76,6 @@ class StateDistribution2:
     def __repr__(self):
         return "State object w/ parameters: {}, {}, {}, {}, {}, {}.".format(self.bern_p,
                                                                             self.gamma_a1,
-                                                                            self.gamma_loc,
                                                                             self.gamma_scale1,
                                                                             self.gamma_a2,
                                                                             self.gamma_scale2)
@@ -128,7 +93,6 @@ def tHMM_E_init2(state):
     return StateDistribution2(state,
                               0.9,
                               10 * (np.random.uniform()),
-                              0,
                               1.5,
                               10 * (np.random.uniform()),
                               1.5)
