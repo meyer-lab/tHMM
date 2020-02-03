@@ -200,5 +200,4 @@ def calculate_log_likelihood(NF):
     '''
     Calculates log likelihood of NF for each lineage.
     '''
-
-    return sum(sum([np.log(nf) for nf in NF]))
+    return sum(np.log(NF))
