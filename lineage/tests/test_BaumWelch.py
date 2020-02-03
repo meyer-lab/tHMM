@@ -47,12 +47,12 @@ class TestBW(unittest.TestCase):
         NF_before = get_leaf_Normalizing_Factors(tHMMobj)
         betas_before = get_leaf_betas(tHMMobj, NF_before)
         get_nonleaf_NF_and_betas(tHMMobj, NF_before, betas_before)
-        LL_before = calculate_log_likelihood(tHMMobj, NF_before)
+        LL_before = calculate_log_likelihood(NF_before)
         self.assertTrue(np.isfinite(LL_before))
 
         # Get the likelihoods after fitting
         tHMMobj_after, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
-        LL_after = calculate_log_likelihood(tHMMobj_after, NF_after)
+        LL_after = calculate_log_likelihood(NF_after)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
 
