@@ -50,7 +50,6 @@ def AIC_increased_cells1():
     state0 = 0
     bern_p0 = 0.99
     gamma_a0 = 20
-    gamma_loc = 0
     gamma_scale0 = 5
 
     # State 0 parameters "Resistant"
@@ -59,8 +58,8 @@ def AIC_increased_cells1():
     gamma_a1 = 20
     gamma_scale1 = 5
 
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
+    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
+    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
     E = [state_obj0, state_obj1]
 
     desired_num_states = [1, 2, 3]
@@ -102,7 +101,6 @@ def AIC_increased_cells2():
     state0 = 0
     bern_p0 = 0.99
     gamma_a0 = 20
-    gamma_loc = 0
     gamma_scale0 = 5
 
     # State 1 parameters "Susceptible"
@@ -111,8 +109,8 @@ def AIC_increased_cells2():
     gamma_a1 = 10
     gamma_scale1 = 1
 
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
+    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
+    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
     E = [state_obj0, state_obj1]
 
     desired_num_states = [1, 2, 3]
@@ -156,7 +154,6 @@ def AIC_increased_cells3():
     # State 0 parameters "Susciptible"
     state0 = 0
     bern_p0 = 0.7
-    gamma_loc = 0
     gamma_a0 = 5.0
     gamma_scale0 = 1.0
 
@@ -172,9 +169,9 @@ def AIC_increased_cells3():
     gamma_a2 = 15.0
     gamma_scale2 = 3.0
 
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
-    state_obj2 = StateDistribution(state2, bern_p2, gamma_a2, gamma_loc, gamma_scale2)
+    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
+    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
+    state_obj2 = StateDistribution(state2, bern_p2, gamma_a2, gamma_scale2)
 
     E = [state_obj0, state_obj1, state_obj2]
 

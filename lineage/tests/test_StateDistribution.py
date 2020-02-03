@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 import scipy.stats as sp
-from ..StateDistribution import StateDistribution, bernoulli_estimator, exponential_estimator, gamma_estimator, fate_prune_rule, time_prune_rule, get_experiment_time
+from ..StateDistribution import StateDistribution, bernoulli_estimator, gamma_estimator, fate_prune_rule, time_prune_rule, get_experiment_time
 from ..LineageTree import LineageTree
 
 
@@ -21,7 +21,6 @@ class TestModel(unittest.TestCase):
         self.state0 = 0
         bern_p0 = 0.99
         gamma_a0 = 20
-        gamma_loc = 0.0
         gamma_scale0 = 5
 
         # State 1 parameters "Susceptible"
@@ -30,8 +29,8 @@ class TestModel(unittest.TestCase):
         gamma_a1 = 10
         gamma_scale1 = 1
 
-        self.stateDist0 = StateDistribution(self.state0, bern_p0, gamma_a0, gamma_loc, gamma_scale0)
-        self.stateDist1 = StateDistribution(self.state1, bern_p1, gamma_a1, gamma_loc, gamma_scale1)
+        self.stateDist0 = StateDistribution(self.state0, bern_p0, gamma_a0, gamma_scale0)
+        self.stateDist1 = StateDistribution(self.state1, bern_p1, gamma_a1, gamma_scale1)
 
         self.E = [self.stateDist0, self.stateDist1]
 
@@ -149,27 +148,14 @@ class TestModel(unittest.TestCase):
             p=0.90, size=1000)  # bernoulli observations
         self.assertTrue(0.87 <= bernoulli_estimator(bern_obs) <= 0.93)
 
-    def test_exponential_estimator(self):
-        """
-        Testing the exponential estimator,
-        by comparing the result of the estimator
-        to the result of scipy random variable generator.
-        """
-        exp_obs = sp.expon.rvs(
-            scale=50, size=1500)  # exponential observations
-        self.assertTrue(45 <= exponential_estimator(
-            exp_obs) <= 55)  # +/- 5 of beta
-
     def test_gamma_estimator(self):
         """
         Testing the gamma estimator,
         by comparing the result of the estimator
         to the result of scipy random variable generator.
         """
-        gamma_obs = sp.gamma.rvs(
-            a=12.5, loc=0.0, scale=3, size=1000)  # gamma observations
-        shape, loc, scale = gamma_estimator(gamma_obs)
+        gamma_obs = sp.gamma.rvs(a=12.5, scale=3, size=1000)  # gamma observations
+        shape, scale = gamma_estimator(gamma_obs)
 
         self.assertTrue(10 <= shape <= 15)
         self.assertTrue(2 <= scale <= 4)
-        self.assertTrue(loc == 0.0)

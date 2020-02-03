@@ -11,6 +11,4 @@ def makeFigure():
 
     subplotLabel(ax[0], 'A')
 
-    f.tight_layout()
-
     return f
