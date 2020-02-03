@@ -69,7 +69,7 @@ def wasserstein():
         w_value = wasserstein_distance(obs_by_state_rand_sampled[0], obs_by_state_rand_sampled[1])
         w_divs.append(w_value)
         tmp_lifetimes.append(obs_by_state_rand_sampled[0] + obs_by_state_rand_sampled[1])
-        tmp_distributions.append(["{}".format(round(a0, 2))] * 750 * 2)
+        tmp_distributions.append(["{}".format(round(w_value, 2))] * 750 * 2)
         tmp_hues.append([1] * 750 + [2] * 750)
 
     # Change the order of lists
@@ -93,7 +93,7 @@ def wasserstein():
     return accuracies, w_divs_to_use, dists
 
 
-def figure_maker(ax, accuracies, kl_divs, dists):
+def figure_maker(ax, accuracies, w_divs, dists):
     """ makes the figure showing
     distributions get farther """
 
@@ -101,12 +101,12 @@ def figure_maker(ax, accuracies, kl_divs, dists):
     ax[i].set_xlabel('KL divergence')
     ax[i].set_ylim(0, 110)
     ax[i].set_xlim(0, 1.07 * max(kl_divs))
-    ax[i].scatter(kl_divs, accuracies, c='k', marker="o", edgecolors='k', alpha=0.25)
+    ax[i].scatter(w_divs, accuracies, c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].set_ylabel(r'Accuracy [\%]')
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
-    ax[i].set_title('KL divergence for two state model')
+    ax[i].set_title('Wasserstein divergence')
     ax[i].grid(linestyle='--')
 
     i += 1
-    sns.violinplot(x="Distributions", y="Lifetimes [hr]", inner="quart", palette="muted", split=True, hue="Hues", data=dists, ax=ax[i])
+    sns.violinplot(x="Distributions", y="Lifetimes [hr]", inner="quart", palette="muted", split=True, hue="Hues", data=dists, ax=ax[i], order=["{}".format(round(w_value, 2)) for w_value in w_divs])
     sns.despine(left=True, ax=ax[i])
