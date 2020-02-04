@@ -39,19 +39,19 @@ def wasserstein():
     T = np.array([[0.66, 0.33],
                   [0.33, 0.66]])
 
-    a0 = np.logspace(2, 5, 5, base=2)
+    a0 = np.logspace(2, 5, 10, base=2)
 
-    state_obj0 = StateDistribution(1, 0.99, 4, 0, 3)
+    state_obj0 = StateDistribution(1, 0.99, 4,3)
 
     w_divs = []
 
-    dists = pd.DataFrame(columns=["Lifetimes [hr]", "Distributions", "Hues"])
+    dists = pd.DataFrame(columns=["Lifetimes [hr]", "Wasserstein divergence", "Hues"])
     tmp_lifetimes = []
     tmp_distributions = []
     tmp_hues = []
     list_of_populations_unsort = []
     for idx, a0 in enumerate(a0):
-        state_obj1 = StateDistribution(0, 0.99, a0, 0, 3)
+        state_obj1 = StateDistribution(0, 0.99, a0, 3)
 
         E = [state_obj0, state_obj1]
         lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000000000, prune_condition='fate', prune_boolean=False)
@@ -63,13 +63,13 @@ def wasserstein():
         # First collect all the observations from the entire population across the lineages ordered by state
         obs_by_state_rand_sampled = []
         for state in range(len(E)):
-            full_list = [obs for obs in lineage.lineage_stats[state].full_lin_cells_obs]
+            full_list = [obs[1] for obs in lineage.lineage_stats[state].full_lin_cells_obs]
             obs_by_state_rand_sampled.append(random.sample(full_list, 750))
 
         w_value = wasserstein_distance(obs_by_state_rand_sampled[0], obs_by_state_rand_sampled[1])
         w_divs.append(w_value)
-        tmp_lifetimes.append(([b for a, b in obs_by_state_rand_sampled[0]] + [b for a, b in obs_by_state_rand_sampled[1]]))
-        tmp_distributions.append(["{}".format(round(a0, 2))] * 750 * 2)
+        tmp_lifetimes.append(obs_by_state_rand_sampled[0] + obs_by_state_rand_sampled[1])
+        tmp_distributions.append(["{}".format(round(w_value, 2))] * 750 * 2)
         tmp_hues.append([1] * 750 + [2] * 750)
 
     # Change the order of lists
@@ -78,7 +78,7 @@ def wasserstein():
     w_divs_to_use = [w_divs[idx] for idx in indices]
 
     dists["Lifetimes [hr]"] = sum([tmp_lifetimes[idx] for idx in indices], [])
-    dists["Distributions"] = sum([tmp_distributions[idx] for idx in indices], [])
+    dists["Wasserstein divergence"] = sum([tmp_distributions[idx] for idx in indices], [])
     dists["Hues"] = sum(tmp_hues, [])
     list_of_populations = [list_of_populations_unsort[idx] for idx in indices]
 
@@ -93,20 +93,20 @@ def wasserstein():
     return accuracies, w_divs_to_use, dists
 
 
-def figure_maker(ax, accuracies, kl_divs, dists):
+def figure_maker(ax, accuracies, w_divs, dists):
     """ makes the figure showing
     distributions get farther """
 
     i = 0
-    ax[i].set_xlabel('KL divergence')
+    ax[i].set_xlabel('Wasserstein divergence')
     ax[i].set_ylim(0, 110)
-    ax[i].set_xlim(0, 1.07 * max(kl_divs))
-    ax[i].scatter(kl_divs, accuracies, c='k', marker="o", edgecolors='k', alpha=0.25)
+    ax[i].set_xlim(0, 1.07 * max(w_divs))
+    ax[i].scatter(w_divs, accuracies, c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].set_ylabel(r'Accuracy [\%]')
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
-    ax[i].set_title('KL divergence for two state model')
+    ax[i].set_title('Wasserstein divergence')
     ax[i].grid(linestyle='--')
 
     i += 1
-    sns.violinplot(x="Distributions", y="Lifetimes [hr]", inner="quart", palette="muted", split=True, hue="Hues", data=dists, ax=ax[i])
+    sns.violinplot(x="Wasserstein divergence", y="Lifetimes [hr]", inner="quart", palette="muted", split=True, hue="Hues", data=dists, ax=ax[i], order=["{}".format(round(w_value, 2)) for w_value in w_divs])
     sns.despine(left=True, ax=ax[i])

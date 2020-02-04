@@ -9,9 +9,10 @@ Sphinx
 pytest
 sphinx-autoapi
 pytest-cov
-pylint
+pylint==2.4.4
 manubot==0.3.1
-pandoc-fignos
-pandoc-eqnos
-pandoc-tablenos
-weasyprint
+pandoc-fignos==2.2.0
+pandoc-eqnos==2.1.1
+pandoc-tablenos==2.1.1
+weasyprint==51
+numba==0.46.0

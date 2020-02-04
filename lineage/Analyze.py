@@ -1,5 +1,5 @@
 '''Calls the tHMM functions and outputs the parameters needed to generate the Figures'''
-import copy as cp
+from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 from .BaumWelch import fit
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
@@ -9,7 +9,7 @@ from sklearn import metrics
 from scipy.stats import entropy
 
 
-def preAnalyze(X, numStates):
+def preAnalyze(X, num_states):
     """Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
     Args:
     -----
@@ -23,7 +23,7 @@ def preAnalyze(X, numStates):
 
     for num_tries in range(1, 5):
         try:
-            tHMMobj = tHMM(X, numStates=numStates)  # build the tHMM class with X
+            tHMMobj = tHMM(X, numStates=num_states)  # build the tHMM class with X
             fit(tHMMobj, max_iter=300)
             break
         except AssertionError:
@@ -37,15 +37,15 @@ def preAnalyze(X, numStates):
     NF = get_leaf_Normalizing_Factors(tHMMobj)
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
-    LL = calculate_log_likelihood(tHMMobj, NF)
+    LL = calculate_log_likelihood(NF)
     return tHMMobj, pred_states_by_lineage, LL
 
 
-def Analyze(X, numStates):
-    tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, numStates)
+def Analyze(X, num_states):
+    tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, num_states)
 
     for _ in range(1, 5):
-        tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, numStates)
+        tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, num_states)
         if tmp_LL > LL:
             tHMMobj = tmp_tHMMobj
             pred_states_by_lineage = tmp_pred_states_by_lineage
@@ -70,10 +70,18 @@ def run_Analyze_over(list_of_populations, num_states):
     list_of_populations: a list of populations that contain lineages
     num_states: an integer number of states to identify (a hyper-parameter of our model)
     """
+    exe = ProcessPoolExecutor()
+
+    prom_holder = []
+    for _, population in enumerate(list_of_populations):
+        prom_holder.append(exe.submit(Analyze, population, num_states))
+
     output = []
-    for population_idx, population in enumerate(list_of_populations):
-        output.append(Analyze(population, num_states))
+    for _, prom in enumerate(prom_holder):
+        output.append(prom.result())
+
     return output
+
 
 
 def Results(tHMMobj, pred_states_by_lineage, LL):
@@ -183,14 +191,14 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
 def run_Results_over(output):
     """
     A function that can be parallelized to speed up figure creation
-
     This function takes as input:
     output: a list of tuples from the results of running run_Analyze_over
     """
     results_holder = []
     for output_idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
         results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL))
-    return(results_holder)
+
+    return results_holder
 
 
 def get_stationary_distribution(transition_matrix):
@@ -264,7 +272,7 @@ def get_stationary_distribution(transition_matrix):
     c = np.zeros((K + 1, 1))  # 9
     c[K, 0] = 1
     p = np.linalg.solve(BT_B, np.matmul(B.T, c)).T  # 11
-    # assert np.allclose(np.matmul(transition_matrix.T, p.T), p.T)  # 12
+    assert np.allclose(np.matmul(transition_matrix.T, p.T), p.T)  # 12
     return p
 
 

@@ -196,13 +196,8 @@ def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
     return np.sum(beta_array[node_child_n_idx, :] * T[state_j, :] / MSD_array[node_child_n_idx, :])
 
 
-def calculate_log_likelihood(tHMMobj, NF):
+def calculate_log_likelihood(NF):
     '''
     Calculates log likelihood of NF for each lineage.
     '''
-    LL = 0.0
-
-    for num, _ in enumerate(tHMMobj.X):  # for each lineage in our Population
-        LL += sum(np.log(NF[num]))
-
-    return LL
+    return sum([sum(np.log(nf_list_per_lineage)) for nf_list_per_lineage in NF])
