@@ -41,7 +41,7 @@ def wasserstein():
 
     a0 = np.logspace(2, 5, 10, base=2)
 
-    state_obj0 = StateDistribution(1, 0.99, 4,3)
+    state_obj0 = StateDistribution(1, 0.99, 4, 3)
 
     w_divs = []
 
@@ -108,5 +108,6 @@ def figure_maker(ax, accuracies, w_divs, dists):
     ax[i].grid(linestyle='--')
 
     i += 1
-    sns.violinplot(x="Wasserstein divergence", y="Lifetimes [hr]", inner="quart", palette="muted", split=True, hue="Hues", data=dists, ax=ax[i], order=["{}".format(round(w_value, 2)) for w_value in w_divs])
+    sns.violinplot(x="Wasserstein divergence", y="Lifetimes [hr]", inner="quart", palette="muted", split=True,
+                   hue="Hues", data=dists, ax=ax[i], order=["{}".format(round(w_value, 2)) for w_value in w_divs])
     sns.despine(left=True, ax=ax[i])
