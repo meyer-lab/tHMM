@@ -31,7 +31,7 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0 - self.bern_p)**(1-tuple_of_obs[0])
+        bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0 - self.bern_p)**(1 - tuple_of_obs[0])
         gamma_ll = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)
 
         return bern_ll * gamma_ll
