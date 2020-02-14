@@ -1,7 +1,7 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
 import numpy as np
 import scipy.stats as sp
-
+from scipy.special import gamma
 
 class StateDistribution:
     def __init__(self, state, bern_p, gamma_a, gamma_scale):  # user has to identify what parameters to use for each state
@@ -31,8 +31,8 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0 - self.bern_p)**(1 - tuple_of_obs[0])
-        gamma_ll = sp.gamma.pdf((x, a) = x**(a-1) * exp(-x) / gamma(a))
+        bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
+        gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
 
         return bern_ll * gamma_ll
 
@@ -260,3 +260,20 @@ def gamma_estimator(gamma_obs):
         return 10, 1
 
     return a_hat, b_hat
+
+def bern_pdf(x, p):
+    """ This function takes in 2 parameters and returns their value 
+        when put into the Gamma Distribution formula"""
+   # bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0 - self.bern_p)**(1 - tuple_of_obs[0])
+    bern_ll = (p**x) * (1.0 - p)**(1-x)
+    return bern_ll
+
+def gamma_pdf(x, a, scale):
+    """ This function takes in 3 paramaters and returns their value 
+        when put into the Gamma Distribution formula """
+    #gamma_ll((x, a, scale) = x**(a-1) * exp(-x/scale) / gamma(a))
+    gamma_ll = (1/(gamma(a)*(scale**a)))*x**(a-1)*np.exp(-x/scale)
+    return gamma_ll
+    
+    
+    
