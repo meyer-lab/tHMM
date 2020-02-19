@@ -167,7 +167,7 @@ class TestModel(unittest.TestCase):
         against a known calculated value.
         """
         bern_ll = bern_pdf(x=1, p=1)
-        self.assertTrue (bern_ll == 1)
+        self.assertTrue(bern_ll == 1)
         
     def test_gamma_pdf(self):
         """
