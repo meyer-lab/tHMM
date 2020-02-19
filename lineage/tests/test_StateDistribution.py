@@ -162,18 +162,18 @@ class TestModel(unittest.TestCase):
         
     def test_bern_pdf(self):
         """
-        Testing the Bernoulli probability function
-        by comparing the result of the function
-        to a calculated value 
+        Testing the Bernoulli probability density function
+        by comparing the result of the outputted likelihood
+        against a known calculated value.
         """
         bern_ll = bern_pdf(x=1, p=1)
         self.assertTrue (bern_ll == 1)
         
     def test_gamma_pdf(self):
         """
-        Testing the Gamma probability function
-        by comparing the result of the function
-        to a calculated value 
+        Testing the gamma probability density function
+        by comparing the result of the outputted likelihood
+        against a known calculated value.
         """
         gamma_ll = gamma_pdf(x=1, a=10, scale=5)
         self.assertTrue(gamma_ll <= 0.1)
