@@ -282,6 +282,3 @@ def gamma_pdf(x, a, scale):
     """
     gamma_ll = (1/(gamma(a)*(scale**a)))*x**(a-1)*np.exp(-x/scale)
     return gamma_ll
-    
-    
-    
