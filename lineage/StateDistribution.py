@@ -4,6 +4,7 @@ import scipy.stats as sp
 from math import gamma
 from numba import jit
 
+
 class StateDistribution:
     def __init__(self, state, bern_p, gamma_a, gamma_scale):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
@@ -262,6 +263,7 @@ def gamma_estimator(gamma_obs):
 
     return a_hat, b_hat
 
+
 @jit(nopython=True)
 def bern_pdf(x, p):
     """
@@ -270,8 +272,9 @@ def bern_pdf(x, p):
     probability distribution function.
     """
     # bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0 - self.bern_p)**(1 - tuple_of_obs[0])
-    bern_ll = (p**x) * (1.0 - p)**(1-x)
+    bern_ll = (p**x) * (1.0 - p)**(1 - x)
     return bern_ll
+
 
 @jit(nopython=True)
 def gamma_pdf(x, a, scale):
@@ -280,5 +283,5 @@ def gamma_pdf(x, a, scale):
     and returns the likelihood of the observation based on the gamma
     probability distribution function.
     """
-    gamma_ll = (1/(gamma(a)*(scale**a)))*x**(a-1)*np.exp(-x/scale)
+    gamma_ll = (1 / (gamma(a) * (scale**a))) * x**(a - 1) * np.exp(-x / scale)
     return gamma_ll
