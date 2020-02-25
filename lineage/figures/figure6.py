@@ -55,9 +55,6 @@ def wasserstein():
 
         E = [state_obj0, state_obj1]
         lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000000000, prune_condition='fate', prune_boolean=False)
-        while len(lineage.output_lineage) < 16:
-            del lineage
-            lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000000000, prune_condition='fate', prune_boolean=False)
         list_of_populations_unsort.append([lineage])
 
         # First collect all the observations from the entire population across the lineages ordered by state
