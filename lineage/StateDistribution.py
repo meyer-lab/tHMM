@@ -1,6 +1,8 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
 import numpy as np
 import scipy.stats as sp
+from math import gamma
+from numba import jit
 
 
 class StateDistribution:
@@ -31,8 +33,8 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0 - self.bern_p)**(1 - tuple_of_obs[0])
-        gamma_ll = sp.gamma.pdf(x=tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)
+        bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
+        gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
 
         return bern_ll * gamma_ll
 
@@ -260,3 +262,26 @@ def gamma_estimator(gamma_obs):
         return 10, 1
 
     return a_hat, b_hat
+
+
+@jit(nopython=True)
+def bern_pdf(x, p):
+    """
+    This function takes in 1 observation and a Bernoulli rate parameter
+    and returns the likelihood of the observation based on the Bernoulli
+    probability distribution function.
+    """
+    # bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0 - self.bern_p)**(1 - tuple_of_obs[0])
+    bern_ll = (p**x) * (1.0 - p)**(1 - x)
+    return bern_ll
+
+
+@jit(nopython=True)
+def gamma_pdf(x, a, scale):
+    """
+    This function takes in 1 observation and gamma shape and scale parameters
+    and returns the likelihood of the observation based on the gamma
+    probability distribution function.
+    """
+    gamma_ll = (1 / (gamma(a) * (scale**a))) * x**(a - 1) * np.exp(-x / scale)
+    return gamma_ll
