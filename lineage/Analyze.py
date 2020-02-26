@@ -276,20 +276,16 @@ def get_stationary_distribution(transition_matrix):
 
 
 def getAIC(tHMMobj, LL):
-    '''
-    Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
+    """
+    Obtain the Akaike Information Criterion (AIC) values and the 
+    degrees of freedom (related to the number of parameters)
+    for a given model and its fit.
+    AIC is used for model selection and deals with the trade off
     between over-fitting and under-fitting.
-    AIC = 2*k - 2 * log(LL) in which k is the number of free parameters and LL is the maximum of likelihood function.
-    Minimum of AIC detremines the relatively better model.
-    Args:
-    -----
-        tHMMobj (obj): the tHMM class which has been built.
-        LL :
-    Returns:
-    --------
-        AIC_value : containing AIC values relative to 0 for each lineage.
-        AIC_degrees_of_freedom : the degrees of freedom in AIC calculation (numStates**2 + numStates * number_of_parameters - 1) - same for each lineage
-    '''
+    AIC = 2*k - 2 * log(LL) in which 
+    k is the number of free parameters and 
+    LL is the maximum of likelihood function.
+    """
     numStates = tHMMobj.numStates
 
     number_of_parameters = len(tHMMobj.estimate.E[0].params)
