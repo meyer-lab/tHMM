@@ -7,5 +7,7 @@ nosetests.xml
 **.ipynb
 # Exception to the rule
 !Guide_to_tHMM.ipynb
+
 venv/
-output/
+# Ignore everything in output except requests-cache.sqlite
+!output/requests-cache.sqlite
