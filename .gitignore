@@ -10,4 +10,5 @@ nosetests.xml
 
 venv/
 # Ignore everything in output except requests-cache.sqlite
+output/
 !output/requests-cache.sqlite
