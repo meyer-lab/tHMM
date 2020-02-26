@@ -1,7 +1,6 @@
 """
-File: figure5.py
+File: figure7.py
 Purpose: Generates figure 7.
-
 AIC.
 """
 import numpy as np
@@ -200,7 +199,7 @@ def AIC_increased_cells3():
 
 def figure_maker(ax, i, desired_num_states, AIC_holder):
     """
-    Makes figure 11.
+    Makes figure 7.
     """
     i += 0
     ax[i].set_xlim((0, int(np.ceil(1.1 * max(desired_num_states)))))
