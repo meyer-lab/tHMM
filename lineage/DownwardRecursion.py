@@ -10,14 +10,11 @@ def get_root_gammas(tHMMobj, betas):
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         gamma_array = np.zeros((len(lineageObj.output_lineage), tHMMobj.numStates))
-
         gamma_array[0, :] = betas[num][0, :]
-        assert np.isclose(np.sum(gamma_array[0]), 1.)
         gammas.append(gamma_array)
 
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        gammas_0_row_sum = np.sum(gammas[num][0])
-        assert np.isclose(gammas_0_row_sum, 1.)
+    for _, gamma in enumerate(gammas):  # for each lineage in our Population
+        assert np.isclose(np.sum(gamma[0]), 1.)
 
     return gammas
 
