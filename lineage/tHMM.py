@@ -12,8 +12,6 @@ class estimate:
         self.E = []
         for state in range(self.numStates):
             self.E.append(tHMM_E_init(state))
-            # in case of using G1 G2 phase, this needs to be used instead of the above line.
-#             self.E.append(tHMM_E_init2(state))
 
 
 class tHMM:

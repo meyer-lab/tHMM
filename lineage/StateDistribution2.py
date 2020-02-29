@@ -1,7 +1,6 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
 import numpy as np
 import scipy.stats as sp
-import math
 from .StateDistribution import gamma_estimator, bernoulli_estimator
 
 
