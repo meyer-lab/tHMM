@@ -37,7 +37,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
         lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
         MSD_array = MSD[num]  # getting the MSD of the respective lineage
         EL_array = EL[num]  # geting the EL of the respective lineage
-        NF_array = np.zeros((len(lineage)), dtype=float)  # instantiating N by 1 array
+        NF_array = np.zeros(len(lineage), dtype=float)  # instantiating N by 1 array
 
         for ii, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
             assert cell._isLeaf()
@@ -78,37 +78,28 @@ def get_leaf_betas(tHMMobj, NF):
     the Marginal State Distributions. The value in the
     denominator is the Normalizing Factor.
     '''
-    numStates = tHMMobj.numStates
-
-    MSD = tHMMobj.MSD
-    EL = tHMMobj.EL
-    # NF is an input argument
-
     betas = []  # full betas holder
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
-        MSD_array = MSD[num]  # getting the MSD of the respective lineage
-        EL_array = EL[num]  # geting the EL of the respective lineage
-        NF_array = NF[num]  # getting the NF of the respective lineage
-
-        beta_array = np.zeros((len(lineage), numStates))  # instantiating N by K array
-        for ii, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
+        MSD_arr = tHMMobj.MSD[num]  # getting the MSD of the respective lineage
+        EL_arr = tHMMobj.EL[num]  # geting the EL of the respective lineage
+        NF_arr = NF[num]  # getting the NF of the respective lineage
+        
+        for _, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
             assert cell._isLeaf()
-            leaf_cell_idx = lineageObj.output_leaves_idx[ii]
-            for state_k in range(numStates):  # for each state
-                # see expression in docstring
-                numer1 = EL_array[leaf_cell_idx, state_k]  # Emission Likelihood
-                # P(x_n = x | z_n = k)
-                numer2 = MSD_array[leaf_cell_idx, state_k]  # Marginal State Distribution
-                # P(z_n = k)
-                denom = NF_array[leaf_cell_idx]  # Normalizing Factor (same regardless of state)
-                # P(x_n = x)
-                beta_array[leaf_cell_idx, state_k] = numer1 * numer2 / denom
+
+        # Emission Likelihood, Marginal State Distribution, Normalizing Factor (same regardless of state)
+        # P(x_n = x | z_n = k), P(z_n = k), P(x_n = x)
+        beta_array = np.zeros((len(lineage), tHMMobj.numStates))  # instantiating N by K array
+        ii = lineageObj.output_leaves_idx
+        beta_array[ii, :] = EL_arr[ii, :] * MSD_arr[ii, :] / NF_arr[ii, np.newaxis]
+
         betas.append(beta_array)
-    for num, lineageObj in enumerate(tHMMobj.X):
-        betas_last_row_sum = np.sum(betas[num][-1])
-        assert np.isclose(betas_last_row_sum, 1.)
+
+    for num, _ in enumerate(tHMMobj.X):
+        assert np.isclose(np.sum(betas[num][-1]), 1.)
+
     return betas
 
 
@@ -122,23 +113,16 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
     of the betas. The recursion is upwards from the leaves to
     the roots.
     '''
-    numStates = tHMMobj.numStates
-
-    MSD = tHMMobj.MSD
-    EL = tHMMobj.EL
-    # NF is an input argument
-    # betas is an input argument
-
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
-        MSD_array = MSD[num]  # getting the MSD of the respective lineage
-        EL_array = EL[num]  # geting the EL of the respective lineage
+        MSD_array = tHMMobj.MSD[num]  # getting the MSD of the respective lineage
+        EL_array = tHMMobj.EL[num]  # geting the EL of the respective lineage
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
 
         for level in lineageObj.output_list_of_gens[2:][::-1]:
             for node_parent_m_idx in lineageObj._get_parents_for_level(level):
-                numer_holder = np.empty(numStates)
-                for state_j in range(numStates):
+                numer_holder = np.empty(tHMMobj.numStates)
+                for state_j in range(tHMMobj.numStates):
                     numer_holder[state_j] = get_beta_parent_child_prod(lineage=lineage,
                                                                        MSD_array=MSD_array,
                                                                        T=T,
@@ -200,4 +184,4 @@ def calculate_log_likelihood(NF):
     '''
     Calculates log likelihood of NF for each lineage.
     '''
-    return sum([sum(np.log(nf_list_per_lineage)) for nf_list_per_lineage in NF])
+    return sum([sum(np.log(lst)) for lst in NF])
