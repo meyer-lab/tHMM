@@ -21,16 +21,15 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, 
     # either be the left daughter or the right daughter
 
     beta_child_state_k = beta_array[node_child_n_idx, child_state_k]
-    gamma_parent_state_j = gamma_array[node_parent_m_idx, parent_state_j]
+    gamma_parent = gamma_array[node_parent_m_idx, :]
     MSD_child_state_k = MSD_array[node_child_n_idx, child_state_k]
-    beta_parent_child_state_j = beta_parent_child_func(beta_array=beta_array,
-                                                       T=T,
-                                                       MSD_array=MSD_array,
-                                                       state_j=parent_state_j,
-                                                       node_child_n_idx=node_child_n_idx)
+    beta_parent_child = beta_parent_child_func(beta_array=beta_array,
+                                               T=T,
+                                               MSD_array=MSD_array,
+                                               node_child_n_idx=node_child_n_idx)
 
-    zeta = beta_child_state_k * T[parent_state_j, child_state_k] * gamma_parent_state_j / (MSD_child_state_k * beta_parent_child_state_j)
-    return zeta
+    zeta = beta_child_state_k * T[:, child_state_k] * gamma_parent / (MSD_child_state_k * beta_parent_child)
+    return zeta[parent_state_j]
 
 
 def get_all_gammas(lineageObj, gamma_array_at_state_j):
