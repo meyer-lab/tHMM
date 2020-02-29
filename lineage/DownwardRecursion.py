@@ -42,7 +42,7 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                                                              state_j=parent_state_j,
                                                              node_child_n_idx=child_idx)
 
-                    sum_holder = np.sum(np.matmul(gammas[num][parent_idx, :], T)) / beta_parent
+                    sum_holder = np.sum(gammas[num][parent_idx, :] * T) / beta_parent
 
                     gammas[num][child_idx, :] = coeffs * sum_holder
 
