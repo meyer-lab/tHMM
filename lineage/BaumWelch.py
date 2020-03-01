@@ -28,14 +28,14 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, 
     return ks * T[parent_state_j, :] * js[parent_state_j]
 
 
-def get_all_gammas(lineageObj, gamma_array_at_state_j):
+def get_all_gammas(lineageObj, gamma_arr):
     '''sum of the list of all the gamma parent child for all the parent child relationships'''
-    holder = 0.0
+    holder = np.zeros(gamma_arr.shape[1])
     for level in lineageObj.output_list_of_gens[1:]:  # get all the gammas but not the ones at the last level
         for cell in level:
             if not cell._isLeaf():
                 cell_idx = lineageObj.output_lineage.index(cell)
-                holder += gamma_array_at_state_j[cell_idx]
+                holder += gamma_arr[cell_idx, :]
 
     return holder
 
@@ -87,10 +87,10 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             gamma_array = gammas[num]
             pi_estimate += gamma_array[0, :]
             T_holder = np.zeros((numStates, numStates), dtype=float)
-            for state_j in range(numStates):
-                gamma_array_at_state_j = gamma_array[:, state_j]
-                denom = get_all_gammas(lineageObj, gamma_array_at_state_j)
 
+            denom = get_all_gammas(lineageObj, gamma_array)
+
+            for state_j in range(numStates):
                 numer = get_all_zetas(parent_state_j=state_j,
                                       lineageObj=lineageObj,
                                       beta_array=betas[num],
@@ -98,7 +98,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
                                       gamma_array=gamma_array,
                                       T=tHMMobj.estimate.T)
 
-                T_holder[state_j, :] = (numer + np.spacing(1)) / (denom + np.spacing(1))
+                T_holder[state_j, :] = (numer + np.spacing(1)) / (denom[state_j] + np.spacing(1))
 
             T_estimate += T_holder
 
