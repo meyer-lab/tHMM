@@ -2,10 +2,12 @@
 
 import sys
 import matplotlib
+import numpy as np
 matplotlib.use('AGG')
 
 fdir = './output/'
 
+np.random.seed(1)
 
 if __name__ == '__main__':
     nameOut = 'figure' + sys.argv[1]
