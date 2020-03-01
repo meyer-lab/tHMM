@@ -85,7 +85,7 @@ def get_leaf_betas(tHMMobj, NF):
         MSD_arr = tHMMobj.MSD[num]  # getting the MSD of the respective lineage
         EL_arr = tHMMobj.EL[num]  # geting the EL of the respective lineage
         NF_arr = NF[num]  # getting the NF of the respective lineage
-        
+
         for _, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
             assert cell._isLeaf()
 
