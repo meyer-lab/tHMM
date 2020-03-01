@@ -1,6 +1,7 @@
 '''File holds the code for the downward recursion.'''
 
 import numpy as np
+from numba import jit
 from .UpwardRecursion import beta_parent_child_func
 
 
@@ -19,6 +20,7 @@ def get_root_gammas(tHMMobj, betas):
     return gammas
 
 
+@jit
 def get_nonroot_gammas(tHMMobj, gammas, betas):
     '''get the gammas for all other nodes using recursion from the root nodes'''
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
