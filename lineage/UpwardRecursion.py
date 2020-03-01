@@ -122,34 +122,29 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
 
         for level in lineageObj.output_list_of_gens[2:][::-1]:
             for node_parent_m_idx in lineageObj._get_parents_for_level(level):
-                numer_holder = np.empty(tHMMobj.numStates)
-                for state_j in range(tHMMobj.numStates):
-                    numer_holder[state_j] = get_beta_parent_child_prod(lineage=lineage,
-                                                                       MSD_array=MSD_array,
-                                                                       T=T,
-                                                                       beta_array=betas[num],
-                                                                       state_j=state_j,
-                                                                       node_parent_m_idx=node_parent_m_idx)
+                fac1 = get_beta_parent_child_prod(lineage=lineage,
+                                                  MSD_array=MSD_array,
+                                                  T=T,
+                                                  beta_array=betas[num],
+                                                  node_parent_m_idx=node_parent_m_idx)
+                fac1 *= EL_array[node_parent_m_idx, :] * MSD_array[node_parent_m_idx, :]
 
-                numer_holder *= EL_array[node_parent_m_idx, :] * MSD_array[node_parent_m_idx, :]
-                NF[num][node_parent_m_idx] = np.sum(numer_holder)
+                NF[num][node_parent_m_idx] = sum(fac1)
+                assert NF[num][node_parent_m_idx] > 0.0
 
-                assert NF[num][node_parent_m_idx] > 0.0, "{} and {} and {} and {}".format(
-                     NF[num], NF[num][node_parent_m_idx], MSD_array[node_parent_m_idx, :], EL_array[node_parent_m_idx, :])
-
-                betas[num][node_parent_m_idx, :] = numer_holder / NF[num][node_parent_m_idx]
+                betas[num][node_parent_m_idx, :] = fac1 / NF[num][node_parent_m_idx]
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         betas_row_sum = np.sum(betas[num], axis=1)
         assert np.allclose(betas_row_sum, 1.)
 
 
-def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, state_j, node_parent_m_idx):
+def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, node_parent_m_idx):
     '''
     Calculates the product of beta-links for every parent-child
     relationship of a given parent cell in a given state.
     '''
-    beta_m_n_holder = 1.0  # list to hold the factors in the product
+    beta_m_n_holder = np.ones(T.shape[0])  # list to hold the factors in the product
     node_parent_m = lineage[node_parent_m_idx]  # get the index of the parent
     children_list = node_parent_m._get_daughters()
     children_idx_list = [lineage.index(daughter) for daughter in children_list]
@@ -159,7 +154,6 @@ def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, state_j, node_
         beta_m_n = beta_parent_child_func(beta_array=beta_array,
                                           T=T,
                                           MSD_array=MSD_array,
-                                          state_j=state_j,
                                           node_child_n_idx=node_child_n_idx)
         beta_m_n_holder *= beta_m_n
 
@@ -167,7 +161,7 @@ def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, state_j, node_
 
 
 @njit
-def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
+def beta_parent_child_func(beta_array, T, MSD_array, node_child_n_idx):
     '''
     This "helper" function calculates the probability
     described as a 'beta-link' between parent and child
@@ -179,7 +173,7 @@ def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
     '''
     # beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
     # P( z_n = k | z_m = j); P(z_n = k)
-    return np.sum(beta_array[node_child_n_idx, :] * T[state_j, :] / MSD_array[node_child_n_idx, :])
+    return np.matmul(T, beta_array[node_child_n_idx, :] / MSD_array[node_child_n_idx, :])
 
 
 @njit
