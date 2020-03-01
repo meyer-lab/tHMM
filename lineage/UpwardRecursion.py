@@ -120,19 +120,14 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
 
         for level in lineageObj.output_list_of_gens[2:][::-1]:
-
-            parent_holder = lineageObj._get_parents_for_level(level)
-            for node_parent_m_idx in parent_holder:
+            for node_parent_m_idx in lineageObj._get_parents_for_level(level):
                 fac1 = get_beta_parent_child_prod(lineage=lineage,
                                                   MSD_array=MSD_array,
                                                   T=T,
                                                   beta_array=betas[num],
                                                   node_parent_m_idx=node_parent_m_idx)
-                fac2 = EL_array[node_parent_m_idx, :]
-                fac3 = MSD_array[node_parent_m_idx, :]
-                numer_holder = fac1 * fac2 * fac3
 
-                NF[num][node_parent_m_idx] = sum(numer_holder)
+                NF[num][node_parent_m_idx] = sum(fac1 * EL_array[node_parent_m_idx, :] * MSD_array[node_parent_m_idx, :])
 
                 assert NF[num][node_parent_m_idx] > 0.0, "{} and {} and {} and {}".format(
                      NF[num], NF[num][node_parent_m_idx], MSD_array[node_parent_m_idx, :], EL_array[node_parent_m_idx, :])
