@@ -1,6 +1,7 @@
 '''This file contains the methods that completes the downward recursion and evaulates the beta values.'''
 
 import numpy as np
+from numba import njit
 
 
 def get_leaf_Normalizing_Factors(tHMMobj):
@@ -165,6 +166,7 @@ def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, state_j, node_
     return beta_m_n_holder
 
 
+@njit
 def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
     '''
     This "helper" function calculates the probability
@@ -180,6 +182,7 @@ def beta_parent_child_func(beta_array, T, MSD_array, state_j, node_child_n_idx):
     return np.sum(beta_array[node_child_n_idx, :] * T[state_j, :] / MSD_array[node_child_n_idx, :])
 
 
+@njit
 def calculate_log_likelihood(NF):
     '''
     Calculates log likelihood of NF for each lineage.
