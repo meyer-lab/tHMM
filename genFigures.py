@@ -7,6 +7,7 @@ matplotlib.use('AGG')
 
 fdir = './output/'
 
+# TODO: Remove this one day.
 np.random.seed(1)
 
 if __name__ == '__main__':
