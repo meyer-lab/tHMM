@@ -5,7 +5,7 @@ from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, beta_parent_child_func
 
 
-def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, child_state_k, lineage, beta_array, MSD_array, gamma_array, T):
+def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, lineage, beta_array, MSD_array, gamma_array, T):
     '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
 
     # check the child-parent relationship
@@ -20,15 +20,15 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, 
     Check again that your lineage is constructed clearly."
     # either be the left daughter or the right daughter
 
-    beta_child_state_k = beta_array[node_child_n_idx, child_state_k]
+    beta_child_state_k = beta_array[node_child_n_idx, :]
     gamma_parent_state_j = gamma_array[node_parent_m_idx, parent_state_j]
-    MSD_child_state_k = MSD_array[node_child_n_idx, child_state_k]
+    MSD_child_state_k = MSD_array[node_child_n_idx, :]
     beta_parent_child_state_j = beta_parent_child_func(beta_array=beta_array,
                                                        T=T,
                                                        MSD_array=MSD_array,
                                                        node_child_n_idx=node_child_n_idx)[parent_state_j]
 
-    zeta = beta_child_state_k * T[parent_state_j, child_state_k] * gamma_parent_state_j / (MSD_child_state_k * beta_parent_child_state_j)
+    zeta = beta_child_state_k * T[parent_state_j, :] * gamma_parent_state_j / (MSD_child_state_k * beta_parent_child_state_j)
     return zeta
 
 
@@ -44,21 +44,19 @@ def get_all_gammas(lineageObj, gamma_array_at_state_j):
     return holder
 
 
-def get_all_zetas(parent_state_j, child_state_k, lineageObj, beta_array, MSD_array, gamma_array, T):
+def get_all_zetas(parent_state_j, lineageObj, beta_array, MSD_array, gamma_array, T):
     '''sum of the list of all the zeta parent child for all the parent cells for a given state transition pair'''
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
     lineage = lineageObj.output_lineage
-    holder = 0.0
+    holder = np.zeros(MSD_array.shape[1])
     for level in lineageObj.output_list_of_gens[1:]:
         for cell in level:  # get lineage for the gen
             node_parent_m_idx = lineage.index(cell)
 
             for daughter_idx in cell._get_daughters():
-                node_child_n_idx = lineage.index(daughter_idx)
                 holder += zeta_parent_child_func(node_parent_m_idx=node_parent_m_idx,
-                                                 node_child_n_idx=node_child_n_idx,
+                                                 node_child_n_idx=lineage.index(daughter_idx),
                                                  parent_state_j=parent_state_j,
-                                                 child_state_k=child_state_k,
                                                  lineage=lineage,
                                                  beta_array=beta_array,
                                                  MSD_array=MSD_array,
@@ -96,16 +94,15 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             for state_j in range(numStates):
                 gamma_array_at_state_j = gamma_array[:, state_j]
                 denom = get_all_gammas(lineageObj, gamma_array_at_state_j)
-                for state_k in range(numStates):
-                    numer = get_all_zetas(parent_state_j=state_j,
-                                          child_state_k=state_k,
-                                          lineageObj=lineageObj,
-                                          beta_array=betas[num],
-                                          MSD_array=tHMMobj.MSD[num],
-                                          gamma_array=gamma_array,
-                                          T=tHMMobj.estimate.T)
 
-                    T_holder[state_j, state_k] = (numer + np.spacing(1)) / (denom + np.spacing(1))
+                numer = get_all_zetas(parent_state_j=state_j,
+                                      lineageObj=lineageObj,
+                                      beta_array=betas[num],
+                                      MSD_array=tHMMobj.MSD[num],
+                                      gamma_array=gamma_array,
+                                      T=tHMMobj.estimate.T)
+
+                T_holder[state_j, :] = (numer + np.spacing(1)) / (denom + np.spacing(1))
 
             T_estimate += T_holder
 
