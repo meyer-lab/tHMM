@@ -5,7 +5,7 @@ from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood, beta_parent_child_func
 
 
-def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, lineage, beta_array, MSD_array, gamma_array, T):
+def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_array, MSD_array, gamma_array, T):
     '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
 
     # check the child-parent relationship
@@ -25,7 +25,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, parent_state_j, 
     js = gamma_parent / beta_parent_child
     ks = beta_child_state_k / MSD_child_state_k
 
-    return ks * T[parent_state_j, :] * js[parent_state_j]
+    return np.outer(js, ks) * T
 
 
 def get_all_gammas(lineageObj, gamma_arr):
@@ -40,11 +40,11 @@ def get_all_gammas(lineageObj, gamma_arr):
     return holder
 
 
-def get_all_zetas(parent_state_j, lineageObj, beta_array, MSD_array, gamma_array, T):
+def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     '''sum of the list of all the zeta parent child for all the parent cells for a given state transition pair'''
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
     lineage = lineageObj.output_lineage
-    holder = np.zeros(MSD_array.shape[1])
+    holder = np.zeros(T.shape)
     for level in lineageObj.output_list_of_gens[1:]:
         for cell in level:  # get lineage for the gen
             node_parent_m_idx = lineage.index(cell)
@@ -52,7 +52,6 @@ def get_all_zetas(parent_state_j, lineageObj, beta_array, MSD_array, gamma_array
             for daughter_idx in cell._get_daughters():
                 holder += zeta_parent_child_func(node_parent_m_idx=node_parent_m_idx,
                                                  node_child_n_idx=lineage.index(daughter_idx),
-                                                 parent_state_j=parent_state_j,
                                                  lineage=lineage,
                                                  beta_array=beta_array,
                                                  MSD_array=MSD_array,
@@ -86,20 +85,15 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             lineage = lineageObj.output_lineage
             gamma_array = gammas[num]
             pi_estimate += gamma_array[0, :]
-            T_holder = np.zeros((numStates, numStates), dtype=float)
 
             denom = get_all_gammas(lineageObj, gamma_array)
+            numer = get_all_zetas(lineageObj=lineageObj,
+                                  beta_array=betas[num],
+                                  MSD_array=tHMMobj.MSD[num],
+                                  gamma_array=gamma_array,
+                                  T=tHMMobj.estimate.T)
 
-            for state_j in range(numStates):
-                numer = get_all_zetas(parent_state_j=state_j,
-                                      lineageObj=lineageObj,
-                                      beta_array=betas[num],
-                                      MSD_array=tHMMobj.MSD[num],
-                                      gamma_array=gamma_array,
-                                      T=tHMMobj.estimate.T)
-
-                T_holder[state_j, :] = (numer + np.spacing(1)) / (denom[state_j] + np.spacing(1))
-
+            T_holder = (numer + np.spacing(1)) / (denom[:, np.newaxis] + np.spacing(1))
             T_estimate += T_holder
 
             max_state_holder = []  # a list the size of lineage, that contains max state for each cell
