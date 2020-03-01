@@ -126,13 +126,12 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
                                                   T=T,
                                                   beta_array=betas[num],
                                                   node_parent_m_idx=node_parent_m_idx)
+                fac1 *= EL_array[node_parent_m_idx, :] * MSD_array[node_parent_m_idx, :]
 
-                NF[num][node_parent_m_idx] = sum(fac1 * EL_array[node_parent_m_idx, :] * MSD_array[node_parent_m_idx, :])
+                NF[num][node_parent_m_idx] = sum(fac1)
+                assert NF[num][node_parent_m_idx] > 0.0
 
-                assert NF[num][node_parent_m_idx] > 0.0, "{} and {} and {} and {}".format(
-                     NF[num], NF[num][node_parent_m_idx], MSD_array[node_parent_m_idx, :], EL_array[node_parent_m_idx, :])
-
-                betas[num][node_parent_m_idx, :] = numer_holder / NF[num][node_parent_m_idx]
+                betas[num][node_parent_m_idx, :] = fac1 / NF[num][node_parent_m_idx]
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         betas_row_sum = np.sum(betas[num], axis=1)
