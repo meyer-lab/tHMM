@@ -83,7 +83,7 @@ def wasserstein():
     list_of_populations = [list_of_populations_unsort[idx] for idx in indices]
 
     # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, 2, parallel=False)
+    output = run_Analyze_over(list_of_populations, 2, parallel=True)
 
     # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)
