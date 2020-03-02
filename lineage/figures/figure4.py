@@ -59,7 +59,7 @@ def accuracy_increased_cells():
     experiment_time = 50
 
     # Creating a list of populations to analyze over
-    num_lineages = list(range(1, 500))
+    num_lineages = list(range(1, 50))
     list_of_populations = []
     for num in num_lineages:
         population = []
@@ -74,7 +74,7 @@ def accuracy_increased_cells():
         list_of_populations.append(population)
 
     # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, 2, parallel=True)
+    output = run_Analyze_over(list_of_populations, 2, parallel=False)
 
     # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)

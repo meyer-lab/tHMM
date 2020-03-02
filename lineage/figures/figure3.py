@@ -86,7 +86,7 @@ def accuracy_increased_cells():
     E = [state_obj0, state_obj1]
 
     # Creating a list of populations to analyze over
-    times = np.linspace(100, 1000, 500)
+    times = np.linspace(100, 1000, 50)
     list_of_populations = []
     for experiment_time in times:
         # Creating an unpruned and pruned lineage
@@ -100,7 +100,7 @@ def accuracy_increased_cells():
         list_of_populations.append([lineage])
 
     # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, 2, parallel=True)
+    output = run_Analyze_over(list_of_populations, 2, parallel=False)
 
     # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)

@@ -41,7 +41,7 @@ def get_all_gammas(lineageObj, gamma_arr):
     return holder
 
 
-@jit
+@jit(forceobj=True)
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     '''sum of the list of all the zeta parent child for all the parent cells for a given state transition pair'''
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
