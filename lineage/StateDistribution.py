@@ -2,7 +2,7 @@
 import numpy as np
 import scipy.stats as sp
 from math import gamma
-from numba import jit
+from numba import njit
 
 
 class StateDistribution:
@@ -264,7 +264,7 @@ def gamma_estimator(gamma_obs):
     return a_hat, b_hat
 
 
-@jit(nopython=True)
+@njit
 def bern_pdf(x, p):
     """
     This function takes in 1 observation and a Bernoulli rate parameter
@@ -276,7 +276,7 @@ def bern_pdf(x, p):
     return bern_ll
 
 
-@jit(nopython=True)
+@njit
 def gamma_pdf(x, a, scale):
     """
     This function takes in 1 observation and gamma shape and scale parameters

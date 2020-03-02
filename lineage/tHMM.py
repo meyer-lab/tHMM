@@ -1,6 +1,7 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
 import numpy as np
+
 from .StateDistribution import tHMM_E_init
 
 
