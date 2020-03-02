@@ -21,9 +21,10 @@ def get_root_gammas(tHMMobj, betas):
 
 def get_nonroot_gammas(tHMMobj, gammas, betas):
     '''get the gammas for all other nodes using recursion from the root nodes'''
+    T = tHMMobj.estimate.T
+
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lineageObj.output_lineage
-        T = tHMMobj.estimate.T
         coeffs = betas[num] / tHMMobj.MSD[num]
 
         for level in lineageObj.output_list_of_gens[1:]:
@@ -38,11 +39,10 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                                                          MSD_array=tHMMobj.MSD[num],
                                                          node_child_n_idx=child_idx)
 
-                    for child_state_k in range(tHMMobj.numStates):
-                        sum_holder = np.sum(T[:, child_state_k] * gammas[num][parent_idx, :] / beta_parent)
+                    sum_holder = np.matmul(gammas[num][parent_idx, :] / beta_parent, T) 
+                    gammas[num][child_idx, :] = coeffs[child_idx, :] * sum_holder
 
-                        gammas[num][child_idx, child_state_k] = coeffs[child_idx, child_state_k] * sum_holder
-                        assert np.all(gammas[num][0, :] == betas[num][0, :])
+        assert np.all(gammas[num][0, :] == betas[num][0, :])
 
     for _, gg in enumerate(gammas):
         assert np.allclose(np.sum(gg, axis=1), 1.)
