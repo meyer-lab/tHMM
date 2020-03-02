@@ -15,9 +15,9 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_ar
     assert lineage[node_child_n_idx]._isChild()
     # either be the left daughter or the right daughter
 
-    beta_child_state_k = beta_array[node_child_n_idx, :] # x by k
-    gamma_parent = gamma_array[node_parent_m_idx, :] # x by j
-    MSD_child_state_k = MSD_array[node_child_n_idx, :] # x by k
+    beta_child_state_k = beta_array[node_child_n_idx, :]  # x by k
+    gamma_parent = gamma_array[node_parent_m_idx, :]  # x by j
+    MSD_child_state_k = MSD_array[node_child_n_idx, :]  # x by k
     beta_parent_child = beta_parent_child_func(beta_array=beta_array,
                                                T=T,
                                                MSD_array=MSD_array,
