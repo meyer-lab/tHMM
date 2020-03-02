@@ -39,7 +39,7 @@ def wasserstein():
     T = np.array([[0.66, 0.33],
                   [0.33, 0.66]])
 
-    a0 = np.logspace(2, 5, 10, base=2)
+    a0 = np.logspace(2, 5, 100, base=2)
 
     state_obj0 = StateDistribution(1, 0.99, 4, 3)
 
@@ -55,6 +55,9 @@ def wasserstein():
 
         E = [state_obj0, state_obj1]
         lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000000000, prune_condition='fate', prune_boolean=False)
+        while len(lineage.output_lineage) < 16:
+            del lineage
+            lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000000000, prune_condition='fate', prune_boolean=False)
         list_of_populations_unsort.append([lineage])
 
         # First collect all the observations from the entire population across the lineages ordered by state
@@ -80,7 +83,7 @@ def wasserstein():
     list_of_populations = [list_of_populations_unsort[idx] for idx in indices]
 
     # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, 2)
+    output = run_Analyze_over(list_of_populations, 2, parallel=False)
 
     # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)
