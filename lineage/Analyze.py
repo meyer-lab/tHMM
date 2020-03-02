@@ -54,7 +54,7 @@ def Analyze(X, num_states):
     return tHMMobj, pred_states_by_lineage, LL
 
 
-def run_Analyze_over(list_of_populations, num_states):
+def run_Analyze_over(list_of_populations, num_states, parallel=True):
     """
     A function that can be parallelized to speed up figure creation.
 
@@ -70,15 +70,19 @@ def run_Analyze_over(list_of_populations, num_states):
     list_of_populations: a list of populations that contain lineages
     num_states: an integer number of states to identify (a hyper-parameter of our model)
     """
-    exe = ProcessPoolExecutor()
-
-    prom_holder = []
-    for _, population in enumerate(list_of_populations):
-        prom_holder.append(exe.submit(Analyze, population, num_states))
-
     output = []
-    for _, prom in enumerate(prom_holder):
-        output.append(prom.result())
+    if parallel:
+        exe = ProcessPoolExecutor()
+
+        prom_holder = []
+        for _, population in enumerate(list_of_populations):
+            prom_holder.append(exe.submit(Analyze, population, num_states))
+
+        for _, prom in enumerate(prom_holder):
+            output.append(prom.result())
+    else:
+        for _, population in enumerate(list_of_populations):
+            output.append(Analyze(population, num_states))
 
     return output
 
