@@ -34,16 +34,12 @@ def get_leaf_deltas(tHMMobj):
 
 def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
     '''Calculates the delta values for all non-leaf cells.'''
-    numStates = tHMMobj.numStates
 
-    EL = tHMMobj.EL
-
-    for num, lineageObj in enumerate(
-            tHMMobj.X):  # for each lineage in our Population
+    # for each lineage in our Population
+    for num, lineageObj in enumerate(tHMMobj.X):
         # getting the lineage in the Population by index
         lineage = lineageObj.output_lineage
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
-        EL_array = EL[num]  # geting the EL of the respective lineage
 
         # move up one generation until the 2nd generation is the children
         # and the root nodes are the parents
@@ -51,23 +47,18 @@ def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
             parent_holder = lineageObj._get_parents_for_level(level)
 
             for node_parent_m_idx in parent_holder:
-                for state_k in range(numStates):
-                    fac1, max_state_ptr = get_delta_parent_child_prod(numStates=numStates,
-                                                                      lineage=lineage,
-                                                                      delta_array=deltas[num],
-                                                                      T=T,
-                                                                      state_k=state_k,
-                                                                      node_parent_m_idx=node_parent_m_idx)
-                    fac2 = EL_array[node_parent_m_idx, state_k]
-                    deltas[num][node_parent_m_idx, state_k] = fac1 * fac2
-                    state_ptrs[num][node_parent_m_idx,
-                                    state_k] = max_state_ptr
+                fac1, max_state_ptr = get_delta_parent_child_prod(lineage=lineage,
+                                                                  delta_array=deltas[num],
+                                                                  T=T,
+                                                                  node_parent_m_idx=node_parent_m_idx)
+
+                deltas[num][node_parent_m_idx, :] = fac1 * tHMMobj.EL[num][node_parent_m_idx, :]
+                state_ptrs[num][node_parent_m_idx, :] = max_state_ptr
 
 
-def get_delta_parent_child_prod(
-        numStates, lineage, delta_array, T, state_k, node_parent_m_idx):
+def get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx):
     '''Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.'''
-    delta_m_n_holder = 1.0  # list to hold the factors in the product
+    delta_m_n_holder = np.ones(T.shape[0])  # list to hold the factors in the product
     max_state_ptr = []
     # get the index of the parent
     node_parent_m = lineage[node_parent_m_idx]
@@ -80,11 +71,9 @@ def get_delta_parent_child_prod(
         children_idx_list.append(lineage.index(node_parent_m.right))
 
     for node_child_n_idx in children_idx_list:
-        delta_m_n, state_ptr = delta_parent_child_func(numStates=numStates,
-                                                       lineage=lineage,
+        delta_m_n, state_ptr = delta_parent_child_func(lineage=lineage,
                                                        delta_array=delta_array,
                                                        T=T,
-                                                       state_j=state_k,
                                                        node_parent_m_idx=node_parent_m_idx,
                                                        node_child_n_idx=node_child_n_idx)
         delta_m_n_holder *= delta_m_n
@@ -93,7 +82,7 @@ def get_delta_parent_child_prod(
     return delta_m_n_holder, max_state_ptr
 
 
-def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_parent_m_idx, node_child_n_idx):
+def delta_parent_child_func(lineage, delta_array, T, node_parent_m_idx, node_child_n_idx):
     '''Calculates the delta value for a single parent-child relationship where the parent is in a given state.'''
     assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
     # if the child-parent relationship is correct, then the child must be
@@ -103,9 +92,9 @@ def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_pa
     # get the already calculated delta at node n for state k
     # get the transition rate for going from state j to state k
     # P( z_n = k | z_m = j)
-    max_holder = delta_array[node_child_n_idx, :] * T[state_j, :]
+    max_holder = np.matmul(T, delta_array[node_child_n_idx, :])
 
-    return np.max(max_holder), np.argmax(max_holder)
+    return np.max(max_holder, axis=1), np.argmax(max_holder, axis=1)
 
 
 def Viterbi(tHMMobj, deltas, state_ptrs):
