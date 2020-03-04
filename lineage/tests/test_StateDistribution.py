@@ -80,7 +80,6 @@ class TestModel(unittest.TestCase):
         estimator_obj = self.E[0].estimator(tuples_of_obs)
 
         # here we check the estimated parameters to be close
-        self.assertEqual(estimator_obj.state, self.E[0].state)
         self.assertTrue(
             0.0 <= abs(
                 estimator_obj.bern_p -
