@@ -24,19 +24,17 @@ def makeFigure():
                   [0.15, 0.85]], dtype="float")
 
     # State 0 parameters "Resistant"
-    state0 = 0
     bern_p0 = 0.99
     gamma_a0 = 20
     gamma_scale0 = 5
 
     # State 1 parameters "Susceptible"
-    state1 = 1
     bern_p1 = 0.88
     gamma_a1 = 10
     gamma_scale1 = 1
 
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
+    state_obj0 = StateDistribution(bern_p0, gamma_a0, gamma_scale0)
+    state_obj1 = StateDistribution(bern_p1, gamma_a1, gamma_scale1)
     E = [state_obj0, state_obj1]
 
     # creating a population
