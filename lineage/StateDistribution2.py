@@ -5,9 +5,8 @@ from .StateDistribution import gamma_estimator, bernoulli_estimator
 
 
 class StateDistribution2:
-    def __init__(self, state, bern_p, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2):  # user has to identify what parameters to use for each state
+    def __init__(self, bern_p, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
-        self.state = state
         self.bern_p = bern_p
         self.gamma_a1 = gamma_a1
         self.gamma_scale1 = gamma_scale1

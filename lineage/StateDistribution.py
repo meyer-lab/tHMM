@@ -6,9 +6,8 @@ from numba import njit
 
 
 class StateDistribution:
-    def __init__(self, state, bern_p, gamma_a, gamma_scale):  # user has to identify what parameters to use for each state
+    def __init__(self, bern_p, gamma_a, gamma_scale):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
-        self.state = state
         self.bern_p = bern_p
         self.gamma_a = gamma_a
         self.gamma_scale = gamma_scale
