@@ -3,19 +3,13 @@ Contains utilities and functions that are commonly used or shared amongst
 the figure creation files.
 """
 
+from string import ascii_lowercase
 import numpy as np
 from matplotlib import gridspec, pyplot as plt
 
 
 def getSetup(figsize, gridd):
     """Setup figures."""
-
-    plt.rc('font', **{'family': 'sans-serif', 'size': 25})
-    # for Palatino and other serif fonts use:
-    # rc('font',**{'family':'serif','serif':['Palatino']})
-    plt.rc('text', usetex=True)
-    plt.rc('xtick', **{'labelsize': 'medium'})
-    plt.rc('ytick', **{'labelsize': 'medium'})
 
     # Setup plotting space
     f = plt.figure(figsize=figsize)
@@ -38,7 +32,7 @@ def moving_average(a, n=50):
     return ret[n - 1:] / n
 
 
-def subplotLabel(ax, letter, hstretch=1):
+def subplotLabel(axs):
     """Sublot labels"""
-    ax.text(-0.2 / hstretch, 1.2, letter, transform=ax.transAxes,
-            fontsize=16, fontweight='bold', va='top')
+    for ii, ax in enumerate(axs):
+        ax.text(-0.2, 1.25, ascii_lowercase[ii], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")

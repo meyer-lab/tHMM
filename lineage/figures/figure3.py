@@ -17,13 +17,6 @@ from ..StateDistribution import StateDistribution
 def getSetup(figsize):
     """Setup figures."""
 
-    plt.rc('font', **{'family': 'sans-serif', 'size': 25})
-    # for Palatino and other serif fonts use:
-    # rc('font',**{'family':'serif','serif':['Palatino']})
-    plt.rc('text', usetex=True)
-    plt.rc('xtick', **{'labelsize': 'medium'})
-    plt.rc('ytick', **{'labelsize': 'medium'})
-
     # Setup plotting space
     f = plt.figure(figsize=figsize)
 
