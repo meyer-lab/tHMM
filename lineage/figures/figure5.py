@@ -32,24 +32,14 @@ def AIC_increased_cells1():
     """
 
     # pi: the initial probability vector
-    pi = np.array([0.5, 0.5], dtype="float")
+    pi = np.ones(2) / 2.0
 
     # T: transition probability matrix
-    T = np.array([[0.5, 0.5],
-                  [0.5, 0.5]], dtype="float")
+    T = np.ones((2, 2)) / 2.0
 
-    # State 0 parameters "Resistant"
-    bern_p0 = 0.99
-    gamma_a0 = 20
-    gamma_scale0 = 5
-
-    # State 0 parameters "Resistant"
-    bern_p1 = 0.99
-    gamma_a1 = 20
-    gamma_scale1 = 5
-
-    state_obj0 = StateDistribution(bern_p0, gamma_a0, gamma_scale0)
-    state_obj1 = StateDistribution(bern_p1, gamma_a1, gamma_scale1)
+    # bern, gamma_a, gamma_scale
+    state_obj0 = StateDistribution(0.99, 20, 5)
+    state_obj1 = StateDistribution(0.99, 20, 5)
     E = [state_obj0, state_obj1]
 
     desired_num_states = [1, 2, 3]
@@ -81,24 +71,14 @@ def AIC_increased_cells2():
     """
 
     # pi: the initial probability vector
-    pi = np.array([0.5, 0.5], dtype="float")
+    pi = np.ones(2) / 2.0
 
     # T: transition probability matrix
-    T = np.array([[0.5, 0.5],
-                  [0.5, 0.5]], dtype="float")
+    T = np.ones((2, 2)) / 2.0
 
-    # State 0 parameters "Resistant"
-    bern_p0 = 0.99
-    gamma_a0 = 20
-    gamma_scale0 = 5
-
-    # State 1 parameters "Susceptible"
-    bern_p1 = 0.88
-    gamma_a1 = 10
-    gamma_scale1 = 1
-
-    state_obj0 = StateDistribution(bern_p0, gamma_a0, gamma_scale0)
-    state_obj1 = StateDistribution(bern_p1, gamma_a1, gamma_scale1)
+    # bern, gamma_a, gamma_scale
+    state_obj0 = StateDistribution(0.99, 20, 5)
+    state_obj1 = StateDistribution(0.88, 10, 1)
     E = [state_obj0, state_obj1]
 
     desired_num_states = [1, 2, 3]
@@ -130,33 +110,17 @@ def AIC_increased_cells3():
     """
 
     # pi: the initial probability vector
-    pi = np.array([1. / 3, 1. / 3, 1. / 3])
+    pi = np.ones(3) / 3.0
 
     # T: transition probability matrix
-    T = np.array([[1. / 3, 1. / 3, 1. / 3],
-                  [1. / 3, 1. / 3, 1. / 3],
-                  [1. / 3, 1. / 3, 1. / 3]])
+    T = np.ones((3, 3)) / 3.0
 
     # E: states are defined as StateDistribution objects
 
-    # State 0 parameters "Susciptible"
-    bern_p0 = 0.7
-    gamma_a0 = 5.0
-    gamma_scale0 = 1.0
-
-    # State 1 parameters "Middle state"
-    bern_p1 = 0.85
-    gamma_a1 = 10.0
-    gamma_scale1 = 2.0
-
-    # State 2 parameters "Resistant"
-    bern_p2 = 0.99
-    gamma_a2 = 15.0
-    gamma_scale2 = 3.0
-
-    state_obj0 = StateDistribution(bern_p0, gamma_a0, gamma_scale0)
-    state_obj1 = StateDistribution(bern_p1, gamma_a1, gamma_scale1)
-    state_obj2 = StateDistribution(bern_p2, gamma_a2, gamma_scale2)
+    # bern, gamma_a, gamma_scale
+    state_obj0 = StateDistribution(0.7, 5.0, 1.0)
+    state_obj1 = StateDistribution(0.85, 10.0, 2.0)
+    state_obj2 = StateDistribution(0.99, 15.0, 3.0)
 
     E = [state_obj0, state_obj1, state_obj2]
 
