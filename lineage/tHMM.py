@@ -11,8 +11,8 @@ class estimate:
         self.pi = np.squeeze(np.random.dirichlet(np.random.rand(numStates), 1).T)
         self.T = np.random.dirichlet(np.random.rand(numStates), numStates)
         self.E = []
-        for state in range(self.numStates):
-            self.E.append(tHMM_E_init(state))
+        for _ in range(self.numStates):
+            self.E.append(tHMM_E_init())
 
 
 class tHMM:
