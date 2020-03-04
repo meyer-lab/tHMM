@@ -6,29 +6,11 @@ Figure 3 analyzes heterogeneous (2 state), pruned (by both time and fate), singl
 times.
 """
 import numpy as np
-from matplotlib import gridspec, pyplot as plt
 
-from .figureCommon import moving_average
+from .figureCommon import getSetup, moving_average, subplotLabel
 from ..Analyze import run_Analyze_over, run_Results_over
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
-
-
-def getSetup(figsize):
-    """Setup figures."""
-
-    # Setup plotting space
-    f = plt.figure(figsize=figsize)
-
-    # Make grid
-    gs1 = gridspec.GridSpec(2, 6, figure=f)
-
-    # Get list of axis objects
-    ax = [f.add_subplot(gs1[0, 0:2]), f.add_subplot(gs1[0, 2:4]),
-          f.add_subplot(gs1[0, 4:6]), f.add_subplot(gs1[-1, 1:3]),
-          f.add_subplot(gs1[-1, 3:5])]
-
-    return (ax, f)
 
 
 def makeFigure():
@@ -37,16 +19,12 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((21, 12))
-#     f.subplot2grid(shape, loc, rowspan=1, colspan=1)
-    x, \
-        bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, \
-        gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, \
-        gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, \
-        accuracies, tr = accuracy_increased_cells()
-    figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true,
-                 gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr)
+    ax, f = getSetup((21, 12), (2, 6))
 
+    output = accuracy_increased_cells()
+    figure_maker(ax, *output)
+
+    subplotLabel(ax)
     return f
 
 
