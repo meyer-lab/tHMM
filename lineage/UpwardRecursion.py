@@ -148,13 +148,13 @@ def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, node_parent_m_
     children_list = node_parent_m._get_daughters()
     children_idx_list = [lineage.index(daughter) for daughter in children_list]
 
-    # child x state
-    beta_all = beta_parent_child_func_all(beta_array, T, MSD_array)
-
     for node_child_n_idx in children_idx_list:
         assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
         assert lineage[node_child_n_idx]._isChild()  # if the child-parent relationship is correct, then the child must
-        beta_m_n_holder *= beta_all[node_child_n_idx, :]
+        beta_m_n_holder *= beta_parent_child_func(beta_array=beta_array,
+                                                  T=T,
+                                                  MSD_array=MSD_array,
+                                                  node_child_n_idx=node_child_n_idx)
 
     return beta_m_n_holder
 
@@ -171,22 +171,7 @@ def beta_parent_child_func(beta_array, T, MSD_array, node_child_n_idx):
     '''
     # beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
     # P( z_n = k | z_m = j); P(z_n = k)
-    return np.matmul(T, beta_array[node_child_n_idx, :] / MSD_array[node_child_n_idx, :])
-
-
-def beta_parent_child_func_all(beta_array, T, MSD_array):
-    '''
-    This "helper" function calculates the probability
-    described as a 'beta-link' between parent and child
-    nodes in our tree for some state j. This beta-link
-    value is what lets you calculate the values of
-    higher (in the direction from the leave
-    to the root node) node beta and Normalizing Factor
-    values.
-    '''
-    # beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
-    # P( z_n = k | z_m = j); P(z_n = k)
-    return np.matmul(beta_array / MSD_array, T.T)
+    return np.matmul(beta_array[node_child_n_idx, :] / MSD_array[node_child_n_idx, :], T.T)
 
 
 def calculate_log_likelihood(NF):
