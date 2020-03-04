@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import time
 import matplotlib
 import numpy as np
 import time
@@ -12,6 +13,7 @@ fdir = './output/'
 np.random.seed(1)
 
 if __name__ == '__main__':
+    start = time.time()
     nameOut = 'figure' + sys.argv[1]
 
     exec('from lineage.figures import ' + nameOut)
@@ -20,4 +22,4 @@ if __name__ == '__main__':
     print("--- {} {} seconds ---".format(nameOut, time.time() - start_time))
     ff.savefig(fdir + nameOut + '.svg', dpi=ff.dpi, bbox_inches='tight', pad_inches=0)
 
-    print(nameOut + ' is done.')
+    print(f'{nameOut} is done after {time.time() - start} seconds.')
