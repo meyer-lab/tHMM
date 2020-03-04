@@ -6,8 +6,6 @@ def get_leaf_deltas(tHMMobj):
     """delta matrix and base case at the leaves. Each element in this N by K matrix is the probability for the leaves P(x_n = x | z_n = k)."""
     numStates = tHMMobj.numStates
 
-    EL = tHMMobj.EL
-
     deltas = []
     state_ptrs = []
 
@@ -15,7 +13,6 @@ def get_leaf_deltas(tHMMobj):
     for num, lineageObj in enumerate(tHMMobj.X):
         # getting the lineage in the Population by index
         lineage = lineageObj.output_lineage
-        EL_array = EL[num]  # geting the EL of the respective lineage
         # instantiating N by K array
         delta_array = np.zeros((len(lineage), numStates))
         state_ptrs_array = np.empty(
@@ -25,7 +22,7 @@ def get_leaf_deltas(tHMMobj):
             if cell._isLeaf():  # if it is a leaf
                 # get the index of the leaf
                 leaf_cell_idx = lineage.index(cell)
-                delta_array[leaf_cell_idx, :] = EL_array[leaf_cell_idx, :]
+                delta_array[leaf_cell_idx, :] = tHMMobj.EL[num][leaf_cell_idx, :]
 
         deltas.append(delta_array)
         state_ptrs.append(state_ptrs_array)
