@@ -19,7 +19,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((21, 12), (1, 5))
+    ax, f = getSetup((21, 9), (1, 5))
 
     figure_maker(ax, *accuracy_increased_cells())
 
