@@ -98,6 +98,11 @@ def figure_maker(ax, accuracies, w_divs, dists):
     distributions get farther """
 
     i = 0
+    sns.violinplot(x="Wasserstein divergence", y="Lifetimes [hr]", inner="quart", palette="muted", split=True,
+                   hue="Hues", data=dists, ax=ax[i], order=["{}".format(round(w_value, 2)) for w_value in w_divs])
+    sns.despine(left=True, ax=ax[i])
+
+    i += 1
     ax[i].set_xlabel('Wasserstein divergence')
     ax[i].set_ylim(0, 110)
     ax[i].set_xlim(0, 1.07 * max(w_divs))
@@ -106,8 +111,3 @@ def figure_maker(ax, accuracies, w_divs, dists):
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('Wasserstein divergence')
     ax[i].grid(linestyle='--')
-
-    i += 1
-    sns.violinplot(x="Wasserstein divergence", y="Lifetimes [hr]", inner="quart", palette="muted", split=True,
-                   hue="Hues", data=dists, ax=ax[i], order=["{}".format(round(w_value, 2)) for w_value in w_divs])
-    sns.despine(left=True, ax=ax[i])
