@@ -19,10 +19,9 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((21, 12), (1, 6))
+    ax, f = getSetup((21, 12), (1, 5))
 
-    output = accuracy_increased_cells()
-    figure_maker(ax, *output)
+    figure_maker(ax, *accuracy_increased_cells())
 
     subplotLabel(ax)
 
