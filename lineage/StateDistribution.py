@@ -54,7 +54,7 @@ class StateDistribution:
         bern_p_estimate = bernoulli_estimator(bern_obs)
         gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
 
-        state_estimate_obj = StateDistribution(state=self.state, bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
+        state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
@@ -65,8 +65,8 @@ class StateDistribution:
         return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_scale)
 
 
-def tHMM_E_init(state):
-    return StateDistribution(state, 0.9, 10 * (np.random.uniform()), 1)
+def tHMM_E_init():
+    return StateDistribution(0.9, 10 * (np.random.uniform()), 1)
 
 
 class Time:

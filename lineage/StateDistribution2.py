@@ -59,8 +59,7 @@ class StateDistribution2:
         gamma_a1_estimate, gamma_scale1_estimate = gamma_estimator(gamma_obsG1)
         gamma_a2_estimate, gamma_scale2_estimate = gamma_estimator(gamma_obsG2)
 
-        state_estimate_obj = StateDistribution2(state=self.state,
-                                                bern_p=bern_p_estimate,
+        state_estimate_obj = StateDistribution2(bern_p=bern_p_estimate,
                                                 gamma_a1=gamma_a1_estimate,
                                                 gamma_scale1=gamma_scale1_estimate,
                                                 gamma_a2=gamma_a2_estimate,
@@ -87,9 +86,8 @@ def prune_rule(cell):
     return truther
 
 
-def tHMM_E_init2(state):
-    return StateDistribution2(state,
-                              0.9,
+def tHMM_E_init2():
+    return StateDistribution2(0.9,
                               10 * (np.random.uniform()),
                               1.5,
                               10 * (np.random.uniform()),
