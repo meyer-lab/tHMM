@@ -89,7 +89,7 @@ def delta_parent_child_func(lineage, delta_array, T, node_parent_m_idx, node_chi
     # get the already calculated delta at node n for state k
     # get the transition rate for going from state j to state k
     # P( z_n = k | z_m = j)
-    max_holder = np.matmul(T, delta_array[node_child_n_idx, :])
+    max_holder = T * delta_array[node_child_n_idx, :]
 
     return np.max(max_holder, axis=1), np.argmax(max_holder, axis=1)
 
