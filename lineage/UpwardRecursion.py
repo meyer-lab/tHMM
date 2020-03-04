@@ -171,7 +171,7 @@ def beta_parent_child_func(beta_array, T, MSD_array, node_child_n_idx):
     '''
     # beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
     # P( z_n = k | z_m = j); P(z_n = k)
-    return np.matmul(beta_array[node_child_n_idx, :] / MSD_array[node_child_n_idx, :], T.T)
+    return np.matmul(T, beta_array[node_child_n_idx, :] / MSD_array[node_child_n_idx, :])
 
 
 def calculate_log_likelihood(NF):
