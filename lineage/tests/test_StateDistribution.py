@@ -17,22 +17,8 @@ class TestModel(unittest.TestCase):
         self.T = np.array([[0.85, 0.15],
                            [0.20, 0.80]])
 
-        # State 0 parameters "Resistant"
-        self.state0 = 0
-        bern_p0 = 0.99
-        gamma_a0 = 20
-        gamma_scale0 = 5
-
-        # State 1 parameters "Susceptible"
-        self.state1 = 1
-        bern_p1 = 0.8
-        gamma_a1 = 10
-        gamma_scale1 = 1
-
-        self.stateDist0 = StateDistribution(self.state0, bern_p0, gamma_a0, gamma_scale0)
-        self.stateDist1 = StateDistribution(self.state1, bern_p1, gamma_a1, gamma_scale1)
-
-        self.E = [self.stateDist0, self.stateDist1]
+        # bern, gamma_a, gamma_scale
+        self.E = [StateDistribution(0.99, 20, 5), StateDistribution(0.80, 10, 1)]
 
         # creating two lineages, one with False for pruning, one with True.
         self.lineage = LineageTree(
@@ -62,11 +48,11 @@ class TestModel(unittest.TestCase):
 
     def test_rvs(self):
         """ A unittest for random generator function, given the number of random variables we want from each distribution, that each corresponds to one of the observation types. """
-        tuple_of_obs = self.stateDist0.rvs(size=30)
+        tuple_of_obs = self.E[0].rvs(size=30)
         bern_obs, gamma_obs = list(zip(*tuple_of_obs))
         self.assertTrue(len(bern_obs) == len(gamma_obs) == 30)
 
-        tuple_of_obs1 = self.stateDist1.rvs(size=40)
+        tuple_of_obs1 = self.E[1].rvs(size=40)
         bern_obs1, gamma_obs1 = list(zip(*tuple_of_obs1))
         self.assertTrue(len(bern_obs1) == len(gamma_obs1) == 40)
 
@@ -77,36 +63,35 @@ class TestModel(unittest.TestCase):
         (the size == 1 which mean we just have one bernoulli, and one gamma).
         """
         # for stateDist0
-        list_of_tuple_of_obs = self.stateDist0.rvs(size=1)
+        list_of_tuple_of_obs = self.E[0].rvs(size=1)
         tuple_of_obs = list_of_tuple_of_obs[0]
-        likelihood = self.stateDist0.pdf(tuple_of_obs)
+        likelihood = self.E[0].pdf(tuple_of_obs)
         self.assertTrue(0.0 <= likelihood <= 1.0)
 
         # for stateDist1
-        list_of_tuple_of_obs1 = self.stateDist1.rvs(size=1)
+        list_of_tuple_of_obs1 = self.E[1].rvs(size=1)
         tuple_of_obs1 = list_of_tuple_of_obs1[0]
-        likelihood1 = self.stateDist1.pdf(tuple_of_obs1)
+        likelihood1 = self.E[1].pdf(tuple_of_obs1)
         self.assertTrue(0.0 <= likelihood1 <= 1.0)
 
     def test_estimator(self):
         """ A unittest for the estimator function, by generating 150 observatopns for each of the distribution functions, we use the estimator and compare. """
-        tuples_of_obs = self.stateDist0.rvs(size=3000)
-        estimator_obj = self.stateDist0.estimator(tuples_of_obs)
+        tuples_of_obs = self.E[0].rvs(size=3000)
+        estimator_obj = self.E[0].estimator(tuples_of_obs)
 
         # here we check the estimated parameters to be close
-        self.assertEqual(estimator_obj.state, self.stateDist0.state)
         self.assertTrue(
             0.0 <= abs(
                 estimator_obj.bern_p -
-                self.stateDist0.bern_p) <= 0.1)
+                self.E[0].bern_p) <= 0.1)
         self.assertTrue(
             0.0 <= abs(
                 estimator_obj.gamma_a -
-                self.stateDist0.gamma_a) <= 3.0)
+                self.E[0].gamma_a) <= 3.0)
         self.assertTrue(
             0.0 <= abs(
                 estimator_obj.gamma_scale -
-                self.stateDist0.gamma_scale) <= 3.0)
+                self.E[0].gamma_scale) <= 3.0)
 
     def test_fate_prune_rule(self):
         """ A unittest for the fate_prune_rule. """

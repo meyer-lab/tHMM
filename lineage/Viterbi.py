@@ -11,8 +11,8 @@ def get_leaf_deltas(tHMMobj):
     deltas = []
     state_ptrs = []
 
-    for num, lineageObj in enumerate(
-            tHMMobj.X):  # for each lineage in our Population
+    # for each lineage in our Population
+    for num, lineageObj in enumerate(tHMMobj.X):
         # getting the lineage in the Population by index
         lineage = lineageObj.output_lineage
         EL_array = EL[num]  # geting the EL of the respective lineage
@@ -67,19 +67,17 @@ def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
 def get_delta_parent_child_prod(
         numStates, lineage, delta_array, T, state_k, node_parent_m_idx):
     '''Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.'''
-    delta_m_n_holder = []  # list to hold the factors in the product
+    delta_m_n_holder = 1.0  # list to hold the factors in the product
     max_state_ptr = []
     # get the index of the parent
     node_parent_m = lineage[node_parent_m_idx]
     children_idx_list = []  # list to hold the children
 
     if node_parent_m.left:
-        node_child_n_left_idx = lineage.index(node_parent_m.left)
-        children_idx_list.append(node_child_n_left_idx)
+        children_idx_list.append(lineage.index(node_parent_m.left))
 
     if node_parent_m.right:
-        node_child_n_right_idx = lineage.index(node_parent_m.right)
-        children_idx_list.append(node_child_n_right_idx)
+        children_idx_list.append(lineage.index(node_parent_m.right))
 
     for node_child_n_idx in children_idx_list:
         delta_m_n, state_ptr = delta_parent_child_func(numStates=numStates,
@@ -89,12 +87,10 @@ def get_delta_parent_child_prod(
                                                        state_j=state_k,
                                                        node_parent_m_idx=node_parent_m_idx,
                                                        node_child_n_idx=node_child_n_idx)
-        delta_m_n_holder.append(delta_m_n)
+        delta_m_n_holder *= delta_m_n
         max_state_ptr.append((node_child_n_idx, state_ptr))
 
-    # calculates the product of items in a list
-    result = np.prod(delta_m_n_holder)
-    return result, max_state_ptr
+    return delta_m_n_holder, max_state_ptr
 
 
 def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_parent_m_idx, node_child_n_idx):
@@ -103,16 +99,13 @@ def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_pa
     # if the child-parent relationship is correct, then the child must be
     # either the left daughter or the right daughter
     assert lineage[node_child_n_idx]._isChild()
-    max_holder = []  # maxing over the states
-    for state_k in range(numStates):  # for each state k
-        # get the already calculated delta at node n for state k
-        num1 = delta_array[node_child_n_idx, state_k]
-        # get the transition rate for going from state j to state k
-        num2 = T[state_j, state_k]
-        # P( z_n = k | z_m = j)
-        max_holder.append(num1 * num2)
 
-    return max(max_holder), np.argmax(max_holder)
+    # get the already calculated delta at node n for state k
+    # get the transition rate for going from state j to state k
+    # P( z_n = k | z_m = j)
+    max_holder = delta_array[node_child_n_idx, :] * T[state_j, :]
+
+    return np.max(max_holder), np.argmax(max_holder)
 
 
 def Viterbi(tHMMobj, deltas, state_ptrs):

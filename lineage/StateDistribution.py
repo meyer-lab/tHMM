@@ -2,13 +2,12 @@
 import numpy as np
 import scipy.stats as sp
 from math import gamma
-from numba import jit
+from numba import njit
 
 
 class StateDistribution:
-    def __init__(self, state, bern_p, gamma_a, gamma_scale):  # user has to identify what parameters to use for each state
+    def __init__(self, bern_p, gamma_a, gamma_scale):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
-        self.state = state
         self.bern_p = bern_p
         self.gamma_a = gamma_a
         self.gamma_scale = gamma_scale
@@ -55,7 +54,7 @@ class StateDistribution:
         bern_p_estimate = bernoulli_estimator(bern_obs)
         gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
 
-        state_estimate_obj = StateDistribution(state=self.state, bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
+        state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
@@ -66,8 +65,8 @@ class StateDistribution:
         return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_scale)
 
 
-def tHMM_E_init(state):
-    return StateDistribution(state, 0.9, 10 * (np.random.uniform()), 1)
+def tHMM_E_init():
+    return StateDistribution(0.9, 10 * (np.random.uniform()), 1)
 
 
 class Time:
@@ -264,7 +263,7 @@ def gamma_estimator(gamma_obs):
     return a_hat, b_hat
 
 
-@jit(nopython=True)
+@njit
 def bern_pdf(x, p):
     """
     This function takes in 1 observation and a Bernoulli rate parameter
@@ -276,7 +275,7 @@ def bern_pdf(x, p):
     return bern_ll
 
 
-@jit(nopython=True)
+@njit
 def gamma_pdf(x, a, scale):
     """
     This function takes in 1 observation and gamma shape and scale parameters

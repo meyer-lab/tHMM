@@ -23,8 +23,7 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((20, 6), (1, 2))
-    accuracies, w_divs_to_use, dists = wasserstein()
-    figure_maker(ax, accuracies, w_divs_to_use, dists)
+    figure_maker(ax, *wasserstein())
 
     return f
 
@@ -41,7 +40,7 @@ def wasserstein():
 
     a0 = np.logspace(2, 5, 10, base=2)
 
-    state_obj0 = StateDistribution(1, 0.99, 4, 3)
+    state_obj0 = StateDistribution(0.99, 4, 3)
 
     w_divs = []
 
@@ -51,7 +50,7 @@ def wasserstein():
     tmp_hues = []
     list_of_populations_unsort = []
     for idx, a0 in enumerate(a0):
-        state_obj1 = StateDistribution(0, 0.99, a0, 3)
+        state_obj1 = StateDistribution(0.99, a0, 3)
 
         E = [state_obj0, state_obj1]
         lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000000000, prune_condition='fate', prune_boolean=False)
