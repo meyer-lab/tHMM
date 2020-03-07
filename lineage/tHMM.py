@@ -1,6 +1,7 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
 import numpy as np
+
 from .StateDistribution import tHMM_E_init
 
 
@@ -10,10 +11,8 @@ class estimate:
         self.pi = np.squeeze(np.random.dirichlet(np.random.rand(numStates), 1).T)
         self.T = np.random.dirichlet(np.random.rand(numStates), numStates)
         self.E = []
-        for state in range(self.numStates):
-            self.E.append(tHMM_E_init(state))
-            # in case of using G1 G2 phase, this needs to be used instead of the above line.
-#             self.E.append(tHMM_E_init2(state))
+        for _ in range(self.numStates):
+            self.E.append(tHMM_E_init())
 
 
 class tHMM:
@@ -62,14 +61,12 @@ class tHMM:
         for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
             lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
 
-            MSD_array = np.zeros((len(lineage), self.numStates), dtype=float)  # instantiating N by K array
+            MSD_array = np.zeros((len(lineage), self.numStates))  # instantiating N by K array
             MSD_array[0, :] = self.estimate.pi
             MSD.append(MSD_array)
 
         for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
-            MSD_0_row_sum = np.sum(MSD[num][0])
-            assert np.isclose(
-                MSD_0_row_sum, 1.), "The Marginal State Distribution for your root cells, P(z_1 = k), for all states k in numStates, are not adding up to 1!"
+            assert np.isclose(np.sum(MSD[num][0]), 1.)
 
         for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
             lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
@@ -78,17 +75,11 @@ class tHMM:
                 for cell in level:
                     parent_cell_idx = lineage.index(cell.parent)  # get the index of the parent cell
                     current_cell_idx = lineage.index(cell)
-                    for state_k in range(self.numStates):  # recursion based on parent cell
-                        temp_sum_holder = 0  # for all states k, calculate the sum of temp
 
-                        for state_j in range(self.numStates):  # for all states j, calculate temp
-                            temp_sum_holder += self.estimate.T[state_j, state_k] * MSD[num][parent_cell_idx, state_j]
+                    # recursion based on parent cell
+                    MSD[num][current_cell_idx, :] = np.matmul(MSD[num][parent_cell_idx, :], self.estimate.T)
 
-                        MSD[num][current_cell_idx, state_k] = temp_sum_holder
-            MSD_row_sums = np.sum(MSD[num], axis=1)
-
-            assert np.allclose(
-                MSD_row_sums, 1.0), "The Marginal State Distribution for your cells, P(z_k = k), for all states k in numStates, are not adding up to 1!"
+            assert np.allclose(np.sum(MSD[num], axis=1), 1.0)
         return MSD
 
     def get_Emission_Likelihoods(self):
