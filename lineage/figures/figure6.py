@@ -38,7 +38,7 @@ def wasserstein():
     T = np.array([[0.66, 0.33],
                   [0.33, 0.66]])
 
-    a0 = np.logspace(2, 5, 100, base=2)
+    a0 = np.logspace(2, 5, 20, base=2)
 
     state_obj0 = StateDistribution(0.99, 4, 3)
 
