@@ -6,36 +6,11 @@ Figure 3 analyzes heterogeneous (2 state), pruned (by both time and fate), singl
 times.
 """
 import numpy as np
-from matplotlib import gridspec, pyplot as plt
 
-from .figureCommon import moving_average
+from .figureCommon import getSetup, moving_average, subplotLabel
 from ..Analyze import run_Analyze_over, run_Results_over
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
-
-
-def getSetup(figsize):
-    """Setup figures."""
-
-    plt.rc('font', **{'family': 'sans-serif', 'size': 25})
-    # for Palatino and other serif fonts use:
-    # rc('font',**{'family':'serif','serif':['Palatino']})
-    plt.rc('text', usetex=True)
-    plt.rc('xtick', **{'labelsize': 'medium'})
-    plt.rc('ytick', **{'labelsize': 'medium'})
-
-    # Setup plotting space
-    f = plt.figure(figsize=figsize)
-
-    # Make grid
-    gs1 = gridspec.GridSpec(2, 6, figure=f)
-
-    # Get list of axis objects
-    ax = [f.add_subplot(gs1[0, 0:2]), f.add_subplot(gs1[0, 2:4]),
-          f.add_subplot(gs1[0, 4:6]), f.add_subplot(gs1[-1, 1:3]),
-          f.add_subplot(gs1[-1, 3:5])]
-
-    return (ax, f)
 
 
 def makeFigure():
@@ -44,15 +19,11 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((21, 12))
-#     f.subplot2grid(shape, loc, rowspan=1, colspan=1)
-    x, \
-        bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, \
-        gamma_a0_est, gamma_a1_est, gamma_a0_true, gamma_a1_true, \
-        gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, \
-        accuracies, tr = accuracy_increased_cells()
-    figure_maker(ax, x, bern_p0_est, bern_p1_est, bern_p0_true, bern_p1_true, gamma_a0_est, gamma_a1_est, gamma_a0_true,
-                 gamma_a1_true, gamma_scale0_est, gamma_scale1_est, gamma_scale0_true, gamma_scale1_true, accuracies, tr)
+    ax, f = getSetup((21, 9), (1, 5))
+
+    figure_maker(ax, *accuracy_increased_cells())
+
+    subplotLabel(ax)
 
     return f
 
@@ -70,19 +41,17 @@ def accuracy_increased_cells():
                   [0.15, 0.85]], dtype="float")
 
     # State 0 parameters "Resistant"
-    state0 = 0
     bern_p0_true = 0.99
     gamma_a0_true = 20
     gamma_scale0_true = 5
 
     # State 1 parameters "Susceptible"
-    state1 = 1
     bern_p1_true = 0.88
     gamma_a1_true = 10
     gamma_scale1_true = 1
 
-    state_obj0 = StateDistribution(state0, bern_p0_true, gamma_a0_true, gamma_scale0_true)
-    state_obj1 = StateDistribution(state1, bern_p1_true, gamma_a1_true, gamma_scale1_true)
+    state_obj0 = StateDistribution(bern_p0_true, gamma_a0_true, gamma_scale0_true)
+    state_obj1 = StateDistribution(bern_p1_true, gamma_a1_true, gamma_scale1_true)
     E = [state_obj0, state_obj1]
 
     # Creating a list of populations to analyze over
@@ -100,7 +69,7 @@ def accuracy_increased_cells():
         list_of_populations.append([lineage])
 
     # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, 2)
+    output = run_Analyze_over(list_of_populations, 2, parallel=True)
 
     # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)

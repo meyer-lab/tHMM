@@ -147,14 +147,14 @@ def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, node_parent_m_
     node_parent_m = lineage[node_parent_m_idx]  # get the index of the parent
     children_list = node_parent_m._get_daughters()
     children_idx_list = [lineage.index(daughter) for daughter in children_list]
+
     for node_child_n_idx in children_idx_list:
         assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
         assert lineage[node_child_n_idx]._isChild()  # if the child-parent relationship is correct, then the child must
-        beta_m_n = beta_parent_child_func(beta_array=beta_array,
-                                          T=T,
-                                          MSD_array=MSD_array,
-                                          node_child_n_idx=node_child_n_idx)
-        beta_m_n_holder *= beta_m_n
+        beta_m_n_holder *= beta_parent_child_func(beta_array=beta_array,
+                                                  T=T,
+                                                  MSD_array=MSD_array,
+                                                  node_child_n_idx=node_child_n_idx)
 
     return beta_m_n_holder
 

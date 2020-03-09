@@ -22,20 +22,10 @@ class TestModel(unittest.TestCase):
         # T: transition probability matrix
         T = np.array([[0.85, 0.15],
                       [0.15, 0.85]], dtype="float")
-        # State 0 parameters "Resistant"
-        state0 = 0
-        bern_p0 = 0.95
-        gamma_a0 = 20
-        gamma_scale0 = 5
 
-        # State 1 parameters "Susciptible"
-        state1 = 1
-        bern_p1 = 0.85
-        gamma_a1 = 10
-        gamma_scale1 = 1
-
-        state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
-        state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
+        # bern, gamma_a, gamma_scale
+        state_obj0 = StateDistribution(0.95, 20, 5)
+        state_obj1 = StateDistribution(0.85, 10, 1)
         self.E = [state_obj0, state_obj1]
         # Using an unpruned lineage to avoid unforseen issues
         self.X = [LineageTree(pi, T, self.E, desired_num_cells=(2**11) - 1, desired_experiment_time=500, prune_condition='die',

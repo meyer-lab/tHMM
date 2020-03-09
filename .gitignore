@@ -9,3 +9,5 @@ nosetests.xml
 !Guide_to_tHMM.ipynb
 venv/
 output/
+profile
+profile.svg
