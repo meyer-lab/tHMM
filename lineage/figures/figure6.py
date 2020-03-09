@@ -38,7 +38,7 @@ def wasserstein():
     T = np.array([[0.66, 0.33],
                   [0.33, 0.66]])
 
-    a0 = np.logspace(2, 5, 10, base=2)
+    a0 = np.logspace(2, 5, 20, base=2)
 
     state_obj0 = StateDistribution(0.99, 4, 3)
 
@@ -82,7 +82,7 @@ def wasserstein():
     list_of_populations = [list_of_populations_unsort[idx] for idx in indices]
 
     # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, 2)
+    output = run_Analyze_over(list_of_populations, 2, parallel=True)
 
     # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)
