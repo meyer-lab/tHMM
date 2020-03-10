@@ -15,8 +15,7 @@ def get_leaf_deltas(tHMMobj):
         lineage = lineageObj.output_lineage
         # instantiating N by K array
         delta_array = np.zeros((len(lineage), numStates))
-        state_ptrs_array = np.empty(
-            (len(lineage), numStates), dtype=object)  # instantiating N by K array
+        state_ptrs_array = np.empty((len(lineage), 2), dtype=object)  # instantiating N by K array
 
         for cell in lineage:  # for each cell in the lineage
             if cell._isLeaf():  # if it is a leaf
@@ -68,30 +67,22 @@ def get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx):
         children_idx_list.append(lineage.index(node_parent_m.right))
 
     for node_child_n_idx in children_idx_list:
-        delta_m_n, state_ptr = delta_parent_child_func(lineage=lineage,
-                                                       delta_array=delta_array,
-                                                       T=T,
-                                                       node_parent_m_idx=node_parent_m_idx,
-                                                       node_child_n_idx=node_child_n_idx)
-        delta_m_n_holder *= delta_m_n
+        assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
+        # if the child-parent relationship is correct, then the child must be
+        # either the left daughter or the right daughter
+        assert lineage[node_child_n_idx]._isChild()
+
+        # get the already calculated delta at node n for state k
+        # get the transition rate for going from state j to state k
+        # P( z_n = k | z_m = j)
+        max_holder = T * delta_array[node_child_n_idx, :]
+
+        state_ptr = np.argmax(max_holder, axis=1)
+
+        delta_m_n_holder *= np.max(max_holder, axis=1)
         max_state_ptr.append((node_child_n_idx, state_ptr))
 
     return delta_m_n_holder, max_state_ptr
-
-
-def delta_parent_child_func(lineage, delta_array, T, node_parent_m_idx, node_child_n_idx):
-    '''Calculates the delta value for a single parent-child relationship where the parent is in a given state.'''
-    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
-    # if the child-parent relationship is correct, then the child must be
-    # either the left daughter or the right daughter
-    assert lineage[node_child_n_idx]._isChild()
-
-    # get the already calculated delta at node n for state k
-    # get the transition rate for going from state j to state k
-    # P( z_n = k | z_m = j)
-    max_holder = T * delta_array[node_child_n_idx, :]
-
-    return np.max(max_holder, axis=1), np.argmax(max_holder, axis=1)
 
 
 def Viterbi(tHMMobj, deltas, state_ptrs):
