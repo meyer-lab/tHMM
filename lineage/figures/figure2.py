@@ -46,7 +46,7 @@ def makeFigure():
     hist_tim_pruned = track_population_growth_histogram(population_pruned, delta_time)
 
     # Get list of axis objects
-    ax, f = getSetup((16, 16), (2, 2))
+    ax, f = getSetup((7, 7), (2, 2))
 
     # generations
 
