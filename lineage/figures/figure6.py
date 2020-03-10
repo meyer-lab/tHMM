@@ -22,7 +22,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((20, 6), (1, 2))
+    ax, f = getSetup((7, 6), (1, 2))
     figure_maker(ax, *wasserstein())
 
     return f

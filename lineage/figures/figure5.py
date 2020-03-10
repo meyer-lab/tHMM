@@ -17,7 +17,7 @@ def makeFigure():
     """
     Makes figure 11.
     """
-    ax, f = getSetup((21, 6), (1, 3))
+    ax, f = getSetup((7, 6), (1, 3))
 
     figure_maker(ax, 0, *AIC_increased_cells1())
     figure_maker(ax, 1, *AIC_increased_cells2())
