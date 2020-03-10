@@ -1,7 +1,16 @@
 """
-This creates Figure 5.
+File: figure5.py
+Purpose: Generates figure 5.
+
+AIC.
 """
-from .figureCommon import subplotLabel, getSetup
+import numpy as np
+from matplotlib.ticker import MaxNLocator
+
+from .figureCommon import getSetup
+from ..Analyze import getAIC, run_Analyze_over
+from ..LineageTree import LineageTree
+from ..StateDistribution import StateDistribution
 
 
 def makeFigure():
@@ -52,7 +61,6 @@ def run_AIC(Trate, E, num_to_evaluate=10):
 
     return AIC_holder
 
-    subplotLabel(ax[0], 'A')
 
 def figure_maker(ax, AIC_holder):
     """
