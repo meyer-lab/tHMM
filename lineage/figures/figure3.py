@@ -8,8 +8,7 @@ times.
 import numpy as np
 
 from .figureCommon import getSetup, subplotLabel
-from .figure4 import figure_maker, E, piiii, T
-from ..Analyze import run_Analyze_over, run_Results_over
+from .figure4 import figure_maker, E, piiii, T, figFourCommon
 from ..LineageTree import LineageTree
 
 
@@ -47,21 +46,4 @@ def accuracy_increased_cells():
         # Adding populations into a holder for analysing
         list_of_populations.append([lineage])
 
-    # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, 2, parallel=True)
-
-    # Collecting the results of analyzing the lineages
-    results_holder = run_Results_over(output)
-
-    dictOut = {}
-
-    for key in results_holder[0].keys():
-        dictOut[key] = []
-
-    for results_dict in results_holder:
-        for key, val in results_dict.items():
-            dictOut[key].append(val)
-
-    paramEst = np.array(dictOut["param_estimates"])
-
-    return dictOut["total_number_of_cells"], paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"]
+    return figFourCommon(list_of_populations)

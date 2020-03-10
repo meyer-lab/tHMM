@@ -7,7 +7,7 @@ number of lineages per population.
 """
 import numpy as np
 
-from .figureCommon import getSetup, moving_average
+from .figureCommon import getSetup, moving_average, subplotLabel
 from ..Analyze import run_Analyze_over, run_Results_over
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
@@ -32,8 +32,10 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((7, 6), (2, 3))
-    output = accuracy_increased_cells()
-    figure_maker(ax, *output)
+
+    figure_maker(ax, *accuracy_increased_cells())
+
+    subplotLabel(ax)
 
     return f
 
@@ -61,6 +63,10 @@ def accuracy_increased_cells():
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
 
+    return figFourCommon(list_of_populations)
+
+
+def figFourCommon(list_of_populations):
     # Analyzing the lineages in the list of populations (parallelized function)
     output = run_Analyze_over(list_of_populations, 2, parallel=True)
 
