@@ -93,7 +93,9 @@ def get_leaf_betas(tHMMobj, NF):
         # P(x_n = x | z_n = k), P(z_n = k), P(x_n = x)
         beta_array = np.zeros((len(lineage), tHMMobj.numStates))  # instantiating N by K array
         ii = lineageObj.output_leaves_idx
-        beta_array[ii, :] = EL_arr[ii, :] * MSD_arr[ii, :] / NF_arr[ii, np.newaxis]
+
+        with np.errstate(divide='ignore', invalid='ignore'):
+            beta_array[ii, :] = EL_arr[ii, :] * MSD_arr[ii, :] / NF_arr[ii, np.newaxis]
 
         betas.append(beta_array)
 

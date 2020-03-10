@@ -32,13 +32,13 @@ def wasserstein():
     """ Assuming we have 2-state model """
 
     # pi: the initial probability vector
-    pi = np.array([0.5, 0.5], dtype="float")
+    pi = np.ones(2) / 2.0
 
     # T: transition probability matrix
-    T = np.array([[0.66, 0.33],
-                  [0.33, 0.66]])
+    T = np.array([[0.8, 0.2],
+                  [0.2, 0.8]])
 
-    a0 = np.logspace(2, 5, 20, base=2)
+    a0 = np.logspace(2, 5, 15, base=2)
 
     state_obj0 = StateDistribution(0.99, 4, 3)
 
