@@ -1,210 +1,67 @@
 """
-File: figure7.py
-Purpose: Generates figure 7.
-AIC.
+This creates Figure 5.
 """
-import numpy as np
-from matplotlib.ticker import MaxNLocator
-
-from .figureCommon import getSetup
-from ..Analyze import getAIC, run_Analyze_over
-from ..LineageTree import LineageTree
-from ..StateDistribution import StateDistribution
+from .figureCommon import subplotLabel, getSetup
 
 
 def makeFigure():
     """
-    Makes figure 7.
+    Makes figure 11.
     """
-    ax, f = getSetup((21, 6), (1, 3))
+    ax, f = getSetup((7, 3), (1, 3))
 
-    desred_num_states1, AIC_holder1 = AIC_increased_cells1()
-    i = 0
-    figure_maker(ax, i, desred_num_states1, AIC_holder1)
+    # bern, gamma_a, gamma_scale
+    Sone = StateDistribution(0.99, 20, 5)
+    Stwo = StateDistribution(0.88, 10, 1)
+    Eone = [Sone, Sone]
+    Etwo = [Sone, Stwo]
+    Ethree = [Sone, Stwo, StateDistribution(0.40, 30, 1)]
 
-    desred_num_states2, AIC_holder2 = AIC_increased_cells2()
-    i = 1
-    figure_maker(ax, i, desred_num_states2, AIC_holder2)
-
-    desred_num_states3, AIC_holder3 = AIC_increased_cells3()
-    i = 2
-    figure_maker(ax, i, desred_num_states3, AIC_holder3)
+    figure_maker(ax[0], run_AIC(0.02, Eone))
+    figure_maker(ax[1], run_AIC(0.02, Etwo))
+    figure_maker(ax[2], run_AIC(0.02, Ethree))
 
     return f
 
 
-def AIC_increased_cells1():
-    """
-    Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a one-state model.
-    """
+# States to evaluate with the model
+desired_num_states = np.arange(1, 6)
+
+
+def run_AIC(Trate, E, num_to_evaluate=10):
+    # Normalize the transition matrix
+    T = Trate + np.eye(len(E))
+    T = T / np.sum(T, axis=0)[np.newaxis, :]
 
     # pi: the initial probability vector
-    pi = np.array([0.5, 0.5], dtype="float")
-
-    # T: transition probability matrix
-    T = np.array([[0.5, 0.5],
-                  [0.5, 0.5]], dtype="float")
-
-    # State 0 parameters "Resistant"
-    state0 = 0
-    bern_p0 = 0.99
-    gamma_a0 = 20
-    gamma_scale0 = 5
-
-    # State 0 parameters "Resistant"
-    state1 = 1
-    bern_p1 = 0.99
-    gamma_a1 = 20
-    gamma_scale1 = 5
-
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
-    E = [state_obj0, state_obj1]
-
-    desired_num_states = [1, 2, 3]
-    num_to_evaluate = 10
+    # make an even starting p
+    pi = np.ones(T.shape[0]) / T.shape[0]
 
     list_of_populations = []
     for idx in range(num_to_evaluate):
         # Creating an unpruned and pruned lineage
-        list_of_populations.append([LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False)])
+        list_of_populations.append([LineageTree(pi, T, E, (2**8) - 1, 1E9, prune_condition='fate', prune_boolean=False)])
 
-    AIC_holder = []
-    for num_states_to_evaluate in desired_num_states:
-        tmp_AIC_holder_by_state = []
+    AIC_holder = np.empty((len(desired_num_states), num_to_evaluate))
+    for ii, num_states_to_evaluate in enumerate(desired_num_states):
         # Analyze the lineages in the list of populations
         output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
         # Collecting the results of analyzing the lineages
         for idx, (tHMMobj, _, LL) in enumerate(output):
-            AIC, _ = getAIC(tHMMobj, LL)
-            tmp_AIC_holder_by_state.append(AIC)
+            AIC_holder[ii, idx] = getAIC(tHMMobj, LL)[0]
 
-        AIC_holder.append(tmp_AIC_holder_by_state)
+    return AIC_holder
 
-    return desired_num_states, AIC_holder
+    subplotLabel(ax[0], 'A')
 
-
-def AIC_increased_cells2():
+def figure_maker(ax, AIC_holder):
     """
-    Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model.
+    Makes figure 11.
     """
-
-    # pi: the initial probability vector
-    pi = np.array([0.5, 0.5], dtype="float")
-
-    # T: transition probability matrix
-    T = np.array([[0.5, 0.5],
-                  [0.5, 0.5]], dtype="float")
-
-    # State 0 parameters "Resistant"
-    state0 = 0
-    bern_p0 = 0.99
-    gamma_a0 = 20
-    gamma_scale0 = 5
-
-    # State 1 parameters "Susceptible"
-    state1 = 1
-    bern_p1 = 0.88
-    gamma_a1 = 10
-    gamma_scale1 = 1
-
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
-    E = [state_obj0, state_obj1]
-
-    desired_num_states = [1, 2, 3]
-    num_to_evaluate = 10
-
-    list_of_populations = []
-    for idx in range(num_to_evaluate):
-            # Creating an unpruned and pruned lineage
-        list_of_populations.append([LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False)])
-
-    AIC_holder = []
-    for num_states_to_evaluate in desired_num_states:
-        tmp_AIC_holder_by_state = []
-        # Analyze the lineages in the list of populations
-        output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
-        # Collecting the results of analyzing the lineages
-        for idx, (tHMMobj, _, LL) in enumerate(output):
-            AIC, _ = getAIC(tHMMobj, LL)
-            tmp_AIC_holder_by_state.append(AIC)
-
-        AIC_holder.append(tmp_AIC_holder_by_state)
-
-    return desired_num_states, AIC_holder
-
-
-def AIC_increased_cells3():
-    """
-    Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a three-state model.
-    """
-
-    # pi: the initial probability vector
-    pi = np.array([1. / 3, 1. / 3, 1. / 3])
-
-    # T: transition probability matrix
-    T = np.array([[1. / 3, 1. / 3, 1. / 3],
-                  [1. / 3, 1. / 3, 1. / 3],
-                  [1. / 3, 1. / 3, 1. / 3]])
-
-    # E: states are defined as StateDistribution objects
-
-    # State 0 parameters "Susciptible"
-    state0 = 0
-    bern_p0 = 0.7
-    gamma_a0 = 5.0
-    gamma_scale0 = 1.0
-
-    # State 1 parameters "Middle state"
-    state1 = 1
-    bern_p1 = 0.85
-    gamma_a1 = 10.0
-    gamma_scale1 = 2.0
-
-    # State 2 parameters "Resistant"
-    state2 = 2
-    bern_p2 = 0.99
-    gamma_a2 = 15.0
-    gamma_scale2 = 3.0
-
-    state_obj0 = StateDistribution(state0, bern_p0, gamma_a0, gamma_scale0)
-    state_obj1 = StateDistribution(state1, bern_p1, gamma_a1, gamma_scale1)
-    state_obj2 = StateDistribution(state2, bern_p2, gamma_a2, gamma_scale2)
-
-    E = [state_obj0, state_obj1, state_obj2]
-
-    desired_num_states = [1, 2, 3]
-    num_to_evaluate = 10
-
-    list_of_populations = []
-    for idx in range(num_to_evaluate):
-            # Creating an unpruned and pruned lineage
-        list_of_populations.append([LineageTree(pi, T, E, (2**8) - 1, 1000000000, prune_condition='fate', prune_boolean=False)])
-
-    AIC_holder = []
-    for num_states_to_evaluate in desired_num_states:
-        tmp_AIC_holder_by_state = []
-        # Analyze the lineages in the list of populations
-        output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
-        # Collecting the results of analyzing the lineages
-        for idx, (tHMMobj, _, LL) in enumerate(output):
-            AIC, _ = getAIC(tHMMobj, LL)
-            tmp_AIC_holder_by_state.append(AIC)
-
-        AIC_holder.append(tmp_AIC_holder_by_state)
-
-    return desired_num_states, AIC_holder
-
-
-def figure_maker(ax, i, desired_num_states, AIC_holder):
-    """
-    Makes figure 7.
-    """
-    i += 0
-    ax[i].set_xlim((0, int(np.ceil(1.1 * max(desired_num_states)))))
-    ax[i].set_xlabel('Number of States')
-    ax[i].plot(desired_num_states, np.array(AIC_holder), 'k', alpha=0.5)
-    ax[i].set_ylabel(r'AIC')
-    ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
-    ax[i].set_title('State Assignment AIC')
+    AIC_holder = AIC_holder - np.min(AIC_holder, axis=0)[np.newaxis, :]
+    ax.set_xlabel('Number of States')
+    ax.plot(desired_num_states, AIC_holder, 'k', alpha=0.5)
+    ax.set_ylabel('Normalized AIC')
+    ax.set_ylim(0.0, 50.0)
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.set_title('State Assignment AIC')
