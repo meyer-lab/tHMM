@@ -19,14 +19,14 @@ def makeFigure():
     """
     ax, f = getSetup((7, 6), (1, 3))
 
-    figure_maker(ax, 0, *AIC_increased_cells1())
-    figure_maker(ax, 1, *AIC_increased_cells2())
-    figure_maker(ax, 2, *AIC_increased_cells3())
+    figure_maker(ax[0], *AIC_increased_cells1())
+    figure_maker(ax[1], *AIC_increased_cells2())
+    figure_maker(ax[2], *AIC_increased_cells3())
 
     return f
 
 
-def run_AIC(T, E, num_to_evaluate):
+def run_AIC(T, E, num_to_evaluate=10):
     # pi: the initial probability vector
     # make an even starting p
     pi = np.ones(T.shape[0]) / T.shape[0]
@@ -63,13 +63,10 @@ def AIC_increased_cells1():
     T = np.ones((2, 2)) / 2.0
 
     # bern, gamma_a, gamma_scale
-    state_obj0 = StateDistribution(0.99, 20, 5)
-    state_obj1 = StateDistribution(0.99, 20, 5)
-    E = [state_obj0, state_obj1]
+    E = [StateDistribution(0.99, 20, 5),
+         StateDistribution(0.99, 20, 5)]
 
-    num_to_evaluate = 10
-
-    return run_AIC(T, E, num_to_evaluate)
+    return run_AIC(T, E)
 
 
 def AIC_increased_cells2():
@@ -81,13 +78,10 @@ def AIC_increased_cells2():
     T = np.ones((2, 2)) / 2.0
 
     # bern, gamma_a, gamma_scale
-    state_obj0 = StateDistribution(0.99, 20, 5)
-    state_obj1 = StateDistribution(0.88, 10, 1)
-    E = [state_obj0, state_obj1]
+    E = [StateDistribution(0.99, 20, 5),
+         StateDistribution(0.88, 10, 1)]
 
-    num_to_evaluate = 10
-
-    return run_AIC(T, E, num_to_evaluate)
+    return run_AIC(T, E)
 
 
 def AIC_increased_cells3():
@@ -99,27 +93,21 @@ def AIC_increased_cells3():
     T = np.ones((3, 3)) / 3.0
 
     # E: states are defined as StateDistribution objects
-
     # bern, gamma_a, gamma_scale
-    state_obj0 = StateDistribution(0.7, 5.0, 1.0)
-    state_obj1 = StateDistribution(0.85, 10.0, 2.0)
-    state_obj2 = StateDistribution(0.99, 15.0, 3.0)
+    E = [StateDistribution(0.7, 5.0, 1.0),
+         StateDistribution(0.85, 10.0, 2.0),
+         StateDistribution(0.99, 15.0, 3.0)]
 
-    E = [state_obj0, state_obj1, state_obj2]
-
-    num_to_evaluate = 10
-
-    return run_AIC(T, E, num_to_evaluate)
+    return run_AIC(T, E)
 
 
-def figure_maker(ax, i, desired_num_states, AIC_holder):
+def figure_maker(ax, desired_num_states, AIC_holder):
     """
     Makes figure 11.
     """
-    i += 0
-    ax[i].set_xlim((0, int(np.ceil(1.1 * max(desired_num_states)))))
-    ax[i].set_xlabel('Number of States')
-    ax[i].plot(desired_num_states, np.array(AIC_holder), 'k', alpha=0.5)
-    ax[i].set_ylabel(r'AIC')
-    ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
-    ax[i].set_title('State Assignment AIC')
+    ax.set_xlim((0, int(np.ceil(1.1 * max(desired_num_states)))))
+    ax.set_xlabel('Number of States')
+    ax.plot(desired_num_states, np.array(AIC_holder), 'k', alpha=0.5)
+    ax.set_ylabel(r'AIC')
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.set_title('State Assignment AIC')
