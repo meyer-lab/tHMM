@@ -100,5 +100,6 @@ def figure_maker(ax, desired_num_states, AIC_holder):
     ax.set_xlabel('Number of States')
     ax.plot(desired_num_states, AIC_holder, 'k', alpha=0.5)
     ax.set_ylabel('Normalized AIC')
+    ax.set_ylim(top=50)
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     ax.set_title('State Assignment AIC')
