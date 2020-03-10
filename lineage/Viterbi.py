@@ -6,8 +6,6 @@ def get_leaf_deltas(tHMMobj):
     """delta matrix and base case at the leaves. Each element in this N by K matrix is the probability for the leaves P(x_n = x | z_n = k)."""
     numStates = tHMMobj.numStates
 
-    EL = tHMMobj.EL
-
     deltas = []
     state_ptrs = []
 
@@ -15,17 +13,15 @@ def get_leaf_deltas(tHMMobj):
     for num, lineageObj in enumerate(tHMMobj.X):
         # getting the lineage in the Population by index
         lineage = lineageObj.output_lineage
-        EL_array = EL[num]  # geting the EL of the respective lineage
         # instantiating N by K array
         delta_array = np.zeros((len(lineage), numStates))
-        state_ptrs_array = np.empty(
-            (len(lineage), numStates), dtype=object)  # instantiating N by K array
+        state_ptrs_array = np.empty((len(lineage), 2), dtype=object)  # instantiating N by K array
 
         for cell in lineage:  # for each cell in the lineage
             if cell._isLeaf():  # if it is a leaf
                 # get the index of the leaf
                 leaf_cell_idx = lineage.index(cell)
-                delta_array[leaf_cell_idx, :] = EL_array[leaf_cell_idx, :]
+                delta_array[leaf_cell_idx, :] = tHMMobj.EL[num][leaf_cell_idx, :]
 
         deltas.append(delta_array)
         state_ptrs.append(state_ptrs_array)
@@ -34,16 +30,12 @@ def get_leaf_deltas(tHMMobj):
 
 def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
     '''Calculates the delta values for all non-leaf cells.'''
-    numStates = tHMMobj.numStates
 
-    EL = tHMMobj.EL
-
-    for num, lineageObj in enumerate(
-            tHMMobj.X):  # for each lineage in our Population
+    # for each lineage in our Population
+    for num, lineageObj in enumerate(tHMMobj.X):
         # getting the lineage in the Population by index
         lineage = lineageObj.output_lineage
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
-        EL_array = EL[num]  # geting the EL of the respective lineage
 
         # move up one generation until the 2nd generation is the children
         # and the root nodes are the parents
@@ -51,23 +43,18 @@ def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
             parent_holder = lineageObj._get_parents_for_level(level)
 
             for node_parent_m_idx in parent_holder:
-                for state_k in range(numStates):
-                    fac1, max_state_ptr = get_delta_parent_child_prod(numStates=numStates,
-                                                                      lineage=lineage,
-                                                                      delta_array=deltas[num],
-                                                                      T=T,
-                                                                      state_k=state_k,
-                                                                      node_parent_m_idx=node_parent_m_idx)
-                    fac2 = EL_array[node_parent_m_idx, state_k]
-                    deltas[num][node_parent_m_idx, state_k] = fac1 * fac2
-                    state_ptrs[num][node_parent_m_idx,
-                                    state_k] = max_state_ptr
+                fac1, max_state_ptr = get_delta_parent_child_prod(lineage=lineage,
+                                                                  delta_array=deltas[num],
+                                                                  T=T,
+                                                                  node_parent_m_idx=node_parent_m_idx)
+
+                deltas[num][node_parent_m_idx, :] = fac1 * tHMMobj.EL[num][node_parent_m_idx, :]
+                state_ptrs[num][node_parent_m_idx, :] = max_state_ptr
 
 
-def get_delta_parent_child_prod(
-        numStates, lineage, delta_array, T, state_k, node_parent_m_idx):
+def get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx):
     '''Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.'''
-    delta_m_n_holder = 1.0  # list to hold the factors in the product
+    delta_m_n_holder = np.ones(T.shape[0])  # list to hold the factors in the product
     max_state_ptr = []
     # get the index of the parent
     node_parent_m = lineage[node_parent_m_idx]
@@ -80,32 +67,22 @@ def get_delta_parent_child_prod(
         children_idx_list.append(lineage.index(node_parent_m.right))
 
     for node_child_n_idx in children_idx_list:
-        delta_m_n, state_ptr = delta_parent_child_func(numStates=numStates,
-                                                       lineage=lineage,
-                                                       delta_array=delta_array,
-                                                       T=T,
-                                                       state_j=state_k,
-                                                       node_parent_m_idx=node_parent_m_idx,
-                                                       node_child_n_idx=node_child_n_idx)
-        delta_m_n_holder *= delta_m_n
+        assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
+        # if the child-parent relationship is correct, then the child must be
+        # either the left daughter or the right daughter
+        assert lineage[node_child_n_idx]._isChild()
+
+        # get the already calculated delta at node n for state k
+        # get the transition rate for going from state j to state k
+        # P( z_n = k | z_m = j)
+        max_holder = T * delta_array[node_child_n_idx, :]
+
+        state_ptr = np.argmax(max_holder, axis=1)
+
+        delta_m_n_holder *= np.max(max_holder, axis=1)
         max_state_ptr.append((node_child_n_idx, state_ptr))
 
     return delta_m_n_holder, max_state_ptr
-
-
-def delta_parent_child_func(numStates, lineage, delta_array, T, state_j, node_parent_m_idx, node_child_n_idx):
-    '''Calculates the delta value for a single parent-child relationship where the parent is in a given state.'''
-    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
-    # if the child-parent relationship is correct, then the child must be
-    # either the left daughter or the right daughter
-    assert lineage[node_child_n_idx]._isChild()
-
-    # get the already calculated delta at node n for state k
-    # get the transition rate for going from state j to state k
-    # P( z_n = k | z_m = j)
-    max_holder = delta_array[node_child_n_idx, :] * T[state_j, :]
-
-    return np.max(max_holder), np.argmax(max_holder)
 
 
 def Viterbi(tHMMobj, deltas, state_ptrs):
@@ -114,24 +91,23 @@ def Viterbi(tHMMobj, deltas, state_ptrs):
 
     for num, lineageObj in enumerate(tHMMobj.X):
         lineage = lineageObj.output_lineage
-        pi = tHMMobj.estimate.pi
-        delta_array = deltas[num]
-        state_ptrs_array = state_ptrs[num]
 
-        opt_state_tree = np.zeros((len(lineage)), dtype=int)
-        possible_first_states = np.multiply(delta_array[0, :], pi)
+        opt_state_tree = np.zeros(len(lineage), dtype=int)
+        possible_first_states = np.multiply(deltas[num][0, :], tHMMobj.estimate.pi)
         opt_state_tree[0] = np.argmax(possible_first_states)
         for level in lineageObj.output_list_of_gens[1:]:
             for cell in level:
                 parent_idx = lineage.index(cell)
-                temp = cell._get_daughters()
-                for n in temp:
+                for n in cell._get_daughters():
                     child_idx = lineage.index(n)
                     parent_state = opt_state_tree[parent_idx]
-                    temp = state_ptrs_array[parent_idx, parent_state]
-                    for child_state_tuple in temp:
+
+                    for ii in range(state_ptrs[num].shape[1]):
+                        child_state_tuple = state_ptrs[num][parent_idx, ii]
+
                         if child_state_tuple[0] == child_idx:
-                            opt_state_tree[child_idx] = child_state_tuple[1]
+                            opt_state_tree[child_idx] = child_state_tuple[1][parent_state]
+                            break
 
         all_states.append(opt_state_tree)
 
