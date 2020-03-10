@@ -26,7 +26,12 @@ def makeFigure():
     return f
 
 
-def run_AIC(T, E, num_to_evaluate=10):
+def run_AIC(Trate, E, num_to_evaluate=10):
+    # Normalize the transition matrix
+    T = Trate + np.eye(2)
+    T = T / np.sum(T, axis=1)[np.newaxis, :]
+    print(T)
+
     # pi: the initial probability vector
     # make an even starting p
     pi = np.ones(T.shape[0]) / T.shape[0]
@@ -59,14 +64,11 @@ def AIC_increased_cells1():
     Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a one-state model.
     """
 
-    # T: transition probability matrix
-    T = np.ones((2, 2)) / 2.0
-
     # bern, gamma_a, gamma_scale
     E = [StateDistribution(0.99, 20, 5),
          StateDistribution(0.99, 20, 5)]
 
-    return run_AIC(T, E)
+    return run_AIC(0.01, E)
 
 
 def AIC_increased_cells2():
@@ -74,14 +76,11 @@ def AIC_increased_cells2():
     Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a two-state model.
     """
 
-    # T: transition probability matrix
-    T = np.ones((2, 2)) / 2.0
-
     # bern, gamma_a, gamma_scale
     E = [StateDistribution(0.99, 20, 5),
          StateDistribution(0.88, 10, 1)]
 
-    return run_AIC(T, E)
+    return run_AIC(0.01, E)
 
 
 def AIC_increased_cells3():
@@ -89,16 +88,13 @@ def AIC_increased_cells3():
     Calculates accuracy and parameter estimation by increasing the number of cells in a lineage for a three-state model.
     """
 
-    # T: transition probability matrix
-    T = np.ones((3, 3)) / 3.0
-
     # E: states are defined as StateDistribution objects
     # bern, gamma_a, gamma_scale
     E = [StateDistribution(0.7, 5.0, 1.0),
          StateDistribution(0.85, 10.0, 2.0),
          StateDistribution(0.99, 15.0, 3.0)]
 
-    return run_AIC(T, E)
+    return run_AIC(0.01, E)
 
 
 def figure_maker(ax, desired_num_states, AIC_holder):
