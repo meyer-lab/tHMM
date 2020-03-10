@@ -53,28 +53,15 @@ def accuracy_increased_cells():
     # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)
 
-    # Collect necessary things to plot
-    x = []
-    bern_p0_est = []
-    bern_p1_est = []
-    gamma_a0_est = []
-    gamma_a1_est = []
-    gamma_scale0_est = []
-    gamma_scale1_est = []
-    accuracies = []
-    tr = []
-    pi = []
+    dictOut = {}
+
+    for key in results_holder[0].keys():
+        dictOut[key] = []
 
     for results_dict in results_holder:
-        x.append(results_dict["total_number_of_cells"])
-        accuracies.append(results_dict["accuracy_after_switching"])
-        tr.append(results_dict["transition_matrix_norm"])
-        pi.append(results_dict["pi_vector_norm"])
-        bern_p0_est.append(results_dict["param_estimates"][0][0])
-        bern_p1_est.append(results_dict["param_estimates"][1][0])
-        gamma_a0_est.append(results_dict["param_estimates"][0][1])
-        gamma_a1_est.append(results_dict["param_estimates"][1][1])
-        gamma_scale0_est.append(results_dict["param_estimates"][0][2])
-        gamma_scale1_est.append(results_dict["param_estimates"][1][2])
+        for key, val in results_dict.items():
+            dictOut[key].append(val)
 
-    return x, bern_p0_est, bern_p1_est, gamma_a0_est, gamma_a1_est, gamma_scale0_est, gamma_scale1_est, accuracies, tr, pi
+    paramEst = np.array(dictOut["param_estimates"])
+
+    return dictOut["total_number_of_cells"], paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"]
