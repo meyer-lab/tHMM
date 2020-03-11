@@ -105,7 +105,7 @@ def figure_maker(ax, accuracies, w_divs, dists):
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('Wasserstein divergence')
     ax[i].grid(linestyle='--')
-
+    
     i += 1
     sns.violinplot(x="Wasserstein divergence", y="Lifetimes [hr]", inner="quart", palette="muted", split=True,
                    hue="Hues", data=dists, ax=ax[i], order=["{}".format(round(w_value, 2)) for w_value in w_divs])
