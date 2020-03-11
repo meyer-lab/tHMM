@@ -6,11 +6,7 @@
 
 some introduction...
 
-![**Distribution of alive cells in resistant and susceptible states over time and generation.** The distribution of alive cells in susceptible and resistant states after pruning the lineage, based on the parameterization including initial probability ${\pi = [0.6, 0.4]}$, transition probability matrix $$\left(\begin{array}{cc} 
-0.85 & 0.15\\
-0.15 & 0.85
-\end{array}\right)
-$$ with ${(p, shape, scale) = (0.99, 20, 5)}$ for resistant cells, and ${(p, shape, scale) = (0.88, 10, 1)}$ for susciptable cells. **a** and **c** show the number of cells over generations and time, and **b** and **d** show the proportion of those over generation and time, respectively.](./output/figure2.svg){#fig:Distributions}
+![**Distribution of alive cells in resistant and susceptible states over time and generation.** The distribution of alive cells in susceptible and resistant states after pruning the lineage, based on the parameterization including initial probability ${\pi = [0.6, 0.4]}$, transition probability matrix $[[0.85, 0.15],[0.15, 0.85]]$ with ${(p, shape, scale) = (0.99, 20, 5)}$ for resistant cells, and ${(p, shape, scale) = (0.88, 10, 1)}$ for susciptable cells. **a** and **c** show the number of cells over generations and time, and **b** and **d** show the proportion of those over generation and time, respectively.](./output/figure2.svg){#fig:Distributions}
 
 
 To provide a better understanding of the accuracy and parameterization of the states by the tHMM, lineages of cells were simulated by starting with an initial cell and sampling the Bernoulli and exponential distributions for its respective fate and lifetime. If a cell divided, it then produced two new simulated cells that underwent the same process sampling from the same Bernoulli and exponential distributions. 
