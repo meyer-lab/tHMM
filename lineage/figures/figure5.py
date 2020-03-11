@@ -33,6 +33,7 @@ def accuracy_increased_cells():
     list_of_populations = []
     
     # Create a list of transition matrices to transition over called list_of_Ts
+    # TODO
     
     # Iterate through the transition matrices
     for T in list_of_Ts:
@@ -47,3 +48,6 @@ def accuracy_increased_cells():
         list_of_populations.append([lineage])
 
     return figFourCommon(list_of_populations)
+
+# Add function to generate transition matrices below
+# TODO
