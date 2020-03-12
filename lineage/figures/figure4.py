@@ -88,7 +88,7 @@ def figFourCommon(list_of_populations, xtype='length'):
     if xtype == 'length':
       x = dictOut["total_number_of_cells"]
     elif x == 'prop':
-      x = dictOut["state_proportions"]
+      x = dictOut["state_proportions"][0]
 
     return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"]
 
