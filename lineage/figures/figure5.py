@@ -17,7 +17,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((7, 6), (2, 3))
 
-    figure_maker(ax, *accuracy_increased_cells())
+    figure_maker(ax, *accuracy_increased_cells(), xlabel="Cells in State 0")
 
     subplotLabel(ax)
 
@@ -51,9 +51,9 @@ def accuracy_increased_cells():
 
 # Add function to generate transition matrices below
 def makeTs(increment=0.1):
-    
-    """ Generates transition matrices """
-    
+    """
+    Generates transition matrices
+    """
     list_of_Ts = [np.array([[0.5, 0.5],[0.5, 0.5]])]
     new_arr = np.copy(list_of_Ts[0])
     while 0 < new_arr[0][0] < 1:
