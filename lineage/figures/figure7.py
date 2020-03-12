@@ -1,6 +1,6 @@
 """
-File: figure5.py
-Purpose: Generates figure 5.
+File: figure7.py
+Purpose: Generates figure 7.
 
 AIC.
 """
@@ -15,7 +15,7 @@ from ..StateDistribution import StateDistribution
 
 def makeFigure():
     """
-    Makes figure 11.
+    Makes figure 7.
     """
     ax, f = getSetup((7, 3), (1, 3))
 
