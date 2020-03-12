@@ -34,6 +34,7 @@ def accuracy_increased_cells():
     
     # Create a list of transition matrices to transition over called list_of_Ts
     list_of_Ts = []
+    list_of_Ts.append([MakeTs])
     
     # Iterate through the transition matrices
     for T in list_of_Ts:
