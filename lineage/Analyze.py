@@ -186,7 +186,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     # 3. Calculate accuracy after switching states
     pred_states_switched = [switcher_map[state] for state in pred_states]
     results_dict["state_counter"] = np.bincount(pred_states_switched)
-    results_dict["state_proportions"] = [i/len(pred_states_switched) for i in results_dict["state_counter"]]
+    results_dict["state_proportions"] = [i / len(pred_states_switched) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
     results_dict["accuracy_before_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states, true_states)]) / len(true_states)
     results_dict["accuracy_after_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states_switched, true_states)]) / len(true_states)
