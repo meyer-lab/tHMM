@@ -66,7 +66,7 @@ def accuracy_increased_cells():
     return figFourCommon(list_of_populations)
 
 
-def figFourCommon(list_of_populations):
+def figFourCommon(list_of_populations, xtype='length'):
     # Analyzing the lineages in the list of populations (parallelized function)
     output = run_Analyze_over(list_of_populations, 2, parallel=True)
 
@@ -83,8 +83,14 @@ def figFourCommon(list_of_populations):
             dictOut[key].append(val)
 
     paramEst = np.array(dictOut["param_estimates"])
+    
+    x = None
+    if xtype = 'length':
+      x = dictOut["total_number_of_cells"]
+    elif x = 'prop':
+      x = dictOut["state_proportions"]
 
-    return dictOut["total_number_of_cells"], paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"]
+    return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"]
 
 
 def figure_maker(ax, x, paramEst, accuracies, tr, pi):
