@@ -11,11 +11,11 @@ class LineageTree:
         A class for lineage trees.
         Every lineage object from this class is a binary tree built based on initial probabilities,
         transition probabilities, and emissions defined by state distributions given by the user.
-        Lineages are generated in full (no pruning) by creating cells of different states in a
+        Lineages are generated in output (no pruning) by creating cells of different states in a
         binary fashion utilizing the pi and the transtion probabilities. Cells are then filled with
         observations based on their states by sampling observations from their emission distributions.
         The lineage tree is then censord based on the censor condition. The value of the boolean in
-        censor_boolean determines what lineage is ultimately analyzed, either the full or censord lineage.
+        censor_boolean determines what lineage is ultimately analyzed, either the output or censord lineage.
 
         Args:
         -----
@@ -28,7 +28,7 @@ class LineageTree:
         desired_num_cells {Int}: The desired number of cells we want the lineage to end up with.
 
         censor_condition {bool}: If it is True, it means the user want this lineage to be censord, 
-        if False it means the user want this lineage as a full binary tree -- in which none of the cells die.
+        if False it means the user want this lineage as a output binary tree -- in which none of the cells die.
         """
         self.pi = pi
         pi_num_states = len(pi)
@@ -45,12 +45,10 @@ class LineageTree:
         \nPlease check that the dimensions and states match. \npi {} \nT {} \nE {}".format(self.pi, self.T, self.E)
         self.num_states = pi_num_states
 
-        self.full_lin_list = self.generate_lineage_list()
-        self.full_max_gen, self.full_list_of_gens = max_gen(self.full_lin_list)
-        self.full_leaves_idx, self.full_leaves = get_leaves(self.full_lin_list)
+        self.output_lin_list = self.generate_lineage_list()
         
         for i_state in range(self.num_states):
-            self.full_assign_obs(i_state)
+            self.output_assign_obs(i_state)
         
         # this is given by the user:
         # 0 - no pruning
@@ -67,15 +65,15 @@ class LineageTree:
         if self.censor_condition > 0:
             self.censor_lineage()
             
-        self.censored_max_gen, self.censor_list_of_gens = max_gen(self.full_lin_list)
-        self.censored_leaves_idx, self.censor_leaves = get_leaves(self.full_lin_list)
+        self.censored_max_gen, self.censor_list_of_gens = max_gen(self.output_lin_list)
+        self.censored_leaves_idx, self.censor_leaves = get_leaves(self.output_lin_list)
         
         
 
     def generate_lineage_list(self):
         """
         Generates a single lineage tree given Markov variables. 
-        This only generates the hidden variables (i.e., the states) in a full binary tree manner.
+        This only generates the hidden variables (i.e., the states) in a output binary tree manner.
         It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
         
         Args:
@@ -84,27 +82,27 @@ class LineageTree:
 
         Returns:
         --------
-        full_lin_list {list}: A list containing cells with assigned hidden states based on initial and transition probabilities.
+        output_lin_list {list}: A list containing cells with assigned hidden states based on initial and transition probabilities.
         """
         first_state_results = sp.multinomial.rvs(1, self.pi)  # roll the dice and yield the state for the first cell
         first_cell_state = first_state_results.tolist().index(1)
         first_cell = CellVar(state=first_cell_state, parent=None, gen=1)  # create first cell
-        self.full_lin_list = [first_cell]
+        self.output_lin_list = [first_cell]
 
-        for idx, cell in enumerate(self.full_lin_list):  # letting the first cell proliferate
+        for idx, cell in enumerate(self.output_lin_list):  # letting the first cell proliferate
             if cell.isLeaf():  # if the cell has no daughters...
                 # make daughters by dividing and assigning states
                 left_cell, right_cell = cell.divide(self.T)
                 # add daughters to the list of cells
-                self.full_lin_list.append(left_cell)
-                self.full_lin_list.append(right_cell)
+                self.output_lin_list.append(left_cell)
+                self.output_lin_list.append(right_cell)
 
-            if len(self.full_lin_list) >= self.desired_num_cells:
+            if len(self.output_lin_list) >= self.desired_num_cells:
                 break
 
-        return self.full_lin_list
+        return self.output_lin_list
     
-    def full_assign_obs(self, state):
+    def output_assign_obs(self, state):
         """
         Observation assignment give a state.
         Given the lineageTree object and the intended state, this function assigns the corresponding observations
@@ -115,7 +113,7 @@ class LineageTree:
         state {Int}: The number assigned to a state.
 
         """
-        cells_in_state = [cell for cell in self.full_lin_list if cell.state ==state] 
+        cells_in_state = [cell for cell in self.output_lin_list if cell.state ==state] 
         list_of_tuples_of_obs = self.E[state].rvs(size=len(cells_in_state))
         assert len(cells_in_state) == len(list_of_tuples_of_obs)
         for i, cell in enumerate(cells_in_state): 
@@ -124,34 +122,34 @@ class LineageTree:
     def censor_lineage(self):
         """
         This function removes those cells that are intended to be remove
-        from the full binary tree based on emissions.
-        It takes in LineageTree object, walks through all the cells in the full binary tree,
+        from the output binary tree based on emissions.
+        It takes in LineageTree object, walks through all the cells in the output binary tree,
         applies the pruning to each cell that is supposed to be removed,
         and returns the censord list of cells.
         """
         assign_times(self)
-        for cell in self.full_lin_list:
+        for cell in self.output_lin_list:
             if self.censor_condition == 0:
                 # do nothing
                 break
             elif self.censor_condition == 1:
                 if fate_censor_rule(cell):
-                    subtree, not_subtree = get_subtrees(cell, self.full_lin_list)
+                    subtree, not_subtree = get_subtrees(cell, self.output_lin_list)
                     for sub_cell in subtree[1:]:
                         sub_cell.censored = True
-                    assert cell.isLeafBecauseDaughtersAreCensored() or cell.isLeafBecauseTerminal
+                    assert cell.isLeaf()
             elif self.censor_condition == 2:
                 if time_censor_rule(cell, self.desired_experiment_time):
-                    subtree, not_subtree = get_subtrees(cell, self.full_lin_list)
+                    subtree, not_subtree = get_subtrees(cell, self.output_lin_list)
                     for sub_cell in subtree[1:]:
                         sub_cell.censored = True
-                    assert cell.isLeafBecauseDaughtersAreCensored() or cell.isLeafBecauseTerminal
+                    assert cell.isLeaf()
             elif self.censor_condition == 3:
                 if fate_censor_rule(cell) or time_censor_rule(cell, self.desired_experiment_time):
-                    subtree, not_subtree = get_subtrees(cell, self.full_lin_list)
+                    subtree, not_subtree = get_subtrees(cell, self.output_lin_list)
                     for sub_cell in subtree[1:]:
                         sub_cell.censored = True
-                    assert cell.isLeafBecauseDaughtersAreCensored() or cell.isLeafBecauseTerminal
+                    assert cell.isLeaf()
 
     def get_parents_for_level(self, level):
         """
@@ -175,7 +173,7 @@ class LineageTree:
         """
         This function is used to get string representation of an object, used for debugging and development.
         Represents the information about the lineage that the user has created,
-        like whether the tree is censord or is a full tree;
+        like whether the tree is censord or is a output tree;
         and for both of the options it prints the number of states,
         the number of cells in the states, the total number of cells.
         """
@@ -194,9 +192,9 @@ class LineageTree:
             s1 = "This tree is NOT censord. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
             s_list = []
             for state in range(self.num_states):
-                s_list.append("\n \t There are {} cells of state {}".format(self.lineage_stats[state].num_full_lin_cells, state))
+                s_list.append("\n \t There are {} cells of state {}".format(self.lineage_stats[state].num_output_lin_cells, state))
             s2 = seperator.join(s_list)
-            s3 = ".\n This UNcensord tree has {} many cells in total".format(len(self.full_lin_list))
+            s3 = ".\n This UNcensord tree has {} many cells in total".format(len(self.output_lin_list))
         return s1 + s2 + s3
 
     def __str__(self):

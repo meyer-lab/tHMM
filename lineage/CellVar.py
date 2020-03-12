@@ -81,7 +81,7 @@ class CellVar:
         Boolean.
         Returns true if the cell has daughters.
         """
-        if self.isLeaf:
+        if self.isLeaf():
             return False
         else:
             return True
