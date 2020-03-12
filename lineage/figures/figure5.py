@@ -31,10 +31,10 @@ def accuracy_increased_cells():
 
     # Creating a list of populations to analyze over
     list_of_populations = []
-    
+
     # Create a list of transition matrices to transition over called list_of_Ts
     list_of_Ts = makeTs()
-    
+
     # Iterate through the transition matrices
     for T in list_of_Ts:
         # Creating an unpruned and pruned lineage
@@ -50,18 +50,20 @@ def accuracy_increased_cells():
     return figFourCommon(list_of_populations, xtype='prop')
 
 # Add function to generate transition matrices below
+
+
 def makeTs(increment=0.01):
     """
     Generates transition matrices
     """
-    list_of_Ts = [np.array([[0.5, 0.5],[0.5, 0.5]])]
+    list_of_Ts = [np.array([[0.5, 0.5], [0.5, 0.5]])]
     new_arr = np.copy(list_of_Ts[0])
     while 0 < new_arr[0][0] < 1:
-        new_arr[:,0] += increment
-        new_arr[:,1] -= increment
+        new_arr[:, 0] += increment
+        new_arr[:, 1] -= increment
         if (abs(1 - new_arr[0][0]) <= 0.1):
             break
         else:
             list_of_Ts.append(np.copy(new_arr))
-    list_of_Ts.append(np.array([[1.,0.],[1.,0.]]))
+    list_of_Ts.append(np.array([[1., 0.], [1., 0.]]))
     return list_of_Ts
