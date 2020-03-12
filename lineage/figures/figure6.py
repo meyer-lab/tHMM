@@ -2,8 +2,8 @@
 File: figure6.py
 Purpose: Generates figure 6.
 
-Figure 12 is the KL divergence for different sets of parameters
-for a two state model. It plots the KL-divergence against accuracy.
+Figure 6 is the wasserstein divergence for different sets of parameters
+for a two state model. It plots the wasserstein-divergence against accuracy.
 """
 import random
 import numpy as np
@@ -18,7 +18,7 @@ from .figureCommon import getSetup
 
 def makeFigure():
     """
-    Makes figure 12.
+    Makes figure 6.
     """
 
     # Get list of axis objects
