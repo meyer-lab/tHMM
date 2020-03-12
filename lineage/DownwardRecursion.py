@@ -33,8 +33,8 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
             for cell in level:
                 parent_idx = lineage.index(cell)
 
-                for daughter_idx in cell.get_daughters():
-                    child_idx = lineage.index(daughter_idx)
+                for daughter in cell.get_daughters():
+                    child_idx = lineage.index(daughter)
 
                     beta_parent = beta_parent_child_func(beta_array=betas[num],
                                                          T=T,

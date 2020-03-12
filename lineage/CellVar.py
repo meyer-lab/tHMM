@@ -134,9 +134,9 @@ class CellVar:
         """
         temp = []
         if hasattr(self, 'left') and hasattr(self, 'right'):
-            if self.left is not None:
+            if self.left is not None and not self.left.censored:
                 temp.append(self.left)
-            if self.right is not None:
+            if self.right is not None and not self.right.censored:
                 temp.append(self.right)
         return temp
 

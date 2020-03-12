@@ -28,7 +28,7 @@ class TestModel(unittest.TestCase):
         self.lineage2 = LineageTree(self.pi, self.T, self.E,
             desired_num_cells=(2**5.5) - 1,
             censor_condition=2,
-            desired_experiment_time=100)
+            desired_experiment_time=50)
         self.lineage3 = LineageTree(self.pi, self.T, self.E,
             desired_num_cells=(2**11) - 1,
             censor_condition=3,
