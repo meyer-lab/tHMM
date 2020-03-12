@@ -64,8 +64,8 @@ class LineageTree:
         if self.censor_condition > 0:
             self.censor_lineage()
             
-        self.censored_max_gen, self.censor_list_of_gens = max_gen(self.output_lin_list)
-        self.censored_leaves_idx, self.censor_leaves = get_leaves(self.output_lin_list)
+        self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lin_list)
+        self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lin_list)
         
         
 
