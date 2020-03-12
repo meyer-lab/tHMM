@@ -96,7 +96,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell.isRootParent())
         self.assertFalse(left_cell.isRootParent() and right_cell.isRootParent())
 
-    def test_isLeaf(self):
+    def test_isLeafBecauseTerminal(self):
         """
         Tests whether the leaf cells are correctly checked.
         """
@@ -105,10 +105,10 @@ class TestModel(unittest.TestCase):
 
         parent_state = 1
         cell = c(state=parent_state, parent=None, gen=1)
-        self.assertTrue(cell.isLeaf())
+        self.assertTrue(cell.isLeafBecauseTerminal())
         left_cell, right_cell = cell.divide(T)
-        self.assertFalse(cell.isLeaf())
-        self.assertTrue(left_cell.isLeaf() and right_cell.isLeaf())
+        self.assertFalse(cell.isLeafBecauseTerminal())
+        self.assertTrue(left_cell.isLeafBecauseTerminal() and right_cell.isLeafBecauseTerminal())
 
     def test_get_sister(self):
         """

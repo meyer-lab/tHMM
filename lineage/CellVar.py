@@ -27,7 +27,7 @@ class CellVar:
         self.parent = parent
         self.gen = gen
         
-        if kwargs is not None:
+        if kwargs:
             self.left = kwargs.get('left', None)
             self.right = kwargs.get('right', None)
             self.obs = kwargs.get('obs', [])
@@ -44,20 +44,47 @@ class CellVar:
         self.right = CellVar(state=right_state, parent=self, gen=self.gen+1) 
         
         return self.left, self.right
+    
+    def isLeafBecauseTerminal(self):
+        """
+        Boolean.
+        Returns true when a cell is a leaf with no children.
+        These are cells at the end of the tree.
+        """
+        # if it has a left and right attribute able to be checked
+        if hasattr(self, 'left') and hasattr(self, 'right'):
+            # then check that they both DO not exist
+            return self.left is None and self.right is None
+        # otherwise, it has no left and right daughters
+        else:
+            return True
+        
+    def isLeafBecauseDaughtersAreCensored(self):
+        """
+        Boolean.
+        Returns true when a cell is a leaf because its children are censored.
+        """
+        if hasattr(self.left, 'censored') and hasattr(self.right, 'censored'):
+            if self.left.censored and self.right.censored:
+                return True
+        else:
+            return False
+        
+    def isLeaf(self):
+        if self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreCensored():
+            return True
+        else:
+            return False
 
     def isParent(self):
         """
         Boolean.
         Returns true if the cell has daughters.
         """
-        # if it has a left and right attribute able to be checked
-        if hasattr(self, 'left') and hasattr(self, 'right'):
-            # then check that they exist
-            return self.left is not None or self.right is not None
-        # otherwise, it has no left and right daughters
-        else:
-            # and is not a parent
+        if self.isLeaf:
             return False
+        else:
+            return True
 
     def isChild(self):
         """
@@ -78,19 +105,7 @@ class CellVar:
             return True
 
         return False
-
-    def isLeaf(self):
-        """
-        Boolean.
-        Returns true when a cell is a leaf with no children.
-        """
-        # if it has a left and right attribute able to be checked
-        if hasattr(self, 'left') and hasattr(self, 'right'):
-            # then check that they both DO not exist
-            return (self.left is None and self.right is None) or (self.left.censored is True and self.right.censored is True)
-        # otherwise, it has no left and right daughters
-        else:
-            return True
+        
 
     def get_sister(self):
         """

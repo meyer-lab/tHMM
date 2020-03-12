@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from ..CellVar import CellVar as c
-from ..LineageTree import LineageTree, max_gen, get_leaves, get_subtrees, find_two_subtrees, get_mixed_subtrees
+from ..LineageTree import LineageTree, max_gen, get_leaves
 from ..StateDistribution import StateDistribution, get_experiment_time
 
 
@@ -39,80 +39,61 @@ class TestModel(unittest.TestCase):
 
         self.E = [state_obj0, state_obj1]
 
-        # creating lineages with the various prune conditions
+        # creating lineages with the various censor conditions
         self.lineage1 = LineageTree(
             self.pi,
             self.T,
             self.E,
             desired_num_cells=(2**11) - 1,
-            desired_experiment_time=500,
-            prune_condition='fate',
-            prune_boolean=False)
-        self.lineage2_pruned_fate = LineageTree(
+            censor_condition=1)
+        self.lineage2_censord_fate = LineageTree(
             self.pi,
             self.T,
             self.E,
             desired_num_cells=(2**11) - 1,
-            desired_experiment_time=500,
-            prune_condition='fate',
-            prune_boolean=True)
-        self.lineage3_pruned_time = LineageTree(
+            censor_condition=1)
+        self.lineage3_censord_time = LineageTree(
             self.pi,
             self.T,
             self.E,
             desired_num_cells=(2**11) - 1,
-            desired_experiment_time=500,
-            prune_condition='time',
-            prune_boolean=True)
-        self.lineage4_pruned_both = LineageTree(
+            censor_condition=2,
+            desired_experiment_time=500)
+        self.lineage4_censord_both = LineageTree(
             self.pi,
             self.T,
             self.E,
             desired_num_cells=(2**11) - 1,
-            desired_experiment_time=500,
-            prune_condition='both',
-            prune_boolean=True)
+            censor_condition=3,
+            desired_experiment_time=500)
+        
         # creating 7 cells for 3 generations manually
         cell_1 = c(
             state=self.state0,
-            left=None,
-            right=None,
             parent=None,
             gen=1)
         cell_2 = c(
             state=self.state0,
-            left=None,
-            right=None,
             parent=cell_1,
             gen=2)
         cell_3 = c(
             state=self.state0,
-            left=None,
-            right=None,
             parent=cell_1,
             gen=2)
         cell_4 = c(
             state=self.state0,
-            left=None,
-            right=None,
             parent=cell_2,
             gen=3)
         cell_5 = c(
             state=self.state0,
-            left=None,
-            right=None,
             parent=cell_2,
             gen=3)
         cell_6 = c(
             state=self.state0,
-            left=None,
-            right=None,
             parent=cell_3,
             gen=3)
         cell_7 = c(
             state=self.state0,
-            left=None,
-            right=None,
             parent=cell_3,
             gen=3)
         cell_1.left = cell_2
@@ -143,82 +124,32 @@ class TestModel(unittest.TestCase):
         # for test_get_mixed_subtrees
         self.mixed = [cell_2, cell_3, cell_4, cell_5, cell_6, cell_7]
 
-    def test_generate_lineage_list(self):
-        """ A unittest for generate_lineage_list. """
-        # checking the number of cells generated is equal to the desired
-        # number of cells given by the user.
-        self.assertTrue(len(self.lineage1.full_lin_list) == 2**11 - 1)
-        self.assertTrue(self.lineage1.full_lin_list ==
-                        self.lineage1.output_lineage)
-        self.assertTrue(self.lineage2_pruned_fate.pruned_lin_list ==
-                        self.lineage2_pruned_fate.output_lineage)
+    def test_censor_lineage(self):
+        """ A unittest for censor_lineage. """
 
-    def test_prune_lineage(self):
-        """ A unittest for prune_lineage. """
-        # checking the number of cells in the pruned version is smaller
-        # than the full version.
-        self.assertTrue(len(self.lineage1.full_lin_list) >=
-                        len(self.lineage1.pruned_lin_list))
-
-        # checking all the cells in the pruned version should have all the
+        # checking all the cells in the censord version should have all the
         # bernoulli observations == 1 (dead cells have been removed.)
         self.assertGreater(get_experiment_time(self.lineage1), 500)
-        for cell in self.lineage1.pruned_lin_list:
+        for cell in self.lineage1.censord_lin_list:
             if cell._isLeaf():
                 self.assertTrue(cell.left is None)
                 self.assertTrue(cell.right is None)
-        for cell in self.lineage2_pruned_fate.pruned_lin_list:
+        for cell in self.lineage2_censord_fate.censord_lin_list:
             if cell._isLeaf():
                 self.assertTrue(cell.left is None)
                 self.assertTrue(cell.right is None)
-        for cell in self.lineage3_pruned_time.pruned_lin_list:
+        for cell in self.lineage3_censord_time.censord_lin_list:
             if cell._isLeaf():
                 self.assertTrue(cell.left is None)
                 self.assertTrue(cell.right is None)
-        for cell in self.lineage4_pruned_both.pruned_lin_list:
+        for cell in self.lineage4_censord_both.censord_lin_list:
             if cell._isLeaf():
                 self.assertTrue(cell.left is None)
                 self.assertTrue(cell.right is None)
-
-    def test_get_full_state_count(self):
-        """ A unittest for _get_full_state_count. """
-        num_cells_in_state, cells_in_state, indices_of_cells_in_state = self.lineage1._get_full_state_count(
-            self.state0)
-        self.assertTrue(len(cells_in_state) == num_cells_in_state)
-        self.assertTrue(num_cells_in_state <= 2**11 - 1)
-        self.assertTrue(max(indices_of_cells_in_state) <= 2**11 - 1)
-
-        num_cells_in_state1, cells_in_state1, indices_of_cells_in_state1 = self.lineage1._get_full_state_count(
-            self.state1)
-        self.assertTrue(len(cells_in_state1) == num_cells_in_state1)
-        self.assertTrue(num_cells_in_state1 <= 2**11 - 1)
-        self.assertTrue(max(indices_of_cells_in_state1) <= 2**11 - 1)
-
-    def test_get_pruned_state_count(self):
-        """ A unittest for _get_pruned_state_count. """
-        num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state = self.lineage1._get_pruned_state_count(
-            self.state0)
-        self.assertTrue(len(cells_in_state) ==
-                        num_cells_in_state == len(list_of_tuples_of_obs))
-        self.assertTrue(num_cells_in_state <= len(self.lineage1.pruned_lin_list)
-                        )
-        if len(indices_of_cells_in_state) > 0:
-            self.assertTrue(
-                max(indices_of_cells_in_state) <= (2**11 - 1))
-
-        num_cells_in_state1, cells_in_state1, list_of_tuples_of_obs1, indices_of_cells_in_state1 = self.lineage1._get_pruned_state_count(
-            self.state1)
-        self.assertTrue(len(cells_in_state1) ==
-                        num_cells_in_state1 == len(list_of_tuples_of_obs1))
-        self.assertTrue(num_cells_in_state1 <= len(self.lineage1.pruned_lin_list)
-                        )
-        if len(indices_of_cells_in_state1) > 0:
-            self.assertTrue(max(indices_of_cells_in_state1) <= (2**11 - 1))
 
     def test_full_assign_obs(self):
         """ A unittest for checking the full_assign_obs function. """
-        _, cells_in_state, list_of_tuples_of_obs, _ = self.lineage1._full_assign_obs(
-            self.state0)
+        self.lineage1._full_assign_obs(self.state0)
 
         # unzipping the tuple of observations
         unzipped_list_obs = list(zip(*list_of_tuples_of_obs))
@@ -228,18 +159,8 @@ class TestModel(unittest.TestCase):
 
         # making sure observations have been assigned properly
         for i, cell in enumerate(cells_in_state):
-            self.assertTrue(cell.obs == list_of_tuples_of_obs[i])
+            self.assertTrue(cell.obs is list_of_tuples_of_obs[i])
 
-        # checking the above tests for a lineage with prune_boolean == True
-        _, cells_in_state1, list_of_tuples_of_obs1, _ = self.lineage1._full_assign_obs(
-            self.state1)
-        unzipped_list_obs1 = list(zip(*list_of_tuples_of_obs1))
-        bern_obs1 = list(unzipped_list_obs1[0])
-        gamma_obs1 = list(unzipped_list_obs1[1])
-        self.assertTrue(len(bern_obs1) == len(gamma_obs1))
-
-        for j, Cell in enumerate(cells_in_state1):
-            self.assertTrue(Cell.obs == list_of_tuples_of_obs1[j])
 
     def test_max_gen(self):
         """ A unittest for testing max_gen function by creating the lineage manually for 3 generations ==> total of 7 cells in the setup  function. """
@@ -253,8 +174,7 @@ class TestModel(unittest.TestCase):
     def test_get_parent_for_level(self):
         """ A unittest for get_parent_for_level. """
         _, list_by_gen = max_gen(self.lineage1.output_lineage)
-        parent_ind_holder = self.lineage1._get_parents_for_level(
-            list_by_gen[3])
+        parent_ind_holder = self.lineage1._get_parents_for_level(list_by_gen[3])
 
         # making a list of parent cells using the indexes that
         # _get_parent_for_level returns

@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 import scipy.stats as sp
-from ..StateDistribution import StateDistribution, bernoulli_estimator, gamma_estimator, fate_prune_rule, time_prune_rule, get_experiment_time, gamma_pdf, bern_pdf
+from ..StateDistribution import StateDistribution, bernoulli_estimator, gamma_estimator, fate_censor_rule, time_censor_rule, get_experiment_time, gamma_pdf, bern_pdf
 from ..LineageTree import LineageTree
 
 
@@ -27,24 +27,24 @@ class TestModel(unittest.TestCase):
             self.E,
             desired_num_cells=(2**11) - 1,
             desired_experiment_time=1000,
-            prune_condition='fate',
-            prune_boolean=False)
+            censor_condition='fate',
+            censor_boolean=False)
         self.lineage2 = LineageTree(
             self.pi,
             self.T,
             self.E,
             desired_num_cells=(2**5.5) - 1,
             desired_experiment_time=100,
-            prune_condition='time',
-            prune_boolean=True)
+            censor_condition='time',
+            censor_boolean=True)
         self.lineage3 = LineageTree(
             self.pi,
             self.T,
             self.E,
             desired_num_cells=(2**11) - 1,
             desired_experiment_time=800,
-            prune_condition='both',
-            prune_boolean=True)
+            censor_condition='both',
+            censor_boolean=True)
 
     def test_rvs(self):
         """ A unittest for random generator function, given the number of random variables we want from each distribution, that each corresponds to one of the observation types. """
@@ -93,27 +93,27 @@ class TestModel(unittest.TestCase):
                 estimator_obj.gamma_scale -
                 self.E[0].gamma_scale) <= 3.0)
 
-    def test_fate_prune_rule(self):
-        """ A unittest for the fate_prune_rule. """
+    def test_fate_censor_rule(self):
+        """ A unittest for the fate_censor_rule. """
 
         for cell in self.lineage.lineage_stats[0].full_lin_cells:
             if cell.obs[0] == 0:
-                self.assertTrue(fate_prune_rule(cell))
+                self.assertTrue(fate_censor_rule(cell))
 
         for cell in self.lineage.lineage_stats[1].full_lin_cells:
             if cell.obs[0] == 0:
-                self.assertTrue(fate_prune_rule(cell))
+                self.assertTrue(fate_censor_rule(cell))
 
-    def test_time_prune_rule(self):
-        """ A unittest for the time_prune_rule. """
+    def test_time_censor_rule(self):
+        """ A unittest for the time_censor_rule. """
 
         for cell in self.lineage3.lineage_stats[0].full_lin_cells:
             if cell.time.startT > self.lineage3.desired_experiment_time:
-                self.assertTrue(time_prune_rule(cell, self.lineage3.desired_experiment_time))
+                self.assertTrue(time_censor_rule(cell, self.lineage3.desired_experiment_time))
 
         for cell in self.lineage3.lineage_stats[1].full_lin_cells:
             if cell.time.startT > self.lineage3.desired_experiment_time:
-                self.assertTrue(time_prune_rule(cell, self.lineage3.desired_experiment_time))
+                self.assertTrue(time_censor_rule(cell, self.lineage3.desired_experiment_time))
 
     def test_get_experiment_time(self):
         """
