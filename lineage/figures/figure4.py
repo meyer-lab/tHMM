@@ -87,20 +87,20 @@ def figFourCommon(list_of_populations, xtype='length'):
     x = None
     if xtype == 'length':
       x = dictOut["total_number_of_cells"]
-    elif x == 'prop':
+    elif xtype == 'prop':
       x = dictOut["state_proportions"][0]
 
     return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"]
 
 
-def figure_maker(ax, x, paramEst, accuracies, tr, pi):
+def figure_maker(ax, x, paramEst, accuracies, tr, pi, xlabel='Number of Cells'):
     """
     Makes figure 4.
     """
 
     i = 0
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
-    ax[i].set_xlabel('Number of Cells')
+    ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 0], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
     ax[i].set_ylabel('Bernoulli $p$')
@@ -114,7 +114,7 @@ def figure_maker(ax, x, paramEst, accuracies, tr, pi):
 
     i += 1
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
-    ax[i].set_xlabel('Number of Cells')
+    ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 1], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
     ax[i].set_ylabel(r'Gamma $k$')
@@ -128,7 +128,7 @@ def figure_maker(ax, x, paramEst, accuracies, tr, pi):
 
     i += 1
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
-    ax[i].set_xlabel('Number of Cells')
+    ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 2], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 2], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
     ax[i].set_ylabel(r'Gamma $\theta$')
@@ -152,7 +152,7 @@ def figure_maker(ax, x, paramEst, accuracies, tr, pi):
 
     i += 1
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
-    ax[i].set_xlabel('Number of Cells')
+    ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(0, 110)
     ax[i].scatter(x, accuracies, c='k', marker="o", label='Accuracy', edgecolors='k', alpha=0.25)
     ax[i].plot(sorted_x_vs_acc[:, 0][49:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
@@ -165,7 +165,7 @@ def figure_maker(ax, x, paramEst, accuracies, tr, pi):
 
     i += 1
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
-    ax[i].set_xlabel('Number of Cells')
+    ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, tr, c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].plot(sorted_x_vs_tr[:, 0][49:], moving_average(sorted_x_vs_tr[:, 1]), c='k', label='Moving Average')
     ax[i].set_xscale('log', basex=2)
@@ -177,7 +177,7 @@ def figure_maker(ax, x, paramEst, accuracies, tr, pi):
 
     i += 1
     ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
-    ax[i].set_xlabel('Number of Cells')
+    ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, pi, c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].plot(sorted_x_vs_pi[:, 0][49:], moving_average(sorted_x_vs_pi[:, 1]), c='k', label='Moving Average')
     ax[i].set_xscale('log', basex=2)
