@@ -99,7 +99,6 @@ def figure_maker(ax, x, paramEst, accuracies, tr, pi, xlabel='Number of Cells'):
     """
 
     i = 0
-    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 0], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
@@ -109,11 +108,9 @@ def figure_maker(ax, x, paramEst, accuracies, tr, pi, xlabel='Number of Cells'):
     ax[i].axhline(y=E[1].bern_p, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
     ax[i].set_title(r'Bernoulli $p$')
     ax[i].grid(linestyle='--')
-    ax[i].set_xscale('log', basex=2)
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
-    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 1], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 1], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
@@ -123,11 +120,9 @@ def figure_maker(ax, x, paramEst, accuracies, tr, pi, xlabel='Number of Cells'):
     ax[i].axhline(y=E[1].gamma_a, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
     ax[i].set_title(r'Gamma $k$')
     ax[i].grid(linestyle='--')
-    ax[i].set_xscale('log', basex=2)
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
-    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 2], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 2], c='#A4C2F4', edgecolors='k', marker="o", alpha=0.5)
@@ -137,7 +132,6 @@ def figure_maker(ax, x, paramEst, accuracies, tr, pi, xlabel='Number of Cells'):
     ax[i].axhline(y=E[1].gamma_scale, linestyle='--', linewidth=2, label='Susceptible', color='#A4C2F4', alpha=1)
     ax[i].set_title(r'Gamma $\theta$')
     ax[i].grid(linestyle='--')
-    ax[i].set_xscale('log', basex=2)
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
     ax[i].legend()
 
@@ -151,12 +145,10 @@ def figure_maker(ax, x, paramEst, accuracies, tr, pi, xlabel='Number of Cells'):
     sorted_x_vs_pi = x_vs_pi[np.argsort(x_vs_pi[:, 0])]
 
     i += 1
-    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(0, 110)
     ax[i].scatter(x, accuracies, c='k', marker="o", label='Accuracy', edgecolors='k', alpha=0.25)
     ax[i].plot(sorted_x_vs_acc[:, 0][49:], moving_average(sorted_x_vs_acc[:, 1]), c='k', label='Moving Average')
-    ax[i].set_xscale('log', basex=2)
     ax[i].set_ylabel(r'Accuracy [\%]')
     ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('State Assignment Accuracy')
@@ -164,11 +156,9 @@ def figure_maker(ax, x, paramEst, accuracies, tr, pi, xlabel='Number of Cells'):
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
-    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, tr, c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].plot(sorted_x_vs_tr[:, 0][49:], moving_average(sorted_x_vs_tr[:, 1]), c='k', label='Moving Average')
-    ax[i].set_xscale('log', basex=2)
     ax[i].set_ylabel(r'$||T-T_{est}||_{F}$')
     ax[i].axhline(y=0, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('Transition Matrix Estimation')
@@ -176,11 +166,9 @@ def figure_maker(ax, x, paramEst, accuracies, tr, pi, xlabel='Number of Cells'):
     ax[i].tick_params(axis='both', which='major', grid_alpha=0.25)
 
     i += 1
-    ax[i].set_xlim((16, int(np.ceil(4 * max(x)))))
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, pi, c='k', marker="o", edgecolors='k', alpha=0.25)
     ax[i].plot(sorted_x_vs_pi[:, 0][49:], moving_average(sorted_x_vs_pi[:, 1]), c='k', label='Moving Average')
-    ax[i].set_xscale('log', basex=2)
     ax[i].set_ylabel(r'$||\pi-\pi_{est}||_{2}$')
     ax[i].axhline(y=0, linestyle='--', linewidth=2, color='k', alpha=1)
     ax[i].set_title('Initial Probability Matrix Estimation')
