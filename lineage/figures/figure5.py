@@ -47,7 +47,7 @@ def accuracy_increased_cells():
         # Adding populations into a holder for analysing
         list_of_populations.append([lineage])
 
-    return figFourCommon(list_of_populations)
+    return figFourCommon(list_of_populations, xtype='prop')
 
 # Add function to generate transition matrices below
 def makeTs(increment=0.1):
