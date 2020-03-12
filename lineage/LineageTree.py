@@ -44,10 +44,17 @@ class LineageTree:
         \nPlease check that the dimensions and states match. \npi {} \nT {} \nE {}".format(self.pi, self.T, self.E)
         self.num_states = pi_num_states
 
-        self.output_lin_list = self.generate_lineage_list()
+        self.generate_lineage_list()
         
         for i_state in range(self.num_states):
             self.output_assign_obs(i_state)
+                        
+        self.full_max_gen, self.full_list_of_gens = max_gen(self.full_lineage)
+        self.full_leaves_idx, self.full_leaves = get_leaves(self.full_lineage)
+        
+        assign_times(self)
+        
+        # Begin censoring:
         
         # this is given by the user:
         # 0 - no pruning
@@ -61,14 +68,12 @@ class LineageTree:
             
         self.censor_boolean = self.censor_condition > 0
             
-        if self.censor_condition > 0:
-            self.censor_lineage()
+        self.censor_lineage()
             
-        self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lin_list)
-        self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lin_list)
+        self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
+        self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
         
         
-
     def generate_lineage_list(self):
         """
         Generates a single lineage tree given Markov variables. 
@@ -86,20 +91,18 @@ class LineageTree:
         first_state_results = sp.multinomial.rvs(1, self.pi)  # roll the dice and yield the state for the first cell
         first_cell_state = first_state_results.tolist().index(1)
         first_cell = CellVar(state=first_cell_state, parent=None, gen=1)  # create first cell
-        self.output_lin_list = [first_cell]
+        self.full_lineage = [first_cell]
 
-        for idx, cell in enumerate(self.output_lin_list):  # letting the first cell proliferate
+        for idx, cell in enumerate(self.full_lineage):  # letting the first cell proliferate
             if cell.isLeaf():  # if the cell has no daughters...
                 # make daughters by dividing and assigning states
                 left_cell, right_cell = cell.divide(self.T)
                 # add daughters to the list of cells
-                self.output_lin_list.append(left_cell)
-                self.output_lin_list.append(right_cell)
+                self.full_lineage.append(left_cell)
+                self.full_lineage.append(right_cell)
 
-            if len(self.output_lin_list) >= self.desired_num_cells:
+            if len(self.full_lineage) >= self.desired_num_cells:
                 break
-
-        return self.output_lin_list
     
     def output_assign_obs(self, state):
         """
@@ -112,7 +115,7 @@ class LineageTree:
         state {Int}: The number assigned to a state.
 
         """
-        cells_in_state = [cell for cell in self.output_lin_list if cell.state ==state] 
+        cells_in_state = [cell for cell in self.full_lineage if cell.state ==state] 
         list_of_tuples_of_obs = self.E[state].rvs(size=len(cells_in_state))
         assert len(cells_in_state) == len(list_of_tuples_of_obs)
         for i, cell in enumerate(cells_in_state): 
@@ -126,29 +129,31 @@ class LineageTree:
         applies the pruning to each cell that is supposed to be removed,
         and returns the censord list of cells.
         """
-        assign_times(self)
-        for cell in self.output_lin_list:
+        self.output_lineage = []
+        for idx, cell in enumerate(self.full_lineage):
             if self.censor_condition == 0:
-                # do nothing
+                self.output_lineage = self.full_lineage
                 break
             elif self.censor_condition == 1:
                 if fate_censor_rule(cell):
-                    subtree, not_subtree = get_subtrees(cell, self.output_lin_list)
-                    for sub_cell in subtree[1:]:
+                    subtree, not_subtree = get_subtrees(cell, self.full_lineage)
+                    for idx, sub_cell in enumerate(subtree[1:]):
                         sub_cell.censored = True
                     assert cell.isLeaf()
             elif self.censor_condition == 2:
                 if time_censor_rule(cell, self.desired_experiment_time):
-                    subtree, not_subtree = get_subtrees(cell, self.output_lin_list)
-                    for sub_cell in subtree[1:]:
+                    subtree, not_subtree = get_subtrees(cell, self.full_lineage)
+                    for idx, sub_cell in enumerate(subtree[1:]):
                         sub_cell.censored = True
                     assert cell.isLeaf()
             elif self.censor_condition == 3:
                 if fate_censor_rule(cell) or time_censor_rule(cell, self.desired_experiment_time):
-                    subtree, not_subtree = get_subtrees(cell, self.output_lin_list)
-                    for sub_cell in subtree[1:]:
+                    subtree, not_subtree = get_subtrees(cell, self.full_lineage)
+                    for idx, sub_cell in enumerate(subtree[1:]):
                         sub_cell.censored = True
                     assert cell.isLeaf()
+            if not cell.censored:
+                self.output_lineage.append(cell)
 
     def get_parents_for_level(self, level):
         """
@@ -193,7 +198,7 @@ class LineageTree:
             for state in range(self.num_states):
                 s_list.append("\n \t There are {} cells of state {}".format(self.lineage_stats[state].num_output_lin_cells, state))
             s2 = seperator.join(s_list)
-            s3 = ".\n This UNcensord tree has {} many cells in total".format(len(self.output_lin_list))
+            s3 = ".\n This UNcensord tree has {} many cells in total".format(len(self.output_lineage))
         return s1 + s2 + s3
 
     def __str__(self):
@@ -222,7 +227,7 @@ def max_gen(lineage):
     gens = sorted({cell.gen for cell in lineage})  # appending the generation of cells in the lineage
     list_of_lists_of_cells_by_gen = [[None]]
     for gen in gens:
-        level = [cell for cell in lineage if cell.gen == gen]
+        level = [cell for cell in lineage if (cell.gen == gen and not cell.censored)]
         list_of_lists_of_cells_by_gen.append(level)
     return max(gens), list_of_lists_of_cells_by_gen
 
@@ -250,8 +255,10 @@ def get_leaves(lineage):
 ##------------------- tools for traversing trees ------------------------##
 
 def tree_recursion(cell, subtree):
-    """ A recursive helper function that traverses upwards from the leaf to the root. """
-    if cell.isLeafBecauseTerminal():
+    """
+    A recursive helper function that traverses upwards from the leaf to the root.
+    """
+    if cell.isLeaf():
         return
     subtree.append(cell.left)
     subtree.append(cell.right)
@@ -261,7 +268,10 @@ def tree_recursion(cell, subtree):
 
 
 def get_subtrees(node, lineage):
-    """ Given one cell, return the subtree of that cell, and return all the tree other than that subtree. """
+    """
+    Given one cell, return the subtree of that cell,
+    and return all the tree other than that subtree.
+    """
     subtree = [node]
     tree_recursion(node, subtree)
     not_subtree = []
@@ -272,8 +282,10 @@ def get_subtrees(node, lineage):
 
 
 def find_two_subtrees(cell, lineage):
-    """ Gets the left and right subtrees from a cell. """
-    if cell._isLeaf():
+    """
+    Gets the left and right subtrees from a cell.
+    """
+    if cell.isLeaf():
         return None, None, lineage
     left_sub, _ = get_subtrees(cell.left, lineage)
     right_sub, _ = get_subtrees(cell.right, lineage)
@@ -285,7 +297,8 @@ def find_two_subtrees(cell, lineage):
 
 
 def get_mixed_subtrees(node_m, node_n, lineage):
-    """ Takes in the lineage and the two cells in any part of the lineage tree, finds the subtree to the both given cells,
+    """
+    Takes in the lineage and the two cells in any part of the lineage tree, finds the subtree to the both given cells,
     and returns a group of cells that are in both subtrees, and the remaining cells in the lineage that are not in any of those.
     """
     m_sub, _ = get_subtrees(node_m, lineage)

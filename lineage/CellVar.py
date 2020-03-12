@@ -26,13 +26,14 @@ class CellVar:
         self.state = state
         self.parent = parent
         self.gen = gen
+        self.censored = False
         
         if kwargs:
             self.left = kwargs.get('left', None)
             self.right = kwargs.get('right', None)
             self.obs = kwargs.get('obs', [])
             self.censored = kwargs.get('censored', True)
-
+            
     def divide(self, T):
         """
         Member function that performs division of a cell.
@@ -105,7 +106,6 @@ class CellVar:
             return True
 
         return False
-        
 
     def get_sister(self):
         """
@@ -130,13 +130,14 @@ class CellVar:
 
     def get_daughters(self):
         """
-        Get the left and right daughters of a cell.
+        Get the left and right daughters of a cell if they exist.
         """
         temp = []
-        if self.left is not None:
-            temp.append(self.left)
-        if self.right is not None:
-            temp.append(self.right)
+        if hasattr(self, 'left') and hasattr(self, 'right'):
+            if self.left is not None:
+                temp.append(self.left)
+            if self.right is not None:
+                temp.append(self.right)
         return temp
 
     def __repr__(self):

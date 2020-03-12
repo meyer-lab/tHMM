@@ -36,8 +36,8 @@ class TestBW(unittest.TestCase):
         E = [state_obj0, state_obj1]
 
         # Using an unpruned lineage to avoid unforseen issues
-        X = LineageTree(pi, T, E, desired_num_cells=(2**11) - 1, desired_experiment_time=500, prune_condition='die', prune_boolean=False)
-        tHMMobj = tHMM([X], numStates=2)  # build the tHMM class with X
+        X = LineageTree(pi, T, E, desired_num_cells=(2**11) - 1)
+        tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
         # Test cases below
         # Get the likelihoods before fitting

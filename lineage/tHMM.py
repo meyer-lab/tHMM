@@ -6,19 +6,19 @@ from .StateDistribution import tHMM_E_init
 
 
 class estimate:
-    def __init__(self, numStates):
-        self.numStates = numStates
-        self.pi = np.squeeze(np.random.dirichlet(np.random.rand(numStates), 1).T)
-        self.T = np.random.dirichlet(np.random.rand(numStates), numStates)
+    def __init__(self, num_states):
+        self.num_states = num_states
+        self.pi = np.squeeze(np.random.dirichlet(np.random.rand(num_states), 1).T)
+        self.T = np.random.dirichlet(np.random.rand(num_states), num_states)
         self.E = []
-        for _ in range(self.numStates):
+        for _ in range(self.num_states):
             self.E.append(tHMM_E_init())
 
 
 class tHMM:
     """ Main tHMM class. """
 
-    def __init__(self, X, numStates):
+    def __init__(self, X, num_states):
         """ Instantiates a tHMM.
 
         This function uses the following functions and assings them to the cells
@@ -28,13 +28,13 @@ class tHMM:
             ----------
             X (list of objects): A list of objects (cells) in a lineage in which
             the NaNs have been removed.
-            numStates (int): the number of hidden states that we want our model have
+            num_states (int): the number of hidden states that we want our model have
             FOM (str): For now, it is either "E": Exponential, or "G": Gompertz
             and it determines the type of distribution for lifetime of the cells
         """
         self.X = X  # list containing lineages, should be in correct format (contain no NaNs)
-        self.numStates = numStates  # number of discrete hidden states
-        self.estimate = estimate(self.numStates)
+        self.num_states = num_states  # number of discrete hidden states
+        self.estimate = estimate(self.num_states)
         self.MSD = self.get_Marginal_State_Distributions()  # full Marginal State Distribution holder
         self.EL = self.get_Emission_Likelihoods()  # full Emission Likelihood holder
 
@@ -61,7 +61,7 @@ class tHMM:
         for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
             lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
 
-            MSD_array = np.zeros((len(lineage), self.numStates))  # instantiating N by K array
+            MSD_array = np.zeros((len(lineage), self.num_states))  # instantiating N by K array
             MSD_array[0, :] = self.estimate.pi
             MSD.append(MSD_array)
 
@@ -97,9 +97,9 @@ class tHMM:
 
         for lineageObj in self.X:  # for each lineage in our Population
             lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
-            EL_array = np.zeros((len(lineage), self.numStates))  # instantiating N by K array for each lineage
+            EL_array = np.zeros((len(lineage), self.num_states))  # instantiating N by K array for each lineage
 
-            for state_k in range(self.numStates):  # for each state
+            for state_k in range(self.num_states):  # for each state
                 for current_cell_idx, cell in enumerate(lineage):  # for each cell in the lineage
                     EL_array[current_cell_idx, state_k] = self.estimate.E[state_k].pdf(cell.obs)
 
