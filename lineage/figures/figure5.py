@@ -50,7 +50,7 @@ def accuracy_increased_cells():
     return figFourCommon(list_of_populations, xtype='prop')
 
 # Add function to generate transition matrices below
-def makeTs(increment=0.1):
+def makeTs(increment=0.01):
     """
     Generates transition matrices
     """
