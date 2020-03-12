@@ -11,11 +11,10 @@ class LineageTree:
         A class for lineage trees.
         Every lineage object from this class is a binary tree built based on initial probabilities,
         transition probabilities, and emissions defined by state distributions given by the user.
-        Lineages are generated in output (no pruning) by creating cells of different states in a
+        Lineages are generated in full (no pruning) by creating cells of different states in a
         binary fashion utilizing the pi and the transtion probabilities. Cells are then filled with
         observations based on their states by sampling observations from their emission distributions.
-        The lineage tree is then censord based on the censor condition. The value of the boolean in
-        censor_boolean determines what lineage is ultimately analyzed, either the output or censord lineage.
+        The lineage tree is then censord based on the censor condition.
 
         Args:
         -----
