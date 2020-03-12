@@ -38,11 +38,11 @@ def accuracy_increased_cells():
     # Iterate through the transition matrices
     for T in list_of_Ts:
         # Creating an unpruned and pruned lineage
-        lineage = LineageTree(piiii, T, E, (2**12) - 1, experiment_time=1e9, prune_condition='both', prune_boolean=True)
+        lineage = LineageTree(piiii, T, E, (2**12) - 1, desired_experiment_time=1e9, prune_condition='fate', prune_boolean=False)
 
         while len(lineage.output_lineage) < 16:
             del lineage
-            lineage = LineageTree(piiii, T, E, (2**12) - 1, experiment_time=1e9, prune_condition='both', prune_boolean=True)
+            lineage = LineageTree(piiii, T, E, (2**12) - 1, desired_experiment_time=1e9, prune_condition='fate', prune_boolean=False)
 
         # Adding populations into a holder for analysing
         list_of_populations.append([lineage])
