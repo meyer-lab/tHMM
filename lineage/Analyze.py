@@ -4,6 +4,7 @@ import numpy as np
 from .BaumWelch import fit
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
+from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .tHMM import tHMM
 from sklearn import metrics
 from scipy.stats import entropy
@@ -305,3 +306,21 @@ def getAIC(tHMMobj, LL):
     AIC_value = -2 * LL + 2 * AIC_degrees_of_freedom
 
     return AIC_value, AIC_degrees_of_freedom
+
+def stateLikelihood(tHMMobj):
+    ''' We intend to find the likelihood of the states, given observations.
+    With Bayes rule we have: P(z | x) = P(x | z) x P(z) / P(x), in which:
+    P(x|z) := Emission Likelihood (EL),
+    P(z) := Marginal State Distribution (MSD),
+    P(x) := Marginal Observation Distribution (NF)
+    '''
+    EL = tHMMobj.get_Emission_Likelihoods()
+    MSD = tHMMobj.get_Marginal_State_Distributions()
+    NF = get_leaf_Normalizing_Factors(tHMMobj)
+    betas = get_leaf_betas(tHMMobj, NF)
+    get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
+    LL = (EL[0] * MSD[0])
+    LL[:,0] = LL[:,0] / NF[0]
+    LL[:,1] = LL[:,1] / NF[0]
+    return LL
+    
