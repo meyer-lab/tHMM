@@ -17,7 +17,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((7, 14), (2, 4))
+    ax, f = getSetup((14, 7), (2, 4))
 
     figure_maker(ax)
 
@@ -41,7 +41,7 @@ def figure_maker(ax):
         
     hist_gen_censored = track_population_generation_histogram(population_censored)
     delta_time = 0.1
-    hist_tim_censored = track_population_growth_histogram(population_uncensored, delta_time)
+    hist_tim_censored = track_population_growth_histogram(population_censored, delta_time)
 
     hist_gen_uncensored = track_population_generation_histogram(population_uncensored)
     hist_tim_uncensored = track_population_growth_histogram(population_uncensored, delta_time)
@@ -81,20 +81,20 @@ def figure_maker(ax):
 
     i = 4
     ax[i].set_xlabel(r'Time [$\mathrm{hours}$]')
-    ax[i].bar([delta_time * i for i in range(len(hist_tim_uncensored[0]))], hist_tim_uncensored[0], color='#F9Cb9C', label='Resistant')
-    ax[i].bar([delta_time * i for i in range(len(hist_tim_uncensored[1]))], hist_tim_uncensored[1], bottom=hist_tim_uncensored[0], color='#A4C2F4', label='Susceptible')
+    ax[i].bar([delta_time * i for i in range(len(hist_tim_censored[0]))], hist_tim_censored[0], color='#F9Cb9C', label='Resistant')
+    ax[i].bar([delta_time * i for i in range(len(hist_tim_censored[1]))], hist_tim_censored[1], bottom=hist_tim_censored[0], color='#A4C2F4', label='Susceptible')
     ax[i].set_ylabel('Number of alive cells')
     ax[i].set_title('Uncensored population growth')
     ax[i].set_xlim([-0.01, 300])
     ax[i].grid(linestyle='--')
 
-    y_0_p = [a / (a + b) if a + b > 0 else 0 for a, b in zip(hist_tim_uncensored[0], hist_tim_uncensored[1])]
-    y_1_p = [b / (a + b) if a + b > 0 else 0 for a, b in zip(hist_tim_uncensored[0], hist_tim_uncensored[1])]
+    y_0_p = [a / (a + b) if a + b > 0 else 0 for a, b in zip(hist_tim_censored[0], hist_tim_censored[1])]
+    y_1_p = [b / (a + b) if a + b > 0 else 0 for a, b in zip(hist_tim_censored[0], hist_tim_censored[1])]
 
     i = 5
     ax[i].set_xlabel(r'Time [$\mathrm{hours}$]')
-    ax[i].plot([delta_time * i for i in range(len(hist_tim_uncensored[0]))], y_0_p, color='#F9Cb9C', label='Resistant')
-    ax[i].plot([delta_time * i for i in range(len(hist_tim_uncensored[1]))], y_1_p, color='#A4C2F4', label='Susceptible')
+    ax[i].plot([delta_time * i for i in range(len(hist_tim_censored[0]))], y_0_p, color='#F9Cb9C', label='Resistant')
+    ax[i].plot([delta_time * i for i in range(len(hist_tim_censored[1]))], y_1_p, color='#A4C2F4', label='Susceptible')
     ax[i].set_ylabel('Proportion of alive cells')
     ax[i].set_xlim([-0.01, 300])
     ax[i].set_ylim([-0.01, 1.01])

@@ -212,10 +212,12 @@ class LineageTree:
     # tool for copying lineages
     def uncensor_copy_lineage(self):
         new_lineage = deepcopy(self)
-        for cell in new_lineage.output_lineage:
+        for cell in new_lineage.full_lineage:
             cell.censored = False
-        self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
-        self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
+        new_lineage.output_max_gen, new_lineage.output_list_of_gens = max_gen(new_lineage.full_lineage)
+        new_lineage.output_leaves_idx, new_lineage.output_leaves = get_leaves(new_lineage.full_lineage)
+        new_lineage.output_lineage = new_lineage.full_lineage
+        return new_lineage
 
 # tools for analyzing trees
 
