@@ -27,7 +27,7 @@ T = np.array([[0.75, 0.25],
 
 def makeFigure():
     """
-    Makes figure 9 and 10.
+    Makes figure 4.
     """
 
     # Get list of axis objects
@@ -86,9 +86,9 @@ def figFourCommon(list_of_populations, xtype='length'):
     
     x = None
     if xtype == 'length':
-      x = dictOut["total_number_of_cells"]
+        x = dictOut["total_number_of_cells"]
     elif xtype == 'prop':
-      x = dictOut["state_proportions_0"]
+        x = dictOut["state_proportions_0"]
 
     return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"]
 
