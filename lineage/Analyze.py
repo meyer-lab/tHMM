@@ -131,7 +131,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     # First collect all the observations from the entire population across the lineages ordered by state
     obs_by_state = []
     for state in range(tHMMobj.num_states):
-        obs_by_state.append([obs for lineage in tHMMobj.X for obs in lineage.lineage_stats[state].full_lin_cells_obs])
+        obs_by_state.append([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage if cell.state == state])
 
     # Array to hold divergence values
     switcher_array = np.zeros((tHMMobj.num_states, tHMMobj.num_states), dtype="float")

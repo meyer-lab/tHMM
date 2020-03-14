@@ -70,7 +70,7 @@ def get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx):
         assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
         # if the child-parent relationship is correct, then the child must be
         # either the left daughter or the right daughter
-        assert lineage[node_child_n_idx]._isChild()
+        assert lineage[node_child_n_idx].isChild()
 
         # get the already calculated delta at node n for state k
         # get the transition rate for going from state j to state k
@@ -98,7 +98,7 @@ def Viterbi(tHMMobj, deltas, state_ptrs):
         for level in lineageObj.output_list_of_gens[1:]:
             for cell in level:
                 parent_idx = lineage.index(cell)
-                for n in cell._get_daughters():
+                for n in cell.get_daughters():
                     child_idx = lineage.index(n)
                     parent_state = opt_state_tree[parent_idx]
 
