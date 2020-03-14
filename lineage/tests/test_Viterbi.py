@@ -6,6 +6,7 @@ from lineage.StateDistribution import StateDistribution
 from lineage.Analyze import Analyze, LLFunc
 from lineage.LineageTree import LineageTree
 
+
 class TestViterbi(unittest.TestCase):
     """ Unit tests for Viterbi. """
 
