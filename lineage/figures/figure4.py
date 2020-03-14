@@ -83,7 +83,7 @@ def figFourCommon(list_of_populations, xtype='length'):
             dictOut[key].append(val)
 
     paramEst = np.array(dictOut["param_estimates"])
-    
+
     x = None
     if xtype == 'length':
         x = dictOut["total_number_of_cells"]
