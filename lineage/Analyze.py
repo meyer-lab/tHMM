@@ -4,6 +4,7 @@ import numpy as np
 from .BaumWelch import fit
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
+from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .tHMM import tHMM
 from sklearn import metrics
 from scipy.stats import entropy
@@ -305,3 +306,49 @@ def getAIC(tHMMobj, LL):
     AIC_value = -2 * LL + 2 * AIC_degrees_of_freedom
 
     return AIC_value, AIC_degrees_of_freedom
+
+def stateLikelihood(tHMMobj):
+    ''' We intend to find the likelihood of the states, given observations.
+    With Bayes rule we have: P(z | x) = P(x | z) x P(z) / P(x), in which:
+    P(x|z) := Emission Likelihood (EL),
+    P(z) := Marginal State Distribution (MSD),
+    P(x) := Marginal Observation Distribution (NF)
+    '''
+    EL = tHMMobj.get_Emission_Likelihoods()
+    MSD = tHMMobj.get_Marginal_State_Distributions()
+    NF = get_leaf_Normalizing_Factors(tHMMobj)
+    betas = get_leaf_betas(tHMMobj, NF)
+    get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
+    LL = (EL[0] * MSD[0])
+    LL[:,0] = LL[:,0] / NF[0]
+    LL[:,1] = LL[:,1] / NF[0]
+    return LL
+
+def LLHelperFunc(T, lineageObj):
+    ''' To calculate the joint probability of state and observations.
+    This function, calculates the second term
+    P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * \prod_{n=2:N}(P(z_n | z_pn)) * \prod_{n=1:N}(P(x_n|z_n))
+    '''
+    states = []
+    for cell in lineageObj.output_lineage:
+        if cell.gen == 1:
+            pass
+        else:
+            states.append(T[cell.parent.state, cell.state])
+    return states
+
+def LLFunc(T, pi, tHMMobj, pred_states_by_lineage):
+    ''' This function calculate the state likelihood, using the joint probability function.
+    *** we do the log-transformation to avoid underflow.
+    '''
+    stLikelihood = []
+    for indx, lineage in enumerate(tHMMobj.X):
+        FirstTerm = pi[lineage.output_lineage[0].state]
+        SecondTerm = LLHelperFunc(T, lineage)
+        pre_ThirdTerm = tHMMobj.get_Emission_Likelihoods()[indx]
+        ThirdTerm = np.zeros(len(lineage.output_lineage))
+        for ind, st in enumerate(pred_states_by_lineage[indx]):
+            ThirdTerm[ind] = pre_ThirdTerm[ind,st]
+        ll = np.log(FirstTerm) + np.sum(np.log(SecondTerm)) + np.sum(np.log(ThirdTerm))
+        stLikelihood.append(ll)
+    return stLikelihood

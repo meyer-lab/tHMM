@@ -27,7 +27,7 @@ T = np.array([[0.75, 0.25],
 
 def makeFigure():
     """
-    Makes figure 9 and 10.
+    Makes figure 4.
     """
 
     # Get list of axis objects
