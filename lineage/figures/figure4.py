@@ -55,10 +55,10 @@ def accuracy_increased_cells():
         population = []
         for _ in range(num):
             # Creating an unpruned and pruned lineage
-            tmp_lineage = LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True)
+            tmp_lineage = LineageTree(piiii, T, E, desired_num_cells, censor_condition=3, desired_experiment_time=experiment_time)
             if len(tmp_lineage.output_lineage) < 10:
                 del tmp_lineage
-                tmp_lineage = LineageTree(piiii, T, E, desired_num_cells, experiment_time, prune_condition='both', prune_boolean=True)
+                tmp_lineage = LineageTree(piiii, T, E, desired_num_cells, censor_condition=3, desired_experiment_time=experiment_time)
             population.append(tmp_lineage)
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
