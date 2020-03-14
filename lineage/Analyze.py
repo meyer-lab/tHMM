@@ -346,7 +346,7 @@ def LLFunc(T, pi, tHMMobj, pred_states_by_lineage):
         FirstTerm = pi[lineage.output_lineage[0].state]
         SecondTerm = LLHelperFunc(T, lineage)
         pre_ThirdTerm = tHMMobj.get_Emission_Likelihoods()[indx]
-        ThirdTerm = zeros(len(lineage.output_lineage))
+        ThirdTerm = np.zeros(len(lineage.output_lineage))
         for ind, st in enumerate(pred_states_by_lineage[indx]):
             ThirdTerm[ind] = pre_ThirdTerm[ind,st]
         ll = np.log(FirstTerm) + np.sum(np.log(SecondTerm)) + np.sum(np.log(ThirdTerm))

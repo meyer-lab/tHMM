@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from numpy.random import randint
 from lineage.StateDistribution import StateDistribution
-from lineage.Analyze import Analyze
+from lineage.Analyze import Analyze, LLFunc
 from lineage.LineageTree import LineageTree
 
 class TestViterbi(unittest.TestCase):
@@ -28,13 +28,12 @@ class TestViterbi(unittest.TestCase):
 
         X = LineageTree(pi, T, E, desired_num_cells=(2**11) - 1, desired_experiment_time=500, prune_condition='fate', prune_boolean=False)
         tHMMobj, pred_states_by_lineage, _ = Analyze([X], num_states=2)
-        vitLL = stateLikelihood(tHMMobj)
-        length = pred_states_by_lineage[0].shape[0]
-        LLTot = []
-        for i in range(2):
-            random.seed(123)
-            temp = randint(0, 2, length)
-            for ind, cell in enumerate(tHMMobj.X[0].full_lin_list):
-                cell.state = temp[ind]
-            ll = stateLikelihood(tHMMobj)
-            LLTot.append(ll.sum())
+        all_LLs = []
+        vitLL = LLFunc(T, pi, tHMMobj, pred_states_by_lineage)
+        for i in range(10):
+            rand = randint(0, 2, (2**11) - 1)
+            temp = LLFunc(T, pi, tHMMobj, [rand])
+            all_LLs.append(temp)
+        self.assertTrue(all(all_LLs <= vitLL))
+            
+        
