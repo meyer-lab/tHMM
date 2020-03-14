@@ -35,5 +35,3 @@ class TestViterbi(unittest.TestCase):
             temp = LLFunc(T, pi, tHMMobj, [rand])
             all_LLs.append(temp)
         self.assertTrue(all(all_LLs <= vitLL))
-            
-        
