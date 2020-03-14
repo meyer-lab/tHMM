@@ -57,7 +57,7 @@ def makeTs(increment=0.01):
     while 0 < new_arr[0][0] < 1:
         new_arr[:, 0] += increment
         new_arr[:, 1] -= increment
-        if new_arr[0][0]==1:
+        if new_arr[0][0] == 1:
             break
         else:
             list_of_Ts.append(np.copy(new_arr))

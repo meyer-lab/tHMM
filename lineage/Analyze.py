@@ -1,13 +1,12 @@
 '''Calls the tHMM functions and outputs the parameters needed to generate the Figures'''
 from concurrent.futures import ProcessPoolExecutor
 import numpy as np
+from sklearn import metrics
+from scipy.stats import entropy
 from .BaumWelch import fit
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
-from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .tHMM import tHMM
-from sklearn import metrics
-from scipy.stats import entropy
 
 
 def preAnalyze(X, num_states):
@@ -29,7 +28,7 @@ def preAnalyze(X, num_states):
             break
         except AssertionError:
             if num_tries == 4:
-                print("Caught AssertionError in fitting after multiple ({}) runs. Fitting is breaking after trying {} times. Consider inspecting the length of your lineages.".format(num_tries))
+                print("Caught AssertionError in fitting after multiple ({}) runs. Fitting is breaking after trying {} times. Consider inspecting the length of your lineages.".format(num_tries,num_tries))
                 raise
 
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)
@@ -43,6 +42,10 @@ def preAnalyze(X, num_states):
 
 
 def Analyze(X, num_states):
+    """
+    Analyze runs several for loops runnning our model for a given number of states
+    given an input population (a list of lineages).
+    """
     tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, num_states)
 
     for _ in range(1, 5):
@@ -202,7 +205,7 @@ def run_Results_over(output):
     output: a list of tuples from the results of running run_Analyze_over
     """
     results_holder = []
-    for output_idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
+    for _, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
         results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL))
 
     return results_holder
@@ -301,9 +304,9 @@ def getAIC(tHMMobj, LL):
     num_states = tHMMobj.num_states
 
     number_of_parameters = len(tHMMobj.estimate.E[0].params)
-    AIC_degrees_of_freedom = num_states**2 + num_states * number_of_parameters - 1
+    AIC_degrees_of_freedom = num_states**2 + num_states*number_of_parameters - 1
 
-    AIC_value = -2 * LL + 2 * AIC_degrees_of_freedom
+    AIC_value = -2*LL + 2*AIC_degrees_of_freedom
 
     return AIC_value, AIC_degrees_of_freedom
 
@@ -321,8 +324,8 @@ def stateLikelihood(tHMMobj):
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
     LL = (EL[0] * MSD[0])
-    LL[:, 0] = LL[:, 0] / NF[0]
-    LL[:, 1] = LL[:, 1] / NF[0]
+    LL[:,0] = LL[:,0] / NF[0]
+    LL[:,1] = LL[:,1] / NF[0]
     return LL
 
 

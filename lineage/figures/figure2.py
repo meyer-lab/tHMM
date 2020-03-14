@@ -11,6 +11,7 @@ from .figureCommon import getSetup, pi, T, E, subplotLabel
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution, track_population_generation_histogram, track_population_growth_histogram
 
+
 def makeFigure():
     """
     Makes figure 2.
@@ -25,6 +26,7 @@ def makeFigure():
 
     return f
 
+
 def figure_maker(ax):
     """
     Makes figure 2.
@@ -34,11 +36,11 @@ def figure_maker(ax):
     population_censored = []
     for _ in range(20):
         population_censored.append(LineageTree(pi, T, E,
-                                             desired_num_cells=(2**12) - 1,
-                                             censor_condition=3,
-                                             desired_experiment_time=500))
+                                               desired_num_cells=(2**12) - 1,
+                                               censor_condition=3,
+                                               desired_experiment_time=500))
         population_uncensored.append(population_censored[-1].uncensor_copy_lineage())
-        
+
     hist_gen_censored = track_population_generation_histogram(population_censored)
     delta_time = 0.1
     hist_tim_censored = track_population_growth_histogram(population_censored, delta_time)
@@ -46,7 +48,6 @@ def figure_maker(ax):
     hist_gen_uncensored = track_population_generation_histogram(population_uncensored)
     hist_tim_uncensored = track_population_growth_histogram(population_uncensored, delta_time)
 
-    
     # generations
 
     x0_gen = [i + 1 for i in list(range(len(hist_gen_uncensored[0])))]
@@ -101,7 +102,7 @@ def figure_maker(ax):
     ax[i].set_title('Uncensored population distribution')
     ax[i].grid(linestyle='--')
     ax[i].legend()
-    
+
     x0_gen = [i + 1 for i in list(range(len(hist_gen_censored[0])))]
     x1_gen = [i + 1 for i in list(range(len(hist_gen_censored[1])))]
 

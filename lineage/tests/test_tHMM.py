@@ -28,7 +28,7 @@ class TestModel(unittest.TestCase):
         state_obj1 = StateDistribution(0.85, 10, 1)
         self.E = [state_obj0, state_obj1]
         # Using an unpruned lineage to avoid unforseen issues
-        self.X = [LineageTree(pi, T, self.E, 
+        self.X = [LineageTree(pi, T, self.E,
                               desired_num_cells=(2**11) - 1)]
         tHMMobj = tHMM(self.X, num_states=2)  # build the tHMM class with X
 

@@ -54,7 +54,7 @@ class TestBW(unittest.TestCase):
         self.assertTrue(np.isfinite(new_LL_list_after))
 
         self.assertGreater(LL_after, LL_before)
-        
+
     def test_step1(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
 
@@ -142,7 +142,7 @@ class TestBW(unittest.TestCase):
         self.assertTrue(np.isfinite(new_LL_list_after))
 
         self.assertGreater(LL_after, LL_before)
-        
+
     def test_step3(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
 

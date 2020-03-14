@@ -5,6 +5,7 @@ from copy import deepcopy
 from .CellVar import CellVar
 from .StateDistribution import assign_times, fate_censor_rule, time_censor_rule
 
+
 class LineageTree:
     def __init__(self, pi, T, E, desired_num_cells, censor_condition=0, **kwargs):
         """
@@ -26,7 +27,7 @@ class LineageTree:
 
         desired_num_cells {Int}: The desired number of cells we want the lineage to end up with.
 
-        censor_condition {bool}: If it is True, it means the user want this lineage to be censord, 
+        censor_condition {bool}: If it is True, it means the user want this lineage to be censord,
         if False it means the user want this lineage as a output binary tree -- in which none of the cells die.
         """
         self.pi = pi
@@ -34,52 +35,51 @@ class LineageTree:
         self.T = T
         T_shape = self.T.shape
         assert T_shape[0] == T_shape[1], \
-        "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
+            "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
         T_num_states = self.T.shape[0]
         self.E = E
         self.desired_num_cells = desired_num_cells
         E_num_states = len(E)
         assert pi_num_states == T_num_states == E_num_states, \
-        "The number of states in your input Markov probability parameters are mistmatched. \
+            "The number of states in your input Markov probability parameters are mistmatched. \
         \nPlease check that the dimensions and states match. \npi {} \nT {} \nE {}".format(self.pi, self.T, self.E)
         self.num_states = pi_num_states
 
         self.generate_lineage_list()
-        
+
         for i_state in range(self.num_states):
             self.output_assign_obs(i_state)
-                        
+
         self.full_max_gen, self.full_list_of_gens = max_gen(self.full_lineage)
         self.full_leaves_idx, self.full_leaves = get_leaves(self.full_lineage)
-        
+
         assign_times(self)
-        
+
         # Begin censoring:
-        
+
         # this is given by the user:
         # 0 - no pruning
         # 1 - censor based on the fate of the cell
         # 2 - censor based on the length of the experiment
         # 3 - censor based on both the 'fate' and 'time' conditions
         self.censor_condition = censor_condition
-        
+
         if kwargs:
             self.desired_experiment_time = kwargs.get('desired_experiment_time', 2e12)
-            
+
         self.censor_boolean = self.censor_condition > 0
-            
+
         self.censor_lineage()
-            
+
         self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
-        
-        
+
     def generate_lineage_list(self):
         """
-        Generates a single lineage tree given Markov variables. 
+        Generates a single lineage tree given Markov variables.
         This only generates the hidden variables (i.e., the states) in a output binary tree manner.
         It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
-        
+
         Args:
         -----
         It takes in the LineageTree object
@@ -103,7 +103,7 @@ class LineageTree:
 
             if len(self.full_lineage) >= self.desired_num_cells:
                 break
-    
+
     def output_assign_obs(self, state):
         """
         Observation assignment give a state.
@@ -115,10 +115,10 @@ class LineageTree:
         state {Int}: The number assigned to a state.
 
         """
-        cells_in_state = [cell for cell in self.full_lineage if cell.state ==state] 
+        cells_in_state = [cell for cell in self.full_lineage if cell.state == state]
         list_of_tuples_of_obs = self.E[state].rvs(size=len(cells_in_state))
         assert len(cells_in_state) == len(list_of_tuples_of_obs)
-        for i, cell in enumerate(cells_in_state): 
+        for i, cell in enumerate(cells_in_state):
             cell.obs = list_of_tuples_of_obs[i]
 
     def censor_lineage(self):
@@ -207,9 +207,9 @@ class LineageTree:
         used for showing the results to the user.
         """
         return self.__repr__()
-    
-    
+
     # tool for copying lineages
+
     def uncensor_copy_lineage(self):
         new_lineage = deepcopy(self)
         for cell in new_lineage.full_lineage:
@@ -220,6 +220,7 @@ class LineageTree:
         return new_lineage
 
 # tools for analyzing trees
+
 
 def max_gen(lineage):
     """ finds the maximal generation in the tree, and cells organized by their generations.

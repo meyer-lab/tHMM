@@ -41,19 +41,19 @@ class TestModel(unittest.TestCase):
 
         # creating lineages with the various censor conditions
         self.lineage1 = LineageTree(self.pi, self.T, self.E,
-            desired_num_cells=(2**11) - 1)
+                                    desired_num_cells=(2**11) - 1)
         self.lineage2_fate_censored = LineageTree(self.pi, self.T, self.E,
-            desired_num_cells=(2**11) - 1,
-            censor_condition=1)
+                                                  desired_num_cells=(2**11) - 1,
+                                                  censor_condition=1)
         self.lineage3_time_censored = LineageTree(self.pi, self.T, self.E,
-            desired_num_cells=(2**11) - 1,
-            censor_condition=2,
-            desired_experiment_time=500)
+                                                  desired_num_cells=(2**11) - 1,
+                                                  censor_condition=2,
+                                                  desired_experiment_time=500)
         self.lineage4_both_censored = LineageTree(self.pi, self.T, self.E,
-            desired_num_cells=(2**11) - 1,
-            censor_condition=3,
-            desired_experiment_time=500)
-        
+                                                  desired_num_cells=(2**11) - 1,
+                                                  censor_condition=3,
+                                                  desired_experiment_time=500)
+
         # creating 7 cells for 3 generations manually
         cell_1 = c(state=self.state0, parent=None, gen=1)
         cell_2 = c(state=self.state0, parent=cell_1, gen=2)
@@ -110,9 +110,8 @@ class TestModel(unittest.TestCase):
             if cell.censored and cell.get_sister().censored:
                 self.assertTrue(cell.parent.isLeaf)
 
-
     def test_max_gen(self):
-        """ 
+        """
         A unittest for testing max_gen function by creating the lineage manually
         for 3 generations ==> total of 7 cells in the setup function.
         """
@@ -141,7 +140,7 @@ class TestModel(unittest.TestCase):
         A unittest fot get_leaves function.
         """
         # getting the leaves and their indexes for lineage1
-        leaf_index, leaf_cells = get_leaves(self.lineage1.output_lineage)  
+        leaf_index, leaf_cells = get_leaves(self.lineage1.output_lineage)
 
         # to check the leaf cells do not have daughters
         for cells in leaf_cells:

@@ -22,17 +22,17 @@ class TestModel(unittest.TestCase):
 
         # creating two lineages, one with False for pruning, one with True.
         self.lineage = LineageTree(self.pi, self.T, self.E,
-            desired_num_cells=(2**11) - 1,
-            desired_experiment_time=1000,
-            censor_condition=1)
+                                   desired_num_cells=(2**11) - 1,
+                                   desired_experiment_time=1000,
+                                   censor_condition=1)
         self.lineage2 = LineageTree(self.pi, self.T, self.E,
-            desired_num_cells=(2**5.5) - 1,
-            censor_condition=2,
-            desired_experiment_time=50)
+                                    desired_num_cells=(2**5.5) - 1,
+                                    censor_condition=2,
+                                    desired_experiment_time=50)
         self.lineage3 = LineageTree(self.pi, self.T, self.E,
-            desired_num_cells=(2**11) - 1,
-            censor_condition=3,
-            desired_experiment_time=800)
+                                    desired_num_cells=(2**11) - 1,
+                                    censor_condition=3,
+                                    desired_experiment_time=800)
 
     def test_rvs(self):
         """
@@ -74,9 +74,9 @@ class TestModel(unittest.TestCase):
         estimator_obj = self.E[0].estimator(tuples_of_obs)
 
         # here we check the estimated parameters to be close
-        self.assertTrue(0.0 <= abs(estimator_obj.bern_p-self.E[0].bern_p) <= 0.1)
-        self.assertTrue(0.0 <= abs(estimator_obj.gamma_a-self.E[0].gamma_a) <= 3.0)
-        self.assertTrue(0.0 <= abs(estimator_obj.gamma_scale-self.E[0].gamma_scale) <= 3.0)
+        self.assertTrue(0.0 <= abs(estimator_obj.bern_p - self.E[0].bern_p) <= 0.1)
+        self.assertTrue(0.0 <= abs(estimator_obj.gamma_a - self.E[0].gamma_a) <= 3.0)
+        self.assertTrue(0.0 <= abs(estimator_obj.gamma_scale - self.E[0].gamma_scale) <= 3.0)
 
     def test_fate_censor_rule(self):
         """
@@ -88,7 +88,6 @@ class TestModel(unittest.TestCase):
         for cell in self.lineage3.output_lineage:
             if cell.obs[0] == 0:
                 self.assertTrue(fate_censor_rule(cell))
-
 
     def test_time_censor_rule(self):
         """

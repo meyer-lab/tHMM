@@ -20,6 +20,7 @@ T = np.array([[0.85, 0.15],
 # bern, gamma_a, gamma_scale
 E = [StateDistribution(0.99, 20, 5), StateDistribution(0.88, 10, 1)]
 
+
 def getSetup(figsize, gridd):
     """ Establish figure set-up with subplots. """
     sns.set(style="whitegrid", font_scale=0.7, color_codes=True, palette="colorblind", rc={"grid.linestyle": "dotted", "axes.linewidth": 0.6})

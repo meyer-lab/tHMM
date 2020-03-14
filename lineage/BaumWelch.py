@@ -104,7 +104,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             # this bins the cells by lineage to the population cell lists
             for ii, state in enumerate(max_state_holder):
                 cell_groups[state].append(lineage[ii])
-                
+
         # population wide pi calculation
         tHMMobj.estimate.pi = pi_estimate / sum(pi_estimate)
         # population wide T calculation

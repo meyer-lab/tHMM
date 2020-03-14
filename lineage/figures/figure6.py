@@ -62,7 +62,7 @@ def wasserstein():
         # First collect all the observations from the entire population across the lineages ordered by state
         obs_by_state_rand_sampled = []
         for state in range(len(E)):
-            full_list = [cell.obs[1] for cell in lineage.output_lineage if cell.state==state]
+            full_list = [cell.obs[1] for cell in lineage.output_lineage if cell.state == state]
             obs_by_state_rand_sampled.append(random.sample(full_list, 750))
 
         w_value = wasserstein_distance(obs_by_state_rand_sampled[0], obs_by_state_rand_sampled[1])
