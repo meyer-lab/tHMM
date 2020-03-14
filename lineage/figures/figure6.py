@@ -53,16 +53,16 @@ def wasserstein():
         state_obj1 = StateDistribution(0.99, a0, 3)
 
         E = [state_obj0, state_obj1]
-        lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000000000, prune_condition='fate', prune_boolean=False)
+        lineage = LineageTree(pi, T, E, (2**12) - 1)
         while len(lineage.output_lineage) < 16:
             del lineage
-            lineage = LineageTree(pi, T, E, (2**12) - 1, desired_experiment_time=1000000000, prune_condition='fate', prune_boolean=False)
+            lineage = LineageTree(pi, T, E, (2**12) - 1)
         list_of_populations_unsort.append([lineage])
 
         # First collect all the observations from the entire population across the lineages ordered by state
         obs_by_state_rand_sampled = []
         for state in range(len(E)):
-            full_list = [obs[1] for obs in lineage.lineage_stats[state].full_lin_cells_obs]
+            full_list = [cell.obs[1] for cell in lineage.output_lineage if cell.state==state]
             obs_by_state_rand_sampled.append(random.sample(full_list, 750))
 
         w_value = wasserstein_distance(obs_by_state_rand_sampled[0], obs_by_state_rand_sampled[1])
