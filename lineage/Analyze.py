@@ -28,7 +28,7 @@ def preAnalyze(X, num_states):
             break
         except AssertionError:
             if num_tries == 4:
-                print("Caught AssertionError in fitting after multiple ({}) runs. Fitting is breaking after trying {} times. Consider inspecting the length of your lineages.".format(num_tries,num_tries))
+                print("Caught AssertionError in fitting after multiple ({}) runs. Fitting is breaking after trying {} times. Consider inspecting the length of your lineages.".format(num_tries, num_tries))
                 raise
 
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)
@@ -304,9 +304,9 @@ def getAIC(tHMMobj, LL):
     num_states = tHMMobj.num_states
 
     number_of_parameters = len(tHMMobj.estimate.E[0].params)
-    AIC_degrees_of_freedom = num_states**2 + num_states*number_of_parameters - 1
+    AIC_degrees_of_freedom = num_states**2 + num_states * number_of_parameters - 1
 
-    AIC_value = -2*LL + 2*AIC_degrees_of_freedom
+    AIC_value = -2 * LL + 2 * AIC_degrees_of_freedom
 
     return AIC_value, AIC_degrees_of_freedom
 
@@ -324,8 +324,8 @@ def stateLikelihood(tHMMobj):
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
     LL = (EL[0] * MSD[0])
-    LL[:,0] = LL[:,0] / NF[0]
-    LL[:,1] = LL[:,1] / NF[0]
+    LL[:, 0] = LL[:, 0] / NF[0]
+    LL[:, 1] = LL[:, 1] / NF[0]
     return LL
 
 
