@@ -56,7 +56,7 @@ def run_AIC(Trate, E, num_to_evaluate=10):
         # Analyze the lineages in the list of populations
         output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
         # Collecting the results of analyzing the lineages
-        for idx, (tHMMobj,pred_states_by_lineage,_) in enumerate(output):
+        for idx, (tHMMobj, pred_states_by_lineage, _) in enumerate(output):
             # Get the likelihood of states
             LLtemp = LLFunc(T, pi, tHMMobj, pred_states_by_lineage)
             LL = np.sum(LLtemp)
