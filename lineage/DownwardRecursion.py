@@ -9,7 +9,7 @@ def get_root_gammas(tHMMobj, betas):
     gammas = []
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        gamma_array = np.zeros((len(lineageObj.output_lineage), tHMMobj.numStates))
+        gamma_array = np.zeros((len(lineageObj.output_lineage), tHMMobj.num_states))
         gamma_array[0, :] = betas[num][0, :]
         gammas.append(gamma_array)
 
@@ -33,8 +33,8 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
             for cell in level:
                 parent_idx = lineage.index(cell)
 
-                for daughter_idx in cell._get_daughters():
-                    child_idx = lineage.index(daughter_idx)
+                for daughter in cell.get_daughters():
+                    child_idx = lineage.index(daughter)
 
                     beta_parent = beta_parent_child_func(beta_array=betas[num],
                                                          T=T,

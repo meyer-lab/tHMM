@@ -37,11 +37,11 @@ def accuracy_increased_cells():
     list_of_populations = []
     for experiment_time in times:
         # Creating an unpruned and pruned lineage
-        lineage = LineageTree(piiii, T, E, (2**12) - 1, experiment_time, prune_condition='both', prune_boolean=True)
+        lineage = LineageTree(piiii, T, E, (2**12) - 1, censor_condition=3, desired_experiment_time=experiment_time)
 
         while len(lineage.output_lineage) < 16:
             del lineage
-            lineage = LineageTree(piiii, T, E, (2**12) - 1, experiment_time, prune_condition='both', prune_boolean=True)
+            lineage = LineageTree(piiii, T, E, (2**12) - 1, censor_condition=3, desired_experiment_time=experiment_time)
 
         # Adding populations into a holder for analysing
         list_of_populations.append([lineage])

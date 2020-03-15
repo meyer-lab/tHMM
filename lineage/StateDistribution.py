@@ -80,7 +80,7 @@ class Time:
     def __init__(self, startT, lifetime, endT):
         self.startT = startT
         self.lifetime = lifetime
-        self.endT = endT  # equivalent to endT
+        self.endT = endT
 
 
 def assign_times(lineageObj):
@@ -94,7 +94,7 @@ def assign_times(lineageObj):
         true_gen = gen_minus_1 + 1  # generations are 1-indexed
         if true_gen == 1:
             for cell in level:
-                assert cell._isRootParent()
+                assert cell.isRootParent()
                 cell.time = Time(0, cell.obs[1], cell.obs[1])
         else:
             for cell in level:
@@ -208,7 +208,7 @@ def track_population_growth_histogram(population, delta_time):
     return total
 
 
-def fate_prune_rule(cell):
+def fate_censor_rule(cell):
     """
     User-defined function that checks whether a cell's subtree should be removed.
     Our example is based on the standard requirement that the first observation
@@ -218,7 +218,7 @@ def fate_prune_rule(cell):
     return cell.obs[0] == 0
 
 
-def time_prune_rule(cell, desired_experiment_time):
+def time_censor_rule(cell, desired_experiment_time):
     """
     User-defined function that checks whether a cell's subtree should be removed.
     Our example is based on the standard requirement that the second observation

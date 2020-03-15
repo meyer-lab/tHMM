@@ -28,9 +28,9 @@ class TestModel(unittest.TestCase):
         state_obj1 = StateDistribution(0.85, 10, 1)
         self.E = [state_obj0, state_obj1]
         # Using an unpruned lineage to avoid unforseen issues
-        self.X = [LineageTree(pi, T, self.E, desired_num_cells=(2**11) - 1, desired_experiment_time=500, prune_condition='die',
-                              prune_boolean=False)]
-        tHMMobj = tHMM(self.X, numStates=2)  # build the tHMM class with X
+        self.X = [LineageTree(pi, T, self.E,
+                              desired_num_cells=(2**11) - 1)]
+        tHMMobj = tHMM(self.X, num_states=2)  # build the tHMM class with X
 
         # Test cases below
         # Get the likelihoods before fitting
@@ -53,11 +53,11 @@ class TestModel(unittest.TestCase):
         Make sure paramlist has proper
         labels and sizes.
         '''
-        t = tHMM(self.X, numStates=2)  # build the tHMM class with X
-        self.assertEqual(t.estimate.pi.shape[0], 2)  # make sure shape is numStates
-        self.assertEqual(t.estimate.T.shape[0], 2)  # make sure shape is numStates
-        self.assertEqual(t.estimate.T.shape[1], 2)  # make sure shape is numStates
-        self.assertEqual(len(t.estimate.E), 2)  # make sure shape is numStates
+        t = tHMM(self.X, num_states=2)  # build the tHMM class with X
+        self.assertEqual(t.estimate.pi.shape[0], 2)  # make sure shape is num_states
+        self.assertEqual(t.estimate.T.shape[0], 2)  # make sure shape is num_states
+        self.assertEqual(t.estimate.T.shape[1], 2)  # make sure shape is num_states
+        self.assertEqual(len(t.estimate.E), 2)  # make sure shape is num_states
 
     def test_get_MSD(self):
         '''
@@ -65,7 +65,7 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
-        t = tHMM(self.X, numStates=2)  # build the tHMM class with X
+        t = tHMM(self.X, num_states=2)  # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
         for _, MSDlin in enumerate(MSD):
@@ -79,7 +79,7 @@ class TestModel(unittest.TestCase):
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         '''
-        t = tHMM(self.X, numStates=2)  # build the tHMM class with X
+        t = tHMM(self.X, num_states=2)  # build the tHMM class with X
         EL = t.get_Emission_Likelihoods()
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
         for _, ELlin in enumerate(EL):
@@ -96,7 +96,7 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         '''
-        t = tHMM(self.X, numStates=2)  # build the tHMM class with X
+        t = tHMM(self.X, num_states=2)  # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(t)
         self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population
         for _, NFlin in enumerate(NF):

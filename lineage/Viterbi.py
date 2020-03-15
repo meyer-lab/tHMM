@@ -4,7 +4,7 @@ import numpy as np
 
 def get_leaf_deltas(tHMMobj):
     """delta matrix and base case at the leaves. Each element in this N by K matrix is the probability for the leaves P(x_n = x | z_n = k)."""
-    numStates = tHMMobj.numStates
+    num_states = tHMMobj.num_states
 
     deltas = []
     state_ptrs = []
@@ -14,11 +14,11 @@ def get_leaf_deltas(tHMMobj):
         # getting the lineage in the Population by index
         lineage = lineageObj.output_lineage
         # instantiating N by K array
-        delta_array = np.zeros((len(lineage), numStates))
+        delta_array = np.zeros((len(lineage), num_states))
         state_ptrs_array = np.empty((len(lineage), 2), dtype=object)  # instantiating N by K array
 
         for cell in lineage:  # for each cell in the lineage
-            if cell._isLeaf():  # if it is a leaf
+            if cell.isLeaf():  # if it is a leaf
                 # get the index of the leaf
                 leaf_cell_idx = lineage.index(cell)
                 delta_array[leaf_cell_idx, :] = tHMMobj.EL[num][leaf_cell_idx, :]
@@ -40,7 +40,7 @@ def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
         # move up one generation until the 2nd generation is the children
         # and the root nodes are the parents
         for level in lineageObj.output_list_of_gens[2:][::-1]:
-            parent_holder = lineageObj._get_parents_for_level(level)
+            parent_holder = lineageObj.get_parents_for_level(level)
 
             for node_parent_m_idx in parent_holder:
                 fac1, max_state_ptr = get_delta_parent_child_prod(lineage=lineage,
@@ -70,7 +70,7 @@ def get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx):
         assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
         # if the child-parent relationship is correct, then the child must be
         # either the left daughter or the right daughter
-        assert lineage[node_child_n_idx]._isChild()
+        assert lineage[node_child_n_idx].isChild()
 
         # get the already calculated delta at node n for state k
         # get the transition rate for going from state j to state k
@@ -98,7 +98,7 @@ def Viterbi(tHMMobj, deltas, state_ptrs):
         for level in lineageObj.output_list_of_gens[1:]:
             for cell in level:
                 parent_idx = lineage.index(cell)
-                for n in cell._get_daughters():
+                for n in cell.get_daughters():
                     child_idx = lineage.index(n)
                     parent_state = opt_state_tree[parent_idx]
 
@@ -111,7 +111,7 @@ def Viterbi(tHMMobj, deltas, state_ptrs):
 
         all_states.append(opt_state_tree)
 
-    first_state_count = [0] * tHMMobj.numStates
+    first_state_count = [0] * tHMMobj.num_states
     for num, lineageObj in enumerate(tHMMobj.X):
         first_cell_state = all_states[num][0]
         first_state_count[first_cell_state] += 1

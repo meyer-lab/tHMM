@@ -49,7 +49,7 @@ def run_AIC(Trate, E, num_to_evaluate=10):
     list_of_populations = []
     for idx in range(num_to_evaluate):
         # Creating an unpruned and pruned lineage
-        list_of_populations.append([LineageTree(pi, T, E, (2**8) - 1, 1E9, prune_condition='fate', prune_boolean=False)])
+        list_of_populations.append([LineageTree(pi, T, E, (2**8) - 1)])
 
     AIC_holder = np.empty((len(desired_num_states), num_to_evaluate))
     for ii, num_states_to_evaluate in enumerate(desired_num_states):

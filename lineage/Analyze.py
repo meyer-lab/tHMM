@@ -1,13 +1,12 @@
 '''Calls the tHMM functions and outputs the parameters needed to generate the Figures'''
 from concurrent.futures import ProcessPoolExecutor
 import numpy as np
+from sklearn import metrics
+from scipy.stats import entropy
 from .BaumWelch import fit
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
-from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
 from .tHMM import tHMM
-from sklearn import metrics
-from scipy.stats import entropy
 
 
 def preAnalyze(X, num_states):
@@ -15,7 +14,7 @@ def preAnalyze(X, num_states):
     Args:
     -----
     X {list}: A list containing LineageTree objects as lineages.
-    numStates {Int}: The number of states we want our model to estimate for the given population.
+    num_states {Int}: The number of states we want our model to estimate for the given population.
 
     Returns:
     --------
@@ -24,12 +23,12 @@ def preAnalyze(X, num_states):
 
     for num_tries in range(1, 5):
         try:
-            tHMMobj = tHMM(X, numStates=num_states)  # build the tHMM class with X
+            tHMMobj = tHMM(X, num_states=num_states)  # build the tHMM class with X
             fit(tHMMobj, max_iter=300)
             break
         except AssertionError:
             if num_tries == 4:
-                print("Caught AssertionError in fitting after multiple ({}) runs. Fitting is breaking after trying {} times. Consider inspecting the length of your lineages.".format(num_tries))
+                print("Caught AssertionError in fitting after multiple ({}) runs. Fitting is breaking after trying {} times. Consider inspecting the length of your lineages.".format(num_tries,num_tries))
                 raise
 
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)
@@ -43,6 +42,10 @@ def preAnalyze(X, num_states):
 
 
 def Analyze(X, num_states):
+    """
+    Analyze runs several for loops runnning our model for a given number of states
+    given an input population (a list of lineages).
+    """
     tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, num_states)
 
     for _ in range(1, 5):
@@ -131,14 +134,14 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
 
     # First collect all the observations from the entire population across the lineages ordered by state
     obs_by_state = []
-    for state in range(tHMMobj.numStates):
-        obs_by_state.append([obs for lineage in tHMMobj.X for obs in lineage.lineage_stats[state].full_lin_cells_obs])
+    for state in range(tHMMobj.num_states):
+        obs_by_state.append([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage if cell.state == state])
 
     # Array to hold divergence values
-    switcher_array = np.zeros((tHMMobj.numStates, tHMMobj.numStates), dtype="float")
+    switcher_array = np.zeros((tHMMobj.num_states, tHMMobj.num_states), dtype="float")
 
-    for state_pred in range(tHMMobj.numStates):
-        for state_true in range(tHMMobj.numStates):
+    for state_pred in range(tHMMobj.num_states):
+        for state_true in range(tHMMobj.num_states):
             p = [tHMMobj.estimate.E[state_pred].pdf(y) for y in obs_by_state[state_pred]]
             q = [tHMMobj.X[0].E[state_true].pdf(x) for x in obs_by_state[state_pred]]
             switcher_array[state_pred, state_true] = (entropy(p, q) + entropy(q, p))
@@ -147,9 +150,9 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
 
     # Create switcher map based on the minimal entropies in the switcher array
 
-    switcher_map = [None] * tHMMobj.numStates
+    switcher_map = [None] * tHMMobj.num_states
 
-    for row in range(tHMMobj.numStates):
+    for row in range(tHMMobj.num_states):
         switcher_row = list(switcher_array[row, :])
         switcher_map[row] = switcher_row.index(min(switcher_row))
 
@@ -157,8 +160,8 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
 
     # Rearrange the values in the transition matrix
     temp_T = tHMMobj.estimate.T
-    for row_idx in range(tHMMobj.numStates):
-        for col_idx in range(tHMMobj.numStates):
+    for row_idx in range(tHMMobj.num_states):
+        for col_idx in range(tHMMobj.num_states):
             temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx], switcher_map[col_idx]]
 
     results_dict["switched_transition_matrix"] = temp_T
@@ -166,22 +169,22 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
 
     # Rearrange the values in the pi vector
     temp_pi = tHMMobj.estimate.pi
-    for val_idx in range(tHMMobj.numStates):
+    for val_idx in range(tHMMobj.num_states):
         temp_pi[val_idx] = tHMMobj.estimate.pi[switcher_map[val_idx]]
 
     results_dict["switched_pi_vector"] = temp_pi
     results_dict["pi_vector_norm"] = np.linalg.norm(temp_pi - tHMMobj.X[0].pi)
 
     # Rearrange the emissions list
-    temp_emissions = [None] * tHMMobj.numStates
-    for val_idx in range(tHMMobj.numStates):
+    temp_emissions = [None] * tHMMobj.num_states
+    for val_idx in range(tHMMobj.num_states):
         temp_emissions[val_idx] = tHMMobj.estimate.E[switcher_map[val_idx]]
 
     results_dict["switched_emissions"] = temp_emissions
 
     # Get the estimated parameter values
     results_dict["param_estimates"] = []
-    for val_idx in range(tHMMobj.numStates):
+    for val_idx in range(tHMMobj.num_states):
         results_dict["param_estimates"].append(temp_emissions[val_idx].params)
 
     # 3. Calculate accuracy after switching states
@@ -202,7 +205,7 @@ def run_Results_over(output):
     output: a list of tuples from the results of running run_Analyze_over
     """
     results_holder = []
-    for output_idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
+    for _, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
         results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL))
 
     return results_holder
@@ -296,14 +299,14 @@ def getAIC(tHMMobj, LL):
     Returns:
     --------
         AIC_value : containing AIC values relative to 0 for each lineage.
-        AIC_degrees_of_freedom : the degrees of freedom in AIC calculation (numStates**2 + numStates * number_of_parameters - 1) - same for each lineage
+        AIC_degrees_of_freedom : the degrees of freedom in AIC calculation (num_states**2 + num_states * number_of_parameters - 1) - same for each lineage
     '''
-    numStates = tHMMobj.numStates
+    num_states = tHMMobj.num_states
 
     number_of_parameters = len(tHMMobj.estimate.E[0].params)
-    AIC_degrees_of_freedom = numStates**2 + numStates * number_of_parameters - 1
+    AIC_degrees_of_freedom = num_states**2 + num_states*number_of_parameters - 1
 
-    AIC_value = -2 * LL + 2 * AIC_degrees_of_freedom
+    AIC_value = -2*LL + 2*AIC_degrees_of_freedom
 
     return AIC_value, AIC_degrees_of_freedom
 
@@ -321,8 +324,8 @@ def stateLikelihood(tHMMobj):
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
     LL = (EL[0] * MSD[0])
-    LL[:, 0] = LL[:, 0] / NF[0]
-    LL[:, 1] = LL[:, 1] / NF[0]
+    LL[:,0] = LL[:,0] / NF[0]
+    LL[:,1] = LL[:,1] / NF[0]
     return LL
 
 

@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 import scipy.stats as sp
-from ..StateDistribution import StateDistribution, bernoulli_estimator, gamma_estimator, fate_prune_rule, time_prune_rule, get_experiment_time, gamma_pdf, bern_pdf
+from ..StateDistribution import StateDistribution, bernoulli_estimator, gamma_estimator, fate_censor_rule, time_censor_rule, get_experiment_time, gamma_pdf, bern_pdf
 from ..LineageTree import LineageTree
 
 
@@ -21,33 +21,25 @@ class TestModel(unittest.TestCase):
         self.E = [StateDistribution(0.99, 20, 5), StateDistribution(0.80, 10, 1)]
 
         # creating two lineages, one with False for pruning, one with True.
-        self.lineage = LineageTree(
-            self.pi,
-            self.T,
-            self.E,
-            desired_num_cells=(2**11) - 1,
-            desired_experiment_time=1000,
-            prune_condition='fate',
-            prune_boolean=False)
-        self.lineage2 = LineageTree(
-            self.pi,
-            self.T,
-            self.E,
-            desired_num_cells=(2**5.5) - 1,
-            desired_experiment_time=100,
-            prune_condition='time',
-            prune_boolean=True)
-        self.lineage3 = LineageTree(
-            self.pi,
-            self.T,
-            self.E,
-            desired_num_cells=(2**11) - 1,
-            desired_experiment_time=800,
-            prune_condition='both',
-            prune_boolean=True)
+        self.lineage = LineageTree(self.pi, self.T, self.E,
+                                   desired_num_cells=(2**11) - 1,
+                                   desired_experiment_time=1000,
+                                   censor_condition=1)
+        self.lineage2 = LineageTree(self.pi, self.T, self.E,
+                                    desired_num_cells=(2**5.5) - 1,
+                                    censor_condition=2,
+                                    desired_experiment_time=50)
+        self.lineage3 = LineageTree(self.pi, self.T, self.E,
+                                    desired_num_cells=(2**11) - 1,
+                                    censor_condition=3,
+                                    desired_experiment_time=800)
 
     def test_rvs(self):
-        """ A unittest for random generator function, given the number of random variables we want from each distribution, that each corresponds to one of the observation types. """
+        """
+        A unittest for random generator function,
+        given the number of random variables we want from each distribution,
+        that each corresponds to one of the observation types
+        """
         tuple_of_obs = self.E[0].rvs(size=30)
         bern_obs, gamma_obs = list(zip(*tuple_of_obs))
         self.assertTrue(len(bern_obs) == len(gamma_obs) == 30)
@@ -75,45 +67,38 @@ class TestModel(unittest.TestCase):
         self.assertTrue(0.0 <= likelihood1 <= 1.0)
 
     def test_estimator(self):
-        """ A unittest for the estimator function, by generating 150 observatopns for each of the distribution functions, we use the estimator and compare. """
+        """
+        A unittest for the estimator function, by generating 150 observatopns for each of the
+        distribution functions, we use the estimator and compare. """
         tuples_of_obs = self.E[0].rvs(size=3000)
         estimator_obj = self.E[0].estimator(tuples_of_obs)
 
         # here we check the estimated parameters to be close
-        self.assertTrue(
-            0.0 <= abs(
-                estimator_obj.bern_p -
-                self.E[0].bern_p) <= 0.1)
-        self.assertTrue(
-            0.0 <= abs(
-                estimator_obj.gamma_a -
-                self.E[0].gamma_a) <= 3.0)
-        self.assertTrue(
-            0.0 <= abs(
-                estimator_obj.gamma_scale -
-                self.E[0].gamma_scale) <= 3.0)
+        self.assertTrue(0.0 <= abs(estimator_obj.bern_p - self.E[0].bern_p) <= 0.1)
+        self.assertTrue(0.0 <= abs(estimator_obj.gamma_a - self.E[0].gamma_a) <= 3.0)
+        self.assertTrue(0.0 <= abs(estimator_obj.gamma_scale - self.E[0].gamma_scale) <= 3.0)
 
-    def test_fate_prune_rule(self):
-        """ A unittest for the fate_prune_rule. """
-
-        for cell in self.lineage.lineage_stats[0].full_lin_cells:
+    def test_fate_censor_rule(self):
+        """
+        A unittest for the fate_censor_rule.
+        """
+        for cell in self.lineage.output_lineage:
             if cell.obs[0] == 0:
-                self.assertTrue(fate_prune_rule(cell))
-
-        for cell in self.lineage.lineage_stats[1].full_lin_cells:
+                self.assertTrue(fate_censor_rule(cell))
+        for cell in self.lineage3.output_lineage:
             if cell.obs[0] == 0:
-                self.assertTrue(fate_prune_rule(cell))
+                self.assertTrue(fate_censor_rule(cell))
 
-    def test_time_prune_rule(self):
-        """ A unittest for the time_prune_rule. """
-
-        for cell in self.lineage3.lineage_stats[0].full_lin_cells:
+    def test_time_censor_rule(self):
+        """
+        A unittest for the time_censor_rule.
+        """
+        for cell in self.lineage2.output_lineage:
+            if cell.time.startT > self.lineage2.desired_experiment_time:
+                self.assertTrue(time_censor_rule(cell, self.lineage2.desired_experiment_time))
+        for cell in self.lineage3.output_lineage:
             if cell.time.startT > self.lineage3.desired_experiment_time:
-                self.assertTrue(time_prune_rule(cell, self.lineage3.desired_experiment_time))
-
-        for cell in self.lineage3.lineage_stats[1].full_lin_cells:
-            if cell.time.startT > self.lineage3.desired_experiment_time:
-                self.assertTrue(time_prune_rule(cell, self.lineage3.desired_experiment_time))
+                self.assertTrue(time_censor_rule(cell, self.lineage3.desired_experiment_time))
 
     def test_get_experiment_time(self):
         """

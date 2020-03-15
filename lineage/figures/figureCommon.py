@@ -8,6 +8,18 @@ import numpy as np
 from matplotlib import gridspec, pyplot as plt
 import seaborn as sns
 
+from ..StateDistribution import StateDistribution
+
+# pi: the initial probability vector
+pi = np.array([0.6, 0.4], dtype="float")
+
+# T: transition probability matrix
+T = np.array([[0.85, 0.15],
+              [0.15, 0.85]], dtype="float")
+
+# bern, gamma_a, gamma_scale
+E = [StateDistribution(0.99, 20, 5), StateDistribution(0.88, 10, 1)]
+
 
 def getSetup(figsize, gridd):
     """ Establish figure set-up with subplots. """

@@ -3,27 +3,11 @@ import scipy.stats as sp
 from copy import deepcopy
 
 from .CellVar import CellVar
-from .StateDistribution import assign_times, fate_prune_rule, time_prune_rule
-
-
-# temporary style guide:
-# Boolean functions are in camelCase.
-# Functions that return cells or lists of cells will be spaced with underscores.
-# Functions that are not to be used by a general user are prefixed with an underscore.
-# States of cells are 0-indexed and discrete (states start at 0 and are whole numbers).
-# Variables with the prefix num (i.e., num_states, num_cells) have an underscore following the 'num'.
-# Docstrings use """ and not '''.
-# Class names use camelCase.
-# The transition matrix must be a square matrix, not a list of lists.
-
-
-class LineageStateStats:
-    def __init__(self, state):
-        self.state = state
+from .StateDistribution import assign_times, fate_censor_rule, time_censor_rule
 
 
 class LineageTree:
-    def __init__(self, pi, T, E, desired_num_cells, desired_experiment_time, prune_condition='fate', prune_boolean=True):
+    def __init__(self, pi, T, E, desired_num_cells, censor_condition=0, **kwargs):
         """
         A class for lineage trees.
         Every lineage object from this class is a binary tree built based on initial probabilities,
@@ -31,8 +15,7 @@ class LineageTree:
         Lineages are generated in full (no pruning) by creating cells of different states in a
         binary fashion utilizing the pi and the transtion probabilities. Cells are then filled with
         observations based on their states by sampling observations from their emission distributions.
-        The lineage tree is then pruned based on the prune condition. The value of the boolean in
-        prune_boolean determines what lineage is ultimately analyzed, either the full or pruned lineage.
+        The lineage tree is then censord based on the censor condition.
 
         Args:
         -----
@@ -44,211 +27,86 @@ class LineageTree:
 
         desired_num_cells {Int}: The desired number of cells we want the lineage to end up with.
 
-        prune_boolean {bool}: If it is True, it means the user want this lineage to be pruned, if False it means the user want this lineage as a full binary tree -- in which none of the cells die.
+        censor_condition {bool}: If it is True, it means the user want this lineage to be censord,
+        if False it means the user want this lineage as a output binary tree -- in which none of the cells die.
         """
         self.pi = pi
         pi_num_states = len(pi)
         self.T = T
         T_shape = self.T.shape
-        assert T_shape[0] == T_shape[1], "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
+        assert T_shape[0] == T_shape[1], \
+            "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
         T_num_states = self.T.shape[0]
         self.E = E
         self.desired_num_cells = desired_num_cells
         E_num_states = len(E)
-        assert pi_num_states == T_num_states == E_num_states, "The number of states in your input Markov probability parameters are mistmatched. Please check that the dimensions and states match. pi {} T {} E {}".format(
-            self.pi, self.T, self.E)
+        assert pi_num_states == T_num_states == E_num_states, \
+            "The number of states in your input Markov probability parameters are mistmatched. \
+        \nPlease check that the dimensions and states match. \npi {} \nT {} \nE {}".format(self.pi, self.T, self.E)
         self.num_states = pi_num_states
-        self.desired_num_cells = desired_num_cells
-        self.desired_experiment_time = desired_experiment_time
-        self.prune_condition = prune_condition  # string for prune condition
-        self.lineage_stats = []
 
-        for state in range(self.num_states):
-            self.lineage_stats.append(LineageStateStats(state))
+        self.generate_lineage_list()
 
-        self.full_lin_list = self._generate_lineage_list()
-        for state in range(self.num_states):
-            self.lineage_stats[state].num_full_lin_cells, \
-                self.lineage_stats[state].full_lin_cells, \
-                self.lineage_stats[state].full_lin_cells_obs, \
-                self.lineage_stats[state].full_lin_cells_idx = self._full_assign_obs(state)
-        self.full_max_gen, self.full_list_of_gens = max_gen(self.full_lin_list)
-        self.full_leaves_idx, self.full_leaves = get_leaves(self.full_lin_list)
+        for i_state in range(self.num_states):
+            self.output_assign_obs(i_state)
 
-        self.pruned_lin_list = self._prune_lineage()
-        for state in range(self.num_states):
-            self.lineage_stats[state].num_pruned_lin_cells, \
-                self.lineage_stats[state].pruned_lin_cells, \
-                self.lineage_stats[state].pruned_lin_cells_obs, \
-                self.lineage_stats[state].pruned_lin_cells_idx = self._get_pruned_state_count(state)
-        self.pruned_max_gen, self.pruned_list_of_gens = max_gen(self.pruned_lin_list)
-        self.pruned_leaves_idx, self.pruned_leaves = get_leaves(self.pruned_lin_list)
+        self.full_max_gen, self.full_list_of_gens = max_gen(self.full_lineage)
+        self.full_leaves_idx, self.full_leaves = get_leaves(self.full_lineage)
+
+        assign_times(self)
+
+        # Begin censoring:
 
         # this is given by the user:
-        # 'fate' - prune based on the fate of the cell
-        # 'time' - prune based on the length of the experiment
-        # 'both' - prune based on both the 'fate' and 'time' conditions
-        self.prune_condition = prune_condition
+        # 0 - no pruning
+        # 1 - censor based on the fate of the cell
+        # 2 - censor based on the length of the experiment
+        # 3 - censor based on both the 'fate' and 'time' conditions
+        self.censor_condition = censor_condition
 
-        # this governs whether or not the pruned or the
-        # the unpruned lineage is used in the analysis
-        self.prune_boolean = prune_boolean
+        if kwargs:
+            self.desired_experiment_time = kwargs.get('desired_experiment_time', 2e12)
 
-    # Based on the user's decision, if they want the lineage to be pruned (prune_boolean == True),
-    # the lineage tree that is given to the tHMM, will be the pruned one.
-    # If the user decides that they want the full binary tree (prune_boolean == False),
-    # then the full_lin_list will be passed to the output_lineage.
+        self.censor_boolean = self.censor_condition > 0
 
-    @property
-    def prune_boolean(self):
-        return self.__prune_boolean
+        self.censor_lineage()
 
-    @prune_boolean.setter
-    def prune_boolean(self, prune_boolean):
-        self.__prune_boolean = prune_boolean
-        if self.prune_boolean:
-            self.output_lineage = self.pruned_lin_list
-            self.output_max_gen = self.pruned_max_gen
-            self.output_list_of_gens = self.pruned_list_of_gens
-            self.output_leaves_idx = self.pruned_leaves_idx
-            self.output_leaves = self.pruned_leaves
-        else:
-            self.output_lineage = self.full_lin_list
-            self.output_max_gen = self.full_max_gen
-            self.output_list_of_gens = self.full_list_of_gens
-            self.output_leaves_idx = self.full_leaves_idx
-            self.output_leaves = self.full_leaves
+        self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
+        self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
 
-    def __len__(self, prune_boolean):
-        if prune_boolean:
-            return len(self.pruned_lin_list)
-        else:
-            return(len(self.full_lin_list))
+    def generate_lineage_list(self):
+        """
+        Generates a single lineage tree given Markov variables.
+        This only generates the hidden variables (i.e., the states) in a output binary tree manner.
+        It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
 
-    def _generate_lineage_list(self):
-        """ Generates a single lineage tree given Markov variables. This only generates the hidden variables (i.e., the states) in a full binary tree manner. It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
         Args:
         -----
         It takes in the LineageTree object
 
         Returns:
         --------
-        full_lin_list {list}: A list containing cells with assigned hidden states based on initial and transition probabilities.
+        output_lin_list {list}: A list containing cells with assigned hidden states based on initial and transition probabilities.
         """
         first_state_results = sp.multinomial.rvs(1, self.pi)  # roll the dice and yield the state for the first cell
         first_cell_state = first_state_results.tolist().index(1)
-        first_cell = CellVar(
-            state=first_cell_state,
-            left=None,
-            right=None,
-            parent=None,
-            gen=1)  # create first cell
-        self.full_lin_list = [first_cell]
+        first_cell = CellVar(state=first_cell_state, parent=None, gen=1)  # create first cell
+        self.full_lineage = [first_cell]
 
-        for cell in self.full_lin_list:  # letting the first cell proliferate
-            if cell._isLeaf():  # if the cell has no daughters...
+        for idx, cell in enumerate(self.full_lineage):  # letting the first cell proliferate
+            if cell.isLeaf():  # if the cell has no daughters...
                 # make daughters by dividing and assigning states
-                left_cell, right_cell = cell._divide(self.T)
+                left_cell, right_cell = cell.divide(self.T)
                 # add daughters to the list of cells
-                self.full_lin_list.append(left_cell)
-                self.full_lin_list.append(right_cell)
+                self.full_lineage.append(left_cell)
+                self.full_lineage.append(right_cell)
 
-            if len(self.full_lin_list) >= self.desired_num_cells:
+            if len(self.full_lineage) >= self.desired_num_cells:
                 break
 
-        return self.full_lin_list
-
-    def _prune_lineage(self):
-        """ This function removes those cells that are intended to be remove
-        from the full binary tree based on emissions.
-        It takes in LineageTree object, walks through all the cells in the full binary tree,
-        applies the pruning to each cell that is supposed to be removed,
-        and returns the pruned list of cells.
+    def output_assign_obs(self, state):
         """
-        assign_times(self)
-        self.pruned_lin_list = deepcopy(self.full_lin_list)
-        for cell in self.pruned_lin_list:
-            if self.prune_condition == 'both':
-                if fate_prune_rule(cell) or time_prune_rule(cell, self.desired_experiment_time):
-                    _, _, self.pruned_lin_list = find_two_subtrees(
-                        cell, self.pruned_lin_list)
-                    cell.left = None
-                    cell.right = None
-                    assert cell._isLeaf()
-            elif self.prune_condition == 'fate':
-                if fate_prune_rule(cell):
-                    _, _, self.pruned_lin_list = find_two_subtrees(
-                        cell, self.pruned_lin_list)
-                    cell.left = None
-                    cell.right = None
-                    assert cell._isLeaf()
-            elif self.prune_condition == 'time':
-                if time_prune_rule(cell, self.desired_experiment_time):
-                    _, _, self.pruned_lin_list = find_two_subtrees(
-                        cell, self.pruned_lin_list)
-                    cell.left = None
-                    cell.right = None
-                    assert cell._isLeaf()
-        return self.pruned_lin_list
-
-    def _get_full_state_count(self, state):
-        """ Counts the number of cells in a specific state in the full lineage (before pruning) and makes a list out of the cells and their indexes in the given state. Used for generating emissions for that specific state.
-        Args:
-        -----
-        state {Int}: The number assigned to a state.
-
-        Returns:
-        --------
-        num_cells_in_state {Int}: The number of cells in the given state.
-
-        cells_in_state {list}: A list of cells being in the given state.
-
-        indices_of_cells_in_state {list}: Holding the indexes of the cells being in the given state
-        """
-        cells_in_state = []  # a list holding cells in the same state
-        indices_of_cells_in_state = []
-        for cell in self.full_lin_list:
-            if cell.state == state:  # if the cell is in the given state...
-                cells_in_state.append(cell)  # append them to a list
-                indices_of_cells_in_state.append(
-                    self.full_lin_list.index(cell))
-        # gets the number of cells in the list
-        num_cells_in_state = len(cells_in_state)
-
-        return num_cells_in_state, cells_in_state, indices_of_cells_in_state
-
-    def _get_pruned_state_count(self, state):
-        """ This function finds the cells that are in a specific state after pruning the lineage.
-        Args:
-        -----
-        state {Int}: The number assigned to a state.
-
-        Returns:
-        --------
-        num_cells_in_state {Int}: The number of cells in the given state.
-
-        cells_in_state {list}: The list of cells in the given state.
-
-        list_of_tuples_of_obs {list}: A list including tuples which represents (bernoulli for die/divide, exponential for lifetime)
-
-        indices_of_cells_in_state {list}: Holding the indexes of the cells being in the given state.
-        """
-        cells_in_state = []  # a list holding cells in the same state
-        list_of_tuples_of_obs = []
-        indices_of_cells_in_state = []
-        for cell in self.pruned_lin_list:
-            if cell.state == state:  # if the cell is in the given state...
-                cells_in_state.append(cell)  # append them to a list
-                list_of_tuples_of_obs.append(cell.obs)
-                indices_of_cells_in_state.append(
-                    self.pruned_lin_list.index(cell))
-        # gets the number of cells in the list
-        num_cells_in_state = len(cells_in_state)
-
-        return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
-
-    def _full_assign_obs(self, state):
-        """ Observation assignment give a state.
+        Observation assignment give a state.
         Given the lineageTree object and the intended state, this function assigns the corresponding observations
         comming from specific distributions for that state.
 
@@ -256,22 +114,50 @@ class LineageTree:
         -----
         state {Int}: The number assigned to a state.
 
-        Returns the same outputs as the `_get_pruned_state_count()`.
         """
-        num_cells_in_state, cells_in_state, indices_of_cells_in_state = self._get_full_state_count(
-            state)
-        list_of_tuples_of_obs = self.E[state].rvs(size=num_cells_in_state)
-
-        assert len(cells_in_state) == len(
-            list_of_tuples_of_obs) == num_cells_in_state
-
+        cells_in_state = [cell for cell in self.full_lineage if cell.state == state]
+        list_of_tuples_of_obs = self.E[state].rvs(size=len(cells_in_state))
+        assert len(cells_in_state) == len(list_of_tuples_of_obs)
         for i, cell in enumerate(cells_in_state):
             cell.obs = list_of_tuples_of_obs[i]
 
-        return num_cells_in_state, cells_in_state, list_of_tuples_of_obs, indices_of_cells_in_state
+    def censor_lineage(self):
+        """
+        This function removes those cells that are intended to be remove
+        from the output binary tree based on emissions.
+        It takes in LineageTree object, walks through all the cells in the output binary tree,
+        applies the pruning to each cell that is supposed to be removed,
+        and returns the censord list of cells.
+        """
+        self.output_lineage = []
+        for idx, cell in enumerate(self.full_lineage):
+            if self.censor_condition == 0:
+                self.output_lineage = self.full_lineage
+                break
+            elif self.censor_condition == 1:
+                if fate_censor_rule(cell):
+                    subtree, not_subtree = get_subtrees(cell, self.full_lineage)
+                    for idx, sub_cell in enumerate(subtree[1:]):
+                        sub_cell.censored = True
+                    assert cell.isLeaf()
+            elif self.censor_condition == 2:
+                if time_censor_rule(cell, self.desired_experiment_time):
+                    subtree, not_subtree = get_subtrees(cell, self.full_lineage)
+                    for idx, sub_cell in enumerate(subtree[1:]):
+                        sub_cell.censored = True
+                    assert cell.isLeaf()
+            elif self.censor_condition == 3:
+                if fate_censor_rule(cell) or time_censor_rule(cell, self.desired_experiment_time):
+                    subtree, not_subtree = get_subtrees(cell, self.full_lineage)
+                    for idx, sub_cell in enumerate(subtree[1:]):
+                        sub_cell.censored = True
+                    assert cell.isLeaf()
+            if not cell.censored:
+                self.output_lineage.append(cell)
 
-    def _get_parents_for_level(self, level):
-        """ get the parents's index of a generation in the population list.
+    def get_parents_for_level(self, level):
+        """
+        Get the parents's index of a generation in the population list.
         Given the generation level, this function returns the index of parent cells of the cells being in that generation level.
 
         Args:
@@ -291,35 +177,28 @@ class LineageTree:
         """
         This function is used to get string representation of an object, used for debugging and development.
         Represents the information about the lineage that the user has created,
-        like whether the tree is pruned or is a full tree;
+        like whether the tree is censord or is a output tree;
         and for both of the options it prints the number of states,
         the number of cells in the states, the total number of cells.
         """
         s1 = ""
         s2 = ""
         s3 = ""
-        if self.prune_boolean:
-            s1 = "This tree is pruned. It is made of {} states.\n For each state in this tree: ".format(
-                self.num_states)
+        seperator = ', '
+        if self.censor_boolean:
+            s1 = "This tree is censord. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
             s_list = []
             for state in range(self.num_states):
-                s_list.append("\n \t There are {} cells of state {}".format(
-                    self.lineage_stats[state].num_pruned_lin_cells, state))
-            seperator = ', '
+                s_list.append("\n \t There are {} cells of state {}".format(self.lineage_stats[state].num_censord_lin_cells, state))
             s2 = seperator.join(s_list)
-            s3 = ".\n This pruned tree has {} many cells in total".format(
-                len(self.pruned_lin_list))
+            s3 = ".\n This censord tree has {} many cells in total".format(len(self.censord_lin_list))
         else:
-            s1 = "This tree is NOT pruned. It is made of {} states.\n For each state in this tree: ".format(
-                self.num_states)
+            s1 = "This tree is NOT censord. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
             s_list = []
             for state in range(self.num_states):
-                s_list.append("\n \t There are {} cells of state {}".format(
-                    self.lineage_stats[state].num_full_lin_cells, state))
-            seperator = ', '
+                s_list.append("\n \t There are {} cells of state {}".format(self.lineage_stats[state].num_output_lin_cells, state))
             s2 = seperator.join(s_list)
-            s3 = ".\n This UNpruned tree has {} many cells in total".format(
-                len(self.full_lin_list))
+            s3 = ".\n This UNcensord tree has {} many cells in total".format(len(self.output_lineage))
         return s1 + s2 + s3
 
     def __str__(self):
@@ -328,6 +207,17 @@ class LineageTree:
         used for showing the results to the user.
         """
         return self.__repr__()
+
+    # tool for copying lineages
+
+    def uncensor_copy_lineage(self):
+        new_lineage = deepcopy(self)
+        for cell in new_lineage.full_lineage:
+            cell.censored = False
+        new_lineage.output_max_gen, new_lineage.output_list_of_gens = max_gen(new_lineage.full_lineage)
+        new_lineage.output_leaves_idx, new_lineage.output_leaves = get_leaves(new_lineage.full_lineage)
+        new_lineage.output_lineage = new_lineage.full_lineage
+        return new_lineage
 
 # tools for analyzing trees
 
@@ -349,7 +239,7 @@ def max_gen(lineage):
     gens = sorted({cell.gen for cell in lineage})  # appending the generation of cells in the lineage
     list_of_lists_of_cells_by_gen = [[None]]
     for gen in gens:
-        level = [cell for cell in lineage if cell.gen == gen]
+        level = [cell for cell in lineage if (cell.gen == gen and not cell.censored)]
         list_of_lists_of_cells_by_gen.append(level)
     return max(gens), list_of_lists_of_cells_by_gen
 
@@ -368,7 +258,7 @@ def get_leaves(lineage):
     leaf_indices = []
     leaves = []
     for index, cell in enumerate(lineage):
-        if cell._isLeaf():
+        if cell.isLeaf():
             leaves.append(cell)  # appending the leaf cells to a list
             leaf_indices.append(index)  # appending the index of the cells
     return leaf_indices, leaves
@@ -377,8 +267,10 @@ def get_leaves(lineage):
 ##------------------- tools for traversing trees ------------------------##
 
 def tree_recursion(cell, subtree):
-    """ A recursive helper function that traverses upwards from the leaf to the root. """
-    if cell._isLeaf():
+    """
+    A recursive helper function that traverses upwards from the leaf to the root.
+    """
+    if cell.isLeaf():
         return
     subtree.append(cell.left)
     subtree.append(cell.right)
@@ -388,7 +280,10 @@ def tree_recursion(cell, subtree):
 
 
 def get_subtrees(node, lineage):
-    """ Given one cell, return the subtree of that cell, and return all the tree other than that subtree. """
+    """
+    Given one cell, return the subtree of that cell,
+    and return all the tree other than that subtree.
+    """
     subtree = [node]
     tree_recursion(node, subtree)
     not_subtree = []
@@ -399,8 +294,10 @@ def get_subtrees(node, lineage):
 
 
 def find_two_subtrees(cell, lineage):
-    """ Gets the left and right subtrees from a cell. """
-    if cell._isLeaf():
+    """
+    Gets the left and right subtrees from a cell.
+    """
+    if cell.isLeaf():
         return None, None, lineage
     left_sub, _ = get_subtrees(cell.left, lineage)
     right_sub, _ = get_subtrees(cell.right, lineage)
@@ -412,7 +309,8 @@ def find_two_subtrees(cell, lineage):
 
 
 def get_mixed_subtrees(node_m, node_n, lineage):
-    """ Takes in the lineage and the two cells in any part of the lineage tree, finds the subtree to the both given cells,
+    """
+    Takes in the lineage and the two cells in any part of the lineage tree, finds the subtree to the both given cells,
     and returns a group of cells that are in both subtrees, and the remaining cells in the lineage that are not in any of those.
     """
     m_sub, _ = get_subtrees(node_m, lineage)

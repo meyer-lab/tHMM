@@ -13,65 +13,104 @@ import numpy as np
 
 
 class CellVar:
-    """ cell class. """
+    """
+    Cell class.
+    """
 
-    def __init__(self, state, left, right, parent, gen):
+    def __init__(self, state, parent, gen, **kwargs):
         """
         Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
         """
         self.state = state
-        self.left = left
-        self.right = right
         self.parent = parent
         self.gen = gen
+        self.censored = False
 
-    def _divide(self, T):
-        """ Member function that performs division of a cell. Equivalent to adding another timestep in a Markov process. """
-        left_state, right_state = _double(
-            self.state, T)  # roll a loaded die according to the row in the transtion matrix
-        self.left = CellVar(
-            state=left_state,
-            left=None,
-            right=None,
-            parent=self,
-            gen=self.gen +
-            1)  # assign the resulting states to new cells
-        self.right = CellVar(
-            state=right_state,
-            left=None,
-            right=None,
-            parent=self,
-            gen=self.gen +
-            1)  # ensure that those cells are related
+        if kwargs:
+            self.left = kwargs.get('left', None)
+            self.right = kwargs.get('right', None)
+            self.obs = kwargs.get('obs', [])
+            self.censored = kwargs.get('censored', True)
+
+    def divide(self, T):
+        """
+        Member function that performs division of a cell.
+        Equivalent to adding another timestep in a Markov process.
+        """
+        # roll a loaded die according to the row in the transtion matrix
+        left_state, right_state = double(self.state, T)
+        self.left = CellVar(state=left_state, parent=self, gen=self.gen + 1)
+        self.right = CellVar(state=right_state, parent=self, gen=self.gen + 1)
 
         return self.left, self.right
 
-    def _isParent(self):
-        """ Boolean. Returns true if the cell has daughters. """
-        return self.left is not None or self.right is not None
+    def isLeafBecauseTerminal(self):
+        """
+        Boolean.
+        Returns true when a cell is a leaf with no children.
+        These are cells at the end of the tree.
+        """
+        # if it has a left and right attribute able to be checked
+        if hasattr(self, 'left') and hasattr(self, 'right'):
+            # then check that they both DO not exist
+            return self.left is None and self.right is None
+        # otherwise, it has no left and right daughters
+        else:
+            return True
 
-    def _isChild(self):
-        """ Boolean. Returns true if this cell has a known parent. """
+    def isLeafBecauseDaughtersAreCensored(self):
+        """
+        Boolean.
+        Returns true when a cell is a leaf because its children are censored.
+        """
+        if hasattr(self.left, 'censored') and hasattr(self.right, 'censored'):
+            if self.left.censored and self.right.censored:
+                return True
+        else:
+            return False
+
+    def isLeaf(self):
+        if self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreCensored():
+            return True
+        else:
+            return False
+
+    def isParent(self):
+        """
+        Boolean.
+        Returns true if the cell has daughters.
+        """
+        if self.isLeaf():
+            return False
+        else:
+            return True
+
+    def isChild(self):
+        """
+        Boolean.
+        Returns true if this cell has a known parent.
+        """
         if self.parent:
-            return self.parent._isParent()
+            return self.parent.isParent()
 
         return False
 
-    def _isRootParent(self):
-        """ Boolean. Returns true if this cell is the first cell in a lineage. """
+    def isRootParent(self):
+        """
+        Boolean.
+        Returns true if this cell is the first cell in a lineage.
+        """
         if not self.parent and self.gen == 1:
             return True
 
         return False
 
-    def _isLeaf(self):
-        """ Boolean. Returns true when a cell is a leaf with no children. """
-        return self.left is None and self.right is None
-
-    def _get_sister(self):
-        """ Member function that gets the sister of the current cell. """
+    def get_sister(self):
+        """
+        Member function that gets the sister of the current cell.
+        """
         cell_to_return = None
         if self.parent.left is self:
             cell_to_return = self.parent.right
@@ -79,62 +118,61 @@ class CellVar:
             cell_to_return = self.parent.left
         return cell_to_return
 
-    def _get_root_cell(self):
-        """ Get the first cell in the lineage to which this cell belongs. """
+    def get_root_cell(self):
+        """
+        Get the first cell in the lineage to which this cell belongs.
+        """
         curr_cell = self
         while curr_cell.gen > 1:
             curr_cell = curr_cell.parent
-        assert curr_cell._isRootParent()
+        assert curr_cell.isRootParent()
         return curr_cell
 
-    def _get_daughters(self):
-        """ Get the left and right daughters of a cell. """
+    def get_daughters(self):
+        """
+        Get the left and right daughters of a cell if they exist.
+        """
         temp = []
-        if self.left is not None:
-            temp.append(self.left)
-        if self.right is not None:
-            temp.append(self.right)
+        if hasattr(self, 'left') and hasattr(self, 'right'):
+            if self.left is not None and not self.left.censored:
+                temp.append(self.left)
+            if self.right is not None and not self.right.censored:
+                temp.append(self.right)
         return temp
 
     def __repr__(self):
+        """
+        Printing function.
+        """
         str_print = ""
         if hasattr(self, 'obs'):
-            str_print = "\n Generation: {}, State: {}, Observation: {}".format(
-                self.gen, self.state, self.obs)
+            str_print = "\n Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, self.obs)
         else:
-            str_print = "\n Generation: {}, State: {}, Observation: {}".format(
-                self.gen, self.state, "This cell has no observations to report.")
+            str_print = "\n Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, "This cell has no observations to report.")
         return str_print
 
     def __str__(self):
-        str_print = ""
-        if hasattr(self, 'obs'):
-            str_print = "\n Generation: {}, State: {}, Observation: {}".format(
-                self.gen, self.state, self.obs)
-        else:
-            str_print = "\n Generation: {}, State: {}, Observation: {}".format(
-                self.gen, self.state, "This cell has no observations to report.")
-        return str_print
+        return self.__repr__()
 
 
-def _double(parent_state, T):
+def double(parent_state, T):
     """
     Function that essentially rolls two of the same loaded dice
     given a state that determines the row of the transition matrix.
     The results of the roll of the loaded dice are two new states that are returned.
     """
     # Checking that the inputs are of the right shape
-    assert T.shape[0] == T.shape[1], "Transition numpy array is not square. \
-    Ensure that your transition numpy array has the same number of rows and columns."
+    assert T.shape[0] == T.shape[1], \
+        "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
     T_num_states = T.shape[0]
-    assert 0 <= parent_state <= T_num_states - \
-        1, "The parent state is a state outside of the range of states being considered."
+    assert 0 <= parent_state <= T_num_states - 1, \
+        "The parent state is a state outside of the range of states being considered."
 
     # Rolling two of the same loaded dice separate times and assigning
     # where they landed to states
 
-    left_state_results, right_state_results = sp.multinomial.rvs(n=1, p=np.squeeze(
-        T[parent_state, :]), size=2)  # first and second roll are left and right
+    left_state_results, right_state_results = \
+        sp.multinomial.rvs(n=1, p=np.squeeze(T[parent_state, :]), size=2)
     left_state = left_state_results.tolist().index(1)
     right_state = right_state_results.tolist().index(1)
 
