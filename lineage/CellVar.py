@@ -57,8 +57,7 @@ class CellVar:
             # then check that they both DO not exist
             return self.left is None and self.right is None
         # otherwise, it has no left and right daughters
-        else:
-            return True
+        return True
 
     def isLeafBecauseDaughtersAreCensored(self):
         """
