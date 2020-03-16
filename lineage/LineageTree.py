@@ -136,19 +136,19 @@ class LineageTree:
                 break
             elif self.censor_condition == 1:
                 if fate_censor_rule(cell):
-                    subtree, not_subtree = get_subtrees(cell, self.full_lineage)
+                    subtree, _ = get_subtrees(cell, self.full_lineage)
                     for sub_cell in subtree[1:]:
                         sub_cell.censored = True
                     assert cell.isLeaf()
             elif self.censor_condition == 2:
                 if time_censor_rule(cell, self.desired_experiment_time):
-                    subtree, not_subtree = get_subtrees(cell, self.full_lineage)
+                    subtree, _ = get_subtrees(cell, self.full_lineage)
                     for sub_cell in subtree[1:]:
                         sub_cell.censored = True
                     assert cell.isLeaf()
             elif self.censor_condition == 3:
                 if fate_censor_rule(cell) or time_censor_rule(cell, self.desired_experiment_time):
-                    subtree, not_subtree = get_subtrees(cell, self.full_lineage)
+                    subtree, _ = get_subtrees(cell, self.full_lineage)
                     for sub_cell in subtree[1:]:
                         sub_cell.censored = True
                     assert cell.isLeaf()
