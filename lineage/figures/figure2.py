@@ -4,12 +4,11 @@ Purpose: Generates figure 2.
 
 Figure 2 is the distribution of cells in a state over generations (pruned) and over time.
 """
-import numpy as np
 from matplotlib.ticker import MaxNLocator
 
 from .figureCommon import getSetup, pi, T, E, subplotLabel
 from ..LineageTree import LineageTree
-from ..StateDistribution import StateDistribution, track_population_generation_histogram, track_population_growth_histogram
+from ..StateDistribution import track_population_generation_histogram, track_population_growth_histogram
 
 
 def makeFigure():
