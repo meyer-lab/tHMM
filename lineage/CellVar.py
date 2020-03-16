@@ -71,20 +71,14 @@ class CellVar:
             return False
 
     def isLeaf(self):
-        if self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreCensored():
-            return True
-        else:
-            return False
+        return self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreCensored()
 
     def isParent(self):
         """
         Boolean.
         Returns true if the cell has daughters.
         """
-        if self.isLeaf():
-            return False
-        else:
-            return True
+        return not self.isLeaf()
 
     def isChild(self):
         """
