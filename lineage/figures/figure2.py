@@ -17,7 +17,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((7, 7), (2, 4))
+    ax, f = getSetup((7, 7), (2, 2))
 
     figure_maker(ax)
 
