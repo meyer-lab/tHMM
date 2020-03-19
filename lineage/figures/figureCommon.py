@@ -75,7 +75,9 @@ def moving_average(a, n=50):
 
 
 def subplotLabel(axs):
-    """Sublot labels"""
+    """
+    Sublot labels
+    """
     for ii, ax in enumerate(axs):
         ax.text(-0.2, 1.25, ascii_lowercase[ii], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
         
@@ -83,7 +85,6 @@ def figure_maker(ax, x, paramEst, accuracies, tr, pi, xlabel='Number of Cells'):
     """
     Makes figure 4.
     """
-
     i = 0
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 0], c='#F9Cb9C', edgecolors='k', marker="o", alpha=0.5)
