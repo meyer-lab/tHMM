@@ -23,6 +23,9 @@ E = [StateDistribution(0.99, 20, 5), StateDistribution(0.88, 10, 1)]
 
 desired_num_cells = (2**12)-1
 
+min_experiment_time = 72
+max_experiment_time = 144
+
 
 def getSetup(figsize, gridd):
     """

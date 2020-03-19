@@ -8,7 +8,7 @@ over increasing experimental times.
 """
 import numpy as np
 
-from .figureCommon import getSetup, subplotLabel, commonAnalyze, figureMaker, pi, T, E, desired_num_cells
+from .figureCommon import getSetup, subplotLabel, commonAnalyze, figureMaker, pi, T, E, desired_num_cells, min_experiment_time, max_experiment_time
 from ..LineageTree import LineageTree
 
 
@@ -37,7 +37,7 @@ def accuracy_increased_cells():
     """
 
     # Creating a list of populations to analyze over
-    times = np.linspace(100, 1000, 50)
+    times = np.linspace(min_experiment_time, max_experiment_time, 50)
     list_of_populations = []
     for experiment_time in times:
         population = []
