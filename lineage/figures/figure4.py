@@ -37,7 +37,7 @@ def accuracy_increased_cells():
     """
 
     # Creating a list of populations to analyze over
-    num_lineages = np.linspace(1, 2000, 50, dtype=int)
+    num_lineages = np.linspace(1, 100, 50, dtype=int)
     list_of_populations = []
     for num in num_lineages:
         population = []
