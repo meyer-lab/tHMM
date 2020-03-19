@@ -1,7 +1,7 @@
 """
 File: figure3.py
 Purpose: Generates figure 3.
-Figure 3 analyzes heterogeneous (2 state), pruned (by both time and fate), 
+Figure 3 analyzes heterogeneous (2 state), censored (by both time and fate), 
 single lineages (no more than one lineage per population)
 with at least 16 cells 
 over increasing experimental times.
@@ -37,19 +37,14 @@ def accuracy_increased_cells():
     """
 
     # Creating a list of populations to analyze over
-    times = np.linspace(min_experiment_time, max_experiment_time, 50)
+    times = np.linspace(min_experiment_time, max_experiment_time, num_data_points)
     list_of_populations = []
     for experiment_time in times:
         population = []
         
-        # Creating a censored lineage
-        lineage = LineageTree(pi, T, E, max_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_time)
-
-        while len(lineage.output_lineage) < 16:
-            del lineage
-            lineage = LineageTree(pi, T, E, max_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_time)
         
-        population.append(lineage)
+        population.append(LineageTree(pi, T, E, max_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_time))
+       
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
 

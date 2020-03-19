@@ -1,5 +1,5 @@
 """
-Contains utilities and functions that are commonly used or shared amongst
+Contains utilities, functions, and variables that are commonly used or shared amongst
 the figure creation files.
 """
 
@@ -21,11 +21,16 @@ T = np.array([[0.85, 0.15],
 # bern, gamma_a, gamma_scale
 E = [StateDistribution(0.99, 20, 5), StateDistribution(0.88, 10, 1)]
 
-min_desired_num_cells = (2**9)-1
+min_desired_num_cells = (2**8)-1
 max_desired_num_cells = (2**12)-1
 
 min_experiment_time = 72
 max_experiment_time = 144
+
+min_num_lineages = 1
+max_num_lineages = 100
+
+num_data_points = 50
 
 
 def getSetup(figsize, gridd):

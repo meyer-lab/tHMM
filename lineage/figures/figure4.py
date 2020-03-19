@@ -1,14 +1,14 @@
 """
 File: figure4.py
 Purpose: Generates figure 4.
-Figure 4 analyzes heterogeneous (2 state), pruned (by both time and fate), 
+Figure 4 analyzes heterogeneous (2 state), censored (by both time and fate), 
 populations of lineages (more than one lineage per populations) 
 with at least 16 cells per lineage 
 over increasing number of lineages per population.
 """
 import numpy as np
 
-from .figureCommon import getSetup, subplotLabel, commonAnalyze, figureMaker, pi, T, E, min_desired_num_cells, min_experiment_time
+from .figureCommon import getSetup, subplotLabel, commonAnalyze, figureMaker, pi, T, E, min_desired_num_cells, min_experiment_time, min_num_lineages, max_num_lineages, num_data_points
 from ..LineageTree import LineageTree
 
 
@@ -37,19 +37,13 @@ def accuracy_increased_cells():
     """
 
     # Creating a list of populations to analyze over
-    num_lineages = np.linspace(1, 100, 50, dtype=int)
+    num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
     list_of_populations = []
     for num in num_lineages:
         population = []
         
-        for _ in range(num):
-            # Creating a censored lineage
-            tmp_lineage = LineageTree(pi, T, E, min_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time)
-            
-            while len(tmp_lineage.output_lineage) < 16:
-                del tmp_lineage
-                tmp_lineage = LineageTree(pi, T, E, min_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time)
-            population.append(tmp_lineage)
+        for _ in range(num):            
+            population.append(LineageTree(pi, T, E, min_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time))
         
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
