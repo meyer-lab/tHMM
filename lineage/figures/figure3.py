@@ -7,8 +7,8 @@ times.
 """
 import numpy as np
 
-from .figureCommon import getSetup, subplotLabel
-from .figure4 import figure_maker, E, piiii, T, figFourCommon
+from .figureCommon import getSetup, subplotLabel, commonAnalyze, figureMaker
+from .figure4 import E, piiii, T
 from ..LineageTree import LineageTree
 
 
@@ -46,4 +46,4 @@ def accuracy_increased_cells():
         # Adding populations into a holder for analysing
         list_of_populations.append([lineage])
 
-    return figFourCommon(list_of_populations)
+    return commonAnalyze(list_of_populations)
