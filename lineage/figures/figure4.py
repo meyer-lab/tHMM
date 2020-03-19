@@ -8,7 +8,7 @@ over increasing number of lineages per population.
 """
 import numpy as np
 
-from .figureCommon import getSetup, subplotLabel, commonAnalyze, figureMaker, pi, T, E, desired_num_cells, min_experiment_time
+from .figureCommon import getSetup, subplotLabel, commonAnalyze, figureMaker, pi, T, E, min_desired_num_cells, min_experiment_time
 from ..LineageTree import LineageTree
 
 
@@ -44,11 +44,11 @@ def accuracy_increased_cells():
         
         for _ in range(num):
             # Creating a censored lineage
-            tmp_lineage = LineageTree(pi, T, E, desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time)
+            tmp_lineage = LineageTree(pi, T, E, min_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time)
             
             while len(tmp_lineage.output_lineage) < 16:
                 del tmp_lineage
-                tmp_lineage = LineageTree(pi, T, E, desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time)
+                tmp_lineage = LineageTree(pi, T, E, min_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time)
             population.append(tmp_lineage)
         
         # Adding populations into a holder for analysing

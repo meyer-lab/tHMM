@@ -21,7 +21,8 @@ T = np.array([[0.85, 0.15],
 # bern, gamma_a, gamma_scale
 E = [StateDistribution(0.99, 20, 5), StateDistribution(0.88, 10, 1)]
 
-desired_num_cells = (2**12)-1
+min_desired_num_cells = (2**9)-1
+max_desired_num_cells = (2**12)-1
 
 min_experiment_time = 72
 max_experiment_time = 144

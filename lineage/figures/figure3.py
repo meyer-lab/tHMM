@@ -8,7 +8,7 @@ over increasing experimental times.
 """
 import numpy as np
 
-from .figureCommon import getSetup, subplotLabel, commonAnalyze, figureMaker, pi, T, E, desired_num_cells, min_experiment_time, max_experiment_time
+from .figureCommon import getSetup, subplotLabel, commonAnalyze, figureMaker, pi, T, E, max_desired_num_cells, min_experiment_time, max_experiment_time
 from ..LineageTree import LineageTree
 
 
@@ -43,11 +43,11 @@ def accuracy_increased_cells():
         population = []
         
         # Creating a censored lineage
-        lineage = LineageTree(pi, T, E, desired_num_cells, censor_condition=3, desired_experiment_time=experiment_time)
+        lineage = LineageTree(pi, T, E, max_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_time)
 
         while len(lineage.output_lineage) < 16:
             del lineage
-            lineage = LineageTree(pi, T, E, desired_num_cells, censor_condition=3, desired_experiment_time=experiment_time)
+            lineage = LineageTree(pi, T, E, max_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_time)
         
         population.append(lineage)
         # Adding populations into a holder for analysing
