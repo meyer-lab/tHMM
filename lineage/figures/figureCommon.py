@@ -7,6 +7,7 @@ from string import ascii_lowercase
 import numpy as np
 from matplotlib import gridspec, pyplot as plt
 import seaborn as sns
+from ..Analyze import run_Results_over, run_Analyze_over
 
 from ..StateDistribution import StateDistribution
 
@@ -19,6 +20,8 @@ T = np.array([[0.85, 0.15],
 
 # bern, gamma_a, gamma_scale
 E = [StateDistribution(0.99, 20, 5), StateDistribution(0.88, 10, 1)]
+
+desired_num_cells = (2**12)-1
 
 
 def getSetup(figsize, gridd):
@@ -81,9 +84,10 @@ def subplotLabel(axs):
     for ii, ax in enumerate(axs):
         ax.text(-0.2, 1.25, ascii_lowercase[ii], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
         
-def figure_maker(ax, x, paramEst, accuracies, tr, pi, xlabel='Number of Cells'):
+def figureMaker(ax, x, paramEst, accuracies, tr, pi, xlabel='Number of Cells'):
     """
-    Makes figure 4.
+    Makes the common 6 panel figures displaying parameter estimation across lineages
+    of various types and sizes.
     """
     i = 0
     ax[i].set_xlabel(xlabel)
