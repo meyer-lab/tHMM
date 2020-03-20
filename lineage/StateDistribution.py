@@ -1,7 +1,7 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
+from math import gamma
 import numpy as np
 import scipy.stats as sp
-from math import gamma
 from numba import njit
 
 
