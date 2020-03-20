@@ -139,13 +139,13 @@ def track_population_generation_histogram(population):
     This function runs the tracking function on a list of lineages.
     """
     collector = []
-    for idx, lineageObj in enumerate(population):
+    for lineageObj in population:
         hist = track_lineage_generation_histogram(lineageObj)
         collector.append(hist)
     total = []
     for state in range(population[0].num_states):
         tmp_array = np.zeros(len(collector[0][0, :]))
-        for idx, hist in enumerate(collector):
+        for hist in collector:
             if len(tmp_array) < len(hist[state, :]):
                 c = hist[state, :].copy()
                 c[: len(tmp_array)] += tmp_array
