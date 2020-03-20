@@ -135,13 +135,14 @@ class LineageTree:
         applies the pruning to each cell that is supposed to be removed,
         and returns the censord list of cells.
         """
+        if self.censor_condition == 0:
+            self.output_lineage = self.full_lineage
+            return
+
         self.output_lineage = []
         for cell in self.full_lineage:
             if not cell.censored:
-                if self.censor_condition == 0:
-                    self.output_lineage = self.full_lineage
-                    break
-                elif self.censor_condition == 1:
+                if self.censor_condition == 1:
                     if fate_censor_rule(cell):
                         subtree, _ = get_subtrees(cell, self.full_lineage)
                         for sub_cell in subtree[1:]:

@@ -176,7 +176,7 @@ def track_lineage_growth_histogram(lineageObj, delta_time):
         end_time = start_time + delta_time
         for bin_idx in range(bins):
             num_alive = 0
-            for cell_idx, cell in enumerate(lineageObj.output_lineage):
+            for cell in lineageObj.output_lineage:
                 if cell.state == state and cell.time.startT <= start_time and cell.time.endT >= end_time:
                     num_alive += 1
             start_time += delta_time
@@ -190,8 +190,8 @@ def track_population_growth_histogram(population, delta_time):
     This function runs the tracking function on a list of lineages.
     """
     collector = []
-    for idx, lineage in enumerate(population):
-        hist, bins = track_lineage_growth_histogram(lineage, delta_time)
+    for lineage in population:
+        hist, _ = track_lineage_growth_histogram(lineage, delta_time)
         collector.append(hist)
     total = []
     for state in range(population[0].num_states):

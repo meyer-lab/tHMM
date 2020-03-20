@@ -30,7 +30,7 @@ class TestViterbi(unittest.TestCase):
         tHMMobj, pred_states_by_lineage, _ = Analyze([X], num_states=2)
         all_LLs = []
         vitLL = LLFunc(T, pi, tHMMobj, pred_states_by_lineage)
-        for i in range(10):
+        for _ in range(10):
             rand = randint(0, 2, (2 ** 11) - 1)
             temp = LLFunc(T, pi, tHMMobj, [rand])
             all_LLs.append(temp)
