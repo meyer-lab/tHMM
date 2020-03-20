@@ -200,9 +200,10 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     obs_by_state_rand_sampled = []
     for state in range(tHMMobj.num_states):
         full_list = [cell.obs[1] for cell in tHMMobj.X[0].output_lineage if cell.state == state]
-        obs_by_state_rand_sampled.append(random.sample(full_list, 750))
-
-    results_dict["wasserstein"] = wasserstein_distance(obs_by_state_rand_sampled[0], obs_by_state_rand_sampled[1])
+        obs_by_state_rand_sampled.append(full_list)
+    
+    num2use = min(len(obs_by_state_rand_sampled[0]), len(obs_by_state_rand_sampled[1]))
+    results_dict["wasserstein"] = wasserstein_distance(rand.sample(obs_by_state_rand_sampled[0],num2use), rand.sample(obs_by_state_rand_sampled[1],num2use))
 
     return results_dict
 
