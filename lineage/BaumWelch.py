@@ -1,4 +1,4 @@
-''' Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch. '''
+""" Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch. """
 import numpy as np
 
 from .DownwardRecursion import get_root_gammas, get_nonroot_gammas
@@ -6,7 +6,7 @@ from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_n
 
 
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_array, MSD_array, gamma_array, T):
-    '''calculates the zeta value that will be used to fill the transition matrix in baum welch'''
+    """calculates the zeta value that will be used to fill the transition matrix in baum welch"""
 
     # check the child-parent relationship
     assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]
@@ -17,10 +17,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_ar
     beta_child_state_k = beta_array[node_child_n_idx, :]  # x by k
     gamma_parent = gamma_array[node_parent_m_idx, :]  # x by j
     MSD_child_state_k = MSD_array[node_child_n_idx, :]  # x by k
-    beta_parent_child = beta_parent_child_func(beta_array=beta_array,
-                                               T=T,
-                                               MSD_array=MSD_array,
-                                               node_child_n_idx=node_child_n_idx)
+    beta_parent_child = beta_parent_child_func(beta_array=beta_array, T=T, MSD_array=MSD_array, node_child_n_idx=node_child_n_idx)
 
     js = gamma_parent / beta_parent_child
     ks = beta_child_state_k / MSD_child_state_k
@@ -29,7 +26,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_ar
 
 
 def get_all_gammas(lineageObj, gamma_arr):
-    '''sum of the list of all the gamma parent child for all the parent child relationships'''
+    """sum of the list of all the gamma parent child for all the parent child relationships"""
     holder = np.zeros(gamma_arr.shape[1])
     for level in lineageObj.output_list_of_gens[1:]:  # get all the gammas but not the ones at the last level
         for cell in level:
@@ -41,7 +38,7 @@ def get_all_gammas(lineageObj, gamma_arr):
 
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
-    '''sum of the list of all the zeta parent child for all the parent cells for a given state transition pair'''
+    """sum of the list of all the zeta parent child for all the parent cells for a given state transition pair"""
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
     lineage = lineageObj.output_lineage
     holder = np.zeros(T.shape)
@@ -50,18 +47,20 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
             node_parent_m_idx = lineage.index(cell)
 
             for daughter_idx in cell.get_daughters():
-                holder += zeta_parent_child_func(node_parent_m_idx=node_parent_m_idx,
-                                                 node_child_n_idx=lineage.index(daughter_idx),
-                                                 lineage=lineage,
-                                                 beta_array=beta_array,
-                                                 MSD_array=MSD_array,
-                                                 gamma_array=gamma_array,
-                                                 T=T)
+                holder += zeta_parent_child_func(
+                    node_parent_m_idx=node_parent_m_idx,
+                    node_child_n_idx=lineage.index(daughter_idx),
+                    lineage=lineage,
+                    beta_array=beta_array,
+                    MSD_array=MSD_array,
+                    gamma_array=gamma_array,
+                    T=T,
+                )
     return holder
 
 
 def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
-    '''Runs the tHMM function through Baum Welch fitting'''
+    """Runs the tHMM function through Baum Welch fitting"""
     num_states = tHMMobj.num_states
 
     # first E step
@@ -87,11 +86,9 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             pi_estimate += gamma_array[0, :]
 
             denom = get_all_gammas(lineageObj, gamma_array)
-            numer = get_all_zetas(lineageObj=lineageObj,
-                                  beta_array=betas[num],
-                                  MSD_array=tHMMobj.MSD[num],
-                                  gamma_array=gamma_array,
-                                  T=tHMMobj.estimate.T)
+            numer = get_all_zetas(
+                lineageObj=lineageObj, beta_array=betas[num], MSD_array=tHMMobj.MSD[num], gamma_array=gamma_array, T=tHMMobj.estimate.T
+            )
 
             T_holder = (numer + np.spacing(1)) / (denom[:, np.newaxis] + np.spacing(1))
             T_estimate += T_holder
@@ -126,6 +123,6 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
         new_LL = calculate_log_likelihood(NF)
 
         if np.allclose([old_LL], [new_LL], atol=tolerance):
-            return(tHMMobj, NF, betas, gammas, new_LL)
+            return (tHMMobj, NF, betas, gammas, new_LL)
 
-    return(tHMMobj, NF, betas, gammas, new_LL)
+    return (tHMMobj, NF, betas, gammas, new_LL)

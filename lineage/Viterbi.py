@@ -29,7 +29,7 @@ def get_leaf_deltas(tHMMobj):
 
 
 def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
-    '''Calculates the delta values for all non-leaf cells.'''
+    """Calculates the delta values for all non-leaf cells."""
 
     # for each lineage in our Population
     for num, lineageObj in enumerate(tHMMobj.X):
@@ -43,17 +43,14 @@ def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
             parent_holder = lineageObj.get_parents_for_level(level)
 
             for node_parent_m_idx in parent_holder:
-                fac1, max_state_ptr = get_delta_parent_child_prod(lineage=lineage,
-                                                                  delta_array=deltas[num],
-                                                                  T=T,
-                                                                  node_parent_m_idx=node_parent_m_idx)
+                fac1, max_state_ptr = get_delta_parent_child_prod(lineage=lineage, delta_array=deltas[num], T=T, node_parent_m_idx=node_parent_m_idx)
 
                 deltas[num][node_parent_m_idx, :] = fac1 * tHMMobj.EL[num][node_parent_m_idx, :]
                 state_ptrs[num][node_parent_m_idx, :] = max_state_ptr
 
 
 def get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx):
-    '''Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.'''
+    """Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state."""
     delta_m_n_holder = np.ones(T.shape[0])  # list to hold the factors in the product
     max_state_ptr = []
     # get the index of the parent

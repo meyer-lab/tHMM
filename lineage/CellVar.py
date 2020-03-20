@@ -29,10 +29,10 @@ class CellVar:
         self.censored = False
 
         if kwargs:
-            self.left = kwargs.get('left', None)
-            self.right = kwargs.get('right', None)
-            self.obs = kwargs.get('obs', [])
-            self.censored = kwargs.get('censored', True)
+            self.left = kwargs.get("left", None)
+            self.right = kwargs.get("right", None)
+            self.obs = kwargs.get("obs", [])
+            self.censored = kwargs.get("censored", True)
 
     def divide(self, T):
         """
@@ -155,17 +155,16 @@ def double(parent_state, T):
     The results of the roll of the loaded dice are two new states that are returned.
     """
     # Checking that the inputs are of the right shape
-    assert T.shape[0] == T.shape[1], \
-        "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
+    assert (
+        T.shape[0] == T.shape[1]
+    ), "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
     T_num_states = T.shape[0]
-    assert 0 <= parent_state <= T_num_states - 1, \
-        "The parent state is a state outside of the range of states being considered."
+    assert 0 <= parent_state <= T_num_states - 1, "The parent state is a state outside of the range of states being considered."
 
     # Rolling two of the same loaded dice separate times and assigning
     # where they landed to states
 
-    left_state_results, right_state_results = \
-        sp.multinomial.rvs(n=1, p=np.squeeze(T[parent_state, :]), size=2)
+    left_state_results, right_state_results = sp.multinomial.rvs(n=1, p=np.squeeze(T[parent_state, :]), size=2)
     left_state = left_state_results.tolist().index(1)
     right_state = right_state_results.tolist().index(1)
 

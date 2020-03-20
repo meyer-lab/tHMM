@@ -36,15 +36,19 @@ class LineageTree:
         pi_num_states = len(pi)
         self.T = T
         T_shape = self.T.shape
-        assert T_shape[0] == T_shape[1], \
-            "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
+        assert (
+            T_shape[0] == T_shape[1]
+        ), "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
         T_num_states = self.T.shape[0]
         self.E = E
         self.desired_num_cells = desired_num_cells
         E_num_states = len(E)
-        assert pi_num_states == T_num_states == E_num_states, \
-            "The number of states in your input Markov probability parameters are mistmatched. \
-        \nPlease check that the dimensions and states match. \npi {} \nT {} \nE {}".format(self.pi, self.T, self.E)
+        assert (
+            pi_num_states == T_num_states == E_num_states
+        ), "The number of states in your input Markov probability parameters are mistmatched. \
+        \nPlease check that the dimensions and states match. \npi {} \nT {} \nE {}".format(
+            self.pi, self.T, self.E
+        )
         self.num_states = pi_num_states
 
         self.generate_lineage_list()
@@ -67,7 +71,7 @@ class LineageTree:
         self.censor_condition = censor_condition
 
         if kwargs:
-            self.desired_experiment_time = kwargs.get('desired_experiment_time', 2e12)
+            self.desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
 
         self.censor_boolean = self.censor_condition > 0
 

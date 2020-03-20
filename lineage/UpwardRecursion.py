@@ -1,10 +1,10 @@
-'''This file contains the methods that completes the downward recursion and evaulates the beta values.'''
+"""This file contains the methods that completes the downward recursion and evaulates the beta values."""
 
 import numpy as np
 
 
 def get_leaf_Normalizing_Factors(tHMMobj):
-    '''
+    """
     Normalizing factor (NF) matrix and base case at the leaves.
 
     Each element in this N by 1 matrix is the normalizing
@@ -27,7 +27,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
     P(x_n = x):
 
     sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
-    '''
+    """
     MSD = tHMMobj.MSD
     EL = tHMMobj.EL
 
@@ -49,13 +49,14 @@ def get_leaf_Normalizing_Factors(tHMMobj):
             # the sum of the joint probabilities is the marginal probability
             NF_array[leaf_cell_idx] = np.sum(MSD_array[leaf_cell_idx, :] * EL_array[leaf_cell_idx, :])  # def of conditional prob
             assert NF_array[leaf_cell_idx] > 0.0, "{} and {} and {} and {}".format(
-                NF_array, NF_array[leaf_cell_idx], MSD_array[leaf_cell_idx, :], EL_array[leaf_cell_idx, :])
+                NF_array, NF_array[leaf_cell_idx], MSD_array[leaf_cell_idx, :], EL_array[leaf_cell_idx, :]
+            )
         NF.append(NF_array)
     return NF
 
 
 def get_leaf_betas(tHMMobj, NF):
-    '''
+    """
     beta matrix and base case at the leaves.
 
     Each element in this N by K matrix is the beta value
@@ -77,7 +78,7 @@ def get_leaf_betas(tHMMobj, NF):
     Likelihoods. The second value in the numerator is
     the Marginal State Distributions. The value in the
     denominator is the Normalizing Factor.
-    '''
+    """
     betas = []  # full betas holder
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
