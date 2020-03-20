@@ -93,7 +93,7 @@ class LineageTree:
         first_cell = CellVar(state=first_cell_state, parent=None, gen=1)  # create first cell
         self.full_lineage = [first_cell]
 
-        for idx, cell in enumerate(self.full_lineage):  # letting the first cell proliferate
+        for cell in self.full_lineage:  # letting the first cell proliferate
             if cell.isLeaf():  # if the cell has no daughters...
                 # make daughters by dividing and assigning states
                 left_cell, right_cell = cell.divide(self.T)
@@ -130,26 +130,26 @@ class LineageTree:
         and returns the censord list of cells.
         """
         self.output_lineage = []
-        for idx, cell in enumerate(self.full_lineage):
+        for cell in self.full_lineage:
             if not cell.censored:
                 if self.censor_condition == 0:
                     self.output_lineage = self.full_lineage
                     break
                 elif self.censor_condition == 1:
                     if fate_censor_rule(cell):
-                        subtree, not_subtree = get_subtrees(cell, self.full_lineage)
+                        subtree, _ = get_subtrees(cell, self.full_lineage)
                         for idx, sub_cell in enumerate(subtree[1:]):
                             sub_cell.censored = True
                         assert cell.isLeaf()
                 elif self.censor_condition == 2:
                     if time_censor_rule(cell, self.desired_experiment_time):
-                        subtree, not_subtree = get_subtrees(cell, self.full_lineage)
+                        subtree, _ = get_subtrees(cell, self.full_lineage)
                         for idx, sub_cell in enumerate(subtree[1:]):
                             sub_cell.censored = True
                         assert cell.isLeaf()
                 elif self.censor_condition == 3:
                     if fate_censor_rule(cell) or time_censor_rule(cell, self.desired_experiment_time):
-                        subtree, not_subtree = get_subtrees(cell, self.full_lineage)
+                        subtree, _ = get_subtrees(cell, self.full_lineage)
                         for idx, sub_cell in enumerate(subtree[1:]):
                             sub_cell.censored = True
                         assert cell.isLeaf()

@@ -92,7 +92,7 @@ class TestBW(unittest.TestCase):
         self.assertTrue(np.isfinite(LL_before))
 
         # Get the likelihoods after fitting
-        tHMMobj_after, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
+        _, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
         LL_after = calculate_log_likelihood(NF_after)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
@@ -136,7 +136,7 @@ class TestBW(unittest.TestCase):
         self.assertTrue(np.isfinite(LL_before))
 
         # Get the likelihoods after fitting
-        tHMMobj_after, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
+        _, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
         LL_after = calculate_log_likelihood(NF_after)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
@@ -180,7 +180,7 @@ class TestBW(unittest.TestCase):
         self.assertTrue(np.isfinite(LL_before))
 
         # Get the likelihoods after fitting
-        tHMMobj_after, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
+        _, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
         LL_after = calculate_log_likelihood(NF_after)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
