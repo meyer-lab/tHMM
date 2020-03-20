@@ -23,8 +23,8 @@ state0 = StateDistribution(0.99, 20, 5)
 state1 = StateDistribution(0.88, 10, 1)
 E = [state0, state1]
 
-min_desired_num_cells = (2**8)-1
-max_desired_num_cells = (2**12)-1
+min_desired_num_cells = (2**8) - 1
+max_desired_num_cells = (2**12) - 1
 
 min_experiment_time = 72
 max_experiment_time = 144
@@ -37,7 +37,7 @@ num_data_points = 50
 
 def getSetup(figsize, gridd):
     """
-    Establish figure set-up with subplots. 
+    Establish figure set-up with subplots.
     """
     sns.set(style="whitegrid", font_scale=0.7, color_codes=True, palette="colorblind", rc={"grid.linestyle": "dotted", "axes.linewidth": 0.6})
 
@@ -51,6 +51,7 @@ def getSetup(figsize, gridd):
         ax.append(f.add_subplot(gs1[x]))
 
     return (ax, f)
+
 
 def commonAnalyze(list_of_populations, xtype='length'):
     # Analyzing the lineages in the list of populations (parallelized function)
@@ -96,7 +97,8 @@ def subplotLabel(axs):
     """
     for ii, ax in enumerate(axs):
         ax.text(-0.2, 1.25, ascii_lowercase[ii], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
-        
+
+
 def figureMaker(ax, x, paramEst, accuracies, tr, pi, xlabel='Number of Cells'):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages

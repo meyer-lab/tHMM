@@ -1,7 +1,7 @@
 """
 File: figure5.py
 Purpose: Generates figure 5.
-Figure 5 analyzes heterogeneous (2 state), NOT censored, 
+Figure 5 analyzes heterogeneous (2 state), NOT censored,
 single lineages (no more than one lineage per population)
 with different proportions of cells in states by
 changing the values in the transition matrices.
@@ -20,7 +20,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((7, 6), (2, 3))
 
-    figureMaker(ax, *accuracy(), xlabel="Cells in State 0 [$\%$]")
+    figureMaker(ax, *accuracy(), xlabel=r"Cells in State 0 [$\%$]")
 
     subplotLabel(ax)
 
@@ -29,19 +29,18 @@ def makeFigure():
 
 def accuracy():
     """
-    Calculates accuracy and parameter estimation 
-    over an similar number of cells in a lineage for 
+    Calculates accuracy and parameter estimation
+    over an similar number of cells in a lineage for
     a uncensored two-state model but differing state distribution.
     We increase the proportion of cells in a lineage by
-    fixing the Transition matrix to be biased towards state 0. 
+    fixing the Transition matrix to be biased towards state 0.
     """
 
     # Creating a list of populations to analyze over
-    list_of_Ts = [np.array([[i,1.0-i],[i,1.0-i]]) for i in np.linspace(0.0, 1.0, num_data_points)]
+    list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.0, 1.0, num_data_points)]
     list_of_populations = []
     for T in list_of_Ts:
         population = []
-
 
         population.append(LineageTree(pi, T, E, max_desired_num_cells))
 
