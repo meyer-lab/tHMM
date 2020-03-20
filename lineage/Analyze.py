@@ -203,7 +203,10 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         obs_by_state_rand_sampled.append(full_list)
     
     num2use = min(len(obs_by_state_rand_sampled[0]), len(obs_by_state_rand_sampled[1]))
-    results_dict["wasserstein"] = wasserstein_distance(random.sample(obs_by_state_rand_sampled[0],num2use), random.sample(obs_by_state_rand_sampled[1],num2use))
+    if num2use == 0:
+        results_dict["wasserstein"] = float("inf")
+    else:
+        results_dict["wasserstein"] = wasserstein_distance(random.sample(obs_by_state_rand_sampled[0],num2use), random.sample(obs_by_state_rand_sampled[1],num2use))
 
     return results_dict
 
