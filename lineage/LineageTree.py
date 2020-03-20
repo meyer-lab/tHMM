@@ -7,16 +7,18 @@ from .StateDistribution import assign_times, fate_censor_rule, time_censor_rule
 
 
 class LineageTree:
+    """
+    A class for lineage trees.
+    Every lineage object from this class is a binary tree built based on initial probabilities,
+    transition probabilities, and emissions defined by state distributions given by the user.
+    Lineages are generated in full (no pruning) by creating cells of different states in a
+    binary fashion utilizing the pi and the transtion probabilities. Cells are then filled with
+    observations based on their states by sampling observations from their emission distributions.
+    The lineage tree is then censord based on the censor condition.
+    """
+
     def __init__(self, pi, T, E, desired_num_cells, censor_condition=0, **kwargs):
         """
-        A class for lineage trees.
-        Every lineage object from this class is a binary tree built based on initial probabilities,
-        transition probabilities, and emissions defined by state distributions given by the user.
-        Lineages are generated in full (no pruning) by creating cells of different states in a
-        binary fashion utilizing the pi and the transtion probabilities. Cells are then filled with
-        observations based on their states by sampling observations from their emission distributions.
-        The lineage tree is then censord based on the censor condition.
-
         Args:
         -----
         pi {numpy array}: The initial probability matrix; its shape must be the same as the number of states and all of them must sum up to 1.
@@ -138,19 +140,19 @@ class LineageTree:
                 elif self.censor_condition == 1:
                     if fate_censor_rule(cell):
                         subtree, _ = get_subtrees(cell, self.full_lineage)
-                        for idx, sub_cell in enumerate(subtree[1:]):
+                        for sub_cell in subtree[1:]:
                             sub_cell.censored = True
                         assert cell.isLeaf()
                 elif self.censor_condition == 2:
                     if time_censor_rule(cell, self.desired_experiment_time):
                         subtree, _ = get_subtrees(cell, self.full_lineage)
-                        for idx, sub_cell in enumerate(subtree[1:]):
+                        for sub_cell in subtree[1:]:
                             sub_cell.censored = True
                         assert cell.isLeaf()
                 elif self.censor_condition == 3:
                     if fate_censor_rule(cell) or time_censor_rule(cell, self.desired_experiment_time):
                         subtree, _ = get_subtrees(cell, self.full_lineage)
-                        for idx, sub_cell in enumerate(subtree[1:]):
+                        for sub_cell in subtree[1:]:
                             sub_cell.censored = True
                         assert cell.isLeaf()
 
