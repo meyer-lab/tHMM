@@ -1,4 +1,4 @@
-'''Calls the tHMM functions and outputs the parameters needed to generate the Figures'''
+"""Calls the tHMM functions and outputs the parameters needed to generate the Figures"""
 from concurrent.futures import ProcessPoolExecutor
 import random
 import numpy as np
@@ -29,7 +29,11 @@ def preAnalyze(X, num_states):
             break
         except AssertionError:
             if num_tries == 4:
-                print("Caught AssertionError in fitting after multiple ({}) runs. Fitting is breaking after trying {} times. Consider inspecting the length of your lineages.".format(num_tries, num_tries))
+                print(
+                    "Caught AssertionError in fitting after multiple ({}) runs. Fitting is breaking after trying {} times. Consider inspecting the length of your lineages.".format(
+                        num_tries, num_tries
+                    )
+                )
                 raise
 
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)
@@ -145,7 +149,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         for state_true in range(tHMMobj.num_states):
             p = [tHMMobj.estimate.E[state_pred].pdf(y) for y in obs_by_state[state_pred]]
             q = [tHMMobj.X[0].E[state_true].pdf(x) for x in obs_by_state[state_pred]]
-            switcher_array[state_pred, state_true] = (entropy(p, q) + entropy(q, p))
+            switcher_array[state_pred, state_true] = entropy(p, q) + entropy(q, p)
 
     results_dict["switcher_array"] = switcher_array
 
@@ -205,7 +209,9 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     if num2use == 0:
         results_dict["wasserstein"] = float("inf")
     else:
-        results_dict["wasserstein"] = wasserstein_distance(random.sample(obs_by_state_rand_sampled[0], num2use), random.sample(obs_by_state_rand_sampled[1], num2use))
+        results_dict["wasserstein"] = wasserstein_distance(
+            random.sample(obs_by_state_rand_sampled[0], num2use), random.sample(obs_by_state_rand_sampled[1], num2use)
+        )
 
     return results_dict
 
@@ -299,7 +305,7 @@ def get_stationary_distribution(transition_matrix):
 
 
 def getAIC(tHMMobj, LL):
-    '''
+    """
     Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
     between over-fitting and under-fitting.
     AIC = 2*k - 2 * log(LL) in which k is the number of free parameters and LL is the maximum of likelihood function.
@@ -312,11 +318,11 @@ def getAIC(tHMMobj, LL):
     --------
         AIC_value : containing AIC values relative to 0 for each lineage.
         AIC_degrees_of_freedom : the degrees of freedom in AIC calculation (num_states**2 + num_states * number_of_parameters - 1) - same for each lineage
-    '''
+    """
     num_states = tHMMobj.num_states
 
     number_of_parameters = len(tHMMobj.estimate.E[0].params)
-    AIC_degrees_of_freedom = num_states**2 + num_states * number_of_parameters - 1
+    AIC_degrees_of_freedom = num_states ** 2 + num_states * number_of_parameters - 1
 
     AIC_value = -2 * LL + 2 * AIC_degrees_of_freedom
 
@@ -324,28 +330,28 @@ def getAIC(tHMMobj, LL):
 
 
 def stateLikelihood(tHMMobj):
-    ''' We intend to find the likelihood of the states, given observations.
+    """ We intend to find the likelihood of the states, given observations.
     With Bayes rule we have: P(z | x) = P(x | z) x P(z) / P(x), in which:
     P(x|z) := Emission Likelihood (EL),
     P(z) := Marginal State Distribution (MSD),
     P(x) := Marginal Observation Distribution (NF)
-    '''
+    """
     EL = tHMMobj.get_Emission_Likelihoods()
     MSD = tHMMobj.get_Marginal_State_Distributions()
     NF = get_leaf_Normalizing_Factors(tHMMobj)
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
-    LL = (EL[0] * MSD[0])
+    LL = EL[0] * MSD[0]
     LL[:, 0] = LL[:, 0] / NF[0]
     LL[:, 1] = LL[:, 1] / NF[0]
     return LL
 
 
 def LLHelperFunc(T, lineageObj):
-    ''' To calculate the joint probability of state and observations.
+    """ To calculate the joint probability of state and observations.
     This function, calculates the second term
-    P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * \prod_{n=2:N}(P(z_n | z_pn)) * \prod_{n=1:N}(P(x_n|z_n))
-    '''
+    P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))
+    """
     states = []
     for cell in lineageObj.output_lineage:
         if cell.gen == 1:
@@ -356,9 +362,9 @@ def LLHelperFunc(T, lineageObj):
 
 
 def LLFunc(T, pi, tHMMobj, pred_states_by_lineage):
-    ''' This function calculate the state likelihood, using the joint probability function.
+    """ This function calculate the state likelihood, using the joint probability function.
     *** we do the log-transformation to avoid underflow.
-    '''
+    """
     stLikelihood = []
     for indx, lineage in enumerate(tHMMobj.X):
         FirstTerm = pi[lineage.output_lineage[0].state]

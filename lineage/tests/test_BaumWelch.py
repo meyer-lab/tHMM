@@ -18,8 +18,7 @@ class TestBW(unittest.TestCase):
         pi = np.array([0.6, 0.4], dtype="float")
 
         # T: transition probability matrix
-        T = np.array([[0.85, 0.15],
-                      [0.15, 0.85]], dtype="float")
+        T = np.array([[0.85, 0.15], [0.15, 0.85]], dtype="float")
         # State 0 parameters "Resistant"
         bern_p0 = 0.99
         gamma_a0 = 20
@@ -36,7 +35,7 @@ class TestBW(unittest.TestCase):
         E = [state_obj0, state_obj1]
 
         # Using an unpruned lineage to avoid unforseen issues
-        X = LineageTree(pi, T, E, desired_num_cells=(2**11) - 1)
+        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)
         tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
         # Test cases below
@@ -48,7 +47,7 @@ class TestBW(unittest.TestCase):
         self.assertTrue(np.isfinite(LL_before))
 
         # Get the likelihoods after fitting
-        tHMMobj_after, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
+        _, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
         LL_after = calculate_log_likelihood(NF_after)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
@@ -62,8 +61,7 @@ class TestBW(unittest.TestCase):
         pi = np.array([0.6, 0.4], dtype="float")
 
         # T: transition probability matrix
-        T = np.array([[0.85, 0.15],
-                      [0.15, 0.85]], dtype="float")
+        T = np.array([[0.85, 0.15], [0.15, 0.85]], dtype="float")
         # State 0 parameters "Resistant"
         bern_p0 = 0.99
         gamma_a0 = 20
@@ -80,7 +78,7 @@ class TestBW(unittest.TestCase):
         E = [state_obj0, state_obj1]
 
         # Using an unpruned lineage to avoid unforseen issues
-        X = LineageTree(pi, T, E, desired_num_cells=(2**11) - 1, censor_condition=1)
+        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1, censor_condition=1)
         tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
         # Test cases below
@@ -92,7 +90,7 @@ class TestBW(unittest.TestCase):
         self.assertTrue(np.isfinite(LL_before))
 
         # Get the likelihoods after fitting
-        tHMMobj_after, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
+        _, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
         LL_after = calculate_log_likelihood(NF_after)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
@@ -106,8 +104,7 @@ class TestBW(unittest.TestCase):
         pi = np.array([0.6, 0.4], dtype="float")
 
         # T: transition probability matrix
-        T = np.array([[0.85, 0.15],
-                      [0.15, 0.85]], dtype="float")
+        T = np.array([[0.85, 0.15], [0.15, 0.85]], dtype="float")
         # State 0 parameters "Resistant"
         bern_p0 = 0.99
         gamma_a0 = 20
@@ -124,7 +121,7 @@ class TestBW(unittest.TestCase):
         E = [state_obj0, state_obj1]
 
         # Using an unpruned lineage to avoid unforseen issues
-        X = LineageTree(pi, T, E, desired_num_cells=(2**11) - 1, censor_condition=2, desired_experimental_time=500)
+        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1, censor_condition=2, desired_experimental_time=500)
         tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
         # Test cases below
@@ -136,7 +133,7 @@ class TestBW(unittest.TestCase):
         self.assertTrue(np.isfinite(LL_before))
 
         # Get the likelihoods after fitting
-        tHMMobj_after, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
+        _, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
         LL_after = calculate_log_likelihood(NF_after)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
@@ -150,8 +147,7 @@ class TestBW(unittest.TestCase):
         pi = np.array([0.6, 0.4], dtype="float")
 
         # T: transition probability matrix
-        T = np.array([[0.85, 0.15],
-                      [0.15, 0.85]], dtype="float")
+        T = np.array([[0.85, 0.15], [0.15, 0.85]], dtype="float")
         # State 0 parameters "Resistant"
         bern_p0 = 0.99
         gamma_a0 = 20
@@ -168,7 +164,7 @@ class TestBW(unittest.TestCase):
         E = [state_obj0, state_obj1]
 
         # Using an unpruned lineage to avoid unforseen issues
-        X = LineageTree(pi, T, E, desired_num_cells=(2**11) - 1, censor_condition=3, desired_experimental_time=500)
+        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experimental_time=500)
         tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
         # Test cases below
@@ -180,7 +176,7 @@ class TestBW(unittest.TestCase):
         self.assertTrue(np.isfinite(LL_before))
 
         # Get the likelihoods after fitting
-        tHMMobj_after, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
+        _, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
         LL_after = calculate_log_likelihood(NF_after)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))

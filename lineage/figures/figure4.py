@@ -8,7 +8,20 @@ over increasing number of lineages per population.
 """
 import numpy as np
 
-from .figureCommon import getSetup, subplotLabel, commonAnalyze, figureMaker, pi, T, E, min_desired_num_cells, min_experiment_time, min_num_lineages, max_num_lineages, num_data_points
+from .figureCommon import (
+    getSetup,
+    subplotLabel,
+    commonAnalyze,
+    figureMaker,
+    pi,
+    T,
+    E,
+    min_desired_num_cells,
+    min_experiment_time,
+    min_num_lineages,
+    max_num_lineages,
+    num_data_points,
+)
 from ..LineageTree import LineageTree
 
 

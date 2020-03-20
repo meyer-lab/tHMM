@@ -59,11 +59,13 @@ class StateDistribution2:
         gamma_a1_estimate, gamma_scale1_estimate = gamma_estimator(gamma_obsG1)
         gamma_a2_estimate, gamma_scale2_estimate = gamma_estimator(gamma_obsG2)
 
-        state_estimate_obj = StateDistribution2(bern_p=bern_p_estimate,
-                                                gamma_a1=gamma_a1_estimate,
-                                                gamma_scale1=gamma_scale1_estimate,
-                                                gamma_a2=gamma_a2_estimate,
-                                                gamma_scale2=gamma_scale2_estimate)
+        state_estimate_obj = StateDistribution2(
+            bern_p=bern_p_estimate,
+            gamma_a1=gamma_a1_estimate,
+            gamma_scale1=gamma_scale1_estimate,
+            gamma_a2=gamma_a2_estimate,
+            gamma_scale2=gamma_scale2_estimate,
+        )
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
@@ -71,11 +73,9 @@ class StateDistribution2:
         return state_estimate_obj
 
     def __repr__(self):
-        return "State object w/ parameters: {}, {}, {}, {}, {}, {}.".format(self.bern_p,
-                                                                            self.gamma_a1,
-                                                                            self.gamma_scale1,
-                                                                            self.gamma_a2,
-                                                                            self.gamma_scale2)
+        return "State object w/ parameters: {}, {}, {}, {}, {}, {}.".format(
+            self.bern_p, self.gamma_a1, self.gamma_scale1, self.gamma_a2, self.gamma_scale2
+        )
 
 
 def prune_rule(cell):
@@ -87,11 +87,8 @@ def prune_rule(cell):
 
 
 def tHMM_E_init2():
-    return StateDistribution2(0.9,
-                              10 * (np.random.uniform()),
-                              1.5,
-                              10 * (np.random.uniform()),
-                              1.5)
+    return StateDistribution2(0.9, 10 * (np.random.uniform()), 1.5, 10 * (np.random.uniform()), 1.5)
+
 
 # Because parameter estimation requires that estimators be written or imported, the user should be able to provide
 # estimators that can solve for the parameters that describe the distributions. We provide some estimators below as an example.

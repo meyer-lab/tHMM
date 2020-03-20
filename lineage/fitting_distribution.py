@@ -3,8 +3,9 @@ import scipy.stats as sp
 
 #######------Check the list of distributions and fit to the data --------#
 
+
 def check_dist(data, verbose=False):
-    '''
+    """
     The function to check the data against distributions.
 
     This function uses fit method in scipy package to find the maximum likelihood estimate
@@ -22,22 +23,38 @@ def check_dist(data, verbose=False):
     -----------
     p_val (dictionary): a dictionary containing the name of distributions with their corresponding p-value
 
-    '''
+    """
     # A list of candidate distributions with [0, inf] range:
-    dist = ['betaprime', 'fatiguelife', 'chi', 'expon', 'f', 'foldnorm',
-            'frechet_r', 'frechet_l', 'gamma', 'invgamma', 'gompertz',
-            'fisk', 'lognorm', 'loggamma', 'nakagami', 'pareto', 'rayleigh',
-            'dweibull']
+    dist = [
+        "betaprime",
+        "fatiguelife",
+        "chi",
+        "expon",
+        "f",
+        "foldnorm",
+        "frechet_r",
+        "frechet_l",
+        "gamma",
+        "invgamma",
+        "gompertz",
+        "fisk",
+        "lognorm",
+        "loggamma",
+        "nakagami",
+        "pareto",
+        "rayleigh",
+        "dweibull",
+    ]
 
     p_val = {}
     for i, val in enumerate(dist):
-        parameters = eval('sp.' + val + '.fit(data, fscale =1)')
+        parameters = eval("sp." + val + ".fit(data, fscale =1)")
 
         _, p = sp.kstest(data, val, args=parameters)
 
         if verbose:
             if p >= 0.01:
-                print(dist[i], ':   ', 'p-value = ', p)
+                print(dist[i], ":   ", "p-value = ", p)
         p_val[val] = p
 
-    return(p_val)
+    return p_val

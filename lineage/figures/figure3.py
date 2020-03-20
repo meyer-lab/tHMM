@@ -8,7 +8,19 @@ over increasing experimental times.
 """
 import numpy as np
 
-from .figureCommon import getSetup, subplotLabel, commonAnalyze, figureMaker, pi, T, E, max_desired_num_cells, min_experiment_time, max_experiment_time, num_data_points
+from .figureCommon import (
+    getSetup,
+    subplotLabel,
+    commonAnalyze,
+    figureMaker,
+    pi,
+    T,
+    E,
+    max_desired_num_cells,
+    min_experiment_time,
+    max_experiment_time,
+    num_data_points,
+)
 from ..LineageTree import LineageTree
 
 

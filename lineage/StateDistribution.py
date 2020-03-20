@@ -1,7 +1,7 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
+from math import gamma
 import numpy as np
 import scipy.stats as sp
-from math import gamma
 from numba import njit
 
 
@@ -66,6 +66,7 @@ class StateDistribution:
 
 
 def tHMM_E_init():
+    """ Initialize a default state distribution. """
     return StateDistribution(0.9, 10 * (np.random.uniform()), 1)
 
 
@@ -139,13 +140,13 @@ def track_population_generation_histogram(population):
     This function runs the tracking function on a list of lineages.
     """
     collector = []
-    for idx, lineageObj in enumerate(population):
+    for lineageObj in population:
         hist = track_lineage_generation_histogram(lineageObj)
         collector.append(hist)
     total = []
     for state in range(population[0].num_states):
         tmp_array = np.zeros(len(collector[0][0, :]))
-        for idx, hist in enumerate(collector):
+        for hist in collector:
             if len(tmp_array) < len(hist[state, :]):
                 c = hist[state, :].copy()
                 c[: len(tmp_array)] += tmp_array
@@ -175,7 +176,7 @@ def track_lineage_growth_histogram(lineageObj, delta_time):
         end_time = start_time + delta_time
         for bin_idx in range(bins):
             num_alive = 0
-            for cell_idx, cell in enumerate(lineageObj.output_lineage):
+            for cell in lineageObj.output_lineage:
                 if cell.state == state and cell.time.startT <= start_time and cell.time.endT >= end_time:
                     num_alive += 1
             start_time += delta_time
@@ -189,8 +190,8 @@ def track_population_growth_histogram(population, delta_time):
     This function runs the tracking function on a list of lineages.
     """
     collector = []
-    for idx, lineage in enumerate(population):
-        hist, bins = track_lineage_growth_histogram(lineage, delta_time)
+    for lineage in population:
+        hist, _ = track_lineage_growth_histogram(lineage, delta_time)
         collector.append(hist)
     total = []
     for state in range(population[0].num_states):
@@ -271,7 +272,7 @@ def bern_pdf(x, p):
     probability distribution function.
     """
     # bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0 - self.bern_p)**(1 - tuple_of_obs[0])
-    bern_ll = (p**x) * (1.0 - p)**(1 - x)
+    bern_ll = (p ** x) * (1.0 - p) ** (1 - x)
     return bern_ll
 
 
@@ -282,5 +283,5 @@ def gamma_pdf(x, a, scale):
     and returns the likelihood of the observation based on the gamma
     probability distribution function.
     """
-    gamma_ll = (1 / (gamma(a) * (scale**a))) * x**(a - 1) * np.exp(-x / scale)
+    gamma_ll = (1 / (gamma(a) * (scale ** a))) * x ** (a - 1) * np.exp(-x / scale)
     return gamma_ll

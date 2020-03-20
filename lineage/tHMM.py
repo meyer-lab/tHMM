@@ -39,7 +39,7 @@ class tHMM:
         self.EL = self.get_Emission_Likelihoods()  # full Emission Likelihood holder
 
     def get_Marginal_State_Distributions(self):
-        '''
+        """
         Marginal State Distribution (MSD) matrix and recursion.
         This is the probability that a hidden state variable z_n is of
         state k, that is, each value in the N by K MSD array for each lineage is
@@ -55,7 +55,7 @@ class tHMM:
         Every element in MSD matrix is essentially sum over all transitions from any state to
         state j (from parent to daughter):
             P(z_u = k) = sum_on_all_j(Transition(from j to k) * P(parent_cell_u) = j)
-        '''
+        """
         MSD = []
 
         for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
@@ -66,7 +66,7 @@ class tHMM:
             MSD.append(MSD_array)
 
         for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
-            assert np.isclose(np.sum(MSD[num][0]), 1.)
+            assert np.isclose(np.sum(MSD[num][0]), 1.0)
 
         for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
             lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
@@ -83,7 +83,7 @@ class tHMM:
         return MSD
 
     def get_Emission_Likelihoods(self):
-        '''
+        """
         Emission Likelihood (EL) matrix.
 
         Each element in this N by K matrix represents the probability
@@ -92,7 +92,7 @@ class tHMM:
 
         for all x_n and z_n in our observed and hidden state tree
         and for all possible discrete states k.
-        '''
+        """
         EL = []
 
         for lineageObj in self.X:  # for each lineage in our Population

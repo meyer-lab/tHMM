@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 .PHONY: clean test testprofile testcover docs
 
-all: output/manuscript.html output/manuscript.pdf coverage.xml pylint.log
+all: output/manuscript.html coverage.xml pylint.log
 
 flist = 1 2 3 4 5 6 7
 
@@ -42,17 +42,6 @@ output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.s
 		--include-after-body=common/templates/manubot/plugins/math.html \
 		--include-after-body=common/templates/manubot/plugins/hypothesis.html \
 		--output=output/manuscript.html output/manuscript.md
-
-output/manuscript.pdf: venv output/manuscript.md $(patsubst %, output/figure%.svg, $(flist))
-	. venv/bin/activate && pandoc --from=markdown --to=html5 \
-    	--pdf-engine=weasyprint --pdf-engine-opt=--presentational-hints \
-    	--filter=pandoc-fignos --filter=pandoc-eqnos --filter=pandoc-tablenos \
-    	--bibliography=output/references.json \
-    	--csl=common/templates/manubot/style.csl \
-    	--metadata link-citations=true \
-    	--webtex=https://latex.codecogs.com/svg.latex? \
-    	--include-after-body=common/templates/manubot/default.html \
-    	--output=output/manuscript.pdf output/manuscript.md
 
 Guide_to_tHMM.pdf: venv Guide_to_tHMM.ipynb
 	. venv/bin/activate && jupyter nbconvert --to pdf --execute Guide_to_tHMM.ipynb

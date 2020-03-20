@@ -1,22 +1,24 @@
 """ This file contains the LineageTree class. """
-import scipy.stats as sp
 from copy import deepcopy
+import scipy.stats as sp
 
 from .CellVar import CellVar
 from .StateDistribution import assign_times, fate_censor_rule, time_censor_rule
 
 
 class LineageTree:
+    """
+    A class for lineage trees.
+    Every lineage object from this class is a binary tree built based on initial probabilities,
+    transition probabilities, and emissions defined by state distributions given by the user.
+    Lineages are generated in full (no pruning) by creating cells of different states in a
+    binary fashion utilizing the pi and the transtion probabilities. Cells are then filled with
+    observations based on their states by sampling observations from their emission distributions.
+    The lineage tree is then censord based on the censor condition.
+    """
+
     def __init__(self, pi, T, E, desired_num_cells, censor_condition=0, **kwargs):
         """
-        A class for lineage trees.
-        Every lineage object from this class is a binary tree built based on initial probabilities,
-        transition probabilities, and emissions defined by state distributions given by the user.
-        Lineages are generated in full (no pruning) by creating cells of different states in a
-        binary fashion utilizing the pi and the transtion probabilities. Cells are then filled with
-        observations based on their states by sampling observations from their emission distributions.
-        The lineage tree is then censord based on the censor condition.
-
         Args:
         -----
         pi {numpy array}: The initial probability matrix; its shape must be the same as the number of states and all of them must sum up to 1.
@@ -34,15 +36,19 @@ class LineageTree:
         pi_num_states = len(pi)
         self.T = T
         T_shape = self.T.shape
-        assert T_shape[0] == T_shape[1], \
-            "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
+        assert (
+            T_shape[0] == T_shape[1]
+        ), "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
         T_num_states = self.T.shape[0]
         self.E = E
         self.desired_num_cells = desired_num_cells
         E_num_states = len(E)
-        assert pi_num_states == T_num_states == E_num_states, \
-            "The number of states in your input Markov probability parameters are mistmatched. \
-        \nPlease check that the dimensions and states match. \npi {} \nT {} \nE {}".format(self.pi, self.T, self.E)
+        assert (
+            pi_num_states == T_num_states == E_num_states
+        ), "The number of states in your input Markov probability parameters are mistmatched. \
+        \nPlease check that the dimensions and states match. \npi {} \nT {} \nE {}".format(
+            self.pi, self.T, self.E
+        )
         self.num_states = pi_num_states
 
         self.generate_lineage_list()
@@ -65,7 +71,7 @@ class LineageTree:
         self.censor_condition = censor_condition
 
         if kwargs:
-            self.desired_experiment_time = kwargs.get('desired_experiment_time', 2e12)
+            self.desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
 
         self.censor_boolean = self.censor_condition > 0
 
@@ -93,7 +99,7 @@ class LineageTree:
         first_cell = CellVar(state=first_cell_state, parent=None, gen=1)  # create first cell
         self.full_lineage = [first_cell]
 
-        for idx, cell in enumerate(self.full_lineage):  # letting the first cell proliferate
+        for cell in self.full_lineage:  # letting the first cell proliferate
             if cell.isLeaf():  # if the cell has no daughters...
                 # make daughters by dividing and assigning states
                 left_cell, right_cell = cell.divide(self.T)
@@ -129,28 +135,29 @@ class LineageTree:
         applies the pruning to each cell that is supposed to be removed,
         and returns the censord list of cells.
         """
+        if self.censor_condition == 0:
+            self.output_lineage = self.full_lineage
+            return
+
         self.output_lineage = []
-        for idx, cell in enumerate(self.full_lineage):
+        for cell in self.full_lineage:
             if not cell.censored:
-                if self.censor_condition == 0:
-                    self.output_lineage = self.full_lineage
-                    break
-                elif self.censor_condition == 1:
+                if self.censor_condition == 1:
                     if fate_censor_rule(cell):
-                        subtree, not_subtree = get_subtrees(cell, self.full_lineage)
-                        for idx, sub_cell in enumerate(subtree[1:]):
+                        subtree, _ = get_subtrees(cell, self.full_lineage)
+                        for sub_cell in subtree[1:]:
                             sub_cell.censored = True
                         assert cell.isLeaf()
                 elif self.censor_condition == 2:
                     if time_censor_rule(cell, self.desired_experiment_time):
-                        subtree, not_subtree = get_subtrees(cell, self.full_lineage)
-                        for idx, sub_cell in enumerate(subtree[1:]):
+                        subtree, _ = get_subtrees(cell, self.full_lineage)
+                        for sub_cell in subtree[1:]:
                             sub_cell.censored = True
                         assert cell.isLeaf()
                 elif self.censor_condition == 3:
                     if fate_censor_rule(cell) or time_censor_rule(cell, self.desired_experiment_time):
-                        subtree, not_subtree = get_subtrees(cell, self.full_lineage)
-                        for idx, sub_cell in enumerate(subtree[1:]):
+                        subtree, _ = get_subtrees(cell, self.full_lineage)
+                        for sub_cell in subtree[1:]:
                             sub_cell.censored = True
                         assert cell.isLeaf()
 
@@ -185,7 +192,7 @@ class LineageTree:
         s1 = ""
         s2 = ""
         s3 = ""
-        seperator = ', '
+        seperator = ", "
         if self.censor_boolean:
             s1 = "This tree is censord. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
             s_list = []
@@ -219,6 +226,7 @@ class LineageTree:
         new_lineage.output_leaves_idx, new_lineage.output_leaves = get_leaves(new_lineage.full_lineage)
         new_lineage.output_lineage = new_lineage.full_lineage
         return new_lineage
+
 
 # tools for analyzing trees
 
@@ -266,6 +274,7 @@ def get_leaves(lineage):
 
 
 ##------------------- tools for traversing trees ------------------------##
+
 
 def tree_recursion(cell, subtree):
     """
