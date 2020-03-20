@@ -1,4 +1,4 @@
-'''Calls the tHMM functions and outputs the parameters needed to generate the Figures'''
+"""Calls the tHMM functions and outputs the parameters needed to generate the Figures"""
 from concurrent.futures import ProcessPoolExecutor
 import random
 import numpy as np

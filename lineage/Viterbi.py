@@ -1,4 +1,4 @@
-'''This file contains the methods for the Viterbi algorithm implemented in an a upward recursion.'''
+"""This file contains the methods for the Viterbi algorithm implemented in an a upward recursion."""
 import numpy as np
 
 
@@ -86,7 +86,7 @@ def get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx):
 
 
 def Viterbi(tHMMobj, deltas, state_ptrs):
-    '''Runs the viterbi algorithm and returns a list of arrays containing the optimal state of each cell.'''
+    """Runs the viterbi algorithm and returns a list of arrays containing the optimal state of each cell."""
     all_states = []
 
     for num, lineageObj in enumerate(tHMMobj.X):

@@ -53,7 +53,7 @@ class CellVar:
         These are cells at the end of the tree.
         """
         # if it has a left and right attribute able to be checked
-        if hasattr(self, 'left') and hasattr(self, 'right'):
+        if hasattr(self, "left") and hasattr(self, "right"):
             # then check that they both DO not exist
             return self.left is None and self.right is None
         # otherwise, it has no left and right daughters
@@ -64,7 +64,7 @@ class CellVar:
         Boolean.
         Returns true when a cell is a leaf because its children are censored.
         """
-        if hasattr(self.left, 'censored') and hasattr(self.right, 'censored'):
+        if hasattr(self.left, "censored") and hasattr(self.right, "censored"):
             if self.left.censored and self.right.censored:
                 return True
         else:
@@ -126,7 +126,7 @@ class CellVar:
         Get the left and right daughters of a cell if they exist.
         """
         temp = []
-        if hasattr(self, 'left') and hasattr(self, 'right'):
+        if hasattr(self, "left") and hasattr(self, "right"):
             if self.left is not None and not self.left.censored:
                 temp.append(self.left)
             if self.right is not None and not self.right.censored:
@@ -138,7 +138,7 @@ class CellVar:
         Printing function.
         """
         str_print = ""
-        if hasattr(self, 'obs'):
+        if hasattr(self, "obs"):
             str_print = "\n Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, self.obs)
         else:
             str_print = "\n Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, "This cell has no observations to report.")

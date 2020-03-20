@@ -187,7 +187,7 @@ class LineageTree:
         s1 = ""
         s2 = ""
         s3 = ""
-        seperator = ', '
+        seperator = ", "
         if self.censor_boolean:
             s1 = "This tree is censord. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
             s_list = []
@@ -221,6 +221,7 @@ class LineageTree:
         new_lineage.output_leaves_idx, new_lineage.output_leaves = get_leaves(new_lineage.full_lineage)
         new_lineage.output_lineage = new_lineage.full_lineage
         return new_lineage
+
 
 # tools for analyzing trees
 
@@ -268,6 +269,7 @@ def get_leaves(lineage):
 
 
 ##------------------- tools for traversing trees ------------------------##
+
 
 def tree_recursion(cell, subtree):
     """

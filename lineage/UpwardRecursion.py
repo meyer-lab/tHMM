@@ -94,19 +94,19 @@ def get_leaf_betas(tHMMobj, NF):
         beta_array = np.zeros((len(lineage), tHMMobj.num_states))  # instantiating N by K array
         ii = lineageObj.output_leaves_idx
 
-        with np.errstate(divide='ignore', invalid='ignore'):
+        with np.errstate(divide="ignore", invalid="ignore"):
             beta_array[ii, :] = EL_arr[ii, :] * MSD_arr[ii, :] / NF_arr[ii, np.newaxis]
 
         betas.append(beta_array)
 
     for num, _ in enumerate(tHMMobj.X):
-        assert np.isclose(np.sum(betas[num][-1]), 1.)
+        assert np.isclose(np.sum(betas[num][-1]), 1.0)
 
     return betas
 
 
 def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
-    '''
+    """
     Traverses through each tree and calculates the
     beta value for each non-leaf cell. The normalizing factors (NFs)
     are also calculated as an intermediate for determining each
@@ -114,7 +114,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
     the terms in the NF equation. This term is also used in the calculation
     of the betas. The recursion is upwards from the leaves to
     the roots.
-    '''
+    """
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
         MSD_array = tHMMobj.MSD[num]  # getting the MSD of the respective lineage
@@ -123,11 +123,9 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
 
         for level in lineageObj.output_list_of_gens[2:][::-1]:
             for node_parent_m_idx in lineageObj.get_parents_for_level(level):
-                fac1 = get_beta_parent_child_prod(lineage=lineage,
-                                                  MSD_array=MSD_array,
-                                                  T=T,
-                                                  beta_array=betas[num],
-                                                  node_parent_m_idx=node_parent_m_idx)
+                fac1 = get_beta_parent_child_prod(
+                    lineage=lineage, MSD_array=MSD_array, T=T, beta_array=betas[num], node_parent_m_idx=node_parent_m_idx
+                )
                 fac1 *= EL_array[node_parent_m_idx, :] * MSD_array[node_parent_m_idx, :]
 
                 NF[num][node_parent_m_idx] = sum(fac1)
@@ -137,14 +135,14 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         betas_row_sum = np.sum(betas[num], axis=1)
-        assert np.allclose(betas_row_sum, 1.)
+        assert np.allclose(betas_row_sum, 1.0)
 
 
 def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, node_parent_m_idx):
-    '''
+    """
     Calculates the product of beta-links for every parent-child
     relationship of a given parent cell in a given state.
-    '''
+    """
     beta_m_n_holder = np.ones(T.shape[0])  # list to hold the factors in the product
     node_parent_m = lineage[node_parent_m_idx]  # get the index of the parent
     children_list = node_parent_m.get_daughters()
@@ -153,16 +151,13 @@ def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, node_parent_m_
     for node_child_n_idx in children_idx_list:
         assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
         assert lineage[node_child_n_idx].isChild()  # if the child-parent relationship is correct, then the child must
-        beta_m_n_holder *= beta_parent_child_func(beta_array=beta_array,
-                                                  T=T,
-                                                  MSD_array=MSD_array,
-                                                  node_child_n_idx=node_child_n_idx)
+        beta_m_n_holder *= beta_parent_child_func(beta_array=beta_array, T=T, MSD_array=MSD_array, node_child_n_idx=node_child_n_idx)
 
     return beta_m_n_holder
 
 
 def beta_parent_child_func(beta_array, T, MSD_array, node_child_n_idx):
-    '''
+    """
     This "helper" function calculates the probability
     described as a 'beta-link' between parent and child
     nodes in our tree for some state j. This beta-link
@@ -170,14 +165,14 @@ def beta_parent_child_func(beta_array, T, MSD_array, node_child_n_idx):
     higher (in the direction from the leave
     to the root node) node beta and Normalizing Factor
     values.
-    '''
+    """
     # beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
     # P( z_n = k | z_m = j); P(z_n = k)
     return np.matmul(T, beta_array[node_child_n_idx, :] / MSD_array[node_child_n_idx, :])
 
 
 def calculate_log_likelihood(NF):
-    '''
+    """
     Calculates log likelihood of NF for each lineage.
-    '''
+    """
     return sum([sum(np.log(lst)) for lst in NF])
