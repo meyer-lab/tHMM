@@ -67,8 +67,8 @@ class CellVar:
         if hasattr(self.left, "censored") and hasattr(self.right, "censored"):
             if self.left.censored and self.right.censored:
                 return True
-        else:
-            return False
+
+        return False
 
     def isLeaf(self):
         return self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreCensored()
