@@ -8,7 +8,15 @@ of varying distributions.
 """
 import numpy as np
 
-from .figureCommon import getSetup, subplotLabel, commonAnalyze, figureMaker, pi, max_desired_num_cells, num_data_points
+from .figureCommon import (
+    getSetup,
+    subplotLabel,
+    commonAnalyze,
+    figureMaker,
+    pi,
+    max_desired_num_cells,
+    num_data_points,
+)
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
