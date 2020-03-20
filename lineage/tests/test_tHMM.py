@@ -20,16 +20,14 @@ class TestModel(unittest.TestCase):
         pi = np.array([0.6, 0.4], dtype="float")
 
         # T: transition probability matrix
-        T = np.array([[0.85, 0.15],
-                      [0.15, 0.85]], dtype="float")
+        T = np.array([[0.85, 0.15], [0.15, 0.85]], dtype="float")
 
         # bern, gamma_a, gamma_scale
         state_obj0 = StateDistribution(0.95, 20, 5)
         state_obj1 = StateDistribution(0.85, 10, 1)
         self.E = [state_obj0, state_obj1]
         # Using an unpruned lineage to avoid unforseen issues
-        self.X = [LineageTree(pi, T, self.E,
-                              desired_num_cells=(2**11) - 1)]
+        self.X = [LineageTree(pi, T, self.E, desired_num_cells=(2 ** 11) - 1)]
         tHMMobj = tHMM(self.X, num_states=2)  # build the tHMM class with X
 
         # Test cases below
@@ -49,10 +47,10 @@ class TestModel(unittest.TestCase):
         self.assertGreater(LL_after, LL_before)
 
     def test_init_paramlist(self):
-        '''
+        """
         Make sure paramlist has proper
         labels and sizes.
-        '''
+        """
         t = tHMM(self.X, num_states=2)  # build the tHMM class with X
         self.assertEqual(t.estimate.pi.shape[0], 2)  # make sure shape is num_states
         self.assertEqual(t.estimate.T.shape[0], 2)  # make sure shape is num_states
@@ -60,11 +58,11 @@ class TestModel(unittest.TestCase):
         self.assertEqual(len(t.estimate.E), 2)  # make sure shape is num_states
 
     def test_get_MSD(self):
-        '''
+        """
         Calls get_Marginal_State_Distributions and
         ensures the output is of correct data type and
         structure.
-        '''
+        """
         t = tHMM(self.X, num_states=2)  # build the tHMM class with X
         MSD = t.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
@@ -75,10 +73,10 @@ class TestModel(unittest.TestCase):
                 self.assertTrue(np.isclose(sum(MSDlin[node_n, :]), 1))  # the rows should sum to 1
 
     def test_get_EL(self):
-        '''
+        """
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
-        '''
+        """
         t = tHMM(self.X, num_states=2)  # build the tHMM class with X
         EL = t.get_Emission_Likelihoods()
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
@@ -86,16 +84,12 @@ class TestModel(unittest.TestCase):
             self.assertGreaterEqual(ELlin.shape[0], 0)  # at least zero cells in each lineage
             self.assertEqual(ELlin.shape[1], 2)  # there are 2 states for each cell
 
-    ##################################
-    # UpwardRecursion.py tests below #
-    ##################################
-
     def test_get_leaf_NF(self):
-        '''
+        """
         Calls get_leaf_Normalizing_Factors and
         ensures the output is of correct data type and
         structure.
-        '''
+        """
         t = tHMM(self.X, num_states=2)  # build the tHMM class with X
         NF = get_leaf_Normalizing_Factors(t)
         self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population

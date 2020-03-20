@@ -6,6 +6,7 @@ from ..CellVar import CellVar as c, double
 
 # pylint: disable=protected-access
 
+
 class TestModel(unittest.TestCase):
     """
     Unit test class for the cell class.
@@ -28,8 +29,7 @@ class TestModel(unittest.TestCase):
         """
         Tests the division of the cells.
         """
-        T = np.array([[1.0, 0.0],
-                      [0.0, 1.0]])
+        T = np.array([[1.0, 0.0], [0.0, 1.0]])
 
         parent_state = 1
         cell = c(state=parent_state, parent=None, gen=1)
@@ -59,8 +59,7 @@ class TestModel(unittest.TestCase):
         """
         Tests the parent relationships of cells.
         """
-        T = np.array([[1.0, 0.0],
-                      [0.0, 1.0]])
+        T = np.array([[1.0, 0.0], [0.0, 1.0]])
 
         parent_state = 1
         cell = c(state=parent_state, parent=None, gen=1)
@@ -74,8 +73,7 @@ class TestModel(unittest.TestCase):
         """
         Tests the daughter relationships of cells.
         """
-        T = np.array([[1.0, 0.0],
-                      [0.0, 1.0]])
+        T = np.array([[1.0, 0.0], [0.0, 1.0]])
 
         parent_state = 1
         cell = c(state=parent_state, parent=None, gen=1)
@@ -87,8 +85,7 @@ class TestModel(unittest.TestCase):
         """
         Tests whether the correct root parent asserts work.
         """
-        T = np.array([[1.0, 0.0],
-                      [0.0, 1.0]])
+        T = np.array([[1.0, 0.0], [0.0, 1.0]])
 
         parent_state = 1
         cell = c(state=parent_state, parent=None, gen=1)
@@ -100,8 +97,7 @@ class TestModel(unittest.TestCase):
         """
         Tests whether the leaf cells are correctly checked.
         """
-        T = np.array([[1.0, 0.0],
-                      [0.0, 1.0]])
+        T = np.array([[1.0, 0.0], [0.0, 1.0]])
 
         parent_state = 1
         cell = c(state=parent_state, parent=None, gen=1)
@@ -114,8 +110,7 @@ class TestModel(unittest.TestCase):
         """
         Tests the relationships between related cells.
         """
-        T = np.array([[1.0, 0.0],
-                      [0.0, 1.0]])
+        T = np.array([[1.0, 0.0], [0.0, 1.0]])
 
         parent_state = 1
         cell = c(state=parent_state, parent=None, gen=1)
@@ -126,8 +121,7 @@ class TestModel(unittest.TestCase):
         """
         Tests the function that returns the root cell.
         """
-        T = np.array([[1.0, 0.0],
-                      [0.0, 1.0]])
+        T = np.array([[1.0, 0.0], [0.0, 1.0]])
 
         parent_state = 1
         cell = c(state=parent_state, parent=None, gen=1)
@@ -140,8 +134,7 @@ class TestModel(unittest.TestCase):
         Make sure double function creates the right and left states properly.
         """
         # transition matrix
-        T = np.array([[1.0, 0.0],
-                      [0.0, 1.0]])
+        T = np.array([[1.0, 0.0], [0.0, 1.0]])
 
         parent_state = 0
         left_state, right_state = double(parent_state, T)

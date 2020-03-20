@@ -2,7 +2,16 @@
 import unittest
 import numpy as np
 import scipy.stats as sp
-from ..StateDistribution import StateDistribution, bernoulli_estimator, gamma_estimator, fate_censor_rule, time_censor_rule, get_experiment_time, gamma_pdf, bern_pdf
+from ..StateDistribution import (
+    StateDistribution,
+    bernoulli_estimator,
+    gamma_estimator,
+    fate_censor_rule,
+    time_censor_rule,
+    get_experiment_time,
+    gamma_pdf,
+    bern_pdf,
+)
 from ..LineageTree import LineageTree
 
 
@@ -14,25 +23,15 @@ class TestModel(unittest.TestCase):
     def setUp(self):
         # ingredients for LineageTree!
         self.pi = np.array([0.75, 0.25])
-        self.T = np.array([[0.85, 0.15],
-                           [0.20, 0.80]])
+        self.T = np.array([[0.85, 0.15], [0.20, 0.80]])
 
         # bern, gamma_a, gamma_scale
         self.E = [StateDistribution(0.99, 20, 5), StateDistribution(0.80, 10, 1)]
 
         # creating two lineages, one with False for pruning, one with True.
-        self.lineage = LineageTree(self.pi, self.T, self.E,
-                                   desired_num_cells=(2**11) - 1,
-                                   desired_experiment_time=1000,
-                                   censor_condition=1)
-        self.lineage2 = LineageTree(self.pi, self.T, self.E,
-                                    desired_num_cells=(2**5.5) - 1,
-                                    censor_condition=2,
-                                    desired_experiment_time=50)
-        self.lineage3 = LineageTree(self.pi, self.T, self.E,
-                                    desired_num_cells=(2**11) - 1,
-                                    censor_condition=3,
-                                    desired_experiment_time=800)
+        self.lineage = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, desired_experiment_time=1000, censor_condition=1)
+        self.lineage2 = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 5.5) - 1, censor_condition=2, desired_experiment_time=50)
+        self.lineage3 = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800)
 
     def test_rvs(self):
         """
@@ -114,8 +113,7 @@ class TestModel(unittest.TestCase):
         by comparing the result of the estimator
         to the result of scipy random variable generator.
         """
-        bern_obs = sp.bernoulli.rvs(
-            p=0.90, size=1000)  # bernoulli observations
+        bern_obs = sp.bernoulli.rvs(p=0.90, size=1000)  # bernoulli observations
         self.assertTrue(0.87 <= bernoulli_estimator(bern_obs) <= 0.93)
 
     def test_gamma_estimator(self):

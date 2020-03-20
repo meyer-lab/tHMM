@@ -49,7 +49,7 @@ def run_AIC(Trate, E, num_to_evaluate=10):
     list_of_populations = []
     for idx in range(num_to_evaluate):
         # Creating an unpruned and pruned lineage
-        list_of_populations.append([LineageTree(pi, T, E, (2**8) - 1)])
+        list_of_populations.append([LineageTree(pi, T, E, (2 ** 8) - 1)])
 
     AIC_holder = np.empty((len(desired_num_states), num_to_evaluate))
     for ii, num_states_to_evaluate in enumerate(desired_num_states):
@@ -70,9 +70,9 @@ def figure_maker(ax, AIC_holder):
     Makes figure 11.
     """
     AIC_holder = AIC_holder - np.min(AIC_holder, axis=0)[np.newaxis, :]
-    ax.set_xlabel('Number of States')
-    ax.plot(desired_num_states, AIC_holder, 'k', alpha=0.5)
-    ax.set_ylabel('Normalized AIC')
+    ax.set_xlabel("Number of States")
+    ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
+    ax.set_ylabel("Normalized AIC")
     ax.set_ylim(0.0, 50.0)
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-    ax.set_title('State Assignment AIC')
+    ax.set_title("State Assignment AIC")

@@ -19,8 +19,7 @@ class TestModel(unittest.TestCase):
         self.pi = np.array([0.75, 0.25])
 
         # T: transition probability matrix
-        self.T = np.array([[0.85, 0.15],
-                           [0.20, 0.80]])
+        self.T = np.array([[0.85, 0.15], [0.20, 0.80]])
 
         # State 0 parameters "Resistant"
         self.state0 = 0
@@ -40,19 +39,14 @@ class TestModel(unittest.TestCase):
         self.E = [state_obj0, state_obj1]
 
         # creating lineages with the various censor conditions
-        self.lineage1 = LineageTree(self.pi, self.T, self.E,
-                                    desired_num_cells=(2**11) - 1)
-        self.lineage2_fate_censored = LineageTree(self.pi, self.T, self.E,
-                                                  desired_num_cells=(2**11) - 1,
-                                                  censor_condition=1)
-        self.lineage3_time_censored = LineageTree(self.pi, self.T, self.E,
-                                                  desired_num_cells=(2**11) - 1,
-                                                  censor_condition=2,
-                                                  desired_experiment_time=500)
-        self.lineage4_both_censored = LineageTree(self.pi, self.T, self.E,
-                                                  desired_num_cells=(2**11) - 1,
-                                                  censor_condition=3,
-                                                  desired_experiment_time=500)
+        self.lineage1 = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
+        self.lineage2_fate_censored = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=1)
+        self.lineage3_time_censored = LineageTree(
+            self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=2, desired_experiment_time=500
+        )
+        self.lineage4_both_censored = LineageTree(
+            self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=500
+        )
 
         # creating 7 cells for 3 generations manually
         cell_1 = c(state=self.state0, parent=None, gen=1)
@@ -69,14 +63,7 @@ class TestModel(unittest.TestCase):
         cell_3.left = cell_6
         cell_3.right = cell_7
 
-        self.test_lineage = [
-            cell_1,
-            cell_2,
-            cell_3,
-            cell_4,
-            cell_5,
-            cell_6,
-            cell_7]
+        self.test_lineage = [cell_1, cell_2, cell_3, cell_4, cell_5, cell_6, cell_7]
         self.level1 = [cell_1]
         self.level2 = [cell_2, cell_3]
         self.level3 = [cell_4, cell_5, cell_6, cell_7]
@@ -149,8 +136,7 @@ class TestModel(unittest.TestCase):
 
         # to check the indexes for leaf cells are true
         for i in leaf_index:
-            self.assertTrue(
-                self.lineage1.output_lineage[i].isLeaf())
+            self.assertTrue(self.lineage1.output_lineage[i].isLeaf())
 
     def test_get_subtrees(self):
         """
@@ -170,9 +156,7 @@ class TestModel(unittest.TestCase):
         left_sub, right_sub, neither_subtree = find_two_subtrees(self.cell_1, self.test_lineage)
         self.assertTrue(left_sub == self.subtree1)
         self.assertTrue(right_sub == self.subtree2)
-        self.assertTrue(
-            neither_subtree == [
-                self.cell_1])
+        self.assertTrue(neither_subtree == [self.cell_1])
 
     def test_get_mixed_subtrees(self):
         """

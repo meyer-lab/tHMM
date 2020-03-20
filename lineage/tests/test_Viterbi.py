@@ -17,8 +17,7 @@ class TestViterbi(unittest.TestCase):
         pi = np.array([0.6, 0.4], dtype="float")
 
         # T: transition probability matrix
-        T = np.array([[0.85, 0.15],
-                      [0.15, 0.85]], dtype="float")
+        T = np.array([[0.85, 0.15], [0.15, 0.85]], dtype="float")
 
         # resistant
         state_obj0 = StateDistribution(0.95, 20, 5)
@@ -27,12 +26,12 @@ class TestViterbi(unittest.TestCase):
 
         E = [state_obj0, state_obj1]
 
-        X = LineageTree(pi, T, E, desired_num_cells=(2**11) - 1)
+        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)
         tHMMobj, pred_states_by_lineage, _ = Analyze([X], num_states=2)
         all_LLs = []
         vitLL = LLFunc(T, pi, tHMMobj, pred_states_by_lineage)
         for i in range(10):
-            rand = randint(0, 2, (2**11) - 1)
+            rand = randint(0, 2, (2 ** 11) - 1)
             temp = LLFunc(T, pi, tHMMobj, [rand])
             all_LLs.append(temp)
         self.assertTrue(all(all_LLs <= vitLL))
