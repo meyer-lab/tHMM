@@ -66,6 +66,7 @@ class StateDistribution:
 
 
 def tHMM_E_init():
+    """ Initialize a default state distribution. """
     return StateDistribution(0.9, 10 * (np.random.uniform()), 1)
 
 
