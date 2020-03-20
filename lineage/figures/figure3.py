@@ -20,14 +20,14 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((7, 6), (2, 3))
 
-    figureMaker(ax, *accuracy_increased_cells())
+    figureMaker(ax, *accuracy())
 
     subplotLabel(ax)
 
     return f
 
 
-def accuracy_increased_cells():
+def accuracy():
     """
     Calculates accuracy and parameter estimation 
     over an increasing number of cells in a lineage for 

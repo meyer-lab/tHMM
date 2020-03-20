@@ -19,7 +19,9 @@ T = np.array([[0.85, 0.15],
               [0.15, 0.85]], dtype="float")
 
 # bern, gamma_a, gamma_scale
-E = [StateDistribution(0.99, 20, 5), StateDistribution(0.88, 10, 1)]
+state0 = StateDistribution(0.99, 20, 5)
+state1 = StateDistribution(0.88, 10, 1)
+E = [state0, state1]
 
 min_desired_num_cells = (2**8)-1
 max_desired_num_cells = (2**12)-1
@@ -73,6 +75,8 @@ def commonAnalyze(list_of_populations, xtype='length'):
         x = dictOut["total_number_of_cells"]
     elif xtype == 'prop':
         x = dictOut["state_proportions_0"]
+    elif xtype == 'wass':
+        x = dictOut["wasserstein"]
 
     return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"]
 

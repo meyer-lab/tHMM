@@ -1,8 +1,9 @@
 '''Calls the tHMM functions and outputs the parameters needed to generate the Figures'''
 from concurrent.futures import ProcessPoolExecutor
+import random
 import numpy as np
 from sklearn import metrics
-from scipy.stats import entropy
+from scipy.stats import entropy, wasserstein_distance
 from .BaumWelch import fit
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
@@ -194,6 +195,14 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
     results_dict["accuracy_before_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states, true_states)]) / len(true_states)
     results_dict["accuracy_after_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states_switched, true_states)]) / len(true_states)
+    
+    
+    obs_by_state_rand_sampled = []
+    for state in range(tHMMobj.num_states):
+        full_list = [cell.obs[1] for cell in tHMMobj.X[0].output_lineage if cell.state == state]
+        obs_by_state_rand_sampled.append(random.sample(full_list, 750))
+
+    results_dict["wasserstein"] = wasserstein_distance(obs_by_state_rand_sampled[0], obs_by_state_rand_sampled[1])
 
     return results_dict
 
