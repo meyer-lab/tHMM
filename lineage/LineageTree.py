@@ -1,6 +1,6 @@
 """ This file contains the LineageTree class. """
-import scipy.stats as sp
 from copy import deepcopy
+import scipy.stats as sp
 
 from .CellVar import CellVar
 from .StateDistribution import assign_times, fate_censor_rule, time_censor_rule
