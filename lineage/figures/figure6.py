@@ -1,19 +1,16 @@
 """
 File: figure6.py
 Purpose: Generates figure 6.
-
-Figure 6 is the wasserstein divergence for different sets of parameters
-for a two state model. It plots the wasserstein-divergence against accuracy.
+Figure 6 analyzes heterogeneous (2 state), NOT censored,
+single lineages (no more than one lineage per population)
+with similar proportions of cells in states but
+of varying distributions.
 """
-import random
 import numpy as np
-from scipy.stats import wasserstein_distance
-import pandas as pd
-import seaborn as sns
-from ..StateDistribution import StateDistribution
+
+from .figureCommon import getSetup, subplotLabel, commonAnalyze, figureMaker, pi, max_desired_num_cells, num_data_points
 from ..LineageTree import LineageTree
-from ..Analyze import run_Results_over, run_Analyze_over
-from .figureCommon import getSetup
+from ..StateDistribution import StateDistribution
 
 
 def makeFigure():
@@ -22,91 +19,33 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((8, 4), (1, 2))
-    figure_maker(ax, *wasserstein())
+    ax, f = getSetup((7, 6), (2, 3))
+
+    figureMaker(ax, *accuracy(), xlabel="Wasserstein Divergence")
+
+    subplotLabel(ax)
 
     return f
 
 
-def wasserstein():
-    """ Assuming we have 2-state model """
+def accuracy():
+    """
+    Calculates accuracy and parameter estimation
+    over an increasing number of cells in a lineage for
+    a uncensored two-state model but differing state distribution.
+    We vary the distribution by
+    increasing the Wasserstein divergence between the two states.
+    """
 
-    # pi: the initial probability vector
-    pi = np.ones(2) / 2.0
+    # Creating a list of populations to analyze over
+    list_of_Es = [[StateDistribution(0.99, 4, 3), StateDistribution(0.99, a, 3)] for a in np.logspace(2, 5, num_data_points, base=2)]
+    list_of_populations = []
+    for E in list_of_Es:
+        population = []
 
-    # T: transition probability matrix
-    T = np.array([[0.8, 0.2],
-                  [0.2, 0.8]])
+        population.append(LineageTree(pi, np.eye(2), E, max_desired_num_cells))
 
-    a0 = np.logspace(2, 5, 15, base=2)
+        # Adding populations into a holder for analysing
+        list_of_populations.append(population)
 
-    state_obj0 = StateDistribution(0.99, 4, 3)
-
-    w_divs = []
-
-    dists = pd.DataFrame(columns=["Lifetimes [hr]", "Wasserstein divergence", "Hues"])
-    tmp_lifetimes = []
-    tmp_distributions = []
-    tmp_hues = []
-    list_of_populations_unsort = []
-    for idx, a0 in enumerate(a0):
-        state_obj1 = StateDistribution(0.99, a0, 3)
-
-        E = [state_obj0, state_obj1]
-        lineage = LineageTree(pi, T, E, (2**12) - 1)
-        while len(lineage.output_lineage) < 16:
-            del lineage
-            lineage = LineageTree(pi, T, E, (2**12) - 1)
-        list_of_populations_unsort.append([lineage])
-
-        # First collect all the observations from the entire population across the lineages ordered by state
-        obs_by_state_rand_sampled = []
-        for state in range(len(E)):
-            full_list = [cell.obs[1] for cell in lineage.output_lineage if cell.state == state]
-            obs_by_state_rand_sampled.append(random.sample(full_list, 750))
-
-        w_value = wasserstein_distance(obs_by_state_rand_sampled[0], obs_by_state_rand_sampled[1])
-        w_divs.append(w_value)
-        tmp_lifetimes.append(obs_by_state_rand_sampled[0] + obs_by_state_rand_sampled[1])
-        tmp_distributions.append(["{}".format(round(w_value, 2))] * 750 * 2)
-        tmp_hues.append([1] * 750 + [2] * 750)
-
-    # Change the order of lists
-    indices = np.argsort(w_divs)
-
-    w_divs_to_use = [w_divs[idx] for idx in indices]
-
-    dists["Lifetimes [hr]"] = sum([tmp_lifetimes[idx] for idx in indices], [])
-    dists["Wasserstein divergence"] = sum([tmp_distributions[idx] for idx in indices], [])
-    dists["Hues"] = sum(tmp_hues, [])
-    list_of_populations = [list_of_populations_unsort[idx] for idx in indices]
-
-    # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, 2, parallel=True)
-
-    # Collecting the results of analyzing the lineages
-    results_holder = run_Results_over(output)
-
-    accuracies = [results_dict["accuracy_after_switching"] for results_dict in results_holder]
-
-    return accuracies, w_divs_to_use, dists
-
-
-def figure_maker(ax, accuracies, w_divs, dists):
-    """ makes the figure showing
-    distributions get farther """
-
-    i = 0
-    ax[i].set_xlabel('Wasserstein divergence')
-    ax[i].set_ylim(0, 110)
-    ax[i].set_xlim(0, 1.07 * max(w_divs))
-    ax[i].scatter(w_divs, accuracies, c='k', marker="o", edgecolors='k', alpha=0.25)
-    ax[i].set_ylabel(r'Accuracy [\%]')
-    ax[i].axhline(y=100, linestyle='--', linewidth=2, color='k', alpha=1)
-    ax[i].set_title('Wasserstein divergence')
-    ax[i].grid(linestyle='--')
-
-    i += 1
-    sns.violinplot(x="Wasserstein divergence", y="Lifetimes [hr]", inner="quart", palette="muted", split=True,
-                   hue="Hues", data=dists, ax=ax[i], order=["{}".format(round(w_value, 2)) for w_value in w_divs])
-    sns.despine(left=True, ax=ax[i])
+    return commonAnalyze(list_of_populations, xtype='wass')

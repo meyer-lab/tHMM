@@ -19,4 +19,4 @@ if __name__ == '__main__':
     ff = eval(nameOut + '.makeFigure()')
     ff.savefig(fdir + nameOut + '.svg', dpi=ff.dpi, bbox_inches='tight', pad_inches=0)
 
-    print(f'{nameOut} is done after {time.time() - start} seconds.')
+    print(f'\n{nameOut} is done after {time.time() - start} seconds.\n')

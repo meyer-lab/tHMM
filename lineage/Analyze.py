@@ -1,8 +1,9 @@
 '''Calls the tHMM functions and outputs the parameters needed to generate the Figures'''
 from concurrent.futures import ProcessPoolExecutor
+import random
 import numpy as np
 from sklearn import metrics
-from scipy.stats import entropy
+from scipy.stats import entropy, wasserstein_distance
 from .BaumWelch import fit
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
@@ -190,10 +191,21 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     # 3. Calculate accuracy after switching states
     pred_states_switched = [switcher_map[state] for state in pred_states]
     results_dict["state_counter"] = np.bincount(pred_states_switched)
-    results_dict["state_proportions"] = [i / len(pred_states_switched) for i in results_dict["state_counter"]]
+    results_dict["state_proportions"] = [100 * i / len(pred_states_switched) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
     results_dict["accuracy_before_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states, true_states)]) / len(true_states)
     results_dict["accuracy_after_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states_switched, true_states)]) / len(true_states)
+
+    obs_by_state_rand_sampled = []
+    for state in range(tHMMobj.num_states):
+        full_list = [cell.obs[1] for cell in tHMMobj.X[0].output_lineage if cell.state == state]
+        obs_by_state_rand_sampled.append(full_list)
+
+    num2use = min(len(obs_by_state_rand_sampled[0]), len(obs_by_state_rand_sampled[1]))
+    if num2use == 0:
+        results_dict["wasserstein"] = float("inf")
+    else:
+        results_dict["wasserstein"] = wasserstein_distance(random.sample(obs_by_state_rand_sampled[0], num2use), random.sample(obs_by_state_rand_sampled[1], num2use))
 
     return results_dict
 
