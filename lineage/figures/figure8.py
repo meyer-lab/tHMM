@@ -1,78 +1,61 @@
 """
-File: figure7.py
-Purpose: Generates figure 7.
-
-AIC.
+File: figure8.py
+Purpose: Generates figure 8.
+Figure 8 analyzes heterogeneous (2 state), censored (by both time and fate),
+single lineages (no more than one lineage per population)
+with similar proportions of cells in states but
+of varying distributions.
 """
 import numpy as np
-from matplotlib.ticker import MaxNLocator
 
-from .figureCommon import getSetup
-from ..Analyze import getAIC, run_Analyze_over, LLFunc
+from .figureCommon import (
+    getSetup,
+    subplotLabel,
+    commonAnalyze,
+    figureMaker,
+    pi,
+    max_desired_num_cells,
+    max_experiment_time,
+    num_data_points,
+    state0,
+)
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
 
 
 def makeFigure():
     """
-    Makes figure 7.
+    Makes figure 6.
     """
-    ax, f = getSetup((7, 3), (1, 3))
 
-    # bern, gamma_a, gamma_scale
-    Sone = StateDistribution(0.99, 20, 5)
-    Stwo = StateDistribution(0.88, 10, 1)
-    Eone = [Sone, Sone]
-    Etwo = [Sone, Stwo]
-    Ethree = [Sone, Stwo, StateDistribution(0.40, 30, 1)]
+    # Get list of axis objects
+    ax, f = getSetup((7, 6), (2, 3))
 
-    figure_maker(ax[0], run_AIC(0.02, Eone))
-    figure_maker(ax[1], run_AIC(0.02, Etwo))
-    figure_maker(ax[2], run_AIC(0.02, Ethree))
+    figureMaker(ax, *accuracy(), xlabel="Wasserstein Divergence")
+
+    subplotLabel(ax)
 
     return f
 
 
-# States to evaluate with the model
-desired_num_states = np.arange(1, 6)
+def accuracy():
+    """
+    Calculates accuracy and parameter estimation
+    over an increasing number of cells in a lineage for
+    a uncensored two-state model but differing state distribution.
+    We vary the distribution by
+    increasing the Wasserstein divergence between the two states.
+    """
 
-
-def run_AIC(Trate, E, num_to_evaluate=10):
-    # Normalize the transition matrix
-    T = Trate + np.eye(len(E))
-    T = T / np.sum(T, axis=0)[np.newaxis, :]
-
-    # pi: the initial probability vector
-    # make an even starting p
-    pi = np.ones(T.shape[0]) / T.shape[0]
-
+    # Creating a list of populations to analyze over
+    list_of_Es = [[state0, StateDistribution(0.99, a, 5)] for a in np.logspace(1, 1.5, num_data_points, base=20)]
     list_of_populations = []
-    for idx in range(num_to_evaluate):
-        # Creating an unpruned and pruned lineage
-        list_of_populations.append([LineageTree(pi, T, E, (2 ** 8) - 1)])
+    for E in list_of_Es:
+        population = []
 
-    AIC_holder = np.empty((len(desired_num_states), num_to_evaluate))
-    for ii, num_states_to_evaluate in enumerate(desired_num_states):
-        # Analyze the lineages in the list of populations
-        output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
-        # Collecting the results of analyzing the lineages
-        for idx, (tHMMobj, pred_states_by_lineage, _) in enumerate(output):
-            # Get the likelihood of states
-            LLtemp = LLFunc(T, pi, tHMMobj, pred_states_by_lineage)
-            LL = np.sum(LLtemp)
-            AIC_holder[ii, idx] = getAIC(tHMMobj, LL)[0]
+        population.append(LineageTree(pi, np.array([[0,1],[1,0]]), E, max_desired_num_cells, censor_condition=3, desired_experiment_time=max_experiment_time))
 
-    return AIC_holder
+        # Adding populations into a holder for analysing
+        list_of_populations.append(population)
 
-
-def figure_maker(ax, AIC_holder):
-    """
-    Makes figure 11.
-    """
-    AIC_holder = AIC_holder - np.min(AIC_holder, axis=0)[np.newaxis, :]
-    ax.set_xlabel("Number of States")
-    ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
-    ax.set_ylabel("Normalized AIC")
-    ax.set_ylim(0.0, 50.0)
-    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-    ax.set_title("State Assignment AIC")
+    return commonAnalyze(list_of_populations, xtype="wass")

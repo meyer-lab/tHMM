@@ -1,7 +1,7 @@
 """
-File: figure6.py
-Purpose: Generates figure 6.
-Figure 6 analyzes heterogeneous (2 state), NOT censored,
+File: figure7.py
+Purpose: Generates figure 7.
+Figure 7 analyzes heterogeneous (2 state), NOT censored,
 single lineages (no more than one lineage per population)
 with similar proportions of cells in states but
 of varying distributions.
@@ -24,7 +24,7 @@ from ..StateDistribution import StateDistribution
 
 def makeFigure():
     """
-    Makes figure 6.
+    Makes figure 7.
     """
 
     # Get list of axis objects
