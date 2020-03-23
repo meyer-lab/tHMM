@@ -16,7 +16,7 @@ from .figureCommon import (
     pi,
     max_desired_num_cells,
     num_data_points,
-    state0,
+    state1,
 )
 from ..LineageTree import LineageTree
 from ..StateDistribution import StateDistribution
@@ -47,7 +47,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Es = [[state0, StateDistribution(0.99, a, 5)] for a in np.logspace(1, 1.5, num_data_points, base=20)]
+    list_of_Es = [[StateDistribution(0.88, a, 1), state1] for a in np.logspace(1, 1.5, num_data_points, base=10)]
     list_of_populations = []
     for E in list_of_Es:
         population = []

@@ -48,7 +48,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Es = [[state0, StateDistribution(0.99, a, 5)] for a in np.logspace(1, 1.5, num_data_points, base=20)]
+    list_of_Es = [[state0, StateDistribution(0.99, a, 5)] for a in np.logspace(1, 1.1, num_data_points, base=20)]
     list_of_populations = []
     for E in list_of_Es:
         population = []
