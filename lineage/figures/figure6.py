@@ -1,27 +1,35 @@
 """
-File: figure6.py
-Purpose: Generates figure 6.
-Figure 6 analyzes heterogeneous (2 state), NOT censored,
+File: figure5.py
+Purpose: Generates figure 5.
+Figure 5 analyzes heterogeneous (2 state), NOT censored,
 single lineages (no more than one lineage per population)
-with similar proportions of cells in states but
-of varying distributions.
+with different proportions of cells in states by
+changing the values in the transition matrices.
 """
 import numpy as np
 
-from .figureCommon import getSetup, subplotLabel, commonAnalyze, figureMaker, pi, max_desired_num_cells, num_data_points
+from .figureCommon import (
+    getSetup,
+    subplotLabel,
+    commonAnalyze,
+    figureMaker,
+    pi,
+    E,
+    max_desired_num_cells,
+    num_data_points,
+)
 from ..LineageTree import LineageTree
-from ..StateDistribution import StateDistribution
 
 
 def makeFigure():
     """
-    Makes figure 6.
+    Makes figure 5.
     """
 
     # Get list of axis objects
     ax, f = getSetup((7, 6), (2, 3))
 
-    figureMaker(ax, *accuracy(), xlabel="Wasserstein Divergence")
+    figureMaker(ax, *accuracy(), xlabel=r"Cells in State 0 [$\%$]")
 
     subplotLabel(ax)
 
@@ -31,21 +39,21 @@ def makeFigure():
 def accuracy():
     """
     Calculates accuracy and parameter estimation
-    over an increasing number of cells in a lineage for
+    over an similar number of cells in a lineage for
     a uncensored two-state model but differing state distribution.
-    We vary the distribution by
-    increasing the Wasserstein divergence between the two states.
+    We increase the proportion of cells in a lineage by
+    fixing the Transition matrix to be biased towards state 0.
     """
 
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 4, 3), StateDistribution(0.99, a, 3)] for a in np.logspace(2, 5, num_data_points, base=2)]
+    list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.0, 1.0, num_data_points)]
     list_of_populations = []
-    for E in list_of_Es:
+    for T in list_of_Ts:
         population = []
 
-        population.append(LineageTree(pi, np.eye(2), E, max_desired_num_cells))
+        population.append(LineageTree(pi, T, E, max_desired_num_cells))
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
 
-    return commonAnalyze(list_of_populations, xtype="wass")
+    return commonAnalyze(list_of_populations, xtype="prop")
