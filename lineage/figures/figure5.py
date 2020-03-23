@@ -1,10 +1,8 @@
 """
-File: figure5.py
-Purpose: Generates figure 5.
-Figure 5 analyzes heterogeneous (2 state), NOT censored,
-single lineages (no more than one lineage per population)
-with different proportions of cells in states by
-changing the values in the transition matrices.
+File: figure4.py
+Purpose: Generates figure 4.
+Figure 4 analyzes heterogeneous (2 state), censored (by both time and fate),
+populations of lineages (more than one lineage per populations).
 """
 import numpy as np
 
@@ -14,8 +12,12 @@ from .figureCommon import (
     commonAnalyze,
     figureMaker,
     pi,
+    T,
     E,
-    max_desired_num_cells,
+    min_desired_num_cells,
+    min_experiment_time,
+    min_num_lineages,
+    max_num_lineages,
     num_data_points,
 )
 from ..LineageTree import LineageTree
@@ -23,13 +25,13 @@ from ..LineageTree import LineageTree
 
 def makeFigure():
     """
-    Makes figure 5.
+    Makes figure 4.
     """
 
     # Get list of axis objects
     ax, f = getSetup((7, 6), (2, 3))
 
-    figureMaker(ax, *accuracy(), xlabel=r"Cells in State 0 [$\%$]")
+    figureMaker(ax, *accuracy())
 
     subplotLabel(ax)
 
@@ -39,21 +41,22 @@ def makeFigure():
 def accuracy():
     """
     Calculates accuracy and parameter estimation
-    over an similar number of cells in a lineage for
-    a uncensored two-state model but differing state distribution.
-    We increase the proportion of cells in a lineage by
-    fixing the Transition matrix to be biased towards state 0.
+    over an increasing number of lineages in a population for
+    a censored two-state model.
+    We increase the desired number of cells in a lineage by
+    the experiment time.
     """
 
     # Creating a list of populations to analyze over
-    list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.0, 1.0, num_data_points)]
+    num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
     list_of_populations = []
-    for T in list_of_Ts:
+    for num in num_lineages:
         population = []
 
-        population.append(LineageTree(pi, T, E, max_desired_num_cells))
+        for _ in range(num):
+            population.append(LineageTree(pi, T, E, min_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time))
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
 
-    return commonAnalyze(list_of_populations, xtype="prop")
+    return commonAnalyze(list_of_populations)
