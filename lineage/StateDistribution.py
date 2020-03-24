@@ -20,7 +20,7 @@ class StateDistribution:
         gamma_obs = sp.gamma.rvs(a=self.gamma_a, scale=self.gamma_scale, size=size)  # gamma observations
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        list_of_tuple_of_obs = list(zip(bern_obs, gamma_obs))
+        list_of_tuple_of_obs = list(map(list, zip(bern_obs, gamma_obs)))
         return list_of_tuple_of_obs
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
@@ -165,8 +165,9 @@ def gamma_estimator(gamma_obs):
     a_hat = (N * (sum(gamma_obs)) + 1e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
     # gamma_scale
     b_hat = ((1 + 1e-10) / (N ** 2 + 1e-10)) * (N * (sum(x_lnx)) - (sum(lnx)) * (sum(gamma_obs)))
-    
-    print(a_hat, b_hat)
+
+    if b_hat < 1.0 or 50.0 < a_hat < 5.0:
+        return 10, 1
 
     return a_hat, b_hat
 
