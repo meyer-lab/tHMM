@@ -1,7 +1,7 @@
 """
-File: figure8.py
-Purpose: Generates figure 8.
-Figure 8 analyzes heterogeneous (2 state), censored (by both time and fate),
+File: figure7.py
+Purpose: Generates figure 7.
+Figure 7 analyzes heterogeneous (2 state), NOT censored,
 single lineages (no more than one lineage per population)
 with similar proportions of cells in states but
 of varying distributions.
@@ -15,7 +15,6 @@ from .figureCommon import (
     figureMaker,
     pi,
     max_desired_num_cells,
-    max_experiment_time,
     num_data_points,
     state1,
 )
@@ -25,7 +24,7 @@ from ..StateDistribution import StateDistribution
 
 def makeFigure():
     """
-    Makes figure 6.
+    Makes figure 7.
     """
 
     # Get list of axis objects
@@ -53,7 +52,7 @@ def accuracy():
     for E in list_of_Es:
         population = []
 
-        population.append(LineageTree(pi, np.array([[0,1],[1,0]]), E, max_desired_num_cells, censor_condition=3, desired_experiment_time=max_experiment_time))
+        population.append(LineageTree(pi, np.array([[0,1],[1,0]]), E, max_desired_num_cells))
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
