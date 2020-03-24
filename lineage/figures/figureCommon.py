@@ -120,7 +120,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, xlabel="Number of Cells"):
     ax[i].set_title(r"Gamma $\theta$")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-    ax[i].legend()
 
     i += 1
     ax[i].set_xlabel(xlabel)
