@@ -1,6 +1,6 @@
 """
-File: figure7.py
-Purpose: Generates figure 7.
+File: figure10.py
+Purpose: Generates figure 10.
 
 AIC.
 """
