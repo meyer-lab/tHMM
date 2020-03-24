@@ -117,98 +117,6 @@ def get_experiment_time(lineageObj):
     return longest
 
 
-def track_lineage_generation_histogram(lineageObj):
-    """
-    This function creates list of lists (as many lists as states)
-    that collects the number
-    of cells in each state throughout the experiment based on
-    successive generations.
-    """
-    max_gen = lineageObj.output_max_gen
-    hist = np.zeros(shape=(lineageObj.num_states, max_gen))
-    for gen_minus_1, level in enumerate(lineageObj.output_list_of_gens[1:]):
-        true_gen = gen_minus_1 + 1  # generations are 1-indexed
-        if true_gen == max_gen:
-            assert gen_minus_1 == hist.shape[1] - 1
-        for state in range(lineageObj.num_states):
-            hist[state, gen_minus_1] = sum([1 if cell.state == state else 0 for cell in level])
-    return hist
-
-
-def track_population_generation_histogram(population):
-    """
-    This function runs the tracking function on a list of lineages.
-    """
-    collector = []
-    for lineageObj in population:
-        hist = track_lineage_generation_histogram(lineageObj)
-        collector.append(hist)
-    total = []
-    for state in range(population[0].num_states):
-        tmp_array = np.zeros(len(collector[0][0, :]))
-        for hist in collector:
-            if len(tmp_array) < len(hist[state, :]):
-                c = hist[state, :].copy()
-                c[: len(tmp_array)] += tmp_array
-                tmp_array = c
-            else:
-                c = tmp_array.copy()
-                c[: len(hist[state, :])] += hist[state, :]
-                tmp_array = c
-        total.append(tmp_array)
-
-    return total
-
-
-def track_lineage_growth_histogram(lineageObj, delta_time):
-    """
-    This function creates list of lists (as many lists as states)
-    that divides the total experiment time
-    into a certain number of bins (provided by the user) and collects the number
-    of cells in each state throughout the experiment based on the time
-    observations.
-    """
-    experiment_time = get_experiment_time(lineageObj)
-    bins = int(np.ceil(experiment_time / delta_time))
-    hist = np.zeros(shape=(lineageObj.num_states, bins))
-    for state in range(lineageObj.num_states):
-        start_time = 0
-        end_time = start_time + delta_time
-        for bin_idx in range(bins):
-            num_alive = 0
-            for cell in lineageObj.output_lineage:
-                if cell.state == state and cell.time.startT <= start_time and cell.time.endT >= end_time:
-                    num_alive += 1
-            start_time += delta_time
-            end_time += delta_time
-            hist[state, bin_idx] = num_alive
-    return (hist, bins)
-
-
-def track_population_growth_histogram(population, delta_time):
-    """
-    This function runs the tracking function on a list of lineages.
-    """
-    collector = []
-    for lineage in population:
-        hist, _ = track_lineage_growth_histogram(lineage, delta_time)
-        collector.append(hist)
-    total = []
-    for state in range(population[0].num_states):
-        tmp_array = np.zeros(len(collector[0][0, :]))
-        for idx, hist in enumerate(collector):
-            if len(tmp_array) < len(hist[state, :]):
-                c = hist[state, :].copy()
-                c[: len(tmp_array)] += tmp_array
-                tmp_array = c
-            else:
-                c = tmp_array.copy()
-                c[: len(hist[state, :])] += hist[state, :]
-                tmp_array = c
-        total.append(tmp_array)
-    return total
-
-
 def fate_censor_rule(cell):
     """
     User-defined function that checks whether a cell's subtree should be removed.
@@ -257,9 +165,8 @@ def gamma_estimator(gamma_obs):
     a_hat = (N * (sum(gamma_obs)) + 1e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
     # gamma_scale
     b_hat = ((1 + 1e-10) / (N ** 2 + 1e-10)) * (N * (sum(x_lnx)) - (sum(lnx)) * (sum(gamma_obs)))
-
-    if b_hat < 1.0 or 50.0 < a_hat < 5.0:
-        return 10, 1
+    
+    print(a_hat, b_hat)
 
     return a_hat, b_hat
 

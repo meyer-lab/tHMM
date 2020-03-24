@@ -154,12 +154,17 @@ class LineageTree:
                         for sub_cell in subtree[1:]:
                             sub_cell.censored = True
                         assert cell.isLeaf()
+                        cell.time.endT = self.desired_experiment_time
+                        cell.obs[1] = cell.time.endT-cell.time.startT
                 elif self.censor_condition == 3:
                     if fate_censor_rule(cell) or time_censor_rule(cell, self.desired_experiment_time):
                         subtree, _ = get_subtrees(cell, self.full_lineage)
                         for sub_cell in subtree[1:]:
                             sub_cell.censored = True
                         assert cell.isLeaf()
+                        if time_censor_rule(cell, self.desired_experiment_time):
+                            cell.time.endT = self.desired_experiment_time
+                            cell.obs[1] = cell.time.endT-cell.time.startT
 
                 self.output_lineage.append(cell)
 
