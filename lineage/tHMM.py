@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from .StateDistribution import tHMM_E_init
+from .states.StateDistribution import tHMM_E_init
 
 
 class estimate:
