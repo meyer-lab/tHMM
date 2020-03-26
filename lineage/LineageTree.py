@@ -3,7 +3,7 @@ from copy import deepcopy
 import scipy.stats as sp
 
 from .CellVar import CellVar
-from .states.StateDistribution import assign_times, fate_censor_rule, time_censor_rule
+from .states.stateCommon import assign_times, fate_censor_rule, time_censor_rule
 
 
 class LineageTree:
