@@ -53,7 +53,7 @@ def accuracy():
     for E in list_of_Es:
         population = []
 
-        population.append(LineageTree(pi, np.array([[0,1],[1,0]]), E, max_desired_num_cells, censor_condition=3, desired_experiment_time=max_experiment_time))
+        population.append(LineageTree(pi, np.array([[0, 1], [1, 0]]), E, max_desired_num_cells, censor_condition=3, desired_experiment_time=max_experiment_time))
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
