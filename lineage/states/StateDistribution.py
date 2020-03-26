@@ -77,7 +77,6 @@ class Time:
     obtaining attributes of the lineage as a whole, such as the
     average growth rate.
     """
-
     def __init__(self, startT, endT):
         self.startT = startT
         self.endT = endT
@@ -123,7 +122,14 @@ def fate_censor_rule(cell):
     (index 0) is a measure of the cell's fate (1 being alive, 0 being dead).
     Clearly if a cell has died, its subtree must be removed.
     """
-    return cell.obs[0] == 0
+    if cell.obs[0] == 0:
+        if not cell.isLeafBecauseTerminal():
+            cell.left.censored = True
+            cell.right.censored = True
+        assert cell.isLeaf()
+    if not cell.isRootParent():
+        if cell.parent.censored:
+            cell.censored = True
 
 
 def time_censor_rule(cell, desired_experiment_time):
@@ -134,7 +140,16 @@ def time_censor_rule(cell, desired_experiment_time):
     If a cell has lived beyond a certain experiment time, then its subtree
     must be removed.
     """
-    return cell.time.endT > desired_experiment_time
+    if cell.time.endT > desired_experiment_time:
+        cell.time.endT = desired_experiment_time
+        cell.obs[1] = cell.time.endT - cell.time.startT
+        if not cell.isLeafBecauseTerminal():
+            cell.left.censored = True
+            cell.right.censored = True
+        assert cell.isLeaf()
+    if not cell.isRootParent():
+        if cell.parent.censored:
+            cell.censored = True
 
 
 # Because parameter estimation requires that estimators be written or imported,

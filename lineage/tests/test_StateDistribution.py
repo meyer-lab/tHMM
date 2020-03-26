@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 import scipy.stats as sp
-from ..StateDistribution import (
+from ..states/StateDistribution import (
     StateDistribution,
     bernoulli_estimator,
     gamma_estimator,
@@ -76,28 +76,6 @@ class TestModel(unittest.TestCase):
         self.assertTrue(0.0 <= abs(estimator_obj.bern_p - self.E[0].bern_p) <= 0.1)
         self.assertTrue(0.0 <= abs(estimator_obj.gamma_a - self.E[0].gamma_a) <= 3.0)
         self.assertTrue(0.0 <= abs(estimator_obj.gamma_scale - self.E[0].gamma_scale) <= 3.0)
-
-    def test_fate_censor_rule(self):
-        """
-        A unittest for the fate_censor_rule.
-        """
-        for cell in self.lineage.output_lineage:
-            if cell.obs[0] == 0:
-                self.assertTrue(fate_censor_rule(cell))
-        for cell in self.lineage3.output_lineage:
-            if cell.obs[0] == 0:
-                self.assertTrue(fate_censor_rule(cell))
-
-    def test_time_censor_rule(self):
-        """
-        A unittest for the time_censor_rule.
-        """
-        for cell in self.lineage2.output_lineage:
-            if cell.time.startT > self.lineage2.desired_experiment_time:
-                self.assertTrue(time_censor_rule(cell, self.lineage2.desired_experiment_time))
-        for cell in self.lineage3.output_lineage:
-            if cell.time.startT > self.lineage3.desired_experiment_time:
-                self.assertTrue(time_censor_rule(cell, self.lineage3.desired_experiment_time))
 
     def test_get_experiment_time(self):
         """

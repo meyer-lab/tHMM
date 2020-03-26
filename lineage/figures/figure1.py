@@ -4,9 +4,17 @@ Purpose: Generates figure 1.
 
 Figure 1 is the distribution of cells in a state over generations (censored) and over time.
 """
-from matplotlib.ticker import MaxNLocator
+import numpy as np
 
-from .figureCommon import getSetup, pi, T, E, subplotLabel
+from .figureCommon import (
+    getSetup,
+    subplotLabel,
+    pi,
+    T,
+    E,
+    max_desired_num_cells,
+    num_data_points,
+)
 from ..LineageTree import LineageTree
 
 def makeFigure():
@@ -16,6 +24,8 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((7, 7), (2, 2))
+    
+    figureMaker(ax)
 
     subplotLabel(ax)
 
