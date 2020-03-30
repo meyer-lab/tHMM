@@ -3,6 +3,10 @@ from math import gamma
 import numpy as np
 import scipy.stats as sp
 from numba import njit
+import scipy.special as sc
+from scipy import optimize
+
+from .stateCommon import skew
 
 
 class StateDistribution:
@@ -90,13 +94,14 @@ def gamma_estimator(gamma_obs):
 
     if N == 0:
         return 10, 1
-
+    
+    xbar = sum(gamma_obs) / len(gamma_obs) 
     x_lnx = [x * np.log(x) for x in gamma_obs]
     lnx = [np.log(x) for x in gamma_obs]
     # gamma_a
     a_hat = (N * (sum(gamma_obs)) + 1e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
     # gamma_scale
-    b_hat = ((1 + 1e-10) / (N ** 2 + 1e-10)) * (N * (sum(x_lnx)) - (sum(lnx)) * (sum(gamma_obs)))
+    b_hat = xbar / a_hat
 
     if b_hat < 1.0 or 50.0 < a_hat < 5.0:
         return 10, 1
