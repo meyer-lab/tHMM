@@ -14,7 +14,7 @@ from .figureCommon import (
     pi,
     T,
     E,
-    min_desired_num_cells,
+    max_desired_num_cells,
     min_experiment_time,
     min_num_lineages,
     max_num_lineages,
@@ -54,7 +54,7 @@ def accuracy():
         population = []
 
         for _ in range(num):
-            population.append(LineageTree(pi, T, E, min_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time))
+            population.append(LineageTree(pi, T, E, max_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time))
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)

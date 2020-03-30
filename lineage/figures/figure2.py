@@ -1,7 +1,7 @@
 """
 File: figure2.py
 Purpose: Generates figure 2.
-Figure 3 analyzes heterogeneous (2 state), uncensored,
+Figure 2 analyzes heterogeneous (2 state), uncensored,
 single lineages (no more than one lineage per population).
 """
 import numpy as np
@@ -22,7 +22,7 @@ from ..LineageTree import LineageTree
 
 def makeFigure():
     """
-    Makes figure 3.
+    Makes figure 2.
     """
 
     # Get list of axis objects
