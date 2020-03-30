@@ -1,7 +1,7 @@
 """
-File: figure4.py
-Purpose: Generates figure 4.
-Figure 4 analyzes heterogeneous (2 state), censored (by both time and fate),
+File: figure5.py
+Purpose: Generates figure 5.
+Figure 5 analyzes heterogeneous (2 state), censored (by both time and fate),
 populations of lineages (more than one lineage per populations).
 """
 import numpy as np
@@ -14,7 +14,7 @@ from .figureCommon import (
     pi,
     T,
     E,
-    max_desired_num_cells,
+    min_desired_num_cells,
     min_experiment_time,
     min_num_lineages,
     max_num_lineages,
@@ -25,7 +25,7 @@ from ..LineageTree import LineageTree
 
 def makeFigure():
     """
-    Makes figure 4.
+    Makes figure 5.
     """
 
     # Get list of axis objects
@@ -54,7 +54,7 @@ def accuracy():
         population = []
 
         for _ in range(num):
-            population.append(LineageTree(pi, T, E, max_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time))
+            population.append(LineageTree(pi, T, E, min_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time))
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
