@@ -2,7 +2,7 @@
 File: figure1.py
 Purpose: Generates figure 1.
 
-Figure 1 is the distribution of cells in a state over generations (censored) and over time.
+Figure 1 is the distribution of cells in a state over generations (uncensored) and over time.
 """
 import numpy as np
 
@@ -19,7 +19,7 @@ from ..LineageTree import LineageTree
 
 def makeFigure():
     """
-    Makes figure 2.
+    Makes figure 1.
     """
 
     # Get list of axis objects
@@ -30,4 +30,11 @@ def makeFigure():
     subplotLabel(ax)
 
     return f
+
+
+def figureMaker(ax):
+    """
+    Creates the data for figure 1.
+    """
+    
    

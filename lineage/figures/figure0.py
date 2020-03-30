@@ -1,6 +1,6 @@
 """
 File: figure0.py
-Purpose: Generates figure 1.
+Purpose: Generates figure 0.
 
 Figure 0 is the distribution of cells in a state over generations (uncensored) and over time.
 """
