@@ -73,7 +73,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
 
     # first stopping condition check
     new_LL = calculate_log_likelihood(NF)
-    for iter_idx in range(max_iter):
+    for _ in range(max_iter):
         old_LL = new_LL
 
         # code for grouping all states in cell lineages
