@@ -1,7 +1,7 @@
 """
-File: figure4.py
-Purpose: Generates figure 4.
-Figure 4 analyzes heterogeneous (2 state), censored (by both time and fate),
+File: figure5.py
+Purpose: Generates figure 5.
+Figure 5 analyzes heterogeneous (2 state), censored (by both time and fate),
 populations of lineages (more than one lineage per populations).
 """
 import numpy as np
@@ -25,7 +25,7 @@ from ..LineageTree import LineageTree
 
 def makeFigure():
     """
-    Makes figure 4.
+    Makes figure 5.
     """
 
     # Get list of axis objects

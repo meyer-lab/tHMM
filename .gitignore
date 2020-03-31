@@ -4,9 +4,13 @@
 **/.pytest_cache
 **/__pycache__/
 nosetests.xml
+
+# Notebooks
 **.ipynb
 # Exception to the rule
 !Guide_to_tHMM.ipynb
+
+
 venv/
 output/
 profile

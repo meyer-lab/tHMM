@@ -1,7 +1,7 @@
 """
-File: figure3.py
-Purpose: Generates figure 3.
-Figure 3 analyzes heterogeneous (2 state), censored (by both time and fate),
+File: figure4.py
+Purpose: Generates figure 4.
+Figure 4 analyzes heterogeneous (2 state), censored (by both time and fate),
 single lineages (no more than one lineage per population).
 """
 import numpy as np

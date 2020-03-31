@@ -169,3 +169,63 @@ def double(parent_state, T):
     right_state = right_state_results.tolist().index(1)
 
     return left_state, right_state
+
+
+def tree_recursion(cell, subtree):
+    """
+    A recursive helper function that traverses upwards from the leaf to the root.
+    """
+    if cell.isLeaf():
+        return
+    subtree.append(cell.left)
+    subtree.append(cell.right)
+    tree_recursion(cell.left, subtree)
+    tree_recursion(cell.right, subtree)
+    return
+
+
+def get_subtrees(node, lineage):
+    """
+    Given one cell, return the subtree of that cell,
+    and return all the tree other than that subtree.
+    """
+    subtree = [node]
+    tree_recursion(node, subtree)
+    not_subtree = []
+    for cell in lineage:
+        if cell not in subtree:
+            not_subtree.append(cell)
+    return subtree, not_subtree
+
+
+def find_two_subtrees(cell, lineage):
+    """
+    Gets the left and right subtrees from a cell.
+    """
+    if cell.isLeaf():
+        return None, None, lineage
+    left_sub, _ = get_subtrees(cell.left, lineage)
+    right_sub, _ = get_subtrees(cell.right, lineage)
+    neither_subtree = []
+    for node in lineage:
+        if node not in left_sub and node not in right_sub:
+            neither_subtree.append(node)
+    return left_sub, right_sub, neither_subtree
+
+
+def get_mixed_subtrees(node_m, node_n, lineage):
+    """
+    Takes in the lineage and the two cells in any part of the lineage tree, finds the subtree to the both given cells,
+    and returns a group of cells that are in both subtrees, and the remaining cells in the lineage that are not in any of those.
+    """
+    m_sub, _ = get_subtrees(node_m, lineage)
+    n_sub, _ = get_subtrees(node_n, lineage)
+    mixed_sub = n_sub
+    for cell in m_sub:
+        if cell not in n_sub:
+            mixed_sub.append(cell)
+    not_mixed = []
+    for cell in lineage:
+        if cell not in mixed_sub:
+            not_mixed.append(cell)
+    return mixed_sub, not_mixed

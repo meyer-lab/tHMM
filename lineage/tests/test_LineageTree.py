@@ -1,9 +1,10 @@
 """ Unit test file. """
 import unittest
 import numpy as np
-from ..CellVar import CellVar as c
-from ..LineageTree import LineageTree, max_gen, get_leaves, get_subtrees, find_two_subtrees, get_mixed_subtrees
-from ..StateDistribution import StateDistribution, get_experiment_time
+from ..CellVar import CellVar as c, get_subtrees, find_two_subtrees, get_mixed_subtrees
+from ..LineageTree import LineageTree, max_gen, get_leaves
+from ..states.StateDistribution import StateDistribution
+from ..states.stateCommon import get_experiment_time
 
 
 class TestModel(unittest.TestCase):

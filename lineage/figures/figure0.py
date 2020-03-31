@@ -1,8 +1,8 @@
 """
-File: figure1.py
-Purpose: Generates figure 1.
+File: figure0.py
+Purpose: Generates figure 0.
 
-Figure 1 is the distribution of cells in a state over generations (uncensored) and over time.
+Figure 0 is the distribution of cells in a state over generations (uncensored) and over time.
 """
 import numpy as np
 
@@ -20,7 +20,7 @@ from ..LineageTree import LineageTree
 
 def makeFigure():
     """
-    Makes figure 1.
+    Makes figure 0.
     """
 
     # Get list of axis objects
@@ -35,5 +35,5 @@ def makeFigure():
 
 def figureMaker(ax):
     """
-    Creates the data for figure 1.
+    Creates the data for figure 0.
     """

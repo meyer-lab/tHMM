@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from numpy.random import randint
-from lineage.StateDistribution import StateDistribution
+from lineage.states.StateDistribution import StateDistribution
 from lineage.Analyze import Analyze, LLFunc
 from lineage.LineageTree import LineageTree
 

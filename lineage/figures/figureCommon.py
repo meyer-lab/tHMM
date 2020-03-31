@@ -9,7 +9,7 @@ from matplotlib import gridspec, pyplot as plt
 import seaborn as sns
 from ..Analyze import run_Results_over, run_Analyze_over
 
-from ..StateDistribution import StateDistribution
+from ..states.StateDistribution import StateDistribution
 
 # pi: the initial probability vector
 pi = np.array([0.5, 0.5], dtype="float")
