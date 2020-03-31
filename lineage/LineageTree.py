@@ -259,4 +259,3 @@ def get_leaves(lineage):
             leaves.append(cell)  # appending the leaf cells to a list
             leaf_indices.append(index)  # appending the index of the cells
     return leaf_indices, leaves
-

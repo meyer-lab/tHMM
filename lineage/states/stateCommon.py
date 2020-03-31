@@ -1,5 +1,6 @@
 """ Common utilities used between states regardless of distribution. """
 
+
 class Time:
     """
     Class that stores all the time related observations in a neater format.
@@ -7,6 +8,7 @@ class Time:
     obtaining attributes of the lineage as a whole, such as the
     average growth rate.
     """
+
     def __init__(self, startT, endT):
         self.startT = startT
         self.endT = endT
@@ -81,7 +83,7 @@ def time_censor_rule(cell, desired_experiment_time):
         if cell.parent.censored:
             cell.censored = True
 
-            
+
 def skew(data):
     """
     skew is third central moment / variance**(1.5)

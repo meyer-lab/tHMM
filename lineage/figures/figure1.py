@@ -17,6 +17,7 @@ from .figureCommon import (
 )
 from ..LineageTree import LineageTree
 
+
 def makeFigure():
     """
     Makes figure 1.
@@ -24,7 +25,7 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((7, 7), (2, 2))
-    
+
     figureMaker(ax)
 
     subplotLabel(ax)
@@ -36,5 +37,3 @@ def figureMaker(ax):
     """
     Creates the data for figure 1.
     """
-    
-   

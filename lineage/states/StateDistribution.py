@@ -94,8 +94,8 @@ def gamma_estimator(gamma_obs):
 
     if N == 0:
         return 10, 1
-    
-    xbar = sum(gamma_obs) / len(gamma_obs) 
+
+    xbar = sum(gamma_obs) / len(gamma_obs)
     x_lnx = [x * np.log(x) for x in gamma_obs]
     lnx = [np.log(x) for x in gamma_obs]
     # gamma_a
