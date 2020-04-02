@@ -47,6 +47,16 @@ def get_experiment_time(lineageObj):
     return longest
 
 
+def basic_censor(cell):
+    if not cell.isRootParent():
+        if cell.parent.censored:
+            cell.censored = True
+            cell.get_sister().censored = True
+            if not cell.isLeafBecauseTerminal():
+                cell.left.censored = True
+                cell.right.censored = True
+
+
 def fate_censor_rule(cell):
     """
     User-defined function that checks whether a cell's subtree should be removed.
@@ -59,9 +69,7 @@ def fate_censor_rule(cell):
             cell.left.censored = True
             cell.right.censored = True
         assert cell.isLeaf()
-    if not cell.isRootParent():
-        if cell.parent.censored:
-            cell.censored = True
+
 
 
 def time_censor_rule(cell, desired_experiment_time):
@@ -79,9 +87,6 @@ def time_censor_rule(cell, desired_experiment_time):
             cell.left.censored = True
             cell.right.censored = True
         assert cell.isLeaf()
-    if not cell.isRootParent():
-        if cell.parent.censored:
-            cell.censored = True
 
 
 def skew(data):

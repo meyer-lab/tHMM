@@ -62,10 +62,11 @@ class CellVar:
     def isLeafBecauseDaughtersAreCensored(self):
         """
         Boolean.
-        Returns true when a cell is a leaf because its children are censored.
+        Returns true when a cell is a leaf because its children are censored
+        but it itself is not censored.
         """
         if hasattr(self.left, "censored") and hasattr(self.right, "censored"):
-            if self.left.censored and self.right.censored:
+            if self.left.censored and self.right.censored and not self.censored:
                 return True
 
         return False
