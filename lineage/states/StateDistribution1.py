@@ -1,30 +1,27 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
-from math import gamma
 import numpy as np
 import scipy.stats as sp
 from numba import njit
 import scipy.special as sc
-from scipy import optimize
 
 from .stateCommon import skew
 
 
 class StateDistribution:
-    def __init__(self, bern_p, gamma_a, gamma_scale):
+    def __init__(self, bern_p, exp_lambda):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.bern_p = bern_p
-        self.gamma_a = gamma_a
-        self.gamma_scale = gamma_scale
-        self.params = [self.bern_p, self.gamma_a, self.gamma_scale]
+        self.exp_lambda = exp_lambda
+        self.params = [self.bern_p, self.exp_lambda]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
-        gamma_obs = sp.gamma.rvs(a=self.gamma_a, scale=self.gamma_scale, size=size)  # gamma observations
+        exp_obs = sp.expon.rvs(scale=self.exp_lambda, size=size)  # gamma observations
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        list_of_tuple_of_obs = list(map(list, zip(bern_obs, gamma_obs)))
+        list_of_tuple_of_obs = list(map(list, zip(bern_obs, exp_obs)))
         return list_of_tuple_of_obs
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood

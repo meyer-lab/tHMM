@@ -4,7 +4,6 @@ import numpy as np
 import scipy.stats as sp
 from numba import njit
 import scipy.special as sc
-from scipy import optimize
 
 from .stateCommon import skew
 
