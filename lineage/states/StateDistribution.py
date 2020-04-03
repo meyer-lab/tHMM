@@ -22,7 +22,7 @@ class StateDistribution:
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
         gamma_obs = sp.gamma.rvs(a=self.gamma_a, scale=self.gamma_scale, size=size)  # gamma observations
-        time_censor = [1]*len(gamma_obs)
+        time_censor = [1] * len(gamma_obs)
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         list_of_tuple_of_obs = list(map(list, zip(bern_obs, gamma_obs, time_censor)))
