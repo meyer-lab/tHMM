@@ -22,9 +22,10 @@ class StateDistribution:
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
         gamma_obs = sp.gamma.rvs(a=self.gamma_a, scale=self.gamma_scale, size=size)  # gamma observations
+        time_censor = [1]*len(gamma_obs)
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        list_of_tuple_of_obs = list(map(list, zip(bern_obs, gamma_obs)))
+        list_of_tuple_of_obs = list(map(list, zip(bern_obs, gamma_obs, time_censor)))
         return list_of_tuple_of_obs
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
@@ -92,14 +93,11 @@ def gamma_estimator(gamma_obs):
     """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
     N = len(gamma_obs)
 
-    if N == 0:
-        return 10, 1
-
-    xbar = sum(gamma_obs) / len(gamma_obs)
+    xbar = (sum(gamma_obs) + 10e-10) / (len(gamma_obs) + 1e-10)
     x_lnx = [x * np.log(x) for x in gamma_obs]
     lnx = [np.log(x) for x in gamma_obs]
     # gamma_a
-    a_hat = (N * (sum(gamma_obs)) + 1e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
+    a_hat = (N * (sum(gamma_obs)) + 10e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
     # gamma_scale
     b_hat = xbar / a_hat
 

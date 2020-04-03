@@ -10,8 +10,8 @@ from ..states.StateDistribution import (
     bern_pdf,
 )
 from ..states.stateCommon import (
-    fate_censor_rule,
-    time_censor_rule,
+    fate_censor,
+    time_censor,
     get_experiment_time,
 )
 from ..LineageTree import LineageTree
@@ -31,9 +31,10 @@ class TestModel(unittest.TestCase):
         self.E = [StateDistribution(0.99, 20, 5), StateDistribution(0.80, 10, 1)]
 
         # creating two lineages, one with False for pruning, one with True.
-        self.lineage = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, desired_experiment_time=1000, censor_condition=1)
+        self.lineage = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
         self.lineage2 = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 5.5) - 1, censor_condition=2, desired_experiment_time=50)
         self.lineage3 = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800)
+        self.population = [LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800) for i in range(50)]
 
     def test_rvs(self):
         """
@@ -42,11 +43,11 @@ class TestModel(unittest.TestCase):
         that each corresponds to one of the observation types
         """
         tuple_of_obs = self.E[0].rvs(size=30)
-        bern_obs, gamma_obs = list(zip(*tuple_of_obs))
+        bern_obs, gamma_obs, _ = list(zip(*tuple_of_obs))
         self.assertTrue(len(bern_obs) == len(gamma_obs) == 30)
 
         tuple_of_obs1 = self.E[1].rvs(size=40)
-        bern_obs1, gamma_obs1 = list(zip(*tuple_of_obs1))
+        bern_obs1, gamma_obs1, _ = list(zip(*tuple_of_obs1))
         self.assertTrue(len(bern_obs1) == len(gamma_obs1) == 40)
 
     def test_pdf(self):
@@ -78,7 +79,18 @@ class TestModel(unittest.TestCase):
         self.assertTrue(0.0 <= abs(estimator_obj.bern_p - self.E[0].bern_p) <= 0.1)
         self.assertTrue(0.0 <= abs(estimator_obj.gamma_a - self.E[0].gamma_a) <= 3.0)
         self.assertTrue(0.0 <= abs(estimator_obj.gamma_scale - self.E[0].gamma_scale) <= 3.0)
-
+        
+    def test_censor(self):
+        """
+        A unittest for testing whether censoring is working 
+        as expected.
+        """
+        for lin in self.population:
+            for cell in lin.output_lineage:
+                if not cell.isRootParent:
+                    if cell.parent.censored:
+                        self.assertTrue(cell.censored)
+        
     def test_get_experiment_time(self):
         """
         A unittest for obtaining the experiment time.
