@@ -57,7 +57,7 @@ def basic_censor(cell):
                 cell.right.censored = True
 
 
-def fate_censor_rule(cell):
+def fate_censor(cell):
     """
     User-defined function that checks whether a cell's subtree should be removed.
     Our example is based on the standard requirement that the first observation
@@ -68,11 +68,9 @@ def fate_censor_rule(cell):
         if not cell.isLeafBecauseTerminal():
             cell.left.censored = True
             cell.right.censored = True
-        assert cell.isLeaf()
 
 
-
-def time_censor_rule(cell, desired_experiment_time):
+def time_censor(cell, desired_experiment_time):
     """
     User-defined function that checks whether a cell's subtree should be removed.
     Our example is based on the standard requirement that the second observation
@@ -83,11 +81,10 @@ def time_censor_rule(cell, desired_experiment_time):
     if cell.time.endT > desired_experiment_time:
         cell.time.endT = desired_experiment_time
         cell.obs[1] = cell.time.endT - cell.time.startT
+        cell.obs[2] = 1
         if not cell.isLeafBecauseTerminal():
             cell.left.censored = True
             cell.right.censored = True
-        assert cell.isLeaf()
-
 
 def skew(data):
     """

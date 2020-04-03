@@ -3,7 +3,7 @@ from copy import deepcopy
 import scipy.stats as sp
 
 from .CellVar import CellVar
-from .states.stateCommon import assign_times, fate_censor_rule, time_censor_rule
+from .states.stateCommon import assign_times, basic_censor, fate_censor, time_censor
 
 
 class LineageTree:
@@ -141,13 +141,14 @@ class LineageTree:
 
         self.output_lineage = []
         for cell in self.full_lineage:
+            basic_censor(cell)
             if self.censor_condition == 1:
-                fate_censor_rule(cell)
+                fate_censor(cell)
             elif self.censor_condition == 2:
-                time_censor_rule(cell, self.desired_experiment_time)
+                time_censor(cell, self.desired_experiment_time)
             elif self.censor_condition == 3:
-                fate_censor_rule(cell)
-                time_censor_rule(cell, self.desired_experiment_time)
+                fate_censor(cell)
+                time_censor(cell, self.desired_experiment_time)
             if not cell.censored:
                 self.output_lineage.append(cell)
 
