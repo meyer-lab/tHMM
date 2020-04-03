@@ -86,6 +86,7 @@ def time_censor(cell, desired_experiment_time):
             cell.left.censored = True
             cell.right.censored = True
 
+
 def skew(data):
     """
     skew is third central moment / variance**(1.5)

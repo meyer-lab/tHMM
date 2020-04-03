@@ -79,10 +79,10 @@ class TestModel(unittest.TestCase):
         self.assertTrue(0.0 <= abs(estimator_obj.bern_p - self.E[0].bern_p) <= 0.1)
         self.assertTrue(0.0 <= abs(estimator_obj.gamma_a - self.E[0].gamma_a) <= 3.0)
         self.assertTrue(0.0 <= abs(estimator_obj.gamma_scale - self.E[0].gamma_scale) <= 3.0)
-        
+
     def test_censor(self):
         """
-        A unittest for testing whether censoring is working 
+        A unittest for testing whether censoring is working
         as expected.
         """
         for lin in self.population:
@@ -90,7 +90,7 @@ class TestModel(unittest.TestCase):
                 if not cell.isRootParent:
                     if cell.parent.censored:
                         self.assertTrue(cell.censored)
-        
+
     def test_get_experiment_time(self):
         """
         A unittest for obtaining the experiment time.
