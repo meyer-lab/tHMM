@@ -66,7 +66,7 @@ class StateDistribution:
         # if this function runs again.
         return state_estimate_obj
     
-    def tHMM_E_init():
+    def tHMM_E_init(self):
         """ Initialize a default state distribution. """
         return StateDistribution(0.9, 10 * (np.random.uniform()), 1)
 
