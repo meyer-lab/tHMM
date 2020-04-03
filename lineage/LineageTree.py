@@ -257,7 +257,8 @@ def get_leaves(lineage):
     leaves = []
     for index, cell in enumerate(lineage):
         if cell.isLeaf():
-            assert not cell.parent.censored
+            if not cell.isRootParent:
+                assert not cell.parent.censored
             leaves.append(cell)  # appending the leaf cells to a list
             leaf_indices.append(index)  # appending the index of the cells
     return leaf_indices, leaves
