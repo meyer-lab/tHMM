@@ -101,6 +101,9 @@ def gamma_estimator(gamma_obs):
     # gamma_scale
     b_hat = xbar / a_hat
 
+    if b_hat < 1.0 or 50.0 < a_hat < 5.0:
+        return 10, 1
+
     return a_hat, b_hat
 
 
