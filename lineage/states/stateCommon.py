@@ -1,5 +1,16 @@
 """ Common utilities used between states regardless of distribution. """
 
+@njit
+def bern_pdf(x, p):
+    """
+    This function takes in 1 observation and a Bernoulli rate parameter
+    and returns the likelihood of the observation based on the Bernoulli
+    probability distribution function.
+    """
+    # bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0 - self.bern_p)**(1 - tuple_of_obs[0])
+    bern_ll = (p ** x) * (1.0 - p) ** (1 - x)
+    return bern_ll
+
 
 class Time:
     """

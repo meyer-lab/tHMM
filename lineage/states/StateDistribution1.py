@@ -4,7 +4,7 @@ import scipy.stats as sp
 from numba import njit
 import scipy.special as sc
 
-from .stateCommon import skew
+from .stateCommon import bern_pdf
 
 
 class StateDistribution:
@@ -19,9 +19,10 @@ class StateDistribution:
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
         exp_obs = sp.expon.rvs(scale=self.exp_lambda, size=size)  # gamma observations
+        time_censor = [1] * len(gamma_obs)
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        list_of_tuple_of_obs = list(map(list, zip(bern_obs, exp_obs)))
+        list_of_tuple_of_obs = list(map(list, zip(bern_obs, exp_obs, time_censor)))
         return list_of_tuple_of_obs
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
@@ -34,7 +35,7 @@ class StateDistribution:
         # the individual observation likelihoods.
 
         bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
-        gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+        exp_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
 
         return bern_ll * gamma_ll
 
@@ -106,16 +107,6 @@ def gamma_estimator(gamma_obs):
     return a_hat, b_hat
 
 
-@njit
-def bern_pdf(x, p):
-    """
-    This function takes in 1 observation and a Bernoulli rate parameter
-    and returns the likelihood of the observation based on the Bernoulli
-    probability distribution function.
-    """
-    # bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0 - self.bern_p)**(1 - tuple_of_obs[0])
-    bern_ll = (p ** x) * (1.0 - p) ** (1 - x)
-    return bern_ll
 
 
 @njit
