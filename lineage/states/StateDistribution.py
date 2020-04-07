@@ -5,7 +5,7 @@ import scipy.stats as sp
 from numba import njit
 import scipy.special as sc
 
-from .stateCommon import bern_pdf
+from .stateCommon import bern_pdf, bernoulli_estimator
 
 
 class StateDistribution:
@@ -81,11 +81,6 @@ class StateDistribution:
 # Their use in the StateDistribution class is shown in the estimator class method.
 # User must take care to define estimators that
 # can handle the case where the list of observations is empty.
-
-
-def bernoulli_estimator(bern_obs):
-    """ Add up all the 1s and divide by the total length (finding the average). """
-    return (sum(bern_obs) + 1e-10) / (len(bern_obs) + 2e-10)
 
 
 def gamma_estimator(gamma_obs):

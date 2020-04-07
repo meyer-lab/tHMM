@@ -19,7 +19,7 @@ class StateDistribution:
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
         exp_obs = sp.expon.rvs(scale=self.exp_lambda, size=size)  # gamma observations
-        time_censor = [1] * len(gamma_obs)
+        time_censor = [1] * len(exp_obs)
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         list_of_tuple_of_obs = list(map(list, zip(bern_obs, exp_obs, time_censor)))
@@ -35,9 +35,9 @@ class StateDistribution:
         # the individual observation likelihoods.
 
         bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
-        exp_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+        exp_ll = exp_pdf(tuple_of_obs[1], self.exp_lambda)
 
-        return bern_ll * gamma_ll
+        return bern_ll * exp_ll
 
     def estimator(self, list_of_tuples_of_obs):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
@@ -48,7 +48,7 @@ class StateDistribution:
         # {
         try:
             bern_obs = list(unzipped_list_of_tuples_of_obs[0])
-            gamma_obs = list(unzipped_list_of_tuples_of_obs[1])
+            exp_obs = list(unzipped_list_of_tuples_of_obs[1])
         except BaseException:
             bern_obs = []
             gamma_obs = []
@@ -81,32 +81,16 @@ def tHMM_E_init():
 # can handle the case where the list of observations is empty.
 
 
-def bernoulli_estimator(bern_obs):
-    """ Add up all the 1s and divide by the total length (finding the average). """
-    return (sum(bern_obs) + 1e-10) / (len(bern_obs) + 2e-10)
 
 
-def gamma_estimator(gamma_obs):
-    """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
-    N = len(gamma_obs)
 
-    if N == 0:
-        return 10, 1
+def exp_estimator(exp_obs):
+    """
+    This is a closed-form estimator for the lambda parameter of the 
+    exponential distribution, which is right-censored.
+    """
 
-    xbar = sum(gamma_obs) / len(gamma_obs)
-    x_lnx = [x * np.log(x) for x in gamma_obs]
-    lnx = [np.log(x) for x in gamma_obs]
-    # gamma_a
-    a_hat = (N * (sum(gamma_obs)) + 1e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
-    # gamma_scale
-    b_hat = xbar / a_hat
-
-    if b_hat < 1.0 or 50.0 < a_hat < 5.0:
-        return 10, 1
-
-    return a_hat, b_hat
-
-
+    return lambda_hat
 
 
 @njit
