@@ -59,7 +59,7 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     return holder
 
 
-def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200, piVary=True, tVary=True, eVary=True):
+def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
     """Runs the tHMM function through Baum Welch fitting"""
     num_states = tHMMobj.num_states
 
@@ -101,13 +101,13 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200, piVary=True, tVary=True,
             # this bins the cells by lineage to the population cell lists
             for ii, state in enumerate(max_state_holder):
                 cell_groups[state].append(lineage[ii])
-        if piVary:
+        if not tHMMobj.estimate.fpi:
             # population wide pi calculation
             tHMMobj.estimate.pi = pi_estimate / sum(pi_estimate)
-        if tVary:
+        if not tHMMobj.estimate.fT:
             # population wide T calculation
             tHMMobj.estimate.T = T_estimate / T_estimate.sum(axis=1)[:, np.newaxis]
-        if eVary:
+        if not tHMMobj.estimate.fE:
             # opulation wide E calculation
             for state_j in range(num_states):
                 tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator([cell.obs for cell in cell_groups[state_j]])
