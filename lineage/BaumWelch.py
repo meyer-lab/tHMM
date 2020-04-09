@@ -101,13 +101,13 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             # this bins the cells by lineage to the population cell lists
             for ii, state in enumerate(max_state_holder):
                 cell_groups[state].append(lineage[ii])
-        if not tHMMobj.estimate.fpi:
+        if tHMMobj.estimate.fpi is None:
             # population wide pi calculation
             tHMMobj.estimate.pi = pi_estimate / sum(pi_estimate)
-        if not tHMMobj.estimate.fT:
+        if tHMMobj.estimate.fT is None:
             # population wide T calculation
             tHMMobj.estimate.T = T_estimate / T_estimate.sum(axis=1)[:, np.newaxis]
-        if not tHMMobj.estimate.fE:
+        if tHMMobj.estimate.fE is None:
             # opulation wide E calculation
             for state_j in range(num_states):
                 tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator([cell.obs for cell in cell_groups[state_j]])

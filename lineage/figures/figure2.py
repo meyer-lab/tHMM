@@ -55,4 +55,4 @@ def accuracy():
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
 
-    return commonAnalyze(list_of_populations)
+    return commonAnalyze(list_of_populations, fpi=pi, fT = T)

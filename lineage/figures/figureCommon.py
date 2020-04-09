@@ -52,9 +52,12 @@ def getSetup(figsize, gridd):
     return (ax, f)
 
 
-def commonAnalyze(list_of_populations, xtype="length"):
+def commonAnalyze(list_of_populations, xtype="length", **kwargs):
+    fpi = kwargs.get('fpi', None)
+    fT = kwargs.get('fT', None)
+    fE = kwargs.get('fE', None)
     # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, 2, parallel=True)
+    output = run_Analyze_over(list_of_populations, 2, parallel=True, fpi=fpi, fT=fT, fE=fE)
 
     # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)

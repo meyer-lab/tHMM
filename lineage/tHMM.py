@@ -12,15 +12,15 @@ class estimate:
         self.fE = kwargs.get('fE', None)
         self.num_states = num_states
         self.pi = np.squeeze(np.random.dirichlet(np.random.rand(num_states), 1).T)
-        if self.fpi:
+        if self.fpi is not None:
             self.pi = self.fpi
         self.T = np.random.dirichlet(np.random.rand(num_states), num_states)
-        if self.fT:
+        if self.fT is not None:
             self.T = self.fT
         self.E = []
         for _ in range(self.num_states):
             self.E.append(tHMM_E_init())
-        if self.fE:
+        if self.fE is not None:
             self.E = self.fE
     
 
