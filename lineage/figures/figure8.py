@@ -14,6 +14,7 @@ from .figureCommon import (
     commonAnalyze,
     figureMaker,
     pi,
+    T,
     max_desired_num_cells,
     num_data_points,
     state1,
@@ -52,7 +53,7 @@ def accuracy():
     for E in list_of_Es:
         population = []
 
-        population.append(LineageTree(pi, np.array([[0, 1], [1, 0]]), E, max_desired_num_cells))
+        population.append(LineageTree(pi, T, E, max_desired_num_cells))
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
