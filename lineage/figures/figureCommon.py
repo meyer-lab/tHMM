@@ -15,7 +15,7 @@ from ..states.StateDistribution import StateDistribution
 pi = np.array([0.5, 0.5], dtype="float")
 
 # T: transition probability matrix
-T = np.array([[0.85, 0.15], [0.15, 0.85]], dtype="float")
+T = np.array([[0.95, 0.05], [0.05, 0.95]], dtype="float")
 
 # bern, gamma_a, gamma_scale
 state0 = StateDistribution(0.99, 20, 5)
