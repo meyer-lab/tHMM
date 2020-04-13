@@ -99,7 +99,7 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
             output.append(prom.result())
     else:
         for _, population in enumerate(list_of_populations):
-            output.append(Analyze(population, num_states, fpi=fpi, fT=fT, fE=fE))
+            output.append(Analyze(population, num_states, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
     return output
 
