@@ -50,6 +50,9 @@ def accuracy():
     # Creating a list of populations to analyze over
     list_of_Es = [[StateDistribution(0.88, a, 1), state1] for a in np.logspace(1, 2, num_data_points, base=10)]
     list_of_populations = []
+    list_of_fpi = []
+    list_of_fT = []
+    list_of_fE = []
     for E in list_of_Es:
         population = []
 
@@ -57,5 +60,8 @@ def accuracy():
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
+        list_of_fpi.append(pi)
+        list_of_fT.append(T)
+        list_of_fE.append(E)
 
-    return commonAnalyze(list_of_populations, xtype="wass")
+    return commonAnalyze(list_of_populations, xtype="wass", list_of_fpi=list_of_fpi)
