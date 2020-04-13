@@ -39,7 +39,7 @@ def accuracy():
     """
     Calculates accuracy and parameter estimation
     over an increasing number of cells in a lineage for
-    a censored two-state model.
+    a uncensored two-state model.
     We increase the desired number of cells in a lineage by
     the experiment time.
     """

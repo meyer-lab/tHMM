@@ -98,7 +98,7 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
         for _, prom in enumerate(prom_holder):
             output.append(prom.result())
     else:
-        for _, population in enumerate(list_of_populations):
+        for idx, population in enumerate(list_of_populations):
             output.append(Analyze(population, num_states, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
     return output
