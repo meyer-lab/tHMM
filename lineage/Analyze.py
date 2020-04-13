@@ -84,16 +84,16 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
     list_of_populations: a list of populations that contain lineages
     num_states: an integer number of states to identify (a hyper-parameter of our model)
     """
-    fpi = kwargs.get('fpi', None)
-    fT = kwargs.get('fT', None)
-    fE = kwargs.get('fE', None)
+    list_of_fpi = kwargs.get('list_of_fpi', None)
+    list_of_fT = kwargs.get('list_of_fT', None)
+    list_of_fE = kwargs.get('list_of_fE', None)
     output = []
     if parallel:
         exe = ProcessPoolExecutor()
 
         prom_holder = []
-        for _, population in enumerate(list_of_populations):
-            prom_holder.append(exe.submit(Analyze, population, num_states, fpi=fpi, fT=fT, fE=fE))
+        for idx, population in enumerate(list_of_populations):
+            prom_holder.append(exe.submit(Analyze, population, num_states, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
         for _, prom in enumerate(prom_holder):
             output.append(prom.result())
