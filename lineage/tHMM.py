@@ -28,7 +28,7 @@ class estimate:
 class tHMM:
     """ Main tHMM class. """
 
-    def __init__(self, X, num_states, **kwargs):
+    def __init__(self, X, num_states, fpi=None, fT=None, fE=None):
         """ Instantiates a tHMM.
 
         This function uses the following functions and assings them to the cells
@@ -42,9 +42,9 @@ class tHMM:
             FOM (str): For now, it is either "E": Exponential, or "G": Gompertz
             and it determines the type of distribution for lifetime of the cells
         """
-        self.fpi = kwargs.get('fpi', None)
-        self.fT = kwargs.get('fT', None)
-        self.fE = kwargs.get('fE', None)
+        self.fpi = fpi
+        self.fT = fT
+        self.fE = fE
         self.X = X  # list containing lineages, should be in correct format (contain no NaNs)
         self.num_states = num_states  # number of discrete hidden states
         self.estimate = estimate(self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
