@@ -10,7 +10,7 @@ from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_n
 from .tHMM import tHMM
 
 
-def preAnalyze(X, num_states, **kwargs):
+def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     """Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
     Args:
     -----
@@ -21,9 +21,6 @@ def preAnalyze(X, num_states, **kwargs):
     --------
     tHMMobj {obj}:
     """
-    fpi = kwargs.get('fpi', None)
-    fT = kwargs.get('fT', None)
-    fE = kwargs.get('fE', None)
     for num_tries in range(1, 5):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
@@ -48,14 +45,11 @@ def preAnalyze(X, num_states, **kwargs):
     return tHMMobj, pred_states_by_lineage, LL
 
 
-def Analyze(X, num_states, **kwargs):
+def Analyze(X, num_states, fpi=None, fT=None, fE=None):
     """
     Analyze runs several for loops runnning our model for a given number of states
     given an input population (a list of lineages).
     """
-    fpi = kwargs.get('fpi', None)
-    fT = kwargs.get('fT', None)
-    fE = kwargs.get('fE', None)
     tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
 
     for _ in range(1, 5):

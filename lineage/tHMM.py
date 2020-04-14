@@ -6,10 +6,10 @@ from .states.StateDistribution import tHMM_E_init
 
 
 class estimate:
-    def __init__(self, num_states, **kwargs):
-        self.fpi = kwargs.get('fpi', None)
-        self.fT = kwargs.get('fT', None)
-        self.fE = kwargs.get('fE', None)
+    def __init__(self, num_states, fpi=None, fT=None, fE=None):
+        self.fpi = fpi
+        self.fT = fT
+        self.fE = fE
         self.num_states = num_states
         self.pi = np.squeeze(np.random.dirichlet(np.random.rand(num_states), 1).T)
         if self.fpi is not None:
@@ -42,12 +42,12 @@ class tHMM:
             FOM (str): For now, it is either "E": Exponential, or "G": Gompertz
             and it determines the type of distribution for lifetime of the cells
         """
-        fpi = kwargs.get('fpi', None)
-        fT = kwargs.get('fT', None)
-        fE = kwargs.get('fE', None)
+        self.fpi = kwargs.get('fpi', None)
+        self.fT = kwargs.get('fT', None)
+        self.fE = kwargs.get('fE', None)
         self.X = X  # list containing lineages, should be in correct format (contain no NaNs)
         self.num_states = num_states  # number of discrete hidden states
-        self.estimate = estimate(self.num_states, fpi=fpi, fT=fT, fE=fE)
+        self.estimate = estimate(self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
         self.MSD = self.get_Marginal_State_Distributions()  # full Marginal State Distribution holder
         self.EL = self.get_Emission_Likelihoods()  # full Emission Likelihood holder
 
