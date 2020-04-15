@@ -22,7 +22,6 @@ class estimate:
             self.E.append(tHMM_E_init())
         if self.fE is not None:
             self.E = self.fE
-    
 
 
 class tHMM:
