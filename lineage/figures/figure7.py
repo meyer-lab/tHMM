@@ -49,6 +49,9 @@ def accuracy():
     # Creating a list of populations to analyze over
     list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.0, 1.0, num_data_points)]
     list_of_populations = []
+    list_of_fpi = []
+    list_of_fT = []
+    list_of_fE = []
     for T in list_of_Ts:
         population = []
 
@@ -56,5 +59,8 @@ def accuracy():
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
+        list_of_fpi.append(pi)
+        list_of_fT.append(T)
+        list_of_fE.append(E)
 
-    return commonAnalyze(list_of_populations, xtype="prop")
+    return commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)

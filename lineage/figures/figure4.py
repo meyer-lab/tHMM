@@ -49,6 +49,9 @@ def accuracy():
     # Creating a list of populations to analyze over
     times = np.linspace(min_experiment_time, max_experiment_time, num_data_points)
     list_of_populations = []
+    list_of_fpi = []
+    list_of_fT = []
+    list_of_fE = []
     for experiment_time in times:
         population = []
 
@@ -56,5 +59,8 @@ def accuracy():
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
+        list_of_fpi.append(pi)
+        list_of_fT.append(T)
+        list_of_fE.append(E)
 
-    return commonAnalyze(list_of_populations)
+    return commonAnalyze(list_of_populations, list_of_fpi=list_of_fpi)

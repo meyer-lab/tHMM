@@ -39,7 +39,7 @@ def accuracy():
     """
     Calculates accuracy and parameter estimation
     over an increasing number of cells in a lineage for
-    a censored two-state model.
+    a uncensored two-state model.
     We increase the desired number of cells in a lineage by
     the experiment time.
     """
@@ -47,6 +47,9 @@ def accuracy():
     # Creating a list of populations to analyze over
     cells = np.linspace(16, 128, num_data_points)
     list_of_populations = []
+    list_of_fpi = []
+    list_of_fT = []
+    list_of_fE = []
     for cell_num in cells:
         population = []
 
@@ -54,5 +57,8 @@ def accuracy():
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
+        list_of_fpi.append(pi)
+        list_of_fT.append(T)
+        list_of_fE.append(E)
 
-    return commonAnalyze(list_of_populations)
+    return commonAnalyze(list_of_populations, list_of_fpi=list_of_fpi)

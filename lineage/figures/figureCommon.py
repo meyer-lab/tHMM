@@ -19,7 +19,7 @@ T = np.array([[0.95, 0.05], [0.05, 0.95]], dtype="float")
 
 # bern, gamma_a, gamma_scale
 state0 = StateDistribution(0.99, 20, 5)
-state1 = StateDistribution(0.88, 10, 1)
+state1 = StateDistribution(0.75, 10, 1)
 E = [state0, state1]
 
 min_desired_num_cells = (2 ** 8) - 1
@@ -52,9 +52,12 @@ def getSetup(figsize, gridd):
     return (ax, f)
 
 
-def commonAnalyze(list_of_populations, xtype="length"):
+def commonAnalyze(list_of_populations, xtype="length", **kwargs):
+    list_of_fpi = kwargs.get('list_of_fpi', [None]*len(list_of_populations))
+    list_of_fT = kwargs.get('list_of_fT', [None]*len(list_of_populations))
+    list_of_fE = kwargs.get('list_of_fE', [None]*len(list_of_populations))
     # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, 2, parallel=True)
+    output = run_Analyze_over(list_of_populations, 2, parallel=True, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
 
     # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)
