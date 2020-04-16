@@ -72,7 +72,8 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
             dictOut[key].append(val)
 
     paramEst = np.array(dictOut["param_estimates"])
-
+    paramTrues = np.array(dictOut["param_trues"])
+    
     x = None
     if xtype == "length":
         x = dictOut["total_number_of_cells"]
@@ -81,7 +82,7 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     elif xtype == "wass":
         x = dictOut["wasserstein"]
 
-    return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"]
+    return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
 
 
 def subplotLabel(axs):
@@ -92,34 +93,40 @@ def subplotLabel(axs):
         ax.text(-0.2, 1.25, ascii_lowercase[ii], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
 
 
-def figureMaker(ax, x, paramEst, accuracies, tr, pii, xlabel="Number of Cells"):
+def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
     """
     i = 0
     ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 0], c="#F9Cb9C", edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 0], c="#A4C2F4", edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].set_ylabel("Bernoulli $p$")
+    ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", alpha=0.5)
     ax[i].set_title(r"Bernoulli $p$")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
     ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 1], c="#F9Cb9C", edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 1], c="#A4C2F4", edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k", marker="o", alpha=0.5)
     ax[i].set_ylabel(r"Gamma $k$")
+    ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", alpha=0.5)
     ax[i].set_title(r"Gamma $k$")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
     ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 2], c="#F9Cb9C", edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 2], c="#A4C2F4", edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k", marker="o", alpha=0.5)
     ax[i].set_ylabel(r"Gamma $\theta$")
+    ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", alpha=0.5)
     ax[i].set_title(r"Gamma $\theta$")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
