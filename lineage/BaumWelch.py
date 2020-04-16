@@ -90,7 +90,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
                 lineageObj=lineageObj, beta_array=betas[num], MSD_array=tHMMobj.MSD[num], gamma_array=gamma_array, T=tHMMobj.estimate.T
             )
 
-            T_holder = (numer + np.spacing(1)) / (denom[:, np.newaxis] + np.spacing(1))
+            T_holder = (numer) / (denom[:, np.newaxis])
             T_estimate += T_holder
 
             max_state_holder = []  # a list the size of lineage, that contains max state for each cell
@@ -107,6 +107,10 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
         if tHMMobj.estimate.fT is None:
             # population wide T calculation
             tHMMobj.estimate.T = T_estimate / T_estimate.sum(axis=1)[:, np.newaxis]
+            print(T_estimate)
+            print(T_estimate.sum(axis=1)[:, np.newaxis])
+            print(tHMMobj.estimate.T)
+            print('BORRRRRRRRRRRRRRRRRG')
         if tHMMobj.estimate.fE is None:
             # opulation wide E calculation
             for state_j in range(num_states):

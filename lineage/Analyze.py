@@ -172,6 +172,10 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
             temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx], switcher_map[col_idx]]
 
     results_dict["switched_transition_matrix"] = temp_T
+    print("poop")
+    print(temp_T)
+    print("pooooooooop")
+    print(tHMMobj.X[0].T)
     results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
 
     # Rearrange the values in the pi vector
