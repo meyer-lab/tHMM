@@ -90,8 +90,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
                 lineageObj=lineageObj, beta_array=betas[num], MSD_array=tHMMobj.MSD[num], gamma_array=gamma_array, T=tHMMobj.estimate.T
             )
 
-            T_holder = (numer + np.spacing(1)) / (denom[:, np.newaxis] + np.spacing(1))
-            T_estimate += T_holder
+            T_estimate += numer / denom[:, np.newaxis]
 
             max_state_holder = []  # a list the size of lineage, that contains max state for each cell
             for ii, cell in enumerate(lineage):
