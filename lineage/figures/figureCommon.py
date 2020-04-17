@@ -2,7 +2,7 @@
 Contains utilities, functions, and variables that are commonly used or shared amongst
 the figure creation files.
 """
-
+from cycler import cycler
 from string import ascii_lowercase
 import numpy as np
 from matplotlib import gridspec, pyplot as plt
@@ -38,7 +38,7 @@ def getSetup(figsize, gridd):
     """
     Establish figure set-up with subplots.
     """
-    sns.set(style="whitegrid", font_scale=0.7, color_codes=True, palette="colorblind", rc={"grid.linestyle": "dotted", "axes.linewidth": 0.6})
+    sns.set(style="whitegrid", font_scale=0.7, color_codes=True, palette="colorblind", rc={"grid.linestyle": "dotted", "axes.linewidth": 0.6, "axes.prop_cycle": cycler('color', ['#1f77b4', '#ff7f0e', '#1f77b4', '#ff7f0e'])})
 
     # Setup plotting space and grid
     f = plt.figure(figsize=figsize, constrained_layout=True)
