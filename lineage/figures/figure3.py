@@ -66,8 +66,6 @@ def accuracy():
             population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
-        if num == num_lineages[0]:
-            print(population)
         list_of_populations.append(population)
         list_of_fpi.append(pi)
         list_of_fT.append(T)
