@@ -16,6 +16,7 @@ from .figureCommon import (
     pi,
     E,
     max_desired_num_cells,
+    lineage_good_to_analyze,
     max_experiment_time,
     num_data_points,
 )
@@ -55,7 +56,11 @@ def accuracy():
     for T in list_of_Ts:
         population = []
 
-        population.append(LineageTree(pi, T, E, max_desired_num_cells, censor_condition=3, desired_experiment_time=max_experiment_time))
+        tmp_lineage = LineageTree(pi, T, E, max_desired_num_cells, censor_condition=3, desired_experiment_time=max_experiment_time)
+        good2go = lineage_good_to_analyze(tmp_lineage)
+        while not good2go:
+            tmp_lineage = LineageTree(pi, T, E, max_desired_num_cells, censor_condition=3, desired_experiment_time=max_experiment_time)
+            good2go = lineage_good_to_analyze(tmp_lineage)
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)

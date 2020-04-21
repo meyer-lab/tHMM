@@ -15,6 +15,7 @@ from .figureCommon import (
     T,
     E,
     min_desired_num_cells,
+    lineage_good_to_analyze,
     min_num_lineages,
     max_num_lineages,
     num_data_points,
@@ -55,10 +56,18 @@ def accuracy():
     for num in num_lineages:
         population = []
 
-        for _ in range(num):
-            population.append(LineageTree(pi, T, E, 16))
+        for _ in range(num):   
+            tmp_lineage = LineageTree(pi, T, E, 16)
+            good2go = lineage_good_to_analyze(tmp_lineage)
+            while not good2go:
+                tmp_lineage = LineageTree(pi, T, E, 16)
+                good2go = lineage_good_to_analyze(tmp_lineage)
+
+            population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
+        if num == num_lineages[0]:
+            print(population)
         list_of_populations.append(population)
         list_of_fpi.append(pi)
         list_of_fT.append(T)

@@ -15,15 +15,17 @@ from ..states.StateDistribution import StateDistribution
 pi = np.array([0.5, 0.5], dtype="float")
 
 # T: transition probability matrix
-T = np.array([[0.95, 0.05], [0.05, 0.95]], dtype="float")
+T = np.array([[0.9, 0.1], [0.1, 0.9]], dtype="float")
 
 # bern, gamma_a, gamma_scale
-state0 = StateDistribution(0.99, 20, 5)
-state1 = StateDistribution(0.75, 10, 1)
+state0 = StateDistribution(0.99, 7, 7)
+state1 = StateDistribution(0.75, 7, 1)
 E = [state0, state1]
 
 min_desired_num_cells = (2 ** 8) - 1
 max_desired_num_cells = (2 ** 12) - 1
+
+min_min_lineage_length = 10
 
 min_experiment_time = 72
 max_experiment_time = 144
@@ -32,6 +34,13 @@ min_num_lineages = 1
 max_num_lineages = 100
 
 num_data_points = 50
+
+
+def lineage_good_to_analyze(tmp_lineage):
+    lineage_length = len(tmp_lineage)
+    is_sufficient_length = lineage_length >= min_min_lineage_length
+    is_heterogeneous = tmp_lineage.is_heterogeneous()
+    return is_sufficient_length and is_heterogeneous
 
 
 def getSetup(figsize, gridd):
