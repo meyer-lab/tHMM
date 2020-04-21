@@ -16,7 +16,7 @@ class estimate:
             self.T = self.fT
         self.E = []
         for _ in range(self.num_states):
-            self.E.append(E[0].tHMM_E_init())
+            self.E.append(self.E[0].tHMM_E_init())
         if self.fE is not None:
             self.E = self.fE
 
