@@ -67,10 +67,10 @@ class StateDistribution:
     
     def tHMM_E_init(self):
         """ Initialize a default state distribution. """
-        return StateDistribution(0.9, 10 * (np.random.uniform()), 1)
+        return StateDistribution(0.9, 7, 1*(np.random.uniform()))
 
     def __repr__(self):
-        return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_scale)
+        return "State object w/ parameters: {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_scale)
 
     
 
@@ -84,7 +84,10 @@ class StateDistribution:
 
 
 def gamma_estimator(gamma_obs):
-    """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
+    """
+    This is a closed-form estimator for two parameters
+    of the Gamma distribution, which is corrected for bias.
+    """
     N = len(gamma_obs)
 
     xbar = (sum(gamma_obs) + 7e-10) / (len(gamma_obs) + 1e-10)

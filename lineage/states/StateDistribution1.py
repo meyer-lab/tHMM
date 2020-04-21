@@ -64,12 +64,12 @@ class StateDistribution:
         return state_estimate_obj
 
     def __repr__(self):
-        return "State object w/ parameters: {}, {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_scale)
+        return "State object w/ parameters: {}, {}.".format(self.bern_p, self.exp_lambda)
 
 
 def tHMM_E_init():
     """ Initialize a default state distribution. """
-    return StateDistribution(0.9, 10 * (np.random.uniform()), 1)
+    return StateDistribution(0.9, 7*(np.random.uniform()))
 
 
 # Because parameter estimation requires that estimators be written or imported,
