@@ -87,7 +87,7 @@ def gamma_estimator(gamma_obs):
     """ This is a closed-form estimator for two parameters of the Gamma distribution, which is corrected for bias. """
     N = len(gamma_obs)
 
-    xbar = (sum(gamma_obs) + 10e-10) / (len(gamma_obs) + 1e-10)
+    xbar = (sum(gamma_obs) + 7e-10) / (len(gamma_obs) + 1e-10)
     x_lnx = [x * np.log(x) for x in gamma_obs]
     lnx = [np.log(x) for x in gamma_obs]
     # gamma_a

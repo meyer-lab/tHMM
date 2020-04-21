@@ -94,11 +94,11 @@ def exp_estimator(exp_obs):
 
 
 @njit
-def gamma_pdf(x, a, scale):
+def exp_pdf(x, lambda_):
     """
-    This function takes in 1 observation and gamma shape and scale parameters
-    and returns the likelihood of the observation based on the gamma
+    This function takes in 1 observation and and an exponential parameter
+    and returns the likelihood of the observation based on the exponential
     probability distribution function.
     """
     gamma_ll = (1 / (gamma(a) * (scale ** a))) * x ** (a - 1) * np.exp(-x / scale)
-    return gamma_ll
+    return exp_ll
