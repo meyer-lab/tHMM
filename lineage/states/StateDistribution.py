@@ -66,10 +66,15 @@ class StateDistribution:
         return state_estimate_obj
     
     def tHMM_E_init(self):
-        """ Initialize a default state distribution. """
+        """
+        Initialize a default state distribution.
+        """
         return StateDistribution(0.9, 7, 1*(np.random.uniform()))
 
     def __repr__(self):
+        """
+        Method to print out a state distribution object.
+        """
         return "State object w/ parameters: {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_scale)
 
     
@@ -111,5 +116,4 @@ def gamma_pdf(x, a, scale):
     and returns the likelihood of the observation based on the gamma
     probability distribution function.
     """
-    gamma_ll = (1 / (gamma(a) * (scale ** a))) * x ** (a - 1) * np.exp(-x / scale)
-    return gamma_ll
+    return (1 / (gamma(a) * (scale ** a))) * x ** (a - 1) * np.exp(-x / scale)

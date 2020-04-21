@@ -51,25 +51,30 @@ class StateDistribution:
             exp_obs = list(unzipped_list_of_tuples_of_obs[1])
         except BaseException:
             bern_obs = []
-            gamma_obs = []
+            exp_obs = []
 
         bern_p_estimate = bernoulli_estimator(bern_obs)
-        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
+        exp_lambda_estimate = exp_estimator(exp_obs)
 
-        state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
+        state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, exp_lambda=exp_lambda_estimate)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
         return state_estimate_obj
+    
+    def tHMM_E_init():
+        """
+        Initialize a random state distribution.
+        """
+        return StateDistribution(0.9, 7*(np.random.uniform()))
 
     def __repr__(self):
+        """
+        Method to print out a state distribution object.
+        """
         return "State object w/ parameters: {}, {}.".format(self.bern_p, self.exp_lambda)
 
-
-def tHMM_E_init():
-    """ Initialize a default state distribution. """
-    return StateDistribution(0.9, 7*(np.random.uniform()))
 
 
 # Because parameter estimation requires that estimators be written or imported,
@@ -80,17 +85,13 @@ def tHMM_E_init():
 # User must take care to define estimators that
 # can handle the case where the list of observations is empty.
 
-
-
-
-
+@njit
 def exp_estimator(exp_obs):
     """
     This is a closed-form estimator for the lambda parameter of the 
     exponential distribution, which is right-censored.
     """
-
-    return lambda_hat
+    return (sum(bern_obs) + 1e-10) / (len(bern_obs) + 2e-10)
 
 
 @njit
@@ -100,5 +101,4 @@ def exp_pdf(x, lambda_):
     and returns the likelihood of the observation based on the exponential
     probability distribution function.
     """
-    gamma_ll = (1 / (gamma(a) * (scale ** a))) * x ** (a - 1) * np.exp(-x / scale)
     return exp_ll
