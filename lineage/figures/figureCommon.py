@@ -2,7 +2,7 @@
 Contains utilities, functions, and variables that are commonly used or shared amongst
 the figure creation files.
 """
-
+from cycler import cycler
 from string import ascii_lowercase
 import numpy as np
 from matplotlib import gridspec, pyplot as plt
@@ -15,15 +15,17 @@ from ..states.StateDistribution import StateDistribution
 pi = np.array([0.5, 0.5], dtype="float")
 
 # T: transition probability matrix
-T = np.array([[0.95, 0.05], [0.05, 0.95]], dtype="float")
+T = np.array([[0.9, 0.1], [0.1, 0.9]], dtype="float")
 
 # bern, gamma_a, gamma_scale
-state0 = StateDistribution(0.99, 20, 5)
-state1 = StateDistribution(0.75, 10, 1)
+state0 = StateDistribution(0.99, 7, 7)
+state1 = StateDistribution(0.75, 7, 1)
 E = [state0, state1]
 
 min_desired_num_cells = (2 ** 8) - 1
 max_desired_num_cells = (2 ** 12) - 1
+
+min_min_lineage_length = 10
 
 min_experiment_time = 72
 max_experiment_time = 144
@@ -34,11 +36,26 @@ max_num_lineages = 100
 num_data_points = 50
 
 
+def lineage_good_to_analyze(tmp_lineage):
+    """
+    Boolean function that returns True when a lineage is
+    good for analysis. 
+    A lineage is good for analysis when it is heterogeneous,
+    that is, contains more than one state in its data, and if
+    it is of sufficient length.
+    """
+    lineage_length = len(tmp_lineage)
+    is_sufficient_length = lineage_length >= min_min_lineage_length
+    is_heterogeneous = tmp_lineage.is_heterogeneous()
+    return is_sufficient_length and is_heterogeneous
+
+
 def getSetup(figsize, gridd):
     """
     Establish figure set-up with subplots.
     """
-    sns.set(style="whitegrid", font_scale=0.7, color_codes=True, palette="colorblind", rc={"grid.linestyle": "dotted", "axes.linewidth": 0.6})
+    sns.set(style="whitegrid", font_scale=0.7, color_codes=True, palette="colorblind", rc={"grid.linestyle": "dotted",
+                                                                                           "axes.linewidth": 0.6, "axes.prop_cycle": cycler('color', ['#1f77b4', '#ff7f0e', '#1f77b4', '#ff7f0e'])})
 
     # Setup plotting space and grid
     f = plt.figure(figsize=figsize, constrained_layout=True)
@@ -53,9 +70,9 @@ def getSetup(figsize, gridd):
 
 
 def commonAnalyze(list_of_populations, xtype="length", **kwargs):
-    list_of_fpi = kwargs.get('list_of_fpi', [None]*len(list_of_populations))
-    list_of_fT = kwargs.get('list_of_fT', [None]*len(list_of_populations))
-    list_of_fE = kwargs.get('list_of_fE', [None]*len(list_of_populations))
+    list_of_fpi = kwargs.get('list_of_fpi', [None] * len(list_of_populations))
+    list_of_fT = kwargs.get('list_of_fT', [None] * len(list_of_populations))
+    list_of_fE = kwargs.get('list_of_fE', [None] * len(list_of_populations))
     # Analyzing the lineages in the list of populations (parallelized function)
     output = run_Analyze_over(list_of_populations, 2, parallel=True, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
 
@@ -72,6 +89,7 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
             dictOut[key].append(val)
 
     paramEst = np.array(dictOut["param_estimates"])
+    paramTrues = np.array(dictOut["param_trues"])
 
     x = None
     if xtype == "length":
@@ -81,7 +99,7 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     elif xtype == "wass":
         x = dictOut["wasserstein"]
 
-    return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"]
+    return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
 
 
 def subplotLabel(axs):
@@ -92,34 +110,41 @@ def subplotLabel(axs):
         ax.text(-0.2, 1.25, ascii_lowercase[ii], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
 
 
-def figureMaker(ax, x, paramEst, accuracies, tr, pii, xlabel="Number of Cells"):
+def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
     """
     i = 0
     ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 0], c="#F9Cb9C", edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 0], c="#A4C2F4", edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].set_ylabel("Bernoulli $p$")
+    ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", alpha=0.5)
     ax[i].set_title(r"Bernoulli $p$")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
     ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 1], c="#F9Cb9C", edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 1], c="#A4C2F4", edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k", marker="o", alpha=0.5)
     ax[i].set_ylabel(r"Gamma $k$")
+    ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", alpha=0.5)
     ax[i].set_title(r"Gamma $k$")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
     ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 2], c="#F9Cb9C", edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 2], c="#A4C2F4", edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k", marker="o", alpha=0.5)
     ax[i].set_ylabel(r"Gamma $\theta$")
+    ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", alpha=0.5, label="State 1")
+    ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", alpha=0.5, label="State 2")
+    ax[i].legend()
     ax[i].set_title(r"Gamma $\theta$")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)

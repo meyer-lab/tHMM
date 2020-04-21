@@ -78,9 +78,9 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
     list_of_populations: a list of populations that contain lineages
     num_states: an integer number of states to identify (a hyper-parameter of our model)
     """
-    list_of_fpi = kwargs.get('list_of_fpi', [None]*len(list_of_populations))
-    list_of_fT = kwargs.get('list_of_fT', [None]*len(list_of_populations))
-    list_of_fE = kwargs.get('list_of_fE', [None]*len(list_of_populations))
+    list_of_fpi = kwargs.get('list_of_fpi', [None] * len(list_of_populations))
+    list_of_fT = kwargs.get('list_of_fT', [None] * len(list_of_populations))
+    list_of_fE = kwargs.get('list_of_fE', [None] * len(list_of_populations))
     output = []
     if parallel:
         exe = ProcessPoolExecutor()
@@ -197,7 +197,13 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["param_estimates"] = []
     for val_idx in range(tHMMobj.num_states):
         results_dict["param_estimates"].append(temp_emissions[val_idx].params)
-
+     
+    # Get the true parameter values
+    results_dict["param_trues"] = []
+    for val_idx in range(tHMMobj.num_states):
+        results_dict["param_trues"].append(tHMMobj.X[0].E[val_idx].params)
+        
+        
     # 3. Calculate accuracy after switching states
     pred_states_switched = [switcher_map[state] for state in pred_states]
     results_dict["state_counter"] = np.bincount(pred_states_switched)
