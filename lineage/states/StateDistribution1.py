@@ -4,7 +4,7 @@ import scipy.stats as sp
 from numba import njit
 import scipy.special as sc
 
-from .stateCommon import bern_pdf
+from .stateCommon import bern_pdf, bernoulli_estimator
 
 
 class StateDistribution:
@@ -63,7 +63,7 @@ class StateDistribution:
         # if this function runs again.
         return state_estimate_obj
     
-    def tHMM_E_init():
+    def tHMM_E_init(self):
         """
         Initialize a random state distribution.
         """
@@ -91,7 +91,7 @@ def exp_estimator(exp_obs):
     This is a closed-form estimator for the lambda parameter of the 
     exponential distribution, which is right-censored.
     """
-    return (sum(exp_obs) + 7e-10) / (len(exp_obs) + 1e-10)
+    return (sum(exp_obs) + 1e-10) / (len(exp_obs) + 7e-10)
 
 
 @njit

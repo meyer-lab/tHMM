@@ -10,6 +10,7 @@ import seaborn as sns
 from ..Analyze import run_Results_over, run_Analyze_over
 
 from ..states.StateDistribution import StateDistribution
+from ..states.StateDistribution1 import StateDistribution as expStateDistribution
 
 # pi: the initial probability vector
 pi = np.array([0.5, 0.5], dtype="float")
@@ -21,6 +22,11 @@ T = np.array([[0.9, 0.1], [0.1, 0.9]], dtype="float")
 state0 = StateDistribution(0.99, 7, 7)
 state1 = StateDistribution(0.75, 7, 1)
 E = [state0, state1]
+
+# bern, exp_lambda
+state10 = expStateDistribution(0.99, 1./49)
+state11 = expStateDistribution(0.75, 1./7)
+E1 = [state10, state11]
 
 min_desired_num_cells = (2 ** 8) - 1
 max_desired_num_cells = (2 ** 12) - 1
@@ -176,3 +182,63 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     ax[i].set_title("Initial Probability Matrix Estimation")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    
+    
+def figureMaker1(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
+    """
+    Makes the common 6 panel figures displaying parameter estimation across lineages
+    of various types and sizes.
+    """
+    i = 0
+    ax[i].set_xlabel(xlabel)
+    ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].set_ylabel("Bernoulli $p$")
+    ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", alpha=0.5)
+    ax[i].set_title(r"Bernoulli $p$")
+    ax[i].grid(linestyle="--")
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
+    i += 1
+    ax[i].set_xlabel(xlabel)
+    ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].set_ylabel(r"exponential $\lambda$")
+    ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", alpha=0.5)
+    ax[i].set_title(r"exponential $\lambda$")
+    ax[i].grid(linestyle="--")
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
+    i += 1
+    pass
+
+    i += 1
+    ax[i].set_xlabel(xlabel)
+    ax[i].set_ylim(0, 110)
+    ax[i].scatter(x, accuracies, c="k", marker="o", label="Accuracy", edgecolors="k", alpha=0.25)
+    ax[i].set_ylabel(r"Accuracy [\%]")
+    ax[i].axhline(y=100, linestyle="--", linewidth=2, color="k", alpha=1)
+    ax[i].set_title("State Assignment Accuracy")
+    ax[i].grid(linestyle="--")
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
+    i += 1
+    ax[i].set_xlabel(xlabel)
+    ax[i].scatter(x, tr, c="k", marker="o", edgecolors="k", alpha=0.25)
+    ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
+    ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
+    ax[i].set_title("Transition Matrix Estimation")
+    ax[i].grid(linestyle="--")
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
+    i += 1
+    ax[i].set_xlabel(xlabel)
+    ax[i].scatter(x, pii, c="k", marker="o", edgecolors="k", alpha=0.25)
+    ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
+    ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
+    ax[i].set_title("Initial Probability Matrix Estimation")
+    ax[i].grid(linestyle="--")
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
