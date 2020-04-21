@@ -54,8 +54,7 @@ def accuracy():
     for cell_num in cells:
         population = []
         
-        tmp_lineage = LineageTree(pi, T, E, cell_num)
-        good2go = lineage_good_to_analyze(tmp_lineage)
+        good2go = False
         while not good2go:
             tmp_lineage = LineageTree(pi, T, E, cell_num)
             good2go = lineage_good_to_analyze(tmp_lineage)

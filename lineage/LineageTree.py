@@ -191,14 +191,22 @@ class LineageTree:
         return self.__repr__()
     
     def __len__(self):
+        """
+        Defines the length of a lineage by returning the number of cells 
+        it contains.
+        """
         return len(self.output_lineage)
     
     def is_heterogeneous(self):
-        true_states = [cell.state for cell in self.output_lineage]
-        if len(set(true_states)) > 1:
-            return True
-        else:
-            return False
+        """
+        Checks whether a lineage is heterogeneous by ensuring that the true states
+        of the cells contained within it create a set that has more than one state.
+        """
+        set_count = False
+        true_states_set_len = len(set([cell.state for cell in self.output_lineage]))
+        if true_states_set_len > 1:
+            set_count = True
+        return set_count
 
     # tool for copying lineages
 

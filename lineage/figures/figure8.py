@@ -56,9 +56,8 @@ def accuracy():
     list_of_fE = []
     for E in list_of_Es:
         population = []
-
-        tmp_lineage = LineageTree(pi, T, E, max_desired_num_cells)
-        good2go = lineage_good_to_analyze(tmp_lineage)
+            
+        good2go = False
         while not good2go:
             tmp_lineage = LineageTree(pi, T, E, max_desired_num_cells)
             good2go = lineage_good_to_analyze(tmp_lineage)
