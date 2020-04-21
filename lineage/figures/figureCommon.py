@@ -47,7 +47,8 @@ def getSetup(figsize, gridd):
     """
     Establish figure set-up with subplots.
     """
-    sns.set(style="whitegrid", font_scale=0.7, color_codes=True, palette="colorblind", rc={"grid.linestyle": "dotted", "axes.linewidth": 0.6, "axes.prop_cycle": cycler('color', ['#1f77b4', '#ff7f0e', '#1f77b4', '#ff7f0e'])})
+    sns.set(style="whitegrid", font_scale=0.7, color_codes=True, palette="colorblind", rc={"grid.linestyle": "dotted",
+                                                                                           "axes.linewidth": 0.6, "axes.prop_cycle": cycler('color', ['#1f77b4', '#ff7f0e', '#1f77b4', '#ff7f0e'])})
 
     # Setup plotting space and grid
     f = plt.figure(figsize=figsize, constrained_layout=True)
@@ -82,7 +83,7 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
 
     paramEst = np.array(dictOut["param_estimates"])
     paramTrues = np.array(dictOut["param_trues"])
-    
+
     x = None
     if xtype == "length":
         x = dictOut["total_number_of_cells"]
