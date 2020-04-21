@@ -178,25 +178,10 @@ class LineageTree:
         and for both of the options it prints the number of states,
         the number of cells in the states, the total number of cells.
         """
-        s1 = ""
-        s2 = ""
-        s3 = ""
-        seperator = ", "
-        if self.censor_boolean:
-            s1 = "This tree is censord. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
-            s_list = []
-            for state in range(self.num_states):
-                s_list.append("\n \t There are {} cells of state {}".format(self.lineage_stats[state].num_censord_lin_cells, state))
-            s2 = seperator.join(s_list)
-            s3 = ".\n This censord tree has {} many cells in total".format(len(self.censord_lin_list))
-        else:
-            s1 = "This tree is NOT censord. It is made of {} states.\n For each state in this tree: ".format(self.num_states)
-            s_list = []
-            for state in range(self.num_states):
-                s_list.append("\n \t There are {} cells of state {}".format(self.lineage_stats[state].num_output_lin_cells, state))
-            s2 = seperator.join(s_list)
-            s3 = ".\n This UNcensord tree has {} many cells in total".format(len(self.output_lineage))
-        return s1 + s2 + s3
+        s = ""
+        for cell in self.output_lineage:
+            s += cell.__repr__()
+        return s
 
     def __str__(self):
         """
@@ -204,6 +189,24 @@ class LineageTree:
         used for showing the results to the user.
         """
         return self.__repr__()
+    
+    def __len__(self):
+        """
+        Defines the length of a lineage by returning the number of cells 
+        it contains.
+        """
+        return len(self.output_lineage)
+    
+    def is_heterogeneous(self):
+        """
+        Checks whether a lineage is heterogeneous by ensuring that the true states
+        of the cells contained within it create a set that has more than one state.
+        """
+        set_count = False
+        true_states_set_len = len(set([cell.state for cell in self.output_lineage]))
+        if true_states_set_len > 1:
+            set_count = True
+        return set_count
 
     # tool for copying lineages
 

@@ -15,6 +15,7 @@ from .figureCommon import (
     T,
     E,
     min_desired_num_cells,
+    lineage_good_to_analyze,
     min_num_lineages,
     max_num_lineages,
     num_data_points,
@@ -41,7 +42,7 @@ def accuracy():
     """
     Calculates accuracy and parameter estimation
     over an increasing number of lineages in a population for
-    a censored two-state model.
+    a uncensored two-state model.
     We increase the desired number of cells in a lineage by
     the experiment time.
     """
@@ -49,13 +50,25 @@ def accuracy():
     # Creating a list of populations to analyze over
     num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
     list_of_populations = []
+    list_of_fpi = []
+    list_of_fT = []
+    list_of_fE = []
     for num in num_lineages:
         population = []
 
-        for _ in range(num):
-            population.append(LineageTree(pi, T, E, 16))
+        for _ in range(num):   
+            
+            good2go = False
+            while not good2go:
+                tmp_lineage = LineageTree(pi, T, E, 16)
+                good2go = lineage_good_to_analyze(tmp_lineage)
+
+            population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
+        list_of_fpi.append(pi)
+        list_of_fT.append(T)
+        list_of_fE.append(E)
 
     return commonAnalyze(list_of_populations)
