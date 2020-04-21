@@ -19,7 +19,7 @@ class StateDistribution:
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
         exp_obs = sp.expon.rvs(scale=self.exp_lambda, size=size)  # gamma observations
-        time_censor = [1] * len(exp_obs)
+        time_censor = [1] * len(exp_obs) # 1 if observed
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         list_of_tuple_of_obs = list(map(list, zip(bern_obs, exp_obs, time_censor)))
@@ -85,13 +85,13 @@ class StateDistribution:
 # User must take care to define estimators that
 # can handle the case where the list of observations is empty.
 
-@njit
+
 def exp_estimator(exp_obs):
     """
     This is a closed-form estimator for the lambda parameter of the 
     exponential distribution, which is right-censored.
     """
-    return (sum(bern_obs) + 1e-10) / (len(bern_obs) + 2e-10)
+    return (sum(exp_obs) + 7e-10) / (len(exp_obs) + 1e-10)
 
 
 @njit
@@ -101,4 +101,4 @@ def exp_pdf(x, lambda_):
     and returns the likelihood of the observation based on the exponential
     probability distribution function.
     """
-    return exp_ll
+    return lambda_* np.exp(-1*lambda_*x)

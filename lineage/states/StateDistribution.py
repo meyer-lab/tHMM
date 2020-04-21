@@ -5,7 +5,7 @@ import scipy.stats as sp
 from numba import njit
 import scipy.special as sc
 
-from .stateCommon import bern_pdf, bernoulli_estimator
+from .stateCommon import bern_pdf
 
 
 class StateDistribution:
