@@ -49,7 +49,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 7, a), state1] for a in np.logspace(0, 2, num_data_points, base=10)]
+    list_of_Es = [[StateDistribution(0.99, 7, a), state1] for a in np.logspace(0, 1, num_data_points, base=7)]
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
