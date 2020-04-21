@@ -113,30 +113,6 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
 
     results_dict["total_number_of_cells"] = len(pred_states)
 
-    # 1. Calculate some cluster labeling scores between the true states and the predicted states prior to switching the
-    # predicted state labels based on their underlying distributions
-
-    # 1.1. mutual information score
-    results_dict["mutual_info_score"] = metrics.mutual_info_score(true_states, pred_states)
-
-    # 1.2. normalized mutual information score
-    results_dict["mutual_info_score"] = metrics.normalized_mutual_info_score(true_states, pred_states)
-
-    # 1.3. adjusted mutual information score
-    results_dict["adjusted_mutual_info_score"] = metrics.adjusted_mutual_info_score(true_states, pred_states)
-
-    # 1.4. adjusted Rand index
-    results_dict["adjusted_rand_score"] = metrics.adjusted_rand_score(true_states, pred_states)
-
-    # 1.5. V-measure cluster labeling score
-    results_dict["v_measure_score"] = metrics.v_measure_score(true_states, pred_states)
-
-    # 1.6. homogeneity metric
-    results_dict["homogeneity_score"] = metrics.homogeneity_score(true_states, pred_states)
-
-    # 1.7. completeness metric
-    results_dict["completeness_score"] = metrics.completeness_score(true_states, pred_states)
-
     # 2. Switch the underlying state labels based on the KL-divergence of the underlying states' distributions
 
     # First collect all the observations from the entire population across the lineages ordered by state
