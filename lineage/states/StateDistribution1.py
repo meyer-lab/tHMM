@@ -8,17 +8,17 @@ from .stateCommon import bern_pdf, bernoulli_estimator
 
 
 class StateDistribution:
-    def __init__(self, bern_p, exp_lambda):
+    def __init__(self, bern_p, exp_beta):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.bern_p = bern_p
-        self.exp_lambda = exp_lambda
-        self.params = [self.bern_p, self.exp_lambda]
+        self.exp_beta = exp_beta
+        self.params = [self.bern_p, self.exp_beta]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
-        exp_obs = sp.expon.rvs(scale=self.exp_lambda, size=size)  # gamma observations
+        exp_obs = sp.expon.rvs(scale=self.exp_beta, size=size)  # gamma observations
         time_censor = [1] * len(exp_obs) # 1 if observed
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
@@ -35,7 +35,7 @@ class StateDistribution:
         # the individual observation likelihoods.
 
         bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
-        exp_ll = exp_pdf(tuple_of_obs[1], self.exp_lambda)
+        exp_ll = exp_pdf(tuple_of_obs[1], self.exp_beta)
 
         return bern_ll * exp_ll
 
@@ -54,9 +54,9 @@ class StateDistribution:
             exp_obs = []
 
         bern_p_estimate = bernoulli_estimator(bern_obs)
-        exp_lambda_estimate = exp_estimator(exp_obs)
+        exp_beta_estimate = exp_estimator(exp_obs)
 
-        state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, exp_lambda=exp_lambda_estimate)
+        state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, exp_beta=exp_beta_estimate)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
@@ -67,7 +67,7 @@ class StateDistribution:
         """
         Initialize a random state distribution.
         """
-        return StateDistribution(0.9, 1/(7*(np.random.uniform())))
+        return StateDistribution(0.9, 7*(np.random.uniform()))
 
     def __repr__(self):
         """
@@ -91,14 +91,14 @@ def exp_estimator(exp_obs):
     This is a closed-form estimator for the lambda parameter of the 
     exponential distribution, which is right-censored.
     """
-    return (sum(exp_obs) + 1e-10) / (len(exp_obs) + 7e-10)
+    return (sum(exp_obs) + 7e-10) / (len(exp_obs) + 1e-10)
 
 
 @njit
-def exp_pdf(x, lambda_):
+def exp_pdf(x, beta):
     """
     This function takes in 1 observation and and an exponential parameter
     and returns the likelihood of the observation based on the exponential
     probability distribution function.
     """
-    return lambda_* np.exp(-1*lambda_*x)
+    return (1./beta)* np.exp(-1.*x/beta)
