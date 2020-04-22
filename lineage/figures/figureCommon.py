@@ -45,7 +45,7 @@ num_data_points = 50
 def lineage_good_to_analyze(tmp_lineage):
     """
     Boolean function that returns True when a lineage is
-    good for analysis. 
+    good for analysis.
     A lineage is good for analysis when it is heterogeneous,
     that is, contains more than one state in its data, and if
     it is of sufficient length.
