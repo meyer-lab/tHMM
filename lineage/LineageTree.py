@@ -189,14 +189,14 @@ class LineageTree:
         used for showing the results to the user.
         """
         return self.__repr__()
-    
+
     def __len__(self):
         """
-        Defines the length of a lineage by returning the number of cells 
+        Defines the length of a lineage by returning the number of cells
         it contains.
         """
         return len(self.output_lineage)
-    
+
     def is_heterogeneous(self):
         """
         Checks whether a lineage is heterogeneous by ensuring that the true states
