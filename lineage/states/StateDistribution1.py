@@ -67,7 +67,7 @@ class StateDistribution:
         """
         Initialize a random state distribution.
         """
-        return StateDistribution(0.9, 1/(7*(np.random.uniform()))
+        return StateDistribution(0.9, 1/(7*(np.random.uniform())))
 
     def __repr__(self):
         """
