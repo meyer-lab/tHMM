@@ -18,8 +18,8 @@ pi = np.array([0.5, 0.5], dtype="float")
 T = np.array([[0.9, 0.1], [0.1, 0.9]], dtype="float")
 
 # bern, gamma_a, gamma_scale
-state0 = StateDistribution(0.99, 7, 7)
-state1 = StateDistribution(0.75, 7, 1)
+state0 = StateDistribution(0.99, 7, 2)
+state1 = StateDistribution(0.75, 7, 4)
 E = [state0, state1]
 
 min_desired_num_cells = (2 ** 8) - 1
