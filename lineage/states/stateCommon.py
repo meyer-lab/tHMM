@@ -104,7 +104,7 @@ def time_censor(cell, desired_experiment_time):
     if cell.time.endT > desired_experiment_time:
         cell.time.endT = desired_experiment_time
         cell.obs[1] = cell.time.endT - cell.time.startT
-        cell.obs[2] = 1
+        cell.obs[2] = 0 # no longer observed
         if not cell.isLeafBecauseTerminal():
             cell.left.censored = True
             cell.right.censored = True
