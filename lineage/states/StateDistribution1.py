@@ -49,12 +49,14 @@ class StateDistribution:
         try:
             bern_obs = list(unzipped_list_of_tuples_of_obs[0])
             exp_obs = list(unzipped_list_of_tuples_of_obs[1])
+            time_censor_obs = list(unzipped_list_of_tuples_of_obs[2])
         except BaseException:
             bern_obs = []
             exp_obs = []
+            time_censor_obs = []
 
         bern_p_estimate = bernoulli_estimator(bern_obs)
-        exp_beta_estimate = exp_estimator(exp_obs)
+        exp_beta_estimate = exp_estimator(exp_obs, time_censor_obs)
 
         state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, exp_beta=exp_beta_estimate)
         # } requires the user's attention.
@@ -86,12 +88,12 @@ class StateDistribution:
 # can handle the case where the list of observations is empty.
 
 
-def exp_estimator(exp_obs):
+def exp_estimator(exp_obs, time_censor_obs):
     """
     This is a closed-form estimator for the lambda parameter of the 
     exponential distribution, which is right-censored.
     """
-    return (sum(exp_obs) + 7e-10) / (len(exp_obs) + 1e-10)
+    return (sum(exp_obs) + 7e-10) / (len(exp_obs) + 1e-10) * len(exp_obs) / sum(time_censor_obs)
 
 
 @njit
