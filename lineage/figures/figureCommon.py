@@ -151,7 +151,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
 
     i += 1
     ax[i].set_xlabel(xlabel)
-    ax[i].set_ylim(0, 110)
+    ax[i].set_ylim(bottom=0, top=101)
     ax[i].scatter(x, accuracies, c="k", marker="o", label="Accuracy", edgecolors="k", alpha=0.25)
     ax[i].set_ylabel(r"Accuracy [\%]")
     ax[i].axhline(y=100, linestyle="--", linewidth=2, color="k", alpha=1)
@@ -161,6 +161,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
 
     i += 1
     ax[i].set_xlabel(xlabel)
+    ax[i].set_ylim(bottom=0, top=max(tr)+0.2)
     ax[i].scatter(x, tr, c="k", marker="o", edgecolors="k", alpha=0.25)
     ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
     ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
@@ -170,6 +171,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
 
     i += 1
     ax[i].set_xlabel(xlabel)
+    ax[i].set_ylim(bottom=0, top=max(pii)+0.2)
     ax[i].scatter(x, pii, c="k", marker="o", edgecolors="k", alpha=0.25)
     ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
     ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
