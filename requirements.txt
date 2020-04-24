@@ -1,10 +1,8 @@
-graphviz==0.13.2
 matplotlib==3.2.1
-networkx==2.4
 numpy==1.18.3
 scipy==1.4.1
 seaborn==0.10.0
-scikit-learn
+scikit-learn==0.22.2.post1
 Sphinx
 pytest
 sphinx-autoapi
