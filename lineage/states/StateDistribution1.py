@@ -1,5 +1,4 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
-from math import gamma
 import numpy as np
 import scipy.stats as sp
 from numba import njit
@@ -9,22 +8,21 @@ from .stateCommon import bern_pdf, bernoulli_estimator
 
 
 class StateDistribution:
-    def __init__(self, bern_p, gamma_a, gamma_scale):
+    def __init__(self, bern_p, exp_beta):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.bern_p = bern_p
-        self.gamma_a = gamma_a
-        self.gamma_scale = gamma_scale
-        self.params = [self.bern_p, self.gamma_a, self.gamma_scale]
+        self.exp_beta = exp_beta
+        self.params = [self.bern_p, self.exp_beta]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
-        gamma_obs = sp.gamma.rvs(a=self.gamma_a, scale=self.gamma_scale, size=size)  # gamma observations
-        time_censor = [1] * len(gamma_obs) # 1 if observed
+        exp_obs = sp.expon.rvs(scale=self.exp_beta, size=size)  # gamma observations
+        time_censor = [1] * len(exp_obs) # 1 if observed
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        list_of_tuple_of_obs = list(map(list, zip(bern_obs, gamma_obs, time_censor)))
+        list_of_tuple_of_obs = list(map(list, zip(bern_obs, exp_obs, time_censor)))
         return list_of_tuple_of_obs
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
@@ -37,9 +35,9 @@ class StateDistribution:
         # the individual observation likelihoods.
 
         bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
-        gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+        exp_ll = exp_pdf(tuple_of_obs[1], self.exp_beta)
 
-        return bern_ll * gamma_ll
+        return bern_ll * exp_ll
 
     def estimator(self, list_of_tuples_of_obs):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
@@ -50,15 +48,17 @@ class StateDistribution:
         # {
         try:
             bern_obs = list(unzipped_list_of_tuples_of_obs[0])
-            gamma_obs = list(unzipped_list_of_tuples_of_obs[1])
+            exp_obs = list(unzipped_list_of_tuples_of_obs[1])
+            time_censor_obs = list(unzipped_list_of_tuples_of_obs[2])
         except BaseException:
             bern_obs = []
-            gamma_obs = []
+            exp_obs = []
+            time_censor_obs = []
 
         bern_p_estimate = bernoulli_estimator(bern_obs)
-        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
+        exp_beta_estimate = exp_estimator(exp_obs, time_censor_obs)
 
-        state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
+        state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, exp_beta=exp_beta_estimate)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
@@ -67,17 +67,17 @@ class StateDistribution:
     
     def tHMM_E_init(self):
         """
-        Initialize a default state distribution.
+        Initialize a random state distribution.
         """
-        return StateDistribution(0.9, 7, 1*(np.random.uniform()))
+        return StateDistribution(0.9, 7*(np.random.uniform()))
 
     def __repr__(self):
         """
         Method to print out a state distribution object.
         """
-        return "State object w/ parameters: {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_scale)
+        return "State object w/ parameters: {}, {}.".format(self.bern_p, self.exp_lambda)
 
-    
+
 
 # Because parameter estimation requires that estimators be written or imported,
 # the user should be able to provide
@@ -88,32 +88,19 @@ class StateDistribution:
 # can handle the case where the list of observations is empty.
 
 
-def gamma_estimator(gamma_obs):
+def exp_estimator(exp_obs, time_censor_obs):
     """
-    This is a closed-form estimator for two parameters
-    of the Gamma distribution, which is corrected for bias.
+    This is a closed-form estimator for the lambda parameter of the 
+    exponential distribution, which is right-censored.
     """
-    N = len(gamma_obs)
-
-    xbar = (sum(gamma_obs) + 7e-10) / (len(gamma_obs) + 1e-10)
-    x_lnx = [x * np.log(x) for x in gamma_obs]
-    lnx = [np.log(x) for x in gamma_obs]
-    # gamma_a
-    a_hat = (N * (sum(gamma_obs)) + 10e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
-    # gamma_scale
-    b_hat = xbar / a_hat
-
-    if b_hat < 1.0 or 50.0 < a_hat < 5.0:
-        return 10, 1
-
-    return a_hat, b_hat
+    return ((sum(exp_obs) + 7e-10) / (len(exp_obs) + 1e-10)) * ((len(exp_obs) + 1e-9) / (sum(time_censor_obs) + 1e-10))
 
 
 @njit
-def gamma_pdf(x, a, scale):
+def exp_pdf(x, beta):
     """
-    This function takes in 1 observation and gamma shape and scale parameters
-    and returns the likelihood of the observation based on the gamma
+    This function takes in 1 observation and and an exponential parameter
+    and returns the likelihood of the observation based on the exponential
     probability distribution function.
     """
-    return (1 / (gamma(a) * (scale ** a))) * x ** (a - 1) * np.exp(-x / scale)
+    return (1./beta)* np.exp(-1.*x/beta)
