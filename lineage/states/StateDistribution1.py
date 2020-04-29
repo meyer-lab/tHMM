@@ -19,7 +19,7 @@ class StateDistribution:
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
         exp_obs = sp.expon.rvs(scale=self.exp_beta, size=size)  # gamma observations
-        time_censor = [1] * len(exp_obs) # 1 if observed
+        time_censor = [1] * len(exp_obs)  # 1 if observed
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         list_of_tuple_of_obs = list(map(list, zip(bern_obs, exp_obs, time_censor)))
@@ -64,19 +64,18 @@ class StateDistribution:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
         return state_estimate_obj
-    
+
     def tHMM_E_init(self):
         """
         Initialize a random state distribution.
         """
-        return StateDistribution(0.9, 7*(np.random.uniform()))
+        return StateDistribution(0.9, 7 * (np.random.uniform()))
 
     def __repr__(self):
         """
         Method to print out a state distribution object.
         """
         return "State object w/ parameters: {}, {}.".format(self.bern_p, self.exp_lambda)
-
 
 
 # Because parameter estimation requires that estimators be written or imported,
@@ -90,7 +89,7 @@ class StateDistribution:
 
 def exp_estimator(exp_obs, time_censor_obs):
     """
-    This is a closed-form estimator for the lambda parameter of the 
+    This is a closed-form estimator for the lambda parameter of the
     exponential distribution, which is right-censored.
     """
     return ((sum(exp_obs) + 7e-10) / (len(exp_obs) + 1e-10)) * ((len(exp_obs) + 1e-9) / (sum(time_censor_obs) + 1e-10))
@@ -103,4 +102,4 @@ def exp_pdf(x, beta):
     and returns the likelihood of the observation based on the exponential
     probability distribution function.
     """
-    return (1./beta)* np.exp(-1.*x/beta)
+    return (1. / beta) * np.exp(-1. * x / beta)
