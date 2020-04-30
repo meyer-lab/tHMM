@@ -184,8 +184,8 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     ax[i].set_title("Initial Probability Matrix Estimation")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-    
-    
+
+
 def figureMaker1(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
@@ -243,4 +243,3 @@ def figureMaker1(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Numbe
     ax[i].set_title("Initial Probability Matrix Estimation")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-

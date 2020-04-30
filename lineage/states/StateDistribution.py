@@ -21,7 +21,7 @@ class StateDistribution:
         # {
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
         gamma_obs = sp.gamma.rvs(a=self.gamma_a, scale=self.gamma_scale, size=size)  # gamma observations
-        time_censor = [1] * len(gamma_obs) # 1 if observed
+        time_censor = [1] * len(gamma_obs)  # 1 if observed
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         list_of_tuple_of_obs = list(map(list, zip(bern_obs, gamma_obs, time_censor)))
@@ -64,12 +64,12 @@ class StateDistribution:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
         return state_estimate_obj
-    
+
     def tHMM_E_init(self):
         """
         Initialize a default state distribution.
         """
-        return StateDistribution(0.9, 7, 1*(np.random.uniform()))
+        return StateDistribution(0.9, 7, 1 * (np.random.uniform()))
 
     def __repr__(self):
         """
@@ -77,7 +77,6 @@ class StateDistribution:
         """
         return "State object w/ parameters: {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_scale)
 
-    
 
 # Because parameter estimation requires that estimators be written or imported,
 # the user should be able to provide

@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 class estimate:
     def __init__(self, X, num_states, fpi=None, fT=None, fE=None):
         self.fpi = fpi
@@ -19,6 +20,7 @@ class estimate:
             self.E.append(X[0].E[0].tHMM_E_init())
         if self.fE is not None:
             self.E = self.fE
+
 
 class tHMM:
     """ Main tHMM class. """
