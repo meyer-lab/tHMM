@@ -1,6 +1,6 @@
 """
-File: figure20.py
-Purpose: Generates figure 20.
+File: figure21.py
+Purpose: Generates figure 21.
 """
 import numpy as np
 
@@ -21,7 +21,7 @@ from ..states.StateDistribution import StateDistribution
 
 def makeFigure():
     """
-    Makes figure 20.
+    Makes figure 21.
     """
 
     # Get list of axis objects
@@ -65,4 +65,4 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E)
 
-    return commonAnalyze(list_of_populations, list_of_fpi=list_of_fpi)
+    return commonAnalyze(list_of_populations, xtype="bern", list_of_fpi=list_of_fpi)
