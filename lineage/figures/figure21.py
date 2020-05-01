@@ -27,7 +27,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((7, 6), (2, 3))
 
-    figureMaker(ax, *accuracy())
+    figureMaker(ax, *accuracy(), xlabel="Bernoulli Parameter")
 
     subplotLabel(ax)
 

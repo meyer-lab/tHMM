@@ -1,6 +1,6 @@
 """
-File: figure20.py
-Purpose: Generates figure 20.
+File: figure22.py
+Purpose: Generates figure 22.
 """
 import numpy as np
 
@@ -8,7 +8,7 @@ from .figureCommon import (
     getSetup,
     subplotLabel,
     commonAnalyze,
-    figureMaker,
+    figureMaker1,
     pi,
     T,
     max_desired_num_cells,
@@ -16,17 +16,17 @@ from .figureCommon import (
     num_data_points,
 )
 from ..LineageTree import LineageTree
-from ..states.StateDistribution import StateDistribution
+from ..states.StateDistribution1 import StateDistribution
 
 def makeFigure():
     """
-    Makes figure 20.
+    Makes figure 22.
     """
 
     # Get list of axis objects
     ax, f = getSetup((7, 6), (2, 3))
 
-    figureMaker(ax, *accuracy(), xlabel="Bernoulli Parameter")
+    figureMaker1(ax, *accuracy(), xlabel="Bernoulli Parameter")
 
     subplotLabel(ax)
 
@@ -43,7 +43,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(a, 7, 1), StateDistribution(a, 7, 7)] for a in np.linspace(0.8, 1, num_data_points)]
+    list_of_Es = [[StateDistribution(a, 7), StateDistribution(a, 49)] for a in np.linspace(0.8, 1, num_data_points)]
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
