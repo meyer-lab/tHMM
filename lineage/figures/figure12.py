@@ -17,6 +17,7 @@ from .figureCommon import (
     max_desired_num_cells,
     lineage_good_to_analyze,
     num_data_points,
+    min_desired_num_cells,
 )
 from ..LineageTree import LineageTree
 
@@ -46,7 +47,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    cells = np.linspace(16, 128, num_data_points)
+    cells = np.linspace(min_desired_num_cells, max_desired_num_cells, num_data_points)
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
