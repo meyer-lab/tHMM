@@ -28,8 +28,8 @@ state10 = expStateDistribution(1, 49)
 state11 = expStateDistribution(1, 7)
 E1 = [state10, state11]
 
-min_desired_num_cells = (2 ** 8) - 1
-max_desired_num_cells = (2 ** 12) - 1
+min_desired_num_cells = 16
+max_desired_num_cells = 128
 
 min_min_lineage_length = 10
 
