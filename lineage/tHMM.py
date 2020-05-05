@@ -107,9 +107,11 @@ class tHMM:
             lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
             EL_array = np.zeros((len(lineage), self.num_states))  # instantiating N by K array for each lineage
 
-            for state_k in range(self.num_states):  # for each state
-                for current_cell_idx, cell in enumerate(lineage):  # for each cell in the lineage
+            for current_cell_idx, cell in enumerate(lineage):  # for each cell in the lineage
+                for state_k in range(self.num_states):  # for each state
                     EL_array[current_cell_idx, state_k] = self.estimate.E[state_k].pdf(cell.obs)
+#                 if EL_array[current_cell_idx, 0] == 0 and EL_array[current_cell_idx, 1] == 0:
+#                     print(cell.obs)
 
             EL.append(EL_array)  # append the EL_array for each lineage
         return EL
