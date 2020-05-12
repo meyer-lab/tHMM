@@ -166,6 +166,8 @@ def double(parent_state, T):
     # where they landed to states
 
     left_state_results, right_state_results = sp.multinomial.rvs(n=1, p=np.squeeze(T[parent_state, :]), size=2)
+    # The index of the 1 value in the resulting list in the two trials represent the state that was picked for that
+    # dice toss.
     left_state = left_state_results.tolist().index(1)
     right_state = right_state_results.tolist().index(1)
 
