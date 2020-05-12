@@ -79,7 +79,8 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
         # code for grouping all states in cell lineages
         cell_groups = [[] for state in range(num_states)]
         pi_estimate = np.zeros((num_states), dtype=float)
-        T_estimate = np.zeros((num_states, num_states), dtype=float)
+        numer_estimate = np.zeros((num_states, num_states), dtype=float)
+        denom_estimate = np.zeros((num_states,),dtype=float)
         for num, lineageObj in enumerate(tHMMobj.X):
             lineage = lineageObj.output_lineage
             gamma_array = gammas[num]
@@ -89,10 +90,9 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             numer = get_all_zetas(
                 lineageObj=lineageObj, beta_array=betas[num], MSD_array=tHMMobj.MSD[num], gamma_array=gamma_array, T=tHMMobj.estimate.T
             )
-
-            T_holder = (numer) / (denom[:, np.newaxis])
-            T_estimate += T_holder
-
+            numer_estimate += numer
+            denom_estimate += denom
+            
             max_state_holder = []  # a list the size of lineage, that contains max state for each cell
             for ii, cell in enumerate(lineage):
                 assert lineage[ii] is cell
@@ -106,11 +106,8 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             tHMMobj.estimate.pi = pi_estimate / sum(pi_estimate)
         if tHMMobj.estimate.fT is None:
             # population wide T calculation
+            T_estimate = (numer) / (denom[:, np.newaxis])
             tHMMobj.estimate.T = T_estimate / T_estimate.sum(axis=1)[:, np.newaxis]
-            print(T_estimate)
-            print(T_estimate.sum(axis=1)[:, np.newaxis])
-            print(tHMMobj.estimate.T)
-            print('BORRRRRRRRRRRRRRRRRG')
         if tHMMobj.estimate.fE is None:
             # opulation wide E calculation
             for state_j in range(num_states):
