@@ -115,4 +115,4 @@ def gamma_pdf(x, a, scale):
     and returns the likelihood of the observation based on the gamma
     probability distribution function.
     """
-    return (1 / (gamma(a) * (scale ** a))) * x**(a-1) * np.exp(-x / scale)
+    return x**(a-1) * np.exp(-x/scale) / gamma(a) / (scale**a)
