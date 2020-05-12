@@ -29,9 +29,7 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
         except AssertionError:
             if num_tries == 4:
                 print(
-                    "Caught AssertionError in fitting after multiple ({}) runs. Fitting is breaking after trying {} times. Consider inspecting the length of your lineages.".format(
-                        num_tries, num_tries
-                    )
+                    f"Caught AssertionError in fitting after multiple ({num_tries}) runs. Fitting is breaking after trying {num_tries} times. Consider inspecting the length of your lineages."
                 )
                 raise
 
@@ -172,10 +170,6 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
             temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx], switcher_map[col_idx]]
 
     results_dict["switched_transition_matrix"] = temp_T
-    print("poop")
-    print(temp_T)
-    print("pooooooooop")
-    print(tHMMobj.X[0].T)
     results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
 
     # Rearrange the values in the pi vector

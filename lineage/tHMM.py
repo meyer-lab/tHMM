@@ -17,6 +17,9 @@ class estimate:
             self.T = self.fT
         self.E = []
         for _ in range(self.num_states):
+            # TODO: Make it so that that this doesn't depend on 
+            # the lineage and tHMM_E_init() can be called without
+            # depending on that being an argument for this class
             self.E.append(X[0].E[0].tHMM_E_init())
         if self.fE is not None:
             self.E = self.fE
@@ -66,22 +69,25 @@ class tHMM:
         """
         MSD = []
 
-        for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
-            lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
+        for num, lineageObj in enumerate(self.X): # for each lineage in our Population
+            lineage = lineageObj.output_lineage # getting the lineage in the Population by lineage index
 
             MSD_array = np.zeros((len(lineage), self.num_states))  # instantiating N by K array
-            MSD_array[0, :] = self.estimate.pi
+            MSD_array[0, :] = self.estimate.pi # the first 
             MSD.append(MSD_array)
 
-        for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
+        for num, lineageObj in enumerate(self.X): # for each lineage in our Population
             assert np.isclose(np.sum(MSD[num][0]), 1.0)
 
-        for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
-            lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
+        for num, lineageObj in enumerate(self.X): # for each lineage in our Population
+            lineage = lineageObj.output_lineage # getting the lineage in the Population by lineage index
 
-            for level in lineageObj.output_list_of_gens[2:]:
+            for level in lineageObj.output_list_of_gens[2:]: # this starts at 2 because the 0-index for 
+                # these generation levels represents the parent of the root cell which is None
+                # and the 1-index represents the root cell which is already accounted for by the 
+                # pi intial probability vector
                 for cell in level:
-                    parent_cell_idx = lineage.index(cell.parent)  # get the index of the parent cell
+                    parent_cell_idx = lineage.index(cell.parent) # get the index of the parent cell
                     current_cell_idx = lineage.index(cell)
 
                     # recursion based on parent cell
