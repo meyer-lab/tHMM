@@ -1,5 +1,27 @@
 """ Common utilities used between states regardless of distribution. """
 
+from numba import njit
+import numpy as np
+
+
+@njit
+def bern_pdf(x, p):
+    """
+    This function takes in 1 observation and a Bernoulli rate parameter
+    and returns the likelihood of the observation based on the Bernoulli
+    probability distribution function.
+    """
+    # bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0-self.bern_p)**(1-tuple_of_obs[0])
+
+    return (p**x) * ((1.0 - p)**(1 - x))
+
+
+def bernoulli_estimator(bern_obs):
+    """
+    Add up all the 1s and divide by the total length (finding the average).
+    """
+    return (sum(bern_obs) + 8e-11) / (len(bern_obs) + 1e-10)
+
 
 class Time:
     """
@@ -81,12 +103,13 @@ def time_censor(cell, desired_experiment_time):
     if cell.time.endT > desired_experiment_time:
         cell.time.endT = desired_experiment_time
         cell.obs[1] = cell.time.endT - cell.time.startT
-        cell.obs[2] = 1
+        cell.obs[2] = 0  # no longer observed
         if not cell.isLeafBecauseTerminal():
             cell.left.censored = True
             cell.right.censored = True
 
 
+@njit
 def skew(data):
     """
     skew is third central moment / variance**(1.5)

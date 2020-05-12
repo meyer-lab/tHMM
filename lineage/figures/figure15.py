@@ -10,10 +10,10 @@ from .figureCommon import (
     getSetup,
     subplotLabel,
     commonAnalyze,
-    figureMaker,
+    figureMaker1,
     pi,
     T,
-    E,
+    E1,
     min_desired_num_cells,
     min_experiment_time,
     lineage_good_to_analyze,
@@ -32,7 +32,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((7, 6), (2, 3))
 
-    figureMaker(ax, *accuracy())
+    figureMaker1(ax, *accuracy())
 
     subplotLabel(ax)
 
@@ -60,7 +60,7 @@ def accuracy():
         for _ in range(num):
             good2go = False
             while not good2go:
-                tmp_lineage = LineageTree(pi, T, E, min_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time)
+                tmp_lineage = LineageTree(pi, T, E1, min_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time)
                 good2go = lineage_good_to_analyze(tmp_lineage)
 
             population.append(tmp_lineage)
@@ -69,6 +69,6 @@ def accuracy():
         list_of_populations.append(population)
         list_of_fpi.append(pi)
         list_of_fT.append(T)
-        list_of_fE.append(E)
+        list_of_fE.append(E1)
 
     return commonAnalyze(list_of_populations)

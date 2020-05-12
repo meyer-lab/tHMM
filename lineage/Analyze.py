@@ -197,13 +197,12 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["param_estimates"] = []
     for val_idx in range(tHMMobj.num_states):
         results_dict["param_estimates"].append(temp_emissions[val_idx].params)
-     
+
     # Get the true parameter values
     results_dict["param_trues"] = []
     for val_idx in range(tHMMobj.num_states):
         results_dict["param_trues"].append(tHMMobj.X[0].E[val_idx].params)
-        
-        
+
     # 3. Calculate accuracy after switching states
     pred_states_switched = [switcher_map[state] for state in pred_states]
     results_dict["state_counter"] = np.bincount(pred_states_switched)
