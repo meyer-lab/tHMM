@@ -19,8 +19,8 @@ pi = np.array([0.5, 0.5], dtype="float")
 T = np.array([[0.9, 0.1], [0.1, 0.9]], dtype="float")
 
 # bern, gamma_a, gamma_scale
-state0 = StateDistribution(1, 7, 7)
-state1 = StateDistribution(1, 7, 1)
+state0 = StateDistribution(0.98, 7, 7)
+state1 = StateDistribution(0.88, 7, 1)
 E = [state0, state1]
 
 # bern, exp_lambda
