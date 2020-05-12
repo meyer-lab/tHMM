@@ -62,7 +62,6 @@ def accuracy():
             while not good2go:
                 tmp_lineage = LineageTree(pi, T, E, min_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time)
                 good2go = lineage_good_to_analyze(tmp_lineage)
-            print()
             population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
