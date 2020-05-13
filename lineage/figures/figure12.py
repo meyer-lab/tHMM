@@ -47,11 +47,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-<<<<<<< HEAD
-    cells = np.linspace(16, 128, 35)
-=======
     cells = np.linspace(min_desired_num_cells, max_desired_num_cells, num_data_points)
->>>>>>> master
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
@@ -72,4 +68,4 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E1)
 
-    return commonAnalyze(list_of_populations, list_of_fpi=list_of_fpi, parallel=False)
+    return commonAnalyze(list_of_populations, list_of_fpi=list_of_fpi)
