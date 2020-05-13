@@ -110,7 +110,6 @@ class tHMM:
             for current_cell_idx, cell in enumerate(lineage):  # for each cell in the lineage
                 for state_k in range(self.num_states):  # for each state
                     EL_array[current_cell_idx, state_k] = self.estimate.E[state_k].pdf(cell.obs)
-                assert EL_array[current_cell_idx, state_k] > 0.0 and EL_array[current_cell_idx, state_k] > 0.0, f"{cell}, {EL_array[current_cell_idx, state_k]}"
 
             EL.append(EL_array)  # append the EL_array for each lineage
         return EL
