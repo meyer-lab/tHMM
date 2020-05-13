@@ -69,7 +69,7 @@ class StateDistribution:
         """
         Initialize a default state distribution.
         """
-        return StateDistribution(0.9, 7, 1+ (1*(np.random.uniform())))
+        return StateDistribution(0.9, 7, 1+(1*(np.random.uniform())))
 
     def __repr__(self):
         """
@@ -94,16 +94,16 @@ def gamma_estimator(gamma_obs):
     """
     N = len(gamma_obs)
 
-    xbar = (sum(gamma_obs) + 7e-10) / (len(gamma_obs) + 1e-10)
+    xbar = (sum(gamma_obs) + 49e-10) / (len(gamma_obs) + 1e-10)
     x_lnx = [x * np.log(x) for x in gamma_obs]
     lnx = [np.log(x) for x in gamma_obs]
     # gamma_a
-    a_hat = (N * (sum(gamma_obs)) + 10e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
+    a_hat = (N * (sum(gamma_obs)) + 7e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
     # gamma_scale
     b_hat = xbar / a_hat
 
     if b_hat < 1.0 or 50.0 < a_hat < 5.0:
-        return 10, 1
+        return 7, 7
 
     return a_hat, b_hat
 
@@ -115,4 +115,4 @@ def gamma_pdf(x, a, scale):
     and returns the likelihood of the observation based on the gamma
     probability distribution function.
     """
-    return (1 / (gamma(a) * (scale ** a))) * x ** (a - 1) * np.exp(-x / scale)
+    return x**(a-1) * np.exp(-x/scale) / gamma(a) / (scale**a)

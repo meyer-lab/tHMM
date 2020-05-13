@@ -28,8 +28,8 @@ state10 = expStateDistribution(0.88, 49)
 state11 = expStateDistribution(0.75, 7)
 E1 = [state10, state11]
 
-min_desired_num_cells = (2 ** 8) - 1
-max_desired_num_cells = (2 ** 12) - 1
+min_desired_num_cells = (2**5)-1
+max_desired_num_cells = (2**9)-1
 
 min_min_lineage_length = 10
 
@@ -105,6 +105,8 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
         x = dictOut["state_proportions_0"]
     elif xtype == "wass":
         x = dictOut["wasserstein"]
+    elif xtype == "bern":
+        x = paramTrues[:, 0, 0]
 
     return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
 
@@ -126,6 +128,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].set_ylim(bottom=0, top=1.02)
     ax[i].set_ylabel("Bernoulli $p$")
     ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", alpha=0.5)
     ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", alpha=0.5)
@@ -197,6 +200,7 @@ def figureMaker1(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Numbe
     ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].set_ylabel("Bernoulli $p$")
+    ax[i].set_ylim(bottom=0, top=1.02)
     ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", alpha=0.5)
     ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", alpha=0.5)
     ax[i].set_title(r"Bernoulli $p$")

@@ -20,7 +20,12 @@ def bernoulli_estimator(bern_obs, gammas):
     """
     Add up all the 1s and divide by the total length (finding the average).
     """
+<<<<<<< HEAD
     return sum(gammas*bern_obs) / sum(gammas)
+=======
+    bern_obs = np.append(bern_obs,1)
+    return (sum(bern_obs)) / (len(bern_obs))
+>>>>>>> master
 
 
 class Time:
