@@ -109,13 +109,12 @@ def time_censor(cell, desired_experiment_time):
             cell.right.censored = True
 
 
-@njit
-def skew(data):
+
+def skew(data, gammas):
     """
     skew is third central moment / variance**(1.5)
     """
-    data = np.ravel(data)
-    mu = data.mean()
-    m2 = ((data - mu)**2).mean()
-    m3 = ((data - mu)**3).mean()
+    mu = sum(gammas*data)/sum(gammas)
+    m2 = sum((gammas*(data - mu)**2))/sum(gammas)
+    m3 = sum((gammas*(data - mu)**3))/sum(gammas)
     return m3 / np.power(m2, 1.5)

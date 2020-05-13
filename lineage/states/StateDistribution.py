@@ -5,7 +5,7 @@ import scipy.stats as sp
 from numba import njit
 import scipy.special as sc
 
-from .stateCommon import bern_pdf, bernoulli_estimator
+from .stateCommon import bern_pdf, bernoulli_estimator, skew
 
 
 class StateDistribution:
@@ -41,7 +41,7 @@ class StateDistribution:
 
         return bern_ll * gamma_ll
 
-    def estimator(self, list_of_tuples_of_obs):
+    def estimator(self, list_of_tuples_of_obs, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
         # unzipping the list of tuples
         unzipped_list_of_tuples_of_obs = list(zip(*list_of_tuples_of_obs))
@@ -55,8 +55,8 @@ class StateDistribution:
             bern_obs = []
             gamma_obs = []
 
-        bern_p_estimate = bernoulli_estimator(bern_obs)
-        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
+        bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
+        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs, gammas)
 
         state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
         # } requires the user's attention.
@@ -87,25 +87,24 @@ class StateDistribution:
 # can handle the case where the list of observations is empty.
 
 
-def gamma_estimator(gamma_obs):
+def gamma_estimator(gamma_obs, gammas):
     """
     This is a closed-form estimator for two parameters
     of the Gamma distribution, which is corrected for bias.
     """
-    N = len(gamma_obs)
 
-    xbar = (sum(gamma_obs) + 49e-10) / (len(gamma_obs) + 1e-10)
-    x_lnx = [x * np.log(x) for x in gamma_obs]
-    lnx = [np.log(x) for x in gamma_obs]
-    # gamma_a
-    a_hat = (N * (sum(gamma_obs)) + 7e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
-    # gamma_scale
-    b_hat = xbar / a_hat
+#     xbar = sum(gammas*gamma_obs) / sum(gammas)
+#     x_lnx = [x*y * np.log(x*y) for x,y in zip(gamma_obs,gammas)]
+#     lnx = [np.log(x*y) for x,y in zip(gamma_obs,gammas)]
+#     # gamma_a
+#     a_hat = (sum(gammas) * sum(gammas*gamma_obs)) / (sum(gammas)*sum(x_lnx) - (sum(lnx))*(sum(gammas*gamma_obs)))
+#     # gamma_scale
 
-    if b_hat < 1.0 or 50.0 < a_hat < 5.0:
-        return 7, 7
+    a_hat = 7
+    scale_hat = (sum(gammas*gamma_obs))/a_hat/sum(gammas)
+    print(a_hat,scale_hat)
 
-    return a_hat, b_hat
+    return a_hat, scale_hat
 
 
 @njit
