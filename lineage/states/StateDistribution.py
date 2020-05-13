@@ -39,9 +39,13 @@ class StateDistribution:
 
         try:
             bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
+        except ZeroDivisionError:
+            assert False, f"{tuple_of_obs[0]}, {self.bern_p}"
+            
+        try:
             gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
         except ZeroDivisionError:
-            assert False
+            assert False, f"{tuple_of_obs[1]}, {self.gamma_a}, {self.gamma_scale}"
 
         return bern_ll * gamma_ll
 
@@ -110,6 +114,9 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, old_params, gammas):
     a_hat = halley(k0, s)
 
     scale_hat = (sum(gammas*gamma_obs))/a_hat/sum(gammas)
+    
+    if a_hat > 100:
+        return 7, 3+(1*(np.random.uniform()))
 
     return a_hat, scale_hat
 
