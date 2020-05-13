@@ -1,2 +1,0 @@
-mkdir -p ./output
-. venv/bin/activate && ./genFigures.py 2

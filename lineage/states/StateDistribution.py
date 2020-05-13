@@ -37,8 +37,11 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
-        gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+        try:
+            bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
+            gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+        except ZeroDivisionError:
+            assert False
 
         return bern_ll * gamma_ll
 
@@ -73,7 +76,7 @@ class StateDistribution:
         Initialize a default state distribution.
         """
         print("Initializing a new StateDistribution object!")
-        return StateDistribution(0.9, 7, 1+(1*(np.random.uniform())))
+        return StateDistribution(0.9, 7, 3+(1*(np.random.uniform())))
 
     def __repr__(self):
         """
@@ -96,19 +99,18 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, old_params, gammas):
     This is a closed-form estimator for two parameters
     of the Gamma distribution, which is corrected for bias.
     """
+    s = np.log(sum(gammas*gamma_obs)/sum(gammas)) - sum(gammas*np.log(gamma_obs))/sum(gammas)
+    k0 = old_params[0]
+    scale0 = old_params[1]
+    
+    f = lambda k,s : np.log(k) - sc.polygamma(0,k) - s
+    fprime = lambda k,s : (1./k) - sc.polygamma(1,k)
+    fprime2 = lambda k,s : (-1./k**2) - sc.polygamma(2,k)
+    
+    halley = lambda k,s: k - ((2*(f(k,s)*fprime(k,s)))/(2*(fprime(k,s)**2)-f(k,s)*fprime2(k,s)))
+    a_hat = halley(k0, s)
 
-
-    print(gamma_obs)
-    print(f"Old Parameters: {old_params}")
-    s = np.log(sum(gamma_obs)/len(gamma_obs)) - ( sum(np.log(gamma_obs))/len(gamma_obs) )
-    k = old_params[0]
-
-    f_over_fPrime_lambda = lambda k,s = (p.log(k) - sc.digamma(k) - s) / ((1/k)- sc.polygamma(1, k))
-    a_hat = k - f_over_fPrime_lambda(k,s)
-    for i in range(50):
-        a_hat = a_hat - f_over_fPrime_lambda(a_hat, s)
     scale_hat = (sum(gammas*gamma_obs))/a_hat/sum(gammas)
-    print(a_hat, scale_hat)
 
     return a_hat, scale_hat
 
