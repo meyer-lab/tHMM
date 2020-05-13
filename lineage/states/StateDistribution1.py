@@ -92,7 +92,7 @@ def exp_estimator(exp_obs, time_censor_obs, gammas):
     This is a closed-form estimator for the lambda parameter of the
     exponential distribution, which is right-censored.
     """
-    return sum(gammas*exp_obs) / sum(gammas)
+    return (sum(gammas*exp_obs) / sum(gammas)) * (len(exp_obs) / sum(time_censor_obs))
 
 
 @njit
