@@ -75,7 +75,6 @@ class StateDistribution:
         """
         Initialize a default state distribution.
         """
-        print("Initializing a new StateDistribution object!")
         return StateDistribution(0.9, 7, 3+(1*(np.random.uniform())))
 
     def __repr__(self):
