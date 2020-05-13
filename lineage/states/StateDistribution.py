@@ -102,7 +102,6 @@ def gamma_estimator(gamma_obs, gammas):
 
     a_hat = 7
     scale_hat = (sum(gammas*gamma_obs))/a_hat/sum(gammas)
-    print(a_hat,scale_hat)
 
     return a_hat, scale_hat
 
