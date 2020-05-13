@@ -55,8 +55,8 @@ class StateDistribution:
             exp_obs = []
             time_censor_obs = []
 
-        bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
-        exp_beta_estimate = exp_estimator(exp_obs, time_censor_obs, gammas)
+        bern_p_estimate = bernoulli_estimator(bern_obs, (self.bern_p,), gammas)
+        exp_beta_estimate = exp_estimator(exp_obs, time_censor_obs, (self.exp_beta,), gammas)
 
         state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, exp_beta=exp_beta_estimate)
         # } requires the user's attention.
@@ -87,7 +87,7 @@ class StateDistribution:
 # can handle the case where the list of observations is empty.
 
 
-def exp_estimator(exp_obs, time_censor_obs, gammas):
+def exp_estimator(exp_obs, time_censor_obs, old_params, gammas):
     """
     This is a closed-form estimator for the lambda parameter of the
     exponential distribution, which is right-censored.

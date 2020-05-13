@@ -52,13 +52,15 @@ class StateDistribution:
         try:
             bern_obs = list(unzipped_list_of_tuples_of_obs[0])
             gamma_obs = list(unzipped_list_of_tuples_of_obs[1])
+            gamma_censor_obs = list(unzipped_list_of_tuples_of_obs[2])
         except BaseException:
             bern_obs = []
             gamma_obs = []
+            gamma_censor_obs = []
 
-        bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
-        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs, gammas)
-
+        bern_p_estimate = bernoulli_estimator(bern_obs, (self.bern_p,), gammas)
+        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs, gamma_censor_obs, (self.gamma_a, self.gamma_scale,), gammas)
+        
         state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
@@ -70,6 +72,7 @@ class StateDistribution:
         """
         Initialize a default state distribution.
         """
+        print("Initializing a new StateDistribution object!")
         return StateDistribution(0.9, 7, 1+(1*(np.random.uniform())))
 
     def __repr__(self):
@@ -88,22 +91,22 @@ class StateDistribution:
 # can handle the case where the list of observations is empty.
 
 
-def gamma_estimator(gamma_obs, gammas):
+def gamma_estimator(gamma_obs, gamma_censor_obs, old_params, gammas):
     """
     This is a closed-form estimator for two parameters
     of the Gamma distribution, which is corrected for bias.
     """
 
 
-#     print("\n +++++++++++++")
-#     print(gamma_obs*gammas)
-#     print(sum(gamma_obs*gammas)/sum(gammas))
-#     print(skew(gamma_obs,gammas))
-#     print(4/skew(gamma_obs,gammas)**2)
-    s = np.log(sum(gammas*gamma_obs)/sum(gammas)) - ( sum(gammas*np.log(gamma_obs))/sum(gammas) )
-    f = lambda k, s: 1/(np.log(k) - sc.digamma(k)) - 1/s
-    print(np.log(7), sc.digamma(7), s, np.log(7) - sc.digamma(7) - s)
-    a_hat = optimize.newton(f, x0=7, args=(s,), disp=True, maxiter=100)
+    print(gamma_obs)
+    print(f"Old Parameters: {old_params}")
+    s = np.log(sum(gamma_obs)/len(gamma_obs)) - ( sum(np.log(gamma_obs))/len(gamma_obs) )
+    k = old_params[0]
+
+    f_over_fPrime_lambda = lambda k,s = (p.log(k) - sc.digamma(k) - s) / ((1/k)- sc.polygamma(1, k))
+    a_hat = k - f_over_fPrime_lambda(k,s)
+    for i in range(50):
+        a_hat = a_hat - f_over_fPrime_lambda(a_hat, s)
     scale_hat = (sum(gammas*gamma_obs))/a_hat/sum(gammas)
     print(a_hat, scale_hat)
 

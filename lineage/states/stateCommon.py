@@ -16,7 +16,7 @@ def bern_pdf(x, p):
     return (p**x) * ((1.0 - p)**(1 - x))
 
 
-def bernoulli_estimator(bern_obs, gammas):
+def bernoulli_estimator(bern_obs, old_params, gammas):
     """
     Add up all the 1s and divide by the total length (finding the average).
     """

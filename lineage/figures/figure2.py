@@ -47,7 +47,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    cells = np.linspace(min_desired_num_cells, max_desired_num_cells, num_data_points)
+    cells = np.linspace(min_desired_num_cells, max_desired_num_cells, 3)
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []

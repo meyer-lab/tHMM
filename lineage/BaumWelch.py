@@ -73,15 +73,17 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
 
     # first stopping condition check
     new_LL = calculate_log_likelihood(NF)
-    for _ in range(max_iter):
+    for iter_number in range(max_iter):
+        print(f"Iteration number {iter_number}")
         old_LL = new_LL
 
         # code for grouping all states in cell lineages
         pi_estimate = np.zeros((num_states), dtype=float)
         numer_estimate = np.zeros((num_states, num_states), dtype=float)
         denom_estimate = np.zeros((num_states,),dtype=float)
-        cell_obs = []
         for num, lineageObj in enumerate(tHMMobj.X):
+            
+            print(f"Analyzing lineage number {num}")
             lineage = lineageObj.output_lineage
             gamma_array = gammas[num]
             
@@ -107,6 +109,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
             all_gammas = np.vstack(gammas)
             for state_j in range(tHMMobj.num_states):
+                print("Running estimator!")
                 tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:,state_j])
 
 
@@ -122,7 +125,8 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
         # tolerance checking
         new_LL = calculate_log_likelihood(NF)
 
-        if np.allclose(old_LL, new_LL, atol=tolerance) and sum(new_LL) > sum(old_LL):
+        if np.allclose(old_LL, new_LL, atol=tolerance) and sum(new_LL) > sum(old_LL) and iter_number>5:
+            print(f"Exiting after {iter_number} iterations after sufficient Likelihood increase!")
             return (tHMMobj, NF, betas, gammas, new_LL)
-
+    print(f"Exiting after {iter_number} iterations!")
     return (tHMMobj, NF, betas, gammas, new_LL)
