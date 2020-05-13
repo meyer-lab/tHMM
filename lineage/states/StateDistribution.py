@@ -4,6 +4,7 @@ import numpy as np
 import scipy.stats as sp
 from numba import njit
 import scipy.special as sc
+from scipy import optimize
 
 from .stateCommon import bern_pdf, bernoulli_estimator, skew
 
@@ -93,15 +94,18 @@ def gamma_estimator(gamma_obs, gammas):
     of the Gamma distribution, which is corrected for bias.
     """
 
-#     xbar = sum(gammas*gamma_obs) / sum(gammas)
-#     x_lnx = [x*y * np.log(x*y) for x,y in zip(gamma_obs,gammas)]
-#     lnx = [np.log(x*y) for x,y in zip(gamma_obs,gammas)]
-#     # gamma_a
-#     a_hat = (sum(gammas) * sum(gammas*gamma_obs)) / (sum(gammas)*sum(x_lnx) - (sum(lnx))*(sum(gammas*gamma_obs)))
-#     # gamma_scale
 
-    a_hat = 7
+#     print("\n +++++++++++++")
+#     print(gamma_obs*gammas)
+#     print(sum(gamma_obs*gammas)/sum(gammas))
+#     print(skew(gamma_obs,gammas))
+#     print(4/skew(gamma_obs,gammas)**2)
+    s = np.log(sum(gammas*gamma_obs)/sum(gammas)) - ( sum(gammas*np.log(gamma_obs))/sum(gammas) )
+    f = lambda k, s: 1/(np.log(k) - sc.digamma(k)) - 1/s
+    print(np.log(7), sc.digamma(7), s, np.log(7) - sc.digamma(7) - s)
+    a_hat = optimize.newton(f, x0=7, args=(s,), disp=True, maxiter=100)
     scale_hat = (sum(gammas*gamma_obs))/a_hat/sum(gammas)
+    print(a_hat, scale_hat)
 
     return a_hat, scale_hat
 
