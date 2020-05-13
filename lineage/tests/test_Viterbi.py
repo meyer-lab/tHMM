@@ -27,7 +27,7 @@ class TestViterbi(unittest.TestCase):
         E = [state_obj0, state_obj1]
 
         X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)
-        tHMMobj, pred_states_by_lineage, _ = Analyze([X], num_states=2)
+        tHMMobj, pred_states_by_lineage, LL = Analyze([X], num_states=2)
         all_LLs = []
         vitLL = LLFunc(T, pi, tHMMobj, pred_states_by_lineage)
         for _ in range(10):
