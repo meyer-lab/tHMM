@@ -6,7 +6,7 @@ from numba import njit
 import scipy.special as sc
 from scipy import optimize
 
-from .stateCommon import bern_pdf, bernoulli_estimator, skew
+from .stateCommon import bern_pdf, bernoulli_estimator
 
 
 class StateDistribution:
