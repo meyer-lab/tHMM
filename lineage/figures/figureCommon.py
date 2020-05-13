@@ -19,12 +19,12 @@ pi = np.array([0.5, 0.5], dtype="float")
 T = np.array([[0.9, 0.1], [0.1, 0.9]], dtype="float")
 
 # bern, gamma_a, gamma_scale
-state0 = StateDistribution(0.99, 7, 7)
+state0 = StateDistribution(0.88, 7, 7)
 state1 = StateDistribution(0.75, 7, 1)
 E = [state0, state1]
 
 # bern, exp_lambda
-state10 = expStateDistribution(0.99, 49)
+state10 = expStateDistribution(0.88, 49)
 state11 = expStateDistribution(0.75, 7)
 E1 = [state10, state11]
 
@@ -79,8 +79,9 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     list_of_fpi = kwargs.get('list_of_fpi', [None] * len(list_of_populations))
     list_of_fT = kwargs.get('list_of_fT', [None] * len(list_of_populations))
     list_of_fE = kwargs.get('list_of_fE', [None] * len(list_of_populations))
+    parallel = kwargs.get('parallel', True)
     # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, 2, parallel=True, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
+    output = run_Analyze_over(list_of_populations, 2, parallel=parallel, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
 
     # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)

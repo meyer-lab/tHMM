@@ -12,15 +12,15 @@ def bern_pdf(x, p):
     probability distribution function.
     """
     # bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0-self.bern_p)**(1-tuple_of_obs[0])
-
+    
     return (p**x) * ((1.0 - p)**(1 - x))
 
 
-def bernoulli_estimator(bern_obs):
+def bernoulli_estimator(bern_obs, gammas):
     """
     Add up all the 1s and divide by the total length (finding the average).
     """
-    return (sum(bern_obs) + 8e-11) / (len(bern_obs) + 1e-10)
+    return sum(gammas*bern_obs) / sum(gammas)
 
 
 class Time:

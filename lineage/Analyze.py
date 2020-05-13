@@ -21,13 +21,13 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     --------
     tHMMobj {obj}:
     """
-    for num_tries in range(1, 5):
+    for num_tries in range(1, 10):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            fit(tHMMobj, max_iter=300)
+            fit(tHMMobj, max_iter=500)
             break
         except AssertionError:
-            if num_tries == 4:
+            if num_tries == 9:
                 print(
                     f"Caught AssertionError in fitting after multiple ({num_tries}) runs. Fitting is breaking after trying {num_tries} times. Consider inspecting the length of your lineages."
                 )
@@ -52,7 +52,7 @@ def Analyze(X, num_states, fpi=None, fT=None, fE=None):
 
     for _ in range(1, 5):
         tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
-        if tmp_LL > LL:
+        if sum(tmp_LL) > sum(LL):
             tHMMobj = tmp_tHMMobj
             pred_states_by_lineage = tmp_pred_states_by_lineage
             LL = tmp_LL

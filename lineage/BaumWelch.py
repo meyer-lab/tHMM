@@ -28,16 +28,13 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_ar
 def get_all_gammas(lineageObj, gamma_arr):
     """sum of the list of all the gamma parent child for all the parent child relationships"""
     holder_wo_leaves = np.zeros(gamma_arr.shape[1])
-    holder_with_leaves = np.zeros(gamma_arr.shape[1])
     for level in lineageObj.output_list_of_gens[1:]: # get all the gammas but not the ones at the last level
         for cell in level:
             cell_idx = lineageObj.output_lineage.index(cell)
             if not cell.isLeaf():
                 holder_wo_leaves += gamma_arr[cell_idx, :]
-            else:
-                holder_with_leaves += gamma_arr[cell_idx, :]
 
-    return holder_wo_leaves, holder_wo_leaves + holder_with_leaves
+    return holder_wo_leaves
 
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
@@ -80,43 +77,38 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
         old_LL = new_LL
 
         # code for grouping all states in cell lineages
-        cell_groups = [[] for state in range(num_states)]
         pi_estimate = np.zeros((num_states), dtype=float)
         numer_estimate = np.zeros((num_states, num_states), dtype=float)
         denom_estimate = np.zeros((num_states,),dtype=float)
-        T_estimate = np.zeros((num_states, num_states), dtype=float)
+        cell_obs = []
         for num, lineageObj in enumerate(tHMMobj.X):
             lineage = lineageObj.output_lineage
             gamma_array = gammas[num]
+            
+            # local pi estimate
             pi_estimate += gamma_array[0, :]
 
-            denom, gamma_holder_with_leaves = get_all_gammas(lineageObj, gamma_array)
-            numer = get_all_zetas(
+            # local T estimate
+            numer_estimate += get_all_zetas(
                 lineageObj=lineageObj, beta_array=betas[num], MSD_array=tHMMobj.MSD[num], gamma_array=gamma_array, T=tHMMobj.estimate.T
             )
-            numer_estimate += numer
-            denom_estimate += denom
-            T_estimate += (numer + np.finfo(np.float64).eps) / (denom[:, np.newaxis] + np.finfo(np.float64).eps)
+            denom_estimate += get_all_gammas(lineageObj, gamma_array)
             
-            max_state_holder = [] # a list the size of lineage, that contains max state for each cell
-            for ii, cell in enumerate(lineage):
-                assert lineage[ii] is cell
-                max_state_holder.append(np.argmax(gamma_array[ii, :]))  # says which state is maximal
-            print(max_state_holder)
 
-            # this bins the cells by lineage to the population cell lists
-            for ii, state in enumerate(max_state_holder):
-                cell_groups[state].append(lineage[ii])
         if tHMMobj.estimate.fpi is None:
             # population wide pi calculation
             tHMMobj.estimate.pi = pi_estimate / sum(pi_estimate)
         if tHMMobj.estimate.fT is None:
             # population wide T calculation
+            T_estimate = numer_estimate / denom_estimate[:, np.newaxis]
             tHMMobj.estimate.T = T_estimate / T_estimate.sum(axis=1)[:, np.newaxis]
         if tHMMobj.estimate.fE is None:
             # population wide E calculation
-            for state_j in range(num_states):
-                tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator([cell.obs for cell in cell_groups[state_j]])
+            all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+            all_gammas = np.vstack(gammas)
+            for state_j in range(tHMMobj.num_states):
+                tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:,state_j])
+
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
@@ -130,7 +122,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
         # tolerance checking
         new_LL = calculate_log_likelihood(NF)
 
-        if np.allclose(old_LL, new_LL, atol=tolerance):
+        if np.allclose(old_LL, new_LL, atol=tolerance) and sum(new_LL) > sum(old_LL):
             return (tHMMobj, NF, betas, gammas, new_LL)
 
     return (tHMMobj, NF, betas, gammas, new_LL)
