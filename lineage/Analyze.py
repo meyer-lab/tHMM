@@ -21,15 +21,17 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     --------
     tHMMobj {obj}:
     """
+    error_holder = []
     for num_tries in range(1, 15):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
             fit(tHMMobj, max_iter=500)
             break
-        except AssertionError or ZeroDivisionError:
+        except (AssertionError, ZeroDivisionError) as error:
+            error_holder.append(error)
             if num_tries == 14:
                 print(
-                    f"Caught AssertionError in fitting after multiple ({num_tries}) runs. Fitting is breaking after trying {num_tries} times. Consider inspecting the length of your lineages."
+                    f"Caught the following errors \n {error_holder} \n in fitting after multiple ({num_tries}) runs. Fitting is breaking after trying {num_tries} times. Consider inspecting the length of your lineages."
                 )
                 raise
 
