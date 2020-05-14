@@ -69,7 +69,7 @@ class StateDistribution:
         """
         Initialize a default state distribution.
         """
-        return StateDistribution(0.9, 7, 1+(1*(np.random.uniform())))
+        return StateDistribution(0.9, 7, 1 + (1 * (np.random.uniform())))
 
     def __repr__(self):
         """
@@ -115,4 +115,4 @@ def gamma_pdf(x, a, scale):
     and returns the likelihood of the observation based on the gamma
     probability distribution function.
     """
-    return x**(a-1) * np.exp(-x/scale) / gamma(a) / (scale**a)
+    return x**(a - 1) * np.exp(-x / scale) / gamma(a) / (scale**a)
