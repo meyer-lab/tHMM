@@ -105,9 +105,9 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, old_params, gammas):
     s = np.log(sum(gammas * gamma_obs) / sum(gammas)) - sum(gammas * np.log(gamma_obs)) / sum(gammas)
     k0 = old_params[0]
 
-    def f(k, s): return np.log(k) - sc.polygamma(0, k) - s
-    def fprime(k, s): return (1. / k) - sc.polygamma(1, k)
-    def fprime2(k, s): return (-1. / k**2) - sc.polygamma(2, k)
+    def f(k, s): return 1/(np.log(k) - sc.polygamma(0, k)) - 1/s
+    def fprime(k, s): return (k*sc.polygamma(1, k) - 1.)/(k*(np.log(k)-sc.polygamma(0, k))**2)
+    def fprime2(k, s): return (2*((1/k)-sc.polygamma(1, k))**2)/((np.log(k)-sc.polygamma(0, k))**3) + (sc.polygamma(2, k)+(1./k**2))/((np.log(k)-sc.polygamma(0, k))**2)
 
     def halley(k, s): return k - ((2 * (f(k, s) * fprime(k, s))) / (2 * (fprime(k, s)**2) - f(k, s) * fprime2(k, s)))
     a_hat = halley(k0, s)
