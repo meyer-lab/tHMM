@@ -27,11 +27,11 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
             fit(tHMMobj, max_iter=500)
             break
-        except (AssertionError, ZeroDivisionError) as error:
+        except (AssertionError, ZeroDivisionError, RuntimeError) as error:
             error_holder.append(error)
             if num_tries == 14:
                 print(
-                    f"Caught the following errors \n {error_holder} \n in fitting after multiple ({num_tries}) runs. Fitting is breaking after trying {num_tries} times. Consider inspecting the length of your lineages."
+                    f"Caught the following errors: \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. Fitting is breaking after trying {num_tries} times. If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue is the estimates of your parameters are returning nonsensible parameters. Consider changing your parameter estimator. "
                 )
                 raise
 

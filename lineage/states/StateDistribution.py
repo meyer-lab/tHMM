@@ -112,7 +112,7 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, old_params, gammas):
     def halley(k, s): return k - ((2 * (f(k, s) * fprime(k, s))) / (2 * (fprime(k, s)**2) - f(k, s) * fprime2(k, s)))
     a_hat0 = halley(k0, s)
     
-    a_hat = optimize.newton(f, args=(s,), x0=a_hat0, x1=k0, fprime=fprime, fprime2=fprime2)
+    a_hat = optimize.newton(f, args=(s,), x0=a_hat0, x1=k0, fprime=fprime, fprime2=fprime2, maxiter=5)
 
     scale_hat = (sum(gammas * gamma_obs)) / a_hat / sum(gammas)
 
