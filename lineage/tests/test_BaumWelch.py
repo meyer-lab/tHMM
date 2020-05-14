@@ -40,7 +40,6 @@ class TestBW(unittest.TestCase):
         # Get the likelihoods after fitting
         tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], 2, max_iter=5)
         self.assertTrue(np.isfinite(LL_after))
-        self.assertTrue(np.isfinite(new_LL_list_after))
 
         self.assertGreater(LL_after, LL_before)
 
@@ -73,7 +72,6 @@ class TestBW(unittest.TestCase):
         # Get the likelihoods after fitting
         tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], 2, max_iter=5)
         self.assertTrue(np.isfinite(LL_after))
-        self.assertTrue(np.isfinite(new_LL_list_after))
 
         self.assertGreater(LL_after, LL_before)
 
@@ -106,7 +104,6 @@ class TestBW(unittest.TestCase):
         # Get the likelihoods after fitting
         tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], 2, max_iter=5)
         self.assertTrue(np.isfinite(LL_after))
-        self.assertTrue(np.isfinite(new_LL_list_after))
 
         self.assertGreater(LL_after, LL_before)
 
@@ -139,6 +136,5 @@ class TestBW(unittest.TestCase):
         # Get the likelihoods after fitting
         tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], 2, max_iter=5)
         self.assertTrue(np.isfinite(LL_after))
-        self.assertTrue(np.isfinite(new_LL_list_after))
 
         self.assertGreater(LL_after, LL_before)
