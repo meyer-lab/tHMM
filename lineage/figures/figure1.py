@@ -4,18 +4,8 @@ Purpose: Generates figure 1.
 
 Figure 1 is the distribution of cells in a state over generations (uncensored) and over time.
 """
-import numpy as np
 
-from .figureCommon import (
-    getSetup,
-    subplotLabel,
-    pi,
-    T,
-    E,
-    max_desired_num_cells,
-    num_data_points,
-)
-from ..LineageTree import LineageTree
+from .figureCommon import getSetup, subplotLabel
 
 
 def makeFigure():
