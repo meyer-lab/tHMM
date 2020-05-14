@@ -41,7 +41,7 @@ class StateDistribution:
             bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
         except ZeroDivisionError:
             assert False, f"{tuple_of_obs[0]}, {self.bern_p}"
-            
+
         try:
             gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
         except ZeroDivisionError:
@@ -67,7 +67,7 @@ class StateDistribution:
 
         bern_p_estimate = bernoulli_estimator(bern_obs, (self.bern_p,), gammas)
         gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs, gamma_censor_obs, (self.gamma_a, self.gamma_scale,), gammas)
-        
+
         state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
@@ -79,7 +79,7 @@ class StateDistribution:
         """
         Initialize a default state distribution.
         """
-        return StateDistribution(0.9, 7, 3+(1*(np.random.uniform())))
+        return StateDistribution(0.9, 7, 3 + (1 * (np.random.uniform())))
 
     def __repr__(self):
         """
@@ -102,21 +102,21 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, old_params, gammas):
     This is a closed-form estimator for two parameters
     of the Gamma distribution, which is corrected for bias.
     """
-    s = np.log(sum(gammas*gamma_obs)/sum(gammas)) - sum(gammas*np.log(gamma_obs))/sum(gammas)
+    s = np.log(sum(gammas * gamma_obs) / sum(gammas)) - sum(gammas * np.log(gamma_obs)) / sum(gammas)
     k0 = old_params[0]
     scale0 = old_params[1]
-    
-    f = lambda k,s : np.log(k) - sc.polygamma(0,k) - s
-    fprime = lambda k,s : (1./k) - sc.polygamma(1,k)
-    fprime2 = lambda k,s : (-1./k**2) - sc.polygamma(2,k)
-    
-    halley = lambda k,s: k - ((2*(f(k,s)*fprime(k,s)))/(2*(fprime(k,s)**2)-f(k,s)*fprime2(k,s)))
+
+    def f(k, s): return np.log(k) - sc.polygamma(0, k) - s
+    def fprime(k, s): return (1. / k) - sc.polygamma(1, k)
+    def fprime2(k, s): return (-1. / k**2) - sc.polygamma(2, k)
+
+    def halley(k, s): return k - ((2 * (f(k, s) * fprime(k, s))) / (2 * (fprime(k, s)**2) - f(k, s) * fprime2(k, s)))
     a_hat = halley(k0, s)
 
-    scale_hat = (sum(gammas*gamma_obs))/a_hat/sum(gammas)
-    
+    scale_hat = (sum(gammas * gamma_obs)) / a_hat / sum(gammas)
+
     if a_hat > 100:
-        return 7, 3+(1*(np.random.uniform()))
+        return 7, 3 + (1 * (np.random.uniform()))
 
     return a_hat, scale_hat
 
@@ -128,4 +128,4 @@ def gamma_pdf(x, a, scale):
     and returns the likelihood of the observation based on the gamma
     probability distribution function.
     """
-    return x**(a-1.) * np.exp(-1.*x/scale) / gamma(a) / (scale**a)
+    return x**(a - 1.) * np.exp(-1. * x / scale) / gamma(a) / (scale**a)

@@ -73,7 +73,7 @@ class TestModel(unittest.TestCase):
         A unittest for the estimator function, by generating 150 observatopns for each of the
         distribution functions, we use the estimator and compare. """
         tuples_of_obs = self.E[0].rvs(size=3000)
-        gammas = np.array([1]*len(tuples_of_obs))
+        gammas = np.array([1] * len(tuples_of_obs))
         estimator_obj = self.E[0].estimator(tuples_of_obs, gammas)
 
         # here we check the estimated parameters to be close
@@ -107,7 +107,7 @@ class TestModel(unittest.TestCase):
         to the result of scipy random variable generator.
         """
         bern_obs = sp.bernoulli.rvs(p=0.90, size=1000)  # bernoulli observations
-        gammas = np.array([1]*len(bern_obs))
+        gammas = np.array([1] * len(bern_obs))
         self.assertTrue(0.87 <= bernoulli_estimator(bern_obs, (0.5,), gammas) <= 0.93)
 
     def test_gamma_estimator(self):
@@ -117,9 +117,9 @@ class TestModel(unittest.TestCase):
         to the result of scipy random variable generator.
         """
         gamma_obs = sp.gamma.rvs(a=12.5, scale=3, size=1000)  # gamma observations
-        gamma_censor_obs = np.array([1]*len(gamma_obs))
-        gammas = [1]*len(gamma_obs)
-        
+        gamma_censor_obs = np.array([1] * len(gamma_obs))
+        gammas = [1] * len(gamma_obs)
+
         shape, scale = gamma_estimator(gamma_obs, gamma_censor_obs, (12, 1,), gammas)
 
         self.assertTrue(10 <= shape <= 15)
