@@ -104,14 +104,15 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, old_params, gammas):
     """
     s = np.log(sum(gammas * gamma_obs) / sum(gammas)) - sum(gammas * np.log(gamma_obs)) / sum(gammas)
     k0 = old_params[0]
-    scale0 = old_params[1]
 
     def f(k, s): return np.log(k) - sc.polygamma(0, k) - s
     def fprime(k, s): return (1. / k) - sc.polygamma(1, k)
     def fprime2(k, s): return (-1. / k**2) - sc.polygamma(2, k)
 
     def halley(k, s): return k - ((2 * (f(k, s) * fprime(k, s))) / (2 * (fprime(k, s)**2) - f(k, s) * fprime2(k, s)))
-    a_hat = halley(k0, s)
+    a_hat0 = halley(k0, s)
+    
+    a_hat = optimize.newton(f, args=(s,), x0=a_hat0, x1=k0, fprime=fprime, fprime2=fprime2)
 
     scale_hat = (sum(gammas * gamma_obs)) / a_hat / sum(gammas)
 
