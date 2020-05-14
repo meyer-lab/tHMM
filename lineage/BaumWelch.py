@@ -59,7 +59,7 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     return holder
 
 
-def calculateQuantities(tHMMobj)
+def calculateQuantities(tHMMobj):
     """ Calculate NF, gamma, beta, LL from tHMM model. """
     NF = get_leaf_Normalizing_Factors(tHMMobj)
     betas = get_leaf_betas(tHMMobj, NF)

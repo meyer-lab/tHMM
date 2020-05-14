@@ -38,7 +38,7 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
     pred_states_by_lineage = Viterbi(tHMMobj, deltas, state_ptrs)
 
-    NF, betas, _, LL = calculateQuantities(tHMMobj)
+    _, _, _, LL = calculateQuantities(tHMMobj)
 
     return tHMMobj, pred_states_by_lineage, LL
 
@@ -344,7 +344,7 @@ def stateLikelihood(tHMMobj):
     EL = tHMMobj.get_Emission_Likelihoods()
     MSD = tHMMobj.get_Marginal_State_Distributions()
 
-    NF, betas, _, _ = calculateQuantities(tHMMobj)
+    NF, _, _, _ = calculateQuantities(tHMMobj)
 
     LL = EL[0] * MSD[0]
     LL[:, 0] = LL[:, 0] / NF[0]
