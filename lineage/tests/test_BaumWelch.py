@@ -36,19 +36,10 @@ class TestBW(unittest.TestCase):
 
         # Using an unpruned lineage to avoid unforseen issues
         X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)
-        tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
-
-        # Test cases below
-        # Get the likelihoods before fitting
-        NF_before = get_leaf_Normalizing_Factors(tHMMobj)
-        betas_before = get_leaf_betas(tHMMobj, NF_before)
-        get_nonleaf_NF_and_betas(tHMMobj, NF_before, betas_before)
-        LL_before = calculate_log_likelihood(NF_before)
-        self.assertTrue(np.isfinite(LL_before))
+        tHMMobj, pred_states_by_lineage, LL_before = Analyze([X], num_states, max_iter=1)
 
         # Get the likelihoods after fitting
-        _, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
-        LL_after = calculate_log_likelihood(NF_after)
+        tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], num_states, max_iter=5)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
 
@@ -77,20 +68,11 @@ class TestBW(unittest.TestCase):
 
         E = [state_obj0, state_obj1]
 
-        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1, censor_condition=1)
-        tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
-
-        # Test cases below
-        # Get the likelihoods before fitting
-        NF_before = get_leaf_Normalizing_Factors(tHMMobj)
-        betas_before = get_leaf_betas(tHMMobj, NF_before)
-        get_nonleaf_NF_and_betas(tHMMobj, NF_before, betas_before)
-        LL_before = calculate_log_likelihood(NF_before)
-        self.assertTrue(np.isfinite(LL_before))
+        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)
+        tHMMobj, pred_states_by_lineage, LL_before = Analyze([X], num_states, max_iter=1)
 
         # Get the likelihoods after fitting
-        _, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
-        LL_after = calculate_log_likelihood(NF_after)
+        tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], num_states, max_iter=5)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
 
@@ -119,21 +101,11 @@ class TestBW(unittest.TestCase):
 
         E = [state_obj0, state_obj1]
 
-        # Using an unpruned lineage to avoid unforseen issues
-        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1, censor_condition=2, desired_experimental_time=500)
-        tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
-
-        # Test cases below
-        # Get the likelihoods before fitting
-        NF_before = get_leaf_Normalizing_Factors(tHMMobj)
-        betas_before = get_leaf_betas(tHMMobj, NF_before)
-        get_nonleaf_NF_and_betas(tHMMobj, NF_before, betas_before)
-        LL_before = calculate_log_likelihood(NF_before)
-        self.assertTrue(np.isfinite(LL_before))
+        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)
+        tHMMobj, pred_states_by_lineage, LL_before = Analyze([X], num_states, max_iter=1)
 
         # Get the likelihoods after fitting
-        _, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
-        LL_after = calculate_log_likelihood(NF_after)
+        tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], num_states, max_iter=5)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
 
@@ -162,21 +134,11 @@ class TestBW(unittest.TestCase):
 
         E = [state_obj0, state_obj1]
 
-        # Using an unpruned lineage to avoid unforseen issues
-        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experimental_time=500)
-        tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
-
-        # Test cases below
-        # Get the likelihoods before fitting
-        NF_before = get_leaf_Normalizing_Factors(tHMMobj)
-        betas_before = get_leaf_betas(tHMMobj, NF_before)
-        get_nonleaf_NF_and_betas(tHMMobj, NF_before, betas_before)
-        LL_before = calculate_log_likelihood(NF_before)
-        self.assertTrue(np.isfinite(LL_before))
+        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)
+        tHMMobj, pred_states_by_lineage, LL_before = Analyze([X], num_states, max_iter=1)
 
         # Get the likelihoods after fitting
-        _, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
-        LL_after = calculate_log_likelihood(NF_after)
+        tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], num_states, max_iter=5)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
 
