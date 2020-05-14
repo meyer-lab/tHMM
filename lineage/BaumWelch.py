@@ -93,14 +93,12 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             T_holder = (numer + np.spacing(1)) / (denom[:, np.newaxis] + np.spacing(1))
             T_estimate += T_holder
 
-            max_state_holder = []  # a list the size of lineage, that contains max state for each cell
-            for ii, cell in enumerate(lineage):
-                assert lineage[ii] is cell
-                max_state_holder.append(np.argmax(gamma_array[ii, :]))  # says which state is maximal
+            for ii, _ in enumerate(lineage):
+                state = np.argmax(gamma_array[ii, :])  # says which state is maximal
 
-            # this bins the cells by lineage to the population cell lists
-            for ii, state in enumerate(max_state_holder):
+                # this bins the cells by lineage to the population cell lists
                 cell_groups[state].append(lineage[ii])
+                
         if tHMMobj.estimate.fpi is None:
             # population wide pi calculation
             tHMMobj.estimate.pi = pi_estimate / sum(pi_estimate)
