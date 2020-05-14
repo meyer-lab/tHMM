@@ -22,7 +22,7 @@ pipeline {
           sh 'make output/manuscript.md'
         }
         sh 'make all -j 4'
-        archiveArtifacts artifacts: 'output/*.svg', onlyIfSuccessful: true
+        archiveArtifacts artifacts: 'output/*.svg, spell.txt', onlyIfSuccessful: true
         cobertura coberturaReportFile: 'coverage.xml', failUnhealthy: false, failUnstable: false, maxNumberOfBuilds: 0, onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
         recordIssues qualityGates: [[threshold: 70, type: 'TOTAL', unstable: true]], tools: [pyLint(pattern: 'pylint.log')]
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'output', reportFiles: 'manuscript.html', reportName: 'Manuscript'])
