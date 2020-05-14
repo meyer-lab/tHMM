@@ -122,7 +122,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
         EL_array = tHMMobj.EL[num]  # geting the EL of the respective lineage
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
 
-        for level in lineageObj.output_list_of_gens[2:][::-1]: # a reversed list of generations
+        for level in lineageObj.output_list_of_gens[2:][::-1]:  # a reversed list of generations
             for node_parent_m_idx in lineageObj.get_parents_for_level(level):
                 fac1 = get_beta_parent_child_prod(
                     lineage=lineage, MSD_array=MSD_array, T=T, beta_array=betas[num], node_parent_m_idx=node_parent_m_idx
@@ -134,7 +134,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
 
                 betas[num][node_parent_m_idx, :] = fac1 / NF[num][node_parent_m_idx]
 
-    for num, lineageObj in enumerate(tHMMobj.X): # for each lineage in our Population
+    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         betas_row_sum = np.sum(betas[num], axis=1)
         assert np.allclose(betas_row_sum, 1.0)
 
@@ -144,14 +144,14 @@ def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, node_parent_m_
     Calculates the product of beta-links for every parent-child
     relationship of a given parent cell in a given state.
     """
-    beta_m_n_holder = np.ones(T.shape[0]) # list to hold the factors in the product
-    node_parent_m = lineage[node_parent_m_idx] # get the index of the parent
+    beta_m_n_holder = np.ones(T.shape[0])  # list to hold the factors in the product
+    node_parent_m = lineage[node_parent_m_idx]  # get the index of the parent
     children_list = node_parent_m.get_daughters()
     children_idx_list = [lineage.index(daughter) for daughter in children_list]
 
     for node_child_n_idx in children_idx_list:
-        assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx] # check the child-parent relationship
-        assert lineage[node_child_n_idx].isChild() # if the child-parent relationship is correct, then the child must have a parent
+        assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
+        assert lineage[node_child_n_idx].isChild()  # if the child-parent relationship is correct, then the child must have a parent
         beta_m_n_holder *= beta_parent_child_func(beta_array=beta_array, T=T, MSD_array=MSD_array, node_child_n_idx=node_child_n_idx)
 
     return beta_m_n_holder

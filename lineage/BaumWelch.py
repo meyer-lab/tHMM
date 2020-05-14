@@ -14,9 +14,9 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_ar
     assert lineage[node_child_n_idx].isChild()
     # either be the left daughter or the right daughter
 
-    beta_child_state_k = beta_array[node_child_n_idx, :] # x by k
-    gamma_parent = gamma_array[node_parent_m_idx, :] # x by j
-    MSD_child_state_k = MSD_array[node_child_n_idx, :] # x by k
+    beta_child_state_k = beta_array[node_child_n_idx, :]  # x by k
+    gamma_parent = gamma_array[node_parent_m_idx, :]  # x by j
+    MSD_child_state_k = MSD_array[node_child_n_idx, :]  # x by k
     beta_parent_child = beta_parent_child_func(beta_array=beta_array, T=T, MSD_array=MSD_array, node_child_n_idx=node_child_n_idx)
 
     js = gamma_parent / beta_parent_child
@@ -28,7 +28,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_ar
 def get_all_gammas(lineageObj, gamma_arr):
     """sum of the list of all the gamma parent child for all the parent child relationships"""
     holder_wo_leaves = np.zeros(gamma_arr.shape[1])
-    for level in lineageObj.output_list_of_gens[1:]: # get all the gammas but not the ones at the last level
+    for level in lineageObj.output_list_of_gens[1:]:  # get all the gammas but not the ones at the last level
         for cell in level:
             cell_idx = lineageObj.output_lineage.index(cell)
             if not cell.isLeaf():
@@ -79,12 +79,12 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
         # code for grouping all states in cell lineages
         pi_estimate = np.zeros((num_states), dtype=float)
         numer_estimate = np.zeros((num_states, num_states), dtype=float)
-        denom_estimate = np.zeros((num_states,),dtype=float)
+        denom_estimate = np.zeros((num_states,), dtype=float)
         for num, lineageObj in enumerate(tHMMobj.X):
-            
+
             lineage = lineageObj.output_lineage
             gamma_array = gammas[num]
-            
+
             # local pi estimate
             pi_estimate += gamma_array[0, :]
 
@@ -93,7 +93,6 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
                 lineageObj=lineageObj, beta_array=betas[num], MSD_array=tHMMobj.MSD[num], gamma_array=gamma_array, T=tHMMobj.estimate.T
             )
             denom_estimate += get_all_gammas(lineageObj, gamma_array)
-            
 
         if tHMMobj.estimate.fpi is None:
             # population wide pi calculation
@@ -107,8 +106,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
             all_gammas = np.vstack(gammas)
             for state_j in range(tHMMobj.num_states):
-                tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:,state_j])
-
+                tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
@@ -122,7 +120,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
         # tolerance checking
         new_LL = calculate_log_likelihood(NF)
 
-        if np.allclose(old_LL, new_LL, atol=tolerance) and sum(new_LL) > sum(old_LL) and iter_number>20:
+        if np.allclose(old_LL, new_LL, atol=tolerance) and sum(new_LL) > sum(old_LL) and iter_number > 20:
             return (tHMMobj, NF, betas, gammas, new_LL)
 
     return (tHMMobj, NF, betas, gammas, new_LL)
