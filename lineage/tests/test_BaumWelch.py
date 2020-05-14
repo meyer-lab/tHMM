@@ -35,10 +35,10 @@ class TestBW(unittest.TestCase):
 
         # Using an unpruned lineage to avoid unforseen issues
         X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)
-        tHMMobj, pred_states_by_lineage, LL_before = Analyze([X], num_states, max_iter=1)
+        tHMMobj, pred_states_by_lineage, LL_before = Analyze([X], 2, max_iter=1)
 
         # Get the likelihoods after fitting
-        tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], num_states, max_iter=5)
+        tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], 2, max_iter=5)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
 
@@ -68,10 +68,10 @@ class TestBW(unittest.TestCase):
         E = [state_obj0, state_obj1]
 
         X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)
-        tHMMobj, pred_states_by_lineage, LL_before = Analyze([X], num_states, max_iter=1)
+        tHMMobj, pred_states_by_lineage, LL_before = Analyze([X], 2, max_iter=1)
 
         # Get the likelihoods after fitting
-        tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], num_states, max_iter=5)
+        tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], 2, max_iter=5)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
 
@@ -101,10 +101,10 @@ class TestBW(unittest.TestCase):
         E = [state_obj0, state_obj1]
 
         X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)
-        tHMMobj, pred_states_by_lineage, LL_before = Analyze([X], num_states, max_iter=1)
+        tHMMobj, pred_states_by_lineage, LL_before = Analyze([X], 2, max_iter=1)
 
         # Get the likelihoods after fitting
-        tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], num_states, max_iter=5)
+        tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], 2, max_iter=5)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
 
@@ -134,10 +134,10 @@ class TestBW(unittest.TestCase):
         E = [state_obj0, state_obj1]
 
         X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)
-        tHMMobj, pred_states_by_lineage, LL_before = Analyze([X], num_states, max_iter=1)
+        tHMMobj, pred_states_by_lineage, LL_before = Analyze([X], 2, max_iter=1)
 
         # Get the likelihoods after fitting
-        tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], num_states, max_iter=5)
+        tHMMobj, pred_states_by_lineage, LL_after = Analyze([X], 2, max_iter=5)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
 
