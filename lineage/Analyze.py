@@ -4,9 +4,8 @@ import random
 import numpy as np
 from sklearn import metrics
 from scipy.stats import entropy, wasserstein_distance
-from .BaumWelch import fit
+from .BaumWelch import fit, calculateQuantities
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
-from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
 from .tHMM import tHMM
 
 
@@ -38,10 +37,9 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
     pred_states_by_lineage = Viterbi(tHMMobj, deltas, state_ptrs)
-    NF = get_leaf_Normalizing_Factors(tHMMobj)
-    betas = get_leaf_betas(tHMMobj, NF)
-    get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
-    LL = calculate_log_likelihood(NF)
+
+    NF, betas, _, LL = calculateQuantities(tHMMobj)
+
     return tHMMobj, pred_states_by_lineage, LL
 
 
@@ -345,9 +343,9 @@ def stateLikelihood(tHMMobj):
     """
     EL = tHMMobj.get_Emission_Likelihoods()
     MSD = tHMMobj.get_Marginal_State_Distributions()
-    NF = get_leaf_Normalizing_Factors(tHMMobj)
-    betas = get_leaf_betas(tHMMobj, NF)
-    get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
+
+    NF, betas, _, _ = calculateQuantities(tHMMobj)
+
     LL = EL[0] * MSD[0]
     LL[:, 0] = LL[:, 0] / NF[0]
     LL[:, 1] = LL[:, 1] / NF[0]

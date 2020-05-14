@@ -59,20 +59,26 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     return holder
 
 
-def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
-    """Runs the tHMM function through Baum Welch fitting"""
-    num_states = tHMMobj.num_states
-
-    # first E step
-
+def calculateQuantities(tHMMobj)
+    """ Calculate NF, gamma, beta, LL from tHMM model. """
     NF = get_leaf_Normalizing_Factors(tHMMobj)
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
     gammas = get_root_gammas(tHMMobj, betas)
     get_nonroot_gammas(tHMMobj, gammas, betas)
+    LL = calculate_log_likelihood(NF)
 
-    # first stopping condition check
-    new_LL = calculate_log_likelihood(NF)
+    return NF, betas, gammas, LL
+
+
+
+def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
+    """Runs the tHMM function through Baum Welch fitting"""
+    num_states = tHMMobj.num_states
+
+    # first E step
+    NF, betas, gammas, new_LL = calculateQuantities(tHMMobj)
+
     for _ in range(max_iter):
         old_LL = new_LL
 
@@ -113,16 +119,9 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
 
-        NF = get_leaf_Normalizing_Factors(tHMMobj)
-        betas = get_leaf_betas(tHMMobj, NF)
-        get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
-        gammas = get_root_gammas(tHMMobj, betas)
-        get_nonroot_gammas(tHMMobj, gammas, betas)
-
-        # tolerance checking
-        new_LL = calculate_log_likelihood(NF)
+        NF, betas, gammas, new_LL = calculateQuantities(tHMMobj)
 
         if np.allclose([old_LL], [new_LL], atol=tolerance):
-            return (tHMMobj, NF, betas, gammas, new_LL)
+            break
 
     return (tHMMobj, NF, betas, gammas, new_LL)
