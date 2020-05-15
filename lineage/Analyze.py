@@ -10,7 +10,6 @@ from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_n
 from .tHMM import tHMM
 
 
-
 def preAnalyze(X, num_states, max_iter=500, fpi=None, fT=None, fE=None):
     """Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
     Args:
