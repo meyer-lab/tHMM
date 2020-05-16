@@ -3,47 +3,36 @@ import unittest
 import numpy as np
 from ..states.StateDistribution import StateDistribution
 from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
-from ..BaumWelch import fit
+from ..BaumWelch import fit, calculateQuantities
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 
 
 class TestBW(unittest.TestCase):
     """ Unit tests for Baum-Welch methods. """
+    def setUp(self):
+        # State 0 parameters "Resistant"
+        state_obj0 = StateDistribution(0.99, 20, 5)
+        # State 1 parameters "Susceptible"
+        state_obj1 = StateDistribution(0.8, 10, 1)
+
+        self.E = [state_obj0, state_obj1]
+
+        # pi: the initial probability vector
+        self.pi = np.array([0.6, 0.4], dtype="float")
+
+        # T: transition probability matrix
+        self.T = np.array([[0.85, 0.15], [0.15, 0.85]], dtype="float")
 
     def test_step(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
-
-        # pi: the initial probability vector
-        pi = np.array([0.6, 0.4], dtype="float")
-
-        # T: transition probability matrix
-        T = np.array([[0.85, 0.15], [0.15, 0.85]], dtype="float")
-        # State 0 parameters "Resistant"
-        bern_p0 = 0.99
-        gamma_a0 = 20
-        gamma_scale0 = 5
-
-        # State 1 parameters "Susceptible"
-        bern_p1 = 0.8
-        gamma_a1 = 10
-        gamma_scale1 = 1
-
-        state_obj0 = StateDistribution(bern_p0, gamma_a0, gamma_scale0)
-        state_obj1 = StateDistribution(bern_p1, gamma_a1, gamma_scale1)
-
-        E = [state_obj0, state_obj1]
-
         # Using an unpruned lineage to avoid unforseen issues
-        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)
+        X = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
         tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
         # Test cases below
         # Get the likelihoods before fitting
-        NF_before = get_leaf_Normalizing_Factors(tHMMobj)
-        betas_before = get_leaf_betas(tHMMobj, NF_before)
-        get_nonleaf_NF_and_betas(tHMMobj, NF_before, betas_before)
-        LL_before = calculate_log_likelihood(NF_before)
+        _, _, _, LL_before = calculateQuantities(tHMMobj)
         self.assertTrue(np.isfinite(LL_before))
 
         # Get the likelihoods after fitting
@@ -56,36 +45,12 @@ class TestBW(unittest.TestCase):
 
     def test_step1(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
-
-        # pi: the initial probability vector
-        pi = np.array([0.6, 0.4], dtype="float")
-
-        # T: transition probability matrix
-        T = np.array([[0.85, 0.15], [0.15, 0.85]], dtype="float")
-        # State 0 parameters "Resistant"
-        bern_p0 = 0.99
-        gamma_a0 = 20
-        gamma_scale0 = 5
-
-        # State 1 parameters "Susceptible"
-        bern_p1 = 0.8
-        gamma_a1 = 10
-        gamma_scale1 = 1
-
-        state_obj0 = StateDistribution(bern_p0, gamma_a0, gamma_scale0)
-        state_obj1 = StateDistribution(bern_p1, gamma_a1, gamma_scale1)
-
-        E = [state_obj0, state_obj1]
-
-        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1, censor_condition=1)
+        X = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=1)
         tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
         # Test cases below
         # Get the likelihoods before fitting
-        NF_before = get_leaf_Normalizing_Factors(tHMMobj)
-        betas_before = get_leaf_betas(tHMMobj, NF_before)
-        get_nonleaf_NF_and_betas(tHMMobj, NF_before, betas_before)
-        LL_before = calculate_log_likelihood(NF_before)
+        _, _, _, LL_before = calculateQuantities(tHMMobj)
         self.assertTrue(np.isfinite(LL_before))
 
         # Get the likelihoods after fitting
@@ -98,37 +63,13 @@ class TestBW(unittest.TestCase):
 
     def test_step2(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
-
-        # pi: the initial probability vector
-        pi = np.array([0.6, 0.4], dtype="float")
-
-        # T: transition probability matrix
-        T = np.array([[0.85, 0.15], [0.15, 0.85]], dtype="float")
-        # State 0 parameters "Resistant"
-        bern_p0 = 0.99
-        gamma_a0 = 20
-        gamma_scale0 = 5
-
-        # State 1 parameters "Susceptible"
-        bern_p1 = 0.8
-        gamma_a1 = 10
-        gamma_scale1 = 1
-
-        state_obj0 = StateDistribution(bern_p0, gamma_a0, gamma_scale0)
-        state_obj1 = StateDistribution(bern_p1, gamma_a1, gamma_scale1)
-
-        E = [state_obj0, state_obj1]
-
         # Using an unpruned lineage to avoid unforseen issues
-        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1, censor_condition=2, desired_experimental_time=500)
+        X = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=2, desired_experimental_time=500)
         tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
         # Test cases below
         # Get the likelihoods before fitting
-        NF_before = get_leaf_Normalizing_Factors(tHMMobj)
-        betas_before = get_leaf_betas(tHMMobj, NF_before)
-        get_nonleaf_NF_and_betas(tHMMobj, NF_before, betas_before)
-        LL_before = calculate_log_likelihood(NF_before)
+        _, _, _, LL_before = calculateQuantities(tHMMobj)
         self.assertTrue(np.isfinite(LL_before))
 
         # Get the likelihoods after fitting
@@ -141,37 +82,13 @@ class TestBW(unittest.TestCase):
 
     def test_step3(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
-
-        # pi: the initial probability vector
-        pi = np.array([0.6, 0.4], dtype="float")
-
-        # T: transition probability matrix
-        T = np.array([[0.85, 0.15], [0.15, 0.85]], dtype="float")
-        # State 0 parameters "Resistant"
-        bern_p0 = 0.99
-        gamma_a0 = 20
-        gamma_scale0 = 5
-
-        # State 1 parameters "Susceptible"
-        bern_p1 = 0.8
-        gamma_a1 = 10
-        gamma_scale1 = 1
-
-        state_obj0 = StateDistribution(bern_p0, gamma_a0, gamma_scale0)
-        state_obj1 = StateDistribution(bern_p1, gamma_a1, gamma_scale1)
-
-        E = [state_obj0, state_obj1]
-
         # Using an unpruned lineage to avoid unforseen issues
-        X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experimental_time=500)
+        X = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experimental_time=500)
         tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
         # Test cases below
         # Get the likelihoods before fitting
-        NF_before = get_leaf_Normalizing_Factors(tHMMobj)
-        betas_before = get_leaf_betas(tHMMobj, NF_before)
-        get_nonleaf_NF_and_betas(tHMMobj, NF_before, betas_before)
-        LL_before = calculate_log_likelihood(NF_before)
+        _, _, _, LL_before = calculateQuantities(tHMMobj)
         self.assertTrue(np.isfinite(LL_before))
 
         # Get the likelihoods after fitting
