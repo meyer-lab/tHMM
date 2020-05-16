@@ -16,14 +16,6 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((7, 7), (2, 2))
 
-    figureMaker(ax)
-
     subplotLabel(ax)
 
     return f
-
-
-def figureMaker(ax):
-    """
-    Creates the data for figure 1.
-    """
