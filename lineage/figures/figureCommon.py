@@ -24,8 +24,8 @@ state1 = StateDistribution(0.88, 7, 1)
 E = [state0, state1]
 
 # bern, exp_lambda
-state10 = expStateDistribution(0.99, 49)
-state11 = expStateDistribution(0.88, 7)
+state10 = expStateDistribution(1, 49)
+state11 = expStateDistribution(1, 7)
 E1 = [state10, state11]
 
 min_desired_num_cells = (2**4) - 1
