@@ -8,7 +8,7 @@ keywords:
 lang: en-US
 authors:
   -
-    github: johndoe
+    github: shak360
     name: Shakthi Visagan
     initials: SV
     affiliations:
@@ -20,19 +20,7 @@ authors:
     affiliations:
       - Department of Something, University of Whatever
   -
-    github: janeroe
-    name: Ali Farhat
-    initials: AF
-    affiliations:
-      - Department of Something, University of Whatever
-  -
-    github: janeroe
-    name: Adam Weiner
-    initials: AW
-    affiliations:
-      - Department of Something, University of Whatever
-  -
-    github: janeroe
+    github: Farnazmdi
     name: Farnaz Mohammadi
     initials: FM
     affiliations:

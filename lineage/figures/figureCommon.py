@@ -2,8 +2,8 @@
 Contains utilities, functions, and variables that are commonly used or shared amongst
 the figure creation files.
 """
-from cycler import cycler
 from string import ascii_lowercase
+from cycler import cycler
 import numpy as np
 from matplotlib import gridspec, pyplot as plt
 import seaborn as sns
@@ -28,8 +28,13 @@ state10 = expStateDistribution(1, 49)
 state11 = expStateDistribution(1, 7)
 E1 = [state10, state11]
 
+<<<<<<< HEAD
 min_desired_num_cells = (2**4) - 1
 max_desired_num_cells = (2**8) - 1
+=======
+min_desired_num_cells = (2**5) - 1
+max_desired_num_cells = (2**9) - 1
+>>>>>>> master
 
 min_min_lineage_length = 10
 
@@ -219,7 +224,6 @@ def figureMaker1(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Numbe
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-    pass
 
     i += 1
     ax[i].set_xlabel(xlabel)

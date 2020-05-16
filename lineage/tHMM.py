@@ -71,10 +71,9 @@ class tHMM:
 
             MSD_array = np.zeros((len(lineage), self.num_states))  # instantiating N by K array
             MSD_array[0, :] = self.estimate.pi
-            MSD.append(MSD_array)
 
-        for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
-            assert np.isclose(np.sum(MSD[num][0]), 1.0)
+            np.isclose(np.sum(MSD_array[0]), 1.0)
+            MSD.append(MSD_array)
 
         for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
             lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index

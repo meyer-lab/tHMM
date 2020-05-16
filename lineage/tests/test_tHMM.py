@@ -1,11 +1,10 @@
 """ Unit test file. """
 import unittest
 import numpy as np
-from ..states.StateDistribution import StateDistribution
-from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
-from ..BaumWelch import fit
+from ..UpwardRecursion import get_leaf_Normalizing_Factors
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
+from lineage.figures.figureCommon import pi, T, E
 
 
 class TestModel(unittest.TestCase):
@@ -15,36 +14,8 @@ class TestModel(unittest.TestCase):
 
     def setUp(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
-
-        # pi: the initial probability vector
-        pi = np.array([0.6, 0.4], dtype="float")
-
-        # T: transition probability matrix
-        T = np.array([[0.85, 0.15], [0.15, 0.85]], dtype="float")
-
-        # bern, gamma_a, gamma_scale
-        state_obj0 = StateDistribution(0.95, 20, 5)
-        state_obj1 = StateDistribution(0.85, 10, 1)
-        self.E = [state_obj0, state_obj1]
         # Using an unpruned lineage to avoid unforseen issues
-        self.X = [LineageTree(pi, T, self.E, desired_num_cells=(2 ** 11) - 1)]
-        tHMMobj = tHMM(self.X, num_states=2)  # build the tHMM class with X
-
-        # Test cases below
-        # Get the likelihoods before fitting
-        NF_before = get_leaf_Normalizing_Factors(tHMMobj)
-        betas_before = get_leaf_betas(tHMMobj, NF_before)
-        get_nonleaf_NF_and_betas(tHMMobj, NF_before, betas_before)
-        LL_before = calculate_log_likelihood(NF_before)
-        self.assertTrue(np.isfinite(LL_before))
-
-        # Get the likelihoods after fitting
-        tHMMobj_after, NF_after, _, _, new_LL_after = fit(tHMMobj, max_iter=4)
-        LL_after = calculate_log_likelihood(NF_after)
-        self.assertTrue(np.isfinite(LL_after))
-        self.assertTrue(np.isfinite(new_LL_after))
-
-        self.assertGreater(LL_after, LL_before)
+        self.X = [LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)]
 
     def test_init_paramlist(self):
         """

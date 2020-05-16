@@ -10,8 +10,6 @@ from ..states.StateDistribution import (
 from ..states.stateCommon import (
     bern_pdf,
     bernoulli_estimator,
-    fate_censor,
-    time_censor,
     get_experiment_time,
 )
 from ..LineageTree import LineageTree

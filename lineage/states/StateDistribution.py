@@ -3,8 +3,11 @@ from math import gamma
 import numpy as np
 import scipy.stats as sp
 from numba import njit
+<<<<<<< HEAD
 import scipy.special as sc
 from scipy import optimize
+=======
+>>>>>>> master
 
 from .stateCommon import bern_pdf, bernoulli_estimator
 
@@ -79,7 +82,11 @@ class StateDistribution:
         """
         Initialize a default state distribution.
         """
+<<<<<<< HEAD
         return StateDistribution(0.9, 7, 3 + (1 * (np.random.uniform())))
+=======
+        return StateDistribution(0.9, 7, 1 + (1 * (np.random.uniform())))
+>>>>>>> master
 
     def __repr__(self):
         """
@@ -131,4 +138,8 @@ def gamma_pdf(x, a, scale):
     and returns the likelihood of the observation based on the gamma
     probability distribution function.
     """
+<<<<<<< HEAD
     return x**(a - 1.) * np.exp(-1. * x / scale) / gamma(a) / (scale**a)
+=======
+    return x**(a - 1) * np.exp(-x / scale) / gamma(a) / (scale**a)
+>>>>>>> master

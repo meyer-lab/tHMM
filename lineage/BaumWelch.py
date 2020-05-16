@@ -59,21 +59,33 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     return holder
 
 
-def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
-    """Runs the tHMM function through Baum Welch fitting"""
-    num_states = tHMMobj.num_states
-
-    # first E step
-
+def calculateQuantities(tHMMobj):
+    """ Calculate NF, gamma, beta, LL from tHMM model. """
     NF = get_leaf_Normalizing_Factors(tHMMobj)
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
     gammas = get_root_gammas(tHMMobj, betas)
     get_nonroot_gammas(tHMMobj, gammas, betas)
+    LL = calculate_log_likelihood(NF)
 
+    return NF, betas, gammas, LL
+
+
+
+def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
+    """Runs the tHMM function through Baum Welch fitting"""
+    num_states = tHMMobj.num_states
+
+    # first E step
+    NF, betas, gammas, new_LL = calculateQuantities(tHMMobj)
+
+<<<<<<< HEAD
     # first stopping condition check
     new_LL = calculate_log_likelihood(NF)
     for iter_number in range(max_iter):
+=======
+    for _ in range(max_iter):
+>>>>>>> master
         old_LL = new_LL
 
         # code for grouping all states in cell lineages
@@ -94,6 +106,18 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             )
             denom_estimate += get_all_gammas(lineageObj, gamma_array)
 
+<<<<<<< HEAD
+=======
+            T_holder = (numer + np.spacing(1)) / (denom[:, np.newaxis] + np.spacing(1))
+            T_estimate += T_holder
+
+            for ii, _ in enumerate(lineage):
+                state = np.argmax(gamma_array[ii, :])  # says which state is maximal
+
+                # this bins the cells by lineage to the population cell lists
+                cell_groups[state].append(lineage[ii])
+
+>>>>>>> master
         if tHMMobj.estimate.fpi is None:
             # population wide pi calculation
             tHMMobj.estimate.pi = pi_estimate / sum(pi_estimate)
@@ -111,16 +135,14 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
 
-        NF = get_leaf_Normalizing_Factors(tHMMobj)
-        betas = get_leaf_betas(tHMMobj, NF)
-        get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
-        gammas = get_root_gammas(tHMMobj, betas)
-        get_nonroot_gammas(tHMMobj, gammas, betas)
+        NF, betas, gammas, new_LL = calculateQuantities(tHMMobj)
 
-        # tolerance checking
-        new_LL = calculate_log_likelihood(NF)
-
+<<<<<<< HEAD
         if np.allclose(old_LL, new_LL, atol=tolerance) and sum(new_LL) > sum(old_LL) and iter_number > 20:
             return (tHMMobj, NF, betas, gammas, new_LL)
+=======
+        if np.allclose([old_LL], [new_LL], atol=tolerance):
+            break
+>>>>>>> master
 
     return (tHMMobj, NF, betas, gammas, new_LL)
