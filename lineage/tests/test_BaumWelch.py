@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from ..states.StateDistribution import StateDistribution
-from ..UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
+from ..UpwardRecursion import calculate_log_likelihood
 from ..BaumWelch import fit, calculateQuantities
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
