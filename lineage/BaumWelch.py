@@ -59,20 +59,26 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     return holder
 
 
-def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
-    """Runs the tHMM function through Baum Welch fitting"""
-    num_states = tHMMobj.num_states
-
-    # first E step
-
+def calculateQuantities(tHMMobj):
+    """ Calculate NF, gamma, beta, LL from tHMM model. """
     NF = get_leaf_Normalizing_Factors(tHMMobj)
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
     gammas = get_root_gammas(tHMMobj, betas)
     get_nonroot_gammas(tHMMobj, gammas, betas)
+    LL = calculate_log_likelihood(NF)
 
-    # first stopping condition check
-    new_LL = calculate_log_likelihood(NF)
+    return NF, betas, gammas, LL
+
+
+
+def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
+    """Runs the tHMM function through Baum Welch fitting"""
+    num_states = tHMMobj.num_states
+
+    # first E step
+    NF, betas, gammas, new_LL = calculateQuantities(tHMMobj)
+
     for _ in range(max_iter):
         old_LL = new_LL
 
@@ -93,14 +99,12 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             T_holder = (numer + np.spacing(1)) / (denom[:, np.newaxis] + np.spacing(1))
             T_estimate += T_holder
 
-            max_state_holder = []  # a list the size of lineage, that contains max state for each cell
-            for ii, cell in enumerate(lineage):
-                assert lineage[ii] is cell
-                max_state_holder.append(np.argmax(gamma_array[ii, :]))  # says which state is maximal
+            for ii, _ in enumerate(lineage):
+                state = np.argmax(gamma_array[ii, :])  # says which state is maximal
 
-            # this bins the cells by lineage to the population cell lists
-            for ii, state in enumerate(max_state_holder):
+                # this bins the cells by lineage to the population cell lists
                 cell_groups[state].append(lineage[ii])
+
         if tHMMobj.estimate.fpi is None:
             # population wide pi calculation
             tHMMobj.estimate.pi = pi_estimate / sum(pi_estimate)
@@ -115,16 +119,9 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
 
-        NF = get_leaf_Normalizing_Factors(tHMMobj)
-        betas = get_leaf_betas(tHMMobj, NF)
-        get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
-        gammas = get_root_gammas(tHMMobj, betas)
-        get_nonroot_gammas(tHMMobj, gammas, betas)
-
-        # tolerance checking
-        new_LL = calculate_log_likelihood(NF)
+        NF, betas, gammas, new_LL = calculateQuantities(tHMMobj)
 
         if np.allclose([old_LL], [new_LL], atol=tolerance):
-            return (tHMMobj, NF, betas, gammas, new_LL)
+            break
 
     return (tHMMobj, NF, betas, gammas, new_LL)

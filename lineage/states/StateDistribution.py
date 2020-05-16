@@ -3,7 +3,6 @@ from math import gamma
 import numpy as np
 import scipy.stats as sp
 from numba import njit
-import scipy.special as sc
 
 from .stateCommon import bern_pdf, bernoulli_estimator
 

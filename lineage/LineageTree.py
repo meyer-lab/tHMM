@@ -32,15 +32,15 @@ class LineageTree:
         censor_condition {bool}: If it is True, it means the user want this lineage to be censord,
         if False it means the user want this lineage as a output binary tree -- in which none of the cells die.
         """
-        self.pi = pi
+        self.pi = deepcopy(pi)
         pi_num_states = len(pi)
-        self.T = T
+        self.T = deepcopy(T)
         T_shape = self.T.shape
         assert (
             T_shape[0] == T_shape[1]
         ), "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
         T_num_states = self.T.shape[0]
-        self.E = E
+        self.E = deepcopy(E)
         self.desired_num_cells = desired_num_cells
         E_num_states = len(E)
         assert (
@@ -203,7 +203,7 @@ class LineageTree:
         of the cells contained within it create a set that has more than one state.
         """
         set_count = False
-        true_states_set_len = len(set([cell.state for cell in self.output_lineage]))
+        true_states_set_len = len({cell.state for cell in self.output_lineage})
         if true_states_set_len > 1:
             set_count = True
         return set_count
