@@ -35,8 +35,7 @@ class StateDistribution:
 
         bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
         exp_ll = exp_pdf(tuple_of_obs[1], self.exp_beta)
-        ans = bern_ll * exp_ll
-        return ans
+        return bern_ll * exp_ll
 
     def estimator(self, list_of_tuples_of_obs, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
