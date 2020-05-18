@@ -20,12 +20,12 @@ T = np.array([[0.9, 0.1], [0.1, 0.9]], dtype="float")
 
 # bern, gamma_a, gamma_scale
 state0 = StateDistribution(0.99, 7, 7)
-state1 = StateDistribution(0.88, 7, 1)
+state1 = StateDistribution(0.75, 7, 1)
 E = [state0, state1]
 
 # bern, exp_lambda
-state10 = expStateDistribution(1, 49)
-state11 = expStateDistribution(1, 7)
+state10 = expStateDistribution(0.99, 49)
+state11 = expStateDistribution(0.75, 7)
 E1 = [state10, state11]
 
 min_desired_num_cells = (2**5) - 1
