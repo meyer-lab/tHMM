@@ -88,17 +88,13 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
         numer_estimate = np.zeros((num_states, num_states), dtype=float)
         denom_estimate = np.zeros((num_states,), dtype=float)
         for num, lineageObj in enumerate(tHMMobj.X):
-
-            lineage = lineageObj.output_lineage
             gamma_array = gammas[num]
 
             # local pi estimate
             pi_estimate += gamma_array[0, :]
 
             # local T estimate
-            numer_estimate += get_all_zetas(
-                lineageObj=lineageObj, beta_array=betas[num], MSD_array=tHMMobj.MSD[num], gamma_array=gamma_array, T=tHMMobj.estimate.T
-            )
+            numer_estimate += get_all_zetas(lineageObj, betas[num], tHMMobj.MSD[num], gamma_array, tHMMobj.estimate.T)
             denom_estimate += get_all_gammas(lineageObj, gamma_array)
 
         if tHMMobj.estimate.fpi is None:
@@ -120,7 +116,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
 
         NF, betas, gammas, new_LL = calculateQuantities(tHMMobj)
 
-        if np.allclose(old_LL, new_LL, atol=tolerance) and sum(new_LL) > sum(old_LL) and iter_number > 20:
+        if np.allclose(old_LL, new_LL, atol=tolerance) and iter_number > 2:
             break
 
     return (tHMMobj, NF, betas, gammas, new_LL)
