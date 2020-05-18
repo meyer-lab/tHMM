@@ -202,11 +202,10 @@ class LineageTree:
         Checks whether a lineage is heterogeneous by ensuring that the true states
         of the cells contained within it create a set that has more than one state.
         """
-        set_count = False
         true_states_set_len = len({cell.state for cell in self.output_lineage})
         if true_states_set_len > 1:
-            set_count = True
-        return set_count
+            return True
+        return False
 
     # tool for copying lineages
 

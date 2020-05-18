@@ -103,17 +103,13 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, old_params, gammas):
     of the Gamma distribution, which is corrected for bias.
     """
     s = np.log(sum(gammas * gamma_obs) / sum(gammas)) - sum(gammas * np.log(gamma_obs)) / sum(gammas)
-    k0 = old_params[0]
 
-    def f(k, s): return np.log(k) - sc.polygamma(0, k) - s
-    def fprime(k, s): return 1./k - sc.polygamma(1, k)
-    def fprime2(k, s): return -1./k**2 - sc.polygamma(2, k)
+    def f(k, sIn): return np.log(k) - sc.polygamma(0, k) - sIn
+    def fprime(k): return 1./k - sc.polygamma(1, k)
+    def fprime2(k): return -1./k**2 - sc.polygamma(2, k)
+    def halley(k, sIn): return k - ((2 * (f(k, sIn) * fprime(k))) / (2 * (fprime(k)**2) - f(k, sIn) * fprime2(k)))
 
-    def halley(k, s): return k - ((2 * (f(k, s) * fprime(k, s))) / (2 * (fprime(k, s)**2) - f(k, s) * fprime2(k, s)))
-    a_hat_list = [halley(k0, s)]
-    
-    
-    a_hat = a_hat_list[-1]
+    a_hat = halley(old_params[0], s)
     scale_hat = (sum(gammas * gamma_obs)) / a_hat / sum(gammas)
 
     if a_hat > 100:
