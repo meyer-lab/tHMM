@@ -112,8 +112,6 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, old_params, gammas):
     def halley(k, s): return k - ((2 * (f(k, s) * fprime(k, s))) / (2 * (fprime(k, s)**2) - f(k, s) * fprime2(k, s)))
     a_hat_list = [halley(k0, s)]
     
-    for _ in range(10):
-        a_hat_list.append(halley(a_hat_list[-1], s))
     
     a_hat = a_hat_list[-1]
     scale_hat = (sum(gammas * gamma_obs)) / a_hat / sum(gammas)
