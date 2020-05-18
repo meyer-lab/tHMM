@@ -30,8 +30,8 @@ def get_all_gammas(lineageObj, gamma_arr):
     holder_wo_leaves = np.zeros(gamma_arr.shape[1])
     for level in lineageObj.output_list_of_gens[1:]:  # get all the gammas but not the ones at the last level
         for cell in level:
-            cell_idx = lineageObj.output_lineage.index(cell)
             if not cell.isLeaf():
+                cell_idx = lineageObj.output_lineage.index(cell)
                 holder_wo_leaves += gamma_arr[cell_idx, :]
 
     return holder_wo_leaves
