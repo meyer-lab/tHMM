@@ -9,7 +9,7 @@ from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .tHMM import tHMM
 
 
-def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
+def preAnalyze(X, num_states, max_iter=500, fpi=None, fT=None, fE=None):
     """Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
     Args:
     -----
@@ -20,17 +20,17 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     --------
     tHMMobj {obj}:
     """
-    for num_tries in range(1, 5):
+    error_holder = []
+    for num_tries in range(1, 15):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            fit(tHMMobj, max_iter=300)
+            fit(tHMMobj, max_iter=max_iter)
             break
-        except AssertionError:
-            if num_tries == 4:
+        except (AssertionError, ZeroDivisionError, RuntimeError) as error:
+            error_holder.append(error)
+            if num_tries == 14:
                 print(
-                    "Caught AssertionError in fitting after multiple ({}) runs. Fitting is breaking after trying {} times. Consider inspecting the length of your lineages.".format(
-                        num_tries, num_tries
-                    )
+                    f"Caught the following errors: \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. Fitting is breaking after trying {num_tries} times. If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue is the estimates of your parameters are returning nonsensible parameters. Consider changing your parameter estimator. "
                 )
                 raise
 
@@ -43,16 +43,16 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     return tHMMobj, pred_states_by_lineage, LL
 
 
-def Analyze(X, num_states, fpi=None, fT=None, fE=None):
+def Analyze(X, num_states, max_iter=500, fpi=None, fT=None, fE=None):
     """
     Analyze runs several for loops runnning our model for a given number of states
     given an input population (a list of lineages).
     """
-    tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
+    tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, num_states, max_iter=max_iter, fpi=fpi, fT=fT, fE=fE)
 
     for _ in range(1, 5):
-        tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
-        if tmp_LL > LL:
+        tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, num_states, max_iter=max_iter, fpi=fpi, fT=fT, fE=fE)
+        if sum(tmp_LL) > sum(LL):
             tHMMobj = tmp_tHMMobj
             pred_states_by_lineage = tmp_pred_states_by_lineage
             LL = tmp_LL

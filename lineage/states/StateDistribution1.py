@@ -35,10 +35,9 @@ class StateDistribution:
 
         bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
         exp_ll = exp_pdf(tuple_of_obs[1], self.exp_beta)
-
         return bern_ll * exp_ll
 
-    def estimator(self, list_of_tuples_of_obs):
+    def estimator(self, list_of_tuples_of_obs, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
         # unzipping the list of tuples
         unzipped_list_of_tuples_of_obs = list(zip(*list_of_tuples_of_obs))
@@ -54,8 +53,8 @@ class StateDistribution:
             exp_obs = []
             time_censor_obs = []
 
-        bern_p_estimate = bernoulli_estimator(bern_obs)
-        exp_beta_estimate = exp_estimator(exp_obs, time_censor_obs)
+        bern_p_estimate = bernoulli_estimator(bern_obs, (self.bern_p,), gammas)
+        exp_beta_estimate = exp_estimator(exp_obs, time_censor_obs, (self.exp_beta,), gammas)
 
         state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, exp_beta=exp_beta_estimate)
         # } requires the user's attention.
@@ -74,7 +73,7 @@ class StateDistribution:
         """
         Method to print out a state distribution object.
         """
-        return "State object w/ parameters: {}, {}.".format(self.bern_p, self.exp_lambda)
+        return "State object w/ parameters: {}, {}.".format(self.bern_p, self.exp_beta)
 
 
 # Because parameter estimation requires that estimators be written or imported,
@@ -86,12 +85,12 @@ class StateDistribution:
 # can handle the case where the list of observations is empty.
 
 
-def exp_estimator(exp_obs, time_censor_obs):
+def exp_estimator(exp_obs, time_censor_obs, old_params, gammas):
     """
     This is a closed-form estimator for the lambda parameter of the
     exponential distribution, which is right-censored.
     """
-    return ((sum(exp_obs) + 7e-10) / (len(exp_obs) + 1e-10)) * ((len(exp_obs) + 1e-9) / (sum(time_censor_obs) + 1e-10))
+    return sum(gammas * exp_obs) / sum(gammas)
 
 
 @njit
