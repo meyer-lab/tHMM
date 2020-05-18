@@ -78,13 +78,9 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
     # first E step
     NF, betas, gammas, new_LL = calculateQuantities(tHMMobj)
 
-<<<<<<< HEAD
     # first stopping condition check
     new_LL = calculate_log_likelihood(NF)
     for iter_number in range(max_iter):
-=======
-    for _ in range(max_iter):
->>>>>>> master
         old_LL = new_LL
 
         # code for grouping all states in cell lineages
@@ -105,18 +101,6 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             )
             denom_estimate += get_all_gammas(lineageObj, gamma_array)
 
-<<<<<<< HEAD
-=======
-            T_holder = (numer + np.spacing(1)) / (denom[:, np.newaxis] + np.spacing(1))
-            T_estimate += T_holder
-
-            for ii, _ in enumerate(lineage):
-                state = np.argmax(gamma_array[ii, :])  # says which state is maximal
-
-                # this bins the cells by lineage to the population cell lists
-                cell_groups[state].append(lineage[ii])
-
->>>>>>> master
         if tHMMobj.estimate.fpi is None:
             # population wide pi calculation
             tHMMobj.estimate.pi = pi_estimate / sum(pi_estimate)
@@ -136,12 +120,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
 
         NF, betas, gammas, new_LL = calculateQuantities(tHMMobj)
 
-<<<<<<< HEAD
         if np.allclose(old_LL, new_LL, atol=tolerance) and sum(new_LL) > sum(old_LL) and iter_number > 20:
-            return (tHMMobj, NF, betas, gammas, new_LL)
-=======
-        if np.allclose([old_LL], [new_LL], atol=tolerance):
             break
->>>>>>> master
 
     return (tHMMobj, NF, betas, gammas, new_LL)
