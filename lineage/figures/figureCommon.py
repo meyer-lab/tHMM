@@ -28,13 +28,8 @@ state10 = expStateDistribution(1, 49)
 state11 = expStateDistribution(1, 7)
 E1 = [state10, state11]
 
-<<<<<<< HEAD
-min_desired_num_cells = (2**4) - 1
-max_desired_num_cells = (2**8) - 1
-=======
 min_desired_num_cells = (2**5) - 1
 max_desired_num_cells = (2**9) - 1
->>>>>>> master
 
 min_min_lineage_length = 10
 
