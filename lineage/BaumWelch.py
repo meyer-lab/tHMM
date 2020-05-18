@@ -116,7 +116,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
 
         NF, betas, gammas, new_LL = calculateQuantities(tHMMobj)
 
-        if np.isclose(old_LL, new_LL, atol=tolerance) and iter_number > 2:
+        if np.allclose(old_LL, new_LL, atol=tolerance) and iter_number > 2:
             break
 
     return (tHMMobj, NF, betas, gammas, new_LL)
