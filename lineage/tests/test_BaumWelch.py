@@ -17,6 +17,7 @@ from lineage.figures.figureCommon import pi, T, E
 
 class TestBW(unittest.TestCase):
     """ Unit tests for Baum-Welch methods. """
+
     def commonTest(self, **kwargs):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
         # Using an unpruned lineage to avoid unforseen issues
