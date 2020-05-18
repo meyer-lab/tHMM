@@ -4,6 +4,7 @@ import numpy as np
 import scipy.stats as sp
 from numba import njit
 import scipy.special as sc
+from scipy.optimize import brentq
 
 
 from .stateCommon import bern_pdf, bernoulli_estimator
@@ -102,18 +103,16 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, old_params, gammas):
     This is a closed-form estimator for two parameters
     of the Gamma distribution, which is corrected for bias.
     """
-    s = np.log(sum(gammas * gamma_obs) / sum(gammas)) - sum(gammas * np.log(gamma_obs)) / sum(gammas)
+    gammaCor = sum(gammas * gamma_obs) / sum(gammas)
+    s = np.log(gammaCor) - sum(gammas * np.log(gamma_obs)) / sum(gammas)
+    def f(k): return np.log(k) - sc.polygamma(0, k) - s
 
-    def f(k, sIn): return np.log(k) - sc.polygamma(0, k) - sIn
-    def fprime(k): return 1./k - sc.polygamma(1, k)
-    def fprime2(k): return -1./k**2 - sc.polygamma(2, k)
-    def halley(k, sIn): return k - ((2 * (f(k, sIn) * fprime(k))) / (2 * (fprime(k)**2) - f(k, sIn) * fprime2(k)))
+    if f(0.01) * f(100.0) > 0.0:
+        a_hat = 10.0
+    else:
+        a_hat = brentq(f, 0.01, 100.0)
 
-    a_hat = halley(old_params[0], s)
-    scale_hat = (sum(gammas * gamma_obs)) / a_hat / sum(gammas)
-
-    if a_hat > 100:
-        return 7, 3 + (1 * (np.random.uniform()))
+    scale_hat = gammaCor / a_hat
 
     return a_hat, scale_hat
 
