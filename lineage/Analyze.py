@@ -227,7 +227,7 @@ def run_Results_over(output):
     output: a list of tuples from the results of running run_Analyze_over
     """
     results_holder = []
-    for idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
+    for _, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
         results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL))
 
     return results_holder
