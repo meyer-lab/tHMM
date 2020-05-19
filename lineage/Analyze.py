@@ -168,11 +168,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL, fpi, fT, fE):
         for col_idx in range(tHMMobj.num_states):
             temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx], switcher_map[col_idx]]
 
-    results_dict["switched_transition_matrix"] = temp_T
-    if fT is None:
-        results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
-    else:
-        results_dict["transition_matrix_norm"] = np.linalg.norm(tHMMobj.estimate.T - tHMMobj.X[0].T)
+    results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
         
     # Rearrange the values in the pi vector
     temp_pi = np.zeros((tHMMobj.num_states))
@@ -180,20 +176,14 @@ def Results(tHMMobj, pred_states_by_lineage, LL, fpi, fT, fE):
         temp_pi[val_idx] = tHMMobj.estimate.pi[switcher_map[val_idx]]
 
     results_dict["switched_pi_vector"] = temp_pi
-    if fpi is None:
-        results_dict["pi_vector_norm"] = np.linalg.norm(temp_pi - tHMMobj.X[0].pi)
-    else:
-        results_dict["pi_vector_norm"] = np.linalg.norm(tHMMobj.estimate.pi - tHMMobj.X[0].pi)
+    results_dict["pi_vector_norm"] = np.linalg.norm(temp_pi - tHMMobj.X[0].pi)
 
     # Rearrange the emissions list
     temp_emissions = [None] * tHMMobj.num_states
     for val_idx in range(tHMMobj.num_states):
         temp_emissions[val_idx] = tHMMobj.estimate.E[switcher_map[val_idx]]
     
-    if fE is None:
-        results_dict["switched_emissions"] = temp_emissions
-    else:
-        results_dict["switched_emissions"] = tHMMobj.estimate.E
+    results_dict["switched_emissions"] = temp_emissions
 
     # Get the estimated parameter values
     results_dict["param_estimates"] = []
