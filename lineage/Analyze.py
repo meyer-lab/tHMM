@@ -172,10 +172,6 @@ def Results(tHMMobj, pred_states_by_lineage, LL, fpi, fT, fE):
     if fT is None:
         results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
     else:
-        print('+++++++++++++')
-        print(tHMMobj.estimate.T)
-        print(tHMMobj.X[0].T)
-        print(tHMMobj.estimate.T - tHMMobj.X[0].T)
         results_dict["transition_matrix_norm"] = np.linalg.norm(tHMMobj.estimate.T - tHMMobj.X[0].T)
         
     # Rearrange the values in the pi vector
