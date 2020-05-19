@@ -84,7 +84,7 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     output = run_Analyze_over(list_of_populations, 2, parallel=parallel, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
 
     # Collecting the results of analyzing the lineages
-    results_holder = run_Results_over(output, list_of_fpi, list_of_fT, list_of_fE)
+    results_holder = run_Results_over(output)
 
     dictOut = {}
 

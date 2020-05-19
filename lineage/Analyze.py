@@ -96,7 +96,7 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
     return output
 
 
-def Results(tHMMobj, pred_states_by_lineage, LL, fpi, fT, fE):
+def Results(tHMMobj, pred_states_by_lineage, LL):
     """
     This function calculates several results of fitting a synthetic lineage.
     """
@@ -220,7 +220,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL, fpi, fT, fE):
     return results_dict
 
 
-def run_Results_over(output, list_of_fpi, list_of_fT, list_of_fE):
+def run_Results_over(output):
     """
     A function that can be parallelized to speed up figure creation
     This function takes as input:
@@ -228,7 +228,7 @@ def run_Results_over(output, list_of_fpi, list_of_fT, list_of_fE):
     """
     results_holder = []
     for idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
-        results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL, list_of_fpi[idx], list_of_fT[idx], list_of_fE[idx]))
+        results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL))
 
     return results_holder
 
