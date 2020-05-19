@@ -84,7 +84,7 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     output = run_Analyze_over(list_of_populations, 2, parallel=parallel, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
 
     # Collecting the results of analyzing the lineages
-    results_holder = run_Results_over(output)
+    results_holder = run_Results_over(output, list_of_fpi, list_of_fT, list_of_fE)
 
     dictOut = {}
 
@@ -107,8 +107,14 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
         x = dictOut["wasserstein"]
     elif xtype == "bern":
         x = paramTrues[:, 0, 0]
+        
+    accuracy = dictOut["accuracy_after_switching"]
+    # In the case, when one of the parameters is given, 
+    # we don't want to see the states being switched
+    if list_of_fpi is not None or list_of_fT is not None or list_of_fE is not None:
+        accuracy = dictOut["accuracy_before_switching"]
 
-    return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
+    return x, paramEst, accuracy, dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
 
 
 def subplotLabel(axs):

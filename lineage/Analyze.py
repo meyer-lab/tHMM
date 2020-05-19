@@ -96,7 +96,7 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
     return output
 
 
-def Results(tHMMobj, pred_states_by_lineage, LL):
+def Results(tHMMobj, pred_states_by_lineage, LL, fpi, fT, fE):
     """
     This function calculates several results of fitting a synthetic lineage.
     """
@@ -136,7 +136,6 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["completeness_score"] = metrics.completeness_score(true_states, pred_states)
 
     # 2. Switch the underlying state labels based on the KL-divergence of the underlying states' distributions
-
     # First collect all the observations from the entire population across the lineages ordered by state
     obs_by_state = []
     for state in range(tHMMobj.num_states):
@@ -170,27 +169,36 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
             temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx], switcher_map[col_idx]]
 
     results_dict["switched_transition_matrix"] = temp_T
-    results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
-
+    if fT is None
+        results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
+    else:
+        results_dict["transition_matrix_norm"] = np.linalg.norm(tHMMobj.estimate.T - tHMMobj.X[0].T)
+        
     # Rearrange the values in the pi vector
     temp_pi = tHMMobj.estimate.pi
     for val_idx in range(tHMMobj.num_states):
         temp_pi[val_idx] = tHMMobj.estimate.pi[switcher_map[val_idx]]
 
     results_dict["switched_pi_vector"] = temp_pi
-    results_dict["pi_vector_norm"] = np.linalg.norm(temp_pi - tHMMobj.X[0].pi)
+    if fpi is None:
+        results_dict["pi_vector_norm"] = np.linalg.norm(temp_pi - tHMMobj.X[0].pi)
+    else:
+        results_dict["pi_vector_norm"] = np.linalg.norm(tHMMobj.estimate.pi - tHMMobj.X[0].pi)
 
     # Rearrange the emissions list
     temp_emissions = [None] * tHMMobj.num_states
     for val_idx in range(tHMMobj.num_states):
         temp_emissions[val_idx] = tHMMobj.estimate.E[switcher_map[val_idx]]
-
-    results_dict["switched_emissions"] = temp_emissions
+    
+    if fE is None:
+        results_dict["switched_emissions"] = temp_emissions
+    else:
+        results_dict["switched_emissions"] = tHMMobj.estimate.E
 
     # Get the estimated parameter values
     results_dict["param_estimates"] = []
     for val_idx in range(tHMMobj.num_states):
-        results_dict["param_estimates"].append(temp_emissions[val_idx].params)
+        results_dict["param_estimates"].append(results_dict["switched_emissions"][val_idx].params)
 
     # Get the true parameter values
     results_dict["param_trues"] = []
@@ -221,15 +229,15 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     return results_dict
 
 
-def run_Results_over(output):
+def run_Results_over(output, list_of_fpi, list_of_fT, list_of_fE):
     """
     A function that can be parallelized to speed up figure creation
     This function takes as input:
     output: a list of tuples from the results of running run_Analyze_over
     """
     results_holder = []
-    for _, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
-        results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL))
+    for idx, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
+        results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL, list_of_fpi[idx], list_of_fT[idx], list_of_fE[idx]))
 
     return results_holder
 
