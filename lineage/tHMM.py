@@ -43,7 +43,6 @@ class tHMM:
         self.X = X  # list containing lineages, should be in correct format (contain no NaNs)
         self.num_states = num_states  # number of discrete hidden states
         self.estimate = estimate(self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
-        print(self.estimate.T)
         self.MSD = self.get_Marginal_State_Distributions()  # full Marginal State Distribution holder
         self.EL = self.get_Emission_Likelihoods()  # full Emission Likelihood holder
 
