@@ -109,9 +109,9 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
         x = paramTrues[:, 0, 0]
         
     accuracy = dictOut["accuracy_after_switching"]
-    # In the case, when one of the parameters is given, 
+    # In the case, when the emissions is given, 
     # we don't want to see the states being switched
-    if list_of_fpi is not None or list_of_fT is not None or list_of_fE is not None:
+    if list_of_fE is not None:
         accuracy = dictOut["accuracy_before_switching"]
 
     return x, paramEst, accuracy, dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
