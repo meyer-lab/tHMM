@@ -213,6 +213,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL, fpi, fT, fE):
     results_dict["accuracy_before_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states, true_states)]) / len(true_states)
     results_dict["accuracy_after_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states_switched, true_states)]) / len(true_states)
 
+    # 4. Calculate the Wasserstein distance
     obs_by_state_rand_sampled = []
     for state in range(tHMMobj.num_states):
         full_list = [cell.obs[1] for cell in tHMMobj.X[0].output_lineage if cell.state == state]
