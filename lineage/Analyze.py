@@ -163,19 +163,23 @@ def Results(tHMMobj, pred_states_by_lineage, LL, fpi, fT, fE):
     results_dict["switcher_map"] = switcher_map
 
     # Rearrange the values in the transition matrix
-    temp_T = tHMMobj.estimate.T
+    temp_T = np.zeros((tHMMobj.num_states,tHMMobj.num_states))
     for row_idx in range(tHMMobj.num_states):
         for col_idx in range(tHMMobj.num_states):
             temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx], switcher_map[col_idx]]
 
     results_dict["switched_transition_matrix"] = temp_T
-    if fT is None
+    if fT is None:
         results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
     else:
+        print('+++++++++++++')
+        print(tHMMobj.estimate.T)
+        print(tHMMobj.X[0].T)
+        print(tHMMobj.estimate.T - tHMMobj.X[0].T)
         results_dict["transition_matrix_norm"] = np.linalg.norm(tHMMobj.estimate.T - tHMMobj.X[0].T)
         
     # Rearrange the values in the pi vector
-    temp_pi = tHMMobj.estimate.pi
+    temp_pi = np.zeros((tHMMobj.num_states))
     for val_idx in range(tHMMobj.num_states):
         temp_pi[val_idx] = tHMMobj.estimate.pi[switcher_map[val_idx]]
 

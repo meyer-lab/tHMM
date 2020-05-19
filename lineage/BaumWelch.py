@@ -101,6 +101,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             # population wide pi calculation
             tHMMobj.estimate.pi = pi_estimate / sum(pi_estimate)
         if tHMMobj.estimate.fT is None:
+            print(f'Shouldnt be here {tHMMobj.estimate.fT}')
             # population wide T calculation
             T_estimate = numer_estimate / denom_estimate[:, np.newaxis]
             tHMMobj.estimate.T = T_estimate / T_estimate.sum(axis=1)[:, np.newaxis]
@@ -118,5 +119,5 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
 
         if np.allclose(old_LL, new_LL, atol=tolerance) and iter_number > 2:
             break
-
+    print(f'about to end bw {tHMMobj.estimate.T}')
     return (tHMMobj, NF, betas, gammas, new_LL)

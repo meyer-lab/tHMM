@@ -14,7 +14,11 @@ class estimate:
             self.pi = self.fpi
         self.T = np.random.dirichlet(np.random.rand(num_states), num_states)
         if self.fT is not None:
+            print('should be here')
             self.T = self.fT
+            print(self.T)
+            print(self.fT)
+            print('WOWOWO')
         self.E = []
         for _ in range(self.num_states):
             self.E.append(X[0].E[0].tHMM_E_init())
@@ -43,6 +47,7 @@ class tHMM:
         self.X = X  # list containing lineages, should be in correct format (contain no NaNs)
         self.num_states = num_states  # number of discrete hidden states
         self.estimate = estimate(self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
+        print(self.estimate.T)
         self.MSD = self.get_Marginal_State_Distributions()  # full Marginal State Distribution holder
         self.EL = self.get_Emission_Likelihoods()  # full Emission Likelihood holder
 
