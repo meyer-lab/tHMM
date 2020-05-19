@@ -163,13 +163,13 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["switcher_map"] = switcher_map
 
     # Rearrange the values in the transition matrix
-    temp_T = np.zeros((tHMMobj.num_states,tHMMobj.num_states))
+    temp_T = np.zeros((tHMMobj.num_states, tHMMobj.num_states))
     for row_idx in range(tHMMobj.num_states):
         for col_idx in range(tHMMobj.num_states):
             temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx], switcher_map[col_idx]]
 
     results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
-        
+
     # Rearrange the values in the pi vector
     temp_pi = np.zeros((tHMMobj.num_states))
     for val_idx in range(tHMMobj.num_states):
@@ -182,7 +182,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     temp_emissions = [None] * tHMMobj.num_states
     for val_idx in range(tHMMobj.num_states):
         temp_emissions[val_idx] = tHMMobj.estimate.E[switcher_map[val_idx]]
-    
+
     results_dict["switched_emissions"] = temp_emissions
 
     # Get the estimated parameter values
