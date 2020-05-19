@@ -125,4 +125,3 @@ def gamma_pdf(x, a, scale):
     probability distribution function.
     """
     return x**(a - 1.) * np.exp(-1. * x / scale) / gamma(a) / (scale**a)
-
