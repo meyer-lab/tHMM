@@ -122,7 +122,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
         EL_array = tHMMobj.EL[num]  # geting the EL of the respective lineage
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
 
-        for level in lineageObj.output_list_of_gens[2:][::-1]:
+        for level in lineageObj.output_list_of_gens[2:][::-1]:  # a reversed list of generations
             for node_parent_m_idx in lineageObj.get_parents_for_level(level):
                 fac1 = get_beta_parent_child_prod(
                     lineage=lineage, MSD_array=MSD_array, T=T, beta_array=betas[num], node_parent_m_idx=node_parent_m_idx
@@ -151,7 +151,7 @@ def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, node_parent_m_
 
     for node_child_n_idx in children_idx_list:
         assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
-        assert lineage[node_child_n_idx].isChild()  # if the child-parent relationship is correct, then the child must
+        assert lineage[node_child_n_idx].isChild()  # if the child-parent relationship is correct, then the child must have a parent
         beta_m_n_holder *= beta_parent_child_func(beta_array=beta_array, T=T, MSD_array=MSD_array, node_child_n_idx=node_child_n_idx)
 
     return beta_m_n_holder
@@ -176,4 +176,5 @@ def calculate_log_likelihood(NF):
     """
     Calculates log likelihood of NF for each lineage.
     """
-    return sum([sum(np.log(lst)) for lst in NF])
+    # NF is a list of arrays, an array for each lineage in the population
+    return [sum(np.log(arr)) for arr in NF]

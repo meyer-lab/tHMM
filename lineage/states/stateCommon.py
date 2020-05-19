@@ -16,11 +16,11 @@ def bern_pdf(x, p):
     return (p**x) * ((1.0 - p)**(1 - x))
 
 
-def bernoulli_estimator(bern_obs):
+def bernoulli_estimator(bern_obs, old_params, gammas):
     """
     Add up all the 1s and divide by the total length (finding the average).
     """
-    return (sum(bern_obs) + 8e-11) / (len(bern_obs) + 1e-10)
+    return sum(gammas * bern_obs) / sum(gammas)
 
 
 class Time:
@@ -107,15 +107,3 @@ def time_censor(cell, desired_experiment_time):
         if not cell.isLeafBecauseTerminal():
             cell.left.censored = True
             cell.right.censored = True
-
-
-@njit
-def skew(data):
-    """
-    skew is third central moment / variance**(1.5)
-    """
-    data = np.ravel(data)
-    mu = data.mean()
-    m2 = ((data - mu)**2).mean()
-    m3 = ((data - mu)**3).mean()
-    return m3 / np.power(m2, 1.5)

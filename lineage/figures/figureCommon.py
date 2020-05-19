@@ -2,8 +2,8 @@
 Contains utilities, functions, and variables that are commonly used or shared amongst
 the figure creation files.
 """
-from cycler import cycler
 from string import ascii_lowercase
+from cycler import cycler
 import numpy as np
 from matplotlib import gridspec, pyplot as plt
 import seaborn as sns
@@ -28,8 +28,8 @@ state10 = expStateDistribution(0.99, 49)
 state11 = expStateDistribution(0.75, 7)
 E1 = [state10, state11]
 
-min_desired_num_cells = (2 ** 8) - 1
-max_desired_num_cells = (2 ** 12) - 1
+min_desired_num_cells = (2**5) - 1
+max_desired_num_cells = (2**9) - 1
 
 min_min_lineage_length = 10
 
@@ -79,8 +79,9 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     list_of_fpi = kwargs.get('list_of_fpi', [None] * len(list_of_populations))
     list_of_fT = kwargs.get('list_of_fT', [None] * len(list_of_populations))
     list_of_fE = kwargs.get('list_of_fE', [None] * len(list_of_populations))
+    parallel = kwargs.get('parallel', True)
     # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, 2, parallel=True, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
+    output = run_Analyze_over(list_of_populations, 2, parallel=parallel, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
 
     # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)
@@ -104,6 +105,8 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
         x = dictOut["state_proportions_0"]
     elif xtype == "wass":
         x = dictOut["wasserstein"]
+    elif xtype == "bern":
+        x = paramTrues[:, 0, 0]
 
     return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
 
@@ -125,6 +128,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].set_ylim(bottom=0, top=1.02)
     ax[i].set_ylabel("Bernoulli $p$")
     ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", alpha=0.5)
     ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", alpha=0.5)
@@ -196,6 +200,7 @@ def figureMaker1(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Numbe
     ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].set_ylabel("Bernoulli $p$")
+    ax[i].set_ylim(bottom=0, top=1.02)
     ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", alpha=0.5)
     ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", alpha=0.5)
     ax[i].set_title(r"Bernoulli $p$")
@@ -214,7 +219,6 @@ def figureMaker1(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Numbe
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-    pass
 
     i += 1
     ax[i].set_xlabel(xlabel)

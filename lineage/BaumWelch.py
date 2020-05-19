@@ -27,14 +27,14 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_ar
 
 def get_all_gammas(lineageObj, gamma_arr):
     """sum of the list of all the gamma parent child for all the parent child relationships"""
-    holder = np.zeros(gamma_arr.shape[1])
+    holder_wo_leaves = np.zeros(gamma_arr.shape[1])
     for level in lineageObj.output_list_of_gens[1:]:  # get all the gammas but not the ones at the last level
         for cell in level:
             if not cell.isLeaf():
                 cell_idx = lineageObj.output_lineage.index(cell)
-                holder += gamma_arr[cell_idx, :]
+                holder_wo_leaves += gamma_arr[cell_idx, :]
 
-    return holder
+    return holder_wo_leaves
 
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
@@ -45,18 +45,30 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     for level in lineageObj.output_list_of_gens[1:]:
         for cell in level:  # get lineage for the gen
             node_parent_m_idx = lineage.index(cell)
-
-            for daughter_idx in cell.get_daughters():
-                holder += zeta_parent_child_func(
-                    node_parent_m_idx=node_parent_m_idx,
-                    node_child_n_idx=lineage.index(daughter_idx),
-                    lineage=lineage,
-                    beta_array=beta_array,
-                    MSD_array=MSD_array,
-                    gamma_array=gamma_array,
-                    T=T,
-                )
+            if not cell.isLeaf():
+                for daughter_idx in cell.get_daughters():
+                    holder += zeta_parent_child_func(
+                        node_parent_m_idx=node_parent_m_idx,
+                        node_child_n_idx=lineage.index(daughter_idx),
+                        lineage=lineage,
+                        beta_array=beta_array,
+                        MSD_array=MSD_array,
+                        gamma_array=gamma_array,
+                        T=T,
+                    )
     return holder
+
+
+def calculateQuantities(tHMMobj):
+    """ Calculate NF, gamma, beta, LL from tHMM model. """
+    NF = get_leaf_Normalizing_Factors(tHMMobj)
+    betas = get_leaf_betas(tHMMobj, NF)
+    get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
+    gammas = get_root_gammas(tHMMobj, betas)
+    get_nonroot_gammas(tHMMobj, gammas, betas)
+    LL = calculate_log_likelihood(NF)
+
+    return NF, betas, gammas, LL
 
 
 def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
@@ -64,67 +76,47 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
     num_states = tHMMobj.num_states
 
     # first E step
-
-    NF = get_leaf_Normalizing_Factors(tHMMobj)
-    betas = get_leaf_betas(tHMMobj, NF)
-    get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
-    gammas = get_root_gammas(tHMMobj, betas)
-    get_nonroot_gammas(tHMMobj, gammas, betas)
+    NF, betas, gammas, new_LL = calculateQuantities(tHMMobj)
 
     # first stopping condition check
     new_LL = calculate_log_likelihood(NF)
-    for _ in range(max_iter):
+    for iter_number in range(max_iter):
         old_LL = new_LL
 
         # code for grouping all states in cell lineages
-        cell_groups = [[] for state in range(num_states)]
         pi_estimate = np.zeros((num_states), dtype=float)
-        T_estimate = np.zeros((num_states, num_states), dtype=float)
+        numer_estimate = np.zeros((num_states, num_states), dtype=float)
+        denom_estimate = np.zeros((num_states,), dtype=float)
         for num, lineageObj in enumerate(tHMMobj.X):
-            lineage = lineageObj.output_lineage
             gamma_array = gammas[num]
+
+            # local pi estimate
             pi_estimate += gamma_array[0, :]
 
-            denom = get_all_gammas(lineageObj, gamma_array)
-            numer = get_all_zetas(
-                lineageObj=lineageObj, beta_array=betas[num], MSD_array=tHMMobj.MSD[num], gamma_array=gamma_array, T=tHMMobj.estimate.T
-            )
+            # local T estimate
+            numer_estimate += get_all_zetas(lineageObj, betas[num], tHMMobj.MSD[num], gamma_array, tHMMobj.estimate.T)
+            denom_estimate += get_all_gammas(lineageObj, gamma_array)
 
-            T_holder = (numer + np.spacing(1)) / (denom[:, np.newaxis] + np.spacing(1))
-            T_estimate += T_holder
-
-            max_state_holder = []  # a list the size of lineage, that contains max state for each cell
-            for ii, cell in enumerate(lineage):
-                assert lineage[ii] is cell
-                max_state_holder.append(np.argmax(gamma_array[ii, :]))  # says which state is maximal
-
-            # this bins the cells by lineage to the population cell lists
-            for ii, state in enumerate(max_state_holder):
-                cell_groups[state].append(lineage[ii])
         if tHMMobj.estimate.fpi is None:
             # population wide pi calculation
             tHMMobj.estimate.pi = pi_estimate / sum(pi_estimate)
         if tHMMobj.estimate.fT is None:
             # population wide T calculation
+            T_estimate = numer_estimate / denom_estimate[:, np.newaxis]
             tHMMobj.estimate.T = T_estimate / T_estimate.sum(axis=1)[:, np.newaxis]
         if tHMMobj.estimate.fE is None:
-            # opulation wide E calculation
-            for state_j in range(num_states):
-                tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator([cell.obs for cell in cell_groups[state_j]])
+            # population wide E calculation
+            all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+            all_gammas = np.vstack(gammas)
+            for state_j in range(tHMMobj.num_states):
+                tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
 
-        NF = get_leaf_Normalizing_Factors(tHMMobj)
-        betas = get_leaf_betas(tHMMobj, NF)
-        get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
-        gammas = get_root_gammas(tHMMobj, betas)
-        get_nonroot_gammas(tHMMobj, gammas, betas)
+        NF, betas, gammas, new_LL = calculateQuantities(tHMMobj)
 
-        # tolerance checking
-        new_LL = calculate_log_likelihood(NF)
-
-        if np.allclose([old_LL], [new_LL], atol=tolerance):
-            return (tHMMobj, NF, betas, gammas, new_LL)
+        if np.allclose(old_LL, new_LL, atol=tolerance) and iter_number > 2:
+            break
 
     return (tHMMobj, NF, betas, gammas, new_LL)

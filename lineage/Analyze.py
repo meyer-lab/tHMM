@@ -4,13 +4,12 @@ import random
 import numpy as np
 from sklearn import metrics
 from scipy.stats import entropy, wasserstein_distance
-from .BaumWelch import fit
+from .BaumWelch import fit, calculateQuantities
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
-from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_nonleaf_NF_and_betas, calculate_log_likelihood
 from .tHMM import tHMM
 
 
-def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
+def preAnalyze(X, num_states, max_iter=500, fpi=None, fT=None, fE=None):
     """Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
     Args:
     -----
@@ -21,40 +20,39 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     --------
     tHMMobj {obj}:
     """
-    for num_tries in range(1, 5):
+    error_holder = []
+    for num_tries in range(1, 15):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            fit(tHMMobj, max_iter=300)
+            fit(tHMMobj, max_iter=max_iter)
             break
-        except AssertionError:
-            if num_tries == 4:
+        except (AssertionError, ZeroDivisionError, RuntimeError) as error:
+            error_holder.append(error)
+            if num_tries == 14:
                 print(
-                    "Caught AssertionError in fitting after multiple ({}) runs. Fitting is breaking after trying {} times. Consider inspecting the length of your lineages.".format(
-                        num_tries, num_tries
-                    )
+                    f"Caught the following errors: \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. Fitting is breaking after trying {num_tries} times. If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue is the estimates of your parameters are returning nonsensible parameters. Consider changing your parameter estimator. "
                 )
                 raise
 
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
     pred_states_by_lineage = Viterbi(tHMMobj, deltas, state_ptrs)
-    NF = get_leaf_Normalizing_Factors(tHMMobj)
-    betas = get_leaf_betas(tHMMobj, NF)
-    get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
-    LL = calculate_log_likelihood(NF)
+
+    _, _, _, LL = calculateQuantities(tHMMobj)
+
     return tHMMobj, pred_states_by_lineage, LL
 
 
-def Analyze(X, num_states, fpi=None, fT=None, fE=None):
+def Analyze(X, num_states, max_iter=500, fpi=None, fT=None, fE=None):
     """
     Analyze runs several for loops runnning our model for a given number of states
     given an input population (a list of lineages).
     """
-    tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
+    tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, num_states, max_iter=max_iter, fpi=fpi, fT=fT, fE=fE)
 
     for _ in range(1, 5):
-        tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
-        if tmp_LL > LL:
+        tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, num_states, max_iter=max_iter, fpi=fpi, fT=fT, fE=fE)
+        if sum(tmp_LL) > sum(LL):
             tHMMobj = tmp_tHMMobj
             pred_states_by_lineage = tmp_pred_states_by_lineage
             LL = tmp_LL
@@ -345,9 +343,9 @@ def stateLikelihood(tHMMobj):
     """
     EL = tHMMobj.get_Emission_Likelihoods()
     MSD = tHMMobj.get_Marginal_State_Distributions()
-    NF = get_leaf_Normalizing_Factors(tHMMobj)
-    betas = get_leaf_betas(tHMMobj, NF)
-    get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
+
+    NF, _, _, _ = calculateQuantities(tHMMobj)
+
     LL = EL[0] * MSD[0]
     LL[:, 0] = LL[:, 0] / NF[0]
     LL[:, 1] = LL[:, 1] / NF[0]

@@ -4,6 +4,8 @@ import numpy as np
 import scipy.stats as sp
 from numba import njit
 import scipy.special as sc
+from scipy.optimize import brentq
+
 
 from .stateCommon import bern_pdf, bernoulli_estimator
 
@@ -36,12 +38,19 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
-        gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+        try:
+            bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
+        except ZeroDivisionError:
+            assert False, f"{tuple_of_obs[0]}, {self.bern_p}"
+
+        try:
+            gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+        except ZeroDivisionError:
+            assert False, f"{tuple_of_obs[1]}, {self.gamma_a}, {self.gamma_scale}"
 
         return bern_ll * gamma_ll
 
-    def estimator(self, list_of_tuples_of_obs):
+    def estimator(self, list_of_tuples_of_obs, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
         # unzipping the list of tuples
         unzipped_list_of_tuples_of_obs = list(zip(*list_of_tuples_of_obs))
@@ -51,12 +60,14 @@ class StateDistribution:
         try:
             bern_obs = list(unzipped_list_of_tuples_of_obs[0])
             gamma_obs = list(unzipped_list_of_tuples_of_obs[1])
+            gamma_censor_obs = list(unzipped_list_of_tuples_of_obs[2])
         except BaseException:
             bern_obs = []
             gamma_obs = []
+            gamma_censor_obs = []
 
-        bern_p_estimate = bernoulli_estimator(bern_obs)
-        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs)
+        bern_p_estimate = bernoulli_estimator(bern_obs, (self.bern_p,), gammas)
+        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs, gamma_censor_obs, (self.gamma_a, self.gamma_scale,), gammas)
 
         state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
         # } requires the user's attention.
@@ -69,7 +80,7 @@ class StateDistribution:
         """
         Initialize a default state distribution.
         """
-        return StateDistribution(0.9, 7, 1 * (np.random.uniform()))
+        return StateDistribution(0.9, 7, 3 + (1 * (np.random.uniform())))
 
     def __repr__(self):
         """
@@ -87,25 +98,23 @@ class StateDistribution:
 # can handle the case where the list of observations is empty.
 
 
-def gamma_estimator(gamma_obs):
+def gamma_estimator(gamma_obs, gamma_censor_obs, old_params, gammas):
     """
     This is a closed-form estimator for two parameters
     of the Gamma distribution, which is corrected for bias.
     """
-    N = len(gamma_obs)
+    gammaCor = sum(gammas * gamma_obs) / sum(gammas)
+    s = np.log(gammaCor) - sum(gammas * np.log(gamma_obs)) / sum(gammas)
+    def f(k): return np.log(k) - sc.polygamma(0, k) - s
 
-    xbar = (sum(gamma_obs) + 7e-10) / (len(gamma_obs) + 1e-10)
-    x_lnx = [x * np.log(x) for x in gamma_obs]
-    lnx = [np.log(x) for x in gamma_obs]
-    # gamma_a
-    a_hat = (N * (sum(gamma_obs)) + 10e-10) / (N * sum(x_lnx) - (sum(lnx)) * (sum(gamma_obs)) + 1e-10)
-    # gamma_scale
-    b_hat = xbar / a_hat
+    if f(0.01) * f(100.0) > 0.0:
+        a_hat = 10.0
+    else:
+        a_hat = brentq(f, 0.01, 100.0)
 
-    if b_hat < 1.0 or 50.0 < a_hat < 5.0:
-        return 10, 1
+    scale_hat = gammaCor / a_hat
 
-    return a_hat, b_hat
+    return a_hat, scale_hat
 
 
 @njit
@@ -115,4 +124,5 @@ def gamma_pdf(x, a, scale):
     and returns the likelihood of the observation based on the gamma
     probability distribution function.
     """
-    return (1 / (gamma(a) * (scale ** a))) * x ** (a - 1) * np.exp(-x / scale)
+    return x**(a - 1.) * np.exp(-1. * x / scale) / gamma(a) / (scale**a)
+

@@ -2,9 +2,9 @@ SHELL := /bin/bash
 
 .PHONY: clean test testprofile testcover docs
 
-all: output/manuscript.html coverage.xml pylint.log
+all: output/manuscript.html coverage.xml pylint.log spell.txt
 
-flist = 0 1 2 3 4 5 6 7 8 9 10 12 13 14 15
+flist = 0 1 2 3 4 5 6 7 8 9 12 13 14 15
 
 venv: venv/bin/activate
 
@@ -48,6 +48,9 @@ Guide_to_tHMM.pdf: venv Guide_to_tHMM.ipynb
 
 test: venv
 	. venv/bin/activate; pytest -s
+
+spell.txt: manuscript/*.md
+	pandoc --lua-filter common/templates/spell.lua manuscript/*.md | sort | uniq -ic > spell.txt
 
 coverage.xml: venv
 	. venv/bin/activate; pytest --junitxml=junit.xml --cov=lineage --cov-report xml:coverage.xml
