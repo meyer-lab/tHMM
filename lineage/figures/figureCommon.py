@@ -11,7 +11,7 @@ from ..Analyze import run_Results_over, run_Analyze_over
 
 from ..states.StateDistribution import StateDistribution
 from ..states.StateDistribution1 import StateDistribution as expStateDistribution
-from ..states.StateDistPhase import StateDistribution2
+from ..states.StateDistPhase import StateDistribution2 as phaseStateDist
 
 # pi: the initial probability vector
 pi = np.array([0.5, 0.5], dtype="float")
@@ -28,6 +28,10 @@ E = [state0, state1]
 state10 = expStateDistribution(0.99, 49)
 state11 = expStateDistribution(0.75, 7)
 E1 = [state10, state11]
+
+State0 = phaseStateDist(0.99, 12, 7, 12, 10)
+State1 = phaseStateDist(0.88, 7, 1, 10, 3)
+E2 = [State0, State1]
 
 min_desired_num_cells = (2**5) - 1
 max_desired_num_cells = (2**9) - 1
@@ -242,6 +246,99 @@ def figureMaker1(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Numbe
 
     i += 1
     ax[i].set_xlabel(xlabel)
+    ax[i].scatter(x, pii, c="k", marker="o", edgecolors="k", alpha=0.25)
+    ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
+    ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
+    ax[i].set_title("Initial Probability Matrix Estimation")
+    ax[i].grid(linestyle="--")
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
+def figureMaker2(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
+    """
+    Makes the common 6 panel figures displaying parameter estimation across lineages
+    of various types and sizes.
+    """
+    i = 0
+    ax[i].set_xlabel(xlabel)
+    ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].set_ylim(bottom=0, top=1.02)
+    ax[i].set_ylabel("Bernoulli $p$")
+    ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", alpha=0.5)
+    ax[i].set_title(r"Bernoulli $p$")
+    ax[i].grid(linestyle="--")
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
+    i += 1
+    ax[i].set_xlabel(xlabel)
+    ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].set_ylabel(r"Gamma $k$")
+    ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", alpha=0.5)
+    ax[i].set_title(r"Gamma $k$ G1")
+    ax[i].grid(linestyle="--")
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
+    i += 1
+    ax[i].set_xlabel(xlabel)
+    ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].set_ylabel(r"Gamma $\theta$")
+    ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", alpha=0.5, label="State 1")
+    ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", alpha=0.5, label="State 2")
+    ax[i].legend()
+    ax[i].set_title(r"Gamma $\theta$ G1")
+    ax[i].grid(linestyle="--")
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
+    i += 1
+    ax[i].set_xlabel(xlabel)
+    ax[i].scatter(x, paramEst[:, 0, 3], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 1, 3], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].set_ylabel(r"Gamma $k$")
+    ax[i].scatter(x, paramTrues[:, 0, 3], marker="_", alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 1, 3], marker="_", alpha=0.5)
+    ax[i].set_title(r"Gamma $k$ G2")
+    ax[i].grid(linestyle="--")
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
+    i += 1
+    ax[i].set_xlabel(xlabel)
+    ax[i].scatter(x, paramEst[:, 0, 4], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 1, 4], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].set_ylabel(r"Gamma $\theta$")
+    ax[i].scatter(x, paramTrues[:, 0, 4], marker="_", alpha=0.5, label="State 1")
+    ax[i].scatter(x, paramTrues[:, 1, 4], marker="_", alpha=0.5, label="State 2")
+    ax[i].legend()
+    ax[i].set_title(r"Gamma $\theta$ G2")
+    ax[i].grid(linestyle="--")
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
+    i += 1
+    ax[i].set_xlabel(xlabel)
+    ax[i].set_ylim(bottom=0, top=101)
+    ax[i].scatter(x, accuracies, c="k", marker="o", label="Accuracy", edgecolors="k", alpha=0.25)
+    ax[i].set_ylabel(r"Accuracy [\%]")
+    ax[i].axhline(y=100, linestyle="--", linewidth=2, color="k", alpha=1)
+    ax[i].set_title("State Assignment Accuracy")
+    ax[i].grid(linestyle="--")
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
+    i += 1
+    ax[i].set_xlabel(xlabel)
+    ax[i].set_ylim(bottom=0, top=max(tr) + 0.2)
+    ax[i].scatter(x, tr, c="k", marker="o", edgecolors="k", alpha=0.25)
+    ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
+    ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
+    ax[i].set_title("Transition Matrix Estimation")
+    ax[i].grid(linestyle="--")
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
+    i += 1
+    ax[i].set_xlabel(xlabel)
+    ax[i].set_ylim(bottom=0, top=max(pii) + 0.2)
     ax[i].scatter(x, pii, c="k", marker="o", edgecolors="k", alpha=0.25)
     ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
     ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
