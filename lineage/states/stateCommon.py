@@ -51,13 +51,13 @@ def assign_times(lineageObj, *kwargs):
                 if kwargs:
                     cell.time = Time(0, (cell.obs[1] + cell.ons[2]))
                 else:
-                    cell.time = Time(0, (cell.obs[1])
+                    cell.time = Time(0, (cell.obs[1]))
         else:
             for cell in level:
                 if kwargs:
                     cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1] + cell.obs[2])
                 else:
-                    cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])                          
+                    cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])                   
 
 
 def get_experiment_time(lineageObj):

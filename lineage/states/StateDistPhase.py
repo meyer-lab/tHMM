@@ -5,6 +5,7 @@ from numba import njit
 import scipy.special as sc
 from scipy.optimize import brentq
 from .StateDistribution import gamma_estimator, gamma_pdf
+from .stateCommon import bern_pdf, bernoulli_estimator
 
 
 class StateDistribution2:
@@ -23,7 +24,7 @@ class StateDistribution2:
         bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
         gamma_obsG1 = sp.gamma.rvs(a=self.gamma_a1, scale=self.gamma_scale1, size=size)  # gamma observations
         gamma_obsG2 = sp.gamma.rvs(a=self.gamma_a2, scale=self.gamma_scale2, size=size)
-        time_censor = [1] * len(gamma_obs)
+        time_censor = [1] * (len(gamma_obsG1) + len(gamma_obsG2))
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         list_of_tuple_of_obs = list(map(list, zip(bern_obs, gamma_obsG1, gamma_obsG2, time_censor)))
@@ -52,7 +53,7 @@ class StateDistribution2:
 
         return bern_ll * gamma_llG1 * gamma_llG2
 
-    def estimator(self, list_of_tuples_of_obs):
+    def estimator(self, list_of_tuples_of_obs, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
         # unzipping the list of tuples
         unzipped_list_of_tuples_of_obs = list(zip(*list_of_tuples_of_obs))
@@ -73,7 +74,7 @@ class StateDistribution2:
         bern_p_estimate = bernoulli_estimator(bern_obs, (self.bern_p,), gammas)
         gamma_a1_estimate, gamma_scale1_estimate = gamma_estimator(gamma_obsG1, gamma_censor_obs, (self.gamma_a1, self.gamma_scale1,), gammas)
         gamma_a2_estimate, gamma_scale2_estimate = gamma_estimator(gamma_obsG2, gamma_censor_obs, (self.gamma_a2, self.gamma_scale2,), gammas)
-        state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, gamma_a1=gamma_a1_estimate, gamma_scale1=gamma_scale1_estimate, gamma_a2=gamma_a2_estimate, gamma_scale2=gamma_scale2_estimate)
+        state_estimate_obj = StateDistribution2(bern_p=bern_p_estimate, gamma_a1=gamma_a1_estimate, gamma_scale1=gamma_scale1_estimate, gamma_a2=gamma_a2_estimate, gamma_scale2=gamma_scale2_estimate)
 
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
@@ -85,7 +86,7 @@ class StateDistribution2:
         """
         Initialize a default state distribution.
         """
-        return StateDistribution(0.9, 7, 3 + (1 * (np.random.uniform())), 14, 6 + (1 * (np.random.uniform())))
+        return StateDistribution2(0.9, 7, 3 + (1 * (np.random.uniform())), 14, 6 + (1 * (np.random.uniform())))
 
     def __repr__(self):
         """
