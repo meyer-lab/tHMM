@@ -58,8 +58,8 @@ class LineageTree:
 
         self.full_max_gen, self.full_list_of_gens = max_gen(self.full_lineage)
         self.full_leaves_idx, self.full_leaves = get_leaves(self.full_lineage)
-
-        assign_times(self)
+        if len(self.E[0].rvs(1)[0]) > 1:
+            assign_times(self)
 
         # Begin censoring:
 
