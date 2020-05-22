@@ -29,9 +29,9 @@ state10 = expStateDistribution(0.99, 49)
 state11 = expStateDistribution(0.75, 7)
 E1 = [state10, state11]
 
-State0 = phaseStateDist(0.99, 12, 7, 12, 10)
-State1 = phaseStateDist(0.88, 7, 1, 10, 3)
-E2 = [State0, State1]
+state20 = phaseStateDist(0.99, 12, 7, 12, 10)
+state21 = phaseStateDist(0.88, 7, 1, 10, 3)
+E2 = [state20, state21]
 
 min_desired_num_cells = (2**5) - 1
 max_desired_num_cells = (2**9) - 1
