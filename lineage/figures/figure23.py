@@ -70,6 +70,6 @@ def accuracy():
         list_of_populations.append(population)
         list_of_fpi.append(pi)
         list_of_fT.append(T)
-        list_of_fE.append(E1)
+        list_of_fE.append(E2)
 
     return commonAnalyze(list_of_populations)
