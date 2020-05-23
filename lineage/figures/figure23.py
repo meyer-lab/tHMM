@@ -73,6 +73,7 @@ def accuracy():
 
     return commonAnalyze(list_of_populations)
 
+
 def figureMaker2(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages

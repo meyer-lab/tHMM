@@ -3,14 +3,15 @@ import numpy as np
 import scipy.stats as sp
 from .StateDistribution import (gamma_estimator,
                                 gamma_pdf,
-                               )
+                                )
 from .stateCommon import (bern_pdf,
                           bernoulli_estimator,
-                         )
+                          )
 
 
 class StateDistribution2:
     """ For G1 and G2 separated as observations. """
+
     def __init__(self, bern_p, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.bern_p = bern_p
@@ -83,6 +84,7 @@ class StateDistribution2:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
         return state_estimate_obj
+
     def tHMM_E_init(self):
         """
         Initialize a default state distribution.
@@ -94,4 +96,3 @@ class StateDistribution2:
         Method to print out a state distribution object.
         """
         return "State object w/ parameters: {}, {}, {}.".format(self.bern_p, self.gamma_a1, self.gamma_scale1, self.gamma_a2, self.gamma_scale2)
-    
