@@ -136,7 +136,6 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["completeness_score"] = metrics.completeness_score(true_states, pred_states)
 
     # 2. Switch the underlying state labels based on the KL-divergence of the underlying states' distributions
-
     # First collect all the observations from the entire population across the lineages ordered by state
     obs_by_state = []
     for state in range(tHMMobj.num_states):
@@ -164,16 +163,15 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["switcher_map"] = switcher_map
 
     # Rearrange the values in the transition matrix
-    temp_T = tHMMobj.estimate.T
+    temp_T = np.copy(tHMMobj.estimate.T)
     for row_idx in range(tHMMobj.num_states):
         for col_idx in range(tHMMobj.num_states):
             temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx], switcher_map[col_idx]]
 
-    results_dict["switched_transition_matrix"] = temp_T
     results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
 
     # Rearrange the values in the pi vector
-    temp_pi = tHMMobj.estimate.pi
+    temp_pi = np.copy(tHMMobj.estimate.pi)
     for val_idx in range(tHMMobj.num_states):
         temp_pi[val_idx] = tHMMobj.estimate.pi[switcher_map[val_idx]]
 
@@ -190,7 +188,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     # Get the estimated parameter values
     results_dict["param_estimates"] = []
     for val_idx in range(tHMMobj.num_states):
-        results_dict["param_estimates"].append(temp_emissions[val_idx].params)
+        results_dict["param_estimates"].append(results_dict["switched_emissions"][val_idx].params)
 
     # Get the true parameter values
     results_dict["param_trues"] = []
@@ -205,6 +203,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["accuracy_before_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states, true_states)]) / len(true_states)
     results_dict["accuracy_after_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states_switched, true_states)]) / len(true_states)
 
+    # 4. Calculate the Wasserstein distance
     obs_by_state_rand_sampled = []
     for state in range(tHMMobj.num_states):
         full_list = [cell.obs[1] for cell in tHMMobj.X[0].output_lineage if cell.state == state]
