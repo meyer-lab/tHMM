@@ -11,6 +11,7 @@ from ..Analyze import run_Results_over, run_Analyze_over
 
 from ..states.StateDistribution import StateDistribution
 from ..states.StateDistribution1 import StateDistribution as expStateDistribution
+from ..states.StateDistPhase import StateDistribution2 as phaseStateDist
 
 # pi: the initial probability vector
 pi = np.array([0.5, 0.5], dtype="float")
@@ -27,6 +28,10 @@ E = [state0, state1]
 state10 = expStateDistribution(0.99, 49)
 state11 = expStateDistribution(0.75, 7)
 E1 = [state10, state11]
+
+state20 = phaseStateDist(0.99, 12, 7, 12, 10)
+state21 = phaseStateDist(0.88, 7, 1, 10, 3)
+E2 = [state20, state21]
 
 min_desired_num_cells = (2**5) - 1
 max_desired_num_cells = (2**9) - 1

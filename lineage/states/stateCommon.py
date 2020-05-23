@@ -36,7 +36,7 @@ class Time:
         self.endT = endT
 
 
-def assign_times(lineageObj):
+def assign_times(lineageObj, *kwargs):
     """
     Assigns the start and end time for each cell in the lineage.
     The time observation will be stored in the cell's observation parameter list
@@ -48,10 +48,16 @@ def assign_times(lineageObj):
         if true_gen == 1:
             for cell in level:
                 assert cell.isRootParent()
-                cell.time = Time(0, cell.obs[1])
+                if kwargs:
+                    cell.time = Time(0, (cell.obs[1] + cell.ons[2]))
+                else:
+                    cell.time = Time(0, (cell.obs[1]))
         else:
             for cell in level:
-                cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
+                if kwargs:
+                    cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1] + cell.obs[2])
+                else:
+                    cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])                   
 
 
 def get_experiment_time(lineageObj):
