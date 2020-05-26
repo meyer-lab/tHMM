@@ -73,7 +73,7 @@ class StateDistribution:
         """
         Method to print out a state distribution object.
         """
-        return "State object w/ parameters: {}, {}.".format(self.bern_p, self.exp_beta)
+        return "State object w/ parameters: {}.".format(self.params)
 
 
 # Because parameter estimation requires that estimators be written or imported,
