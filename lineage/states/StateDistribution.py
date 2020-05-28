@@ -4,7 +4,7 @@ import numpy as np
 import scipy.stats as sp
 from numba import njit
 import scipy.special as sc
-from scipy.optimize import brentq
+from scipy.optimize import brentq, minimize
 
 
 from .stateCommon import bern_pdf, bernoulli_estimator
@@ -114,7 +114,27 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
 
     scale_hat = gammaCor / a_hat
 
-    return a_hat, scale_hat
+    gamma_obs = np.array(gamma_obs)
+    gamma_censor_obs = np.array(gamma_censor_obs)
+    
+    def LL(x):
+        uncens = gamma_pdf(gamma_obs, x[0], x[1])
+        cens = sp.gamma.sf(gamma_obs, a=x[0], scale=x[1])
+
+        # If the observation was censored, use the survival function
+        uncens[gamma_censor_obs == 0] = cens[gamma_censor_obs == 0]
+
+        # If gamma indicates the cell is very unlikely for this state, ignore it
+        gamL = np.log(gammas)
+        uncens[gamL < -9] = 1.0
+        gamL[gamL < -9] = 0
+
+        uncens = np.log(uncens)
+        return -np.sum(uncens + gamL)
+
+    res = minimize(LL, [a_hat, scale_hat])
+
+    return res.x[0], res.x[1]
 
 
 @njit
