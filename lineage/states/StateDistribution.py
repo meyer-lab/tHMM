@@ -67,7 +67,7 @@ class StateDistribution:
             gamma_censor_obs = []
 
         bern_p_estimate = bernoulli_estimator(bern_obs, (self.bern_p,), gammas)
-        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs, gamma_censor_obs, (self.gamma_a, self.gamma_scale,), gammas)
+        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs, gamma_censor_obs, gammas)
 
         state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
         # } requires the user's attention.
@@ -98,7 +98,7 @@ class StateDistribution:
 # can handle the case where the list of observations is empty.
 
 
-def gamma_estimator(gamma_obs, gamma_censor_obs, old_params, gammas):
+def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
     """
     This is a closed-form estimator for two parameters
     of the Gamma distribution, which is corrected for bias.
