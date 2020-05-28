@@ -3,7 +3,6 @@ import numpy as np
 import scipy.stats as sp
 
 
-
 class StateDistribution:
     def __init__(self, norm_loc, norm_scale):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
@@ -16,7 +15,7 @@ class StateDistribution:
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
         norm_obs = sp.norm.rvs(loc=self.norm_loc, scale=self.norm_scale, size=size)  # normal observations
-        #time_censor = [1] * len(gamma_obs)  # 1 if observed
+        # time_censor = [1] * len(gamma_obs)  # 1 if observed
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         list_of_tuple_of_obs = list(map(list, zip(norm_obs)))
@@ -80,8 +79,8 @@ class StateDistribution:
 
 def norm_estimator(norm_obs, gammas):
     '''This function is an estimator for the mean and standard deviation of a normal distribution, including weighting for each state'''
-    mu = (sum(gammas * norm_obs) + 1e-10) / (sum(gammas)+ 1e-10)
-    std = ((sum(gammas*(norm_obs-mu)**2) + 1e-10)/ (sum(gammas)+ 1e-10))**.5
+    mu = (sum(gammas * norm_obs) + 1e-10) / (sum(gammas) + 1e-10)
+    std = ((sum(gammas * (norm_obs - mu)**2) + 1e-10) / (sum(gammas) + 1e-10))**.5
     if mu == 0:
         print("mu == 0")
     if std == 0:
