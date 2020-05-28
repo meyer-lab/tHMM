@@ -7,6 +7,7 @@ from cycler import cycler
 import numpy as np
 from matplotlib import gridspec, pyplot as plt
 import seaborn as sns
+import svgutils.transform as st
 from ..Analyze import run_Results_over, run_Analyze_over
 
 from ..states.StateDistribution import StateDistribution
@@ -123,6 +124,21 @@ def subplotLabel(axs):
     for ii, ax in enumerate(axs):
         ax.text(-0.2, 1.25, ascii_lowercase[ii], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
 
+
+def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1):
+    """ Add cartoon to a figure file. """
+
+    # Overlay Figure cartoons
+    template = st.fromfile(figFile)
+    cartoon = st.fromfile(cartoonFile).getroot()
+
+    cartoon.moveto(x, y, scale=scalee)
+    cartoon.scale_xy(scale_x, scale_y)
+
+    template.append(cartoon)
+    template.save(figFile)
+        
+        
 
 def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """
