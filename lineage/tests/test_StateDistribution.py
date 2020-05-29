@@ -133,10 +133,10 @@ class TestModel(unittest.TestCase):
         self.assertTrue(bern_ll == 1)
 
     def test_gamma_pdf(self):
-         """
-         Testing the gamma probability density function
-         by comparing the result of the outputted likelihood
-         against a known calculated value.
-         """
-         gamma_ll = gamma_pdf(x=1, a=10, scale=5)
-         self.assertTrue(gamma_ll <= 0.1)
+        """
+        Testing the gamma probability density function
+        by comparing the result of the outputted likelihood
+        against a known calculated value.
+        """
+        gamma_ll = gamma_pdf(x=1, a=10, scale=5)
+        self.assertTrue(gamma_ll <= 0.1)
