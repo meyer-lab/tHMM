@@ -165,7 +165,7 @@ def double(parent_state, T):
 
     # The index of the 1 value in the resulting list in the two trials represent the state that was picked for that
     # dice toss.
-    return left_state_results.index(1), right_state_results.index(1)
+    return left_state_results.tolist().index(1), right_state_results.tolist().index(1)
 
 
 def tree_recursion(cell, subtree):
