@@ -106,7 +106,7 @@ class TestModel(unittest.TestCase):
         """
         bern_obs = sp.bernoulli.rvs(p=0.90, size=1000)  # bernoulli observations
         gammas = np.array([1] * len(bern_obs))
-        self.assertTrue(0.87 <= bernoulli_estimator(bern_obs, (0.5,), gammas) <= 0.93)
+        self.assertTrue(0.87 <= bernoulli_estimator(bern_obs, gammas) <= 0.93)
 
     def test_gamma_estimator(self):
         """

@@ -44,7 +44,8 @@ class StateDistribution:
             else:
                 bern_ll = 1.0
         except ZeroDivisionError:
-            assert False, f"{tuple_of_obs[0]}, {self.bern_p}"
+            print(f"{tuple_of_obs[0]}, {self.bern_p}")
+            raise
 
         try:
             if tuple_of_obs[2] == 1:
@@ -52,7 +53,8 @@ class StateDistribution:
             else:
                 gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)
         except ZeroDivisionError:
-            assert False, f"{tuple_of_obs[1]}, {self.gamma_a}, {self.gamma_scale}"
+            print(f"{tuple_of_obs[1]}, {self.gamma_a}, {self.gamma_scale}")
+            raise
 
         return bern_ll * gamma_ll
 
