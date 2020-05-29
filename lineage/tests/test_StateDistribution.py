@@ -5,10 +5,10 @@ import scipy.stats as sp
 from ..states.StateDistribution import (
     StateDistribution,
     gamma_estimator,
-    gamma_pdf,
 )
 from ..states.stateCommon import (
     bern_pdf,
+    gamma_pdf,
     bernoulli_estimator,
     get_experiment_time,
 )
@@ -106,7 +106,7 @@ class TestModel(unittest.TestCase):
         """
         bern_obs = sp.bernoulli.rvs(p=0.90, size=1000)  # bernoulli observations
         gammas = np.array([1] * len(bern_obs))
-        self.assertTrue(0.87 <= bernoulli_estimator(bern_obs, (0.5,), gammas) <= 0.93)
+        self.assertTrue(0.87 <= bernoulli_estimator(bern_obs, gammas) <= 0.93)
 
     def test_gamma_estimator(self):
         """
@@ -115,10 +115,10 @@ class TestModel(unittest.TestCase):
         to the result of scipy random variable generator.
         """
         gamma_obs = sp.gamma.rvs(a=12.5, scale=3, size=1000)  # gamma observations
-        gamma_censor_obs = np.array([1] * len(gamma_obs))
+        gamma_censor_obs = np.ones_like(gamma_obs)
         gammas = [1] * len(gamma_obs)
 
-        shape, scale = gamma_estimator(gamma_obs, gamma_censor_obs, (12, 1,), gammas)
+        shape, scale = gamma_estimator(gamma_obs, gamma_censor_obs, gammas)
 
         self.assertTrue(10 <= shape <= 15)
         self.assertTrue(2 <= scale <= 4)

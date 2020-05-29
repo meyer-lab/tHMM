@@ -44,7 +44,7 @@ class StateDistribution:
         try:
             norm_obs = list(unzipped_list_of_tuples_of_obs[0])
         except BaseException:
-            norm_obs = []
+            self.tHMM_E_init()
 
         norm_loc_estimate, norm_scale_estimate = norm_estimator(norm_obs, gammas)
 
@@ -61,12 +61,6 @@ class StateDistribution:
         """
         return StateDistribution(10, 1 + 10 * (np.random.uniform()))
 
-    def __repr__(self):
-        """
-        Method to print out a state distribution object.
-        """
-        return "State object w/ parameters: {}, {}.".format(self.norm_loc, self.norm_scale)
-
 
 # Because parameter estimation requires that estimators be written or imported,
 # the user should be able to provide
@@ -78,9 +72,9 @@ class StateDistribution:
 
 
 def norm_estimator(norm_obs, gammas):
-    '''This function is an estimator for the mean and standard deviation of a normal distribution, including weighting for each state'''
+    """This function is an estimator for the mean and standard deviation of a normal distribution, including weighting for each state"""
     mu = (sum(gammas * norm_obs) + 1e-10) / (sum(gammas) + 1e-10)
-    std = ((sum(gammas * (norm_obs - mu)**2) + 1e-10) / (sum(gammas) + 1e-10))**.5
+    std = ((sum(gammas * (norm_obs - mu) ** 2) + 1e-10) / (sum(gammas) + 1e-10)) ** 0.5
     if mu == 0:
         print("mu == 0")
     if std == 0:
