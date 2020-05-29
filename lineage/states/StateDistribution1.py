@@ -92,4 +92,4 @@ def exp_pdf(x, beta):
     and returns the likelihood of the observation based on the exponential
     probability distribution function.
     """
-    return (1. / beta) * np.exp(-1. * x / beta)
+    return (1.0 / beta) * np.exp(-1.0 * x / beta)

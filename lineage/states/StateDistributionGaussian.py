@@ -72,9 +72,9 @@ class StateDistribution:
 
 
 def norm_estimator(norm_obs, gammas):
-    '''This function is an estimator for the mean and standard deviation of a normal distribution, including weighting for each state'''
+    """This function is an estimator for the mean and standard deviation of a normal distribution, including weighting for each state"""
     mu = (sum(gammas * norm_obs) + 1e-10) / (sum(gammas) + 1e-10)
-    std = ((sum(gammas * (norm_obs - mu)**2) + 1e-10) / (sum(gammas) + 1e-10))**.5
+    std = ((sum(gammas * (norm_obs - mu) ** 2) + 1e-10) / (sum(gammas) + 1e-10)) ** 0.5
     if mu == 0:
         print("mu == 0")
     if std == 0:

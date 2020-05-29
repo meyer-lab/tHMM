@@ -14,7 +14,7 @@ def bern_pdf(x, p):
     """
     # bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0-self.bern_p)**(1-tuple_of_obs[0])
 
-    return (p**x) * ((1.0 - p)**(1 - x))
+    return (p ** x) * ((1.0 - p) ** (1 - x))
 
 
 @njit
@@ -24,7 +24,7 @@ def gamma_pdf(x, a, scale):
     and returns the likelihood of the observation based on the gamma
     probability distribution function.
     """
-    return x**(a - 1.) * np.exp(-1. * x / scale) / gamma(a) / (scale**a)
+    return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / gamma(a) / (scale ** a)
 
 
 def bernoulli_estimator(bern_obs, gammas):

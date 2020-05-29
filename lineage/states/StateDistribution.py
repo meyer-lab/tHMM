@@ -117,6 +117,6 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
 
         return -np.sum(uncens + gamL)
 
-    #res = minimize(LL, [a_hat, scale_hat])
+    # res = minimize(LL, [a_hat, scale_hat])
 
     return a_hat, scale_hat
