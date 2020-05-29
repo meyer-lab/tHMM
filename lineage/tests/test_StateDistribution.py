@@ -5,7 +5,6 @@ import scipy.stats as sp
 from ..states.StateDistribution import (
     StateDistribution,
     gamma_estimator,
-    gamma_pdf,
 )
 from ..states.stateCommon import (
     bern_pdf,
@@ -131,12 +130,3 @@ class TestModel(unittest.TestCase):
         """
         bern_ll = bern_pdf(x=1, p=1)
         self.assertTrue(bern_ll == 1)
-
-    def test_gamma_pdf(self):
-        """
-        Testing the gamma probability density function
-        by comparing the result of the outputted likelihood
-        against a known calculated value.
-        """
-        gamma_ll = gamma_pdf(x=1, a=10, scale=5)
-        self.assertTrue(gamma_ll <= 0.1)
