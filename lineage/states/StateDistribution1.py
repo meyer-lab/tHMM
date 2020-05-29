@@ -49,12 +49,10 @@ class StateDistribution:
             exp_obs = list(unzipped_list_of_tuples_of_obs[1])
             time_censor_obs = list(unzipped_list_of_tuples_of_obs[2])
         except BaseException:
-            bern_obs = []
-            exp_obs = []
-            time_censor_obs = []
+            return self.tHMM_E_init()
 
-        bern_p_estimate = bernoulli_estimator(bern_obs, (self.bern_p,), gammas)
-        exp_beta_estimate = exp_estimator(exp_obs, time_censor_obs, (self.exp_beta,), gammas)
+        bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
+        exp_beta_estimate = exp_estimator(exp_obs, time_censor_obs, gammas)
 
         state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, exp_beta=exp_beta_estimate)
         # } requires the user's attention.
@@ -69,12 +67,6 @@ class StateDistribution:
         """
         return StateDistribution(0.9, 7 * (np.random.uniform()))
 
-    def __repr__(self):
-        """
-        Method to print out a state distribution object.
-        """
-        return "State object w/ parameters: {}, {}.".format(self.bern_p, self.exp_beta)
-
 
 # Because parameter estimation requires that estimators be written or imported,
 # the user should be able to provide
@@ -85,7 +77,7 @@ class StateDistribution:
 # can handle the case where the list of observations is empty.
 
 
-def exp_estimator(exp_obs, time_censor_obs, old_params, gammas):
+def exp_estimator(exp_obs, time_censor_obs, gammas):
     """
     This is a closed-form estimator for the lambda parameter of the
     exponential distribution, which is right-censored.
@@ -100,4 +92,4 @@ def exp_pdf(x, beta):
     and returns the likelihood of the observation based on the exponential
     probability distribution function.
     """
-    return (1. / beta) * np.exp(-1. * x / beta)
+    return (1.0 / beta) * np.exp(-1.0 * x / beta)

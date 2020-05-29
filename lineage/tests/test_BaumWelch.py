@@ -5,7 +5,7 @@ from ..UpwardRecursion import calculate_log_likelihood
 from ..BaumWelch import fit, calculateQuantities
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
-from lineage.figures.figureCommon import pi, T, E
+from ..figures.figureCommon import pi, T, E
 
 
 class TestBW(unittest.TestCase):
