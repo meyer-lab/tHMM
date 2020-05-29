@@ -1,7 +1,8 @@
 """ Common utilities used between states regardless of distribution. """
 
-from numba import njit
+from math import gamma
 import numpy as np
+from numba import njit
 
 
 @njit
@@ -13,10 +14,20 @@ def bern_pdf(x, p):
     """
     # bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0-self.bern_p)**(1-tuple_of_obs[0])
 
-    return (p**x) * ((1.0 - p)**(1 - x))
+    return (p ** x) * ((1.0 - p) ** (1 - x))
 
 
-def bernoulli_estimator(bern_obs, old_params, gammas):
+@njit
+def gamma_pdf(x, a, scale):
+    """
+    This function takes in 1 observation and gamma shape and scale parameters
+    and returns the likelihood of the observation based on the gamma
+    probability distribution function.
+    """
+    return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / gamma(a) / (scale ** a)
+
+
+def bernoulli_estimator(bern_obs, gammas):
     """
     Add up all the 1s and divide by the total length (finding the average).
     """

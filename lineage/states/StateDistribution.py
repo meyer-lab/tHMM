@@ -1,13 +1,11 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
-from math import gamma
 import numpy as np
 import scipy.stats as sp
-from numba import njit
 import scipy.special as sc
 from scipy.optimize import brentq
 
 
-from .stateCommon import bern_pdf, bernoulli_estimator
+from .stateCommon import bern_pdf, gamma_pdf, bernoulli_estimator
 
 
 class StateDistribution:
@@ -38,15 +36,16 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        try:
-            bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
-        except ZeroDivisionError:
-            assert False, f"{tuple_of_obs[0]}, {self.bern_p}"
+        bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p) if tuple_of_obs[2] == 1 else 1.0
 
         try:
-            gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+            if tuple_of_obs[2] == 1:
+                gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+            else:
+                gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)
         except ZeroDivisionError:
-            assert False, f"{tuple_of_obs[1]}, {self.gamma_a}, {self.gamma_scale}"
+            print(f"{tuple_of_obs[1]}, {self.gamma_a}, {self.gamma_scale}")
+            raise
 
         return bern_ll * gamma_ll
 
@@ -59,34 +58,23 @@ class StateDistribution:
         # {
         try:
             bern_obs = list(unzipped_list_of_tuples_of_obs[0])
-            gamma_obs = list(unzipped_list_of_tuples_of_obs[1])
-            gamma_censor_obs = list(unzipped_list_of_tuples_of_obs[2])
+            γ_obs = np.array(unzipped_list_of_tuples_of_obs[1])
+            γ_censor_obs = np.array(unzipped_list_of_tuples_of_obs[2], dtype=bool)
         except BaseException:
-            bern_obs = []
-            gamma_obs = []
-            gamma_censor_obs = []
+            return self.tHMM_E_init()
 
-        bern_p_estimate = bernoulli_estimator(bern_obs, (self.bern_p,), gammas)
-        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs, gamma_censor_obs, (self.gamma_a, self.gamma_scale,), gammas)
+        bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
+        γ_a_hat, γ_scale_hat = gamma_estimator(γ_obs, γ_censor_obs, gammas)
 
-        state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
+        return StateDistribution(bern_p=bern_p_estimate, gamma_a=γ_a_hat, gamma_scale=γ_scale_hat)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
-        return state_estimate_obj
 
     def tHMM_E_init(self):
-        """
-        Initialize a default state distribution.
-        """
+        """ Initialize a default state distribution. """
         return StateDistribution(0.9, 7, 3 + (1 * (np.random.uniform())))
-
-    def __repr__(self):
-        """
-        Method to print out a state distribution object.
-        """
-        return "State object w/ parameters: {}, {}, {}.".format(self.bern_p, self.gamma_a, self.gamma_scale)
 
 
 # Because parameter estimation requires that estimators be written or imported,
@@ -98,7 +86,7 @@ class StateDistribution:
 # can handle the case where the list of observations is empty.
 
 
-def gamma_estimator(gamma_obs, gamma_censor_obs, old_params, gammas):
+def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
     """
     This is a closed-form estimator for two parameters
     of the Gamma distribution, which is corrected for bias.
@@ -114,14 +102,21 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, old_params, gammas):
 
     scale_hat = gammaCor / a_hat
 
+    
+    def LL(x):
+        uncens = sp.gamma.logpdf(gamma_obs, a=x[0], scale=x[1])
+        cens = sp.gamma.logsf(gamma_obs, a=x[0], scale=x[1])
+
+        # If the observation was censored, use the survival function
+        uncens[np.logical_not(gamma_censor_obs)] = cens[np.logical_not(gamma_censor_obs)]
+
+        # If gamma indicates the cell is very unlikely for this state, ignore it
+        gamL = np.log(gammas)
+        uncens[gamL < -9] = 1.0
+        gamL[gamL < -9] = 0
+
+        return -np.sum(uncens + gamL)
+
+    # res = minimize(LL, [a_hat, scale_hat])
+
     return a_hat, scale_hat
-
-
-@njit
-def gamma_pdf(x, a, scale):
-    """
-    This function takes in 1 observation and gamma shape and scale parameters
-    and returns the likelihood of the observation based on the gamma
-    probability distribution function.
-    """
-    return x**(a - 1.) * np.exp(-1. * x / scale) / gamma(a) / (scale**a)

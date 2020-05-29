@@ -34,8 +34,8 @@ state20 = phaseStateDist(0.99, 12, 7, 12, 10)
 state21 = phaseStateDist(0.88, 7, 1, 10, 3)
 E2 = [state20, state21]
 
-min_desired_num_cells = (2**5) - 1
-max_desired_num_cells = (2**9) - 1
+min_desired_num_cells = (2 ** 5) - 1
+max_desired_num_cells = (2 ** 9) - 1
 
 min_min_lineage_length = 10
 
@@ -66,8 +66,13 @@ def getSetup(figsize, gridd):
     """
     Establish figure set-up with subplots.
     """
-    sns.set(style="whitegrid", font_scale=0.7, color_codes=True, palette="colorblind", rc={"grid.linestyle": "dotted",
-                                                                                           "axes.linewidth": 0.6, "axes.prop_cycle": cycler('color', ['#1f77b4', '#ff7f0e', '#1f77b4', '#ff7f0e'])})
+    sns.set(
+        style="whitegrid",
+        font_scale=0.7,
+        color_codes=True,
+        palette="colorblind",
+        rc={"grid.linestyle": "dotted", "axes.linewidth": 0.6, "axes.prop_cycle": cycler("color", ["#1f77b4", "#ff7f0e", "#1f77b4", "#ff7f0e"])},
+    )
 
     # Setup plotting space and grid
     f = plt.figure(figsize=figsize, constrained_layout=True)
@@ -82,10 +87,10 @@ def getSetup(figsize, gridd):
 
 
 def commonAnalyze(list_of_populations, xtype="length", **kwargs):
-    list_of_fpi = kwargs.get('list_of_fpi', [None] * len(list_of_populations))
-    list_of_fT = kwargs.get('list_of_fT', [None] * len(list_of_populations))
-    list_of_fE = kwargs.get('list_of_fE', [None] * len(list_of_populations))
-    parallel = kwargs.get('parallel', True)
+    list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
+    list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
+    list_of_fE = kwargs.get("list_of_fE", [None] * len(list_of_populations))
+    parallel = kwargs.get("parallel", True)
     # Analyzing the lineages in the list of populations (parallelized function)
     output = run_Analyze_over(list_of_populations, 2, parallel=parallel, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
 

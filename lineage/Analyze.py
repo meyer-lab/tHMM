@@ -76,9 +76,9 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
     list_of_populations: a list of populations that contain lineages
     num_states: an integer number of states to identify (a hyper-parameter of our model)
     """
-    list_of_fpi = kwargs.get('list_of_fpi', [None] * len(list_of_populations))
-    list_of_fT = kwargs.get('list_of_fT', [None] * len(list_of_populations))
-    list_of_fE = kwargs.get('list_of_fE', [None] * len(list_of_populations))
+    list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
+    list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
+    list_of_fE = kwargs.get("list_of_fE", [None] * len(list_of_populations))
     output = []
     if parallel:
         exe = ProcessPoolExecutor()
