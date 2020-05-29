@@ -58,15 +58,13 @@ class StateDistribution:
         # {
         try:
             bern_obs = list(unzipped_list_of_tuples_of_obs[0])
-            gamma_obs = np.array(unzipped_list_of_tuples_of_obs[1])
-            gamma_censor_obs = np.array(unzipped_list_of_tuples_of_obs[2], dtype=bool)
+            γ_obs = np.array(unzipped_list_of_tuples_of_obs[1])
+            γ_censor_obs = np.array(unzipped_list_of_tuples_of_obs[2], dtype=bool)
         except BaseException:
-            bern_obs = []
-            gamma_obs = np.array([])
-            gamma_censor_obs = np.array([], dtype=bool)
+            return self.tHMM_E_init()
 
         bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
-        γ_a_hat, γ_scale_hat = gamma_estimator(gamma_obs, gamma_censor_obs, gammas)
+        γ_a_hat, γ_scale_hat = gamma_estimator(γ_obs, γ_censor_obs, gammas)
         
         return StateDistribution(bern_p=bern_p_estimate, gamma_a=γ_a_hat, gamma_scale=γ_scale_hat)
         # } requires the user's attention.
@@ -75,9 +73,7 @@ class StateDistribution:
         # if this function runs again.
 
     def tHMM_E_init(self):
-        """
-        Initialize a default state distribution.
-        """
+        """ Initialize a default state distribution. """
         return StateDistribution(0.9, 7, 3 + (1 * (np.random.uniform())))
 
 
@@ -108,8 +104,8 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
 
     
     def LL(x):
-        uncens = sp.gamma.pdf(gamma_obs, a=x[0], scale=x[1])
-        cens = sp.gamma.sf(gamma_obs, a=x[0], scale=x[1])
+        uncens = sp.gamma.logpdf(gamma_obs, a=x[0], scale=x[1])
+        cens = sp.gamma.logsf(gamma_obs, a=x[0], scale=x[1])
 
         # If the observation was censored, use the survival function
         uncens[np.logical_not(gamma_censor_obs)] = cens[np.logical_not(gamma_censor_obs)]
@@ -119,7 +115,6 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
         uncens[gamL < -9] = 1.0
         gamL[gamL < -9] = 0
 
-        uncens = np.log(uncens)
         return -np.sum(uncens + gamL)
 
     #res = minimize(LL, [a_hat, scale_hat])
