@@ -1,8 +1,6 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
-from math import gamma
 import numpy as np
 import scipy.stats as sp
-from numba import njit
 import scipy.special as sc
 from scipy.optimize import brentq
 
@@ -42,7 +40,7 @@ class StateDistribution:
 
         try:
             if tuple_of_obs[2] == 1:
-                gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+                gamma_ll = sp.gamma.pdf(tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)
             else:
                 gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)
         except ZeroDivisionError:
@@ -110,7 +108,7 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
 
     
     def LL(x):
-        uncens = gamma_pdf(gamma_obs, x[0], x[1])
+        uncens = sp.gamma.pdf(gamma_obs, a=x[0], scale=x[1])
         cens = sp.gamma.sf(gamma_obs, a=x[0], scale=x[1])
 
         # If the observation was censored, use the survival function
@@ -127,13 +125,3 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
     #res = minimize(LL, [a_hat, scale_hat])
 
     return a_hat, scale_hat
-
-
-@njit
-def gamma_pdf(x, a, scale):
-    """
-    This function takes in 1 observation and gamma shape and scale parameters
-    and returns the likelihood of the observation based on the gamma
-    probability distribution function.
-    """
-    return x**(a - 1.) * np.exp(-1. * x / scale) / gamma(a) / (scale**a)

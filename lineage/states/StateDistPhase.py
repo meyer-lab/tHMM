@@ -1,12 +1,8 @@
 """ State distribution class for separated G1 and G2 phase durations as observation. """
 import numpy as np
 import scipy.stats as sp
-from .StateDistribution import (gamma_estimator,
-                                gamma_pdf,
-                                )
-from .stateCommon import (bern_pdf,
-                          bernoulli_estimator,
-                          )
+from .StateDistribution import gamma_estimator
+from .stateCommon import bern_pdf, bernoulli_estimator
 
 
 class StateDistribution2:
@@ -46,11 +42,11 @@ class StateDistribution2:
         except ZeroDivisionError:
             assert False, f"{tuple_of_obs[0]}, {self.bern_p}"
         try:
-            gamma_llG1 = gamma_pdf(tuple_of_obs[1], self.gamma_a1, self.gamma_scale1)
+            gamma_llG1 = sp.gamma.pdf(tuple_of_obs[1], a=self.gamma_a1, scale=self.gamma_scale1)
         except ZeroDivisionError:
             assert False, f"{tuple_of_obs[1]}, {self.gamma_a1}, {self.gamma_scale1}"
         try:
-            gamma_llG2 = gamma_pdf(tuple_of_obs[2], self.gamma_a2, self.gamma_scale2)
+            gamma_llG2 = sp.gamma.pdf(tuple_of_obs[2], a=self.gamma_a2, scale=self.gamma_scale2)
         except ZeroDivisionError:
             assert False, f"{tuple_of_obs[2]}, {self.gamma_a2}, {self.gamma_scale2}"
 
