@@ -39,12 +39,15 @@ class StateDistribution:
         # the individual observation likelihoods.
 
         try:
-            bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
+            if tuple_of_obs[2] == 1:
+                bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
+            else:
+                bern_ll = 1.0
         except ZeroDivisionError:
             assert False, f"{tuple_of_obs[0]}, {self.bern_p}"
 
         try:
-            if tuple_of_obs[1] == 1:
+            if tuple_of_obs[2] == 1:
                 gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
             else:
                 gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)
