@@ -61,12 +61,6 @@ class StateDistribution:
         """
         return StateDistribution(10, 1 + 10 * (np.random.uniform()))
 
-    def __repr__(self):
-        """
-        Method to print out a state distribution object.
-        """
-        return "State object w/ parameters: {}, {}.".format(self.norm_loc, self.norm_scale)
-
 
 # Because parameter estimation requires that estimators be written or imported,
 # the user should be able to provide

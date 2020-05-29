@@ -90,9 +90,3 @@ class StateDistribution2:
         Initialize a default state distribution.
         """
         return StateDistribution2(0.9, 7, 3 + (1 * (np.random.uniform())), 14, 6 + (1 * (np.random.uniform())))
-
-    def __repr__(self):
-        """
-        Method to print out a state distribution object.
-        """
-        return f"State object w/ parameters: {self.bern_p}, {self.gamma_a1}, {self.gamma_scale1}, {self.gamma_a2}, {self.gamma_scale2}."
