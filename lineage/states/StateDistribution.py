@@ -5,7 +5,7 @@ import scipy.special as sc
 from scipy.optimize import brentq
 
 
-from .stateCommon import bern_pdf, bernoulli_estimator
+from .stateCommon import bern_pdf, gamma_pdf, bernoulli_estimator
 
 
 class StateDistribution:
@@ -40,7 +40,7 @@ class StateDistribution:
 
         try:
             if tuple_of_obs[2] == 1:
-                gamma_ll = sp.gamma.pdf(tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)
+                gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
             else:
                 gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)
         except ZeroDivisionError:
@@ -65,7 +65,7 @@ class StateDistribution:
 
         bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
         γ_a_hat, γ_scale_hat = gamma_estimator(γ_obs, γ_censor_obs, gammas)
-        
+
         return StateDistribution(bern_p=bern_p_estimate, gamma_a=γ_a_hat, gamma_scale=γ_scale_hat)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters

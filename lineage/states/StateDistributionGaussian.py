@@ -44,7 +44,7 @@ class StateDistribution:
         try:
             norm_obs = list(unzipped_list_of_tuples_of_obs[0])
         except BaseException:
-            norm_obs = []
+            self.tHMM_E_init()
 
         norm_loc_estimate, norm_scale_estimate = norm_estimator(norm_obs, gammas)
 
