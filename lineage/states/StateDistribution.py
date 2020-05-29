@@ -38,11 +38,7 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        try:
-            bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p) if tuple_of_obs[2] == 1 else 1.0
-        except ZeroDivisionError:
-            print(f"{tuple_of_obs[0]}, {self.bern_p}")
-            raise
+        bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p) if tuple_of_obs[2] == 1 else 1.0
 
         try:
             if tuple_of_obs[2] == 1:
