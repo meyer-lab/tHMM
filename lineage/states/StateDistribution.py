@@ -102,7 +102,6 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
 
     scale_hat = gammaCor / a_hat
 
-    
     def LL(x):
         uncens = sp.gamma.logpdf(gamma_obs, a=x[0], scale=x[1])
         cens = sp.gamma.logsf(gamma_obs, a=x[0], scale=x[1])
