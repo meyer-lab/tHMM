@@ -1,12 +1,8 @@
 """ State distribution class for separated G1 and G2 phase durations as observation. """
 import numpy as np
 import scipy.stats as sp
-from .StateDistribution import (gamma_estimator,
-                                gamma_pdf,
-                                )
-from .stateCommon import (bern_pdf,
-                          bernoulli_estimator,
-                          )
+from .StateDistribution import gamma_estimator
+from .stateCommon import bern_pdf, bernoulli_estimator, gamma_pdf
 
 
 class StateDistribution2:
@@ -41,10 +37,8 @@ class StateDistribution2:
         # In our example, we assume the observation's are uncorrelated across the dimensions (across the different
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
-        try:
-            bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
-        except ZeroDivisionError:
-            assert False, f"{tuple_of_obs[0]}, {self.bern_p}"
+        bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
+
         try:
             gamma_llG1 = gamma_pdf(tuple_of_obs[1], self.gamma_a1, self.gamma_scale1)
         except ZeroDivisionError:
@@ -69,14 +63,11 @@ class StateDistribution2:
             gamma_obsG2 = list(unzipped_list_of_tuples_of_obs[2])
             gamma_censor_obs = list(unzipped_list_of_tuples_of_obs[3])
         except BaseException:
-            bern_obs = []
-            gamma_obsG1 = []
-            gamma_obsG2 = []
-            gamma_censor_obs = []
+            self.tHMM_E_init()
 
-        bern_p_estimate = bernoulli_estimator(bern_obs, (self.bern_p,), gammas)
-        gamma_a1_estimate, gamma_scale1_estimate = gamma_estimator(gamma_obsG1, gamma_censor_obs, (self.gamma_a1, self.gamma_scale1,), gammas)
-        gamma_a2_estimate, gamma_scale2_estimate = gamma_estimator(gamma_obsG2, gamma_censor_obs, (self.gamma_a2, self.gamma_scale2,), gammas)
+        bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
+        gamma_a1_estimate, gamma_scale1_estimate = gamma_estimator(gamma_obsG1, gamma_censor_obs, gammas)
+        gamma_a2_estimate, gamma_scale2_estimate = gamma_estimator(gamma_obsG2, gamma_censor_obs, gammas)
         state_estimate_obj = StateDistribution2(bern_p=bern_p_estimate, gamma_a1=gamma_a1_estimate, gamma_scale1=gamma_scale1_estimate, gamma_a2=gamma_a2_estimate, gamma_scale2=gamma_scale2_estimate)
 
         # } requires the user's attention.
@@ -90,9 +81,3 @@ class StateDistribution2:
         Initialize a default state distribution.
         """
         return StateDistribution2(0.9, 7, 3 + (1 * (np.random.uniform())), 14, 6 + (1 * (np.random.uniform())))
-
-    def __repr__(self):
-        """
-        Method to print out a state distribution object.
-        """
-        return "State object w/ parameters: {}, {}, {}.".format(self.bern_p, self.gamma_a1, self.gamma_scale1, self.gamma_a2, self.gamma_scale2)

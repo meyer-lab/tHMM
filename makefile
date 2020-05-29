@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 .PHONY: clean test testprofile testcover docs
 
-all: output/manuscript.html coverage.xml pylint.log spell.txt
+all: output/manuscript.html pylint.log spell.txt
 
 flist = 0 1 2 3 4 5 6 7 8 9 12 13 14 15 23
 
@@ -51,9 +51,6 @@ test: venv
 
 spell.txt: manuscript/*.md
 	pandoc --lua-filter common/templates/spell.lua manuscript/*.md | sort | uniq -ic > spell.txt
-
-coverage.xml: venv
-	. venv/bin/activate; pytest --junitxml=junit.xml --cov=lineage --cov-report xml:coverage.xml
 
 testprofile: venv
 	. venv/bin/activate && python3 -m cProfile -o profile /usr/local/bin/pytest
