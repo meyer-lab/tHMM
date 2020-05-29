@@ -4,7 +4,7 @@ import numpy as np
 import scipy.stats as sp
 from numba import njit
 import scipy.special as sc
-from scipy.optimize import brentq, minimize
+from scipy.optimize import brentq
 
 
 from .stateCommon import bern_pdf, bernoulli_estimator
@@ -39,10 +39,7 @@ class StateDistribution:
         # the individual observation likelihoods.
 
         try:
-            if tuple_of_obs[2] == 1:
-                bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
-            else:
-                bern_ll = 1.0
+            bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p) if tuple_of_obs[2] == 1 else 1.0
         except ZeroDivisionError:
             print(f"{tuple_of_obs[0]}, {self.bern_p}")
             raise
@@ -67,22 +64,21 @@ class StateDistribution:
         # {
         try:
             bern_obs = list(unzipped_list_of_tuples_of_obs[0])
-            gamma_obs = list(unzipped_list_of_tuples_of_obs[1])
-            gamma_censor_obs = list(unzipped_list_of_tuples_of_obs[2])
+            gamma_obs = np.array(unzipped_list_of_tuples_of_obs[1])
+            gamma_censor_obs = np.array(unzipped_list_of_tuples_of_obs[2], dtype=bool)
         except BaseException:
             bern_obs = []
-            gamma_obs = []
-            gamma_censor_obs = []
+            gamma_obs = np.array([])
+            gamma_censor_obs = np.array([], dtype=bool)
 
-        bern_p_estimate = bernoulli_estimator(bern_obs, (self.bern_p,), gammas)
-        gamma_a_estimate, gamma_scale_estimate = gamma_estimator(gamma_obs, gamma_censor_obs, gammas)
-
-        state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, gamma_a=gamma_a_estimate, gamma_scale=gamma_scale_estimate)
+        bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
+        γ_a_hat, γ_scale_hat = gamma_estimator(gamma_obs, gamma_censor_obs, gammas)
+        
+        return StateDistribution(bern_p=bern_p_estimate, gamma_a=γ_a_hat, gamma_scale=γ_scale_hat)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
-        return state_estimate_obj
 
     def tHMM_E_init(self):
         """
@@ -122,15 +118,13 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
 
     scale_hat = gammaCor / a_hat
 
-    gamma_obs = np.array(gamma_obs)
-    gamma_censor_obs = np.array(gamma_censor_obs)
     
     def LL(x):
         uncens = gamma_pdf(gamma_obs, x[0], x[1])
         cens = sp.gamma.sf(gamma_obs, a=x[0], scale=x[1])
 
         # If the observation was censored, use the survival function
-        uncens[gamma_censor_obs == 0] = cens[gamma_censor_obs == 0]
+        uncens[np.logical_not(gamma_censor_obs)] = cens[np.logical_not(gamma_censor_obs)]
 
         # If gamma indicates the cell is very unlikely for this state, ignore it
         gamL = np.log(gammas)
@@ -140,9 +134,9 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
         uncens = np.log(uncens)
         return -np.sum(uncens + gamL)
 
-    res = minimize(LL, [a_hat, scale_hat])
+    #res = minimize(LL, [a_hat, scale_hat])
 
-    return res.x[0], res.x[1]
+    return a_hat, scale_hat
 
 
 @njit

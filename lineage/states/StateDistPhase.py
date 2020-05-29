@@ -74,9 +74,9 @@ class StateDistribution2:
             gamma_obsG2 = []
             gamma_censor_obs = []
 
-        bern_p_estimate = bernoulli_estimator(bern_obs, (self.bern_p,), gammas)
-        gamma_a1_estimate, gamma_scale1_estimate = gamma_estimator(gamma_obsG1, gamma_censor_obs, (self.gamma_a1, self.gamma_scale1,), gammas)
-        gamma_a2_estimate, gamma_scale2_estimate = gamma_estimator(gamma_obsG2, gamma_censor_obs, (self.gamma_a2, self.gamma_scale2,), gammas)
+        bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
+        gamma_a1_estimate, gamma_scale1_estimate = gamma_estimator(gamma_obsG1, gamma_censor_obs, gammas)
+        gamma_a2_estimate, gamma_scale2_estimate = gamma_estimator(gamma_obsG2, gamma_censor_obs, gammas)
         state_estimate_obj = StateDistribution2(bern_p=bern_p_estimate, gamma_a1=gamma_a1_estimate, gamma_scale1=gamma_scale1_estimate, gamma_a2=gamma_a2_estimate, gamma_scale2=gamma_scale2_estimate)
 
         # } requires the user's attention.
@@ -95,4 +95,4 @@ class StateDistribution2:
         """
         Method to print out a state distribution object.
         """
-        return "State object w/ parameters: {}, {}, {}.".format(self.bern_p, self.gamma_a1, self.gamma_scale1, self.gamma_a2, self.gamma_scale2)
+        return f"State object w/ parameters: {self.bern_p}, {self.gamma_a1}, {self.gamma_scale1}, {self.gamma_a2}, {self.gamma_scale2}."
