@@ -3,5 +3,5 @@
 omit = 
   lineage/figures/*
   
- ignore = 
+ignore = 
   lineage/figures/*
