@@ -9,20 +9,17 @@ from .stateCommon import bern_pdf, gamma_pdf, bernoulli_estimator, gamma_estimat
 class StateDistribution:
     def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=3):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
-        self.bern_p = bern_p
-        self.gamma_a = gamma_a
-        self.gamma_scale = gamma_scale
+        self.params = [bern_p, gamma_a, gamma_scale]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
-        bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
-        gamma_obs = sp.gamma.rvs(a=self.gamma_a, scale=self.gamma_scale, size=size)  # gamma observations
+        bern_obs = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
+        gamma_obs = sp.gamma.rvs(a=self.params[1], scale=self.params[2], size=size)  # gamma observations
         time_censor = [1] * len(gamma_obs)  # 1 if observed
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        list_of_tuple_of_obs = list(map(list, zip(bern_obs, gamma_obs, time_censor)))
-        return list_of_tuple_of_obs
+        return list(map(list, zip(bern_obs, gamma_obs, time_censor)))
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
@@ -33,15 +30,15 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p) if tuple_of_obs[2] == 1 else 1.0
+        bern_ll = bern_pdf(tuple_of_obs[0], self.params[0]) if tuple_of_obs[2] == 1 else 1.0
 
         try:
             if tuple_of_obs[2] == 1:
-                gamma_ll = gamma_pdf(tuple_of_obs[1], self.gamma_a, self.gamma_scale)
+                gamma_ll = gamma_pdf(tuple_of_obs[1], self.params[1], self.params[2])
             else:
-                gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.gamma_a, scale=self.gamma_scale)
+                gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.params[1], scale=self.params[2])
         except ZeroDivisionError:
-            print(f"{tuple_of_obs[1]}, {self.gamma_a}, {self.gamma_scale}")
+            print(f"{tuple_of_obs[1]}, {self.params[1]}, {self.params[2]}")
             raise
 
         return bern_ll * gamma_ll
@@ -58,12 +55,11 @@ class StateDistribution:
             γ_obs = np.array(unzipped_list_of_tuples_of_obs[1])
             γ_censor_obs = np.array(unzipped_list_of_tuples_of_obs[2], dtype=bool)
         except BaseException:
-            return StateDistribution()
+            self.params = [0.9, 7, 3]
+            return
 
-        bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
-        γ_a_hat, γ_scale_hat = gamma_estimator(γ_obs, γ_censor_obs, gammas)
-
-        return StateDistribution(bern_p=bern_p_estimate, gamma_a=γ_a_hat, gamma_scale=γ_scale_hat)
+        self.params[0] = bernoulli_estimator(bern_obs, gammas)
+        self.params[1], self.params[2] = gamma_estimator(γ_obs, γ_censor_obs, gammas)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
