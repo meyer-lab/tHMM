@@ -7,7 +7,7 @@ from .stateCommon import bern_pdf, gamma_pdf, bernoulli_estimator, gamma_estimat
 
 
 class StateDistribution:
-    def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=3):
+    def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=4.5):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.params = [bern_p, gamma_a, gamma_scale]
 
