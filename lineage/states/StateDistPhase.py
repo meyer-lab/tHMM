@@ -29,7 +29,7 @@ class StateDistribution2:
         # In our example, we assume the observation's are uncorrelated across the dimensions (across the different
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
-        bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
+        bern_ll = bern_pdf(tuple_of_obs[0], self.params[0])
 
         try:
             gamma_llG1 = gamma_pdf(tuple_of_obs[1], self.params[1], self.params[2])
