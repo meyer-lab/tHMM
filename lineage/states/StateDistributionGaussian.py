@@ -15,7 +15,7 @@ class StateDistribution:
         norm_obs = sp.norm.rvs(loc=self.params[0], scale=self.params[1], size=size)  # normal observations
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        return list(map(list, zip(norm_obs)))
+        return (norm_obs, )
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """

@@ -41,12 +41,10 @@ class TestModel(unittest.TestCase):
         given the number of random variables we want from each distribution,
         that each corresponds to one of the observation types
         """
-        tuple_of_obs = self.E[0].rvs(size=30)
-        bern_obs, gamma_obs, _ = list(zip(*tuple_of_obs))
+        bern_obs, gamma_obs, _ = self.E[0].rvs(size=30)
         self.assertTrue(len(bern_obs) == len(gamma_obs) == 30)
 
-        tuple_of_obs1 = self.E[1].rvs(size=40)
-        bern_obs1, gamma_obs1, _ = list(zip(*tuple_of_obs1))
+        bern_obs1, gamma_obs1, _ = self.E[1].rvs(size=40)
         self.assertTrue(len(bern_obs1) == len(gamma_obs1) == 40)
 
     def test_pdf(self):
@@ -56,15 +54,15 @@ class TestModel(unittest.TestCase):
         (the size == 1 which mean we just have one bernoulli, and one gamma).
         """
         # for stateDist0
-        list_of_tuple_of_obs = self.E[0].rvs(size=1)
-        tuple_of_obs = list_of_tuple_of_obs[0]
-        likelihood = self.E[0].pdf(tuple_of_obs)
+        bobs = self.E[0].rvs(size=1)
+        bobs = (bobs[0][0], bobs[1][0], bobs[2][0])
+        likelihood = self.E[0].pdf(bobs)
         self.assertTrue(0.0 <= likelihood <= 1.0)
 
         # for stateDist1
-        list_of_tuple_of_obs1 = self.E[1].rvs(size=1)
-        tuple_of_obs1 = list_of_tuple_of_obs1[0]
-        likelihood1 = self.E[1].pdf(tuple_of_obs1)
+        bobs = self.E[1].rvs(size=1)
+        bobs = (bobs[0][0], bobs[1][0], bobs[2][0])
+        likelihood1 = self.E[1].pdf(bobs)
         self.assertTrue(0.0 <= likelihood1 <= 1.0)
 
     def test_estimator(self):
@@ -72,6 +70,7 @@ class TestModel(unittest.TestCase):
         A unittest for the estimator function, by generating 150 observatopns for each of the
         distribution functions, we use the estimator and compare. """
         tuples_of_obs = self.E[0].rvs(size=3000)
+        tuples_of_obs = list(map(list, zip(*tuples_of_obs)))
         gammas = np.array([1] * len(tuples_of_obs))
         estimator_obj = deepcopy(self.E[0])
         estimator_obj.estimator(tuples_of_obs, gammas)
