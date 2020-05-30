@@ -7,11 +7,10 @@ from .stateCommon import bern_pdf, bernoulli_estimator
 
 
 class StateDistribution:
-    def __init__(self, bern_p, exp_beta):
+    def __init__(self, bern_p=0.9, exp_beta=7.0):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.bern_p = bern_p
         self.exp_beta = exp_beta
-        self.params = [self.bern_p, self.exp_beta]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
@@ -49,23 +48,16 @@ class StateDistribution:
             exp_obs = list(unzipped_list_of_tuples_of_obs[1])
             time_censor_obs = list(unzipped_list_of_tuples_of_obs[2])
         except BaseException:
-            return self.tHMM_E_init()
+            return StateDistribution()
 
         bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
         exp_beta_estimate = exp_estimator(exp_obs, time_censor_obs, gammas)
 
-        state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, exp_beta=exp_beta_estimate)
+        return StateDistribution(bern_p=bern_p_estimate, exp_beta=exp_beta_estimate)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
-        return state_estimate_obj
-
-    def tHMM_E_init(self):
-        """
-        Initialize a random state distribution.
-        """
-        return StateDistribution(0.9, 7 * (np.random.uniform()))
 
 
 # Because parameter estimation requires that estimators be written or imported,

@@ -1,21 +1,18 @@
 """ State distribution class for separated G1 and G2 phase durations as observation. """
-import numpy as np
 import scipy.stats as sp
-from .StateDistribution import gamma_estimator
-from .stateCommon import bern_pdf, bernoulli_estimator, gamma_pdf
+from .stateCommon import bern_pdf, bernoulli_estimator, gamma_pdf, gamma_estimator
 
 
 class StateDistribution2:
     """ For G1 and G2 separated as observations. """
 
-    def __init__(self, bern_p, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2):  # user has to identify what parameters to use for each state
+    def __init__(self, bern_p=0.9, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.bern_p = bern_p
         self.gamma_a1 = gamma_a1
         self.gamma_scale1 = gamma_scale1
         self.gamma_a2 = gamma_a2
         self.gamma_scale2 = gamma_scale2
-        self.params = [self.bern_p, self.gamma_a1, self.gamma_scale1, self.gamma_a2, self.gamma_scale2]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
@@ -63,7 +60,7 @@ class StateDistribution2:
             gamma_obsG2 = list(unzipped_list_of_tuples_of_obs[2])
             gamma_censor_obs = list(unzipped_list_of_tuples_of_obs[3])
         except BaseException:
-            self.tHMM_E_init()
+            return StateDistribution2()
 
         bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
         gamma_a1_estimate, gamma_scale1_estimate = gamma_estimator(gamma_obsG1, gamma_censor_obs, gammas)
@@ -75,9 +72,3 @@ class StateDistribution2:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
         return state_estimate_obj
-
-    def tHMM_E_init(self):
-        """
-        Initialize a default state distribution.
-        """
-        return StateDistribution2(0.9, 7, 3 + (1 * (np.random.uniform())), 14, 6 + (1 * (np.random.uniform())))
