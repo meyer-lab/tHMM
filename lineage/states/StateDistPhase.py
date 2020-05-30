@@ -57,13 +57,10 @@ class StateDistribution2:
 
         # getting the observations as individual lists
         # {
-        try:
-            bern_obs = list(unzipped_list_of_tuples_of_obs[0])
-            gamma_obsG1 = list(unzipped_list_of_tuples_of_obs[1])
-            gamma_obsG2 = list(unzipped_list_of_tuples_of_obs[2])
-            gamma_censor_obs = list(unzipped_list_of_tuples_of_obs[3])
-        except BaseException:
-            self.tHMM_E_init()
+        bern_obs = list(unzipped_list_of_tuples_of_obs[0])
+        gamma_obsG1 = list(unzipped_list_of_tuples_of_obs[1])
+        gamma_obsG2 = list(unzipped_list_of_tuples_of_obs[2])
+        gamma_censor_obs = list(unzipped_list_of_tuples_of_obs[3])
 
         bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
         gamma_a1_estimate, gamma_scale1_estimate = gamma_estimator(gamma_obsG1, gamma_censor_obs, gammas)

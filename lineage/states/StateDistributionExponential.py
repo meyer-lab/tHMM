@@ -44,12 +44,9 @@ class StateDistribution:
 
         # getting the observations as individual lists
         # {
-        try:
-            bern_obs = list(unzipped_list_of_tuples_of_obs[0])
-            exp_obs = list(unzipped_list_of_tuples_of_obs[1])
-            time_censor_obs = list(unzipped_list_of_tuples_of_obs[2])
-        except BaseException:
-            return self.tHMM_E_init()
+        bern_obs = list(unzipped_list_of_tuples_of_obs[0])
+        exp_obs = list(unzipped_list_of_tuples_of_obs[1])
+        time_censor_obs = list(unzipped_list_of_tuples_of_obs[2])
 
         bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
         exp_beta_estimate = exp_estimator(exp_obs, time_censor_obs, gammas)
