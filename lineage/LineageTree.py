@@ -58,7 +58,7 @@ class LineageTree:
 
         self.full_max_gen, self.full_list_of_gens = max_gen(self.full_lineage)
         self.full_leaves_idx, self.full_leaves = get_leaves(self.full_lineage)
-        if len(self.E[0].rvs(1)[0]) > 1:
+        if len(self.E[0].rvs(1)) > 1:
             assign_times(self)
 
         # Begin censoring:
@@ -123,6 +123,8 @@ class LineageTree:
         """
         cells_in_state = [cell for cell in self.full_lineage if cell.state == state]
         list_of_tuples_of_obs = self.E[state].rvs(size=len(cells_in_state))
+        list_of_tuples_of_obs = list(map(list, zip(*list_of_tuples_of_obs)))
+
         assert len(cells_in_state) == len(list_of_tuples_of_obs)
         for i, cell in enumerate(cells_in_state):
             cell.obs = list_of_tuples_of_obs[i]

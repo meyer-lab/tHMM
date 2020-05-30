@@ -7,22 +7,19 @@ from .stateCommon import bern_pdf, bernoulli_estimator
 
 
 class StateDistribution:
-    def __init__(self, bern_p, exp_beta):
+    def __init__(self, bern_p=0.9, exp_beta=7.0):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
-        self.bern_p = bern_p
-        self.exp_beta = exp_beta
-        self.params = [self.bern_p, self.exp_beta]
+        self.params = [bern_p, exp_beta]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
-        bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
-        exp_obs = sp.expon.rvs(scale=self.exp_beta, size=size)  # gamma observations
+        bern_obs = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
+        exp_obs = sp.expon.rvs(scale=self.params[1], size=size)  # gamma observations
         time_censor = [1] * len(exp_obs)  # 1 if observed
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        list_of_tuple_of_obs = list(map(list, zip(bern_obs, exp_obs, time_censor)))
-        return list_of_tuple_of_obs
+        return bern_obs, exp_obs, time_censor
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
@@ -33,8 +30,8 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
-        exp_ll = exp_pdf(tuple_of_obs[1], self.exp_beta)
+        bern_ll = bern_pdf(tuple_of_obs[0], self.params[0])
+        exp_ll = exp_pdf(tuple_of_obs[1], self.params[1])
         return bern_ll * exp_ll
 
     def estimator(self, list_of_tuples_of_obs, gammas):
@@ -48,21 +45,12 @@ class StateDistribution:
         exp_obs = list(unzipped_list_of_tuples_of_obs[1])
         time_censor_obs = list(unzipped_list_of_tuples_of_obs[2])
 
-        bern_p_estimate = bernoulli_estimator(bern_obs, gammas)
-        exp_beta_estimate = exp_estimator(exp_obs, time_censor_obs, gammas)
-
-        state_estimate_obj = StateDistribution(bern_p=bern_p_estimate, exp_beta=exp_beta_estimate)
+        self.params[0] = bernoulli_estimator(bern_obs, gammas)
+        self.params[1] = exp_estimator(exp_obs, time_censor_obs, gammas)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
-        return state_estimate_obj
-
-    def tHMM_E_init(self):
-        """
-        Initialize a random state distribution.
-        """
-        return StateDistribution(0.9, 7 * (np.random.uniform()))
 
 
 # Because parameter estimation requires that estimators be written or imported,

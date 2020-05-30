@@ -71,7 +71,7 @@ def calculateQuantities(tHMMobj):
     return NF, betas, gammas, LL
 
 
-def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
+def fit(tHMMobj, tolerance=np.spacing(1), max_iter=300):
     """Runs the tHMM function through Baum Welch fitting"""
     num_states = tHMMobj.num_states
 
@@ -109,7 +109,7 @@ def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
             all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
             all_gammas = np.vstack(gammas)
             for state_j in range(tHMMobj.num_states):
-                tHMMobj.estimate.E[state_j] = tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
+                tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
 
         tHMMobj.MSD = tHMMobj.get_Marginal_State_Distributions()
         tHMMobj.EL = tHMMobj.get_Emission_Likelihoods()
