@@ -1,7 +1,4 @@
 [run]
 
 omit = 
-  lineage/figures/*
-  
-ignore = 
-  lineage/figures/*
+  ./lineage/figures/*
