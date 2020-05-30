@@ -50,13 +50,9 @@ class StateDistribution:
 
         # getting the observations as individual lists
         # {
-        try:
-            bern_obs = list(unzipped_list_of_tuples_of_obs[0])
-            γ_obs = np.array(unzipped_list_of_tuples_of_obs[1])
-            γ_censor_obs = np.array(unzipped_list_of_tuples_of_obs[2], dtype=bool)
-        except BaseException:
-            self.params = [0.9, 7, 3]
-            return
+        bern_obs = list(unzipped_list_of_tuples_of_obs[0])
+        γ_obs = np.array(unzipped_list_of_tuples_of_obs[1])
+        γ_censor_obs = np.array(unzipped_list_of_tuples_of_obs[2], dtype=bool)
 
         self.params[0] = bernoulli_estimator(bern_obs, gammas)
         self.params[1], self.params[2] = gamma_estimator(γ_obs, γ_censor_obs, gammas)

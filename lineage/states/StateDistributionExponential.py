@@ -41,13 +41,9 @@ class StateDistribution:
 
         # getting the observations as individual lists
         # {
-        try:
-            bern_obs = list(unzipped_list_of_tuples_of_obs[0])
-            exp_obs = list(unzipped_list_of_tuples_of_obs[1])
-            time_censor_obs = list(unzipped_list_of_tuples_of_obs[2])
-        except BaseException:
-            self.params = [0.9, 7.0]
-            return
+        bern_obs = list(unzipped_list_of_tuples_of_obs[0])
+        exp_obs = list(unzipped_list_of_tuples_of_obs[1])
+        time_censor_obs = list(unzipped_list_of_tuples_of_obs[2])
 
         self.params[0] = bernoulli_estimator(bern_obs, gammas)
         self.params[1] = exp_estimator(exp_obs, time_censor_obs, gammas)

@@ -21,7 +21,7 @@ from .figureCommon import (
     state1,
 )
 from ..LineageTree import LineageTree
-from ..states.StateDistribution import StateDistribution
+from ..states.StateDistributionGamma import StateDistribution
 
 
 def makeFigure():

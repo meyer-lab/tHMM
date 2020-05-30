@@ -34,11 +34,7 @@ class StateDistribution:
 
         # getting the observations as individual lists
         # {
-        try:
-            norm_obs = list(unzipped_list_of_tuples_of_obs[0])
-        except BaseException:
-            self.params = [10.0, 1.0]
-            return
+        norm_obs = list(unzipped_list_of_tuples_of_obs[0])
 
         eps = np.finfo(float).eps
         self.params[0] = (sum(gammas * norm_obs) + eps) / (sum(gammas) + eps)
