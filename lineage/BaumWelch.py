@@ -71,7 +71,7 @@ def calculateQuantities(tHMMobj):
     return NF, betas, gammas, LL
 
 
-def fit(tHMMobj, tolerance=np.spacing(1), max_iter=200):
+def fit(tHMMobj, tolerance=np.spacing(1), max_iter=300):
     """Runs the tHMM function through Baum Welch fitting"""
     num_states = tHMMobj.num_states
 
