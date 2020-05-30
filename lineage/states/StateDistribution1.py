@@ -19,7 +19,7 @@ class StateDistribution:
         time_censor = [1] * len(exp_obs)  # 1 if observed
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        return list(map(list, zip(bern_obs, exp_obs, time_censor)))
+        return bern_obs, exp_obs, time_censor
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
