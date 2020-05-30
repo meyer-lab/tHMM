@@ -10,8 +10,8 @@ import seaborn as sns
 import svgutils.transform as st
 from ..Analyze import run_Results_over, run_Analyze_over
 
-from ..states.StateDistribution import StateDistribution
-from ..states.StateDistribution1 import StateDistribution as expStateDistribution
+from ..states.StateDistributionGamma import StateDistribution
+from ..states.StateDistributionExponential import StateDistribution as expStateDistribution
 from ..states.StateDistPhase import StateDistribution2 as phaseStateDist
 
 # pi: the initial probability vector

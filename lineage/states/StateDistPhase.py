@@ -1,7 +1,7 @@
 """ State distribution class for separated G1 and G2 phase durations as observation. """
 import numpy as np
 import scipy.stats as sp
-from .StateDistribution import gamma_estimator
+from .StateDistributionGamma import gamma_estimator
 from .stateCommon import bern_pdf, bernoulli_estimator, gamma_pdf
 
 

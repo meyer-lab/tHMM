@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 import scipy.stats as sp
-from ..states.StateDistribution import (
+from ..states.StateDistributionGamma import (
     StateDistribution,
     gamma_estimator,
 )
