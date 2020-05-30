@@ -1,4 +1,4 @@
 [run]
 
 omit = 
-  lineage-growth/lineage/figures/*
+  lineage/figures/*
