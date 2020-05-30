@@ -38,7 +38,9 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
 
                     beta_parent = beta_parent_child_func(beta_array=betas[num], T=T, MSD_array=tHMMobj.MSD[num], node_child_n_idx=child_idx)
 
-                    sum_holder = np.matmul(gammas[num][parent_idx, :] / beta_parent, T)
+                    with np.errstate(divide="ignore", invalid="ignore"):
+                        sum_holder = np.matmul(gammas[num][parent_idx, :] / beta_parent, T)
+
                     gammas[num][child_idx, :] = coeffs[child_idx, :] * sum_holder
 
         assert np.all(gammas[num][0, :] == betas[num][0, :])
