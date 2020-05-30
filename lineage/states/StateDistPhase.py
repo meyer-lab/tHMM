@@ -13,9 +13,9 @@ class StateDistribution2:
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
-        bern_obs = sp.bernoulli.rvs(p=self.bern_p, size=size)  # bernoulli observations
-        gamma_obsG1 = sp.gamma.rvs(a=self.gamma_a1, scale=self.gamma_scale1, size=size)  # gamma observations
-        gamma_obsG2 = sp.gamma.rvs(a=self.gamma_a2, scale=self.gamma_scale2, size=size)
+        bern_obs = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
+        gamma_obsG1 = sp.gamma.rvs(a=self.params[1], scale=self.params[2], size=size)  # gamma observations
+        gamma_obsG2 = sp.gamma.rvs(a=self.params[3], scale=self.params[4], size=size)
         time_censor = [1] * (len(gamma_obsG1) + len(gamma_obsG2))
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
@@ -32,13 +32,13 @@ class StateDistribution2:
         bern_ll = bern_pdf(tuple_of_obs[0], self.bern_p)
 
         try:
-            gamma_llG1 = gamma_pdf(tuple_of_obs[1], self.gamma_a1, self.gamma_scale1)
+            gamma_llG1 = gamma_pdf(tuple_of_obs[1], self.params[1], self.params[2])
         except ZeroDivisionError:
-            assert False, f"{tuple_of_obs[1]}, {self.gamma_a1}, {self.gamma_scale1}"
+            assert False, f"{tuple_of_obs[1]}, {self.params[1]}, {self.params[2]}"
         try:
-            gamma_llG2 = gamma_pdf(tuple_of_obs[2], self.gamma_a2, self.gamma_scale2)
+            gamma_llG2 = gamma_pdf(tuple_of_obs[2], self.params[3], self.params[4])
         except ZeroDivisionError:
-            assert False, f"{tuple_of_obs[2]}, {self.gamma_a2}, {self.gamma_scale2}"
+            assert False, f"{tuple_of_obs[2]}, {self.params[3]}, {self.params[4]}"
 
         return bern_ll * gamma_llG1 * gamma_llG2
 
