@@ -1,5 +1,6 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
+from copy import deepcopy
 import numpy as np
 
 
@@ -17,7 +18,7 @@ class estimate:
             self.T = self.fT
         self.E = []
         for _ in range(self.num_states):
-            self.E.append(X[0].E[0].tHMM_E_init())
+            self.E.append(deepcopy(X[0].E[0]))
         if self.fE is not None:
             self.E = self.fE
 
