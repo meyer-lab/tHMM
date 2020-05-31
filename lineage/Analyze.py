@@ -20,15 +20,18 @@ def preAnalyze(X, num_states, max_iter=500, fpi=None, fT=None, fE=None):
     --------
     tHMMobj {obj}:
     """
-    for num_tries in range(1, 4):
+    error_holder = []
+    for num_tries in range(1, 15):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
             fit(tHMMobj, max_iter=max_iter)
             break
         except (AssertionError, ZeroDivisionError, RuntimeError) as error:
-            print(f"Caught: \n {error} \n Retrying fitting.")
-            if num_tries == 3:
-                print("Retried too many times. Exiting.")
+            error_holder.append(error)
+            if num_tries == 14:
+                print(
+                    f"Caught the following errors: \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. Fitting is breaking after trying {num_tries} times. If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue is the estimates of your parameters are returning nonsensible parameters. Consider changing your parameter estimator. "
+                )
                 raise
 
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)
