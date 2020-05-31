@@ -150,20 +150,13 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["switcher_array"] = switcher_array
 
     # Create switcher map based on the minimal entropies in the switcher array
-
-    switcher_map = [None] * tHMMobj.num_states
-
-    for row in range(tHMMobj.num_states):
-        switcher_row = list(switcher_array[row, :])
-        switcher_map[row] = switcher_row.index(min(switcher_row))
-
+    switcher_map = np.argmin(switcher_array, axis=1)
     results_dict["switcher_map"] = switcher_map
 
     # Rearrange the values in the transition matrix
     temp_T = np.copy(tHMMobj.estimate.T)
-    for row_idx in range(tHMMobj.num_states):
-        for col_idx in range(tHMMobj.num_states):
-            temp_T[row_idx, col_idx] = tHMMobj.estimate.T[switcher_map[row_idx], switcher_map[col_idx]]
+    temp_T = temp_T[switcher_map, :]
+    temp_T = temp_T[:, switcher_map]
 
     results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
 
