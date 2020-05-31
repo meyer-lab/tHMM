@@ -106,8 +106,8 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["LL"] = LL
 
     # Calculate the predicted states prior to switching their label
-    true_states = [cell.state for lineage_obj in tHMMobj.X for cell in lineage_obj.output_lineage]
-    pred_states = [state for sublist in pred_states_by_lineage for state in sublist]
+    true_states = np.array([cell.state for lineage_obj in tHMMobj.X for cell in lineage_obj.output_lineage])
+    pred_states = np.array([state for sublist in pred_states_by_lineage for state in sublist])
 
     results_dict["total_number_of_cells"] = len(pred_states)
 
@@ -164,9 +164,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
 
     # Rearrange the values in the pi vector
-    temp_pi = np.copy(tHMMobj.estimate.pi)
-    for val_idx in range(tHMMobj.num_states):
-        temp_pi[val_idx] = tHMMobj.estimate.pi[switcher_map[val_idx]]
+    temp_pi = tHMMobj.estimate.pi[switcher_map]
 
     results_dict["switched_pi_vector"] = temp_pi
     results_dict["pi_vector_norm"] = np.linalg.norm(temp_pi - tHMMobj.X[0].pi)
@@ -189,12 +187,12 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         results_dict["param_trues"].append(tHMMobj.X[0].E[val_idx].params)
 
     # 3. Calculate accuracy after switching states
-    pred_states_switched = [switcher_map[state] for state in pred_states]
+    pred_states_switched = switcher_map[pred_states]
     results_dict["state_counter"] = np.bincount(pred_states_switched)
     results_dict["state_proportions"] = [100 * i / len(pred_states_switched) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
-    results_dict["accuracy_before_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states, true_states)]) / len(true_states)
-    results_dict["accuracy_after_switching"] = 100 * sum([int(i == j) for i, j in zip(pred_states_switched, true_states)]) / len(true_states)
+    results_dict["accuracy_before_switching"] = 100 * np.mean(pred_states == true_states)
+    results_dict["accuracy_after_switching"] = 100 * np.mean(pred_states_switched == true_states)
 
     # 4. Calculate the Wasserstein distance
     obs_by_state_rand_sampled = []
@@ -226,81 +224,6 @@ def run_Results_over(output):
     return results_holder
 
 
-def get_stationary_distribution(transition_matrix):
-    """
-    Obtain the stationary distribution given a transition matrix.
-    The transition matrix should be in the format preferred by Wikipedia.
-    That is, the transition matrix should be square, contain real numbers,
-    and be right stochastic.
-    This implies that the rows of the transition matrix sum to one (not the columns).
-    This also means that the row index (i) represents the state of the previous step,
-    and the column index (j) represents the state of the next step.
-    If the transition matrix is defined as A, then the element of the A matrix
-
-    A[i,j] = P(child = j | parent = i).
-
-    Our goal is to find the stationary distribution vector, p, such that
-
-    pA = p.
-
-    This is equivalent to finding the distribution of states that is invariant
-    to the Markov transition operation.
-    Remark. Due to our transition matrix being right stochastic, the stationary vector
-    is a row-vector which is left-multiplying the transition matrix. Using the transpose
-    can help with the notation.
-
-    Notation:
-    ().T is the transpose of ()
-    * is the matrix multiplication operation
-    I is the identity matrix of size K
-    K() is a vector with K number of (), for example,
-    K0 is a vector with K number of 0s
-    K represents the number of states
-
-    p*A             = p       1
-    (p*A).T         = p.T     2
-    A.T*p.T         = p.T     3
-    A.T*p.T - I*p.T = K0      4
-    (A.T - I)*p.T   = K0      5
-
-    Our goal is to solve this equation. To obtain non-trivial solutions for p
-    and to constrain the problem, we can add the constraint that the elements of
-    p must sum to 1.
-
-    [(A.T - I), K1]*p.T = [K0, 1]      6
-    [(A.T - I), K1]     = B            7
-    B*p.T               = [K0, 1]      8
-    [K0, 1]             = c            9
-    B*p.T               = c           10
-
-    However, this is now an over-determined system of linear equations
-    (B now has more rows than the number of elements (K) in p).
-    Linear equation solvers will be unable to proceed.
-    To ameliorate this, we can use the normal equations.
-
-    B.T*B*p.T = B.T*c     11
-
-    Solving this yields the stationary distribution vector.
-    We can then check that the stationary distribution vector
-    remains unchanged by applying the transition matrix to it
-    and obtain the stationary distribution vector again.
-
-    A.T*p.T=p.T  12
-
-    We return this solution as a row vector.
-    """
-    A = transition_matrix
-    K = A.shape[0]
-    tmp_A = A.T - np.eye(K)  # 5
-    B = np.r_[tmp_A, np.ones((1, K))]  # 7
-    BT_B = np.matmul(B.T, B)
-    c = np.zeros((K + 1, 1))  # 9
-    c[K, 0] = 1
-    p = np.linalg.solve(BT_B, np.matmul(B.T, c)).T  # 11
-    assert np.allclose(np.matmul(transition_matrix.T, p.T), p.T)  # 12
-    return p
-
-
 def getAIC(tHMMobj, LL):
     """
     Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
@@ -324,24 +247,6 @@ def getAIC(tHMMobj, LL):
     AIC_value = -2 * LL + 2 * AIC_degrees_of_freedom
 
     return AIC_value, AIC_degrees_of_freedom
-
-
-def stateLikelihood(tHMMobj):
-    """ We intend to find the likelihood of the states, given observations.
-    With Bayes rule we have: P(z | x) = P(x | z) x P(z) / P(x), in which:
-    P(x|z) := Emission Likelihood (EL),
-    P(z) := Marginal State Distribution (MSD),
-    P(x) := Marginal Observation Distribution (NF)
-    """
-    EL = tHMMobj.get_Emission_Likelihoods()
-    MSD = tHMMobj.get_Marginal_State_Distributions()
-
-    NF, _, _, _ = calculateQuantities(tHMMobj)
-
-    LL = EL[0] * MSD[0]
-    LL[:, 0] = LL[:, 0] / NF[0]
-    LL[:, 1] = LL[:, 1] / NF[0]
-    return LL
 
 
 def LLHelperFunc(T, lineageObj):
