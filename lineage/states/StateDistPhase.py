@@ -15,7 +15,7 @@ class StateDistribution2:
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
         bern_obsG1 = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
-        bern_obsG2 = sp.bernoulli.rvs(p=self.params[1], size=size) 
+        bern_obsG2 = sp.bernoulli.rvs(p=self.params[1], size=size)
         gamma_obsG1 = sp.gamma.rvs(a=self.params[2], scale=self.params[3], size=size)  # gamma observations
         gamma_obsG2 = sp.gamma.rvs(a=self.params[4], scale=self.params[5], size=size)
         time_censor = [1] * (len(gamma_obsG1) + len(gamma_obsG2))
