@@ -4,15 +4,18 @@ import numpy as np
 
 
 class estimate:
-    def __init__(self, X, num_states, fpi=None, fT=None, fE=None):
+    def __init__(self, X, nState, fpi=None, fT=None, fE=None):
         self.fpi = fpi
         self.fT = fT
         self.fE = fE
-        self.num_states = num_states
-        self.pi = np.squeeze(np.random.dirichlet(np.random.rand(num_states), 1).T)
-        if self.fpi is not None:
+        self.num_states = nState
+
+        if self.fpi is None:
+            self.pi = np.full(nState, 1.0 / nState)
+        else:
             self.pi = self.fpi
-        self.T = np.random.dirichlet(np.random.rand(num_states), num_states)
+
+        self.T = np.full((nState, nState), 1.0 / nState)
         if self.fT is not None:
             self.T = self.fT
         self.E = []
@@ -72,7 +75,7 @@ class tHMM:
             MSD_array = np.zeros((len(lineage), self.num_states))  # instantiating N by K array
             MSD_array[0, :] = self.estimate.pi
 
-            np.isclose(np.sum(MSD_array[0]), 1.0)
+            assert np.isclose(np.sum(MSD_array[0]), 1.0)
             MSD.append(MSD_array)
 
         for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
