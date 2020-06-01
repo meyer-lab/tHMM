@@ -15,13 +15,14 @@ class estimate:
         else:
             self.pi = self.fpi
 
-        self.T = np.full((nState, nState), 1.0 / nState)
-        if self.fT is not None:
+        if self.fT is None:
+            self.T = np.full((nState, nState), 1.0 / nState)
+        else:
             self.T = self.fT
-        self.E = []
-        for _ in range(self.num_states):
-            self.E.append(X[0].E[0].__class__())
-        if self.fE is not None:
+
+        if self.fE is None:
+            self.E = [X[0].E[0].__class__() for _ in self.num_states]
+        else:
             self.E = self.fE
 
 
