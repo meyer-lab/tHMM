@@ -17,7 +17,7 @@ class estimate:
             self.pi = self.fpi
 
         if self.fT is None:
-            self.T = np.eye(nState)
+            self.T = np.random.dirichlet(np.random.rand(nState), nState)
         else:
             self.T = self.fT
 
