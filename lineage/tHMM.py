@@ -4,7 +4,7 @@ import numpy as np
 
 
 class estimate:
-    def __init__(self, X, nState, fpi=None, fT=None, fE=None):
+    def __init__(self, X, nState: int, fpi=None, fT=None, fE=None):
         self.fpi = fpi
         self.fT = fT
         self.fE = fE
@@ -16,12 +16,12 @@ class estimate:
             self.pi = self.fpi
 
         if self.fT is None:
-            self.T = np.full((nState, nState), 1.0 / nState)
+            self.T = np.eye(nState)
         else:
             self.T = self.fT
 
         if self.fE is None:
-            self.E = [X[0].E[0].__class__() for _ in self.num_states]
+            self.E = [X[0].E[0].__class__() for _ in range(self.num_states)]
         else:
             self.E = self.fE
 
