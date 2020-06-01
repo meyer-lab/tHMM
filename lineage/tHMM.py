@@ -11,7 +11,8 @@ class estimate:
         self.num_states = nState
 
         if self.fpi is None:
-            self.pi = np.full(nState, 1.0 / nState)
+            self.pi = np.random.rand(nState)
+            self.pi /= np.sum(self.pi)
         else:
             self.pi = self.fpi
 
