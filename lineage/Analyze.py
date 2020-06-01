@@ -9,7 +9,7 @@ from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .tHMM import tHMM
 
 
-def preAnalyze(X, num_states, max_iter=500, fpi=None, fT=None, fE=None):
+def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     """Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
     Args:
     -----
@@ -24,7 +24,7 @@ def preAnalyze(X, num_states, max_iter=500, fpi=None, fT=None, fE=None):
     for num_tries in range(1, 15):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            fit(tHMMobj, max_iter=max_iter)
+            fit(tHMMobj)
             break
         except (AssertionError, ZeroDivisionError, RuntimeError) as error:
             error_holder.append(error)
@@ -43,19 +43,20 @@ def preAnalyze(X, num_states, max_iter=500, fpi=None, fT=None, fE=None):
     return tHMMobj, pred_states_by_lineage, LL
 
 
-def Analyze(X, num_states, max_iter=500, fpi=None, fT=None, fE=None):
+def Analyze(X, num_states, fpi=None, fT=None, fE=None, restart=False):
     """
     Analyze runs several for loops runnning our model for a given number of states
     given an input population (a list of lineages).
     """
-    tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, num_states, max_iter=max_iter, fpi=fpi, fT=fT, fE=fE)
+    tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
 
-    for _ in range(1, 5):
-        tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, num_states, max_iter=max_iter, fpi=fpi, fT=fT, fE=fE)
-        if sum(tmp_LL) > sum(LL):
-            tHMMobj = tmp_tHMMobj
-            pred_states_by_lineage = tmp_pred_states_by_lineage
-            LL = tmp_LL
+    if restart:
+        for _ in range(1, 5):
+            tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
+            if sum(tmp_LL) > sum(LL):
+                tHMMobj = tmp_tHMMobj
+                pred_states_by_lineage = tmp_pred_states_by_lineage
+                LL = tmp_LL
 
     return tHMMobj, pred_states_by_lineage, LL
 
