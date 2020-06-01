@@ -43,20 +43,19 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     return tHMMobj, pred_states_by_lineage, LL
 
 
-def Analyze(X, num_states, fpi=None, fT=None, fE=None, restart=False):
+def Analyze(X, num_states, fpi=None, fT=None, fE=None):
     """
     Analyze runs several for loops runnning our model for a given number of states
     given an input population (a list of lineages).
     """
     tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
 
-    if restart:
-        for _ in range(1, 5):
-            tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
-            if sum(tmp_LL) > sum(LL):
-                tHMMobj = tmp_tHMMobj
-                pred_states_by_lineage = tmp_pred_states_by_lineage
-                LL = tmp_LL
+    for _ in range(1, 2):
+        tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
+        if sum(tmp_LL) > sum(LL):
+            tHMMobj = tmp_tHMMobj
+            pred_states_by_lineage = tmp_pred_states_by_lineage
+            LL = tmp_LL
 
     return tHMMobj, pred_states_by_lineage, LL
 
