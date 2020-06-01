@@ -53,7 +53,7 @@ class tHMM:
         state k, that is, each value in the N by K MSD array for each lineage is
         the probability
 
-        P(z_n = k),
+        :math:`P(z_n = k)`,
 
         for all z_n in the hidden state tree
         and for all k in the total number of discrete states. Each MSD array is
@@ -95,7 +95,7 @@ class tHMM:
 
         Each element in this N by K matrix represents the probability
 
-        P(x_n = x | z_n = k),
+        :math:`P(x_n = x | z_n = k)`,
 
         for all x_n and z_n in our observed and hidden state tree
         and for all possible discrete states k.
