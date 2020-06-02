@@ -76,7 +76,7 @@ class TestModel(unittest.TestCase):
         t = self.t
         t3 = self.t3
         EL = get_Emission_Likelihoods(t)
-        EL3 = t3.get_Emission_Likelihoods(t3)
+        EL3 = get_Emission_Likelihoods(t3)
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
         self.assertLessEqual(len(EL3), 50)  # there are <=50 lineages in the population
         for ind, ELlin in enumerate(EL):

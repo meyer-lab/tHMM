@@ -7,6 +7,7 @@ from .UpwardRecursion import (
     get_leaf_Normalizing_Factors,
     get_leaf_betas,
     get_nonleaf_NF_and_betas,
+    beta_parent_child_func,
 )
 
 from .DownwardRecursion import (
