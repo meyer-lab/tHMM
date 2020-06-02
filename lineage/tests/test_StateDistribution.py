@@ -7,6 +7,8 @@ from ..states.StateDistributionGamma import (
     StateDistribution,
     gamma_estimator,
 )
+from ..states.StateDistPhase import StateDistribution2 as StateDistPhase
+from ..states.StateDistributionGaussian import StateDistribution as StateDistGaussian
 from ..states.stateCommon import (
     bern_pdf,
     gamma_pdf,
@@ -26,14 +28,18 @@ class TestModel(unittest.TestCase):
         self.pi = np.array([0.75, 0.25])
         self.T = np.array([[0.85, 0.15], [0.20, 0.80]])
 
-        # bern, gamma_a, gamma_scale
+        # Emissions
         self.E = [StateDistribution(0.99, 20, 5), StateDistribution(0.80, 10, 1)]
+        self.E2 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.8, 0.75, 10, 2, 15, 4)]
+        self.E3 = [StateDistGaussian(10.0, 1.0), StateDistGaussian(15.0, 2.0)]
 
         # creating two lineages, one with False for pruning, one with True.
         self.lineage = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
         self.lineage2 = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 5.5) - 1, censor_condition=2, desired_experiment_time=50)
         self.lineage3 = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800)
         self.population = [LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800) for i in range(50)]
+        self.lineage_E2 = LineageTree(self.pi, self.T, self.E2, desired_num_cells=(2 ** 11) - 1) # 1 lin unconsored for G1/G2 separated obs.
+        self.lineage_E3 = LineageTree(self.pi, self.T, self.E3, desired_num_cells=(2 ** 11) - 1) # 1 lin unconsored for Gaussian observations
 
     def test_rvs(self):
         """
@@ -46,6 +52,9 @@ class TestModel(unittest.TestCase):
 
         bern_obs1, gamma_obs1, _ = self.E[1].rvs(size=40)
         self.assertTrue(len(bern_obs1) == len(gamma_obs1) == 40)
+
+        bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, _ = self.E2[0].rvs(size=50)
+        self.assertTrue(len(bern_obsG1) == len(bern_obsG2) == len(gamma_obsG1) == len(gamma_obsG2) == 50)
 
     def test_pdf(self):
         """
@@ -67,18 +76,44 @@ class TestModel(unittest.TestCase):
 
     def test_estimator(self):
         """
-        A unittest for the estimator function, by generating 150 observatopns for each of the
+        A unittest for the estimator function, by generating 3000 observatons for each of the
         distribution functions, we use the estimator and compare. """
+        # Gamma dist.
         tuples_of_obs = self.E[0].rvs(size=3000)
         tuples_of_obs = list(map(list, zip(*tuples_of_obs)))
         gammas = np.array([1] * len(tuples_of_obs))
         estimator_obj = deepcopy(self.E[0])
         estimator_obj.estimator(tuples_of_obs, gammas)
 
-        # here we check the estimated parameters to be close
+        # G1/G2 separated Gamma dist.
+        tuples_of_obsPhase = self.E2[0].rvs(size=3000)
+        tuples_of_obsPhase = list(map(list, zip(*tuples_of_obsPhase)))
+        gammas = np.array([1] * len(tuples_of_obsPhase))
+        estimator_objPhase = deepcopy(self.E2[0])
+        estimator_objPhase.estimator(tuples_of_obsPhase, gammas)
+
+        # Gaussian Dist.
+        tuples_of_obsGaus = self.E3[0].rvs(size=3000)
+        tuples_of_obsGaus = list(map(list, zip(*tuples_of_obsGaus)))
+        gammas = np.array([1] * len(tuples_of_obsGaus))
+        estimator_objGaus = deepcopy(self.E3[0])
+        estimator_objGaus.estimator(tuples_of_obsGaus, gammas)
+
+        # here we check the estimated parameters to be close for Gamma distribution
         self.assertTrue(0.0 <= abs(estimator_obj.params[0] - self.E[0].params[0]) <= 0.1)
         self.assertTrue(0.0 <= abs(estimator_obj.params[1] - self.E[0].params[1]) <= 3.0)
         self.assertTrue(0.0 <= abs(estimator_obj.params[2] - self.E[0].params[2]) <= 3.0)
+
+        # For StateDistPhase
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[0] - self.E2[0].params[0]) <= 0.1)
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[1] - self.E2[0].params[1]) <= 0.1)
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[2] - self.E2[0].params[2]) <= 3.0)
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[3] - self.E2[0].params[3]) <= 2.0)
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[4] - self.E2[0].params[4]) <= 3.0)
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[5] - self.E2[0].params[5]) <= 2.0)
+
+        # For Gaussian Distribution
+        self.assertTrue(0.0 <= abs(estimator_objGaus.params[0] - self.E3[0].params[0]) <= 0.1)
 
     def test_censor(self):
         """
