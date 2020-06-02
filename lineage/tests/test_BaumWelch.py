@@ -1,8 +1,7 @@
 """ Unit test file. """
 import unittest
 import numpy as np
-from ..UpwardRecursion import calculate_log_likelihood
-from ..BaumWelch import fit, calculateQuantities
+from ..BaumWelch import do_E_step, calculate_log_likelihood
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 from ..states.StateDistPhase import StateDistribution2 as StateDistPhase
@@ -30,20 +29,22 @@ class TestBW(unittest.TestCase):
 
         # Test cases below
         # Get the likelihoods before fitting
-        _, _, _, LL_before = calculateQuantities(tHMMobj)
+        _, _, NF, _, _ = do_E_step(tHMMobj)
+        LL_before = calculate_log_likelihood(NF)
         self.assertTrue(np.isfinite(LL_before))
         # For 3 states
-        _, _, _, LL_before3 = calculateQuantities(tHMMobj3s)
+        _, _, NF3s, _, _ = do_E_step(tHMMobj3s)
+        LL_before3 = calculate_log_likelihood(NF3s)
         self.assertTrue(np.isfinite(LL_before3))
 
         # Get the likelihoods after fitting
-        _, NF_after, _, _, new_LL_list_after = fit(tHMMobj, max_iter=4)
+        _, NF_after, _, _, new_LL_list_after = tHMMobj.fit(max_iter=4)
         LL_after = calculate_log_likelihood(NF_after)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
 
         # for 3 states
-        _, NF_after3, _, _, new_LL_list_after3 = fit(tHMMobj3s, max_iter=4)
+        _, NF_after3, _, _, new_LL_list_after3 = tHMMobj3s.fit(max_iter=4)
         LL_after3 = calculate_log_likelihood(NF_after3)
         self.assertGreater(LL_after3, LL_before3)
 
