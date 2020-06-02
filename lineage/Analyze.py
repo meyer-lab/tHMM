@@ -4,7 +4,7 @@ import random
 import numpy as np
 from sklearn import metrics
 from scipy.stats import entropy, wasserstein_distance
-from .BaumWelch import fit, calculateQuantities
+from .BaumWelch import do_E_step, calculate_log_likelihood
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .tHMM import tHMM
 
@@ -24,7 +24,7 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     for num_tries in range(1, 15):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            fit(tHMMobj)
+            tHMMobj.fit()
             break
         except (AssertionError, ZeroDivisionError, RuntimeError) as error:
             error_holder.append(error)
@@ -38,7 +38,8 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
     pred_states_by_lineage = Viterbi(tHMMobj, deltas, state_ptrs)
 
-    _, _, _, LL = calculateQuantities(tHMMobj)
+    _, _, NF, _, _ = do_E_step(tHMMobj)
+    LL = calculate_log_likelihood(NF)
 
     return tHMMobj, pred_states_by_lineage, LL
 
