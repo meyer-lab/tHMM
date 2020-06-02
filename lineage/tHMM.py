@@ -51,26 +51,26 @@ class tHMM:
         self.estimate = estimate(self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
 
     def fit(self, tolerance=np.spacing(1), max_iter=100):
-    """Runs the tHMM function through Baum Welch fitting"""
+        """Runs the tHMM function through Baum Welch fitting"""
 
-    # first E step
-    MSD, EL, NF, betas, gammas = do_E_step(self)
-    new_LL = calculate_log_likelihood(NF)
-
-    # first stopping condition check
-    for iter_number in range(max_iter):
-        old_LL = new_LL
-
-        est_pi, est_T, est_E = do_M_step(self, MSD, betas, gammas)
+        # first E step
         MSD, EL, NF, betas, gammas = do_E_step(self)
         new_LL = calculate_log_likelihood(NF)
 
-        diff = np.linalg.norm(old_LL - new_LL)
+        # first stopping condition check
+        for iter_number in range(max_iter):
+            old_LL = new_LL
 
-        if diff < tolerance:
-            break
+            est_pi, est_T, est_E = do_M_step(self, MSD, betas, gammas)
+            MSD, EL, NF, betas, gammas = do_E_step(self)
+            new_LL = calculate_log_likelihood(NF)
 
-    return self, MSD, EL, NF, betas, gammas, new_LL
+            diff = np.linalg.norm(old_LL - new_LL)
+
+            if diff < tolerance:
+                break
+
+        return self, MSD, EL, NF, betas, gammas, new_LL
 
 
     
