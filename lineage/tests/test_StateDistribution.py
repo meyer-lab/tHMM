@@ -38,8 +38,8 @@ class TestModel(unittest.TestCase):
         self.lineage2 = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 5.5) - 1, censor_condition=2, desired_experiment_time=50)
         self.lineage3 = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800)
         self.population = [LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800) for i in range(50)]
-        self.lineage_E2 = LineageTree(self.pi, self.T, self.E2, desired_num_cells=(2 ** 11) - 1) # 1 lin unconsored for G1/G2 separated obs.
-        self.lineage_E3 = LineageTree(self.pi, self.T, self.E3, desired_num_cells=(2 ** 11) - 1) # 1 lin unconsored for Gaussian observations
+        self.lineage_E2 = LineageTree(self.pi, self.T, self.E2, desired_num_cells=(2 ** 11) - 1)  # 1 lin unconsored for G1/G2 separated obs.
+        self.lineage_E3 = LineageTree(self.pi, self.T, self.E3, desired_num_cells=(2 ** 11) - 1)  # 1 lin unconsored for Gaussian observations
 
     def test_rvs(self):
         """
