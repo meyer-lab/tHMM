@@ -64,7 +64,7 @@ def get_Emission_Likelihoods(tHMMobj):
         EL_array = np.zeros((len(lineage), tHMMobj.num_states))  # instantiating N by K array for each lineage
 
         for current_cell_idx, cell in enumerate(lineage):  # for each cell in the lineage
-            for state_k in range(self.num_states):  # for each state
+            for state_k in range(tHMMobj.num_states):  # for each state
                 EL_array[current_cell_idx, state_k] = tHMMobj.estimate.E[state_k].pdf(cell.obs)
 
         EL.append(EL_array)  # append the EL_array for each lineage
@@ -237,4 +237,3 @@ def beta_parent_child_func(beta_array, T, MSD_array, node_child_n_idx):
     # beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
     # P( z_n = k | z_m = j); P(z_n = k)
     return np.matmul(T, beta_array[node_child_n_idx, :] / MSD_array[node_child_n_idx, :])
-    

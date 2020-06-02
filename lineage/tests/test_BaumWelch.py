@@ -46,6 +46,8 @@ class TestBW(unittest.TestCase):
         # for 3 states
         _, NF_after3, _, _, new_LL_list_after3 = tHMMobj3s.fit(max_iter=4)
         LL_after3 = calculate_log_likelihood(NF_after3)
+        self.assertTrue(np.isfinite(LL_after3))
+        self.assertTrue(np.isfinite(new_LL_list_after3))
         self.assertGreater(LL_after3, LL_before3)
 
     def test_step(self):
