@@ -1,7 +1,7 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
 import numpy as np
-from .BaumWelch import do_E_step, do_M_step
+from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step
 
 
 class estimate:
