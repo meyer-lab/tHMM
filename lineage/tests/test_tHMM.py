@@ -23,19 +23,22 @@ class TestModel(unittest.TestCase):
         # Emissions
         self.E = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
         self.X3 = [LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)]
+        
+        self.t = tHMM(self.X, num_states=2)  # build the tHMM class with X
+        self.t3 = tHMM(self.X3, num_states=3) # build the tHMM class for 3 states
 
     def test_init_paramlist(self):
         """
         Make sure paramlist has proper
         labels and sizes.
         """
-        t = tHMM(self.X, num_states=2)  # build the tHMM class with X
-        t3 = tHMM(self.X3, num_states=3) # build the tHMM class for 3 states
+        t = self.t
         self.assertEqual(t.estimate.pi.shape[0], 2)  # make sure shape is num_states
         self.assertEqual(t.estimate.T.shape[0], 2)  # make sure shape is num_states
         self.assertEqual(t.estimate.T.shape[1], 2)  # make sure shape is num_states
         self.assertEqual(len(t.estimate.E), 2)  # make sure shape is num_states
-
+        
+        t3 = self.t3
         self.assertEqual(t3.estimate.pi.shape[0], 3)  # make sure shape is num_states
         self.assertEqual(t3.estimate.T.shape[0], 3)  # make sure shape is num_states
         self.assertEqual(t3.estimate.T.shape[1], 3)  # make sure shape is num_states
@@ -47,8 +50,8 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         """
-        t = tHMM(self.X, num_states=2)  # build the tHMM class with X
-        t3 = tHMM(self.X3, num_states=3) # build the tHMM class for 3 states
+        t = self.t
+        t3 = self.t3
         MSD = t.get_Marginal_State_Distributions()
         MSD3 = t3.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
@@ -66,8 +69,8 @@ class TestModel(unittest.TestCase):
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         """
-        t = tHMM(self.X, num_states=2)  # build the tHMM class with X
-        t3 = tHMM(self.X3, num_states=3) # build the tHMM class for 3 states
+        t = self.t
+        t3 = self.t3
         EL = t.get_Emission_Likelihoods()
         EL3 = t3.get_Emission_Likelihoods()
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
@@ -84,8 +87,8 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         """
-        t = tHMM(self.X, num_states=2)  # build the tHMM class with X
-        t3 = tHMM(self.X3, num_states=3)
+        t = self.t
+        t3 = self.t3
         NF = get_leaf_Normalizing_Factors(t)
         NF3 = get_leaf_Normalizing_Factors(t3)
         self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population
