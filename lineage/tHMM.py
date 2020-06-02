@@ -4,21 +4,26 @@ import numpy as np
 
 
 class estimate:
-    def __init__(self, X, num_states, fpi=None, fT=None, fE=None):
+    def __init__(self, X, nState: int, fpi=None, fT=None, fE=None):
         self.fpi = fpi
         self.fT = fT
         self.fE = fE
-        self.num_states = num_states
-        self.pi = np.squeeze(np.random.dirichlet(np.random.rand(num_states), 1).T)
-        if self.fpi is not None:
+        self.num_states = nState
+
+        if self.fpi is None:
+            self.pi = np.random.rand(nState)
+            self.pi /= np.sum(self.pi)
+        else:
             self.pi = self.fpi
-        self.T = np.random.dirichlet(np.random.rand(num_states), num_states)
-        if self.fT is not None:
+
+        if self.fT is None:
+            self.T = np.random.dirichlet(np.random.rand(nState), nState)
+        else:
             self.T = self.fT
-        self.E = []
-        for _ in range(self.num_states):
-            self.E.append(X[0].E[0].__class__())
-        if self.fE is not None:
+
+        if self.fE is None:
+            self.E = [X[0].E[0].__class__() for _ in range(self.num_states)]
+        else:
             self.E = self.fE
 
 
@@ -53,7 +58,7 @@ class tHMM:
         state k, that is, each value in the N by K MSD array for each lineage is
         the probability
 
-        P(z_n = k),
+        :math:`P(z_n = k)`,
 
         for all z_n in the hidden state tree
         and for all k in the total number of discrete states. Each MSD array is
@@ -72,7 +77,7 @@ class tHMM:
             MSD_array = np.zeros((len(lineage), self.num_states))  # instantiating N by K array
             MSD_array[0, :] = self.estimate.pi
 
-            np.isclose(np.sum(MSD_array[0]), 1.0)
+            assert np.isclose(np.sum(MSD_array[0]), 1.0)
             MSD.append(MSD_array)
 
         for num, lineageObj in enumerate(self.X):  # for each lineage in our Population
@@ -95,7 +100,7 @@ class tHMM:
 
         Each element in this N by K matrix represents the probability
 
-        P(x_n = x | z_n = k),
+        :math:`P(x_n = x | z_n = k)`,
 
         for all x_n and z_n in our observed and hidden state tree
         and for all possible discrete states k.
