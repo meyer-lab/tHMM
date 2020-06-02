@@ -70,7 +70,7 @@ def get_Emission_Likelihoods(tHMMobj):
         EL.append(EL_array)  # append the EL_array for each lineage
     return EL
 
-def get_leaf_Normalizing_Factors(tHMMobj):
+def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
     """
     Normalizing factor (NF) matrix and base case at the leaves.
 
@@ -95,8 +95,6 @@ def get_leaf_Normalizing_Factors(tHMMobj):
 
     sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
     """
-    MSD = tHMMobj.MSD
-    EL = tHMMobj.EL
 
     NF = []  # full Normalizing Factors holder
 
@@ -122,7 +120,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
     return NF
 
 
-def get_leaf_betas(tHMMobj, NF):
+def get_leaf_betas(tHMMobj, MSD, EL, NF):
     """
     beta matrix and base case at the leaves.
 
@@ -150,8 +148,8 @@ def get_leaf_betas(tHMMobj, NF):
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
-        MSD_arr = tHMMobj.MSD[num]  # getting the MSD of the respective lineage
-        EL_arr = tHMMobj.EL[num]  # geting the EL of the respective lineage
+        MSD_arr = MSD[num]  # getting the MSD of the respective lineage
+        EL_arr = EL[num]  # geting the EL of the respective lineage
         NF_arr = NF[num]  # getting the NF of the respective lineage
 
         for _, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
@@ -173,7 +171,7 @@ def get_leaf_betas(tHMMobj, NF):
     return betas
 
 
-def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
+def get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas):
     """
     Traverses through each tree and calculates the
     beta value for each non-leaf cell. The normalizing factors (NFs)
@@ -185,8 +183,8 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
     """
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
-        MSD_array = tHMMobj.MSD[num]  # getting the MSD of the respective lineage
-        EL_array = tHMMobj.EL[num]  # geting the EL of the respective lineage
+        MSD_array = MSD[num]  # getting the MSD of the respective lineage
+        EL_array = EL[num]  # geting the EL of the respective lineage
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
 
         for level in lineageObj.output_list_of_gens[2:][::-1]:  # a reversed list of generations

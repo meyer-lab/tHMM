@@ -20,11 +20,11 @@ def do_E_step(tHMMobj):
     """ Calculate MSD, EL, NF, gamma, beta, LL from tHMM model. """
     MSD = get_Marginal_State_Distributions(tHMMobj)
     EL = get_Emission_Likelihoods(tHMMobj)
-    NF = get_leaf_Normalizing_Factors(tHMMobj)
-    betas = get_leaf_betas(tHMMobj, NF)
-    get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
+    NF = get_leaf_Normalizing_Factors(tHMMobj, MSD, EL)
+    betas = get_leaf_betas(tHMMobj, MSD, EL, NF)
+    get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas)
     gammas = get_root_gammas(tHMMobj, betas)
-    get_nonroot_gammas(tHMMobj, gammas, betas)
+    get_nonroot_gammas(tHMMobj, MSD, gammas, betas)
 
     return MSD, EL, NF, betas, gammas
 
