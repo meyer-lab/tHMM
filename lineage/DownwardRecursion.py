@@ -47,3 +47,19 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
 
     for _, gg in enumerate(gammas):
         assert np.allclose(np.sum(gg, axis=1), 1.0)
+
+
+def sum_nonleaf_gammas(lineageObj, gamma_arr):
+    """
+    Sum of the gammas of the cells that are able to divide, that is,
+    sum the of the gammas of all the nonleaf cells.
+    """
+    holder_wo_leaves = np.zeros(gamma_arr.shape[1])
+    for level in lineageObj.output_list_of_gens[1:]:  # sum the gammas for cells that are transitioning
+        for cell in level:
+            if not cell.isLeaf():
+                cell_idx = lineageObj.output_lineage.index(cell)
+                holder_wo_leaves += gamma_arr[cell_idx, :]
+
+    return holder_wo_leaves
+    
