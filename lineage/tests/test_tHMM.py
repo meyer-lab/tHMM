@@ -27,9 +27,9 @@ class TestModel(unittest.TestCase):
         # Emissions
         self.E = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
         self.X3 = [LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)]
-        
+
         self.t = tHMM(self.X, num_states=2)  # build the tHMM class with X
-        self.t3 = tHMM(self.X3, num_states=3) # build the tHMM class for 3 states
+        self.t3 = tHMM(self.X3, num_states=3)  # build the tHMM class for 3 states
 
     def test_init_paramlist(self):
         """
@@ -41,7 +41,7 @@ class TestModel(unittest.TestCase):
         self.assertEqual(t.estimate.T.shape[0], 2)  # make sure shape is num_states
         self.assertEqual(t.estimate.T.shape[1], 2)  # make sure shape is num_states
         self.assertEqual(len(t.estimate.E), 2)  # make sure shape is num_states
-        
+
         t3 = self.t3
         self.assertEqual(t3.estimate.pi.shape[0], 3)  # make sure shape is num_states
         self.assertEqual(t3.estimate.T.shape[0], 3)  # make sure shape is num_states
@@ -62,9 +62,9 @@ class TestModel(unittest.TestCase):
         self.assertLessEqual(len(MSD3), 50)
         for ind, MSDlin in enumerate(MSD):
             self.assertGreaterEqual(MSDlin.shape[0], 0)  # at least zero cells in each lineage
-            self.assertGreaterEqual(MSD3[ind].shape[0], 0) # at least zero cells in each lineage
+            self.assertGreaterEqual(MSD3[ind].shape[0], 0)  # at least zero cells in each lineage
             self.assertEqual(MSDlin.shape[1], 2)  # there are 2 states for each cell
-            self.assertEqual(MSD3[ind].shape[1], 3) # there are 3 states for each cell
+            self.assertEqual(MSD3[ind].shape[1], 3)  # there are 3 states for each cell
             for node_n in range(MSDlin.shape[0]):
                 self.assertTrue(np.isclose(sum(MSDlin[node_n, :]), 1))  # the rows should sum to 1
 

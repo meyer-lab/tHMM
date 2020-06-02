@@ -10,6 +10,7 @@ from ..figures.figureCommon import pi, T, E
 
 class TestBW(unittest.TestCase):
     """ Unit tests for Baum-Welch methods. """
+
     def setUp(self):
         """ This setup will be used to test the model for the cases with 3 number of states. """
         # ingredients for LineageTree with 3 states
