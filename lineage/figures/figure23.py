@@ -29,7 +29,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((9.333, 6), (2, 4))
+    ax, f = getSetup((7.5, 7.5), (3, 3))
 
     figureMaker2(ax, *accuracy())
 
@@ -87,7 +87,7 @@ def figureMaker2(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Numbe
     ax[i].set_ylabel("Bernoulli $p$")
     ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", alpha=0.5)
     ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", alpha=0.5)
-    ax[i].set_title(r"Bernoulli $p$")
+    ax[i].set_title(r"Bernoulli $p$ G1")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
@@ -95,10 +95,11 @@ def figureMaker2(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Numbe
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].set_ylabel(r"Gamma $k$")
+    ax[i].set_ylim(bottom=0, top=1.02)
+    ax[i].set_ylabel("Bernoulli $p$")
     ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", alpha=0.5)
     ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", alpha=0.5)
-    ax[i].set_title(r"Gamma $k$ G1")
+    ax[i].set_title(r"Bernoulli $p$ G2")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
@@ -106,11 +107,10 @@ def figureMaker2(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Numbe
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].set_ylabel(r"Gamma $\theta$")
-    ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", alpha=0.5, label="State 1")
-    ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", alpha=0.5, label="State 2")
-    ax[i].legend()
-    ax[i].set_title(r"Gamma $\theta$ G1")
+    ax[i].set_ylabel(r"Gamma $k$")
+    ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", alpha=0.5)
+    ax[i].set_title(r"Gamma $k$ G1")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
@@ -118,10 +118,11 @@ def figureMaker2(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Numbe
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 3], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 3], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].set_ylabel(r"Gamma $k$")
-    ax[i].scatter(x, paramTrues[:, 0, 3], marker="_", alpha=0.5)
-    ax[i].scatter(x, paramTrues[:, 1, 3], marker="_", alpha=0.5)
-    ax[i].set_title(r"Gamma $k$ G2")
+    ax[i].set_ylabel(r"Gamma $\theta$")
+    ax[i].scatter(x, paramTrues[:, 0, 3], marker="_", alpha=0.5, label="State 1")
+    ax[i].scatter(x, paramTrues[:, 1, 3], marker="_", alpha=0.5, label="State 2")
+    ax[i].legend()
+    ax[i].set_title(r"Gamma $\theta$ G1")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
@@ -129,9 +130,20 @@ def figureMaker2(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Numbe
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 4], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 4], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].set_ylabel(r"Gamma $k$")
+    ax[i].scatter(x, paramTrues[:, 0, 4], marker="_", alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 1, 4], marker="_", alpha=0.5)
+    ax[i].set_title(r"Gamma $k$ G2")
+    ax[i].grid(linestyle="--")
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
+    i += 1
+    ax[i].set_xlabel(xlabel)
+    ax[i].scatter(x, paramEst[:, 0, 5], edgecolors="k", marker="o", alpha=0.5)
+    ax[i].scatter(x, paramEst[:, 1, 5], edgecolors="k", marker="o", alpha=0.5)
     ax[i].set_ylabel(r"Gamma $\theta$")
-    ax[i].scatter(x, paramTrues[:, 0, 4], marker="_", alpha=0.5, label="State 1")
-    ax[i].scatter(x, paramTrues[:, 1, 4], marker="_", alpha=0.5, label="State 2")
+    ax[i].scatter(x, paramTrues[:, 0, 5], marker="_", alpha=0.5, label="State 1")
+    ax[i].scatter(x, paramTrues[:, 1, 5], marker="_", alpha=0.5, label="State 2")
     ax[i].legend()
     ax[i].set_title(r"Gamma $\theta$ G2")
     ax[i].grid(linestyle="--")
