@@ -177,4 +177,4 @@ def calculate_log_likelihood(NF):
     Calculates log likelihood of NF for each lineage.
     """
     # NF is a list of arrays, an array for each lineage in the population
-    return [sum(np.log(arr)) for arr in NF]
+    return np.array([sum(np.log(arr)) for arr in NF])
