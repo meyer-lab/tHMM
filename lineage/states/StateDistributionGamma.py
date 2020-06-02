@@ -3,19 +3,23 @@ import numpy as np
 import scipy.stats as sp
 
 
+from .stateCommon import bern_pdf, gamma_pdf, bernoulli_estimator, gamma_estimator
+
+
 class StateDistribution:
-    def __init__(self, norm_loc=10.0, norm_scale=1.0):
+    def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=4.5):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
-        assert norm_scale > 0
-        self.params = [norm_loc, norm_scale]
+        self.params = [bern_p, gamma_a, gamma_scale]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
-        norm_obs = sp.norm.rvs(loc=self.params[0], scale=self.params[1], size=size)  # normal observations
+        bern_obs = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
+        gamma_obs = sp.gamma.rvs(a=self.params[1], scale=self.params[2], size=size)  # gamma observations
+        time_censor = [1] * len(gamma_obs)  # 1 if observed
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        return (norm_obs, )
+        return bern_obs, gamma_obs, time_censor
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
@@ -25,7 +29,15 @@ class StateDistribution:
         # In our example, we assume the observation's are uncorrelated across the dimensions (across the different
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
-        return sp.norm.pdf(tuple_of_obs[0], self.params[0], self.params[1])
+
+        bern_ll = bern_pdf(tuple_of_obs[0], self.params[0]) if tuple_of_obs[2] == 1 else 1.0
+
+        if tuple_of_obs[2] == 1:
+            gamma_ll = gamma_pdf(tuple_of_obs[1], self.params[1], self.params[2])
+        else:
+            gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.params[1], scale=self.params[2])
+
+        return bern_ll * gamma_ll
 
     def estimator(self, list_of_tuples_of_obs, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
@@ -34,11 +46,12 @@ class StateDistribution:
 
         # getting the observations as individual lists
         # {
-        norm_obs = list(unzipped_list_of_tuples_of_obs[0])
+        bern_obs = list(unzipped_list_of_tuples_of_obs[0])
+        γ_obs = np.array(unzipped_list_of_tuples_of_obs[1])
+        γ_censor_obs = np.array(unzipped_list_of_tuples_of_obs[2], dtype=bool)
 
-        eps = np.finfo(float).eps
-        self.params[0] = (sum(gammas * norm_obs) + eps) / (sum(gammas) + eps)
-        self.params[1] = ((sum(gammas * (norm_obs - self.params[0]) ** 2) + eps) / (sum(gammas) + eps)) ** 0.5
+        self.params[0] = bernoulli_estimator(bern_obs, gammas)
+        self.params[1], self.params[2] = gamma_estimator(γ_obs, γ_censor_obs, gammas)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated

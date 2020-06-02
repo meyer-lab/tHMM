@@ -4,6 +4,7 @@ import numpy as np
 from ..UpwardRecursion import get_leaf_Normalizing_Factors
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
+from ..states.StateDistPhase import StateDistribution2 as StateDistPhase
 from lineage.figures.figureCommon import pi, T, E
 
 
@@ -16,17 +17,32 @@ class TestModel(unittest.TestCase):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
         # Using an unpruned lineage to avoid unforseen issues
         self.X = [LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)]
+        self.pi = np.array([0.55, 0.35, 0.10])
+        self.T = np.array([[0.75, 0.20, 0.05], [0.1, 0.85, 0.05], [0.1, 0.1, 0.8]])
+
+        # Emissions
+        self.E = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
+        self.X3 = [LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)]
+        
+        self.t = tHMM(self.X, num_states=2)  # build the tHMM class with X
+        self.t3 = tHMM(self.X3, num_states=3) # build the tHMM class for 3 states
 
     def test_init_paramlist(self):
         """
         Make sure paramlist has proper
         labels and sizes.
         """
-        t = tHMM(self.X, num_states=2)  # build the tHMM class with X
+        t = self.t
         self.assertEqual(t.estimate.pi.shape[0], 2)  # make sure shape is num_states
         self.assertEqual(t.estimate.T.shape[0], 2)  # make sure shape is num_states
         self.assertEqual(t.estimate.T.shape[1], 2)  # make sure shape is num_states
         self.assertEqual(len(t.estimate.E), 2)  # make sure shape is num_states
+        
+        t3 = self.t3
+        self.assertEqual(t3.estimate.pi.shape[0], 3)  # make sure shape is num_states
+        self.assertEqual(t3.estimate.T.shape[0], 3)  # make sure shape is num_states
+        self.assertEqual(t3.estimate.T.shape[1], 3)  # make sure shape is num_states
+        self.assertEqual(len(t3.estimate.E), 3)  # make sure shape is num_states
 
     def test_get_MSD(self):
         """
@@ -34,12 +50,17 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         """
-        t = tHMM(self.X, num_states=2)  # build the tHMM class with X
+        t = self.t
+        t3 = self.t3
         MSD = t.get_Marginal_State_Distributions()
+        MSD3 = t3.get_Marginal_State_Distributions()
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
-        for _, MSDlin in enumerate(MSD):
+        self.assertLessEqual(len(MSD3), 50)
+        for ind, MSDlin in enumerate(MSD):
             self.assertGreaterEqual(MSDlin.shape[0], 0)  # at least zero cells in each lineage
+            self.assertGreaterEqual(MSD3[ind].shape[0], 0) # at least zero cells in each lineage
             self.assertEqual(MSDlin.shape[1], 2)  # there are 2 states for each cell
+            self.assertEqual(MSD3[ind].shape[1], 3) # there are 3 states for each cell
             for node_n in range(MSDlin.shape[0]):
                 self.assertTrue(np.isclose(sum(MSDlin[node_n, :]), 1))  # the rows should sum to 1
 
@@ -48,12 +69,17 @@ class TestModel(unittest.TestCase):
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         """
-        t = tHMM(self.X, num_states=2)  # build the tHMM class with X
+        t = self.t
+        t3 = self.t3
         EL = t.get_Emission_Likelihoods()
+        EL3 = t3.get_Emission_Likelihoods()
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
-        for _, ELlin in enumerate(EL):
+        self.assertLessEqual(len(EL3), 50)  # there are <=50 lineages in the population
+        for ind, ELlin in enumerate(EL):
             self.assertGreaterEqual(ELlin.shape[0], 0)  # at least zero cells in each lineage
+            self.assertGreaterEqual(EL3[ind].shape[0], 0)  # at least zero cells in each lineage
             self.assertEqual(ELlin.shape[1], 2)  # there are 2 states for each cell
+            self.assertEqual(EL3[ind].shape[1], 3)  # there are 3 states for each cell
 
     def test_get_leaf_NF(self):
         """
@@ -61,8 +87,12 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         """
-        t = tHMM(self.X, num_states=2)  # build the tHMM class with X
+        t = self.t
+        t3 = self.t3
         NF = get_leaf_Normalizing_Factors(t)
+        NF3 = get_leaf_Normalizing_Factors(t3)
         self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population
-        for _, NFlin in enumerate(NF):
+        self.assertLessEqual(len(NF3), 50)
+        for ind, NFlin in enumerate(NF):
             self.assertGreaterEqual(NFlin.shape[0], 0)  # at least zero cells in each lineage
+            self.assertGreaterEqual(NF3[ind].shape[0], 0)

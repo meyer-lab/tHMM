@@ -10,7 +10,7 @@ from matplotlib.ticker import MaxNLocator
 from .figureCommon import getSetup
 from ..Analyze import getAIC, run_Analyze_over, LLFunc
 from ..LineageTree import LineageTree
-from ..states.StateDistribution import StateDistribution
+from ..states.StateDistributionGamma import StateDistribution
 
 
 def makeFigure():
