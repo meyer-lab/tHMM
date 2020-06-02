@@ -1,7 +1,11 @@
 """ Unit test file. """
 import unittest
 import numpy as np
-from ..UpwardRecursion import get_leaf_Normalizing_Factors
+from ..UpwardRecursion import (
+    get_Marginal_State_Distributions,
+    get_Emission_Likelihoods,
+     get_leaf_Normalizing_Factors,
+)
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 from ..states.StateDistPhase import StateDistribution2 as StateDistPhase
@@ -52,8 +56,8 @@ class TestModel(unittest.TestCase):
         """
         t = self.t
         t3 = self.t3
-        MSD = t.get_Marginal_State_Distributions()
-        MSD3 = t3.get_Marginal_State_Distributions()
+        MSD = get_Marginal_State_Distributions(t)
+        MSD3 = get_Marginal_State_Distributions(t3)
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
         self.assertLessEqual(len(MSD3), 50)
         for ind, MSDlin in enumerate(MSD):
@@ -71,8 +75,8 @@ class TestModel(unittest.TestCase):
         """
         t = self.t
         t3 = self.t3
-        EL = t.get_Emission_Likelihoods()
-        EL3 = t3.get_Emission_Likelihoods()
+        EL = get_Emission_Likelihoods(t)
+        EL3 = t3.get_Emission_Likelihoods(t3)
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
         self.assertLessEqual(len(EL3), 50)  # there are <=50 lineages in the population
         for ind, ELlin in enumerate(EL):
