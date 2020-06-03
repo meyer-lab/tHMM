@@ -84,6 +84,7 @@ def exp_pdf(x, beta):
     """
     return (1.0 / beta) * np.exp(-1.0 * x / beta)
 
+
 @njit
 def exp_sdf(x, beta):
     """
