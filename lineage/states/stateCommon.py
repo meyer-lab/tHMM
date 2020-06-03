@@ -49,6 +49,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     def LL(x):
         uncens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==1])
         uncens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==1])
+        assert uncens_gammas.shape[0] == uncens_obs.shape[0]
         uncens = uncens_gammas*sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
         cens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==0])
         cens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==0])
