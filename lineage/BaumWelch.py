@@ -6,7 +6,9 @@ from .UpwardRecursion import get_leaf_Normalizing_Factors, get_leaf_betas, get_n
 
 
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_array, MSD_array, gamma_array, T):
-    """calculates the zeta value that will be used to fill the transition matrix in baum welch"""
+    """
+    Calculates the zeta value that will be used to fill the transition matrix in baum welch.
+    """
 
     # check the child-parent relationship
     assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]
@@ -26,7 +28,9 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_ar
 
 
 def get_all_gammas(lineageObj, gamma_arr):
-    """sum of the list of all the gamma parent child for all the parent child relationships"""
+    """
+    Sum of the list of all the gamma parent child for all the parent child relationships.
+    """
     holder_wo_leaves = np.zeros(gamma_arr.shape[1])
     for level in lineageObj.output_list_of_gens[1:]:  # get all the gammas but not the ones at the last level
         for cell in level:
@@ -38,7 +42,9 @@ def get_all_gammas(lineageObj, gamma_arr):
 
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
-    """sum of the list of all the zeta parent child for all the parent cells for a given state transition pair"""
+    """
+    Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
+    """
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
     lineage = lineageObj.output_lineage
     holder = np.zeros(T.shape)
@@ -60,7 +66,9 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
 
 
 def calculateQuantities(tHMMobj):
-    """ Calculate NF, gamma, beta, LL from tHMM model. """
+    """
+    Calculate NF, gamma, beta, LL from tHMM model.
+    """
     NF = get_leaf_Normalizing_Factors(tHMMobj)
     betas = get_leaf_betas(tHMMobj, NF)
     get_nonleaf_NF_and_betas(tHMMobj, NF, betas)
@@ -72,7 +80,9 @@ def calculateQuantities(tHMMobj):
 
 
 def fit(tHMMobj, tolerance=np.spacing(1), max_iter=100):
-    """Runs the tHMM function through Baum Welch fitting"""
+    """
+    Runs the tHMM function through Baum Welch fitting.
+    """
     num_states = tHMMobj.num_states
 
     # first E step

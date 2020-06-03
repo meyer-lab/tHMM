@@ -225,7 +225,8 @@ class LineageTree:
 
 
 def max_gen(lineage):
-    """ finds the maximal generation in the tree, and cells organized by their generations.
+    """
+    finds the maximal generation in the tree, and cells organized by their generations.
     This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
     creates a list of them, appends the lists leading to have a list of the lists of cells in specific generations.
 
@@ -247,7 +248,8 @@ def max_gen(lineage):
 
 
 def get_leaves(lineage):
-    """ A function to find the leaves and their indexes in the lineage list.
+    """
+    A function to find the leaves and their indexes in the lineage list.
     Args:
     -----
     lineage {list}: A list of cells in the lineage.

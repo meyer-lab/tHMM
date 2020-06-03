@@ -4,6 +4,9 @@ import numpy as np
 
 
 class estimate:
+    """
+    Estimation class.
+    """
     def __init__(self, X, nState: int, fpi=None, fT=None, fE=None):
         self.fpi = fpi
         self.fT = fT
@@ -28,19 +31,22 @@ class estimate:
 
 
 class tHMM:
-    """ Main tHMM class. """
+    """
+    Main tHMM class.
+    """
 
     def __init__(self, X, num_states, fpi=None, fT=None, fE=None):
-        """ Instantiates a tHMM.
+        """
+        Instantiates a tHMM.
 
         This function uses the following functions and assings them to the cells
         (objects) in the lineage.
 
         Args:
-            ----------
-            X (list of objects): A list of objects (cells) in a lineage in which
-            the NaNs have been removed.
-            num_states (int): the number of hidden states that we want our model have
+        ----------
+        X (list of objects): A list of objects (cells) in a lineage in which
+        the NaNs have been removed.
+        num_states (int): the number of hidden states that we want our model have
         """
         self.fpi = fpi
         self.fT = fT
@@ -67,7 +73,7 @@ class tHMM:
 
         Every element in MSD matrix is essentially sum over all transitions from any state to
         state j (from parent to daughter):
-            P(z_u = k) = sum_on_all_j(Transition(from j to k) * P(parent_cell_u) = j)
+            :math:`P(z_u = k) = sum_on_all_j(Transition(from j to k) * P(parent_cell_u) = j)`
         """
         MSD = []
 

@@ -1,11 +1,13 @@
-"""File holds the code for the downward recursion."""
+""" File holds the code for the downward recursion. """
 
 import numpy as np
 from .UpwardRecursion import beta_parent_child_func
 
 
 def get_root_gammas(tHMMobj, betas):
-    """need the first gamma terms in the baum welch, which are just the beta values of the root nodes."""
+    """
+   Need the first gamma terms in the baum welch, which are just the beta values of the root nodes.
+    """
     gammas = []
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
@@ -20,7 +22,9 @@ def get_root_gammas(tHMMobj, betas):
 
 
 def get_nonroot_gammas(tHMMobj, gammas, betas):
-    """get the gammas for all other nodes using recursion from the root nodes"""
+    """
+    Get the gammas for all other nodes using recursion from the root nodes.
+    """
     T = tHMMobj.estimate.T
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population

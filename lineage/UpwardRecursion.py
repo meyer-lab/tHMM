@@ -17,16 +17,14 @@ def get_leaf_Normalizing_Factors(tHMMobj):
     We first calculate the joint probability
     using the definition of conditional probability:
 
-    P(x_n = x | z_n = k) * P(z_n = k) = P(x_n = x , z_n = k),
+    :math:`P(x_n = x | z_n = k) * P(z_n = k) = P(x_n = x , z_n = k)`,
     where n are the leaf nodes.
 
     We can then sum this joint probability over k,
     which are the possible states z_n can be,
     and through the law of total probability,
     obtain the marginal observation distribution
-    P(x_n = x):
-
-    sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x).
+    :math:`P(x_n = x) = sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x)`.
     """
     MSD = tHMMobj.MSD
     EL = tHMMobj.EL
@@ -57,7 +55,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
 
 def get_leaf_betas(tHMMobj, NF):
     """
-    beta matrix and base case at the leaves.
+    Beta matrix and base case at the leaves.
 
     Each element in this N by K matrix is the beta value
     for each cell and at each state. In particular, this
@@ -66,13 +64,13 @@ def get_leaf_betas(tHMMobj, NF):
     Normalizing Factors (NF). Each beta value
     for the leaves is exactly the probability
 
-    beta[n,k] = P(z_n = k | x_n = x).
+    :math:`beta[n,k] = P(z_n = k | x_n = x)`.
 
     Using Bayes Theorem, we see that the above equals
 
-    numerator = P(x_n = x | z_n = k) * P(z_n = k)
-    denominator = P(x_n = x)
-    beta[n,k] = numerator / denominator
+    numerator = :math:`P(x_n = x | z_n = k) * P(z_n = k)`
+    denominator = :math:`P(x_n = x)`
+    :math:`beta[n,k] = numerator / denominator`
 
     The first value in the numerator is the Emission
     Likelihoods. The second value in the numerator is
@@ -166,9 +164,9 @@ def beta_parent_child_func(beta_array, T, MSD_array, node_child_n_idx):
     higher (in the direction from the leave
     to the root node) node beta and Normalizing Factor
     values.
+    beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
+    :math:`P( z_n = k | z_m = j)`; "math:`P(z_n = k)`
     """
-    # beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
-    # P( z_n = k | z_m = j); P(z_n = k)
     return np.matmul(T, beta_array[node_child_n_idx, :] / MSD_array[node_child_n_idx, :])
 
 
