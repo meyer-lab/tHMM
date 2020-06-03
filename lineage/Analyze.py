@@ -5,6 +5,7 @@ import numpy as np
 from sklearn import metrics
 from scipy.stats import entropy, wasserstein_distance
 from .BaumWelch import do_E_step, calculate_log_likelihood
+from .upwardrecursion import get_Emission_Likelihoods
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .tHMM import tHMM
 
@@ -269,7 +270,7 @@ def LLFunc(T, pi, tHMMobj, pred_states_by_lineage):
     for indx, lineage in enumerate(tHMMobj.X):
         FirstTerm = pi[lineage.output_lineage[0].state]
         SecondTerm = LLHelperFunc(T, lineage)
-        pre_ThirdTerm = tHMMobj.get_Emission_Likelihoods()[indx]
+        pre_ThirdTerm = get_Emission_Likelihoods(tHMMobj)[indx]
         ThirdTerm = np.zeros(len(lineage.output_lineage))
         for ind, st in enumerate(pred_states_by_lineage[indx]):
             ThirdTerm[ind] = pre_ThirdTerm[ind, st]
