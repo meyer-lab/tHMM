@@ -57,6 +57,9 @@ class StateDistribution:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
 
+    def __repl__(self):
+        return "f{self.params}"
+
 
 # Because parameter estimation requires that estimators be written or imported,
 # the user should be able to provide
