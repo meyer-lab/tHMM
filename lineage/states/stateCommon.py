@@ -55,7 +55,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
         cens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==0])
         cens = cens_gammas*sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
 
-        return np.sum(np.sum(uncens) + np.sum(cens))
+        return -1*np.sum(np.sum(uncens) + np.sum(cens))
 
     res = minimize(LL, [a_hat, scale_hat])
     print(res)
