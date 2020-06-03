@@ -7,7 +7,7 @@ from ..states.StateDistributionGamma import (
     StateDistribution,
     gamma_estimator,
 )
-from ..states.StateDistPhase import StateDistribution2 as StateDistPhase
+from ..states.StateDistPhase import StateDistribution as StateDistPhase
 from ..states.StateDistributionGaussian import StateDistribution as StateDistGaussian
 from ..states.stateCommon import (
     bern_pdf,
