@@ -30,7 +30,7 @@ def gamma_pdf(x, a, scale):
     return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / gamma(a) / (scale ** a)
 
 
-def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
+def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
