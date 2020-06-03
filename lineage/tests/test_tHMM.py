@@ -4,7 +4,7 @@ import numpy as np
 from ..UpwardRecursion import (
     get_Marginal_State_Distributions,
     get_Emission_Likelihoods,
-     get_leaf_Normalizing_Factors,
+    get_leaf_Normalizing_Factors,
 )
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
