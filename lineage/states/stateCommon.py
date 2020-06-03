@@ -37,7 +37,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     """
     def LL(x):
         uncens = (gammas*time_censor_obs)*sp.gamma.logpdf(gamma_obs*time_censor_obs, a=x[0], scale=x[1])
-        cens = (gammas*(1-time_censor_obs)*sp.gamma.logsf(gamma_obs*(1-time_censor_obs), a=x[0], scale=x[1])
+        cens = (gammas*(1-time_censor_obs))*sp.gamma.logsf(gamma_obs*(1-time_censor_obs), a=x[0], scale=x[1])
 
         return np.sum(uncens + cens)
 
