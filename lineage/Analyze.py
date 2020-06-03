@@ -5,7 +5,7 @@ import numpy as np
 from sklearn import metrics
 from scipy.stats import entropy, wasserstein_distance
 from .BaumWelch import do_E_step, calculate_log_likelihood
-from .upwardrecursion import get_Emission_Likelihoods
+from .UpwardRecursion import get_Emission_Likelihoods
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .tHMM import tHMM
 
