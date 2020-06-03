@@ -11,7 +11,7 @@ from .UpwardRecursion import (
 )
 
 from .DownwardRecursion import (
-    get_root_gammas, 
+    get_root_gammas,
     get_nonroot_gammas,
     sum_nonleaf_gammas,
 )
@@ -44,7 +44,7 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
 
     if tHMMobj.estimate.fT is None:
         tHMMobj.estimate.T = do_M_T_step(tHMMobj, MSD, betas, gammas)
-    
+
     if tHMMobj.estimate.fE is None:
         do_M_E_step(tHMMobj, gammas)
 
@@ -71,7 +71,7 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
     denom_estimate = np.zeros((num_states,), dtype=float)
     for num, lineageObj in enumerate(tHMMobj.X):
         gamma_array = gammas[num]
-        
+
         # local T estimate
         numer_estimate += get_all_zetas(lineageObj, betas[num], MSD[num], gamma_array, tHMMobj.estimate.T)
         denom_estimate += sum_nonleaf_gammas(lineageObj, gamma_array)
@@ -87,8 +87,6 @@ def do_M_E_step(tHMMobj, gammas):
     all_gammas = np.vstack(gammas)
     for state_j in range(tHMMobj.num_states):
         tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
-
-
 
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
@@ -131,5 +129,3 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_ar
     ks = beta_child_state_k / MSD_child_state_k
 
     return np.outer(js, ks) * T
-
-

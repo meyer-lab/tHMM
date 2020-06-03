@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 def get_Marginal_State_Distributions(tHMMobj):
     """
     Marginal State Distribution (MSD) matrix and recursion.
@@ -46,6 +47,7 @@ def get_Marginal_State_Distributions(tHMMobj):
 
     return MSD
 
+
 def get_Emission_Likelihoods(tHMMobj):
     """
     Emission Likelihood (EL) matrix.
@@ -69,6 +71,7 @@ def get_Emission_Likelihoods(tHMMobj):
 
         EL.append(EL_array)  # append the EL_array for each lineage
     return EL
+
 
 def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
     """
