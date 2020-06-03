@@ -5,7 +5,7 @@ import numpy as np
 from numba import njit
 import scipy.stats as sp
 import scipy.special as sc
-from scipy.optimize import brentq
+from scipy.optimize import brentq, minimize
 
 
 @njit
@@ -55,14 +55,14 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
 
         # If gamma indicates the cell is very unlikely for this state, ignore it
         gamL = np.log(gammas)
-        uncens[gamL < -9] = 1.0
+        uncens[gamL < -9] = 0.0
         gamL[gamL < -9] = 0
 
         return -np.sum(uncens + gamL)
 
-    # res = minimize(LL, [a_hat, scale_hat])
+    res = minimize(LL, [a_hat, scale_hat])
 
-    return a_hat, scale_hat
+    return res.x[0], res.x[1]
 
 
 def bernoulli_estimator(bern_obs, gammas):
