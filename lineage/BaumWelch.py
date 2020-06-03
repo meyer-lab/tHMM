@@ -39,36 +39,54 @@ def calculate_log_likelihood(NF):
 
 
 def do_M_step(tHMMobj, MSD, betas, gammas):
+    if tHMMobj.estimate.fpi is None:
+        tHMMobj.estimate.pi = do_M_pi_step(tHMMobj, gammas)
+
+    if tHMMobj.estimate.fT is None:
+        tHMMobj.estimate.T = do_M_T_step(tHMMobj, MSD, betas, gammas)
+    
+    if tHMMobj.estimate.fE is None:
+        do_M_E_step(tHMMobj, gammas)
+
+
+def do_M_pi_step(tHMMobj, gammas):
     num_states = tHMMobj.num_states
 
     pi_estimate = np.zeros((num_states), dtype=float)
-    numer_estimate = np.zeros((num_states, num_states), dtype=float)
-    denom_estimate = np.zeros((num_states,), dtype=float)
-    for num, lineageObj in enumerate(tHMMobj.X):
+    for num, _ in enumerate(tHMMobj.X):
         gamma_array = gammas[num]
 
         # local pi estimate
         pi_estimate += gamma_array[0, :]
 
+    pi_estimate = pi_estimate / sum(pi_estimate)
+
+    return pi_estimate
+
+
+def do_M_T_step(tHMMobj, MSD, betas, gammas):
+    num_states = tHMMobj.num_states
+
+    numer_estimate = np.zeros((num_states, num_states), dtype=float)
+    denom_estimate = np.zeros((num_states,), dtype=float)
+    for num, lineageObj in enumerate(tHMMobj.X):
+        gamma_array = gammas[num]
+        
         # local T estimate
         numer_estimate += get_all_zetas(lineageObj, betas[num], MSD[num], gamma_array, tHMMobj.estimate.T)
         denom_estimate += sum_nonleaf_gammas(lineageObj, gamma_array)
 
-    if tHMMobj.estimate.fpi is None:
-        # population wide pi calculation
-        tHMMobj.estimate.pi = pi_estimate / sum(pi_estimate)
-    if tHMMobj.estimate.fT is None:
-        # population wide T calculation
-        T_estimate = numer_estimate / denom_estimate[:, np.newaxis]
-        tHMMobj.estimate.T = T_estimate / T_estimate.sum(axis=1)[:, np.newaxis]
-    if tHMMobj.estimate.fE is None:
-        # population wide E calculation
-        all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
-        all_gammas = np.vstack(gammas)
-        for state_j in range(tHMMobj.num_states):
-            tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
-    
-    return tHMMobj.estimate.pi, tHMMobj.estimate.T, tHMMobj.estimate.E
+    T_estimate_prenorm = numer_estimate / denom_estimate[:, np.newaxis]
+    T_estimate = T_estimate_prenorm / T_estimate_prenorm.sum(axis=1)[:, np.newaxis]
+
+    return T_estimate
+
+
+def do_M_E_step(tHMMobj, gammas):
+    all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+    all_gammas = np.vstack(gammas)
+    for state_j in range(tHMMobj.num_states):
+        tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
 
 
 

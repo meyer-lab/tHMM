@@ -1,7 +1,9 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
+from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step
+
 import numpy as np
-from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step
+import scipy.stats as sp
 
 
 class estimate:
@@ -53,15 +55,19 @@ class tHMM:
     def fit(self, tolerance=np.spacing(1), max_iter=100):
         """Runs the tHMM function through Baum Welch fitting"""
 
-        # first E step
+        # Step 0: initialize with random assignments and do an M step
+        random_gammas = [sp.multinomial.rvs(1, [1./self.num_states]*self.num_states, len(lineage.output_linage)) for lineage in self.X]
+        do_M_E_step(self, random_gammas)
+
+        # Step 1: first E step
         MSD, EL, NF, betas, gammas = do_E_step(self)
         new_LL = calculate_log_likelihood(NF)
 
         # first stopping condition check
-        for iter_number in range(max_iter):
+        for _ in range(max_iter):
             old_LL = new_LL
 
-            est_pi, est_T, est_E = do_M_step(self, MSD, betas, gammas)
+            do_M_step(self, MSD, betas, gammas)
             MSD, EL, NF, betas, gammas = do_E_step(self)
             new_LL = calculate_log_likelihood(NF)
 
@@ -71,6 +77,3 @@ class tHMM:
                 break
 
         return self, MSD, EL, NF, betas, gammas, new_LL
-
-
-    
