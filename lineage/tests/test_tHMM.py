@@ -31,11 +31,11 @@ class TestModel(unittest.TestCase):
         self.t = tHMM(self.X, num_states=2)  # build the tHMM class with X
         self.t3 = tHMM(self.X3, num_states=3)  # build the tHMM class for 3 states
 
-        self.MSD = get_Marginal_State_Distributions(t)
-        self.MSD3 = get_Marginal_State_Distributions(t3)
+        self.MSD = get_Marginal_State_Distributions(self.t)
+        self.MSD3 = get_Marginal_State_Distributions(self.t3)
 
-        self.EL = get_Emission_Likelihoods(t)
-        self.EL3 = get_Emission_Likelihoods(t3)
+        self.EL = get_Emission_Likelihoods(self.t)
+        self.EL3 = get_Emission_Likelihoods(self.t3)
 
     def test_init_paramlist(self):
         """
