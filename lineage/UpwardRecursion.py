@@ -3,7 +3,77 @@
 import numpy as np
 
 
-def get_leaf_Normalizing_Factors(tHMMobj):
+def get_Marginal_State_Distributions(tHMMobj):
+    """
+    Marginal State Distribution (MSD) matrix and recursion.
+    This is the probability that a hidden state variable z_n is of
+    state k, that is, each value in the N by K MSD array for each lineage is
+    the probability
+
+    :math:`P(z_n = k)`,
+
+    for all z_n in the hidden state tree
+    and for all k in the total number of discrete states. Each MSD array is
+    an N by K array (an entry for each cell and an entry for each state),
+    and each lineage has its own MSD array.
+
+    Every element in MSD matrix is essentially sum over all transitions from any state to
+    state j (from parent to daughter):
+        P(z_u = k) = sum_on_all_j(Transition(from j to k) * P(parent_cell_u) = j)
+    """
+    MSD = []
+
+    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
+        lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
+
+        MSD_array = np.zeros((len(lineage), tHMMobj.num_states))  # instantiating N by K array
+        MSD_array[0, :] = tHMMobj.estimate.pi
+
+        assert np.isclose(np.sum(MSD_array[0]), 1.0)
+        MSD.append(MSD_array)
+
+    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
+        lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
+
+        for level in lineageObj.output_list_of_gens[2:]:
+            for cell in level:
+                parent_cell_idx = lineage.index(cell.parent)  # get the index of the parent cell
+                current_cell_idx = lineage.index(cell)
+
+                # recursion based on parent cell
+                MSD[num][current_cell_idx, :] = np.matmul(MSD[num][parent_cell_idx, :], tHMMobj.estimate.T)
+
+        assert np.allclose(np.sum(MSD[num], axis=1), 1.0)
+
+    return MSD
+
+
+def get_Emission_Likelihoods(tHMMobj):
+    """
+    Emission Likelihood (EL) matrix.
+
+    Each element in this N by K matrix represents the probability
+
+    :math:`P(x_n = x | z_n = k)`,
+
+    for all x_n and z_n in our observed and hidden state tree
+    and for all possible discrete states k.
+    """
+    EL = []
+
+    for lineageObj in tHMMobj.X:  # for each lineage in our Population
+        lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
+        EL_array = np.zeros((len(lineage), tHMMobj.num_states))  # instantiating N by K array for each lineage
+
+        for current_cell_idx, cell in enumerate(lineage):  # for each cell in the lineage
+            for state_k in range(tHMMobj.num_states):  # for each state
+                EL_array[current_cell_idx, state_k] = tHMMobj.estimate.E[state_k].pdf(cell.obs)
+
+        EL.append(EL_array)  # append the EL_array for each lineage
+    return EL
+
+
+def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
     """
     Normalizing factor (NF) matrix and base case at the leaves.
 
@@ -26,8 +96,6 @@ def get_leaf_Normalizing_Factors(tHMMobj):
     obtain the marginal observation distribution
     :math:`P(x_n = x) = sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x)`.
     """
-    MSD = tHMMobj.MSD
-    EL = tHMMobj.EL
 
     NF = []  # full Normalizing Factors holder
 
@@ -53,7 +121,7 @@ def get_leaf_Normalizing_Factors(tHMMobj):
     return NF
 
 
-def get_leaf_betas(tHMMobj, NF):
+def get_leaf_betas(tHMMobj, MSD, EL, NF):
     """
     Beta matrix and base case at the leaves.
 
@@ -81,8 +149,8 @@ def get_leaf_betas(tHMMobj, NF):
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
-        MSD_arr = tHMMobj.MSD[num]  # getting the MSD of the respective lineage
-        EL_arr = tHMMobj.EL[num]  # geting the EL of the respective lineage
+        MSD_arr = MSD[num]  # getting the MSD of the respective lineage
+        EL_arr = EL[num]  # geting the EL of the respective lineage
         NF_arr = NF[num]  # getting the NF of the respective lineage
 
         for _, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
@@ -104,7 +172,7 @@ def get_leaf_betas(tHMMobj, NF):
     return betas
 
 
-def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
+def get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas):
     """
     Traverses through each tree and calculates the
     beta value for each non-leaf cell. The normalizing factors (NFs)
@@ -116,8 +184,8 @@ def get_nonleaf_NF_and_betas(tHMMobj, NF, betas):
     """
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
-        MSD_array = tHMMobj.MSD[num]  # getting the MSD of the respective lineage
-        EL_array = tHMMobj.EL[num]  # geting the EL of the respective lineage
+        MSD_array = MSD[num]  # getting the MSD of the respective lineage
+        EL_array = EL[num]  # geting the EL of the respective lineage
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
 
         for level in lineageObj.output_list_of_gens[2:][::-1]:  # a reversed list of generations
@@ -168,11 +236,3 @@ def beta_parent_child_func(beta_array, T, MSD_array, node_child_n_idx):
     :math:`P( z_n = k | z_m = j)`; "math:`P(z_n = k)`
     """
     return np.matmul(T, beta_array[node_child_n_idx, :] / MSD_array[node_child_n_idx, :])
-
-
-def calculate_log_likelihood(NF):
-    """
-    Calculates log likelihood of NF for each lineage.
-    """
-    # NF is a list of arrays, an array for each lineage in the population
-    return np.array([sum(np.log(arr)) for arr in NF])

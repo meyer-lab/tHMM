@@ -2,7 +2,7 @@
 import numpy as np
 
 
-def get_leaf_deltas(tHMMobj):
+def get_leaf_deltas(tHMMobj, EL):
     """
     Delta matrix and base case at the leaves. Each element in this N by K matrix is the probability for the leaves :math:`P(x_n = x | z_n = k)`.
     Args:
@@ -30,14 +30,14 @@ def get_leaf_deltas(tHMMobj):
             if cell.isLeaf():  # if it is a leaf
                 # get the index of the leaf
                 leaf_cell_idx = lineage.index(cell)
-                delta_array[leaf_cell_idx, :] = tHMMobj.EL[num][leaf_cell_idx, :]
+                delta_array[leaf_cell_idx, :] = EL[num][leaf_cell_idx, :]
 
         deltas.append(delta_array)
         state_ptrs.append(state_ptrs_array)
     return deltas, state_ptrs
 
 
-def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
+def get_nonleaf_deltas(tHMMobj, EL, deltas, state_ptrs):
     """
     Calculates the delta values for all non-leaf cells by filling out the delta matrix passed to it from the :func:`get_leaf_deltas`.
     Args:
@@ -61,7 +61,7 @@ def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
             for node_parent_m_idx in parent_holder:
                 fac1, max_state_ptr = get_delta_parent_child_prod(lineage=lineage, delta_array=deltas[num], T=T, node_parent_m_idx=node_parent_m_idx)
 
-                deltas[num][node_parent_m_idx, :] = fac1 * tHMMobj.EL[num][node_parent_m_idx, :]
+                deltas[num][node_parent_m_idx, :] = fac1 * EL[num][node_parent_m_idx, :]
                 state_ptrs[num][node_parent_m_idx, :] = max_state_ptr
 
 

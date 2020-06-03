@@ -4,7 +4,8 @@ import random
 import numpy as np
 from sklearn import metrics
 from scipy.stats import entropy, wasserstein_distance
-from .BaumWelch import fit, calculateQuantities
+from .BaumWelch import calculate_log_likelihood
+from .UpwardRecursion import get_Emission_Likelihoods
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .tHMM import tHMM
 
@@ -27,7 +28,7 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     for num_tries in range(1, 15):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            fit(tHMMobj)
+            _, _, EL, _, _, _, LL = tHMMobj.fit()
             break
         except (AssertionError, ZeroDivisionError, RuntimeError) as error:
             error_holder.append(error)
@@ -37,11 +38,9 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
                 )
                 raise
 
-    deltas, state_ptrs = get_leaf_deltas(tHMMobj)
-    get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+    deltas, state_ptrs = get_leaf_deltas(tHMMobj, EL)
+    get_nonleaf_deltas(tHMMobj, EL, deltas, state_ptrs)
     pred_states_by_lineage = Viterbi(tHMMobj, deltas, state_ptrs)
-
-    _, _, _, LL = calculateQuantities(tHMMobj)
 
     return tHMMobj, pred_states_by_lineage, LL
 
@@ -277,7 +276,7 @@ def LLFunc(T, pi, tHMMobj, pred_states_by_lineage):
     for indx, lineage in enumerate(tHMMobj.X):
         FirstTerm = pi[lineage.output_lineage[0].state]
         SecondTerm = LLHelperFunc(T, lineage)
-        pre_ThirdTerm = tHMMobj.get_Emission_Likelihoods()[indx]
+        pre_ThirdTerm = get_Emission_Likelihoods(tHMMobj)[indx]
         ThirdTerm = np.zeros(len(lineage.output_lineage))
         for ind, st in enumerate(pred_states_by_lineage[indx]):
             ThirdTerm[ind] = pre_ThirdTerm[ind, st]
