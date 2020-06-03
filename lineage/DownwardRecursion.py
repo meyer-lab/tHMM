@@ -19,7 +19,7 @@ def get_root_gammas(tHMMobj, betas):
     return gammas
 
 
-def get_nonroot_gammas(tHMMobj, gammas, betas):
+def get_nonroot_gammas(tHMMobj, MSD, gammas, betas):
     """get the gammas for all other nodes using recursion from the root nodes"""
     T = tHMMobj.estimate.T
 
@@ -27,7 +27,7 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
         lineage = lineageObj.output_lineage
 
         with np.errstate(divide="ignore", invalid="ignore"):
-            coeffs = betas[num] / tHMMobj.MSD[num]
+            coeffs = betas[num] / MSD[num]
 
         for level in lineageObj.output_list_of_gens[1:]:
             for cell in level:
@@ -36,7 +36,7 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
                 for daughter in cell.get_daughters():
                     child_idx = lineage.index(daughter)
 
-                    beta_parent = beta_parent_child_func(beta_array=betas[num], T=T, MSD_array=tHMMobj.MSD[num], node_child_n_idx=child_idx)
+                    beta_parent = beta_parent_child_func(beta_array=betas[num], T=T, MSD_array=MSD[num], node_child_n_idx=child_idx)
 
                     with np.errstate(divide="ignore", invalid="ignore"):
                         sum_holder = np.matmul(gammas[num][parent_idx, :] / beta_parent, T)
@@ -47,3 +47,18 @@ def get_nonroot_gammas(tHMMobj, gammas, betas):
 
     for _, gg in enumerate(gammas):
         assert np.allclose(np.sum(gg, axis=1), 1.0)
+
+
+def sum_nonleaf_gammas(lineageObj, gamma_arr):
+    """
+    Sum of the gammas of the cells that are able to divide, that is,
+    sum the of the gammas of all the nonleaf cells.
+    """
+    holder_wo_leaves = np.zeros(gamma_arr.shape[1])
+    for level in lineageObj.output_list_of_gens[1:]:  # sum the gammas for cells that are transitioning
+        for cell in level:
+            if not cell.isLeaf():
+                cell_idx = lineageObj.output_lineage.index(cell)
+                holder_wo_leaves += gamma_arr[cell_idx, :]
+
+    return holder_wo_leaves

@@ -15,9 +15,10 @@ class TestViterbi(unittest.TestCase):
         """ This tests that state assignments by Viterbi are maximum likelihood. """
         X = LineageTree(pi, T, E, desired_num_cells=(2 ** 9) - 1)
         tHMMobj = tHMM([X], num_states=2)
+        _, _, EL, _, _, _, _ = tHMMobj.fit()
 
-        deltas, state_ptrs = get_leaf_deltas(tHMMobj)
-        get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+        deltas, state_ptrs = get_leaf_deltas(tHMMobj, EL)
+        get_nonleaf_deltas(tHMMobj, EL, deltas, state_ptrs)
         pred_states_by_lineage = Viterbi(tHMMobj, deltas, state_ptrs)
 
         vitLL = LLFunc(T, pi, tHMMobj, pred_states_by_lineage)

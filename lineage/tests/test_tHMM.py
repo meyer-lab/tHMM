@@ -1,7 +1,11 @@
 """ Unit test file. """
 import unittest
 import numpy as np
-from ..UpwardRecursion import get_leaf_Normalizing_Factors
+from ..UpwardRecursion import (
+    get_Marginal_State_Distributions,
+    get_Emission_Likelihoods,
+     get_leaf_Normalizing_Factors,
+)
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 from ..states.StateDistPhase import StateDistribution2 as StateDistPhase
@@ -26,6 +30,12 @@ class TestModel(unittest.TestCase):
 
         self.t = tHMM(self.X, num_states=2)  # build the tHMM class with X
         self.t3 = tHMM(self.X3, num_states=3)  # build the tHMM class for 3 states
+
+        self.MSD = get_Marginal_State_Distributions(self.t)
+        self.MSD3 = get_Marginal_State_Distributions(self.t3)
+
+        self.EL = get_Emission_Likelihoods(self.t)
+        self.EL3 = get_Emission_Likelihoods(self.t3)
 
     def test_init_paramlist(self):
         """
@@ -52,8 +62,8 @@ class TestModel(unittest.TestCase):
         """
         t = self.t
         t3 = self.t3
-        MSD = t.get_Marginal_State_Distributions()
-        MSD3 = t3.get_Marginal_State_Distributions()
+        MSD = self.MSD
+        MSD3 = self.MSD3
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
         self.assertLessEqual(len(MSD3), 50)
         for ind, MSDlin in enumerate(MSD):
@@ -71,8 +81,8 @@ class TestModel(unittest.TestCase):
         """
         t = self.t
         t3 = self.t3
-        EL = t.get_Emission_Likelihoods()
-        EL3 = t3.get_Emission_Likelihoods()
+        EL = self.EL
+        EL3 = self.EL3
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
         self.assertLessEqual(len(EL3), 50)  # there are <=50 lineages in the population
         for ind, ELlin in enumerate(EL):
@@ -89,8 +99,8 @@ class TestModel(unittest.TestCase):
         """
         t = self.t
         t3 = self.t3
-        NF = get_leaf_Normalizing_Factors(t)
-        NF3 = get_leaf_Normalizing_Factors(t3)
+        NF = get_leaf_Normalizing_Factors(t, self.MSD, self.EL)
+        NF3 = get_leaf_Normalizing_Factors(t3, self.MSD3, self.EL3)
         self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population
         self.assertLessEqual(len(NF3), 50)
         for ind, NFlin in enumerate(NF):
