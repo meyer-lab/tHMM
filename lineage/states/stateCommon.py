@@ -57,9 +57,10 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
 
         return -1*np.sum(np.sum(uncens) + np.sum(cens))
 
-    res = minimize(LL, [a_hat, scale_hat])
+    res = minimize(LL, [a_hat, scale_hat], bounds=((1,10),(1,10),))
     print(res)
-
+    if math.isnan(res.x[0]) or math.isnan(res.x[1]):
+        return a_hat, scale_hat
     return  res.x[0], res.x[1]
 
 
