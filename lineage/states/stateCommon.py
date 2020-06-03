@@ -58,6 +58,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
         return np.sum(np.sum(uncens) + np.sum(cens))
 
     res = minimize(LL, [a_hat, scale_hat])
+    print(res)
 
     return  res.x[0], res.x[1]
 
