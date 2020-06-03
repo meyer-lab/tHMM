@@ -30,14 +30,13 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        bern_ll = bern_pdf(tuple_of_obs[0], self.params[0]) if tuple_of_obs[2] == 1 else 1.0
-
         if tuple_of_obs[2] == 1:
-            gamma_ll = gamma_pdf(tuple_of_obs[1], self.params[1], self.params[2])
+            ll = bern_pdf(tuple_of_obs[0], self.params[0])
+            ll *= gamma_pdf(tuple_of_obs[1], self.params[1], self.params[2])
         else:
-            gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.params[1], scale=self.params[2])
+            ll = sp.gamma.sf(tuple_of_obs[1], a=self.params[1], scale=self.params[2])
 
-        return bern_ll * gamma_ll
+        return ll
 
     def estimator(self, list_of_tuples_of_obs, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
