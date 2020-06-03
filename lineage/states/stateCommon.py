@@ -5,7 +5,7 @@ import numpy as np
 from numba import njit
 import scipy.stats as sp
 import scipy.special as sc
-from scipy.optimize import brentq
+from scipy.optimize import minimize
 
 
 @njit
@@ -35,32 +35,13 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
     """
-    gammaCor = sum(gammas * gamma_obs) / sum(gammas)
-    s = np.log(gammaCor) - sum(gammas * np.log(gamma_obs)) / sum(gammas)
-    def f(k): return np.log(k) - sc.polygamma(0, k) - s
-
-    if f(0.01) * f(100.0) > 0.0:
-        a_hat = 10.0
-    else:
-        a_hat = brentq(f, 0.01, 100.0)
-
-    scale_hat = gammaCor / a_hat
-
     def LL(x):
-        uncens = sp.gamma.logpdf(gamma_obs, a=x[0], scale=x[1])
-        cens = sp.gamma.logsf(gamma_obs, a=x[0], scale=x[1])
+        uncens = (gammas*time_censor_obs)*sp.gamma.logpdf(gamma_obs*time_censor_obs, a=x[0], scale=x[1])
+        cens = (gammas*(1-time_censor_obs)*sp.gamma.logsf(gamma_obs*(1-time_censor_obs), a=x[0], scale=x[1])
 
-        # If the observation was censored, use the survival function
-        uncens[np.logical_not(gamma_censor_obs)] = cens[np.logical_not(gamma_censor_obs)]
+        return np.sum(uncens + cens)
 
-        # If gamma indicates the cell is very unlikely for this state, ignore it
-        gamL = np.log(gammas)
-        uncens[gamL < -9] = 1.0
-        gamL[gamL < -9] = 0
-
-        return -np.sum(uncens + gamL)
-
-    # res = minimize(LL, [a_hat, scale_hat])
+    res = minimize(LL, [a_hat, scale_hat])
 
     return a_hat, scale_hat
 
