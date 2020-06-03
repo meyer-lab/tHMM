@@ -30,8 +30,13 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        bern_ll = bern_pdf(tuple_of_obs[0], self.params[0])
-        exp_ll = exp_pdf(tuple_of_obs[1], self.params[1])
+        bern_ll = bern_pdf(tuple_of_obs[0], self.params[0]) if tuple_of_obs[2] == 1 else 1.0
+
+        if tuple_of_obs[2] == 1:
+            exp_ll = exp_pdf(tuple_of_obs[1], self.params[1])
+        else:
+            exp_ll = exp_sdf(tuple_of_obs[1], self.params[1])
+
         return bern_ll * exp_ll
 
     def estimator(self, list_of_tuples_of_obs, gammas):
@@ -78,3 +83,12 @@ def exp_pdf(x, beta):
     probability distribution function.
     """
     return (1.0 / beta) * np.exp(-1.0 * x / beta)
+
+@njit
+def exp_sdf(x, beta):
+    """
+    This function takes in 1 observation and and an exponential parameter
+    and returns the likelihood of the observation based on the exponential
+    survival distribution function.
+    """
+    return np.exp(-1.0 * x / beta)
