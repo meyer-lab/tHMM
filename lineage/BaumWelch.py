@@ -18,7 +18,7 @@ from .DownwardRecursion import (
 
 
 def do_E_step(tHMMobj):
-    """ 
+    """
     Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
     """
     MSD = get_Marginal_State_Distributions(tHMMobj)
