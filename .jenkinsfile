@@ -12,10 +12,10 @@ pipeline {
     }
     stage('Test/Build/Lint') {
       steps {
-        lock ('manubot') {
-          sh 'make output/manuscript.md'
-        }
         sh 'make all -j 4'
+        lock ('manubot') {
+          sh 'make output/manuscript.html'
+        }
         archiveArtifacts artifacts: 'output/*.svg, spell.txt', onlyIfSuccessful: true
         recordIssues qualityGates: [[threshold: 70, type: 'TOTAL', unstable: true]], tools: [pyLint(pattern: 'pylint.log')]
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'output', reportFiles: 'manuscript.html', reportName: 'Manuscript'])

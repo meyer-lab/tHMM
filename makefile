@@ -2,9 +2,9 @@ SHELL := /bin/bash
 
 .PHONY: clean test testprofile testcover docs
 
-all: output/manuscript.html pylint.log spell.txt
-
 flist = 0 1 2 3 4 5 6 7 8 9 12 13 14 15 23
+
+all: pylint.log spell.txt $(patsubst %, output/figure%.svg, $(flist))
 
 venv: venv/bin/activate
 

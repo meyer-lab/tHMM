@@ -26,14 +26,14 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     :rtype: float
     """
     error_holder = []
-    for num_tries in range(1, 15):
+    for num_tries in range(1, 5):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
             _, _, EL, _, _, _, LL = tHMMobj.fit()
             break
         except (AssertionError, ZeroDivisionError, RuntimeError) as error:
             error_holder.append(error)
-            if num_tries == 14:
+            if num_tries == 4:
                 print(
                     f"Caught the following errors: \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. Fitting is breaking after trying {num_tries} times. If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue is the estimates of your parameters are returning nonsensible parameters. Consider changing your parameter estimator. "
                 )
