@@ -13,7 +13,7 @@ venv/bin/activate: requirements.txt
 	. venv/bin/activate && pip install -Uqr requirements.txt
 	touch venv/bin/activate
 
-output/figure%.svg: venv genFigures.py 
+output/figure%.svg: venv genFigures.py lineage/figures/figure%.py
 	mkdir -p ./output
 	. venv/bin/activate && ./genFigures.py $*
 
@@ -23,11 +23,9 @@ output/manuscript.md: venv manuscript/*.md
 output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.svg, $(flist))
 	mkdir output/output
 	cp output/*.svg output/output/
-	. venv/bin/activate && pandoc --verbose --data-dir=common/templates/pandoc \
-		--defaults=common.yaml --defaults=html.yaml output/manuscript.md
-
-Guide_to_tHMM.pdf: venv Guide_to_tHMM.ipynb
-	. venv/bin/activate && jupyter nbconvert --to pdf --execute Guide_to_tHMM.ipynb
+	. venv/bin/activate && pandoc --verbose \
+		--defaults=./common/templates/manubot/pandoc/common.yaml \
+		--defaults=./common/templates/manubot/pandoc/html.yaml output/manuscript.md
 
 test: venv
 	. venv/bin/activate; pytest -s
