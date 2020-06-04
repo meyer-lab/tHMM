@@ -4,7 +4,6 @@ import random
 import numpy as np
 from sklearn import metrics
 from scipy.stats import entropy, wasserstein_distance
-from .BaumWelch import calculate_log_likelihood
 from .UpwardRecursion import get_Emission_Likelihoods
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .tHMM import tHMM
