@@ -50,16 +50,7 @@ def Analyze(X, num_states, fpi=None, fT=None, fE=None):
     :func:`Analyze` runs several for loops runnning our model for a given number of states
     given an input population (a list of lineages).
     """
-    tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
-
-    for _ in range(1, 2):
-        tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
-        if sum(tmp_LL) > sum(LL):
-            tHMMobj = tmp_tHMMobj
-            pred_states_by_lineage = tmp_pred_states_by_lineage
-            LL = tmp_LL
-
-    return tHMMobj, pred_states_by_lineage, LL
+    return preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
 
 
 def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
