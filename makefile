@@ -39,6 +39,7 @@ testprofile: venv
 	gprof2dot -f pstats --node-thres=5.0 profile | dot -Tsvg -o profile.svg
 
 pylint.log: venv
+	. venv/bin/activate && pip install pylint
 	. venv/bin/activate && (pylint --rcfile=./common/pylintrc lineage > pylint.log || echo "pylint exited with $?")
 
 clean:
