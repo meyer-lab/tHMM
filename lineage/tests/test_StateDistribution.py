@@ -155,7 +155,6 @@ class TestModel(unittest.TestCase):
         gammas = [1] * len(gamma_obs)
 
         shape, scale = gamma_estimator(gamma_obs, gamma_censor_obs, gammas)
-        print(shape,scale)
         self.assertTrue(10 <= shape <= 15)
         self.assertTrue(2 <= scale <= 4)
 
