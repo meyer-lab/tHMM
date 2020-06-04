@@ -31,7 +31,7 @@ def gamma_pdf(x, a, scale):
     return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / gamma(a) / (scale ** a)
 
 
-def gamma_estimator(gamma_obs, time_censor_obs, gammas):
+def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
@@ -47,16 +47,16 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
 
     scale_hat = gammaCor / a_hat
 
-    def LL(x):
-        uncens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==1])
-        uncens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==1])
-        assert uncens_gammas.shape[0] == uncens_obs.shape[0]
-        uncens = uncens_gammas*sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
-        cens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==0])
-        cens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==0])
-        cens = cens_gammas*sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
+    # def LL(x):
+    #     uncens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==1])
+    #     uncens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==1])
+    #     assert uncens_gammas.shape[0] == uncens_obs.shape[0]
+    #     uncens = uncens_gammas*sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
+    #     cens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==0])
+    #     cens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==0])
+    #     cens = cens_gammas*sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
 
-        return -1*np.sum(np.sum(uncens) + np.sum(cens))
+    #     return -1*np.sum(np.sum(uncens) + np.sum(cens))
 
     # res = minimize(LL, [a_hat, scale_hat], bounds=((1.,20.),(1.,20.),), options={'maxiter': 5})
 
