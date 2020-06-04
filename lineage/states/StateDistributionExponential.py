@@ -35,7 +35,7 @@ class StateDistribution:
         if tuple_of_obs[2] == 1:
             exp_ll = exp_pdf(tuple_of_obs[1], self.params[1])
         else:
-            exp_ll = exp_sdf(tuple_of_obs[1], self.params[1])
+            exp_ll = exp_sf(tuple_of_obs[1], self.params[1])
 
         return bern_ll * exp_ll
 
@@ -89,7 +89,7 @@ def exp_pdf(x, beta):
 
 
 @njit
-def exp_sdf(x, beta):
+def exp_sf(x, beta):
     """
     This function takes in 1 observation and and an exponential parameter
     and returns the likelihood of the observation based on the exponential
