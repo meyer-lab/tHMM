@@ -7,8 +7,7 @@ from .states.stateCommon import assign_times, basic_censor, fate_censor, time_ce
 
 
 class LineageTree:
-    """
-    A class for lineage trees.
+    """A class for lineage trees.
     Every lineage object from this class is a binary tree built based on initial probabilities,
     transition probabilities, and emissions defined by state distributions given by the user.
     Lineages are generated in full (no pruning) by creating cells of different states in a
@@ -18,19 +17,24 @@ class LineageTree:
     """
 
     def __init__(self, pi, T, E, desired_num_cells, censor_condition=0, **kwargs):
-        """
-        Args:
-        -----
-        pi {numpy array}: The initial probability matrix; its shape must be the same as the number of states and all of them must sum up to 1.
+        """Constructor method
 
-        T {numpy square matrix}: The transition probability matrix; every row must sum up to 1.
+        :param :math:`\pi`: The initial probability matrix; its shape must be the same as the number of states and all of them must sum up to 1.
+        :type :math:`\pi`: Array
+        :param T: The transition probability matrix; every row must sum up to 1.
+        :type T: square Matrix
+        :param E: A list containing state distribution objects, the length of it is the same as the number of states.
+        :type E: list
+        :param desired_num_cells: The desired number of cells we want the lineage to end up with.
+        :type desired_num_cells: Int
+        :param censor_condition: An integer :math:`\in` \{0, 1, 2, 3\} that decides the type of censoring.
+        :type censor_condition: Int
 
-        E {list}: A list containing state distribution objects, the length of it is the same as the number of states.
-
-        desired_num_cells {Int}: The desired number of cells we want the lineage to end up with.
-
-        censor_condition {bool}: If it is True, it means the user want this lineage to be censord,
-        if False it means the user want this lineage as a output binary tree -- in which none of the cells die.
+        Censoring guide
+        - 0 means no pruning
+        - 1 means censor based on the fate of the cell
+        - 2 means censor based on the length of the experiment
+        - 3 means censor based on both the 'fate' and 'time' conditions
         """
         self.pi = deepcopy(pi)
         pi_num_states = len(pi)
@@ -61,13 +65,6 @@ class LineageTree:
         if len(self.E[0].rvs(1)) > 1:
             assign_times(self)
 
-        # Begin censoring:
-
-        # this is given by the user:
-        # 0 - no pruning
-        # 1 - censor based on the fate of the cell
-        # 2 - censor based on the length of the experiment
-        # 3 - censor based on both the 'fate' and 'time' conditions
         self.censor_condition = censor_condition
 
         if kwargs:
@@ -81,18 +78,9 @@ class LineageTree:
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
 
     def generate_lineage_list(self):
-        """
-        Generates a single lineage tree given Markov variables.
+        """Generates a single lineage tree given Markov variables.
         This only generates the hidden variables (i.e., the states) in a output binary tree manner.
         It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
-
-        Args:
-        -----
-        It takes in the LineageTree object
-
-        Returns:
-        --------
-        output_lin_list {list}: A list containing cells with assigned hidden states based on initial and transition probabilities.
         """
         first_state_results = sp.multinomial.rvs(1, self.pi)  # roll the dice and yield the state for the first cell
         first_cell_state = first_state_results.tolist().index(1)
@@ -111,15 +99,12 @@ class LineageTree:
                 break
 
     def output_assign_obs(self, state):
-        """
-        Observation assignment give a state.
+        """Observation assignment give a state.
         Given the lineageTree object and the intended state, this function assigns the corresponding observations
         comming from specific distributions for that state.
 
-        Args:
-        -----
-        state {Int}: The number assigned to a state.
-
+        :param state: The number assigned to a state.
+        :type state: Int
         """
         cells_in_state = [cell for cell in self.full_lineage if cell.state == state]
         list_of_tuples_of_obs = self.E[state].rvs(size=len(cells_in_state))
@@ -130,8 +115,7 @@ class LineageTree:
             cell.obs = list_of_tuples_of_obs[i]
 
     def censor_lineage(self):
-        """
-        This function removes those cells that are intended to be remove
+        """This function removes those cells that are intended to be remove
         from the output binary tree based on emissions.
         It takes in LineageTree object, walks through all the cells in the output binary tree,
         applies the pruning to each cell that is supposed to be removed,
@@ -155,17 +139,13 @@ class LineageTree:
                 self.output_lineage.append(cell)
 
     def get_parents_for_level(self, level):
-        """
-        Get the parents's index of a generation in the population list.
+        """Get the parents's index of a generation in the population list.
         Given the generation level, this function returns the index of parent cells of the cells being in that generation level.
 
-        Args:
-        -----
-        level {list}: A list containing cells in a specific generation level.
-
-        Retunrs:
-        --------
-        parent_holder {set}: A set holding the parents' indexes of cells in a given generation.
+        :param level: A list containing cells in a specific generation level.
+        :type level: list
+        :return: A set holding the parents' indexes of cells in a given generation.
+        :rtype: set
         """
         parent_holder = set()  # set makes sure only one index is put in and no overlap
         for cell in level:
@@ -173,8 +153,7 @@ class LineageTree:
         return parent_holder
 
     def __repr__(self):
-        """
-        This function is used to get string representation of an object, used for debugging and development.
+        """This function is used to get string representation of an object, used for debugging and development.
         Represents the information about the lineage that the user has created,
         like whether the tree is censord or is a output tree;
         and for both of the options it prints the number of states,
@@ -186,22 +165,19 @@ class LineageTree:
         return s
 
     def __str__(self):
-        """
-        This function is used to get string representation of an object,
+        """This function is used to get string representation of an object,
         used for showing the results to the user.
         """
         return self.__repr__()
 
     def __len__(self):
-        """
-        Defines the length of a lineage by returning the number of cells
+        """Defines the length of a lineage by returning the number of cells
         it contains.
         """
         return len(self.output_lineage)
 
     def is_heterogeneous(self):
-        """
-        Checks whether a lineage is heterogeneous by ensuring that the true states
+        """Checks whether a lineage is heterogeneous by ensuring that the true states
         of the cells contained within it create a set that has more than one state.
         """
         true_states_set_len = len({cell.state for cell in self.output_lineage})
@@ -209,9 +185,9 @@ class LineageTree:
             return True
         return False
 
-    # tool for copying lineages
-
     def uncensor_copy_lineage(self):
+        """A tool for copying lineages.
+        """
         new_lineage = deepcopy(self)
         for cell in new_lineage.full_lineage:
             cell.censored = False
@@ -220,23 +196,19 @@ class LineageTree:
         new_lineage.output_lineage = new_lineage.full_lineage
         return new_lineage
 
-
 # tools for analyzing trees
 
-
 def max_gen(lineage):
-    """ finds the maximal generation in the tree, and cells organized by their generations.
+    """Finds the maximal generation in the tree, and cells organized by their generations.
     This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
     creates a list of them, appends the lists leading to have a list of the lists of cells in specific generations.
 
-    Args:
-    -----
-    lineage {list}: A list of cells (objects) with known state, generation, ect.
-
-    Returns:
-    --------
-    max(gens) {Int}: The maximal generation in the given lineage.
-    list_of_lists_of_cells_by_gen {list}: A list of lists of cells, organized by their generations.
+    :param lineage: A list of cells (objects) with known state, generation, ect.
+    :type lineage: list
+    :return: The maximal generation in the given lineage.
+    :rtype: Int
+    :return: A list of lists of cells, organized by their generations.
+    :rtype: list
     """
     gens = sorted({cell.gen for cell in lineage})  # appending the generation of cells in the lineage
     list_of_lists_of_cells_by_gen = [[None]]
@@ -247,15 +219,15 @@ def max_gen(lineage):
 
 
 def get_leaves(lineage):
-    """ A function to find the leaves and their indexes in the lineage list.
-    Args:
-    -----
-    lineage {list}: A list of cells in the lineage.
+    """
+    A function to find the leaves and their indexes in the lineage list.
 
-    Returns:
-    --------
-    leaf_indices {list}: A list of indexes to the leaf cells in the lineage list.
-    leaves {list}: A list holding the leaf cells in the lineage given.
+    :param lineage: A list of cells in the lineage.
+    :type lineage: list
+    :return: A list of indexes to the leaf cells in the lineage list.
+    :rtype: list
+    :return: A list holding the leaf cells in the lineage given.
+    :rtype: list
     """
     leaf_indices = []
     leaves = []
