@@ -13,6 +13,14 @@ Welcome to lineage-growth's documentation!
    modules.rst
 
 
+Tutorials
+==================
+
+   :doc:`../overview`
+   :doc:`../stateDistributions`
+   :doc:`../estimating_states`
+
+
 Indices and tables
 ==================
 
