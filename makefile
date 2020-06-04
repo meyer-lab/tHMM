@@ -64,7 +64,3 @@ clean:
 	rm -rf prof output coverage.xml .coverage .coverage* junit.xml coverage.xml profile profile.svg pylint.log
 	mkdir output
 	mv requests-cache.sqlite output/requests-cache.sqlite || true
-
-docs: venv
-	. venv/bin/activate && sphinx-apidoc -o doc/source lineage
-	. venv/bin/activate && sphinx-build doc/source doc/build
