@@ -1,9 +1,15 @@
-"""This file contains the methods for the Viterbi algorithm implemented in an a upward recursion."""
+""" This file contains the methods for the Viterbi algorithm implemented in an a upward recursion. """
 import numpy as np
 
 
 def get_leaf_deltas(tHMMobj, EL):
-    """delta matrix and base case at the leaves. Each element in this N by K matrix is the probability for the leaves P(x_n = x | z_n = k)."""
+    """Delta matrix and base case at the leaves. Each element in this N by K matrix is the probability for the leaves :math:`P(x_n = x | z_n = k)`.
+
+    :param tHMMobj: the tHMM object
+    :type tHMMobj: object
+    :return: a list of N by K matrices for each lineage, initialized from the leaf cells by EL(n,k).
+    :rtype: list
+    """
     num_states = tHMMobj.num_states
 
     deltas = []
@@ -29,7 +35,17 @@ def get_leaf_deltas(tHMMobj, EL):
 
 
 def get_nonleaf_deltas(tHMMobj, EL, deltas, state_ptrs):
-    """Calculates the delta values for all non-leaf cells."""
+    """Calculates the delta values for all non-leaf cells by filling out the delta matrix passed to it from the :func:`get_leaf_deltas`.
+
+    :param tHMMobj: the tHMM object
+    :type tHMMobj: object
+    :param EL: emission likelihood
+    :type EL: list
+    :param deltas: a list of N by K matrices for each lineage, initialized from the leaf cells by EL(n,k).
+    :type deltas: list
+    :param state_ptrs: a list of N by K matrices that are state pointers, to obtain nonleaf deltas.
+    :type state_ptrs: list
+    """
 
     # for each lineage in our Population
     for num, lineageObj in enumerate(tHMMobj.X):
@@ -50,7 +66,21 @@ def get_nonleaf_deltas(tHMMobj, EL, deltas, state_ptrs):
 
 
 def get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx):
-    """Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state."""
+    """Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.
+
+    :param lineage: A list containing cells (which are objects with their own properties).
+    :type lineage: list
+    :param delta_array: A N by K matrix containing the delta values that will be used in Viterbi.
+    :type delta_array: Matrix
+    :param T: The K by K transition matrix.
+    :type T: Matrix
+    :param node_parent_m_index: The index of the parent to the currently-intended-cell.
+    :type node_parent_m_index: Int
+    :return: A list to hold the factors in the product.
+    rtype: list
+    :return: A list of tuples of daughter cell indexes and their state pointers.
+    :rtype: list
+    """
     delta_m_n_holder = np.ones(T.shape[0])  # list to hold the factors in the product
     max_state_ptr = []
     # get the index of the parent
@@ -83,7 +113,8 @@ def get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx):
 
 
 def Viterbi(tHMMobj, deltas, state_ptrs):
-    """Runs the viterbi algorithm and returns a list of arrays containing the optimal state of each cell."""
+    """Runs the viterbi algorithm and returns a list of arrays containing the optimal state of each cell. This function returns the most likely sequence of states for each lineage.
+    """
     all_states = []
 
     for num, lineageObj in enumerate(tHMMobj.X):

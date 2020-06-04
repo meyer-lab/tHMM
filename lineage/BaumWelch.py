@@ -18,7 +18,9 @@ from .DownwardRecursion import (
 
 
 def do_E_step(tHMMobj):
-    """ Calculate MSD, EL, NF, gamma, beta, LL from tHMM model. """
+    """ 
+    Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
+    """
     MSD = get_Marginal_State_Distributions(tHMMobj)
     EL = get_Emission_Likelihoods(tHMMobj)
     NF = get_leaf_Normalizing_Factors(tHMMobj, MSD, EL)
@@ -90,7 +92,9 @@ def do_M_E_step(tHMMobj, gammas):
 
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
-    """sum of the list of all the zeta parent child for all the parent cells for a given state transition pair"""
+    """
+    Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
+    """
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
     lineage = lineageObj.output_lineage
     holder = np.zeros(T.shape)
@@ -112,7 +116,9 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
 
 
 def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_array, MSD_array, gamma_array, T):
-    """calculates the zeta value that will be used to fill the transition matrix in baum welch"""
+    """
+    Calculates the zeta value that will be used to fill the transition matrix in baum welch.
+    """
 
     # check the child-parent relationship
     assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]

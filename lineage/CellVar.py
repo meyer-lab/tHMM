@@ -18,8 +18,7 @@ class CellVar:
     """
 
     def __init__(self, state, parent, gen, **kwargs):
-        """
-        Instantiates the cell object.
+        """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
         """
@@ -35,8 +34,7 @@ class CellVar:
             self.censored = kwargs.get("censored", True)
 
     def divide(self, T):
-        """
-        Member function that performs division of a cell.
+        """Member function that performs division of a cell.
         Equivalent to adding another timestep in a Markov process.
         """
         # roll a loaded die according to the row in the transtion matrix
@@ -47,8 +45,7 @@ class CellVar:
         return self.left, self.right
 
     def isLeafBecauseTerminal(self):
-        """
-        Boolean.
+        """Boolean.
         Returns true when a cell is a leaf with no children.
         These are cells at the end of the tree.
         """
