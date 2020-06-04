@@ -23,9 +23,8 @@ output/manuscript.md: venv manuscript/*.md
 output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.svg, $(flist))
 	mkdir output/output
 	cp output/*.svg output/output/
-	. venv/bin/activate && pandoc --verbose \
-		--defaults=common/templates/pandoc/common.yaml \
-  		--defaults=common/templates/pandoc/html.yaml output/manuscript.md
+	. venv/bin/activate && pandoc --verbose --data-dir=common/templates/pandoc \
+		--defaults=common.yaml --defaults=html.yaml output/manuscript.md
 
 Guide_to_tHMM.pdf: venv Guide_to_tHMM.ipynb
 	. venv/bin/activate && jupyter nbconvert --to pdf --execute Guide_to_tHMM.ipynb
