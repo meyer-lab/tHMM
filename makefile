@@ -18,30 +18,14 @@ output/figure%.svg: venv genFigures.py
 	. venv/bin/activate && ./genFigures.py $*
 
 output/manuscript.md: venv manuscript/*.md
-	. venv/bin/activate && manubot process --content-directory=./manuscript/ --output-directory=./output --log-level=INFO
+	. venv/bin/activate && manubot process --content-directory=content --output-directory=output --cache-directory=cache --skip-citations --log-level=INFO
 
 output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.svg, $(flist))
 	mkdir output/output
 	cp output/*.svg output/output/
 	. venv/bin/activate && pandoc --verbose \
-		--from=markdown --to=html5 --filter=pandoc-fignos --filter=pandoc-eqnos --filter=pandoc-tablenos \
-		--bibliography=output/references.json \
-		--csl=common/templates/manubot/style.csl \
-		--metadata link-citations=true \
-		--include-after-body=common/templates/manubot/default.html \
-		--include-after-body=common/templates/manubot/plugins/table-scroll.html \
-		--include-after-body=common/templates/manubot/plugins/anchors.html \
-		--include-after-body=common/templates/manubot/plugins/accordion.html \
-		--include-after-body=common/templates/manubot/plugins/tooltips.html \
-		--include-after-body=common/templates/manubot/plugins/jump-to-first.html \
-		--include-after-body=common/templates/manubot/plugins/link-highlight.html \
-		--include-after-body=common/templates/manubot/plugins/table-of-contents.html \
-		--include-after-body=common/templates/manubot/plugins/lightbox.html \
-		--mathjax \
-		--variable math="" \
-		--include-after-body=common/templates/manubot/plugins/math.html \
-		--include-after-body=common/templates/manubot/plugins/hypothesis.html \
-		--output=output/manuscript.html output/manuscript.md
+		--defaults=common/templates/pandoc/common.yaml \
+  		--defaults=common/templates/pandoc/html.yaml output/manuscript.md
 
 Guide_to_tHMM.pdf: venv Guide_to_tHMM.ipynb
 	. venv/bin/activate && jupyter nbconvert --to pdf --execute Guide_to_tHMM.ipynb
@@ -60,7 +44,4 @@ pylint.log: venv
 	. venv/bin/activate && (pylint --rcfile=./common/pylintrc lineage > pylint.log || echo "pylint exited with $?")
 
 clean:
-	mv output/requests-cache.sqlite requests-cache.sqlite || true
 	rm -rf prof output coverage.xml .coverage .coverage* junit.xml coverage.xml profile profile.svg pylint.log
-	mkdir output
-	mv requests-cache.sqlite output/requests-cache.sqlite || true
