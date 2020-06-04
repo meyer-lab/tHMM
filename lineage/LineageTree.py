@@ -198,6 +198,7 @@ class LineageTree:
 
 # tools for analyzing trees
 
+
 def max_gen(lineage):
     """Finds the maximal generation in the tree, and cells organized by their generations.
     This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and

@@ -18,7 +18,7 @@ def get_Marginal_State_Distributions(tHMMobj):
 
     Every element in MSD matrix is essentially sum over all transitions from any state to
     state j (from parent to daughter):
-    
+
     :math:`P(z_u = k) = \sum_j(Transition(j -> k) * P(parent_{cell_u}) = j)`
     """
     MSD = []

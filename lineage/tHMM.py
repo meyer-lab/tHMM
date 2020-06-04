@@ -9,6 +9,7 @@ import scipy.stats as sp
 class estimate:
     """Estimation class.
     """
+
     def __init__(self, X, nState: int, fpi=None, fT=None, fE=None):
         self.fpi = fpi
         self.fT = fT
