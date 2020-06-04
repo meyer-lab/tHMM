@@ -1,25 +1,28 @@
-"""Calls the tHMM functions and outputs the parameters needed to generate the Figures"""
+""" Calls the tHMM functions and outputs the parameters needed to generate the Figures. """
 from concurrent.futures import ProcessPoolExecutor
 import random
 import numpy as np
 from sklearn import metrics
 from scipy.stats import entropy, wasserstein_distance
-from .BaumWelch import calculate_log_likelihood
 from .UpwardRecursion import get_Emission_Likelihoods
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 from .tHMM import tHMM
 
 
 def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
-    """Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
-    Args:
-    -----
-    X {list}: A list containing LineageTree objects as lineages.
-    num_states {Int}: The number of states we want our model to estimate for the given population.
+    """
+    Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
 
-    Returns:
-    --------
-    tHMMobj {obj}:
+    :param X: A list containing LineageTree objects as lineages.
+    :type X: list
+    :param num_states: The number of states we want our model to estimate for the given population.
+    :type num_states: Int
+    :return: The tHMM object
+    :rtype: object
+    :return: A list containing the lineage-wise predicted states by Viterbi.
+    :rtype: list
+    :return: Log-likelihood of the normalizing factor for the lineage.
+    :rtype: float
     """
     error_holder = []
     for num_tries in range(1, 15):
@@ -44,19 +47,10 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
 
 def Analyze(X, num_states, fpi=None, fT=None, fE=None):
     """
-    Analyze runs several for loops runnning our model for a given number of states
+    :func:`Analyze` runs several for loops runnning our model for a given number of states
     given an input population (a list of lineages).
     """
-    tHMMobj, pred_states_by_lineage, LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
-
-    for _ in range(1, 2):
-        tmp_tHMMobj, tmp_pred_states_by_lineage, tmp_LL = preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
-        if sum(tmp_LL) > sum(LL):
-            tHMMobj = tmp_tHMMobj
-            pred_states_by_lineage = tmp_pred_states_by_lineage
-            LL = tmp_LL
-
-    return tHMMobj, pred_states_by_lineage, LL
+    return preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
 
 
 def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
@@ -71,9 +65,10 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
     and computing certain statistics, most of which can be done in an
     additional for loop over the results from Analyze.
 
-    This function takes as input:
-    list_of_populations: a list of populations that contain lineages
-    num_states: an integer number of states to identify (a hyper-parameter of our model)
+    :param list_of_populations: A list of populations that contain lineages.
+    :type: list
+    :param num_states: An integer number of states to identify (a hyper-parameter of our model)
+    :type num_states: Int
     """
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
@@ -213,8 +208,9 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
 def run_Results_over(output):
     """
     A function that can be parallelized to speed up figure creation
-    This function takes as input:
-    output: a list of tuples from the results of running run_Analyze_over
+
+    :param output: a list of tuples from the results of running :func:`run_Analyze_over`
+    :type output: list
     """
     results_holder = []
     for _, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
@@ -227,16 +223,15 @@ def getAIC(tHMMobj, LL):
     """
     Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
     between over-fitting and under-fitting.
-    AIC = 2*k - 2 * log(LL) in which k is the number of free parameters and LL is the maximum of likelihood function.
+    :math:`AIC = 2*k - 2 * log(LL)` in which k is the number of free parameters and LL is the maximum of likelihood function.
     Minimum of AIC detremines the relatively better model.
-    Args:
-    -----
-        tHMMobj (obj): the tHMM class which has been built.
-        LL :
-    Returns:
-    --------
-        AIC_value : containing AIC values relative to 0 for each lineage.
-        AIC_degrees_of_freedom : the degrees of freedom in AIC calculation (num_states**2 + num_states * number_of_parameters - 1) - same for each lineage
+
+    :param tHMMobj: the tHMM class which has been built.
+    :type tHMMobj: object
+    :param LL: the likelihood value
+    :param AIC_value: containing AIC values relative to 0 for each lineage.
+    :type AIC_value: float
+    :param AIC_degrees_of_freedom: the degrees of freedom in AIC calculation :math:`(num_{states}^2 + num_{states} * numberOfParameters - 1)` - same for each lineage
     """
     num_states = tHMMobj.num_states
 
@@ -249,9 +244,10 @@ def getAIC(tHMMobj, LL):
 
 
 def LLHelperFunc(T, lineageObj):
-    """ To calculate the joint probability of state and observations.
+    """
+    To calculate the joint probability of state and observations.
     This function, calculates the second term
-    P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))
+    :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
     """
     states = []
     for cell in lineageObj.output_lineage:
@@ -263,8 +259,9 @@ def LLHelperFunc(T, lineageObj):
 
 
 def LLFunc(T, pi, tHMMobj, pred_states_by_lineage):
-    """ This function calculate the state likelihood, using the joint probability function.
-    *** we do the log-transformation to avoid underflow.
+    """
+    This function calculate the state likelihood, using the joint probability function.
+    *we do the log-transformation to avoid underflow.*
     """
     stLikelihood = []
     for indx, lineage in enumerate(tHMMobj.X):
