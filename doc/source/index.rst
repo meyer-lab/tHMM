@@ -3,6 +3,8 @@ Welcome to lineage-growth's documentation!
 
 .. automodule:: lineage
     :members:
+    :undoc-members:
+    :show-inheritance:
 
 .. toctree::
    :maxdepth: 2
