@@ -7,7 +7,7 @@ from ..states.StateDistributionGamma import (
     StateDistribution,
     gamma_estimator,
 )
-from ..states.StateDistPhase import StateDistribution2 as StateDistPhase
+from ..states.StateDistPhase import StateDistribution as StateDistPhase
 from ..states.StateDistributionGaussian import StateDistribution as StateDistGaussian
 from ..states.stateCommon import (
     bern_pdf,
@@ -155,7 +155,6 @@ class TestModel(unittest.TestCase):
         gammas = [1] * len(gamma_obs)
 
         shape, scale = gamma_estimator(gamma_obs, gamma_censor_obs, gammas)
-
         self.assertTrue(10 <= shape <= 15)
         self.assertTrue(2 <= scale <= 4)
 

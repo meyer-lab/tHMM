@@ -12,7 +12,7 @@ from ..Analyze import run_Results_over, run_Analyze_over
 
 from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistributionExponential import StateDistribution as expStateDistribution
-from ..states.StateDistPhase import StateDistribution2 as phaseStateDist
+from ..states.StateDistPhase import StateDistribution as phaseStateDist
 
 # pi: the initial probability vector
 pi = np.array([0.75, 0.25], dtype="float")

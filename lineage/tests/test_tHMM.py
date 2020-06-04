@@ -8,8 +8,8 @@ from ..UpwardRecursion import (
 )
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
-from ..states.StateDistPhase import StateDistribution2 as StateDistPhase
-from ..figures.figureCommon import pi, T, E
+from ..states.StateDistPhase import StateDistribution as StateDistPhase
+from lineage.figures.figureCommon import pi, T, E
 
 
 class TestModel(unittest.TestCase):

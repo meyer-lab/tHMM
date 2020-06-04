@@ -30,8 +30,13 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        bern_ll = bern_pdf(tuple_of_obs[0], self.params[0])
-        exp_ll = exp_pdf(tuple_of_obs[1], self.params[1])
+        bern_ll = bern_pdf(tuple_of_obs[0], self.params[0]) if tuple_of_obs[2] == 1 else 1.0
+
+        if tuple_of_obs[2] == 1:
+            exp_ll = exp_pdf(tuple_of_obs[1], self.params[1])
+        else:
+            exp_ll = exp_sf(tuple_of_obs[1], self.params[1])
+
         return bern_ll * exp_ll
 
     def estimator(self, list_of_tuples_of_obs, gammas):
@@ -43,7 +48,7 @@ class StateDistribution:
         # {
         bern_obs = list(unzipped_list_of_tuples_of_obs[0])
         exp_obs = list(unzipped_list_of_tuples_of_obs[1])
-        time_censor_obs = list(unzipped_list_of_tuples_of_obs[2])
+        time_censor_obs = np.array(unzipped_list_of_tuples_of_obs[2], dtype=bool)
 
         self.params[0] = bernoulli_estimator(bern_obs, gammas)
         self.params[1] = exp_estimator(exp_obs, time_censor_obs, gammas)
@@ -51,6 +56,9 @@ class StateDistribution:
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
+
+    def __repl__(self):
+        return "f{self.params}"
 
 
 # Because parameter estimation requires that estimators be written or imported,
@@ -67,7 +75,7 @@ def exp_estimator(exp_obs, time_censor_obs, gammas):
     This is a closed-form estimator for the lambda parameter of the
     exponential distribution, which is right-censored.
     """
-    return sum(gammas * exp_obs) / sum(gammas)
+    return sum(gammas * exp_obs) / sum(gammas * time_censor_obs)
 
 
 @njit
@@ -78,3 +86,13 @@ def exp_pdf(x, beta):
     probability distribution function.
     """
     return (1.0 / beta) * np.exp(-1.0 * x / beta)
+
+
+@njit
+def exp_sf(x, beta):
+    """
+    This function takes in 1 observation and and an exponential parameter
+    and returns the likelihood of the observation based on the exponential
+    survival distribution function.
+    """
+    return np.exp(-1.0 * x / beta)

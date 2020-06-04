@@ -4,7 +4,7 @@ import scipy.stats as sp
 from .stateCommon import bern_pdf, bernoulli_estimator, gamma_pdf, gamma_estimator
 
 
-class StateDistribution2:
+class StateDistribution:
     """ For G1 and G2 separated as observations. """
 
     def __init__(self, bern_p1=0.9, bern_p2=0.75, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6):  # user has to identify what parameters to use for each state

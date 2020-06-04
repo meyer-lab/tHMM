@@ -48,11 +48,14 @@ class StateDistribution:
         # {
         bern_obs = list(unzipped_list_of_tuples_of_obs[0])
         γ_obs = np.array(unzipped_list_of_tuples_of_obs[1])
-        γ_censor_obs = np.array(unzipped_list_of_tuples_of_obs[2], dtype=bool)
+        time_censor_obs = np.array(unzipped_list_of_tuples_of_obs[2], dtype=bool)
 
         self.params[0] = bernoulli_estimator(bern_obs, gammas)
-        self.params[1], self.params[2] = gamma_estimator(γ_obs, γ_censor_obs, gammas)
+        self.params[1], self.params[2] = gamma_estimator(γ_obs, time_censor_obs, gammas)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
+
+    def __repl__(self):
+        return "f{self.params}"

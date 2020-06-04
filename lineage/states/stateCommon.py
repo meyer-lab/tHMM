@@ -5,7 +5,8 @@ import numpy as np
 from numba import njit
 import scipy.stats as sp
 import scipy.special as sc
-from scipy.optimize import brentq
+from scipy.optimize import brentq, minimize
+import math
 
 
 @njit
@@ -46,22 +47,22 @@ def gamma_estimator(gamma_obs, gamma_censor_obs, gammas):
 
     scale_hat = gammaCor / a_hat
 
-    def LL(x):
-        uncens = sp.gamma.logpdf(gamma_obs, a=x[0], scale=x[1])
-        cens = sp.gamma.logsf(gamma_obs, a=x[0], scale=x[1])
+    # def LL(x):
+    #     uncens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==1])
+    #     uncens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==1])
+    #     assert uncens_gammas.shape[0] == uncens_obs.shape[0]
+    #     uncens = uncens_gammas*sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
+    #     cens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==0])
+    #     cens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==0])
+    #     cens = cens_gammas*sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
 
-        # If the observation was censored, use the survival function
-        uncens[np.logical_not(gamma_censor_obs)] = cens[np.logical_not(gamma_censor_obs)]
+    #     return -1*np.sum(np.sum(uncens) + np.sum(cens))
 
-        # If gamma indicates the cell is very unlikely for this state, ignore it
-        gamL = np.log(gammas)
-        uncens[gamL < -9] = 1.0
-        gamL[gamL < -9] = 0
+    # res = minimize(LL, [a_hat, scale_hat], bounds=((1.,20.),(1.,20.),), options={'maxiter': 5})
 
-        return -np.sum(uncens + gamL)
-
-    # res = minimize(LL, [a_hat, scale_hat])
-
+    # if math.isnan(res.x[0]) or math.isnan(res.x[1]):
+    #     return a_hat, scale_hat
+    # return  res.x[0], res.x[1]
     return a_hat, scale_hat
 
 
