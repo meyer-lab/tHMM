@@ -4,22 +4,22 @@ import numpy as np
 
 
 def get_Marginal_State_Distributions(tHMMobj):
-    """
-    Marginal State Distribution (MSD) matrix and recursion.
-    This is the probability that a hidden state variable z_n is of
+    """Marginal State Distribution (MSD) matrix and recursion.
+    This is the probability that a hidden state variable :math:`z_n` is of
     state k, that is, each value in the N by K MSD array for each lineage is
     the probability
 
     :math:`P(z_n = k)`,
 
-    for all z_n in the hidden state tree
+    for all :math:`z_n` in the hidden state tree
     and for all k in the total number of discrete states. Each MSD array is
     an N by K array (an entry for each cell and an entry for each state),
     and each lineage has its own MSD array.
 
     Every element in MSD matrix is essentially sum over all transitions from any state to
     state j (from parent to daughter):
-        P(z_u = k) = sum_on_all_j(Transition(from j to k) * P(parent_cell_u) = j)
+    
+    :math:`P(z_u = k) = \sum_j(Transition(from j to k) * P(parent_cell_u) = j)`
     """
     MSD = []
 
@@ -49,14 +49,13 @@ def get_Marginal_State_Distributions(tHMMobj):
 
 
 def get_Emission_Likelihoods(tHMMobj):
-    """
-    Emission Likelihood (EL) matrix.
+    """Emission Likelihood (EL) matrix.
 
     Each element in this N by K matrix represents the probability
 
     :math:`P(x_n = x | z_n = k)`,
 
-    for all x_n and z_n in our observed and hidden state tree
+    for all :math:`x_n` and :math:`z_n` in our observed and hidden state tree
     and for all possible discrete states k.
     """
     EL = []
@@ -74,10 +73,9 @@ def get_Emission_Likelihoods(tHMMobj):
 
 
 def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
-    """
-    Normalizing factor (NF) matrix and base case at the leaves.
+    """Normalizing factor (NF) matrix and base case at the leaves.
 
-    Each element in this N by 1 matrix is the normalizing
+    Each element in this :math:`N \times 1` matrix is the normalizing
     factor for each beta value calculation for each node.
     This normalizing factor is essentially the marginal
     observation distribution for a node.
@@ -122,8 +120,7 @@ def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
 
 
 def get_leaf_betas(tHMMobj, MSD, EL, NF):
-    """
-    Beta matrix and base case at the leaves.
+    """Beta matrix and base case at the leaves.
 
     Each element in this N by K matrix is the beta value
     for each cell and at each state. In particular, this
@@ -173,8 +170,7 @@ def get_leaf_betas(tHMMobj, MSD, EL, NF):
 
 
 def get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas):
-    """
-    Traverses through each tree and calculates the
+    """Traverses through each tree and calculates the
     beta value for each non-leaf cell. The normalizing factors (NFs)
     are also calculated as an intermediate for determining each
     beta term. Helper functions are called to determine one of
@@ -206,8 +202,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas):
 
 
 def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, node_parent_m_idx):
-    """
-    Calculates the product of beta-links for every parent-child
+    """Calculates the product of beta-links for every parent-child
     relationship of a given parent cell in a given state.
     """
     beta_m_n_holder = np.ones(T.shape[0])  # list to hold the factors in the product
@@ -224,8 +219,7 @@ def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, node_parent_m_
 
 
 def beta_parent_child_func(beta_array, T, MSD_array, node_child_n_idx):
-    """
-    This "helper" function calculates the probability
+    """This "helper" function calculates the probability
     described as a 'beta-link' between parent and child
     nodes in our tree for some state j. This beta-link
     value is what lets you calculate the values of

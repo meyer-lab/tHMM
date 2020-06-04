@@ -7,8 +7,7 @@ import scipy.stats as sp
 
 
 class estimate:
-    """
-    Estimation class.
+    """Estimation class.
     """
     def __init__(self, X, nState: int, fpi=None, fT=None, fE=None):
         self.fpi = fpi
@@ -34,22 +33,20 @@ class estimate:
 
 
 class tHMM:
-    """
-    Main tHMM class.
+    """Main tHMM class.
     """
 
     def __init__(self, X, num_states, fpi=None, fT=None, fE=None):
-        """
-        Instantiates a tHMM.
+        """Instantiates a tHMM.
 
         This function uses the following functions and assings them to the cells
         (objects) in the lineage.
 
-        Args:
-        ----------
-        X (list of objects): A list of objects (cells) in a lineage in which
+        :param X: A list of objects (cells) in a lineage in which
         the NaNs have been removed.
-        num_states (int): the number of hidden states that we want our model have
+        :type X:  list of objects
+        :param num_states: The number of hidden states that we want our model have.
+        :type num_states: Int
         """
         self.fpi = fpi
         self.fT = fT
