@@ -14,11 +14,12 @@ venv/bin/activate: requirements.txt
 	touch venv/bin/activate
 
 output/figure%.svg: venv genFigures.py lineage/figures/figure%.py
-	mkdir -p ./output
+	@. mkdir -p ./output
 	. venv/bin/activate && ./genFigures.py $*
 
 output/manuscript.md: venv manuscript/*.md
-	. venv/bin/activate && manubot process --content-directory=content --output-directory=output --cache-directory=cache --skip-citations --log-level=INFO
+	. venv/bin/activate && manubot process --content-directory=manuscript --output-directory=output --cache-directory=cache --skip-citations --log-level=INFO
+	git remote rm rootstock
 
 output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.svg, $(flist))
 	mkdir output/output
