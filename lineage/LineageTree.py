@@ -144,8 +144,8 @@ class LineageTree:
 
         :param level: A list containing cells in a specific generation level.
         :type level: list
-        :return parent_holder: A set holding the parents' indexes of cells in a given generation.
-        :rtype parent_holder: set
+        :return: A set holding the parents' indexes of cells in a given generation.
+        :rtype: set
         """
         parent_holder = set()  # set makes sure only one index is put in and no overlap
         for cell in level:
@@ -186,7 +186,7 @@ class LineageTree:
         return False
 
     def uncensor_copy_lineage(self):
-        """ A tool for copying lineages.
+        """A tool for copying lineages.
         """
         new_lineage = deepcopy(self)
         for cell in new_lineage.full_lineage:
@@ -205,10 +205,10 @@ def max_gen(lineage):
 
     :param lineage: A list of cells (objects) with known state, generation, ect.
     :type lineage: list
-    :return max(gens): The maximal generation in the given lineage.
-    :rtype max(gens): Int
-    :return list_of_lists_of_cells_by_gen: A list of lists of cells, organized by their generations.
-    :rtype list_of_lists_of_cells_by_gen: list
+    :return: The maximal generation in the given lineage.
+    :rtype: Int
+    :return: A list of lists of cells, organized by their generations.
+    :rtype: list
     """
     gens = sorted({cell.gen for cell in lineage})  # appending the generation of cells in the lineage
     list_of_lists_of_cells_by_gen = [[None]]
@@ -224,10 +224,10 @@ def get_leaves(lineage):
 
     :param lineage: A list of cells in the lineage.
     :type lineage: list
-    :return leaf_indices: A list of indexes to the leaf cells in the lineage list.
-    :rtype leaf_indices: list
-    :return leaves: A list holding the leaf cells in the lineage given.
-    :rtype leaves: list
+    :return: A list of indexes to the leaf cells in the lineage list.
+    :rtype: list
+    :return: A list holding the leaf cells in the lineage given.
+    :rtype: list
     """
     leaf_indices = []
     leaves = []

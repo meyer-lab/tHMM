@@ -44,7 +44,7 @@ class tHMM:
 
         :param X: A list of objects (cells) in a lineage in which
         the NaNs have been removed.
-        :type X:  list of objects
+        :type X: list of objects
         :param num_states: The number of hidden states that we want our model have.
         :type num_states: Int
         """

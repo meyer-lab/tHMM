@@ -13,16 +13,17 @@ from .tHMM import tHMM
 def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     """
     Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
-    Args:
-    -----
-    X {list}: A list containing LineageTree objects as lineages.
-    num_states {Int}: The number of states we want our model to estimate for the given population.
 
-    Returns:
-    --------
-    tHMMobj {obj}: The tHMM object
-    pred_states_by_lineage {list}: A list containing the lineage-wise predicted states by Viterbi.
-    LL {Float}: Log-likelihood of the normalizing factor for the lineage.
+    :param X: A list containing LineageTree objects as lineages.
+    :type X: list
+    :param num_states: The number of states we want our model to estimate for the given population.
+    :type num_states: Int
+    :return: The tHMM object
+    :rtype: object
+    :return: A list containing the lineage-wise predicted states by Viterbi.
+    :rtype: list
+    :return: Log-likelihood of the normalizing factor for the lineage.
+    :rtype: float
     """
     error_holder = []
     for num_tries in range(1, 15):
@@ -74,10 +75,10 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
     and computing certain statistics, most of which can be done in an
     additional for loop over the results from Analyze.
 
-    Args:
-    -----
-        list_of_populations {list}: A list of populations that contain lineages
-        num_states {Int}: An integer number of states to identify (a hyper-parameter of our model)
+    :param list_of_populations: A list of populations that contain lineages.
+    :type: list
+    :param num_states: An integer number of states to identify (a hyper-parameter of our model)
+    :type num_states: Int
     """
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
@@ -217,8 +218,9 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
 def run_Results_over(output):
     """
     A function that can be parallelized to speed up figure creation
-    This function takes as input:
-    output: a list of tuples from the results of running run_Analyze_over
+
+    :param output: a list of tuples from the results of running :func:`run_Analyze_over`
+    :type output: list
     """
     results_holder = []
     for _, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
@@ -233,14 +235,13 @@ def getAIC(tHMMobj, LL):
     between over-fitting and under-fitting.
     :math:`AIC = 2*k - 2 * log(LL)` in which k is the number of free parameters and LL is the maximum of likelihood function.
     Minimum of AIC detremines the relatively better model.
-    Args:
-    -----
-    tHMMobj (obj): the tHMM class which has been built.
-    LL : the likelihood value
-    Returns:
-    --------
-    AIC_value : containing AIC values relative to 0 for each lineage.
-    AIC_degrees_of_freedom : the degrees of freedom in AIC calculation :math:`(num_states**2 + num_states * number_of_parameters - 1)` - same for each lineage
+
+    :param tHMMobj: the tHMM class which has been built.
+    :type tHMMobj: object
+    :param LL: the likelihood value
+    :param AIC_value: containing AIC values relative to 0 for each lineage.
+    :type AIC_value: float
+    :param AIC_degrees_of_freedom: the degrees of freedom in AIC calculation :math:`(num_{states}^2 + num_{states} * numberOfParameters - 1)` - same for each lineage
     """
     num_states = tHMMobj.num_states
 

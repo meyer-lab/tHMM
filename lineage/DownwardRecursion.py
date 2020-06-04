@@ -5,8 +5,7 @@ from .UpwardRecursion import beta_parent_child_func
 
 
 def get_root_gammas(tHMMobj, betas):
-    """
-   Need the first gamma terms in the baum welch, which are just the beta values of the root nodes.
+    """Need the first gamma terms in the baum welch, which are just the beta values of the root nodes.
     """
     gammas = []
 
@@ -22,8 +21,7 @@ def get_root_gammas(tHMMobj, betas):
 
 
 def get_nonroot_gammas(tHMMobj, MSD, gammas, betas):
-    """
-    Get the gammas for all other nodes using recursion from the root nodes.
+    """Get the gammas for all other nodes using recursion from the root nodes.
     """
     T = tHMMobj.estimate.T
 
@@ -54,8 +52,7 @@ def get_nonroot_gammas(tHMMobj, MSD, gammas, betas):
 
 
 def sum_nonleaf_gammas(lineageObj, gamma_arr):
-    """
-    Sum of the gammas of the cells that are able to divide, that is,
+    """Sum of the gammas of the cells that are able to divide, that is,
     sum the of the gammas of all the nonleaf cells.
     """
     holder_wo_leaves = np.zeros(gamma_arr.shape[1])

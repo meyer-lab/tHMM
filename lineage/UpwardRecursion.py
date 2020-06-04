@@ -19,7 +19,7 @@ def get_Marginal_State_Distributions(tHMMobj):
     Every element in MSD matrix is essentially sum over all transitions from any state to
     state j (from parent to daughter):
     
-    :math:`P(z_u = k) = \sum_j(Transition(from j to k) * P(parent_cell_u) = j)`
+    :math:`P(z_u = k) = \sum_j(Transition(j -> k) * P(parent_{cell_u}) = j)`
     """
     MSD = []
 
@@ -75,7 +75,7 @@ def get_Emission_Likelihoods(tHMMobj):
 def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
     """Normalizing factor (NF) matrix and base case at the leaves.
 
-    Each element in this :math:`N \times 1` matrix is the normalizing
+    Each element in this N by 1 matrix is the normalizing
     factor for each beta value calculation for each node.
     This normalizing factor is essentially the marginal
     observation distribution for a node.

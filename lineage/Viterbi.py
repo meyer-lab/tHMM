@@ -7,8 +7,8 @@ def get_leaf_deltas(tHMMobj, EL):
 
     :param tHMMobj: the tHMM object
     :type tHMMobj: object
-    :return deltas: a list of :math:`N \times K` matrices for each lineage, initialized from the leaf cells by EL(n,k).
-    :rtype deltas: list
+    :return: a list of N by K matrices for each lineage, initialized from the leaf cells by EL(n,k).
+    :rtype: list
     """
     num_states = tHMMobj.num_states
 
@@ -41,9 +41,9 @@ def get_nonleaf_deltas(tHMMobj, EL, deltas, state_ptrs):
     :type tHMMobj: object
     :param EL: emission likelihood
     :type EL: list
-    :param deltas: a list of :math:`N \times K` matrices for each lineage, initialized from the leaf cells by EL(n,k).
+    :param deltas: a list of N by K matrices for each lineage, initialized from the leaf cells by EL(n,k).
     :type deltas: list
-    :param state_ptrs: a list of :math:`N \times K` matrices that are state pointers, to obtain nonleaf deltas.
+    :param state_ptrs: a list of N by K matrices that are state pointers, to obtain nonleaf deltas.
     :type state_ptrs: list
     """
 
@@ -70,16 +70,16 @@ def get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx):
 
     :param lineage: A list containing cells (which are objects with their own properties).
     :type lineage: list
-    :param delta_array: A :math:`N \times K` matrix containing the delta values that will be used in Viterbi.
+    :param delta_array: A N by K matrix containing the delta values that will be used in Viterbi.
     :type delta_array: Matrix
-    :param T: The :math:`K \times K` transition matrix.
+    :param T: The K by K transition matrix.
     :type T: Matrix
     :param node_parent_m_index: The index of the parent to the currently-intended-cell.
     :type node_parent_m_index: Int
-    :return delta_m_n_holder: A list to hold the factors in the product.
-    rtype delta_m_n_holder: list
-    :return max_state_ptr: A list of tuples of daughter cell indexes and their state pointers.
-    :rtype max_state_ptr: list
+    :return: A list to hold the factors in the product.
+    rtype: list
+    :return: A list of tuples of daughter cell indexes and their state pointers.
+    :rtype: list
     """
     delta_m_n_holder = np.ones(T.shape[0])  # list to hold the factors in the product
     max_state_ptr = []
