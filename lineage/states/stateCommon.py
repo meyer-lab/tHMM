@@ -58,11 +58,12 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
 
         return -1*np.sum(np.sum(uncens) + np.sum(cens))
 
-    res = minimize(LL, [a_hat, scale_hat], bounds=((1.,20.),(1.,20.),), options={'maxiter': 5})
+    # res = minimize(LL, [a_hat, scale_hat], bounds=((1.,20.),(1.,20.),), options={'maxiter': 5})
 
-    if math.isnan(res.x[0]) or math.isnan(res.x[1]):
-        return a_hat, scale_hat
-    return  res.x[0], res.x[1]
+    # if math.isnan(res.x[0]) or math.isnan(res.x[1]):
+    #     return a_hat, scale_hat
+    # return  res.x[0], res.x[1]
+    return a_hat, scale_hat
 
 
 def bernoulli_estimator(bern_obs, gammas):
