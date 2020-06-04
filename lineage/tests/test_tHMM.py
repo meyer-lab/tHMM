@@ -60,8 +60,6 @@ class TestModel(unittest.TestCase):
         ensures the output is of correct data type and
         structure.
         """
-        t = self.t
-        t3 = self.t3
         MSD = self.MSD
         MSD3 = self.MSD3
         self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
@@ -79,8 +77,6 @@ class TestModel(unittest.TestCase):
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         """
-        t = self.t
-        t3 = self.t3
         EL = self.EL
         EL3 = self.EL3
         self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
