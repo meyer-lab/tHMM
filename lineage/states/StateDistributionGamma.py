@@ -58,4 +58,7 @@ class StateDistribution:
         # if this function runs again.
 
     def __repl__(self):
-        return "f{self.params}"
+        return f"{self.params}"
+
+    def __str__(self):
+        return self.__repl__()

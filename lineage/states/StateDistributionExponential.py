@@ -58,7 +58,10 @@ class StateDistribution:
         # if this function runs again.
 
     def __repl__(self):
-        return "f{self.params}"
+        return f"{self.params}"
+
+    def __str__(self):
+        return self.__repl__()
 
 
 # Because parameter estimation requires that estimators be written or imported,
