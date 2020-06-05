@@ -5,6 +5,7 @@ from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution as gamma_state
 from ..states.StateDistributionExpon import StateDistribution as expon_state
 
+
 class TestModel(unittest.TestCase):
     """
     Unit test class for state distributions.
@@ -31,3 +32,6 @@ class TestModel(unittest.TestCase):
         self.lineage_expon_censored = LineageTree(self.pi, self.T, self.E_expon, 2**9, censor_condition=3, desired_experiment_time=30)
         self.solver_expon_censored = tHMM([self.lineage_expon_censored], 1) # evaluating for one state
         self.solver_expon_censored.fit()
+        
+        
+    def eva
