@@ -46,7 +46,7 @@ class TestModel(unittest.TestCase):
         self.solver_expon_censored.fit()
         self.expon_state_censored_estimate = self.solver_expon_censored.estimate.E[0]
 
-    def estimationEvaluationGamma(self):
+    def test_estimationEvaluationGamma(self):
         """
         Evaluates the performance of fitting and the underlying estimator
         by comparing the parameter estimates to their true values.
@@ -55,7 +55,7 @@ class TestModel(unittest.TestCase):
         self.assertGreater(1., abs(self.gamma_state_estimate.gamma_a-self.E_gamma.gamma_a))
         self.assertGreater(1., abs(self.gamma_state_estimate.gamma_scale-self.E_gamma.gamma_scale))
 
-    def estimationEvaluationExpon(self):
+    def test_estimationEvaluationExpon(self):
         """
         Evaluates the performance of fitting and the underlying estimator
         by comparing the parameter estimates to their true values.
@@ -63,7 +63,7 @@ class TestModel(unittest.TestCase):
         """
         self.assertGreater(1., abs(self.expon_state_estimate.exp_beta - self.E_expon.exp_beta))
 
-    def estimationEvaluationGammaCensored(self):
+    def test_estimationEvaluationGammaCensored(self):
         """
         Evaluates the performance of fitting and the underlying estimator
         by comparing the parameter estimates to their true values.
@@ -72,7 +72,7 @@ class TestModel(unittest.TestCase):
         self.assertGreater(1., abs(self.gamma_state_censored_estimate.gamma_a - self.E_gamma.gamma_a))
         self.assertGreater(1., abs(self.gamma_state_censored_estimate.gamma_scale - self.E_gamma.gamma_scale))
 
-    def estimationEvaluationExponCensored(self):
+    def test_estimationEvaluationExponCensored(self):
         """
         Evaluates the performance of fitting and the underlying estimator
         by comparing the parameter estimates to their true values.
