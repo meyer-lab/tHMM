@@ -21,7 +21,7 @@ class TestModel(unittest.TestCase):
         self.T = np.array([[1]])
         self.E_gamma = [gamma_state(bern_p=1., gamma_a=7, gamma_scale=4.5)]
         self.E_expon = [expon_state(bern_p=1., exp_beta=7.0)]
-        # setting the bern_p to 1. ensures that all cells live and censoring is only
+        # Setting the bern_p to 1. ensures that all cells live and censoring is only
         # due to living past the experiment time
 
         self.lineage_gamma = LineageTree(self.pi, self.T, self.E_gamma, 2**9)
@@ -35,13 +35,13 @@ class TestModel(unittest.TestCase):
         self.expon_state_estimate = self.solver_expon.estimate.E[0]
 
         self.lineage_gamma_censored = LineageTree(self.pi, self.T, self.E_gamma, 2**9, censor_condition=3, desired_experiment_time=30)
-        assert not all([cell.obs[2] for cell in self.lineage_gamma_censored.output_lineage])  # ensures that at least some cells are censored
+        assert not all([cell.obs[2]==1 for cell in self.lineage_gamma_censored.output_lineage])  # ensures that at least some cells are censored
         self.solver_gamma_censored = tHMM([self.lineage_gamma_censored], 1)  # evaluating for one state
         self.solver_gamma_censored.fit()
         self.gamma_state_censored_estimate = self.solver_gamma_censored.estimate.E[0]
 
         self.lineage_expon_censored = LineageTree(self.pi, self.T, self.E_expon, 2**9, censor_condition=3, desired_experiment_time=30)
-        assert not all([cell.obs[2] for cell in self.lineage_expon_censored.output_lineage])  # ensures that at least some cells are censored
+        assert not all([cell.obs[2]==1 for cell in self.lineage_expon_censored.output_lineage])  # ensures that at least some cells are censored
         self.solver_expon_censored = tHMM([self.lineage_expon_censored], 1)  # evaluating for one state
         self.solver_expon_censored.fit()
         self.expon_state_censored_estimate = self.solver_expon_censored.estimate.E[0]
