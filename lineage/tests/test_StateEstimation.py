@@ -1,5 +1,6 @@
 """ Unit test file. """
 import unittest
+import numpy as np
 
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution as gamma_state
