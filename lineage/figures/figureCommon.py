@@ -11,7 +11,7 @@ import svgutils.transform as st
 from ..Analyze import run_Results_over, run_Analyze_over
 
 from ..states.StateDistributionGamma import StateDistribution
-from ..states.StateDistributionExponential import StateDistribution as expStateDistribution
+from ..states.StateDistributionExpon import StateDistribution as expon_state
 from ..states.StateDistPhase import StateDistribution as phaseStateDist
 
 # pi: the initial probability vector
@@ -26,8 +26,8 @@ state1 = StateDistribution(0.75, 7, 1)
 E = [state0, state1]
 
 # bern, exp_lambda
-state10 = expStateDistribution(0.99, 49)
-state11 = expStateDistribution(0.75, 7)
+state10 = expon_state(0.99, 49)
+state11 = expon_state(0.75, 7)
 E1 = [state10, state11]
 
 state20 = phaseStateDist(0.99, 0.8, 12, 7, 12, 10)
