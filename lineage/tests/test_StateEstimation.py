@@ -35,11 +35,13 @@ class TestModel(unittest.TestCase):
         self.expon_state_estimate = self.solver_expon.estimate.E[0]
 
         self.lineage_gamma_censored = LineageTree(self.pi, self.T, self.E_gamma, 2**9, censor_condition=3, desired_experiment_time=30)
+        assert(not all [cell.obs[2] for cell in self.lineage_gamma_censored.output_lineage])  # ensures that at least some cells are censored
         self.solver_gamma_censored = tHMM([self.lineage_gamma_censored], 1)  # evaluating for one state
         self.solver_gamma_censored.fit()
         self.gamma_state_censored_estimate = self.solver_gamma_censored.estimate.E[0]
 
         self.lineage_expon_censored = LineageTree(self.pi, self.T, self.E_expon, 2**9, censor_condition=3, desired_experiment_time=30)
+        assert(not all [cell.obs[2] for cell in self.lineage_expon_censored.output_lineage])  # ensures that at least some cells are censored
         self.solver_expon_censored = tHMM([self.lineage_expon_censored], 1)  # evaluating for one state
         self.solver_expon_censored.fit()
         self.expon_state_censored_estimate = self.solver_expon_censored.estimate.E[0]
@@ -48,6 +50,7 @@ class TestModel(unittest.TestCase):
         """
         Evaluates the performance of fitting and the underlying estimator
         by comparing the parameter estimates to their true values.
+        Gamma uncensored.
         """
         self.assertTrue(abs(self.gamma_state_estimate.gamma_a - self.E_gamma.gamma_a) < 1)
         self.assertTrue(abs(self.gamma_state_estimate.gamma_scale - self.E_gamma.gamma_scale) < 1)
@@ -56,6 +59,7 @@ class TestModel(unittest.TestCase):
         """
         Evaluates the performance of fitting and the underlying estimator
         by comparing the parameter estimates to their true values.
+        Exponential uncensored.
         """
         self.assertTrue(abs(self.expon_state_estimate.exp_beta - self.E_expon.exp_beta) < 1)
         
@@ -63,6 +67,7 @@ class TestModel(unittest.TestCase):
         """
         Evaluates the performance of fitting and the underlying estimator
         by comparing the parameter estimates to their true values.
+        Gamma censored.
         """
         self.assertTrue(abs(self.gamma_state_censored_estimate.gamma_a - self.E_gamma.gamma_a) < 1)  
         self.assertTrue(abs(self.gamma_state_censored_estimate.gamma_scale - self.E_gamma.gamma_scale) < 1)
@@ -71,5 +76,6 @@ class TestModel(unittest.TestCase):
         """
         Evaluates the performance of fitting and the underlying estimator
         by comparing the parameter estimates to their true values.
+        Exponential censored.
         """
         self.assertTrue(abs(self.expon_state_censored_estimate.exp_beta - self.E_expon.exp_beta) < 1)
