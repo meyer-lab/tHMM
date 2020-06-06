@@ -52,8 +52,8 @@ class TestModel(unittest.TestCase):
         by comparing the parameter estimates to their true values.
         Gamma uncensored.
         """
-        self.assertTrue(abs(self.gamma_state_estimate.gamma_a - self.E_gamma.gamma_a) < 1)
-        self.assertTrue(abs(self.gamma_state_estimate.gamma_scale - self.E_gamma.gamma_scale) < 1)
+        self.assertGreater(abs(self.gamma_state_estimate.gamma_a-self.E_gamma.gamma_a) < 1)
+        self.assertGreater(abs(self.gamma_state_estimate.gamma_scale-self.E_gamma.gamma_scale) < 1)
         
     def estimationEvaluationExpon(self):
         """
@@ -61,7 +61,7 @@ class TestModel(unittest.TestCase):
         by comparing the parameter estimates to their true values.
         Exponential uncensored.
         """
-        self.assertTrue(abs(self.expon_state_estimate.exp_beta - self.E_expon.exp_beta) < 1)
+        self.assertGreater(abs(self.expon_state_estimate.exp_beta - self.E_expon.exp_beta) < 1)
         
     def estimationEvaluationGammaCensored(self):
         """
@@ -69,8 +69,8 @@ class TestModel(unittest.TestCase):
         by comparing the parameter estimates to their true values.
         Gamma censored.
         """
-        self.assertTrue(abs(self.gamma_state_censored_estimate.gamma_a - self.E_gamma.gamma_a) < 1)  
-        self.assertTrue(abs(self.gamma_state_censored_estimate.gamma_scale - self.E_gamma.gamma_scale) < 1)
+        self.assertGreater(abs(self.gamma_state_censored_estimate.gamma_a - self.E_gamma.gamma_a) < 1)  
+        self.assertGreater(abs(self.gamma_state_censored_estimate.gamma_scale - self.E_gamma.gamma_scale) < 1)
         
     def estimationEvaluationExponCensored(self):
         """
@@ -78,4 +78,4 @@ class TestModel(unittest.TestCase):
         by comparing the parameter estimates to their true values.
         Exponential censored.
         """
-        self.assertTrue(abs(self.expon_state_censored_estimate.exp_beta - self.E_expon.exp_beta) < 1)
+        self.assertGreater(abs(self.expon_state_censored_estimate.exp_beta-self.E_expon.exp_beta) < 1)
