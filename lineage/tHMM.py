@@ -60,7 +60,7 @@ class tHMM:
         """Runs the tHMM function through Baum Welch fitting"""
 
         # Step 0: initialize with random assignments and do an M step
-        random_gammas = [sp.multinomial.rvs(n=11, p=[1./self.num_states]*self.num_states, size=len(lineage)) \
+        random_gammas = [sp.multinomial.rvs(n=1, p=[1./self.num_states]*self.num_states, size=len(lineage)) \
                          for lineage in self.X]
         do_M_E_step(self, random_gammas)
 
