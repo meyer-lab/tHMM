@@ -62,3 +62,9 @@ class StateDistribution:
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
+
+    def __repl__(self):
+        return f"{self.params}"
+
+    def __str__(self):
+        return self.__repl__()

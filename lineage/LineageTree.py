@@ -47,12 +47,10 @@ class LineageTree:
         self.E = deepcopy(E)
         self.desired_num_cells = desired_num_cells
         E_num_states = len(E)
-        assert (
-            pi_num_states == T_num_states == E_num_states
-        ), "The number of states in your input Markov probability parameters are mistmatched. \
-        \nPlease check that the dimensions and states match. \npi {} \nT {} \nE {}".format(
-            self.pi, self.T, self.E
-        )
+        assert pi_num_states == T_num_states == E_num_states, \
+        f"The number of states in your input Markov probability parameters are mistmatched. \
+        \nPlease check that the dimensions and states match. \npi {self.pi} \nT {self.T} \nE {self.E}"
+
         self.num_states = pi_num_states
 
         self.generate_lineage_list()
@@ -85,7 +83,7 @@ class LineageTree:
         first_state_results = sp.multinomial.rvs(1, self.pi)  # roll the dice and yield the state for the first cell
         first_cell_state = first_state_results.tolist().index(1)
         first_cell = CellVar(state=first_cell_state, parent=None, gen=1)  # create first cell
-        self.full_lineage = [first_cell]
+        self.full_lineage = [first_cell]  # instantiate lineage with first cell
 
         for cell in self.full_lineage:  # letting the first cell proliferate
             if cell.isLeaf():  # if the cell has no daughters...

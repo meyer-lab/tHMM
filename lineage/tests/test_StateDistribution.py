@@ -3,16 +3,14 @@ import unittest
 from copy import deepcopy
 import numpy as np
 import scipy.stats as sp
-from ..states.StateDistributionGamma import (
-    StateDistribution,
-    gamma_estimator,
-)
+from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistPhase import StateDistribution as StateDistPhase
 from ..states.StateDistributionGaussian import StateDistribution as StateDistGaussian
 from ..states.stateCommon import (
     bern_pdf,
     gamma_pdf,
     bernoulli_estimator,
+    gamma_estimator,
     get_experiment_time,
 )
 from ..LineageTree import LineageTree
