@@ -25,7 +25,7 @@ state0 = StateDistribution(0.99, 7, 7)
 state1 = StateDistribution(0.75, 7, 1)
 E = [state0, state1]
 
-# bern, exp_lambda
+# bern, exp_beta
 state10 = expon_state(0.99, 49)
 state11 = expon_state(0.75, 7)
 E1 = [state10, state11]
