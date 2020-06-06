@@ -12,6 +12,9 @@ class TestModel(unittest.TestCase):
     """
 
     def setUp(self):
+        """
+        Creates and fits one state lineages.
+        """
         self.pi = np.array([1])
         self.T = np.array([[1]])
         self.E_gamma = [gamma_state(bern_p=1., gamma_a=7, gamma_scale=4.5)]
@@ -37,6 +40,10 @@ class TestModel(unittest.TestCase):
         
         
     def estimationEvaluation(self):
+        """
+        Evaluates the performance of fitting and the underlying estimator
+        by comparing the parameter estimates to their true values.
+        """
         gamma_state_estimate = self.solver_gamma.estimate.E[0]
         expon_state_estimate = self.solver_expon.estimate.E[0]
         gamma_state_censored_estimate = self.solver_gamma_censored.estimate.E[0]
