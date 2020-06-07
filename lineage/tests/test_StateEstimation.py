@@ -34,13 +34,21 @@ class TestModel(unittest.TestCase):
         self.solver_expon.fit()
         self.expon_state_estimate = self.solver_expon.estimate.E[0]
 
-        self.lineage_gamma_censored = LineageTree(self.pi, self.T, self.E_gamma, 2**9, censor_condition=3, desired_experiment_time=30)
+        good2go = False
+        while not good2go:
+            lineage_gamma_censored = LineageTree(self.pi, self.T, self.E_gamma, 2**9, censor_condition=3, desired_experiment_time=30)
+            good2go = lineage_good_to_analyze(lineage_gamma_censored)
+        self.lineage_gamma_censored = lineage_gamma_censored
         assert not all([cell.obs[2] == 1 for cell in self.lineage_gamma_censored.output_lineage])  # ensures that at least some cells are censored
         self.solver_gamma_censored = tHMM([self.lineage_gamma_censored], 1)  # evaluating for one state
         self.solver_gamma_censored.fit()
         self.gamma_state_censored_estimate = self.solver_gamma_censored.estimate.E[0]
 
-        self.lineage_expon_censored = LineageTree(self.pi, self.T, self.E_expon, 2**9, censor_condition=3, desired_experiment_time=30)
+        good2go = False
+        while not good2go:
+            lineage_expon_censored = LineageTree(self.pi, self.T, self.E_expon, 2**9, censor_condition=3, desired_experiment_time=30)
+            good2go = lineage_good_to_analyze(lineage_expon_censored)
+        self.lineage_expon_censored = lineage_expon_censored
         assert not all([cell.obs[2] == 1 for cell in self.lineage_expon_censored.output_lineage])  # ensures that at least some cells are censored
         self.solver_expon_censored = tHMM([self.lineage_expon_censored], 1)  # evaluating for one state
         self.solver_expon_censored.fit()
