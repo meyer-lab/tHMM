@@ -52,8 +52,8 @@ class TestModel(unittest.TestCase):
         by comparing the parameter estimates to their true values.
         Gamma uncensored.
         """
-        self.assertGreater(1., abs(self.gamma_state_estimate.params[1]-self.E_gamma[0].params[1]))
-        self.assertGreater(1., abs(self.gamma_state_estimate.params[2]-self.E_gamma[0].params[2]))
+        self.assertGreater(1., abs(self.gamma_state_estimate.params[1] - self.E_gamma[0].params[1]))
+        self.assertGreater(1., abs(self.gamma_state_estimate.params[2] - self.E_gamma[0].params[2]))
 
     def test_estimationEvaluationExpon(self):
         """
