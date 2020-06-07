@@ -37,7 +37,7 @@ class TestModel(unittest.TestCase):
 
         good2go = False
         while not good2go:
-            lineage_gamma_censored = LineageTree(self.pi, self.T, self.E_gamma, 2**9, censor_condition=3, desired_experiment_time=30)
+            lineage_gamma_censored = LineageTree(self.pi, self.T, self.E_gamma, 2**9, censor_condition=3, desired_experiment_time=100)
             good2go = lineage_good_to_analyze(lineage_gamma_censored)
         self.lineage_gamma_censored = lineage_gamma_censored
         assert not all([cell.obs[2] == 1 for cell in self.lineage_gamma_censored.output_lineage])  # ensures that at least some cells are censored
@@ -47,7 +47,7 @@ class TestModel(unittest.TestCase):
 
         good2go = False
         while not good2go:
-            lineage_expon_censored = LineageTree(self.pi, self.T, self.E_expon, 2**9, censor_condition=3, desired_experiment_time=30)
+            lineage_expon_censored = LineageTree(self.pi, self.T, self.E_expon, 2**9, censor_condition=3, desired_experiment_time=100)
             good2go = lineage_good_to_analyze(lineage_expon_censored)
         self.lineage_expon_censored = lineage_expon_censored
         assert not all([cell.obs[2] == 1 for cell in self.lineage_expon_censored.output_lineage])  # ensures that at least some cells are censored
