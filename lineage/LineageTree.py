@@ -183,16 +183,6 @@ class LineageTree:
             return True
         return False
 
-    def uncensor_copy_lineage(self):
-        """A tool for copying lineages.
-        """
-        new_lineage = deepcopy(self)
-        for cell in new_lineage.full_lineage:
-            cell.censored = False
-        new_lineage.output_max_gen, new_lineage.output_list_of_gens = max_gen(new_lineage.full_lineage)
-        new_lineage.output_leaves_idx, new_lineage.output_leaves = get_leaves(new_lineage.full_lineage)
-        new_lineage.output_lineage = new_lineage.full_lineage
-        return new_lineage
 
 # tools for analyzing trees
 
