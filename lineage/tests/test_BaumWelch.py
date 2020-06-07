@@ -6,6 +6,8 @@ from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 from ..states.StateDistPhase import StateDistribution as StateDistPhase
 from ..figures.figureCommon import pi, T, E
+from ..figures.figureCommon import lineage_good_to_analyze
+
 
 
 class TestBW(unittest.TestCase):
@@ -24,6 +26,10 @@ class TestBW(unittest.TestCase):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
         # Using an unpruned lineage to avoid unforseen issues
         X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1, **kwargs)
+        good2go = False
+        while not good2go:
+            X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1, **kwargs)
+            good2go = lineage_good_to_analyze(X)
         tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
         X3s = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, **kwargs)
         tHMMobj3s = tHMM([X3s], num_states=3)
