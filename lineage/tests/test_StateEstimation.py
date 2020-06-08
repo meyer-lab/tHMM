@@ -1,11 +1,12 @@
 """ Unit test file. """
-import unittest
-import numpy as np
 
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 from ..states.StateDistributionGamma import StateDistribution as gamma_state
 from ..states.StateDistributionExpon import StateDistribution as expon_state
+
+import unittest
+import numpy as np
 
 
 class TestModel(unittest.TestCase):
