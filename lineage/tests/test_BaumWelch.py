@@ -24,14 +24,18 @@ class TestBW(unittest.TestCase):
 
     def commonTest(self, **kwargs):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
-        # Using an unpruned lineage to avoid unforseen issues
         X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1, **kwargs)
         good2go = False
         while not good2go:
             X = LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1, **kwargs)
             good2go = lineage_good_to_analyze(X)
         tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
+
         X3s = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, **kwargs)
+        good2go = False
+        while not good2go:
+            X3s = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, **kwargs)
+            good2go = lineage_good_to_analyze(X3s)
         tHMMobj3s = tHMM([X3s], num_states=3)
 
         # Test cases below
@@ -39,6 +43,7 @@ class TestBW(unittest.TestCase):
         _, _, NF, _, _ = do_E_step(tHMMobj)
         LL_before = calculate_log_likelihood(NF)
         self.assertTrue(np.isfinite(LL_before))
+        
         # For 3 states
         _, _, NF3s, _, _ = do_E_step(tHMMobj3s)
         LL_before3 = calculate_log_likelihood(NF3s)
