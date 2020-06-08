@@ -2,6 +2,8 @@
 
 from .UpwardRecursion import get_Emission_Likelihoods
 from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step
+from ..Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
+
 
 import numpy as np
 import scipy.stats as sp
@@ -84,6 +86,12 @@ class tHMM:
 
         return self, MSD, EL, NF, betas, gammas, new_LL
 
+    def predict(self, EL):
+        deltas, state_ptrs = get_leaf_deltas(self, EL)
+        get_nonleaf_deltas(self, EL, deltas, state_ptrs)
+        pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
+        return pred_states_by_lineage
+
     def getAIC(self, LL):
         """
         Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
@@ -99,12 +107,9 @@ class tHMM:
         :param AIC_degrees_of_freedom: the degrees of freedom in AIC calculation :math:`(num_{states}^2 + num_{states} * numberOfParameters - 1)` - same for each lineage
         """
         num_states = self.num_states
-
         number_of_parameters = len(self.estimate.E[0].params)
         AIC_degrees_of_freedom = num_states ** 2 + num_states * number_of_parameters - 1
-
         AIC_value = [-2 * LL_val + 2 * AIC_degrees_of_freedom for LL_val in LL]
-
         return AIC_value, AIC_degrees_of_freedom
 
     def log_score(self, X_state_tree_sequence, pi=None, T=None, E=None):
