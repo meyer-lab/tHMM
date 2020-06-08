@@ -62,10 +62,16 @@ class tHMM:
 
     # getter method 
     def get_EL(self): 
+        """
+        getter method for tHMM's EL
+        """
         return self.EL 
       
     # setter method 
     def set_EL(self, EL): 
+        """
+        setter method for tHMM's EL
+        """
         self.EL = EL
 
     def fit(self, tolerance=np.spacing(1), max_iter=100):
@@ -96,6 +102,10 @@ class tHMM:
         return self, MSD, NF, betas, gammas, new_LL
 
     def predict(self):
+        """
+        Given a fit model, the model predicts an optimal 
+        state assignment using the Viterbi algorithm.
+        """
         deltas, state_ptrs = get_leaf_deltas(self)
         get_nonleaf_deltas(self, deltas, state_ptrs)
         pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
@@ -156,6 +166,7 @@ def log_T_score(T, state_tree_sequence, lineageObj):
     :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
     """
     log_T_score_holder = 0
+    log_T = np.log(T)
     for level in lineageObj.output_list_of_gens[1:]:  # we start with the first transition, from the root cell
         for cell in level:
             cell_idx = lineageObj.output_lineage.index(cell)
@@ -164,7 +175,7 @@ def log_T_score(T, state_tree_sequence, lineageObj):
                 for daughter in cell.get_daughters():
                     child_idx = lineageObj.output_lineage.index(daughter)
                     daughter_state = state_tree_sequence[child_idx]
-                    log_T_score_holder += np.log(T[cell_state,daughter_state])
+                    log_T_score_holder += log_T[cell_state,daughter_state]
     return log_T_score_holder
 
 
