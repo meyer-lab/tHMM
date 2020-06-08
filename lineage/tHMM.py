@@ -1,5 +1,6 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
+from .UpwardRecursion import get_Emission_Likelihoods
 from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step
 
 import numpy as np
@@ -122,28 +123,23 @@ class tHMM:
         if E is None:
             E = self.estimate.E
 
+        EL = get_Emission_Likelihoods(self, E=E)
+
         log_scores = []
         for idx, lineageObj in enumerate(self.X):
+            log_score = 0
             # the first term is the value of pi for the state of the first cell
-            FirstTerm = np.log(pi[X_state_tree_sequence[idx][0]])
-            SecondTerm = log_T_score(T, X_state_tree_sequence[idx], lineageObj)
-
-
-
-
-            pre_ThirdTerm = get_Emission_Likelihoods(tHMMobj)[indx]
-            ThirdTerm = np.zeros(len(lineage.output_lineage))
-                for ind, st in enumerate(pred_states_by_lineage[indx]):
-                    ThirdTerm[ind] = pre_ThirdTerm[ind, st]
-                ll = np.log(FirstTerm) + np.sum(np.log(SecondTerm)) + np.sum(np.log(ThirdTerm))
-                stLikelihood.append(ll)
+            log_score += np.log(pi[X_state_tree_sequence[idx][0]])
+            log_score += log_T_score(T, X_state_tree_sequence[idx], lineageObj)
+            log_score += log_E_score(EL[idx], X_state_tree_sequence[idx])
+            log_scores.append(log_score)
         return log_scores
 
 
 def log_T_score(T, state_tree_sequence, lineageObj):
     """
     To calculate the joint probability of state and observations.
-    This function, calculates the second term
+    This function calculates the second term.
     :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
     :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
     """
@@ -152,10 +148,25 @@ def log_T_score(T, state_tree_sequence, lineageObj):
         for cell in level:
             cell_idx = lineageObj.output_lineage.index(cell)
             cell_state = state_tree_sequence[cell_idx]
-            for daughter in cell.get_daughters():
-                child_idx = lineageObj.output_lineage.index(daughter)
-                daughter_state = state_tree_sequence[child_idx]
-                log_T_score += np.log(T[cell_state,daughter_state])
+            if not cell.isLeaf():
+                for daughter in cell.get_daughters():
+                    child_idx = lineageObj.output_lineage.index(daughter)
+                    daughter_state = state_tree_sequence[child_idx]
+                    log_T_score += np.log(T[cell_state,daughter_state])
     return log_T_score
+
+
+def log_E_score(EL_array, state_tree_sequence):
+    """
+    To calculate the joint probability of state and observations.
+    This function calculates the thid term.
+    :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
+    :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
+    """
+    log_EL_array = np.log(EL_array)
+    log_E_score = 0
+    for idx, row in enumerate(log_EL_array):
+        log_E_score += row[state_tree_sequence[idx]]
+    return log_E_score
 
 
