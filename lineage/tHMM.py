@@ -101,7 +101,7 @@ class tHMM:
         pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
         return pred_states_by_lineage
 
-    def getAIC(self, LL):
+    def get_AIC(self, LL):
         """
         Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.
