@@ -175,7 +175,7 @@ def log_T_score(T, state_tree_sequence, lineageObj):
                 for daughter in cell.get_daughters():
                     child_idx = lineageObj.output_lineage.index(daughter)
                     daughter_state = state_tree_sequence[child_idx]
-                    log_T_score_holder += log_T[cell_state,daughter_state]
+                    log_T_score_holder += log_T[cell_state, daughter_state]
     return log_T_score_holder
 
 

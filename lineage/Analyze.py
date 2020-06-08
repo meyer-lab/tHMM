@@ -32,7 +32,12 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
             error_holder.append(error)
             if num_tries == 14:
                 print(
-                    f"Caught the following errors: \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. Fitting is breaking after trying {num_tries} times. If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue is the estimates of your parameters are returning nonsensible parameters. Consider changing your parameter estimator. "
+                    f"Caught the following errors: \
+                    \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. \
+                    Fitting is breaking after trying {num_tries} times. \
+                    If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue \
+                    is the estimates of your parameters are returning nonsensible parameters. \
+                    Consider changing your parameter estimator. "
                 )
                 raise
 

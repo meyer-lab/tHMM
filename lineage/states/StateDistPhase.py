@@ -37,9 +37,10 @@ class StateDistribution:
         gamma_llG2 = gamma_pdf(tuple_of_obs[3], self.params[4], self.params[5])
 
         if tuple_of_obs[0] == 0:
-            return bern_llG2 * gamma_llG1 * gamma_llG2
+            ll = bern_llG2 * gamma_llG1 * gamma_llG2
         else:
-            return bern_llG1 * bern_llG2 * gamma_llG1 * gamma_llG2
+            ll = bern_llG1 * bern_llG2 * gamma_llG1 * gamma_llG2
+        return ll
 
     def estimator(self, list_of_tuples_of_obs, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """

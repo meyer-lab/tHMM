@@ -84,6 +84,10 @@ def getSetup(figsize, gridd):
 
 
 def commonAnalyze(list_of_populations, xtype="length", **kwargs):
+    """
+    The standard way of analyzing a list of populations (a list of list of lineages)
+    for analysis and plotting.
+    """
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
     list_of_fE = kwargs.get("list_of_fE", [None] * len(list_of_populations))

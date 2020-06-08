@@ -38,6 +38,11 @@ desired_num_states = np.arange(1, 6)
 
 
 def run_AIC(Trate, E, num_to_evaluate=10):
+    """
+    Run's AIC for known lineages with known pi,
+    and T values and stores the output for
+    figure drawing.
+    """
     # Normalize the transition matrix
     T = Trate + np.eye(len(E))
     T = T / np.sum(T, axis=0)[np.newaxis, :]

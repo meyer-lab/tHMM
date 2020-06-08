@@ -127,6 +127,9 @@ def get_experiment_time(lineageObj):
 
 
 def basic_censor(cell):
+    """
+    Censor's nuclear family of a cell.
+    """
     if not cell.isRootParent():
         if cell.parent.censored:
             cell.censored = True
