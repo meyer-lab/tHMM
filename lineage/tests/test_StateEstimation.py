@@ -35,7 +35,8 @@ class TestModel(unittest.TestCase):
         self.solver_expon.fit()
         self.expon_state_estimate = self.solver_expon.estimate.E[0]
 
-        good2go = False
+        lineage_gamma_censored = LineageTree(self.pi, self.T, self.E_gamma, 2**11, censor_condition=3, desired_experiment_time=300)
+        good2go = lineage_good_to_analyze(lineage_gamma_censored)
         while not good2go:
             lineage_gamma_censored = LineageTree(self.pi, self.T, self.E_gamma, 2**11, censor_condition=3, desired_experiment_time=300)
             good2go = lineage_good_to_analyze(lineage_gamma_censored)
@@ -45,7 +46,8 @@ class TestModel(unittest.TestCase):
         self.solver_gamma_censored.fit()
         self.gamma_state_censored_estimate = self.solver_gamma_censored.estimate.E[0]
 
-        good2go = False
+        lineage_expon_censored = LineageTree(self.pi, self.T, self.E_expon, 2**11, censor_condition=3, desired_experiment_time=300)
+        good2go = lineage_good_to_analyze(lineage_expon_censored)
         while not good2go:
             lineage_expon_censored = LineageTree(self.pi, self.T, self.E_expon, 2**11, censor_condition=3, desired_experiment_time=300)
             good2go = lineage_good_to_analyze(lineage_expon_censored)
