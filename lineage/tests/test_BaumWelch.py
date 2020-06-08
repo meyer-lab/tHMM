@@ -9,7 +9,6 @@ from ..figures.figureCommon import pi, T, E
 from ..figures.figureCommon import lineage_good_to_analyze
 
 
-
 class TestBW(unittest.TestCase):
     """ Unit tests for Baum-Welch methods. """
 
@@ -43,7 +42,7 @@ class TestBW(unittest.TestCase):
         _, _, NF, _, _ = do_E_step(tHMMobj)
         LL_before = calculate_log_likelihood(NF)
         self.assertTrue(np.isfinite(LL_before))
-        
+
         # For 3 states
         _, _, NF3s, _, _ = do_E_step(tHMMobj3s)
         LL_before3 = calculate_log_likelihood(NF3s)

@@ -49,7 +49,7 @@ class TestModel(unittest.TestCase):
         good2go = len(lineage_expon_censored) >= 10
         while not good2go:
             lineage_expon_censored = LineageTree(self.pi, self.T, self.E_expon, 2**11, censor_condition=3, desired_experiment_time=100)
-            good2go = len(lineage_expon_censored) >- 10
+            good2go = len(lineage_expon_censored) > - 10
         self.lineage_expon_censored = lineage_expon_censored
         assert not all([cell.obs[2] == 1 for cell in self.lineage_expon_censored.output_lineage])  # ensures that at least some cells are censored
         self.solver_expon_censored = tHMM([self.lineage_expon_censored], 1)  # evaluating for one state
@@ -62,8 +62,8 @@ class TestModel(unittest.TestCase):
         by comparing the parameter estimates to their true values.
         Gamma uncensored.
         """
-        self.assertGreater(5., abs(self.gamma_state_estimate.params[1]-self.E_gamma[0].params[1]))
-        self.assertGreater(5., abs(self.gamma_state_estimate.params[2]-self.E_gamma[0].params[2]))
+        self.assertGreater(5., abs(self.gamma_state_estimate.params[1] - self.E_gamma[0].params[1]))
+        self.assertGreater(5., abs(self.gamma_state_estimate.params[2] - self.E_gamma[0].params[2]))
 
     def test_estimationEvaluationExpon(self):
         """
