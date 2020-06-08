@@ -155,7 +155,7 @@ def log_T_score(T, state_tree_sequence, lineageObj):
     :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
     :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
     """
-    log_T_score = 0
+    log_T_score_holder = 0
     for level in lineageObj.output_list_of_gens[1:]:  # we start with the first transition, from the root cell
         for cell in level:
             cell_idx = lineageObj.output_lineage.index(cell)
@@ -164,8 +164,8 @@ def log_T_score(T, state_tree_sequence, lineageObj):
                 for daughter in cell.get_daughters():
                     child_idx = lineageObj.output_lineage.index(daughter)
                     daughter_state = state_tree_sequence[child_idx]
-                    log_T_score += np.log(T[cell_state,daughter_state])
-    return log_T_score
+                    log_T_score_holder += np.log(T[cell_state,daughter_state])
+    return log_T_score_holder
 
 
 def log_E_score(EL_array, state_tree_sequence):
@@ -176,9 +176,9 @@ def log_E_score(EL_array, state_tree_sequence):
     :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
     """
     log_EL_array = np.log(EL_array)
-    log_E_score = 0
+    log_E_score_holder = 0
     for idx, row in enumerate(log_EL_array):
-        log_E_score += row[state_tree_sequence[idx]]
-    return log_E_score
+        log_E_score_holder += row[state_tree_sequence[idx]]
+    return log_E_score_holder
 
 
