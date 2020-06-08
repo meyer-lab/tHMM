@@ -34,7 +34,7 @@ def get_leaf_deltas(tHMMobj):
     return deltas, state_ptrs
 
 
-def get_nonleaf_deltas(tHMMobj, EL, deltas, state_ptrs):
+def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
     """Calculates the delta values for all non-leaf cells by filling out the delta matrix passed to it from the :func:`get_leaf_deltas`.
 
     :param tHMMobj: the tHMM object
@@ -61,7 +61,7 @@ def get_nonleaf_deltas(tHMMobj, EL, deltas, state_ptrs):
             for node_parent_m_idx in parent_holder:
                 fac1, max_state_ptr = get_delta_parent_child_prod(lineage=lineage, delta_array=deltas[num], T=T, node_parent_m_idx=node_parent_m_idx)
 
-                deltas[num][node_parent_m_idx, :] = fac1 * EL[num][node_parent_m_idx, :]
+                deltas[num][node_parent_m_idx, :] = fac1 * tHMMobj.get_EL()[num][node_parent_m_idx, :]
                 state_ptrs[num][node_parent_m_idx, :] = max_state_ptr
 
 
