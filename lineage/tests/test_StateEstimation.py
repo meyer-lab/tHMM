@@ -35,22 +35,22 @@ class TestModel(unittest.TestCase):
         self.solver_expon.fit()
         self.expon_state_estimate = self.solver_expon.estimate.E[0]
 
-        lineage_gamma_censored = LineageTree(self.pi, self.T, self.E_gamma, 2**11, censor_condition=3, desired_experiment_time=300)
-        good2go = lineage_good_to_analyze(lineage_gamma_censored)
+        lineage_gamma_censored = LineageTree(self.pi, self.T, self.E_gamma, 2**11, censor_condition=3, desired_experiment_time=100)
+        good2go = len(lineage_gamma_censored) >= 10
         while not good2go:
-            lineage_gamma_censored = LineageTree(self.pi, self.T, self.E_gamma, 2**11, censor_condition=3, desired_experiment_time=300)
-            good2go = lineage_good_to_analyze(lineage_gamma_censored)
+            lineage_gamma_censored = LineageTree(self.pi, self.T, self.E_gamma, 2**11, censor_condition=3, desired_experiment_time=100)
+            good2go = len(lineage_gamma_censored) >= 10
         self.lineage_gamma_censored = lineage_gamma_censored
         assert not all([cell.obs[2] == 1 for cell in self.lineage_gamma_censored.output_lineage])  # ensures that at least some cells are censored
         self.solver_gamma_censored = tHMM([self.lineage_gamma_censored], 1)  # evaluating for one state
         self.solver_gamma_censored.fit()
         self.gamma_state_censored_estimate = self.solver_gamma_censored.estimate.E[0]
 
-        lineage_expon_censored = LineageTree(self.pi, self.T, self.E_expon, 2**11, censor_condition=3, desired_experiment_time=300)
-        good2go = lineage_good_to_analyze(lineage_expon_censored)
+        lineage_expon_censored = LineageTree(self.pi, self.T, self.E_expon, 2**11, censor_condition=3, desired_experiment_time=100)
+        good2go = len(lineage_expon_censored) >= 10
         while not good2go:
-            lineage_expon_censored = LineageTree(self.pi, self.T, self.E_expon, 2**11, censor_condition=3, desired_experiment_time=300)
-            good2go = lineage_good_to_analyze(lineage_expon_censored)
+            lineage_expon_censored = LineageTree(self.pi, self.T, self.E_expon, 2**11, censor_condition=3, desired_experiment_time=100)
+            good2go = len(lineage_expon_censored) >- 10
         self.lineage_expon_censored = lineage_expon_censored
         assert not all([cell.obs[2] == 1 for cell in self.lineage_expon_censored.output_lineage])  # ensures that at least some cells are censored
         self.solver_expon_censored = tHMM([self.lineage_expon_censored], 1)  # evaluating for one state
