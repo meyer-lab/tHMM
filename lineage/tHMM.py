@@ -106,7 +106,7 @@ class tHMM:
 
         return AIC_value, AIC_degrees_of_freedom
 
-    def score(self, pred_states_by_lineage, pi=None, T=None, E=None):
+    def log_score(self, X_state_tree_sequence, pi=None, T=None, E=None):
         """
         This function returns the log-likelihood of a possible state assignment
         given the estimated model parameters.
@@ -122,31 +122,40 @@ class tHMM:
         if E is None:
             E = self.estimate.E
 
-        # the first term is the value of pi for the state of the first cell
-        FirstTerm = pi[pred_states_by_lineage[0]]
-        SecondTerm = LLHelperFunc(T, lineage)
-        pre_ThirdTerm = get_Emission_Likelihoods(tHMMobj)[indx]
-        ThirdTerm = np.zeros(len(lineage.output_lineage))
-            for ind, st in enumerate(pred_states_by_lineage[indx]):
-                ThirdTerm[ind] = pre_ThirdTerm[ind, st]
-            ll = np.log(FirstTerm) + np.sum(np.log(SecondTerm)) + np.sum(np.log(ThirdTerm))
-            stLikelihood.append(ll)
-        return stLikelihood
+        log_scores = []
+        for idx, lineageObj in enumerate(self.X):
+            # the first term is the value of pi for the state of the first cell
+            FirstTerm = np.log(pi[X_state_tree_sequence[idx][0]])
+            SecondTerm = log_T_score(T, X_state_tree_sequence[idx], lineageObj)
 
 
 
-def LLHelperFunc(T, lineageObj):
+
+            pre_ThirdTerm = get_Emission_Likelihoods(tHMMobj)[indx]
+            ThirdTerm = np.zeros(len(lineage.output_lineage))
+                for ind, st in enumerate(pred_states_by_lineage[indx]):
+                    ThirdTerm[ind] = pre_ThirdTerm[ind, st]
+                ll = np.log(FirstTerm) + np.sum(np.log(SecondTerm)) + np.sum(np.log(ThirdTerm))
+                stLikelihood.append(ll)
+        return log_scores
+
+
+def log_T_score(T, state_tree_sequence, lineageObj):
     """
     To calculate the joint probability of state and observations.
     This function, calculates the second term
     :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
+    :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
     """
-    states = []
-    for cell in lineageObj.output_lineage:
-        if cell.gen == 1:
-            pass
-        else:
-            states.append(T[cell.parent.state, cell.state])
-    return states
+    log_T_score = 0
+    for level in lineageObj.output_list_of_gens[1:]:  # we start with the first transition, from the root cell
+        for cell in level:
+            if not cell.isLeaf():
+                parent_idx = lineageObj.output_lineage.index(cell.parent)
+                parent_state = state_tree_sequence[parent_idx]
+                daughter_idx = lineageObj.output_lineage.index(cell)
+                daughter_state = state_tree_sequence[daughter_idx]
+                T_score += np.log(T[parent_state,daughter_state])
+    return log_T_score
 
 
