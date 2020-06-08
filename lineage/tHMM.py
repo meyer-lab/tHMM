@@ -58,6 +58,15 @@ class tHMM:
         self.X = X  # list containing lineages
         self.num_states = num_states  # number of discrete hidden states, should be integral
         self.estimate = estimate(self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
+        self.EL = get_Emission_Likelihoods(self)
+
+    # getter method 
+    def get_EL(self): 
+        return self.EL 
+      
+    # setter method 
+    def set_EL(self, E): 
+        self.EL = get_Emission_Likelihoods(self, E)
 
     def fit(self, tolerance=np.spacing(1), max_iter=100):
         """Runs the tHMM function through Baum Welch fitting"""
@@ -68,7 +77,7 @@ class tHMM:
         do_M_E_step(self, random_gammas)
 
         # Step 1: first E step
-        MSD, EL, NF, betas, gammas = do_E_step(self)
+        MSD, NF, betas, gammas = do_E_step(self)
         new_LL = calculate_log_likelihood(NF)
 
         # first stopping condition check
@@ -76,19 +85,19 @@ class tHMM:
             old_LL = new_LL
 
             do_M_step(self, MSD, betas, gammas)
-            MSD, EL, NF, betas, gammas = do_E_step(self)
+            MSD, NF, betas, gammas = do_E_step(self)
             new_LL = calculate_log_likelihood(NF)
 
             diff = np.linalg.norm(old_LL - new_LL)
 
             if diff < tolerance:
                 break
+        
+        return self, MSD, NF, betas, gammas, new_LL
 
-        return self, MSD, EL, NF, betas, gammas, new_LL
-
-    def predict(self, EL):
-        deltas, state_ptrs = get_leaf_deltas(self, EL)
-        get_nonleaf_deltas(self, EL, deltas, state_ptrs)
+    def predict(self):
+        deltas, state_ptrs = get_leaf_deltas(self)
+        get_nonleaf_deltas(self, deltas, state_ptrs)
         pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
         return pred_states_by_lineage
 
@@ -128,15 +137,13 @@ class tHMM:
         if E is None:
             E = self.estimate.E
 
-        EL = get_Emission_Likelihoods(self, E=E)
-
         log_scores = []
         for idx, lineageObj in enumerate(self.X):
             log_score = 0
             # the first term is the value of pi for the state of the first cell
             log_score += np.log(pi[X_state_tree_sequence[idx][0]])
             log_score += log_T_score(T, X_state_tree_sequence[idx], lineageObj)
-            log_score += log_E_score(EL[idx], X_state_tree_sequence[idx])
+            log_score += log_E_score(self.get_EL()[idx], X_state_tree_sequence[idx])
             log_scores.append(log_score)
         return log_scores
 

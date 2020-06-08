@@ -29,7 +29,7 @@ def do_E_step(tHMMobj):
     gammas = get_root_gammas(tHMMobj, betas)
     get_nonroot_gammas(tHMMobj, MSD, gammas, betas)
 
-    return MSD, EL, NF, betas, gammas
+    return MSD, NF, betas, gammas
 
 
 def calculate_log_likelihood(NF):

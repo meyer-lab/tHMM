@@ -28,7 +28,7 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     for num_tries in range(1, 15):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            _, _, EL, _, _, _, LL = tHMMobj.fit()
+            _, _, _, _, _, LL = tHMMobj.fit()
             break
         except (AssertionError, ZeroDivisionError, RuntimeError) as error:
             error_holder.append(error)
@@ -38,9 +38,7 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
                 )
                 raise
 
-    deltas, state_ptrs = get_leaf_deltas(tHMMobj, EL)
-    get_nonleaf_deltas(tHMMobj, EL, deltas, state_ptrs)
-    pred_states_by_lineage = Viterbi(tHMMobj, deltas, state_ptrs)
+    pred_states_by_lineage = tHMMobj.predict()
 
     return tHMMobj, pred_states_by_lineage, LL
 

@@ -2,7 +2,7 @@
 import numpy as np
 
 
-def get_leaf_deltas(tHMMobj, EL):
+def get_leaf_deltas(tHMMobj):
     """Delta matrix and base case at the leaves. Each element in this N by K matrix is the probability for the leaves :math:`P(x_n = x | z_n = k)`.
 
     :param tHMMobj: the tHMM object
@@ -27,7 +27,7 @@ def get_leaf_deltas(tHMMobj, EL):
             if cell.isLeaf():  # if it is a leaf
                 # get the index of the leaf
                 leaf_cell_idx = lineage.index(cell)
-                delta_array[leaf_cell_idx, :] = EL[num][leaf_cell_idx, :]
+                delta_array[leaf_cell_idx, :] = tHMMobj.get_EL()[num][leaf_cell_idx, :]
 
         deltas.append(delta_array)
         state_ptrs.append(state_ptrs_array)
