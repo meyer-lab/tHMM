@@ -219,34 +219,4 @@ def run_Results_over(output):
     return results_holder
 
 
-def LLHelperFunc(T, lineageObj):
-    """
-    To calculate the joint probability of state and observations.
-    This function, calculates the second term
-    :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
-    """
-    states = []
-    for cell in lineageObj.output_lineage:
-        if cell.gen == 1:
-            pass
-        else:
-            states.append(T[cell.parent.state, cell.state])
-    return states
 
-
-def LLFunc(T, pi, tHMMobj, pred_states_by_lineage):
-    """
-    This function calculate the state likelihood, using the joint probability function.
-    *we do the log-transformation to avoid underflow.*
-    """
-    stLikelihood = []
-    for indx, lineage in enumerate(tHMMobj.X):
-        FirstTerm = pi[lineage.output_lineage[0].state]
-        SecondTerm = LLHelperFunc(T, lineage)
-        pre_ThirdTerm = get_Emission_Likelihoods(tHMMobj)[indx]
-        ThirdTerm = np.zeros(len(lineage.output_lineage))
-        for ind, st in enumerate(pred_states_by_lineage[indx]):
-            ThirdTerm[ind] = pre_ThirdTerm[ind, st]
-        ll = np.log(FirstTerm) + np.sum(np.log(SecondTerm)) + np.sum(np.log(ThirdTerm))
-        stLikelihood.append(ll)
-    return stLikelihood

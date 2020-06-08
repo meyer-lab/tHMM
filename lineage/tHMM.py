@@ -52,8 +52,8 @@ class tHMM:
         self.fpi = fpi
         self.fT = fT
         self.fE = fE
-        self.X = X  # list containing lineages, should be in correct format (contain no NaNs)
-        self.num_states = num_states  # number of discrete hidden states
+        self.X = X  # list containing lineages
+        self.num_states = num_states  # number of discrete hidden states, should be integral
         self.estimate = estimate(self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
 
     def fit(self, tolerance=np.spacing(1), max_iter=100):
@@ -106,17 +106,27 @@ class tHMM:
 
         return AIC_value, AIC_degrees_of_freedom
 
-    def score(self, pred_states_by_lineage):
+    def score(self, pred_states_by_lineage, pi=None, T=None, E=None):
         """
-        This function calculate the state likelihood, using the joint probability function.
-        *we do the log-transformation to avoid underflow.*
+        This function returns the log-likelihood of a possible state assignment
+        given the estimated model parameters.
+        The user can also provide their own pi, T, or E matrices instead to score
+        a possible state assignment.
+        :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
+        :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
         """
-        stLikelihood = []
-        for indx, lineage in enumerate(tHMMobj.X):
-            FirstTerm = pi[lineage.output_lineage[0].state]
-            SecondTerm = LLHelperFunc(T, lineage)
-            pre_ThirdTerm = get_Emission_Likelihoods(tHMMobj)[indx]
-            ThirdTerm = np.zeros(len(lineage.output_lineage))
+        if pi is None:
+            pi = self.estimate.pi
+        if T is None:
+            T = self.estimate.T
+        if E is None:
+            E = self.estimate.E
+
+        # the first term is the value of pi for the state of the first cell
+        FirstTerm = pi[pred_states_by_lineage[0]]
+        SecondTerm = LLHelperFunc(T, lineage)
+        pre_ThirdTerm = get_Emission_Likelihoods(tHMMobj)[indx]
+        ThirdTerm = np.zeros(len(lineage.output_lineage))
             for ind, st in enumerate(pred_states_by_lineage[indx]):
                 ThirdTerm[ind] = pre_ThirdTerm[ind, st]
             ll = np.log(FirstTerm) + np.sum(np.log(SecondTerm)) + np.sum(np.log(ThirdTerm))
