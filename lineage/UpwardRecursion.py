@@ -72,7 +72,6 @@ def get_Emission_Likelihoods(tHMMobj, E=None):
                 EL_array[current_cell_idx, state_k] = E[state_k].pdf(cell.obs)
 
         EL.append(EL_array)  # append the EL_array for each lineage
-    tHMMobj.EL = EL
     return EL
 
 

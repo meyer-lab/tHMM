@@ -65,8 +65,8 @@ class tHMM:
         return self.EL 
       
     # setter method 
-    def set_EL(self, E): 
-        self.EL = get_Emission_Likelihoods(self, E)
+    def set_EL(self, EL): 
+        self.EL = EL
 
     def fit(self, tolerance=np.spacing(1), max_iter=100):
         """Runs the tHMM function through Baum Welch fitting"""

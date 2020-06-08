@@ -23,6 +23,7 @@ def do_E_step(tHMMobj):
     """
     MSD = get_Marginal_State_Distributions(tHMMobj)
     EL = get_Emission_Likelihoods(tHMMobj)
+    tHMMobj.set_EL(EL)
     NF = get_leaf_Normalizing_Factors(tHMMobj, MSD, EL)
     betas = get_leaf_betas(tHMMobj, MSD, EL, NF)
     get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas)
