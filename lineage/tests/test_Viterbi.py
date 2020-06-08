@@ -22,5 +22,7 @@ class TestViterbi(unittest.TestCase):
 
         for _ in range(10):
             rand = randint(0, 2, (2 ** 9) - 1)
+            # generate a sequence of integers between 0 (inclusive)
+            # and 2 (exclusive)
             random_log_scores = tHMMobj.log_score([rand])
             self.assertTrue(random_log_scores[0] <= true_log_scores[0])
