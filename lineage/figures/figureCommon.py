@@ -37,8 +37,6 @@ E2 = [state20, state21]
 min_desired_num_cells = (2 ** 5) - 1
 max_desired_num_cells = (2 ** 9) - 1
 
-min_min_lineage_length = 10
-
 min_experiment_time = 72
 max_experiment_time = 144
 
