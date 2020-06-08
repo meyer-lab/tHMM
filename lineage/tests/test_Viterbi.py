@@ -1,6 +1,7 @@
 """ Unit test file for Viterbi. """
 import unittest
 from numpy.random import randint
+
 from ..tHMM import tHMM
 from ..LineageTree import LineageTree
 from ..figures.figureCommon import pi, T, E
