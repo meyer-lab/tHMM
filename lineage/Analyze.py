@@ -4,6 +4,7 @@ import random
 import numpy as np
 from sklearn import metrics
 from scipy.stats import entropy, wasserstein_distance
+
 from .tHMM import tHMM
 
 

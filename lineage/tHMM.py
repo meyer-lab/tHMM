@@ -1,12 +1,13 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
+import numpy as np
+import scipy.stats as sp
+
 from .UpwardRecursion import get_Emission_Likelihoods
 from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 
 
-import numpy as np
-import scipy.stats as sp
 
 
 class estimate:
@@ -60,15 +61,15 @@ class tHMM:
         self.estimate = estimate(self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
         self.EL = get_Emission_Likelihoods(self)
 
-    # getter method 
-    def get_EL(self): 
+    # getter method
+    def get_EL(self):
         """
         getter method for tHMM's EL
         """
-        return self.EL 
+        return self.EL
       
-    # setter method 
-    def set_EL(self, EL): 
+    # setter method
+    def set_EL(self, EL):
         """
         setter method for tHMM's EL
         """
@@ -98,12 +99,12 @@ class tHMM:
 
             if diff < tolerance:
                 break
-        
+
         return self, MSD, NF, betas, gammas, new_LL
 
     def predict(self):
         """
-        Given a fit model, the model predicts an optimal 
+        Given a fit model, the model predicts an optimal
         state assignment using the Viterbi algorithm.
         """
         deltas, state_ptrs = get_leaf_deltas(self)

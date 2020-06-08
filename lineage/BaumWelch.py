@@ -45,7 +45,7 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
-    The individual parameter estimations are performed in 
+    The individual parameter estimations are performed in
     separate functions.
     """
     if tHMMobj.estimate.fpi is None:

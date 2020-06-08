@@ -73,7 +73,7 @@ class CellVar:
         """
         Boolean.
         Returns true when a cell is a leaf defined by the two conditions that determine
-        whether a cell is a leaf. A cell only has to satisfy one of the conditions 
+        whether a cell is a leaf. A cell only has to satisfy one of the conditions
         (an or statement) for it to be a leaf.
         """
         return self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreCensored()
