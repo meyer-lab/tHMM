@@ -8,7 +8,7 @@ import numpy as np
 from matplotlib.ticker import MaxNLocator
 
 from .figureCommon import getSetup
-from ..Analyze import getAIC, run_Analyze_over, LLFunc
+from ..Analyze import getAIC, run_Analyze_over
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
 
@@ -58,7 +58,7 @@ def run_AIC(Trate, E, num_to_evaluate=10):
         # Collecting the results of analyzing the lineages
         for idx, (tHMMobj, pred_states_by_lineage, _) in enumerate(output):
             # Get the likelihood of states
-            LLtemp = LLFunc(T, pi, tHMMobj, pred_states_by_lineage)
+            LLtemp = tHMMobj.log_score(pred_states_by_lineage)
             LL = np.sum(LLtemp)
             AIC_holder[ii, idx] = getAIC(tHMMobj, LL)[0]
 
