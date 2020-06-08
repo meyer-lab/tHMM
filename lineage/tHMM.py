@@ -150,12 +150,12 @@ def log_T_score(T, state_tree_sequence, lineageObj):
     log_T_score = 0
     for level in lineageObj.output_list_of_gens[1:]:  # we start with the first transition, from the root cell
         for cell in level:
-            if not cell.isLeaf():
-                parent_idx = lineageObj.output_lineage.index(cell.parent)
-                parent_state = state_tree_sequence[parent_idx]
-                daughter_idx = lineageObj.output_lineage.index(cell)
-                daughter_state = state_tree_sequence[daughter_idx]
-                T_score += np.log(T[parent_state,daughter_state])
+            cell_idx = lineageObj.output_lineage.index(cell)
+            cell_state = state_tree_sequence[cell_idx]
+            for daughter in cell.get_daughters():
+                child_idx = lineageObj.output_lineage.index(daughter)
+                daughter_state = state_tree_sequence[child_idx]
+                log_T_score += np.log(T[cell_state,daughter_state])
     return log_T_score
 
 
