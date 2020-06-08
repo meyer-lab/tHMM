@@ -49,14 +49,14 @@ class TestBW(unittest.TestCase):
         self.assertTrue(np.isfinite(LL_before3))
 
         # Get the likelihoods after fitting
-        _, _, _, NF_after, _, _, new_LL_list_after = tHMMobj.fit(max_iter=4)
+        _, _, NF_after, _, _, new_LL_list_after = tHMMobj.fit(max_iter=4)
         LL_after = calculate_log_likelihood(NF_after)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
         self.assertGreater(LL_after, LL_before)
 
         # for 3 states
-        _, _, _, NF_after3, _, _, new_LL_list_after3 = tHMMobj3s.fit(max_iter=4)
+        _, _, NF_after3, _, _, new_LL_list_after3 = tHMMobj3s.fit(max_iter=4)
         LL_after3 = calculate_log_likelihood(NF_after3)
         self.assertTrue(np.isfinite(LL_after3))
         self.assertTrue(np.isfinite(new_LL_list_after3))
