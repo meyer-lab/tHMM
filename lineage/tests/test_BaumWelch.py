@@ -39,12 +39,12 @@ class TestBW(unittest.TestCase):
 
         # Test cases below
         # Get the likelihoods before fitting
-        _, _, NF, _, _ = do_E_step(tHMMobj)
+        _, NF, _, _ = do_E_step(tHMMobj)
         LL_before = calculate_log_likelihood(NF)
         self.assertTrue(np.isfinite(LL_before))
 
         # For 3 states
-        _, _, NF3s, _, _ = do_E_step(tHMMobj3s)
+        _, NF3s, _, _ = do_E_step(tHMMobj3s)
         LL_before3 = calculate_log_likelihood(NF3s)
         self.assertTrue(np.isfinite(LL_before3))
 
