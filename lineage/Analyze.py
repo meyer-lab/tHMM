@@ -122,6 +122,11 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     # assignments
     switcher_map = switcher_map_holder[max_idx]
     switched_pred_states_by_lineage = new_pred_states_by_lineage_holder[max_idx]
+    print(switcher_map)
+    print(true_states_by_lineage)
+    print(pred_states_by_lineage)
+    print(switched_pred_states_by_lineage)
+    print(100 * np.mean(switched_pred_states_by_lineage == true_states_by_lineage))
     results_dict["switcher_map"] = switcher_map
 
     # Rearrange the values in the transition matrix
@@ -163,8 +168,9 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["state_counter"] = np.bincount(switched_pred_states)
     results_dict["state_proportions"] = [100 * i / len(switched_pred_states) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
-    results_dict["accuracy_before_switching"] = 100 * np.mean(switched_pred_states_by_lineage == true_states_by_lineage)
+    results_dict["accuracy_before_switching"] = 100 * np.mean(pred_states_by_lineage == true_states_by_lineage)
     results_dict["accuracy_after_switching"] = 100 * np.mean(switched_pred_states_by_lineage == true_states_by_lineage)
+    print(results_dict["accuracy_after_switching"])
 
     # 4. Calculate the Wasserstein distance
     obs_by_state_rand_sampled = []
