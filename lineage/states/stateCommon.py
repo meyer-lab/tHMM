@@ -128,7 +128,7 @@ def get_experiment_time(lineageObj):
 
 def basic_censor(cell):
     """
-    Censor's nuclear family of a cell.
+    Censors nuclear family of a cell.
     """
     if not cell.isRootParent():
         if cell.parent.censored:
@@ -137,6 +137,8 @@ def basic_censor(cell):
             if not cell.isLeafBecauseTerminal():
                 cell.left.censored = True
                 cell.right.censored = True
+                cell.get_sister().left.censored = True
+                cell.get_sister().right.censored = True
 
 
 def fate_censor(cell):
