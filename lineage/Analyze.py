@@ -140,7 +140,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         temp_pred_states_by_lineage = []
         for state_assignment in pred_states_by_lineage:
             temp_pred_states_by_lineage.append([switcher[state] for state in state_assignment])
-        new_pred_states_by_lineage_holder.append(temp_pred_states_by_lineage)
+        new_pred_states_by_lineage_holder.append(np.array(temp_pred_states_by_lineage))
         switcher_LL_holder.append(np.sum(tHMMobj.log_score(temp_pred_states_by_lineage, pi=tHMMobj.X[0].pi, T=tHMMobj.X[0].T, E=tHMMobj.X[0].E)))
     max_idx = switcher_LL_holder.index(max(switcher_LL_holder))
 
@@ -151,6 +151,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     switched_pred_states_by_lineage = new_pred_states_by_lineage_holder[max_idx]
     print(pred_states_by_lineage)
     print(switched_pred_states_by_lineage)
+    print(100 * np.mean(switched_pred_states_by_lineage == pred_states_by_lineage)
     results_dict["switcher_map"] = switcher_map
 
     # Rearrange the values in the transition matrix
