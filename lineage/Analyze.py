@@ -103,6 +103,8 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["LL"] = LL
     results_dict["total_number_of_cells"] = sum([len(lineage) for lineage in tHMMobj.X])
 
+    true_states_by_lineage = [[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X]
+
 
     # 1. Decide how to switch states based on the state assignment that yields the maximum likelihood
     switcher_map_holder = list(itertools.permutations(list(range(tHMMobj.num_states))))
@@ -161,8 +163,8 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["state_counter"] = np.bincount(switched_pred_states)
     results_dict["state_proportions"] = [100 * i / len(switched_pred_states) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
-    results_dict["accuracy_before_switching"] = 100 * np.mean(switched_pred_states_by_lineage == pred_states_by_lineage)
-    results_dict["accuracy_after_switching"] = 100 * np.mean(switched_pred_states_by_lineage == pred_states_by_lineage)
+    results_dict["accuracy_before_switching"] = 100 * np.mean(switched_pred_states_by_lineage == true_states_by_lineage)
+    results_dict["accuracy_after_switching"] = 100 * np.mean(switched_pred_states_by_lineage == true_states_by_lineage)
 
     # 4. Calculate the Wasserstein distance
     obs_by_state_rand_sampled = []
