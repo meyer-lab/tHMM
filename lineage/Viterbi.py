@@ -27,7 +27,7 @@ def get_leaf_deltas(tHMMobj):
             if cell.isLeaf():  # if it is a leaf
                 # get the index of the leaf
                 leaf_cell_idx = lineage.index(cell)
-                delta_array[leaf_cell_idx, :] = tHMMobj.get_EL()[num][leaf_cell_idx, :]
+                delta_array[leaf_cell_idx, :] = tHMMobj.EL[num][leaf_cell_idx, :]
 
         deltas.append(delta_array)
         state_ptrs.append(state_ptrs_array)
@@ -61,7 +61,7 @@ def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
             for node_parent_m_idx in parent_holder:
                 fac1, max_state_ptr = get_delta_parent_child_prod(lineage=lineage, delta_array=deltas[num], T=T, node_parent_m_idx=node_parent_m_idx)
 
-                deltas[num][node_parent_m_idx, :] = fac1 * tHMMobj.get_EL()[num][node_parent_m_idx, :]
+                deltas[num][node_parent_m_idx, :] = fac1 * tHMMobj.EL[num][node_parent_m_idx, :]
                 state_ptrs[num][node_parent_m_idx, :] = max_state_ptr
 
 
