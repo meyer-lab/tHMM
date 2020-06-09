@@ -126,7 +126,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     print(true_states_by_lineage)
     print(pred_states_by_lineage)
     print(switched_pred_states_by_lineage)
-    print(100 * np.mean(switched_pred_states_by_lineage == true_states_by_lineage))
+    print("accuracy after switching in acc func", 100 * np.mean(switched_pred_states_by_lineage == true_states_by_lineage))
     results_dict["switcher_map"] = switcher_map
 
     # Rearrange the values in the transition matrix
@@ -170,6 +170,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
     results_dict["accuracy_before_switching"] = 100 * np.mean(pred_states_by_lineage == true_states_by_lineage)
     results_dict["accuracy_after_switching"] = 100 * np.mean(switched_pred_states_by_lineage == true_states_by_lineage)
+    print(results_dict["accuracy_before_switching"])
     print(results_dict["accuracy_after_switching"])
 
     # 4. Calculate the Wasserstein distance
