@@ -142,12 +142,12 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
             temp_pred_states_by_lineage.append([switcher[state] for state in state_assignment])
         new_pred_states_by_lineage_holder.append(temp_pred_states_by_lineage)
         switcher_LL_holder.append(tHMMobj.log_score(temp_pred_states_by_lineage))
-    min_idx = switcher_LL_holder.index(min(switcher_LL_holder))
+    max_idx = switcher_LL_holder.index(max(switcher_LL_holder))
 
     # Create switcher map based on the minimal likelihood of different permutations of state
     # assignments
-    switcher_map = switcher_map_holder[min_idx]
-    switched_pred_states_by_lineage = new_pred_states_by_lineage_holder[min_idx]
+    switcher_map = switcher_map_holder[max_idx]
+    switched_pred_states_by_lineage = new_pred_states_by_lineage_holder[max_idx]
     results_dict["switcher_map"] = switcher_map
 
     # Rearrange the values in the transition matrix
