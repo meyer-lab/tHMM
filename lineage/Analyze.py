@@ -102,37 +102,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
 
-    # Calculate the predicted states prior to switching their label
-    true_states = np.array([cell.state for lineage_obj in tHMMobj.X for cell in lineage_obj.output_lineage])
-    pred_states = np.array([state for sublist in pred_states_by_lineage for state in sublist])
-
-    results_dict["total_number_of_cells"] = len(pred_states)
-
-    # 1. Calculate some cluster labeling scores between the true states and the predicted states prior to switching the
-    # predicted state labels based on their underlying distributions
-
-    # 1.1. mutual information score
-    results_dict["mutual_info_score"] = metrics.mutual_info_score(true_states, pred_states)
-
-    # 1.2. normalized mutual information score
-    results_dict["mutual_info_score"] = metrics.normalized_mutual_info_score(true_states, pred_states)
-
-    # 1.3. adjusted mutual information score
-    results_dict["adjusted_mutual_info_score"] = metrics.adjusted_mutual_info_score(true_states, pred_states)
-
-    # 1.4. adjusted Rand index
-    results_dict["adjusted_rand_score"] = metrics.adjusted_rand_score(true_states, pred_states)
-
-    # 1.5. V-measure cluster labeling score
-    results_dict["v_measure_score"] = metrics.v_measure_score(true_states, pred_states)
-
-    # 1.6. homogeneity metric
-    results_dict["homogeneity_score"] = metrics.homogeneity_score(true_states, pred_states)
-
-    # 1.7. completeness metric
-    results_dict["completeness_score"] = metrics.completeness_score(true_states, pred_states)
-
-    # 2. Decide how to switch states based on the state assignment that yields the maximum likelihood
+    # 1. Decide how to switch states based on the state assignment that yields the maximum likelihood
     switcher_map_holder = list(itertools.permutations(list(range(tHMMobj.num_states))))
     new_pred_states_by_lineage_holder = []
     switcher_LL_holder = []
@@ -188,13 +158,13 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     for val_idx in range(tHMMobj.num_states):
         results_dict["param_trues"].append(tHMMobj.X[0].E[val_idx].params)
 
-    # 3. Calculate accuracy after switching states
-    pred_states_switched = np.array([state for sublist in switched_pred_states_by_lineage for state in sublist])
-    results_dict["state_counter"] = np.bincount(pred_states_switched)
-    results_dict["state_proportions"] = [100 * i / len(pred_states_switched) for i in results_dict["state_counter"]]
+    # 2. Calculate accuracy after switching states
+    switched_pred_states = np.array([state for sublist in switched_pred_states_by_lineage for state in sublist])
+    results_dict["state_counter"] = np.bincount(switched_pred_states)
+    results_dict["state_proportions"] = [100 * i / len(switched_pred_states) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
-    results_dict["accuracy_before_switching"] = 100 * np.mean(pred_states == true_states)
-    results_dict["accuracy_after_switching"] = 100 * np.mean(pred_states_switched == true_states)
+    results_dict["accuracy_before_switching"] = 100 * np.mean(switched_pred_states_by_lineage == pred_states_by_lineage)
+    results_dict["accuracy_after_switching"] = 100 * np.mean(switched_pred_states_by_lineage == pred_states_by_lineage)
     print(results_dict["accuracy_after_switching"])
 
     # 4. Calculate the Wasserstein distance
