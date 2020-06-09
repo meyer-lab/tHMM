@@ -137,6 +137,7 @@ def basic_censor(cell):
             if not cell.isLeafBecauseTerminal():
                 cell.left.censored = True
                 cell.right.censored = True
+            if not cell.get_sister.isLeafBecauseTerminal():
                 cell.get_sister().left.censored = True
                 cell.get_sister().right.censored = True
 
