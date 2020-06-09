@@ -151,7 +151,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     switched_pred_states_by_lineage = new_pred_states_by_lineage_holder[max_idx]
     print(pred_states_by_lineage)
     print(switched_pred_states_by_lineage)
-    print(100 * np.mean(switched_pred_states_by_lineage == pred_states_by_lineage)
+    print(100 * np.mean(switched_pred_states_by_lineage == pred_states_by_lineage))
     results_dict["switcher_map"] = switcher_map
 
     # Rearrange the values in the transition matrix
