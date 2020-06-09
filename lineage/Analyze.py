@@ -122,6 +122,8 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     # assignments
     switcher_map = switcher_map_holder[max_idx]
     switched_pred_states_by_lineage = new_pred_states_by_lineage_holder[max_idx]
+    print(switcher_map_holder)
+    print(switcher_LL_holder)
     print(switcher_map)
     print(true_states_by_lineage)
     print(pred_states_by_lineage)
