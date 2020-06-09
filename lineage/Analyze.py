@@ -3,7 +3,8 @@ from concurrent.futures import ProcessPoolExecutor
 import random
 import numpy as np
 from sklearn import metrics
-from scipy.stats import entropy, wasserstein_distance
+from scipy.stats import wasserstein_distance
+import itertools
 
 from .tHMM import tHMM
 
@@ -131,25 +132,22 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     # 1.7. completeness metric
     results_dict["completeness_score"] = metrics.completeness_score(true_states, pred_states)
 
-    # 2. Switch the underlying state labels based on the KL-divergence of the underlying states' distributions
-    # First collect all the observations from the entire population across the lineages ordered by state
-    obs_by_state = []
-    for state in range(tHMMobj.num_states):
-        obs_by_state.append([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage if cell.state == state])
+    # 2. Decide how to switch states based on the state assignment that yields the maximum likelihood
+    switcher_map_holder = list(itertools.permutations(list(range(tHMMobj.num_states))))
+    new_pred_states_by_lineage_holder = []
+    switcher_LL_holder = []
+    for _, switcher in enumerate(switcher_map_holder):
+        temp_pred_states_by_lineage = []
+        for state_assignment in pred_states_by_lineage:
+            temp_pred_states_by_lineage.append([switcher[state] for state in state_assignment])
+        new_pred_states_by_lineage_holder.append(temp_pred_states_by_lineage)
+        switcher_LL_holder.append(tHMMobj.log_score(temp_pred_states_by_lineage))
+    min_idx = switcher_LL_holder.index(min(switcher_LL_holder))
 
-    # Array to hold divergence values
-    switcher_array = np.zeros((tHMMobj.num_states, tHMMobj.num_states), dtype="float")
-
-    for state_pred in range(tHMMobj.num_states):
-        for state_true in range(tHMMobj.num_states):
-            p = [tHMMobj.estimate.E[state_pred].pdf(y) for y in obs_by_state[state_pred]]
-            q = [tHMMobj.X[0].E[state_true].pdf(x) for x in obs_by_state[state_pred]]
-            switcher_array[state_pred, state_true] = entropy(p, q) + entropy(q, p)
-
-    results_dict["switcher_array"] = switcher_array
-
-    # Create switcher map based on the minimal entropies in the switcher array
-    switcher_map = np.argmin(switcher_array, axis=1)
+    # Create switcher map based on the minimal likelihood of different permutations of state
+    # assignments
+    switcher_map = switcher_map_holder[min_idx]
+    switched_pred_states_by_lineage = new_pred_states_by_lineage_holder[min_idx]
     results_dict["switcher_map"] = switcher_map
 
     # Rearrange the values in the transition matrix
@@ -183,7 +181,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         results_dict["param_trues"].append(tHMMobj.X[0].E[val_idx].params)
 
     # 3. Calculate accuracy after switching states
-    pred_states_switched = switcher_map[pred_states]
+    pred_states_switched = np.array([state for sublist in switched_pred_states_by_lineage for state in sublist])
     results_dict["state_counter"] = np.bincount(pred_states_switched)
     results_dict["state_proportions"] = [100 * i / len(pred_states_switched) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
