@@ -61,20 +61,6 @@ class tHMM:
         self.estimate = estimate(self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
         self.EL = get_Emission_Likelihoods(self)
 
-    # getter method
-    def get_EL(self):
-        """
-        getter method for tHMM's EL
-        """
-        return self.EL
-      
-    # setter method
-    def set_EL(self, EL):
-        """
-        setter method for tHMM's EL
-        """
-        self.EL = EL
-
     def fit(self, tolerance=np.spacing(1), max_iter=100):
         """Runs the tHMM function through Baum Welch fitting"""
 
@@ -154,7 +140,7 @@ class tHMM:
             # the first term is the value of pi for the state of the first cell
             log_score += np.log(pi[X_state_tree_sequence[idx][0]])
             log_score += log_T_score(T, X_state_tree_sequence[idx], lineageObj)
-            log_score += log_E_score(self.get_EL()[idx], X_state_tree_sequence[idx])
+            log_score += log_E_score(self.EL[idx], X_state_tree_sequence[idx])
             log_scores.append(log_score)
         return log_scores
 
