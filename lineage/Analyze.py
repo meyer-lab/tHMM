@@ -126,7 +126,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     print(true_states_by_lineage)
     print(pred_states_by_lineage)
     print(switched_pred_states_by_lineage)
-    print("accuracy after switching in acc func", 100 * np.mean(switched_pred_states_by_lineage == true_states_by_lineage))
+    print("accuracy after switching in acc func", 100 * np.mean(switched_pred_states_by_lineage.flat == true_states_by_lineage.flat))
     results_dict["switcher_map"] = switcher_map
 
     # Rearrange the values in the transition matrix
@@ -164,12 +164,11 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         results_dict["param_trues"].append(tHMMobj.X[0].E[val_idx].params)
 
     # 2. Calculate accuracy after switching states
-    switched_pred_states = np.array([state for sublist in switched_pred_states_by_lineage for state in sublist])
-    results_dict["state_counter"] = np.bincount(switched_pred_states)
-    results_dict["state_proportions"] = [100 * i / len(switched_pred_states) for i in results_dict["state_counter"]]
+    results_dict["state_counter"] = np.bincount(switched_pred_states_by_lineage.flat)
+    results_dict["state_proportions"] = [100 * i / len(switched_pred_states_by_lineage.flat) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
-    results_dict["accuracy_before_switching"] = 100 * np.mean(pred_states_by_lineage == true_states_by_lineage)
-    results_dict["accuracy_after_switching"] = 100 * np.mean(switched_pred_states_by_lineage == true_states_by_lineage)
+    results_dict["accuracy_before_switching"] = 100 * np.mean(pred_states_by_lineage.flat == true_states_by_lineage.flat)
+    results_dict["accuracy_after_switching"] = 100 * np.mean(switched_pred_states_by_lineage.flat == true_states_by_lineage.flat)
     print(results_dict["accuracy_before_switching"])
     print(results_dict["accuracy_after_switching"])
 
