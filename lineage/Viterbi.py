@@ -139,4 +139,4 @@ def Viterbi(tHMMobj, deltas, state_ptrs):
 
         all_states.append(opt_state_tree)
 
-    return all_states
+    return np.array(all_states)
