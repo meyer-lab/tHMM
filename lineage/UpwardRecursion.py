@@ -48,7 +48,7 @@ def get_Marginal_State_Distributions(tHMMobj):
     return MSD
 
 
-def get_Emission_Likelihoods(tHMMobj):
+def get_Emission_Likelihoods(tHMMobj, E=None):
     """Emission Likelihood (EL) matrix.
 
     Each element in this N by K matrix represents the probability
@@ -58,6 +58,9 @@ def get_Emission_Likelihoods(tHMMobj):
     for all :math:`x_n` and :math:`z_n` in our observed and hidden state tree
     and for all possible discrete states k.
     """
+    if E is None:
+        E = tHMMobj.estimate.E
+
     EL = []
 
     for lineageObj in tHMMobj.X:  # for each lineage in our Population
@@ -66,7 +69,7 @@ def get_Emission_Likelihoods(tHMMobj):
 
         for current_cell_idx, cell in enumerate(lineage):  # for each cell in the lineage
             for state_k in range(tHMMobj.num_states):  # for each state
-                EL_array[current_cell_idx, state_k] = tHMMobj.estimate.E[state_k].pdf(cell.obs)
+                EL_array[current_cell_idx, state_k] = E[state_k].pdf(cell.obs)
 
         EL.append(EL_array)  # append the EL_array for each lineage
     return EL

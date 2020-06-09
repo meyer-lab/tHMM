@@ -4,8 +4,7 @@ import random
 import numpy as np
 from sklearn import metrics
 from scipy.stats import entropy, wasserstein_distance
-from .UpwardRecursion import get_Emission_Likelihoods
-from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
+
 from .tHMM import tHMM
 
 
@@ -28,19 +27,22 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     for num_tries in range(1, 15):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            _, _, EL, _, _, _, LL = tHMMobj.fit()
+            _, _, _, _, _, LL = tHMMobj.fit()
             break
         except (AssertionError, ZeroDivisionError, RuntimeError) as error:
             error_holder.append(error)
             if num_tries == 14:
                 print(
-                    f"Caught the following errors: \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. Fitting is breaking after trying {num_tries} times. If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue is the estimates of your parameters are returning nonsensible parameters. Consider changing your parameter estimator. "
+                    f"Caught the following errors: \
+                    \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. \
+                    Fitting is breaking after trying {num_tries} times. \
+                    If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue \
+                    is the estimates of your parameters are returning nonsensible parameters. \
+                    Consider changing your parameter estimator. "
                 )
                 raise
 
-    deltas, state_ptrs = get_leaf_deltas(tHMMobj, EL)
-    get_nonleaf_deltas(tHMMobj, EL, deltas, state_ptrs)
-    pred_states_by_lineage = Viterbi(tHMMobj, deltas, state_ptrs)
+    pred_states_by_lineage = tHMMobj.predict()
 
     return tHMMobj, pred_states_by_lineage, LL
 
@@ -219,58 +221,4 @@ def run_Results_over(output):
     return results_holder
 
 
-def getAIC(tHMMobj, LL):
-    """
-    Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
-    between over-fitting and under-fitting.
-    :math:`AIC = 2*k - 2 * log(LL)` in which k is the number of free parameters and LL is the maximum of likelihood function.
-    Minimum of AIC detremines the relatively better model.
 
-    :param tHMMobj: the tHMM class which has been built.
-    :type tHMMobj: object
-    :param LL: the likelihood value
-    :param AIC_value: containing AIC values relative to 0 for each lineage.
-    :type AIC_value: float
-    :param AIC_degrees_of_freedom: the degrees of freedom in AIC calculation :math:`(num_{states}^2 + num_{states} * numberOfParameters - 1)` - same for each lineage
-    """
-    num_states = tHMMobj.num_states
-
-    number_of_parameters = len(tHMMobj.estimate.E[0].params)
-    AIC_degrees_of_freedom = num_states ** 2 + num_states * number_of_parameters - 1
-
-    AIC_value = -2 * LL + 2 * AIC_degrees_of_freedom
-
-    return AIC_value, AIC_degrees_of_freedom
-
-
-def LLHelperFunc(T, lineageObj):
-    """
-    To calculate the joint probability of state and observations.
-    This function, calculates the second term
-    :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
-    """
-    states = []
-    for cell in lineageObj.output_lineage:
-        if cell.gen == 1:
-            pass
-        else:
-            states.append(T[cell.parent.state, cell.state])
-    return states
-
-
-def LLFunc(T, pi, tHMMobj, pred_states_by_lineage):
-    """
-    This function calculate the state likelihood, using the joint probability function.
-    *we do the log-transformation to avoid underflow.*
-    """
-    stLikelihood = []
-    for indx, lineage in enumerate(tHMMobj.X):
-        FirstTerm = pi[lineage.output_lineage[0].state]
-        SecondTerm = LLHelperFunc(T, lineage)
-        pre_ThirdTerm = get_Emission_Likelihoods(tHMMobj)[indx]
-        ThirdTerm = np.zeros(len(lineage.output_lineage))
-        for ind, st in enumerate(pred_states_by_lineage[indx]):
-            ThirdTerm[ind] = pre_ThirdTerm[ind, st]
-        ll = np.log(FirstTerm) + np.sum(np.log(SecondTerm)) + np.sum(np.log(ThirdTerm))
-        stLikelihood.append(ll)
-    return stLikelihood

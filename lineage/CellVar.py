@@ -45,7 +45,8 @@ class CellVar:
         return self.left, self.right
 
     def isLeafBecauseTerminal(self):
-        """Boolean.
+        """
+        Boolean.
         Returns true when a cell is a leaf with no children.
         These are cells at the end of the tree.
         """
@@ -69,6 +70,12 @@ class CellVar:
         return False
 
     def isLeaf(self):
+        """
+        Boolean.
+        Returns true when a cell is a leaf defined by the two conditions that determine
+        whether a cell is a leaf. A cell only has to satisfy one of the conditions
+        (an or statement) for it to be a leaf.
+        """
         return self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreCensored()
 
     def isParent(self):

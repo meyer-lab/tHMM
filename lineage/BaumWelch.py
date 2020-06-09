@@ -23,13 +23,14 @@ def do_E_step(tHMMobj):
     """
     MSD = get_Marginal_State_Distributions(tHMMobj)
     EL = get_Emission_Likelihoods(tHMMobj)
+    tHMMobj.EL = EL
     NF = get_leaf_Normalizing_Factors(tHMMobj, MSD, EL)
     betas = get_leaf_betas(tHMMobj, MSD, EL, NF)
     get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas)
     gammas = get_root_gammas(tHMMobj, betas)
     get_nonroot_gammas(tHMMobj, MSD, gammas, betas)
 
-    return MSD, EL, NF, betas, gammas
+    return MSD, NF, betas, gammas
 
 
 def calculate_log_likelihood(NF):
@@ -41,6 +42,12 @@ def calculate_log_likelihood(NF):
 
 
 def do_M_step(tHMMobj, MSD, betas, gammas):
+    """
+    Calculates the M-step of the Baum Welch algorithm
+    given output of the E step.
+    The individual parameter estimations are performed in
+    separate functions.
+    """
     if tHMMobj.estimate.fpi is None:
         tHMMobj.estimate.pi = do_M_pi_step(tHMMobj, gammas)
 
@@ -52,6 +59,12 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
 
 
 def do_M_pi_step(tHMMobj, gammas):
+    """
+    Calculates the M-step of the Baum Welch algorithm
+    given output of the E step.
+    Does the parameter estimation for the pi
+    initial probability vector.
+    """
     num_states = tHMMobj.num_states
 
     pi_estimate = np.zeros((num_states), dtype=float)
@@ -67,6 +80,12 @@ def do_M_pi_step(tHMMobj, gammas):
 
 
 def do_M_T_step(tHMMobj, MSD, betas, gammas):
+    """
+    Calculates the M-step of the Baum Welch algorithm
+    given output of the E step.
+    Does the parameter estimation for the T
+    Markov stochastic transition matrix.
+    """
     num_states = tHMMobj.num_states
 
     numer_estimate = np.zeros((num_states, num_states), dtype=float)
@@ -85,6 +104,12 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
 
 
 def do_M_E_step(tHMMobj, gammas):
+    """
+    Calculates the M-step of the Baum Welch algorithm
+    given output of the E step.
+    Does the parameter estimation for the E
+    Emissions matrix (state probabilistic distributions).
+    """
     all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
     all_gammas = np.vstack(gammas)
     for state_j in range(tHMMobj.num_states):

@@ -39,24 +39,24 @@ class TestBW(unittest.TestCase):
 
         # Test cases below
         # Get the likelihoods before fitting
-        _, _, NF, _, _ = do_E_step(tHMMobj)
+        _, NF, _, _ = do_E_step(tHMMobj)
         LL_before = calculate_log_likelihood(NF)
         self.assertTrue(np.isfinite(LL_before))
 
         # For 3 states
-        _, _, NF3s, _, _ = do_E_step(tHMMobj3s)
+        _, NF3s, _, _ = do_E_step(tHMMobj3s)
         LL_before3 = calculate_log_likelihood(NF3s)
         self.assertTrue(np.isfinite(LL_before3))
 
         # Get the likelihoods after fitting
-        _, _, _, NF_after, _, _, new_LL_list_after = tHMMobj.fit(max_iter=4)
+        _, _, NF_after, _, _, new_LL_list_after = tHMMobj.fit(max_iter=4)
         LL_after = calculate_log_likelihood(NF_after)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
         self.assertGreater(LL_after, LL_before)
 
         # for 3 states
-        _, _, _, NF_after3, _, _, new_LL_list_after3 = tHMMobj3s.fit(max_iter=4)
+        _, _, NF_after3, _, _, new_LL_list_after3 = tHMMobj3s.fit(max_iter=4)
         LL_after3 = calculate_log_likelihood(NF_after3)
         self.assertTrue(np.isfinite(LL_after3))
         self.assertTrue(np.isfinite(new_LL_list_after3))
