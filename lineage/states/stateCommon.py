@@ -132,12 +132,14 @@ def basic_censor(cell):
     """
     if not cell.isRootParent():
         if cell.parent.censored:
+
             cell.censored = True
-            cell.get_sister().censored = True
             if not cell.isLeafBecauseTerminal():
                 cell.left.censored = True
                 cell.right.censored = True
-            if not cell.get_sister.isLeafBecauseTerminal():
+
+            cell.get_sister().censored = True
+            if not cell.get_sister().isLeafBecauseTerminal():
                 cell.get_sister().left.censored = True
                 cell.get_sister().right.censored = True
 
