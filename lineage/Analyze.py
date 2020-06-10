@@ -169,8 +169,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         results_dict["param_trues"].append(tHMMobj.X[0].E[val_idx].params)
 
     # 2. Calculate accuracy after switching states
-    print(ravel_switched_pred_states_by_lineage)
-    results_dict["state_counter"] = np.bincount(ravel_switched_pred_states_by_lineage)
+    results_dict["state_counter"] = np.bincount([state for sublist in switched_pred_states_by_lineage for state in sublist ])
     results_dict["state_proportions"] = [100 * i / len(ravel_switched_pred_states_by_lineage) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
     results_dict["accuracy_before_switching"] = 100 * np.mean(ravel_pred_states_by_lineage == ravel_true_states_by_lineage)
