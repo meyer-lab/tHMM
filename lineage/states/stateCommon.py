@@ -46,7 +46,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     else:
         a_hat0 = brentq(f, 0.01, 100.0)
 
-    scale_hat0 = gammaCor / a_hat
+    scale_hat0 = gammaCor / a_hat0
 
     def LL(a_hat_LL, scale_hat_LL):
         uncens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==1])
