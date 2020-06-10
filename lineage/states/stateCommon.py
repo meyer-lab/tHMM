@@ -36,8 +36,8 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
     """
-    gammaCor = sum(gammas * gamma_obs) / sum(gammas * time_censor_obs)
-    s = np.log(gammaCor) - sum(gammas * np.log(gamma_obs)) / sum(gammas * time_censor_obs)
+    gammaCor = sum(gammas * gamma_obs) / sum(gammas)
+    s = np.log(gammaCor) - sum(gammas * np.log(gamma_obs)) / sum(gammas)
 
     def f(k): return np.log(k) - sc.polygamma(0, k) - s
 
