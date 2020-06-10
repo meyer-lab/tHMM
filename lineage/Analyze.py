@@ -103,7 +103,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["LL"] = LL
     results_dict["total_number_of_cells"] = sum([len(lineage) for lineage in tHMMobj.X])
 
-    true_states_by_lineage = np.array([[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X])
+    true_states_by_lineage = np.array([np.array([cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X]))
     ravel_true_states_by_lineage = np.ravel(true_states_by_lineage)
 
     # 1. Decide how to switch states based on the state assignment that yields the maximum likelihood
@@ -129,7 +129,6 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     print(true_states_by_lineage)
     print(pred_states_by_lineage)
     print(switched_pred_states_by_lineage)
-    print(ravel_true_states_by_lineage)
     print("accuracy after switching in acc func", 100 * np.mean(ravel_switched_pred_states_by_lineage == ravel_true_states_by_lineage))
     results_dict["switcher_map"] = switcher_map
 
