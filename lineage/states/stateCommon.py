@@ -48,14 +48,14 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
 
     scale_hat0 = gammaCor / a_hat0
 
-    def LL(a_hat_LL, scale_hat_LL):
+    def LL(x):
         uncens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==1])
         uncens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==1])
         assert uncens_gammas.shape[0] == uncens_obs.shape[0]
-        uncens = uncens_gammas*sp.gamma.logpdf(uncens_obs, a=a_hat_LL, scale=scale_hat_LL)
+        uncens = uncens_gammas*sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
         cens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==0])
         cens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==0])
-        cens = cens_gammas*sp.gamma.logsf(cens_obs, a=a_hat_LL, scale=scale_hat_LL)
+        cens = cens_gammas*sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
 
         return -1*np.sum(np.sum(uncens) + np.sum(cens))
 
