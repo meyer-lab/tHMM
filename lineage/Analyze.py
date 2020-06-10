@@ -206,6 +206,3 @@ def run_Results_over(output):
         results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL))
 
     return results_holder
-
-
-

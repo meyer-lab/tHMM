@@ -8,8 +8,6 @@ from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_st
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 
 
-
-
 class estimate:
     """Estimation class.
     """
@@ -178,5 +176,3 @@ def log_E_score(EL_array, state_tree_sequence):
     for idx, row in enumerate(log_EL_array):
         log_E_score_holder += row[state_tree_sequence[idx]]
     return log_E_score_holder
-
-

@@ -128,7 +128,7 @@ def get_experiment_time(lineageObj):
 
 def basic_censor(cell):
     """
-    Censors a cell, its daughters, its sister, and 
+    Censors a cell, its daughters, its sister, and
     it's sister's daughters if the cell's parent is
     censored.
     """

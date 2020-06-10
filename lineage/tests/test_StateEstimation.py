@@ -8,8 +8,6 @@ from ..states.StateDistributionGamma import StateDistribution as gamma_state
 from ..states.StateDistributionExpon import StateDistribution as expon_state
 
 
-
-
 class TestModel(unittest.TestCase):
     """
     Unit test class for state distributions.
