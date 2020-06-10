@@ -62,7 +62,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
 
     res = minimize(LL, a_hat, bounds=((1.,20.),), options={'maxiter': 5})
 
-    return  res.x, gammaCor / res.x
+    return  res.x[0], gammaCor / res.x[0]
 
 
 def bernoulli_estimator(bern_obs, gammas):
