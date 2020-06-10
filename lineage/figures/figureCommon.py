@@ -21,21 +21,21 @@ pi = np.array([0.75, 0.25], dtype="float")
 T = np.array([[0.9, 0.1], [0.1, 0.9]], dtype="float")
 
 # bern, gamma_a, gamma_scale
-state0 = StateDistribution(0.99, 7, 7)
-state1 = StateDistribution(0.75, 7, 1)
+state0 = StateDistribution(0.99, 8, 6)
+state1 = StateDistribution(0.75, 8, 1)
 E = [state0, state1]
 
 # bern, exp_beta
-state10 = expon_state(0.99, 49)
-state11 = expon_state(0.75, 7)
+state10 = expon_state(0.99, 48)
+state11 = expon_state(0.75, 8)
 E1 = [state10, state11]
 
 state20 = phaseStateDist(0.99, 0.8, 12, 7, 12, 10)
 state21 = phaseStateDist(0.88, 0.75, 7, 1, 10, 3)
 E2 = [state20, state21]
 
-min_desired_num_cells = (2 ** 5) - 1
-max_desired_num_cells = (2 ** 9) - 1
+min_desired_num_cells = (2 ** 4) - 1
+max_desired_num_cells = (2 ** 8) - 1
 
 min_experiment_time = 72
 max_experiment_time = 144
