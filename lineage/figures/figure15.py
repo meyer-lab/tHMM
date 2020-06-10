@@ -71,4 +71,4 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E1)
 
-    return commonAnalyze(list_of_populations, parallel=False, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT)
+    return commonAnalyze(list_of_populations, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT)
