@@ -121,7 +121,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     # Create switcher map based on the minimal likelihood of different permutations of state
     # assignments
     switcher_map = switcher_map_holder[max_idx]
-    switched_pred_states_by_lineage = new_pred_states_by_lineage_holder[max_idx]
+    switched_pred_states_by_lineage = np.array(new_pred_states_by_lineage_holder[max_idx])
     ravel_switched_pred_states_by_lineage = np.ravel(switched_pred_states_by_lineage)
     print(switcher_map_holder)
     print(switcher_LL_holder)
