@@ -60,7 +60,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
 
         return -1*np.sum(np.sum(uncens) + np.sum(cens))
 
-    res = minimize(LL, a_hat, bounds=(1.,20.), options={'maxiter': 5})
+    res = minimize(LL, a_hat, bounds=((1.,20.),), options={'maxiter': 5})
 
     return  res.x, gammaCor / res.x
 
