@@ -3,7 +3,8 @@ from concurrent.futures import ProcessPoolExecutor
 import random
 import numpy as np
 from sklearn import metrics
-from scipy.stats import entropy, wasserstein_distance
+from scipy.stats import wasserstein_distance
+import itertools
 
 from .tHMM import tHMM
 
@@ -100,67 +101,45 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict = {}
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
+    results_dict["total_number_of_cells"] = sum([len(lineage) for lineage in tHMMobj.X])
 
-    # Calculate the predicted states prior to switching their label
-    true_states = np.array([cell.state for lineage_obj in tHMMobj.X for cell in lineage_obj.output_lineage])
-    pred_states = np.array([state for sublist in pred_states_by_lineage for state in sublist])
+    true_states_by_lineage = [[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X]
+    ravel_true_states = np.array([state for sublist in true_states_by_lineage for state in sublist])
 
-    results_dict["total_number_of_cells"] = len(pred_states)
+    ravel_pred_states = np.array([state for sublist in pred_states_by_lineage for state in sublist])
 
-    # 1. Calculate some cluster labeling scores between the true states and the predicted states prior to switching the
-    # predicted state labels based on their underlying distributions
+    # 1. Decide how to switch states based on the state assignment that yields the maximum likelihood
+    switcher_map_holder = list(itertools.permutations(list(range(tHMMobj.num_states))))
+    new_pred_states_by_lineage_holder = []
+    switcher_LL_holder = []
+    for _, switcher in enumerate(switcher_map_holder):
+        temp_pred_states_by_lineage = []
+        for state_assignment in pred_states_by_lineage:
+            temp_pred_states_by_lineage.append([switcher[state] for state in state_assignment])
+        new_pred_states_by_lineage_holder.append(temp_pred_states_by_lineage)
+        switcher_LL_holder.append(np.sum(tHMMobj.log_score(temp_pred_states_by_lineage, pi=tHMMobj.X[0].pi, T=tHMMobj.X[0].T, E=tHMMobj.X[0].E)))
+    max_idx = switcher_LL_holder.index(max(switcher_LL_holder))
 
-    # 1.1. mutual information score
-    results_dict["mutual_info_score"] = metrics.mutual_info_score(true_states, pred_states)
-
-    # 1.2. normalized mutual information score
-    results_dict["mutual_info_score"] = metrics.normalized_mutual_info_score(true_states, pred_states)
-
-    # 1.3. adjusted mutual information score
-    results_dict["adjusted_mutual_info_score"] = metrics.adjusted_mutual_info_score(true_states, pred_states)
-
-    # 1.4. adjusted Rand index
-    results_dict["adjusted_rand_score"] = metrics.adjusted_rand_score(true_states, pred_states)
-
-    # 1.5. V-measure cluster labeling score
-    results_dict["v_measure_score"] = metrics.v_measure_score(true_states, pred_states)
-
-    # 1.6. homogeneity metric
-    results_dict["homogeneity_score"] = metrics.homogeneity_score(true_states, pred_states)
-
-    # 1.7. completeness metric
-    results_dict["completeness_score"] = metrics.completeness_score(true_states, pred_states)
-
-    # 2. Switch the underlying state labels based on the KL-divergence of the underlying states' distributions
-    # First collect all the observations from the entire population across the lineages ordered by state
-    obs_by_state = []
-    for state in range(tHMMobj.num_states):
-        obs_by_state.append([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage if cell.state == state])
-
-    # Array to hold divergence values
-    switcher_array = np.zeros((tHMMobj.num_states, tHMMobj.num_states), dtype="float")
-
-    for state_pred in range(tHMMobj.num_states):
-        for state_true in range(tHMMobj.num_states):
-            p = [tHMMobj.estimate.E[state_pred].pdf(y) for y in obs_by_state[state_pred]]
-            q = [tHMMobj.X[0].E[state_true].pdf(x) for x in obs_by_state[state_pred]]
-            switcher_array[state_pred, state_true] = entropy(p, q) + entropy(q, p)
-
-    results_dict["switcher_array"] = switcher_array
-
-    # Create switcher map based on the minimal entropies in the switcher array
-    switcher_map = np.argmin(switcher_array, axis=1)
+    # Create switcher map based on the minimal likelihood of different permutations of state
+    # assignments
+    switcher_map = switcher_map_holder[max_idx]
+    switched_pred_states_by_lineage = new_pred_states_by_lineage_holder[max_idx]
+    ravel_switched_pred_states = np.array([state for sublist in switched_pred_states_by_lineage for state in sublist])
     results_dict["switcher_map"] = switcher_map
 
     # Rearrange the values in the transition matrix
     temp_T = np.copy(tHMMobj.estimate.T)
-    temp_T = temp_T[switcher_map, :]
-    temp_T = temp_T[:, switcher_map]
+    for row in range(tHMMobj.num_states):
+        for col in range(tHMMobj.num_states):
+            temp_T[row,col] = tHMMobj.estimate.T[switcher_map[row],switcher_map[col]]
 
+    results_dict["switched_transition_matrix"] = temp_T
     results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
 
     # Rearrange the values in the pi vector
-    temp_pi = tHMMobj.estimate.pi[switcher_map]
+    temp_pi = np.copy(tHMMobj.estimate.pi)
+    for val_idx in range(tHMMobj.num_states):
+        temp_pi[val_idx] = tHMMobj.estimate.pi[switcher_map[val_idx]]
 
     results_dict["switched_pi_vector"] = temp_pi
     results_dict["pi_vector_norm"] = np.linalg.norm(temp_pi - tHMMobj.X[0].pi)
@@ -182,13 +161,12 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     for val_idx in range(tHMMobj.num_states):
         results_dict["param_trues"].append(tHMMobj.X[0].E[val_idx].params)
 
-    # 3. Calculate accuracy after switching states
-    pred_states_switched = switcher_map[pred_states]
-    results_dict["state_counter"] = np.bincount(pred_states_switched)
-    results_dict["state_proportions"] = [100 * i / len(pred_states_switched) for i in results_dict["state_counter"]]
+    # 2. Calculate accuracy after switching states
+    results_dict["state_counter"] = np.bincount(ravel_switched_pred_states)
+    results_dict["state_proportions"] = [100 * i / len(ravel_switched_pred_states) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
-    results_dict["accuracy_before_switching"] = 100 * np.mean(pred_states == true_states)
-    results_dict["accuracy_after_switching"] = 100 * np.mean(pred_states_switched == true_states)
+    results_dict["accuracy_before_switching"] = 100 * np.mean(ravel_pred_states == ravel_true_states)
+    results_dict["accuracy_after_switching"] = 100 * np.mean(ravel_switched_pred_states == ravel_true_states)
 
     # 4. Calculate the Wasserstein distance
     obs_by_state_rand_sampled = []
