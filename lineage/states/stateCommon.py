@@ -42,27 +42,26 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     def f(k): return np.log(k) - sc.polygamma(0, k) - s
 
     if f(0.01) * f(100.0) > 0.0:
-        a_hat = 10.0
+        a_hat0 = 10.0
     else:
-        a_hat = brentq(f, 0.01, 100.0)
+        a_hat0 = brentq(f, 0.01, 100.0)
 
-    scale_hat = gammaCor / a_hat
+    scale_hat0 = gammaCor / a_hat
 
-    def LL(a_hat):
-        scale_hat = gammaCor / a_hat
+    def LL(a_hat_LL, scale_hat_LL):
         uncens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==1])
         uncens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==1])
         assert uncens_gammas.shape[0] == uncens_obs.shape[0]
-        uncens = uncens_gammas*sp.gamma.logpdf(uncens_obs, a=a_hat, scale=scale_hat)
+        uncens = uncens_gammas*sp.gamma.logpdf(uncens_obs, a=a_hat_LL, scale=scale_hat_LL)
         cens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==0])
         cens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==0])
-        cens = cens_gammas*sp.gamma.logsf(cens_obs, a=a_hat, scale=scale_hat)
+        cens = cens_gammas*sp.gamma.logsf(cens_obs, a=a_hat_LL, scale=scale_hat_LL)
 
         return -1*np.sum(np.sum(uncens) + np.sum(cens))
 
-    res = minimize(LL, a_hat, bounds=((1.,20.),), options={'maxiter': 5})
+    res = minimize(fun=LL, x_0=[a_hat0, scale_hat0], bounds=((1.,20.),(1.,20.),), options={'maxiter': 5})
 
-    return  res.x[0], gammaCor / res.x[0]
+    return  res.x[0], res.x[1]
 
 
 def bernoulli_estimator(bern_obs, gammas):
