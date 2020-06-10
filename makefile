@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 .PHONY: clean test testprofile testcover docs
 
-flist = 15
+flist = 5 15
 
 all: pylint.log spell.txt $(patsubst %, output/figure%.svg, $(flist))
 
