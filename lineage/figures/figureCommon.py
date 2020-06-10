@@ -119,6 +119,8 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
         x = dictOut["wasserstein"]
     elif xtype == "bern":
         x = paramTrues[:, 0, 0]
+    print(dictOut["accuracy_before_switching"])
+    print(dictOut["accuracy_after_switching"])
     return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
 
 

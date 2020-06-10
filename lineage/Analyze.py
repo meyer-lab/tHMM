@@ -167,6 +167,10 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
     results_dict["accuracy_before_switching"] = 100 * np.mean(ravel_pred_states_by_lineage == ravel_true_states_by_lineage)
     results_dict["accuracy_after_switching"] = 100 * np.mean(ravel_switched_pred_states_by_lineage == ravel_true_states_by_lineage)
+    print(ravel_switched_pred_states_by_lineage)
+    print(ravel_true_states_by_lineage)
+    print(results_dict["accuracy_before_switching"])
+    print(results_dict["accuracy_after_switching"])
 
     # 4. Calculate the Wasserstein distance
     obs_by_state_rand_sampled = []
