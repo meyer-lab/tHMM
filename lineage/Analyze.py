@@ -103,10 +103,10 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["LL"] = LL
     results_dict["total_number_of_cells"] = sum([len(lineage) for lineage in tHMMobj.X])
 
-    true_states_by_lineage = np.array([[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X])
-    ravel_true_states = [state for sublist in true_states_by_lineage for state in sublist]
+    true_states_by_lineage = [[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X]
+    ravel_true_states = np.array([state for sublist in true_states_by_lineage for state in sublist])
 
-    ravel_pred_states = [state for sublist in pred_states_by_lineage for state in sublist]
+    ravel_pred_states = np.array([state for sublist in pred_states_by_lineage for state in sublist])
 
     # 1. Decide how to switch states based on the state assignment that yields the maximum likelihood
     switcher_map_holder = list(itertools.permutations(list(range(tHMMobj.num_states))))
@@ -123,8 +123,8 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     # Create switcher map based on the minimal likelihood of different permutations of state
     # assignments
     switcher_map = switcher_map_holder[max_idx]
-    switched_pred_states_by_lineage = np.array(new_pred_states_by_lineage_holder[max_idx])
-    ravel_switched_pred_states = [state for sublist in switched_pred_states_by_lineage for state in sublist]
+    switched_pred_states_by_lineage = new_pred_states_by_lineage_holder[max_idx]
+    ravel_switched_pred_states = np.array([state for sublist in switched_pred_states_by_lineage for state in sublist])
     results_dict["switcher_map"] = switcher_map
 
     # Rearrange the values in the transition matrix
