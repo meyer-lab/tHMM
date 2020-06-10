@@ -104,9 +104,9 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["total_number_of_cells"] = sum([len(lineage) for lineage in tHMMobj.X])
 
     true_states_by_lineage = np.array([[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X])
-    ravel_true_states_by_lineage = np.ravel(true_states_by_lineage)
+    ravel_true_states = [state for sublist in true_states_by_lineage for state in sublist]
 
-    ravel_pred_states_by_lineage = np.ravel(pred_states_by_lineage)
+    ravel_pred_states = [state for sublist in pred_states_by_lineage for state in sublist]
 
     # 1. Decide how to switch states based on the state assignment that yields the maximum likelihood
     switcher_map_holder = list(itertools.permutations(list(range(tHMMobj.num_states))))
@@ -124,7 +124,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     # assignments
     switcher_map = switcher_map_holder[max_idx]
     switched_pred_states_by_lineage = np.array(new_pred_states_by_lineage_holder[max_idx])
-    ravel_switched_pred_states_by_lineage = np.ravel(switched_pred_states_by_lineage)
+    ravel_switched_pred_states = [state for sublist in switched_pred_states_by_lineage for state in sublist]
     results_dict["switcher_map"] = switcher_map
 
     # Rearrange the values in the transition matrix
@@ -162,13 +162,14 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         results_dict["param_trues"].append(tHMMobj.X[0].E[val_idx].params)
 
     # 2. Calculate accuracy after switching states
-    results_dict["state_counter"] = np.bincount([state for sublist in switched_pred_states_by_lineage for state in sublist ])
-    results_dict["state_proportions"] = [100 * i / len(ravel_switched_pred_states_by_lineage) for i in results_dict["state_counter"]]
+    results_dict["state_counter"] = np.bincount(ravel_switched_pred_states)
+    results_dict["state_proportions"] = [100 * i / len(ravel_switched_pred_states) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
-    results_dict["accuracy_before_switching"] = 100 * np.mean(ravel_pred_states_by_lineage == ravel_true_states_by_lineage)
-    results_dict["accuracy_after_switching"] = 100 * np.mean(ravel_switched_pred_states_by_lineage == ravel_true_states_by_lineage)
-    print(ravel_switched_pred_states_by_lineage)
-    print(ravel_true_states_by_lineage)
+    results_dict["accuracy_before_switching"] = 100 * np.mean(ravel_pred_states == ravel_true_states)
+    results_dict["accuracy_after_switching"] = 100 * np.mean(ravel_switched_pred_states == ravel_true_states)
+    print(ravel_pred_states)
+    print(ravel_switched_pred_states)
+    print(ravel_true_states)
     print(results_dict["accuracy_before_switching"])
     print(results_dict["accuracy_after_switching"])
 
