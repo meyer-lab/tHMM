@@ -49,19 +49,19 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     scale_hat0 = gammaCor / a_hat0
 
     def negative_LL(x):
-        uncens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==1])
-        uncens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==1])
+        uncens_gammas = np.array([gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 1])
+        uncens_obs = np.array([obs for obs, idx in zip(gamma_obs, time_censor_obs) if idx == 1])
         assert uncens_gammas.shape[0] == uncens_obs.shape[0]
-        uncens = uncens_gammas*sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
-        cens_gammas = np.array([gamma for gamma,idx in zip(gammas,time_censor_obs) if idx==0])
-        cens_obs = np.array([obs for obs,idx in zip(gamma_obs,time_censor_obs) if idx==0])
-        cens = cens_gammas*sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
+        uncens = uncens_gammas * sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
+        cens_gammas = np.array([gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 0])
+        cens_obs = np.array([obs for obs, idx in zip(gamma_obs, time_censor_obs) if idx == 0])
+        cens = cens_gammas * sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
 
-        return -1*(np.sum(uncens) + np.sum(cens))
+        return -1 * (np.sum(uncens) + np.sum(cens))
 
-    res = minimize(fun=negative_LL, x0=[a_hat0, scale_hat0], bounds=((1.,20.),(1.,20.),), options={'maxiter': 5})
+    res = minimize(fun=negative_LL, x0=[a_hat0, scale_hat0], bounds=((1., 20.), (1., 20.),), options={'maxiter': 5})
 
-    return  res.x[0], res.x[1]
+    return res.x[0], res.x[1]
 
 
 def bernoulli_estimator(bern_obs, gammas):

@@ -131,7 +131,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     temp_T = np.copy(tHMMobj.estimate.T)
     for row in range(tHMMobj.num_states):
         for col in range(tHMMobj.num_states):
-            temp_T[row,col] = tHMMobj.estimate.T[switcher_map[row],switcher_map[col]]
+            temp_T[row, col] = tHMMobj.estimate.T[switcher_map[row], switcher_map[col]]
 
     results_dict["switched_transition_matrix"] = temp_T
     results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
