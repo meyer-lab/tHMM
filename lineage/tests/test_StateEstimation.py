@@ -73,19 +73,19 @@ class TestModel(unittest.TestCase):
         """
         self.assertGreater(5., abs(self.expon_state_estimate.params[1] - self.E_expon[0].params[1]))
 
-#     def test_estimationEvaluationGammaCensored(self):
-#         """
-#         Evaluates the performance of fitting and the underlying estimator
-#         by comparing the parameter estimates to their true values.
-#         Gamma censored.
-#         """
-#         self.assertGreater(5., abs(self.gamma_state_censored_estimate.params[1]- self.E_gamma[0].params[1]))
-#         self.assertGreater(5., abs(self.gamma_state_censored_estimate.params[2] - self.E_gamma[0].params[2]))
+    def test_estimationEvaluationGammaCensored(self):
+        """
+        Evaluates the performance of fitting and the underlying estimator
+        by comparing the parameter estimates to their true values.
+        Gamma censored.
+        """
+        self.assertGreater(5., abs(self.gamma_state_censored_estimate.params[1]- self.E_gamma[0].params[1]))
+        self.assertGreater(5., abs(self.gamma_state_censored_estimate.params[2] - self.E_gamma[0].params[2]))
 
-#     def test_estimationEvaluationExponCensored(self):
-#         """
-#         Evaluates the performance of fitting and the underlying estimator
-#         by comparing the parameter estimates to their true values.
-#         Exponential censored.
-#         """
-#         self.assertGreater(5., abs(self.expon_state_censored_estimate.params[1]-self.E_expon[0].params[1]))
+    def test_estimationEvaluationExponCensored(self):
+        """
+        Evaluates the performance of fitting and the underlying estimator
+        by comparing the parameter estimates to their true values.
+        Exponential censored.
+        """
+        self.assertGreater(5., abs(self.expon_state_censored_estimate.params[1]-self.E_expon[0].params[1]))
