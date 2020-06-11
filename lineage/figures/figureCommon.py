@@ -41,7 +41,7 @@ min_experiment_time = 72
 max_experiment_time = 144
 
 min_num_lineages = 1
-max_num_lineages = 100
+max_num_lineages = 50
 
 num_data_points = 50
 
