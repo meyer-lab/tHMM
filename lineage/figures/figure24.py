@@ -77,11 +77,11 @@ def forHistObs(X):
     list_bern_g1 = [obsBernoulliG1, obsBernoulliG1S1, obsBernoulliG1S2]
     list_bern_g2 = [obsBernoulliG2, obsBernoulliG2S1, obsBernoulliG2S2]
 
-    totalObsG1 = pd.DataFrame(columns=['values', 'state'])
-    totalObsG1['values'] = obsG1 + obsG1S1 + obsG1S2
+    totalObsG1 = pd.DataFrame(columns=['G1 phase duration [hr]', 'state'])
+    totalObsG1['G1 phase duration [hr]'] = obsG1 + obsG1S1 + obsG1S2
     totalObsG1['state'] = ['total'] * len(obsG1) + ['state 1'] * len(obsG1S1) + ['state 2'] * len(obsG1S2)
-    totalObsG2 = pd.DataFrame(columns = ['values', 'state'])
-    totalObsG2['values'] = obsG2 + obsG2S1 + obsG2S2
+    totalObsG2 = pd.DataFrame(columns = ['G2 phase duration [hr]', 'state'])
+    totalObsG2['G2 phase duration [hr]'] = obsG2 + obsG2S1 + obsG2S2
     totalObsG2['state'] = ['total'] * len(obsG2) + ['state 1'] * len(obsG2S1) + ['state 2'] * len(obsG2S2)
 
     return totalObsG1, totalObsG2, list_bern_g1, list_bern_g2
@@ -116,7 +116,7 @@ def figureMaker2(ax, totalObsG1, totalObsG2, list_bern_g1, list_bern_g2):
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-    ax[i].set_xlabel("G1 phase duration")
+    ax[i].set_xlabel("G1 phase")
     sns.violinplot(x="values", y="state", data=totalObsG1, ax=ax[i], palette="deep", scale="count", inner="quartile")
     ax[i].set_ylabel(r"PDF")
     ax[i].set_title(r"G1 phase [hr]")
@@ -124,7 +124,7 @@ def figureMaker2(ax, totalObsG1, totalObsG2, list_bern_g1, list_bern_g2):
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-    ax[i].set_xlabel("G2 phase duration")
+    ax[i].set_xlabel("G2 phase")
     sns.violinplot(x="values", y="state", data=totalObsG2, ax=ax[i], palette="deep", scale="count", inner="quartile")
     ax[i].set_ylabel(r"PDF")
     ax[i].set_title(r"G2 phase [hr]")
