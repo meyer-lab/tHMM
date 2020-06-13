@@ -1,27 +1,21 @@
 """ This file contains functions for plotting different phenotypes in the manuscript. """
 
-import numpy as np
 import math
+import numpy as np
 import pandas as pd
 import seaborn as sns
-import itertools
 from .figureCommon import (
     getSetup,
     subplotLabel,
-    commonAnalyze,
     pi,
     T,
-    E2,
-    min_desired_num_cells,
-    min_num_lineages,
-    max_num_lineages,
-    num_data_points,
+    E2
 )
 from ..LineageTree import LineageTree
 from ..Analyze import Analyze
 
 lineage1 = LineageTree(pi, T, E2, desired_num_cells=1023)
-X = [lineage1]
+x = [lineage1]
 
 def makeFigure():
     """
@@ -31,7 +25,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((7.5, 5.0), (2, 3))
 
-    figureMaker2(ax, *forHistObs(X))
+    figureMaker2(ax, *forHistObs(x))
 
     subplotLabel(ax)
 
@@ -51,7 +45,7 @@ def forHistObs(X):
     obsG1 = []
     obsG2 = []
 
-    tHMMobj, pred_states_by_lineage, LL = Analyze(X, 2)
+    _, pred_states_by_lineage, _ = Analyze(X, 2)
     # state 1 observations
     obsBernoulliG1S1 = []
     obsBernoulliG2S1 = []
@@ -86,23 +80,16 @@ def forHistObs(X):
     list_obs_g1 = [obsG1, obsG1S1, obsG1S2]
     list_obs_g2 = [obsG2, obsG2S1, obsG2S2]
 
-    totalbernG1 = pd.DataFrame(columns = ['values', 'state'])
-    totalbernG1['values'] = obsBernoulliG1 + obsBernoulliG1S1 + obsBernoulliG1S2
-    totalbernG1['state'] = ['total'] * len(obsBernoulliG1) + ['state 1'] * len(obsBernoulliG1S1) + ['state 2'] * len(obsBernoulliG1S2)
-    totalbernG2 = pd.DataFrame(columns = ['values', 'state'])
-    totalbernG2['values'] = obsBernoulliG2 + obsBernoulliG2S1 + obsBernoulliG2S2
-    totalbernG2['state'] = ['total'] * len(obsBernoulliG2) + ['state 1'] * len(obsBernoulliG2S1) + ['state 2'] * len(obsBernoulliG2S2)
-    
-    totalObsG1 = pd.DataFrame(columns = ['values', 'state'])
+    totalObsG1 = pd.DataFrame(columns=['values', 'state'])
     totalObsG1['values'] = obsG1 + obsG1S1 + obsG1S2
     totalObsG1['state'] = ['total'] * len(obsG1) + ['state 1'] * len(obsG1S1) + ['state 2'] * len(obsG1S2)
     totalObsG2 = pd.DataFrame(columns = ['values', 'state'])
     totalObsG2['values'] = obsG2 + obsG2S1 + obsG2S2
     totalObsG2['state'] = ['total'] * len(obsG2) + ['state 1'] * len(obsG2S1) + ['state 2'] * len(obsG2S2)
 
-    return totalbernG1, totalbernG2, totalObsG1, totalObsG2, list_obs_g1, list_obs_g2, list_bern_g1, list_bern_g2
+    return totalObsG1, totalObsG2, list_obs_g1, list_obs_g2, list_bern_g1, list_bern_g2
 
-def figureMaker2(ax, totalbernG1, totalbernG2, totalObsG1, totalObsG2, list_obs_g1, list_obs_g2, list_bern_g1, list_bern_g2):
+def figureMaker2(ax, totalObsG1, totalObsG2, list_obs_g1, list_obs_g2, list_bern_g1, list_bern_g2):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
