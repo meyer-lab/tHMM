@@ -23,7 +23,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((7.5, 5.0), (2, 3))
+    ax, f = getSetup((5.0, 5.0), (2, 2))
 
     figureMaker2(ax, *forHistObs(x))
 
@@ -36,7 +36,6 @@ def forHistObs(X):
 
     :param X: list of lineages in the population.
     :type X: list
-
     """
     # regardless of states
     # two state model
@@ -77,8 +76,6 @@ def forHistObs(X):
 
     list_bern_g1 = [obsBernoulliG1, obsBernoulliG1S1, obsBernoulliG1S2]
     list_bern_g2 = [obsBernoulliG2, obsBernoulliG2S1, obsBernoulliG2S2]
-    list_obs_g1 = [obsG1, obsG1S1, obsG1S2]
-    list_obs_g2 = [obsG2, obsG2S1, obsG2S2]
 
     totalObsG1 = pd.DataFrame(columns=['values', 'state'])
     totalObsG1['values'] = obsG1 + obsG1S1 + obsG1S2
@@ -87,9 +84,9 @@ def forHistObs(X):
     totalObsG2['values'] = obsG2 + obsG2S1 + obsG2S2
     totalObsG2['state'] = ['total'] * len(obsG2) + ['state 1'] * len(obsG2S1) + ['state 2'] * len(obsG2S2)
 
-    return totalObsG1, totalObsG2, list_obs_g1, list_obs_g2, list_bern_g1, list_bern_g2
+    return totalObsG1, totalObsG2, list_bern_g1, list_bern_g2
 
-def figureMaker2(ax, totalObsG1, totalObsG2, list_obs_g1, list_obs_g2, list_bern_g1, list_bern_g2):
+def figureMaker2(ax, totalObsG1, totalObsG2, list_bern_g1, list_bern_g2):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
@@ -120,21 +117,6 @@ def figureMaker2(ax, totalObsG1, totalObsG2, list_obs_g1, list_obs_g2, list_bern
 
     i += 1
     ax[i].set_xlabel("G1 phase duration")
-    w = 10
-    n2 = math.ceil((np.max(list_obs_g1[1]) - np.min(list_obs_g1[1]))/w)
-    n3 = math.ceil((np.max(list_obs_g1[2]) - np.min(list_obs_g1[2]))/w)
-    ax[i].hist(list_obs_g1[1], density=True, label="in state 1", alpha=0.6, color="sienna", bins=n2)
-    ax[i].hist(list_obs_g1[2], density=True, label="in state 2", alpha=0.6, color="seagreen", bins=n3)
-    ax[i].set_ylabel(r"PDF")
-    ax[i].set_title(r"G1 phase [hr]")
-    ax[i].grid(linestyle="--")
-    sns.kdeplot(list_obs_g1[0], ax=ax[i], label="total")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-    ax[i].legend()
-
-    i += 1
-    # violin
-    ax[i].set_xlabel("G1 phase duration")
     sns.violinplot(x="values", y="state", data=totalObsG1, ax=ax[i], palette="deep", scale="count", inner="quartile")
     ax[i].set_ylabel(r"PDF")
     ax[i].set_title(r"G1 phase [hr]")
@@ -142,21 +124,6 @@ def figureMaker2(ax, totalObsG1, totalObsG2, list_obs_g1, list_obs_g2, list_bern
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-    ax[i].set_xlabel("G2 phase duration")
-    w = 10
-    n2 = math.ceil((np.max(list_obs_g2[1]) - np.min(list_obs_g2[1]))/w)
-    n3 = math.ceil((np.max(list_obs_g2[2]) - np.min(list_obs_g2[2]))/w)
-    ax[i].hist(list_obs_g2[1], density=True, label="in state 1", alpha=0.6, color="sienna", bins=n2)
-    ax[i].hist(list_obs_g2[2], density=True, label="in state 2", alpha=0.6, color="seagreen", bins=n3)
-    ax[i].set_ylabel(r"PDF")
-    ax[i].set_title(r"G2 phase [hr]")
-    ax[i].grid(linestyle="--")
-    sns.kdeplot(list_obs_g2[0], ax=ax[i], label="total")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-    ax[i].legend()
-
-    i += 1
-    # violin
     ax[i].set_xlabel("G2 phase duration")
     sns.violinplot(x="values", y="state", data=totalObsG2, ax=ax[i], palette="deep", scale="count", inner="quartile")
     ax[i].set_ylabel(r"PDF")
