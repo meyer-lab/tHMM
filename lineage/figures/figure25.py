@@ -10,11 +10,12 @@ from .figureCommon import (
     pi,
     E2,
     T,
-    min_desired_num_cells,
+    max_desired_num_cells,
     min_num_lineages,
     max_num_lineages,
     lineage_good_to_analyze,
     num_data_points,
+    max_experiment_time
 )
 from ..LineageTree import LineageTree
 from ..Analyze import Analyze
@@ -26,9 +27,9 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((4.5, 9.0), (4, 1))
+    ax, f = getSetup((5.0, 11.5), (5,1))
 
-    figureMaker2(ax, *accuracy())
+    figureMaker2(ax, E2, *accuracy())
 
     subplotLabel(ax)
 
@@ -56,7 +57,7 @@ def accuracy():
 
             good2go = False
             while not good2go:
-                tmp_lineage = LineageTree(pi, T, E2, min_desired_num_cells)
+                tmp_lineage = LineageTree(pi, T, E2, max_desired_num_cells, censor_condition=3, desired_experiment_time=max_experiment_time)
                 good2go = lineage_good_to_analyze(tmp_lineage)
 
             population.append(tmp_lineage)
@@ -69,65 +70,84 @@ def accuracy():
 
     total_cellnum, all_states, paramEst, accuracy_after_switching, transition_matrix_norm, pi_vector_norm, paramTrues = commonAnalyze(list_of_populations)
 
-    dataframe = pd.DataFrame(columns=['cell number', 'state acc.', 'T norm', r'$\pi$ norm'])
+    dataframe = pd.DataFrame(columns=['cell number', 'state acc.'])
     dataframe['cell number'] = total_cellnum
     dataframe['state acc.'] = accuracy_after_switching
-    dataframe['T norm'] = transition_matrix_norm
-    dataframe[r'$\pi$ norm'] = pi_vector_norm
+    maxx = np.max(total_cellnum)
     for indx, num in enumerate(dataframe['cell number']):
-        if num >= 0 and num <= 200:
-            dataframe['cell number'][indx] = 100
-        elif num > 200 and num < 400:
-            dataframe['cell number'][indx] = 300
-        elif num > 400 and num < 600:
-            dataframe['cell number'][indx] = 500
-        elif num > 600 and num < 800:
-            dataframe['cell number'][indx] = 700
-        elif num > 800:
-            dataframe['cell number'][indx] = 900
+        if num >= 0 and num <= maxx/5:
+            dataframe['cell number'][indx] = int(maxx/10)
+        elif num > maxx/5 and num <= maxx*(2/5):
+            dataframe['cell number'][indx] = maxx*3/10
+        elif num > maxx*(2/5) and num <= maxx*(3/5):
+            dataframe['cell number'][indx] = maxx/2
+        elif num > maxx*(3/5) and num <= maxx*(4/5):
+            dataframe['cell number'][indx] = maxx*(7/10)
+        elif num > maxx*(4/5) and num <= maxx:
+            dataframe['cell number'][indx] = maxx*(9/10)
 
-    dataParams = pd.DataFrame(columns=['cell number', 'state', 'Bern. G1 p', 'Bern. G2 p', 'shape G1', 'scale G1', 'shape G2', 'scale G2'])
+    dataParams = pd.DataFrame(columns=['cell number', 'state', 'Bern. G1 p', 'Bern. G1 true', 'Bern. G2 p', 'Bern. G2 true', 'shape G1', 'shape G1 true', 'scale G1', 'scale G1 true', 'shape G2', 'shape G2 true', 'scale G2', 'scale G2 true', 'T and pi', 'hue'])
     dataParams['cell number'] = dataframe['cell number'].append(dataframe['cell number'], ignore_index=True)
-    dataParams['state'] = ['state 1'] * paramEst[:, 0, 0].shape[0] + ['state 2'] * paramEst[:, 1, 0].shape[0]
+    dataParams['state'] = ['S1'] * paramEst[:, 0, 0].shape[0] + ['S2'] * paramEst[:, 1, 0].shape[0]
     dataParams['Bern. G1 p'] = np.concatenate((paramEst[:, 0, 0], paramEst[:, 1, 0]), axis=0)
+    dataParams['Bern. G1 true'] = np.concatenate((paramTrues[:, 0, 0], paramTrues[:, 1, 0]), axis=0)
     dataParams['Bern. G2 p'] = np.concatenate((paramEst[:, 0, 1], paramEst[:, 1, 1]), axis=0)
+    dataParams['Bern. G2 true'] = np.concatenate((paramTrues[:, 0, 1], paramTrues[:, 1, 1]), axis=0)
     dataParams['shape G1'] = np.concatenate((paramEst[:, 0, 2], paramEst[:, 1, 2]), axis=0)
+    dataParams['shape G1 true'] = np.concatenate((paramTrues[:, 0, 2], paramTrues[:, 1, 2]), axis=0)
     dataParams['scale G1'] = np.concatenate((paramEst[:, 0, 3], paramEst[:, 1, 3]), axis=0)
+    dataParams['scale G1 true'] = np.concatenate((paramTrues[:, 0, 3], paramTrues[:, 1, 3]), axis=0)
     dataParams['shape G2'] = np.concatenate((paramEst[:, 0, 4], paramEst[:, 1, 4]), axis=0)
+    dataParams['shape G2 true'] = np.concatenate((paramTrues[:, 0, 4], paramTrues[:, 1, 4]), axis=0)
     dataParams['scale G2'] = np.concatenate((paramEst[:, 0, 5], paramEst[:, 1, 5]), axis=0)
+    dataParams['scale G2 true'] = np.concatenate((paramTrues[:, 0, 5], paramTrues[:, 1, 5]), axis=0)
+    dataParams['T and pi'] = np.concatenate((transition_matrix_norm, pi_vector_norm), axis=0)
+    dataParams['hue'] = ['T'] * len(transition_matrix_norm) + ['pi'] * len(pi_vector_norm)
 
-            
-    return dataframe, paramTrues, dataParams
+    return total_cellnum, dataframe, dataParams
 
-def figureMaker2(ax, dataframe, paramTrues, dataParams):
+def figureMaker2(ax, E, total_cellnum, dataframe, dataParams):
     """
     """
     i = 0
-    sns.violinplot(x="cell number", y="state acc.", data=dataframe, ax=ax[i], palette="deep", scale="count", inner="quartile")
+    sns.boxplot(x="cell number", y="state acc.", data=dataframe, ax=ax[i], palette="deep")
     ax[i].set_ylabel("accuracy")
     ax[i].set_title("state assignemnt accuracy")
+    ax[i].set_ylabel("accuracy (%)")
+    ax[i].grid(linestyle="--")
+    ax[i].set_ylim(bottom=50.0, top=100.02)
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
+    i += 1
+    sns.stripplot(x="cell number", y='T and pi', hue='hue', dodge=False, jitter=True, data=dataParams, ax=ax[i], palette="deep", marker='o', linewidth=0.5, edgecolor="white", alpha=0.6)
+    ax[i].set_ylim(bottom=-0.05, top=1.02)
+    ax[i].set_ylabel("dif. from true value")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-    sns.violinplot(x="cell number", y="T norm", data=dataframe, ax=ax[i], palette="deep", inner="quartile", aplha=0.7)
-    sns.violinplot(x="cell number", y=r'$\pi$ norm', data=dataframe, ax=ax[i], palette="deep", scale="count", inner="quartile", alpha=0.7)
-    ax[i].set_ylim(bottom=0, top=1.02)
-    ax[i].set_ylabel("transition probability matrix")
-    ax[i].set_title(r"$||T-T_{est}||_{F}$")
+    sns.stripplot(x="cell number", y='Bern. G1 p', hue='state', data=dataParams, dodge=False, jitter=True, ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['blue', 'green']))
+    sns.boxplot(x="cell number", y='Bern. G1 true', hue="state", data=dataParams, palette=sns.xkcd_palette(['blue', 'green']), linewidth=0.1, ax=ax[i])
+    sns.boxplot(x="cell number", y='Bern. G2 true', hue="state", data=dataParams, palette=sns.xkcd_palette(['orange', 'red']), linewidth=0.1, ax=ax[i])
+    sns.stripplot(x="cell number", y='Bern. G2 p', hue='state', data=dataParams, dodge=False, jitter=True, ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
+    ax[i].set_ylabel("bernoulli parameters")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-    sns.stripplot(x="cell number", y='Bern. G1 p', hue='state', data=dataParams, ax=ax[i], marker='o')
-    sns.stripplot(x="cell number", y='Bern. G2 p', hue='state', data=dataParams, ax=ax[i], marker='^')
+    sns.stripplot(x="cell number", y='shape G1', hue='state', jitter=True, dodge=False, data=dataParams, ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['blue', 'green']))
+    sns.boxplot(x="cell number", y='shape G1 true', hue="state", linewidth=0.1, palette=sns.xkcd_palette(['blue', 'green']), data=dataParams, ax=ax[i])
+    sns.boxplot(x="cell number", y="shape G2 true", hue="state", linewidth=0.1, palette=sns.xkcd_palette(['orange', 'red']), data=dataParams, ax=ax[i])
+    sns.stripplot(x="cell number", y='shape G2', hue='state', data=dataParams, dodge=False, jitter=True, ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
+    ax[i].set_ylabel("shape parameter")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-    sns.stripplot(x="cell number", y='shape G1', hue='state', data=dataParams, ax=ax[i])
-    sns.stripplot(x="cell number", y='scale G1', hue='state', data=dataParams, ax=ax[i])
-    sns.stripplot(x="cell number", y='shape G2', hue='state', data=dataParams, ax=ax[i])
-    sns.stripplot(x="cell number", y='scale G2', hue='state', data=dataParams, ax=ax[i])
+    sns.stripplot(x="cell number", y='scale G1', hue='state', data=dataParams, dodge=False, jitter=True, ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['blue', 'green']))
+    sns.boxplot(x="cell number", y="scale G1 true", hue="state", linewidth=0.1, palette=sns.xkcd_palette(['blue', 'green']), data=dataParams, ax=ax[i])
+    sns.boxplot(x="cell number", y="scale G2 true", hue="state", linewidth=0.1, palette=sns.xkcd_palette(['orange', 'red']), data=dataParams, ax=ax[i])
+    sns.stripplot(x="cell number", y='scale G2', hue='state', data=dataParams, dodge=False, jitter=True, ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
+    ax[i].set_ylabel("scale parameter")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
