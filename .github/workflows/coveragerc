@@ -2,3 +2,4 @@
 
 omit = 
   lineage/figures/*
+  lineage/data/*
