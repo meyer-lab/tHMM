@@ -127,7 +127,7 @@ def figureMaker2(ax, E, total_cellnum, dataframe, dataParams):
 
     i += 1
     sns.stripplot(x="cell number", y='Bern. G1 p', hue='state', data=dataParams, dodge=False, jitter=True, ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['blue', 'green']))
-    for tick, text in zip(ax.get_xticks(), ax.get_xticklabels()):
+    for tick, text in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
         # plot horizontal lines across the column, centered on the tick
         ax.plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 0][0], paramTrues[:, 0, 0][0]], color='blue')
         ax.plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 0][0], paramTrues[:, 1, 0][0]], color='green')
