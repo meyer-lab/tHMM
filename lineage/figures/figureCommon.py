@@ -215,7 +215,7 @@ def figureMaker(ax, x, nothing, paramEst, accuracies, tr, pii, paramTrues, xlabe
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
 
-def figureMaker1(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
+def figureMaker1(ax, x, nothing, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
