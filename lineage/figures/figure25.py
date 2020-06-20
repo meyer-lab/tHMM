@@ -132,7 +132,7 @@ def figureMaker2(ax, E, total_cellnum, dataframe, dataParams, paramTrues):
         ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 0][0], paramTrues[:, 0, 0][0]], color='blue')
         ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 0][0], paramTrues[:, 1, 0][0]], color='green')
         ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 1][0], paramTrues[:, 0, 1][0]], color='orange')
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 1][0], paramTrues[1, 1, 1][0]], color='red')
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 1][0], paramTrues[:, 1, 1][0]], color='red')
     sns.stripplot(x="cell number", y='Bern. G2 p', hue='state', data=dataParams, dodge=False, jitter=True, ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
     ax[i].set_ylabel("bernoulli parameters")
