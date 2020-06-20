@@ -124,17 +124,22 @@ def figureMaker2(ax, E, total_cellnum, dataframe, dataParams, paramTrues):
 
     i += 1
     # Bernoulli parameter estimation
-    sns.stripplot(x="cell number", y='Bern. G1 p', hue='state', data=dataParams, dodge=False, 
-jitter=True, ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", 
+    sns.stripplot(x="cell number", y='Bern. G1 p', hue='state', data=dataParams, dodge=False,
+                  jitter=True, ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", 
 palette=sns.xkcd_palette(['blue', 'green']))
     for tick, text in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
         # plot horizontal lines across the column, centered on the tick
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 0][0], paramTrues[:, 0, 0][0]], color='blue', alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 0][0], paramTrues[:, 1, 0][0]], color='green', alpha=0.6)
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 0][0], paramTrues[:, 0, 0][0]],
+                   color='blue', alpha=0.6)
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 0][0], paramTrues[:, 1, 0][0]], color='green',
+                   alpha=0.6)
         ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 1][0], paramTrues[:, 0, 1][0]], 
-color='orange', alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 1][0], paramTrues[:, 1, 1][0]], color='red', alpha=0.6)
-    sns.stripplot(x="cell number", y='Bern. G2 p', hue='state', data=dataParams, dodge=False, jitter=True, ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
+                   color='orange', alpha=0.6)
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 1][0], paramTrues[:, 1, 1][0]], color='red', 
+                   alpha=0.6)
+    sns.stripplot(x="cell number", y='Bern. G2 p', hue='state', data=dataParams, dodge=False, 
+                  jitter=True, ax=ax[i], marker='^', linewidth=0.5, edgecolor="white",
+                  palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
     ax[i].set_ylim(bottom=-0.05, top=1.2)
     ax[i].set_ylabel("bernoulli parameters")
@@ -143,21 +148,23 @@ color='orange', alpha=0.6)
 
     i += 1
     sns.stripplot(x="cell number", y='shape G1', hue='state', jitter=True, dodge=False, data=dataParams, 
-ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", 
-palette=sns.xkcd_palette(['blue', 'green']))
+                  ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", 
+                  palette=sns.xkcd_palette(['blue', 'green']))
     for tick, text in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
         # plot horizontal lines across the column, centered on the tick
         ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 2][0], paramTrues[:, 0, 2][0]], color='blue', 
-alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 2][0], paramTrues[:, 1, 2][0]], color='green', alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 4][0], paramTrues[:, 0, 4][0]], color='orange', alpha=0.6)
+                   alpha=0.6)
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 2][0], paramTrues[:, 1, 2][0]], color='green',
+                   alpha=0.6)
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 4][0], paramTrues[:, 0, 4][0]], color='orange',
+                   alpha=0.6)
         ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 4][0], paramTrues[:, 1, 4][0]], color='red', 
-alpha=0.6)
+                   alpha=0.6)
     sns.stripplot(x="cell number", y='shape G2', hue='state', data=dataParams, dodge=False, jitter=True, 
-ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
+                  ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
     ax[i].set_ylim(bottom=-0.05, top=15.0)
-    ax[i].text(1.2,2.5 , str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
+    ax[i].text(1.2, 2.5, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
     ax[i].set_ylabel("shape parameter")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
@@ -167,15 +174,17 @@ ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette
     for tick, text in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
         # plot horizontal lines across the column, centered on the tick
         ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 3][0], paramTrues[:, 0, 3][0]], color='blue', 
-alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 3][0], paramTrues[:, 1, 3][0]], color='green', alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 5][0], paramTrues[:, 0, 5][0]], color='orange', alpha=0.6)
+                   alpha=0.6)
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 3][0], paramTrues[:, 1, 3][0]], color='green',
+                   alpha=0.6)
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 5][0], paramTrues[:, 0, 5][0]], color='orange',
+                   alpha=0.6)
         ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 5][0], paramTrues[:, 1, 5][0]], color='red', 
-alpha=0.6)
+                   alpha=0.6)
     sns.stripplot(x="cell number", y='scale G2', hue='state', data=dataParams, dodge=False, jitter=True, 
-ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
+                  ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
     ax[i].set_ylim(bottom=-0.05, top=11.0)
     ax[i].set_ylabel("scale parameter")
-    ax[i].text(1.1,7.5 , str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
+    ax[i].text(1.1, 7.5, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
