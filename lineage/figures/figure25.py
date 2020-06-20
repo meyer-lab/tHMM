@@ -1,5 +1,4 @@
 """ This file contains figures related to how big the experment needs to be. """
-import math
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -14,11 +13,9 @@ from .figureCommon import (
     min_num_lineages,
     max_num_lineages,
     lineage_good_to_analyze,
-    num_data_points,
-    max_experiment_time
+    num_data_points
 )
 from ..LineageTree import LineageTree
-from ..Analyze import Analyze
 
 
 def makeFigure():
@@ -29,7 +26,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((4.0, 10.0), (5, 1))
 
-    figureMaker2(ax, E2, *accuracy())
+    figureMaker2(ax, *accuracy())
 
     subplotLabel(ax)
 
@@ -102,7 +99,7 @@ def accuracy():
     return total_cellnum, dataframe, dataParams, paramTrues
 
 
-def figureMaker2(ax, E, total_cellnum, dataframe, dataParams, paramTrues):
+def figureMaker2(ax, total_cellnum, dataframe, dataParams, paramTrues):
     """
     This makes figure 3A.
     """
@@ -129,7 +126,7 @@ def figureMaker2(ax, E, total_cellnum, dataframe, dataParams, paramTrues):
     sns.stripplot(x="cell number", y='Bern. G1 p', hue='state', data=dataParams, dodge=False,
                   jitter=True, ax=ax[i], marker='o', linewidth=0.5, edgecolor="white",
                   palette=sns.xkcd_palette(['blue', 'green']))
-    for tick, text in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
+    for tick, _ in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
         # plot horizontal lines across the column, centered on the tick
         ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 0][0], paramTrues[:, 0, 0][0]],
                    color='blue', alpha=0.6)
@@ -152,7 +149,7 @@ def figureMaker2(ax, E, total_cellnum, dataframe, dataParams, paramTrues):
     sns.stripplot(x="cell number", y='shape G1', hue='state', jitter=True, dodge=False, data=dataParams,
                   ax=ax[i], marker='o', linewidth=0.5, edgecolor="white",
                   palette=sns.xkcd_palette(['blue', 'green']))
-    for tick, text in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
+    for tick, _ in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
         # plot horizontal lines across the column, centered on the tick
         ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 2][0], paramTrues[:, 0, 2][0]], color='blue',
                    alpha=0.6)
@@ -173,7 +170,7 @@ def figureMaker2(ax, E, total_cellnum, dataframe, dataParams, paramTrues):
     i += 1
     sns.stripplot(x="cell number", y='scale G1', hue='state', data=dataParams, dodge=False, jitter=True,
                   ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['blue', 'green']))
-    for tick, text in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
+    for tick, _ in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
         # plot horizontal lines across the column, centered on the tick
         ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 3][0], paramTrues[:, 0, 3][0]], color='blue',
                    alpha=0.6)
