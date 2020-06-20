@@ -17,6 +17,7 @@ from ..Analyze import Analyze
 lineage1 = LineageTree(pi, T, E2, desired_num_cells=1023)
 x = [lineage1]
 
+
 def makeFigure():
     """
     Makes fig 2.
@@ -30,6 +31,7 @@ def makeFigure():
     subplotLabel(ax)
 
     return f
+
 
 def forHistObs(X):
     """ To plot the histogram of the observations regardless of their state.
@@ -63,12 +65,12 @@ def forHistObs(X):
             obsG1.append(cell.obs[2])
             obsG2.append(cell.obs[3])
 
-            if pred_states_by_lineage[indx][cell_ind] == 0: # if the cell is in state 1
+            if pred_states_by_lineage[indx][cell_ind] == 0:  # if the cell is in state 1
                 obsBernoulliG1S1.append(cell.obs[0])
                 obsBernoulliG2S1.append(cell.obs[1])
                 obsG1S1.append(cell.obs[2])
                 obsG2S1.append(cell.obs[3])
-            else: # if the cell is in state 2
+            else:  # if the cell is in state 2
                 obsBernoulliG1S2.append(cell.obs[0])
                 obsBernoulliG2S2.append(cell.obs[1])
                 obsG1S2.append(cell.obs[2])
@@ -80,11 +82,12 @@ def forHistObs(X):
     totalObsG1 = pd.DataFrame(columns=['G1 phase duration [hr]', 'state'])
     totalObsG1['G1 phase duration [hr]'] = obsG1 + obsG1S1 + obsG1S2
     totalObsG1['state'] = ['total'] * len(obsG1) + ['state 1'] * len(obsG1S1) + ['state 2'] * len(obsG1S2)
-    totalObsG2 = pd.DataFrame(columns = ['G2 phase duration [hr]', 'state'])
+    totalObsG2 = pd.DataFrame(columns=['G2 phase duration [hr]', 'state'])
     totalObsG2['G2 phase duration [hr]'] = obsG2 + obsG2S1 + obsG2S2
     totalObsG2['state'] = ['total'] * len(obsG2) + ['state 1'] * len(obsG2S1) + ['state 2'] * len(obsG2S2)
 
     return totalObsG1, totalObsG2, list_bern_g1, list_bern_g2
+
 
 def figureMaker2(ax, totalObsG1, totalObsG2, list_bern_g1, list_bern_g2):
     """
