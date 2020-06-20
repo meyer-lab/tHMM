@@ -31,7 +31,7 @@ state11 = expon_state(0.75, 8)
 E1 = [state10, state11]
 
 state20 = phaseStateDist(0.99, 0.8, 12, 7, 10, 5)
-state21 = phaseStateDist(0.88, 0.75, 6, 1, 10, 3)
+state21 = phaseStateDist(0.88, 0.75, 6, 1, 8, 3)
 E2 = [state20, state21]
 
 min_desired_num_cells = (2 ** 4) - 1
