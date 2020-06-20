@@ -82,6 +82,7 @@ def getSetup(figsize, gridd):
 
     return (ax, f)
 
+
 def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     """
     The standard way of analyzing a list of populations (a list of list of lineages)

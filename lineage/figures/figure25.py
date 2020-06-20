@@ -35,6 +35,7 @@ def makeFigure():
 
     return f
 
+
 def accuracy():
     """
     Calculates accuracy and parameter estimation
@@ -75,16 +76,16 @@ def accuracy():
     dataframe['state acc.'] = accuracy_after_switching
     maxx = np.max(total_cellnum)
     for indx, num in enumerate(dataframe['cell number']):
-        if  0 <= num <= maxx/5:
-            dataframe['cell number'][indx] = int(maxx/10)
-        elif maxx/5 < num <= maxx*(2/5):
-            dataframe['cell number'][indx] = maxx*3/10
-        elif maxx*(2/5) < num <= maxx*(3/5):
-            dataframe['cell number'][indx] = maxx/2
-        elif maxx*(3/5) < num <= maxx*(4/5):
-            dataframe['cell number'][indx] = maxx*(7/10)
-        elif num > maxx*(4/5):
-            dataframe['cell number'][indx] = maxx*(9/10)
+        if 0 <= num <= maxx / 5:
+            dataframe['cell number'][indx] = int(maxx / 10)
+        elif maxx / 5 < num <= maxx * (2 / 5):
+            dataframe['cell number'][indx] = maxx * 3 / 10
+        elif maxx * (2 / 5) < num <= maxx * (3 / 5):
+            dataframe['cell number'][indx] = maxx / 2
+        elif maxx * (3 / 5) < num <= maxx * (4 / 5):
+            dataframe['cell number'][indx] = maxx * (7 / 10)
+        elif num > maxx * (4 / 5):
+            dataframe['cell number'][indx] = maxx * (9 / 10)
 
     dataParams = pd.DataFrame(columns=['cell number', 'state', 'Bern. G1 p', 'Bern. G2 p', 'shape G1', 'scale G1', 'shape G2', 'scale G2', 'T and pi', 'hue'])
     dataParams['cell number'] = dataframe['cell number'].append(dataframe['cell number'], ignore_index=True)
@@ -99,6 +100,7 @@ def accuracy():
     dataParams['hue'] = ['T'] * len(transition_matrix_norm) + ['pi'] * len(pi_vector_norm)
 
     return total_cellnum, dataframe, dataParams, paramTrues
+
 
 def figureMaker2(ax, E, total_cellnum, dataframe, dataParams, paramTrues):
     """
@@ -125,19 +127,19 @@ def figureMaker2(ax, E, total_cellnum, dataframe, dataParams, paramTrues):
     i += 1
     # Bernoulli parameter estimation
     sns.stripplot(x="cell number", y='Bern. G1 p', hue='state', data=dataParams, dodge=False,
-                  jitter=True, ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", 
-palette=sns.xkcd_palette(['blue', 'green']))
+                  jitter=True, ax=ax[i], marker='o', linewidth=0.5, edgecolor="white",
+                  palette=sns.xkcd_palette(['blue', 'green']))
     for tick, text in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
         # plot horizontal lines across the column, centered on the tick
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 0][0], paramTrues[:, 0, 0][0]],
+        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 0][0], paramTrues[:, 0, 0][0]],
                    color='blue', alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 0][0], paramTrues[:, 1, 0][0]], color='green',
+        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 0][0], paramTrues[:, 1, 0][0]], color='green',
                    alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 1][0], paramTrues[:, 0, 1][0]], 
+        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 1][0], paramTrues[:, 0, 1][0]],
                    color='orange', alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 1][0], paramTrues[:, 1, 1][0]], color='red', 
+        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 1][0], paramTrues[:, 1, 1][0]], color='red',
                    alpha=0.6)
-    sns.stripplot(x="cell number", y='Bern. G2 p', hue='state', data=dataParams, dodge=False, 
+    sns.stripplot(x="cell number", y='Bern. G2 p', hue='state', data=dataParams, dodge=False,
                   jitter=True, ax=ax[i], marker='^', linewidth=0.5, edgecolor="white",
                   palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
@@ -147,20 +149,20 @@ palette=sns.xkcd_palette(['blue', 'green']))
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-    sns.stripplot(x="cell number", y='shape G1', hue='state', jitter=True, dodge=False, data=dataParams, 
-                  ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", 
+    sns.stripplot(x="cell number", y='shape G1', hue='state', jitter=True, dodge=False, data=dataParams,
+                  ax=ax[i], marker='o', linewidth=0.5, edgecolor="white",
                   palette=sns.xkcd_palette(['blue', 'green']))
     for tick, text in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
         # plot horizontal lines across the column, centered on the tick
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 2][0], paramTrues[:, 0, 2][0]], color='blue', 
+        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 2][0], paramTrues[:, 0, 2][0]], color='blue',
                    alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 2][0], paramTrues[:, 1, 2][0]], color='green',
+        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 2][0], paramTrues[:, 1, 2][0]], color='green',
                    alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 4][0], paramTrues[:, 0, 4][0]], color='orange',
+        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 4][0], paramTrues[:, 0, 4][0]], color='orange',
                    alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 4][0], paramTrues[:, 1, 4][0]], color='red', 
+        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 4][0], paramTrues[:, 1, 4][0]], color='red',
                    alpha=0.6)
-    sns.stripplot(x="cell number", y='shape G2', hue='state', data=dataParams, dodge=False, jitter=True, 
+    sns.stripplot(x="cell number", y='shape G2', hue='state', data=dataParams, dodge=False, jitter=True,
                   ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
     ax[i].set_ylim(bottom=-0.05, top=15.0)
@@ -169,19 +171,19 @@ palette=sns.xkcd_palette(['blue', 'green']))
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-    sns.stripplot(x="cell number", y='scale G1', hue='state', data=dataParams, dodge=False, jitter=True, 
-ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['blue', 'green']))
+    sns.stripplot(x="cell number", y='scale G1', hue='state', data=dataParams, dodge=False, jitter=True,
+                  ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['blue', 'green']))
     for tick, text in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
         # plot horizontal lines across the column, centered on the tick
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 3][0], paramTrues[:, 0, 3][0]], color='blue', 
+        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 3][0], paramTrues[:, 0, 3][0]], color='blue',
                    alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 3][0], paramTrues[:, 1, 3][0]], color='green',
+        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 3][0], paramTrues[:, 1, 3][0]], color='green',
                    alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 5][0], paramTrues[:, 0, 5][0]], color='orange',
+        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 5][0], paramTrues[:, 0, 5][0]], color='orange',
                    alpha=0.6)
-        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 5][0], paramTrues[:, 1, 5][0]], color='red', 
+        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 5][0], paramTrues[:, 1, 5][0]], color='red',
                    alpha=0.6)
-    sns.stripplot(x="cell number", y='scale G2', hue='state', data=dataParams, dodge=False, jitter=True, 
+    sns.stripplot(x="cell number", y='scale G2', hue='state', data=dataParams, dodge=False, jitter=True,
                   ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
     ax[i].set_ylim(bottom=-0.05, top=11.0)
