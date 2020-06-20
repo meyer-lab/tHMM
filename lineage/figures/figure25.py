@@ -140,8 +140,12 @@ def figureMaker2(ax, E, total_cellnum, dataframe, dataParams, paramTrues):
 
     i += 1
     sns.stripplot(x="cell number", y='shape G1', hue='state', jitter=True, dodge=False, data=dataParams, ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['blue', 'green']))
-    sns.boxplot(x="cell number", y='shape G1 true', hue="state", linewidth=0.1, palette=sns.xkcd_palette(['blue', 'green']), data=dataParams, ax=ax[i])
-    sns.boxplot(x="cell number", y="shape G2 true", hue="state", linewidth=0.1, palette=sns.xkcd_palette(['orange', 'red']), data=dataParams, ax=ax[i])
+    for tick, text in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
+        # plot horizontal lines across the column, centered on the tick
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 2][0], paramTrues[:, 0, 2][0]], color='blue')
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 2][0], paramTrues[:, 1, 2][0]], color='green')
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 4][0], paramTrues[:, 0, 4][0]], color='orange')
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 4][0], paramTrues[:, 1, 4][0]], color='red')
     sns.stripplot(x="cell number", y='shape G2', hue='state', data=dataParams, dodge=False, jitter=True, ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
     ax[i].set_ylabel("shape parameter")
@@ -149,8 +153,12 @@ def figureMaker2(ax, E, total_cellnum, dataframe, dataParams, paramTrues):
 
     i += 1
     sns.stripplot(x="cell number", y='scale G1', hue='state', data=dataParams, dodge=False, jitter=True, ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['blue', 'green']))
-    sns.boxplot(x="cell number", y="scale G1 true", hue="state", linewidth=0.1, palette=sns.xkcd_palette(['blue', 'green']), data=dataParams, ax=ax[i])
-    sns.boxplot(x="cell number", y="scale G2 true", hue="state", linewidth=0.1, palette=sns.xkcd_palette(['orange', 'red']), data=dataParams, ax=ax[i])
+    for tick, text in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
+        # plot horizontal lines across the column, centered on the tick
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 3][0], paramTrues[:, 0, 3][0]], color='blue')
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 3][0], paramTrues[:, 1, 3][0]], color='green')
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 0, 5][0], paramTrues[:, 0, 5][0]], color='orange')
+        ax[i].plot([tick-0.5, tick+0.5], [paramTrues[:, 1, 5][0], paramTrues[:, 1, 5][0]], color='red')
     sns.stripplot(x="cell number", y='scale G2', hue='state', data=dataParams, dodge=False, jitter=True, ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
     ax[i].set_ylabel("scale parameter")
