@@ -55,3 +55,14 @@ if __name__ == '__main__':
         # Overlay Figure 8 cartoon
         overlayCartoon(fdir + 'figure8.svg',
                        './lineage/data/figures/figure8.svg', 270, 250, scalee=0.18)
+    
+    if sys.argv[1] == '9':
+        # Overlay Figure 9 cartoon
+        overlayCartoon(fdir + 'figure9.svg',
+                       './lineage/data/figures/figure9.svg', 270, 250, scalee=0.18)
+    
+    if sys.argv[1] == '10':
+        # Overlay Figure 10 cartoon
+        overlayCartoon(fdir + 'figure10.svg',
+                       './lineage/data/figures/figure10.svg', 270, 250, scalee=0.18)
+    
