@@ -24,4 +24,9 @@ if __name__ == '__main__':
     if sys.argv[1] == '2':
         # Overlay Figure 2 cartoon
         overlayCartoon(fdir + 'figure2.svg',
-                       './lineage/data/figures/figure2.svg', 260, 250, scalee=0.2)  # might need to adjust this
+                       './lineage/data/figures/figure2.svg', 260, 250, scalee=0.2) 
+    
+    if sys.argv[1] == '3':
+        # Overlay Figure 3 cartoon
+        overlayCartoon(fdir + 'figure3.svg',
+                       './lineage/data/figures/figure3.svg', 270, 250, scalee=0.18)
