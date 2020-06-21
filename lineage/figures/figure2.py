@@ -5,6 +5,7 @@ Figure 2 analyzes heterogeneous (2 state), uncensored,
 single lineages (no more than one lineage per population).
 """
 import numpy as np
+import matplotlib.pyplot as plt
 
 from .figureCommon import (
     getSetup,
@@ -28,13 +29,26 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((7, 6), (2, 3))
+    ax, f = getSetup((7, 6), (2, 4))
 
     figureMaker(ax, *accuracy())
 
     subplotLabel(ax)
 
     return f
+
+    
+
+fig,axes = plt.subplots(2,3)
+for ax in axes.flat:
+    ax.plot([2,3,1])
+
+axes[0,1].clear()
+axes[1,0].axis("off")
+axes[1,1].set_visible(False)
+axes[0,2].remove()
+
+plt.show()
 
 
 def accuracy():
