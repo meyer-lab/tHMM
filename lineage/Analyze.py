@@ -126,8 +126,8 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     switched_pred_states_by_lineage = new_pred_states_by_lineage_holder[max_idx]
     ravel_switched_pred_states = np.array([state for sublist in switched_pred_states_by_lineage for state in sublist])
     results_dict["switcher_map"] = switcher_map
-    results["switched_pred_states_by_lineage"] = switched_pred_states_by_lineage
-    results["ravel_switched_pred_states"] = ravel_switched_pred_states
+    results_dict["switched_pred_states_by_lineage"] = switched_pred_states_by_lineage
+    results_dict["ravel_switched_pred_states"] = ravel_switched_pred_states
 
     # Rearrange the values in the transition matrix
     temp_T = np.copy(tHMMobj.estimate.T)
