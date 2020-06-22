@@ -193,7 +193,9 @@ def run_Results_over(output):
     :type output: list
     """
     results_holder = []
+    pred_states_bylin = []
     for _, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
         results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL))
+        pred_states_bylin.append(pred_states_by_lineage)
 
-    return results_holder
+    return results_holder, pred_states_bylin

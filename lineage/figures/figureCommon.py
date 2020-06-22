@@ -30,8 +30,8 @@ state10 = expon_state(0.99, 48)
 state11 = expon_state(0.75, 8)
 E1 = [state10, state11]
 
-state20 = phaseStateDist(0.99, 0.8, 12, 7, 12, 10)
-state21 = phaseStateDist(0.88, 0.75, 7, 1, 10, 3)
+state20 = phaseStateDist(0.99, 0.8, 12, 7, 10, 5)
+state21 = phaseStateDist(0.88, 0.75, 6, 1, 8, 3)
 E2 = [state20, state21]
 
 min_desired_num_cells = (2 ** 4) - 1
@@ -96,7 +96,7 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     output = run_Analyze_over(list_of_populations, 2, parallel=parallel, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
 
     # Collecting the results of analyzing the lineages
-    results_holder = run_Results_over(output)
+    results_holder, all_states = run_Results_over(output)
 
     dictOut = {}
 
@@ -120,7 +120,7 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     elif xtype == "bern":
         x = paramTrues[:, 0, 0]
 
-    return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
+    return x, all_states, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
 
 
 def subplotLabel(axs):
@@ -145,7 +145,7 @@ def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1):
     template.save(figFile)
 
 
-def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
+def figureMaker(ax, x, nothing, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
@@ -216,7 +216,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
 
-def figureMaker1(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
+def figureMaker1(ax, x, nothing, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
