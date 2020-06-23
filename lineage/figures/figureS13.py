@@ -10,7 +10,7 @@ from .figureCommon import (
     getSetup,
     subplotLabel,
     commonAnalyze,
-    figureMaker1,
+    figureMaker,
     pi,
     T,
     E1,
@@ -31,7 +31,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((7, 7), (3, 3))
 
-    figureMaker1(ax, *accuracy())
+    figureMaker(ax, *accuracy())
 
     subplotLabel(ax)
 
