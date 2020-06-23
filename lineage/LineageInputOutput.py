@@ -2,7 +2,7 @@
 
 import pandas as pd
 import math
-from CellVar import CellVar as c, double
+from .CellVar import CellVar as c, double
 
 
 def import_Heiser(path=r"~/Projects/CAPSTONE/lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xlsx"):
