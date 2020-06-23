@@ -1,36 +1,32 @@
-"""
-File: figure6.py
-Purpose: Generates figure 6.
-Figure 6 analyzes heterogeneous (2 state), NOT censored,
-single lineages (no more than one lineage per population)
-with different proportions of cells in states by
-changing the values in the transition matrices.
-"""
+""" This file contains figures related to how big the experment needs to be. """
+import itertools
 import numpy as np
-
+import pandas as pd
+import scipy.stats as sp
+import seaborn as sns
 from .figureCommon import (
     getSetup,
     subplotLabel,
     commonAnalyze,
-    figureMaker,
     pi,
-    E,
+    E2,
+    T,
     max_desired_num_cells,
-    lineage_good_to_analyze,
-    num_data_points,
+    lineage_good_to_analyze
 )
 from ..LineageTree import LineageTree
+from ..states.StateDistPhase import StateDistribution
 
 
 def makeFigure():
     """
-    Makes figure 6.
+    Makes fig 6.
     """
 
     # Get list of axis objects
-    ax, f = getSetup((7, 7), (3, 3))
+    ax, f = getSetup((4.0, 8.0), (3, 1))
 
-    figureMaker(ax, *accuracy(), xlabel=r"Cells in State 0 [$\%$]")
+    figureMaker2(ax, *accuracy())
 
     subplotLabel(ax)
 
@@ -40,19 +36,19 @@ def makeFigure():
 def accuracy():
     """
     Calculates accuracy and parameter estimation
-    over an similar number of cells in a lineage for
+    over an increasing number of cells in a lineage for
     a uncensored two-state model but differing state distribution.
-    We increase the proportion of cells in a lineage by
-    fixing the Transition matrix to be biased towards state 0.
+    We vary the distribution by
+    increasing the Wasserstein divergence between the two states.
     """
 
     # Creating a list of populations to analyze over
-    list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.1, 0.9, num_data_points)]
+    list_of_Es = [[StateDistribution(0.99, 0.8, 12, a, 10, 5), StateDistribution(0.99, 0.75, 12, 1, 9, 4)] for a in np.linspace(1, 10, 40)]
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
     list_of_fE = []
-    for T in list_of_Ts:
+    for E in list_of_Es:
         population = []
 
         good2go = False
@@ -68,4 +64,58 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E)
 
-    return commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
+    wass, _, Accuracy, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass")
+    total = []
+    for i in range(4):
+        tmp1 = list(sp.gamma.rvs(a=paramTrues[i, 0, 3], loc=0.0,
+                                 scale=paramTrues[i, 0, 5], size=200))
+        total.append(tmp1)
+        tmp2 = list(sp.gamma.rvs(a=paramTrues[i, 1, 3], loc=0.0,
+                                 scale=paramTrues[i, 1, 5], size=200))
+        total.append(tmp2)
+
+    violinDF = pd.DataFrame(columns=['G2 lifetime', 'state', 'distributions'])
+    violinDF['G2 lifetime'] = list(itertools.chain.from_iterable(total))
+    violinDF['state'] = 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2]
+    violinDF['distributions'] = 400 * ['very similar'] + 400 * ['similar'] + 400 * ['different'] + 400 * ['very different']
+
+    dataframe = pd.DataFrame(columns=['Wasserestein distance', 'state acc.'])
+    maxx = len(wass)
+    newwass = np.zeros(len(wass))
+    for indx, _ in enumerate(wass):
+        if 0 <= indx <= maxx / 4:
+            newwass[indx] = np.round(np.mean(wass[0:int(maxx / 4)]), 2)
+        elif maxx / 4 < indx <= maxx / 2:
+            newwass[indx] = np.round(np.mean(wass[int(maxx / 4):int(maxx / 2)]), 2)
+        elif maxx / 2 < indx <= maxx * 3 / 4:
+            newwass[indx] = np.round(np.mean(wass[int(maxx / 2):int(maxx * 3 / 4)]), 2)
+        elif indx >= maxx * 3 / 4:
+            newwass[indx] = np.round(np.mean(wass[int(maxx * 3 / 4):int(maxx)]), 2)
+
+    dataframe['state acc.'] = Accuracy
+    dataframe['Wasserestein distance'] = newwass
+
+    return dataframe, violinDF
+
+
+def figureMaker2(ax, dataframe, violinDF):
+    """
+    This makes figure 3B.
+    """
+    # cartoon to show different shapes --> similar shapes
+    i = 0
+    ax[i].axis('off')
+    i += 1
+    sns.violinplot(x="distributions", y="G2 lifetime",
+                   palette="muted", split=True, hue="state",
+                   data=violinDF, ax=ax[i])
+    sns.despine(left=True, ax=ax[i])
+    i += 1
+    # state accuracy
+    sns.boxplot(x="Wasserestein distance", y="state acc.", data=dataframe, ax=ax[i], palette="deep")
+    ax[i].set_ylabel("accuracy")
+    ax[i].set_title("state assignemnt accuracy")
+    ax[i].set_ylabel("accuracy (%)")
+    ax[i].grid(linestyle="--")
+    ax[i].set_ylim(bottom=10.0, top=105.0)
+    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
