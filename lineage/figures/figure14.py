@@ -1,7 +1,7 @@
 """
-File: figure4.py
-Purpose: Generates figure 4.
-Figure 4 analyzes heterogeneous (2 state), censored (by both time and fate),
+File: figure14.py
+Purpose: Generates figure 14.
+Figure 14 analyzes heterogeneous (2 state), censored (by both time and fate),
 single lineages (no more than one lineage per population).
 """
 import numpy as np
@@ -10,7 +10,7 @@ from .figureCommon import (
     getSetup,
     subplotLabel,
     commonAnalyze,
-    figureMaker1,
+    figureMaker,
     pi,
     T,
     E1,
@@ -25,13 +25,13 @@ from ..LineageTree import LineageTree
 
 def makeFigure():
     """
-    Makes figure 3.
+    Makes figure 14.
     """
 
     # Get list of axis objects
-    ax, f = getSetup((7, 6), (2, 3))
+    ax, f = getSetup((7, 7), (3, 3))
 
-    figureMaker1(ax, *accuracy())
+    figureMaker(ax, *accuracy())
 
     subplotLabel(ax)
 
