@@ -128,9 +128,8 @@ def subplotLabel(axs):
     Sublot labels
     """
     for ii, ax in enumerate(axs):
-        if ax.axis == "off":
-            continue
-        ax.text(-0.2, 1.25, ascii_lowercase[ii], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
+        if ax.has_data():
+            ax.text(-0.2, 1.25, ascii_lowercase[ii], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
 
 
 def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1):
