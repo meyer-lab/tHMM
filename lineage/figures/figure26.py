@@ -68,10 +68,10 @@ def accuracy():
     total = []
     for i in range(4):
         tmp1 = list(sp.gamma.rvs(a=paramTrues[i, 0, 3], loc=0.0,
-                    scale=paramTrues[i, 0, 5], size=200))
+                                 scale=paramTrues[i, 0, 5], size=200))
         total.append(tmp1)
         tmp2 = list(sp.gamma.rvs(a=paramTrues[i, 1, 3], loc=0.0,
-                    scale=paramTrues[i, 1, 5], size=200))
+                                 scale=paramTrues[i, 1, 5], size=200))
         total.append(tmp2)
 
     violinDF = pd.DataFrame(columns=['G2 lifetime', 'state', 'distributions'])
@@ -83,19 +83,20 @@ def accuracy():
     maxx = len(wass)
     newwass = np.zeros(len(wass))
     for indx, _ in enumerate(wass):
-        if 0 <= indx <= maxx/4:
-            newwass[indx] = np.round(np.mean(wass[0:int(maxx/4)]), 2)
-        elif maxx/4 < indx <= maxx/2:
-            newwass[indx] = np.round(np.mean(wass[int(maxx/4):int(maxx/2)]), 2)
-        elif maxx/2 < indx <= maxx*3/4:
-            newwass[indx] = np.round(np.mean(wass[int(maxx/2):int(maxx*3/4)]), 2)
-        elif indx >= maxx*3/4:
-            newwass[indx] = np.round(np.mean(wass[int(maxx*3/4):int(maxx)]), 2)
+        if 0 <= indx <= maxx / 4:
+            newwass[indx] = np.round(np.mean(wass[0:int(maxx / 4)]), 2)
+        elif maxx / 4 < indx <= maxx / 2:
+            newwass[indx] = np.round(np.mean(wass[int(maxx / 4):int(maxx / 2)]), 2)
+        elif maxx / 2 < indx <= maxx * 3 / 4:
+            newwass[indx] = np.round(np.mean(wass[int(maxx / 2):int(maxx * 3 / 4)]), 2)
+        elif indx >= maxx * 3 / 4:
+            newwass[indx] = np.round(np.mean(wass[int(maxx * 3 / 4):int(maxx)]), 2)
 
     dataframe['state acc.'] = Accuracy
     dataframe['Wasserestein distance'] = newwass
 
     return dataframe, violinDF
+
 
 def figureMaker2(ax, dataframe, violinDF):
     """
