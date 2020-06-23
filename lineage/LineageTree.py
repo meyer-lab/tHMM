@@ -17,7 +17,8 @@ class LineageTree:
     """
 
     def __init__(self, pi, T, E, desired_num_cells, censor_condition=0, **kwargs):
-        """Constructor method
+        """
+        Constructor method
 
         :param :math:`\pi`: The initial probability matrix; its shape must be the same as the number of states and all of them must sum up to 1.
         :type :math:`\pi`: Array
@@ -67,6 +68,7 @@ class LineageTree:
 
         if kwargs:
             self.desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
+            self.synthetic = kwargs.get("synthetic", True)
 
         self.censor_boolean = self.censor_condition > 0
 

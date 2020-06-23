@@ -34,7 +34,6 @@ def import_Heiser(path=r"~/Projects/CAPSTONE/lineage/data/heiser_data/LT_AU003_A
         # determine if lineage has cells
         if(lPos < len(data) and not math.isnan(data[lPos][1])):
             # add list for the lineage
-            global currentLineage
             currentLineage = []
             # make Parent
             parentCell = c(parent=None, gen=1, synthetic=False)
