@@ -1,7 +1,7 @@
 """
-File: figure5.py
-Purpose: Generates figure 5.
-Figure 5 analyzes heterogeneous (2 state), NOT censored,
+File: figure6.py
+Purpose: Generates figure 6.
+Figure 6 analyzes heterogeneous (2 state), NOT censored,
 single lineages (no more than one lineage per population)
 with different proportions of cells in states by
 changing the values in the transition matrices.
@@ -24,11 +24,11 @@ from ..LineageTree import LineageTree
 
 def makeFigure():
     """
-    Makes figure 5.
+    Makes figure 6.
     """
 
     # Get list of axis objects
-    ax, f = getSetup((7, 6), (2, 3))
+    ax, f = getSetup((7, 7), (3, 3))
 
     figureMaker(ax, *accuracy(), xlabel=r"Cells in State 0 [$\%$]")
 
