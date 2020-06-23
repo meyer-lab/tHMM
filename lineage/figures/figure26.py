@@ -1,11 +1,9 @@
 """ This file contains figures related to how big the experment needs to be. """
 import itertools
-import random
 import numpy as np
 import pandas as pd
 import scipy.stats as sp
 import seaborn as sns
-from scipy.stats import wasserstein_distance
 from .figureCommon import (
     getSetup,
     subplotLabel,
@@ -14,14 +12,10 @@ from .figureCommon import (
     E2,
     T,
     max_desired_num_cells,
-    min_num_lineages,
-    max_num_lineages,
-    lineage_good_to_analyze,
-    num_data_points
+    lineage_good_to_analyze
 )
 from ..LineageTree import LineageTree
 from ..states.StateDistPhase import StateDistribution
-from ..Analyze import run_Analyze_over, run_Results_over
 
 
 def makeFigure():
@@ -70,16 +64,14 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E)
 
-    wass, _, accuracy, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass")
+    wass, _, Accuracy, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass")
     total = []
     for i in range(4):
         tmp1 = list(sp.gamma.rvs(a=paramTrues[i, 0, 3], loc=0.0,
-                              scale=paramTrues[i, 0, 5],
-                              size=200))
+                    scale=paramTrues[i, 0, 5], size=200))
         total.append(tmp1)
         tmp2 = list(sp.gamma.rvs(a=paramTrues[i, 1, 3], loc=0.0,
-                              scale=paramTrues[i, 1, 5],
-                              size=200))
+                    scale=paramTrues[i, 1, 5], size=200))
         total.append(tmp2)
 
     violinDF = pd.DataFrame(columns=['G2 lifetime', 'state', 'distributions'])
@@ -90,7 +82,7 @@ def accuracy():
     dataframe = pd.DataFrame(columns=['Wasserestein distance', 'state acc.'])
     maxx = len(wass)
     newwass = np.zeros(len(wass))
-    for indx, val in enumerate(wass):
+    for indx, _ in enumerate(wass):
         if 0 <= indx <= maxx/4:
             newwass[indx] = np.round(np.mean(wass[0:int(maxx/4)]), 2)
         elif maxx/4 < indx <= maxx/2:
@@ -100,7 +92,7 @@ def accuracy():
         elif indx >= maxx*3/4:
             newwass[indx] = np.round(np.mean(wass[int(maxx*3/4):int(maxx)]), 2)
 
-    dataframe['state acc.'] = accuracy
+    dataframe['state acc.'] = Accuracy
     dataframe['Wasserestein distance'] = newwass
 
     return dataframe, violinDF
