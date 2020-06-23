@@ -104,6 +104,7 @@ def figureMaker2(ax, dataframe, violinDF):
     """
     # cartoon to show different shapes --> similar shapes
     i = 0
+    ax[i].axis('off')
     i += 1
     sns.violinplot(x="distributions", y="G2 lifetime",
                    palette="muted", split=True, hue="state",
