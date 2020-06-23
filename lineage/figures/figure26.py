@@ -9,6 +9,7 @@ from scipy.stats import wasserstein_distance
 from .figureCommon import (
     getSetup,
     subplotLabel,
+    commonAnalyze,
     pi,
     E2,
     T,
@@ -29,7 +30,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((4.0, 10.0), (3, 1))
+    ax, f = getSetup((4.0, 8.0), (3, 1))
 
     figureMaker2(ax, *accuracy())
 
@@ -48,7 +49,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 0.8, 12, a, 10, 5), StateDistribution(0.99, 0.75, 12, 1, 9, 4)] for a in np.linspace(1, 10, num_data_points)]
+    list_of_Es = [[StateDistribution(0.99, 0.8, 12, a, 10, 5), StateDistribution(0.99, 0.75, 12, 1, 9, 4)] for a in np.linspace(1, 10, 40)]
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
@@ -69,37 +70,7 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E)
 
-    output = run_Analyze_over(list_of_populations, 2, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
-
-    # Collecting the results of analyzing the lineages
-    results_holder, all_states = run_Results_over(output)
-
-    dictOut = {}
-
-    for key in results_holder[0].keys():
-        dictOut[key] = []
-
-    for results_dict in results_holder:
-        for key, val in results_dict.items():
-            dictOut[key].append(val)
-
-    paramTrues = np.array(dictOut["param_trues"])
-    obs_by_state_rand_sampled = []
-    for state in range(output[0][0].num_states):
-        full_list = [cell.obs[3] for cell in output[0][0].X[0].output_lineage if cell.state == state]
-        obs_by_state_rand_sampled.append(full_list)
-
-    num2use = min(len(obs_by_state_rand_sampled[0]), len(obs_by_state_rand_sampled[1]))
-    if num2use == 0:
-        results_dict["wasserstein"] = float("inf")
-    else:
-        results_dict["wasserstein"] = wasserstein_distance(
-            random.sample(obs_by_state_rand_sampled[0], num2use), random.sample(obs_by_state_rand_sampled[1], num2use)
-        )
-
-    accuracy = dictOut["accuracy_after_switching"]
-    wass = dictOut["wasserstein"]
-
+    wass, _, _, accuracy, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass")
     total = []
     for i in range(4):
         tmp1 = list(sp.gamma.rvs(a=paramTrues[i, 0, 3], loc=0.0,
@@ -114,17 +85,25 @@ def accuracy():
     violinDF = pd.DataFrame(columns=['G2 lifetime', 'state', 'distributions'])
     violinDF['G2 lifetime'] = list(itertools.chain.from_iterable(total))
     violinDF['state'] = 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2]
-    violinDF['distributions'] = 400 * ['very different'] + 400 * ['different'] + 400 * ['similar'] + 400 * ['very similar']
+    violinDF['distributions'] = 400 * ['very similar'] + 400 * ['similar'] + 400 * ['different'] + 400 * ['very different']
 
     dataframe = pd.DataFrame(columns=['Wasserestein distance', 'state acc.'])
-    dataframe['state acc.'] = accuracy
+    maxx = len(wass)
+    newwass = np.zeros(len(wass))
+    for indx, val in enumerate(wass):
+        if 0 <= indx <= maxx/4:
+            newwass[indx] = np.round(np.mean(wass[0:int(maxx/4)]), 2)
+        elif maxx/4 < indx <= maxx/2:
+            newwass[indx] = np.round(np.mean(wass[int(maxx/4):int(maxx/2)]), 2)
+        elif maxx/2 < indx <= maxx*3/4:
+            newwass[indx] = np.round(np.mean(wass[int(maxx/2):int(maxx*3/4)]), 2)
+        elif indx >= maxx*3/4:
+            newwass[indx] = np.round(np.mean(wass[int(maxx*3/4):int(maxx)]), 2)
 
-    maxx = len(dataframe['Wasserestein distance'])
-    for i in range(4):
-        dataframe['Wasserestein distance'][i] = np.mean(dataframe['Wasserestein distance'][(i-1)*maxx/4:int((i+1)*maxx/4)])
+    dataframe['state acc.'] = accuracy
+    dataframe['Wasserestein distance'] = newwass
 
     return dataframe, violinDF
-
 
 def figureMaker2(ax, dataframe, violinDF):
     """

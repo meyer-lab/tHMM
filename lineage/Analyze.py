@@ -169,9 +169,13 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["accuracy_after_switching"] = 100 * np.mean(ravel_switched_pred_states == ravel_true_states)
 
     # 4. Calculate the Wasserstein distance
+    obs_index = 1
+    if len(tHMMobj.X[0].E.params) == 6:
+        obs_index = 2
+
     obs_by_state_rand_sampled = []
     for state in range(tHMMobj.num_states):
-        full_list = [cell.obs[1] for cell in tHMMobj.X[0].output_lineage if cell.state == state]
+        full_list = [cell.obs[obs_index] for cell in tHMMobj.X[0].output_lineage if cell.state == state]
         obs_by_state_rand_sampled.append(full_list)
 
     num2use = min(len(obs_by_state_rand_sampled[0]), len(obs_by_state_rand_sampled[1]))
