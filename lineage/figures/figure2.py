@@ -37,19 +37,6 @@ def makeFigure():
 
     return f
 
-    
-
-fig,axes = plt.subplots(2,3)
-for ax in axes.flat:
-    ax.plot([2,3,1])
-
-axes[0,1].clear()
-axes[1,0].axis("off")
-axes[1,1].set_visible(False)
-axes[0,2].remove()
-
-plt.show()
-
 
 def accuracy():
     """
