@@ -148,11 +148,13 @@ def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1):
     template.save(figFile)
 
 
-def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells", length):
+def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
     """
+    number_of_params = paramEst.shape[-1]
+    
     i = 0
     ax[i].axis('off')
 
@@ -178,24 +180,33 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].set_ylabel(r"Gamma $k$")
     ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", alpha=0.5)
     ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", alpha=0.5)
-    ax[i].set_title(r"Gamma $k$")
+    if number_of_params == 2:
+        ax[i].set_ylabel(r"exponential $\beta$")
+        ax[i].set_title(r"exponential $\beta$")
+        ax[i].grid(linestyle="--")
+        ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    else: 
+        ax[i].set_ylabel(r"Gamma $k$")
+        ax[i].set_title(r"Gamma $k$")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-    ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].set_ylabel(r"Gamma $\theta$")
-    ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", alpha=0.5, label="State 1")
-    ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", alpha=0.5, label="State 2")
-    ax[i].legend()
-    ax[i].set_title(r"Gamma $\theta$")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    if number_of_params == 2:
+        ax[i].axis('off')
+    else:
+        ax[i].set_xlabel(xlabel)
+        ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].set_ylabel(r"Gamma $\theta$")
+        ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", alpha=0.5, label="State 1")
+        ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", alpha=0.5, label="State 2")
+        ax[i].legend()
+        ax[i].set_title(r"Gamma $\theta$")
+        ax[i].grid(linestyle="--")
+        ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
     ax[i].set_xlabel(xlabel)
@@ -220,75 +231,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     i += 1
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=0, top=max(pii) + 0.2)
-    ax[i].scatter(x, pii, c="k", marker="o", edgecolors="k", alpha=0.25)
-    ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
-    ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
-    ax[i].set_title("Initial Probability Matrix Estimation")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
-
-def figureMaker1(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
-    """
-    Makes the common 6 panel figures displaying parameter estimation across lineages
-    of various types and sizes.
-    """
-    i = 0
-    ax[i].axis('off')
-
-    i+=1
-    ax[i].axis('off')
-
-    i+=1
-    ax[i].axis('off')
-
-    i+=1
-    ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].set_ylabel("Bernoulli $p$")
-    ax[i].set_ylim(bottom=0, top=1.02)
-    ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", alpha=0.5)
-    ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", alpha=0.5)
-    ax[i].set_title(r"Bernoulli $p$")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
-    i += 1
-    ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].set_ylabel(r"exponential $\lambda$")
-    ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", alpha=0.5)
-    ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", alpha=0.5)
-    ax[i].set_title(r"exponential $\lambda$")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
-    i += 1
-    ax[i].axis('off')
-    
-    i += 1
-    ax[i].set_xlabel(xlabel)
-    ax[i].set_ylim(0, 110)
-    ax[i].scatter(x, accuracies, c="k", marker="o", label="Accuracy", edgecolors="k", alpha=0.25)
-    ax[i].set_ylabel(r"Accuracy [\%]")
-    ax[i].axhline(y=100, linestyle="--", linewidth=2, color="k", alpha=1)
-    ax[i].set_title("State Assignment Accuracy")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
-    i += 1
-    ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, tr, c="k", marker="o", edgecolors="k", alpha=0.25)
-    ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
-    ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
-    ax[i].set_title("Transition Matrix Estimation")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
-    i += 1
-    ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, pii, c="k", marker="o", edgecolors="k", alpha=0.25)
     ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
     ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
