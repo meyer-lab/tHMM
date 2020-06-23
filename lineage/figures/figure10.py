@@ -17,7 +17,7 @@ def makeFigure():
     """
     Makes figure 7.
     """
-    ax, f = getSetup((7, 3), (1, 3))
+    ax, f = getSetup((7, 3), (1, 4))
 
     # bern, gamma_a, gamma_scale
     Sone = StateDistribution(0.99, 20, 5)
