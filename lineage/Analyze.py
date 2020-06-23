@@ -170,7 +170,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
 
     # 4. Calculate the Wasserstein distance
     obs_index = 1
-    if len(tHMMobj.X[0].E.params) == 6:
+    if len(tHMMobj.X[0].E[0].params) == 6:
         obs_index = 2
 
     obs_by_state_rand_sampled = []
