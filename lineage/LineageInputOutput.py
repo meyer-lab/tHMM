@@ -37,7 +37,7 @@ def import_Heiser(path=r"~/Projects/CAPSTONE/lineage/data/heiser_data/LT_AU003_A
             global currentLineage
             currentLineage = []
             # make Parent
-            parentCell = c(state=0, left=None, right=None, parent=None, gen=1)
+            parentCell = c(parent=None, gen=1, synthetic=False)
             parentCell.obs.append(data[lPos][1])
             parentCell.obs.append(data[lPos][1 + 2])
             parentCell.obs.append(data[lPos][1 + 1])
@@ -80,7 +80,7 @@ def tryRecursionT(pColumn, lower, upper, parentCell, currentLineage, lineageSize
     if not found:
         return None
     # store values into lineage here
-    daughterCell = c(parent=parentCell, gen=parentCell.gen + 1)
+    daughterCell = c(parent=parentCell, gen=parentCell.gen + 1, synthetic=parentCell.synthetic)
     daughterCell.obs.append(data[parentPos][pColumn])
     daughterCell.obs.append(data[parentPos][pColumn + 2])
     daughterCell.obs.append(data[parentPos][pColumn + 1])
@@ -111,7 +111,7 @@ def tryRecursionB(pColumn, lower, upper, parentCell, currentLineage, lineageSize
     if not found:
         return None
     # store values into lineage here
-    daughterCell = c(parent=parentCell, gen=parentCell.gen + 1)
+    daughterCell = c(parent=parentCell, gen=parentCell.gen + 1, synthetic=parentCell.synthetic)
     daughterCell.obs.append(data[parentPos][pColumn])
     daughterCell.obs.append(data[parentPos][pColumn + 2])
     daughterCell.obs.append(data[parentPos][pColumn + 1])
