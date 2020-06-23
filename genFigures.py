@@ -25,39 +25,39 @@ if __name__ == '__main__':
     if sys.argv[1] == 'S02':
         # Overlay Figure 2 cartoon
         overlayCartoon(fdir + 'figureS02.svg',
-                       f'{cartoon_dir}/figure2.svg', 0, 0, scalee=0.2)
+                       f'{cartoon_dir}/figureS02.svg', 0, 0, scalee=0.2)
 
     if sys.argv[1] == 'S03':
         # Overlay Figure 3 cartoon
         overlayCartoon(fdir + 'figureS03.svg',
-                       f'{cartoon_dir}/figure3.svg', 0, 0, scalee=0.18)
+                       f'{cartoon_dir}/figureS03.svg', 0, 0, scalee=0.18)
 
     if sys.argv[1] == 'S04':
         # Overlay Figure 4 cartoon
         overlayCartoon(fdir + 'figureS04.svg',
-                       f'{cartoon_dir}/figure4.svg', 0, 0, scalee=0.18)
+                       f'{cartoon_dir}/figureS04.svg', 0, 0, scalee=0.18)
 
     if sys.argv[1] == 'S05':
         # Overlay Figure 5 cartoon
         overlayCartoon(fdir + 'figureS05.svg',
-                       f'{cartoon_dir}/figure5.svg', 0, 0, scalee=0.18)
+                       f'{cartoon_dir}/figureS05.svg', 0, 0, scalee=0.18)
 
     if sys.argv[1] == 'S06':
         # Overlay Figure 6 cartoon
         overlayCartoon(fdir + 'figureS06.svg',
-                       f'{cartoon_dir}/figure6.svg', 0, 0, scalee=0.19)
+                       f'{cartoon_dir}/figureS06.svg', 0, 0, scalee=0.19)
 
     if sys.argv[1] == 'S07':
         # Overlay Figure 7 cartoon
         overlayCartoon(fdir + 'figureS07.svg',
-                       f'{cartoon_dir}/figure7.svg', 0, 0, scalee=0.18)
+                       f'{cartoon_dir}/figureS07.svg', 0, 0, scalee=0.18)
 
     if sys.argv[1] == 'S08':
         # Overlay Figure 8 cartoon
         overlayCartoon(fdir + 'figureS08.svg',
-                       f'{cartoon_dir}/figure8.svg', 0, 0, scalee=0.18)
+                       f'{cartoon_dir}/figureS08.svg', 0, 0, scalee=0.18)
 
     if sys.argv[1] == 'S09':
         # Overlay Figure 9 cartoon
         overlayCartoon(fdir + 'figureS09.svg',
-                       f'{cartoon_dir}/figure9.svg', 0, 0, scalee=0.18)
+                       f'{cartoon_dir}/figureS09.svg', 0, 0, scalee=0.18)
