@@ -155,7 +155,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     """
     # Checks whether we are plotting exponential results, or gamma results
     number_of_params = paramEst.shape[-1]
-    
+
     i = 0
     ax[i].axis('off')
 
@@ -186,7 +186,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     if number_of_params == 2:
         ax[i].set_ylabel(r"exponential $\beta$")
         ax[i].set_title(r"exponential $\beta$")
-    else: 
+    else:
         ax[i].set_ylabel(r"Gamma $k$")
         ax[i].set_title(r"Gamma $k$")
     ax[i].grid(linestyle="--")
