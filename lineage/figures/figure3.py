@@ -36,7 +36,7 @@ def makeFigure():
     subplotLabel(ax)
 
     return f
- 
+
 
 def accuracy():
     """
