@@ -80,7 +80,7 @@ def tryRecursionT(pColumn, lower, upper, parentCell, currentLineage, lineageSize
     if not found:
         return None
     # store values into lineage here
-    daughterCell = c(state=0, left=None, right=None, parent=parentCell, gen=parentCell.gen + 1)
+    daughterCell = c(parent=parentCell, gen=parentCell.gen + 1)
     daughterCell.obs.append(data[parentPos][pColumn])
     daughterCell.obs.append(data[parentPos][pColumn + 2])
     daughterCell.obs.append(data[parentPos][pColumn + 1])
@@ -111,7 +111,7 @@ def tryRecursionB(pColumn, lower, upper, parentCell, currentLineage, lineageSize
     if not found:
         return None
     # store values into lineage here
-    daughterCell = c(state=0, left=None, right=None, parent=parentCell, gen=parentCell.gen + 1)
+    daughterCell = c(parent=parentCell, gen=parentCell.gen + 1)
     daughterCell.obs.append(data[parentPos][pColumn])
     daughterCell.obs.append(data[parentPos][pColumn + 2])
     daughterCell.obs.append(data[parentPos][pColumn + 1])

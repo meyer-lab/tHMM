@@ -82,7 +82,7 @@ class LineageTree:
         """
         first_state_results = sp.multinomial.rvs(1, self.pi)  # roll the dice and yield the state for the first cell
         first_cell_state = first_state_results.tolist().index(1)
-        first_cell = CellVar(state=first_cell_state, parent=None, gen=1)  # create first cell
+        first_cell = CellVar(parent=None, gen=1, state=first_cell_state, synthetic=True)  # create first cell
         self.full_lineage = [first_cell]  # instantiate lineage with first cell
 
         for cell in self.full_lineage:  # letting the first cell proliferate

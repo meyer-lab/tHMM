@@ -17,24 +17,26 @@ class CellVar:
     Cell class.
     """
 
-    def __init__(self, state, parent, gen, **kwargs):
+    def __init__(self, parent, gen, **kwargs):
         """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
         """
-        self.state = state
         self.parent = parent
         self.gen = gen
         self.censored = False
 
         if kwargs:
+            self.state = kwargs.get("state", None)
             self.left = kwargs.get("left", None)
             self.right = kwargs.get("right", None)
             self.obs = kwargs.get("obs", [])
-            self.censored = kwargs.get("censored", True)
+            self.censored = kwargs.get("censored", False)
+            self.synthetic = kwargs.get("synthetic", True)
 
     def divide(self, T):
-        """Member function that performs division of a cell.
+        """
+        Member function that performs division of a cell.
         Equivalent to adding another timestep in a Markov process.
         """
         # roll a loaded die according to the row in the transtion matrix
@@ -64,9 +66,10 @@ class CellVar:
         but it itself is not censored.
         """
         if hasattr(self.left, "censored") and hasattr(self.right, "censored"):
+            # if its daughters are censored (unobserved) and it itself is not censored
             if self.left.censored and self.right.censored and not self.censored:
                 return True
-
+        # otherwise, it itself is observed and at least one of its daughters is observed
         return False
 
     def isLeaf(self):
