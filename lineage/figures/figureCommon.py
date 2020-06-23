@@ -186,8 +186,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     if number_of_params == 2:
         ax[i].set_ylabel(r"exponential $\beta$")
         ax[i].set_title(r"exponential $\beta$")
-        ax[i].grid(linestyle="--")
-        ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
     else: 
         ax[i].set_ylabel(r"Gamma $k$")
         ax[i].set_title(r"Gamma $k$")
