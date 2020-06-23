@@ -150,7 +150,16 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
     """
-    i = 3
+    i = 0
+    ax[i].axis('off')
+
+    i+=1
+    ax[i].axis('off')
+
+    i+=1
+    ax[i].axis('off')
+    
+    i+=1
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
@@ -221,7 +230,16 @@ def figureMaker1(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Numbe
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
     """
-    i = 3
+    i = 0
+    ax[i].axis('off')
+
+    i+=1
+    ax[i].axis('off')
+
+    i+=1
+    ax[i].axis('off')
+
+    i+=1
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
