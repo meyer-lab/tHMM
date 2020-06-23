@@ -95,8 +95,10 @@ def tryRecursionT(pColumn, lower, upper, parentCell,currentLineage,lineageSizeIn
     return daughterCell
     
 
-#Method for Bottom half of Lineage Tree
 def tryRecursionB(pColumn, lower, upper, parentCell,currentLineage, lineageSizeIndex, data):
+    """
+    Method for Bottom half of Lineage Tree
+    """
     found = False
     #check if this is the last possible cell
     if pColumn+3 >= lineageSizeIndex:
