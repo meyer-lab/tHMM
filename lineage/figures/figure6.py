@@ -20,7 +20,7 @@ from ..states.StateDistPhase import StateDistribution
 
 def makeFigure():
     """
-    Makes fig 3b.
+    Makes fig 6.
     """
 
     # Get list of axis objects

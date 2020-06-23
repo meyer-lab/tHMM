@@ -20,7 +20,7 @@ x = [lineage1]
 
 def makeFigure():
     """
-    Makes fig 2.
+    Makes fig 4.
     """
 
     # Get list of axis objects
