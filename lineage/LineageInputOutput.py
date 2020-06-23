@@ -6,7 +6,7 @@ from CellVar import CellVar as c, double
 
 
 def import_Heiser(path=r"~/Projects/CAPSTONE/lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xlsx"):
-    excel_file = pd.read_excel(path, header = None)
+    excel_file = pd.read_excel(path, header=None)
     data = excel_file.to_numpy()
     #Cell.obs stored as [G1, G2/S (nan if cell dies), Death (nan if cell does not die)]
     #position of Lineage Size attribute
@@ -64,8 +64,10 @@ def import_Heiser(path=r"~/Projects/CAPSTONE/lineage/data/heiser_data/LT_AU003_A
 
     
 
-#Method for Top half of Lineage Tree (They mirrored the posistions for the last set of daughter cells...)
 def tryRecursionT(pColumn, lower, upper, parentCell,currentLineage,lineageSizeIndex, data):
+    """
+    Method for Top half of Lineage Tree (They mirrored the posistions for the last set of daughter cells...)
+    """
     found = False
     #check if this is the last possible cell
     if pColumn+3 >= lineageSizeIndex:
