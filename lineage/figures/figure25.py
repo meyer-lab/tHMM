@@ -66,7 +66,7 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E2)
 
-    total_cellnum, all_states, paramEst, accuracy_after_switching, transition_matrix_norm, pi_vector_norm, paramTrues = commonAnalyze(list_of_populations)
+    total_cellnum, paramEst, accuracy_after_switching, transition_matrix_norm, pi_vector_norm, paramTrues = commonAnalyze(list_of_populations)
 
     dataframe = pd.DataFrame(columns=['cell number', 'state acc.'])
     dataframe['cell number'] = total_cellnum

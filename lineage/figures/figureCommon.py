@@ -13,7 +13,7 @@ from ..Analyze import run_Results_over, run_Analyze_over
 from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistributionExpon import StateDistribution as expon_state
 from ..states.StateDistPhase import StateDistribution as phaseStateDist
-
+ 
 # pi: the initial probability vector
 pi = np.array([0.75, 0.25], dtype="float")
 
@@ -96,7 +96,7 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     output = run_Analyze_over(list_of_populations, 2, parallel=parallel, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
 
     # Collecting the results of analyzing the lineages
-    results_holder, all_states = run_Results_over(output)
+    results_holder = run_Results_over(output)
 
     dictOut = {}
 
@@ -120,15 +120,18 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     elif xtype == "bern":
         x = paramTrues[:, 0, 0]
 
-    return x, all_states, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
+    return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
 
 
 def subplotLabel(axs):
     """
     Sublot labels
     """
-    for ii, ax in enumerate(axs):
-        ax.text(-0.2, 1.25, ascii_lowercase[ii], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
+    i = 0
+    for _, ax in enumerate(axs):
+        if ax.has_data(): # only label plots with graphs on them
+            ax.text(-0.2, 1.25, ascii_lowercase[i], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
+            i+=1
 
 
 def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1):
@@ -145,12 +148,21 @@ def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1):
     template.save(figFile)
 
 
-def figureMaker(ax, x, nothing, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
+def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
     """
     i = 0
+    ax[i].axis('off')
+
+    i+=1
+    ax[i].axis('off')
+
+    i+=1
+    ax[i].axis('off')
+    
+    i+=1
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
@@ -216,12 +228,21 @@ def figureMaker(ax, x, nothing, paramEst, accuracies, tr, pii, paramTrues, xlabe
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
 
-def figureMaker1(ax, x, nothing, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
+def figureMaker1(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
     """
     i = 0
+    ax[i].axis('off')
+
+    i+=1
+    ax[i].axis('off')
+
+    i+=1
+    ax[i].axis('off')
+
+    i+=1
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
@@ -245,7 +266,8 @@ def figureMaker1(ax, x, nothing, paramEst, accuracies, tr, pii, paramTrues, xlab
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-
+    ax[i].axis('off')
+    
     i += 1
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(0, 110)
