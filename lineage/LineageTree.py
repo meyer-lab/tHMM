@@ -57,13 +57,14 @@ class LineageTree:
 
         num_states = pi_num_states
 
-        generate_lineage_list(pi=pi,T=T,desired_num_cells=desired_num_cells)
+        full_lineage = generate_lineage_list(pi=pi, T=T, desired_num_cells=desired_num_cells)
         # TODO: make this not use self, call the init method once the output_lineage is made
-        for i_state in range(self.num_states):
-            self.output_assign_obs(i_state)
+        for i_state in range(num_states):
+            output_assign_obs(i_state, full_lineage, E)
 
-        self.full_max_gen, self.full_list_of_gens = max_gen(self.full_lineage)
-        self.full_leaves_idx, self.full_leaves = get_leaves(self.full_lineage)
+        full_max_gen, full_list_of_gens = max_gen(full_lineage)
+        full_leaves_idx, full_leaves = get_leaves(full_lineage)
+        # TODO: assign_times needs to be moved
         if len(self.E[0].rvs(1)) > 1:
             assign_times(self)
 
@@ -99,8 +100,9 @@ class LineageTree:
 
             if len(full_lineage) >= desired_num_cells:
                 break
+        return full_lineage
 
-    def output_assign_obs(self, state):
+    def output_assign_obs(state, full_lineage, E):
         """Observation assignment give a state.
         Given the lineageTree object and the intended state, this function assigns the corresponding observations
         comming from specific distributions for that state.
@@ -108,8 +110,8 @@ class LineageTree:
         :param state: The number assigned to a state.
         :type state: Int
         """
-        cells_in_state = [cell for cell in self.full_lineage if cell.state == state]
-        list_of_tuples_of_obs = self.E[state].rvs(size=len(cells_in_state))
+        cells_in_state = [cell for cell in full_lineage if cell.state == state]
+        list_of_tuples_of_obs = E[state].rvs(size=len(cells_in_state))
         list_of_tuples_of_obs = list(map(list, zip(*list_of_tuples_of_obs)))
 
         assert len(cells_in_state) == len(list_of_tuples_of_obs)
