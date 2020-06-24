@@ -245,3 +245,10 @@ class Time:
     def __init__(self, startT, endT):
         self.startT = startT
         self.endT = endT
+        
+    def __repl__(self):
+        "Print method for Time class"
+        return f"Lived from {self.startT} to {self.endT}."
+    
+    def __str__(self):
+        return self.__repl__()
