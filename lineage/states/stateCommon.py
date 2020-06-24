@@ -71,43 +71,6 @@ def bernoulli_estimator(bern_obs, gammas):
     return sum(gammas * bern_obs) / sum(gammas)
 
 
-class Time:
-    """
-    Class that stores all the time related observations in a neater format.
-    This will assist in pruning based on experimental time as well as
-    obtaining attributes of the lineage as a whole, such as the
-    average growth rate.
-    """
-
-    def __init__(self, startT, endT):
-        self.startT = startT
-        self.endT = endT
-
-
-def assign_times(full_list_of_gens, *kwargs):
-    """
-    Assigns the start and end time for each cell in the lineage.
-    The time observation will be stored in the cell's observation parameter list
-    in the second position (index 1). See the other time functions to understand.
-    """
-    # traversing the cells by generation
-    for gen_minus_1, level in enumerate(full_list_of_gens[1:]):
-        true_gen = gen_minus_1 + 1  # generations are 1-indexed
-        if true_gen == 1:
-            for cell in level:
-                assert cell.isRootParent()
-                if kwargs:
-                    cell.time = Time(0, (cell.obs[1] + cell.ons[2]))
-                else:
-                    cell.time = Time(0, (cell.obs[1]))
-        else:
-            for cell in level:
-                if kwargs:
-                    cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1] + cell.obs[2])
-                else:
-                    cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
-
-
 def get_experiment_time(lineageObj):
     """
     This function returns the longest experiment time

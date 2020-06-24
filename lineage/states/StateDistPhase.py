@@ -63,6 +63,24 @@ class StateDistribution:
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
+        
+    def assign_times(self, list_of_gens):
+        """
+        Assigns the start and end time for each cell in the lineage.
+        The time observation will be stored in the cell's observation parameter list
+        in the second position (index 1). See the other time functions to understand.
+        This is used in the creation of LineageTrees
+        """
+        # traversing the cells by generation
+        for gen_minus_1, level in enumerate(list_of_gens[1:]):
+            true_gen = gen_minus_1 + 1  # generations are 1-indexed
+            if true_gen == 1:
+                for cell in level:
+                    assert cell.isRootParent()
+                        cell.time = Time(0, cell.obs[2] + cell.obs[3])
+            else:
+                for cell in level:
+                        cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[2] + cell.obs[3])
 
     def __repl__(self):
         return f"{self.params}"

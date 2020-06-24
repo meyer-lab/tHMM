@@ -4,7 +4,7 @@ import scipy.stats as sp
 import operator
 
 from .CellVar import CellVar
-from .states.stateCommon import assign_times, basic_censor, fate_censor, time_censor
+from .states.stateCommon import basic_censor, fate_censor, time_censor
 
 
 class LineageTree:
@@ -21,6 +21,8 @@ class LineageTree:
         self.E = E
         self.output_lineage = sorted(list_of_cells, key=operator.attrgetter('gen'))
         self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
+        # assign times using the state distribution specific time model
+        E[0].assign_times(self.output_list_of_gens)
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
         
     @classmethod
@@ -64,9 +66,9 @@ class LineageTree:
 
         full_max_gen, full_list_of_gens = max_gen(full_lineage)
         full_leaves_idx, full_leaves = get_leaves(full_lineage)
-        # TODO: assign_times needs to be moved
-        if len(E[0].rvs(1)) > 1:
-            assign_times(full_list_of_gens)
+        
+        # assign times using the state distribution specific time model
+        E[0].assign_times(full_list_of_gens)
 
         output_lineage = censor_lineage(censor_condition, full_lineage, **kwargs)
 

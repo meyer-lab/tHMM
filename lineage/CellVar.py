@@ -233,3 +233,15 @@ def get_mixed_subtrees(node_m, node_n, lineage):
         if cell not in mixed_sub:
             not_mixed.append(cell)
     return mixed_sub, not_mixed
+
+class Time:
+    """
+    Class that stores all the time related observations in a neater format.
+    This will assist in pruning based on experimental time as well as
+    obtaining attributes of the lineage as a whole, such as the
+    average growth rate.
+    """
+
+    def __init__(self, startT, endT):
+        self.startT = startT
+        self.endT = endT
