@@ -71,76 +71,10 @@ class LineageTree:
         if kwargs:
             desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
 
-        self.censor_lineage()
+        output_lineage = censor_lineage(censor_condition, desired_experiment_time)
 
-        self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
-        self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
+        return cls(output_lineage)
         
-
-def generate_lineage_list(pi, T, desired_num_cells):
-    """Generates a single lineage tree given Markov variables.
-    This only generates the hidden variables (i.e., the states) in a output binary tree manner.
-    It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
-    """
-    first_state_results = sp.multinomial.rvs(1, pi)  # roll the dice and yield the state for the first cell
-    first_cell_state = first_state_results.tolist().index(1)
-    first_cell = CellVar(parent=None, gen=1, state=first_cell_state, synthetic=True)  # create first cell
-    full_lineage = [first_cell]  # instantiate lineage with first cell
-
-    for cell in full_lineage:  # letting the first cell proliferate
-        if cell.isLeaf():  # if the cell has no daughters...
-            # make daughters by dividing and assigning states
-            left_cell, right_cell = cell.divide(T)
-            # add daughters to the list of cells
-            full_lineage.append(left_cell)
-            full_lineage.append(right_cell)
-
-        if len(full_lineage) >= desired_num_cells:
-            break
-    return full_lineage
-
-
-def output_assign_obs(state, full_lineage, E):
-    """Observation assignment give a state.
-    Given the lineageTree object and the intended state, this function assigns the corresponding observations
-    comming from specific distributions for that state.
-
-    :param state: The number assigned to a state.
-    :type state: Int
-    """
-    cells_in_state = [cell for cell in full_lineage if cell.state == state]
-    list_of_tuples_of_obs = E[state].rvs(size=len(cells_in_state))
-    list_of_tuples_of_obs = list(map(list, zip(*list_of_tuples_of_obs)))
-
-    assert len(cells_in_state) == len(list_of_tuples_of_obs)
-    for i, cell in enumerate(cells_in_state):
-        cell.obs = list_of_tuples_of_obs[i]
-
-    def censor_lineage(self):
-        """This function removes those cells that are intended to be remove
-        from the output binary tree based on emissions.
-        It takes in LineageTree object, walks through all the cells in the output binary tree,
-        applies the pruning to each cell that is supposed to be removed,
-        and returns the censord list of cells.
-        """
-        if self.censor_condition == 0:
-            self.output_lineage = self.full_lineage
-            return
-
-        self.output_lineage = []
-        for cell in self.full_lineage:
-            basic_censor(cell)
-            if self.censor_condition == 1:
-                fate_censor(cell)
-            elif self.censor_condition == 2:
-                time_censor(cell, self.desired_experiment_time)
-            elif self.censor_condition == 3:
-                fate_censor(cell)
-                time_censor(cell, self.desired_experiment_time)
-            if not cell.censored:
-                self.output_lineage.append(cell)
-        return output_lineage
-
     def get_parents_for_level(self, level):
         """Get the parents's index of a generation in the population list.
         Given the generation level, this function returns the index of parent cells of the cells being in that generation level.
@@ -187,6 +121,75 @@ def output_assign_obs(state, full_lineage, E):
         if true_states_set_len > 1:
             return True
         return False
+        
+
+def generate_lineage_list(pi, T, desired_num_cells):
+    """
+    Generates a single lineage tree given Markov variables.
+    This only generates the hidden variables (i.e., the states) in a output binary tree manner.
+    It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
+    """
+    first_state_results = sp.multinomial.rvs(1, pi)  # roll the dice and yield the state for the first cell
+    first_cell_state = first_state_results.tolist().index(1)
+    first_cell = CellVar(parent=None, gen=1, state=first_cell_state, synthetic=True)  # create first cell
+    full_lineage = [first_cell]  # instantiate lineage with first cell
+
+    for cell in full_lineage:  # letting the first cell proliferate
+        if cell.isLeaf():  # if the cell has no daughters...
+            # make daughters by dividing and assigning states
+            left_cell, right_cell = cell.divide(T)
+            # add daughters to the list of cells
+            full_lineage.append(left_cell)
+            full_lineage.append(right_cell)
+
+        if len(full_lineage) >= desired_num_cells:
+            break
+    return full_lineage
+
+
+def output_assign_obs(state, full_lineage, E):
+    """
+    Observation assignment give a state.
+    Given the lineageTree object and the intended state, this function assigns the corresponding observations
+    comming from specific distributions for that state.
+
+    :param state: The number assigned to a state.
+    :type state: Int
+    """
+    cells_in_state = [cell for cell in full_lineage if cell.state == state]
+    list_of_tuples_of_obs = E[state].rvs(size=len(cells_in_state))
+    list_of_tuples_of_obs = list(map(list, zip(*list_of_tuples_of_obs)))
+
+    assert len(cells_in_state) == len(list_of_tuples_of_obs)
+    for i, cell in enumerate(cells_in_state):
+        cell.obs = list_of_tuples_of_obs[i]
+
+def censor_lineage(censor_condition):
+    """
+    This function removes those cells that are intended to be remove
+    from the output binary tree based on emissions.
+    It takes in LineageTree object, walks through all the cells in the output binary tree,
+    applies the pruning to each cell that is supposed to be removed,
+    and returns the censord list of cells.
+    """
+    if censor_condition == 0:
+        output_lineage = full_lineage
+        return output_lineage
+
+    self.output_lineage = []
+    for cell in self.full_lineage:
+        basic_censor(cell)
+        if self.censor_condition == 1:
+            fate_censor(cell)
+        elif self.censor_condition == 2:
+            time_censor(cell, self.desired_experiment_time)
+        elif self.censor_condition == 3:
+            fate_censor(cell)
+            time_censor(cell, self.desired_experiment_time)
+        if not cell.censored:
+            self.output_lineage.append(cell)
+    return output_lineage
+
 
 
 # tools for analyzing trees
