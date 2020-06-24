@@ -17,7 +17,7 @@ def import_Heiser(path=r"~/Projects/CAPSTONE/lineage/data/heiser_data/LT_AU003_A
     4. time spent in G2,
     5. time spent totally alive
     
-    The cell's observation are stored in as the following in the observation (obs) attribute:
+    The observations for each cell are stored in cell as the following list in the observation (obs) attribute:
     
     1. Boolean (survived G1, None if G1 didn't happen), 
     2. Boolean (survived G2, None if G2 didn't happen), 
