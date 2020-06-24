@@ -58,7 +58,6 @@ class LineageTree:
         num_states = pi_num_states
 
         full_lineage = generate_lineage_list(pi=pi, T=T, desired_num_cells=desired_num_cells)
-        # TODO: make this not use self, call the init method once the output_lineage is made
         for i_state in range(num_states):
             output_assign_obs(i_state, full_lineage, E)
 
@@ -73,7 +72,19 @@ class LineageTree:
 
         output_lineage = censor_lineage(censor_condition, desired_experiment_time)
 
-        return cls(output_lineage)
+        lineageObj = cls(output_lineage)
+        
+        lineageObj.pi = pi
+        lineageObj.T = T
+        lineageObj.E = E
+        lineageObj.num_states = num_states
+        lineageObj.full_lineage = full_lineage
+        lineageObj.full_max_gen = full_max_gen
+        lineageObj.full_list_of_gens = full_list_of_gens
+        lineageObj.full_leaves_idx = full_leaves_idx
+        lineageObj.full_leaves = full_leaves
+        
+        return lineageObj
         
     def get_parents_for_level(self, level):
         """Get the parents's index of a generation in the population list.
