@@ -2,6 +2,7 @@
 import scipy.stats as sp
 
 from .stateCommon import bern_pdf, bernoulli_estimator, gamma_pdf, gamma_estimator
+from ..CellVar import Time
 
 
 class StateDistribution:
@@ -77,10 +78,10 @@ class StateDistribution:
             if true_gen == 1:
                 for cell in level:
                     assert cell.isRootParent()
-                        cell.time = Time(0, cell.obs[2] + cell.obs[3])
+                    cell.time = Time(0, cell.obs[2] + cell.obs[3])
             else:
                 for cell in level:
-                        cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[2] + cell.obs[3])
+                    cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[2] + cell.obs[3])
 
     def __repl__(self):
         return f"{self.params}"

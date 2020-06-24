@@ -70,10 +70,10 @@ class StateDistribution:
             if true_gen == 1:
                 for cell in level:
                     assert cell.isRootParent()
-                        cell.time = Time(0, cell.obs[1])
+                    cell.time = Time(0, cell.obs[1])
             else:
                 for cell in level:
-                        cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
+                    cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
 
     def __repl__(self):
         return f"{self.params}"
