@@ -84,14 +84,14 @@ class Time:
         self.endT = endT
 
 
-def assign_times(lineageObj, *kwargs):
+def assign_times(full_list_of_gens, *kwargs):
     """
     Assigns the start and end time for each cell in the lineage.
     The time observation will be stored in the cell's observation parameter list
     in the second position (index 1). See the other time functions to understand.
     """
     # traversing the cells by generation
-    for gen_minus_1, level in enumerate(lineageObj.full_list_of_gens[1:]):
+    for gen_minus_1, level in enumerate(full_list_of_gens[1:]):
         true_gen = gen_minus_1 + 1  # generations are 1-indexed
         if true_gen == 1:
             for cell in level:

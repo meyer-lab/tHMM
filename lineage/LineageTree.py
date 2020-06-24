@@ -66,18 +66,14 @@ class LineageTree:
         full_leaves_idx, full_leaves = get_leaves(full_lineage)
         # TODO: assign_times needs to be moved
         if len(E[0].rvs(1)) > 1:
-            assign_times(full_lineage)
+            assign_times(full_list_of_gens)
 
-        if kwargs:
-            desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
+        output_lineage = censor_lineage(censor_condition, full_lineage, **kwargs)
 
-        output_lineage = censor_lineage(censor_condition, desired_experiment_time)
-
-        lineageObj = cls(output_lineage)
+        lineageObj = cls(output_lineage, E)
         
         lineageObj.pi = pi
         lineageObj.T = T
-        lineageObj.E = E
         lineageObj.num_states = num_states
         lineageObj.full_lineage = full_lineage
         lineageObj.full_max_gen = full_max_gen
@@ -176,30 +172,33 @@ def output_assign_obs(state, full_lineage, E):
     for i, cell in enumerate(cells_in_state):
         cell.obs = list_of_tuples_of_obs[i]
 
-def censor_lineage(censor_condition):
+def censor_lineage(censor_condition, full_lineage, **kwargs):
     """
     This function removes those cells that are intended to be remove
     from the output binary tree based on emissions.
     It takes in LineageTree object, walks through all the cells in the output binary tree,
     applies the pruning to each cell that is supposed to be removed,
-    and returns the censord list of cells.
+    and returns the censored list of cells.
     """
+    if kwargs:
+        desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
+
     if censor_condition == 0:
         output_lineage = full_lineage
         return output_lineage
 
-    self.output_lineage = []
-    for cell in self.full_lineage:
+    output_lineage = []
+    for cell in full_lineage:
         basic_censor(cell)
-        if self.censor_condition == 1:
+        if censor_condition == 1:
             fate_censor(cell)
-        elif self.censor_condition == 2:
-            time_censor(cell, self.desired_experiment_time)
-        elif self.censor_condition == 3:
+        elif censor_condition == 2:
+            time_censor(cell, desired_experiment_time)
+        elif censor_condition == 3:
             fate_censor(cell)
-            time_censor(cell, self.desired_experiment_time)
+            time_censor(cell, desired_experiment_time)
         if not cell.censored:
-            self.output_lineage.append(cell)
+            output_lineage.append(cell)
     return output_lineage
 
 

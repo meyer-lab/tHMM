@@ -40,12 +40,12 @@ class TestModel(unittest.TestCase):
         self.E = [state_obj0, state_obj1]
 
         # creating lineages with the various censor conditions
-        self.lineage1 = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
-        self.lineage2_fate_censored = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=1)
-        self.lineage3_time_censored = LineageTree(
+        self.lineage1 = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
+        self.lineage2_fate_censored = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=1)
+        self.lineage3_time_censored = LineageTree.init_from_parameters(
             self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=2, desired_experiment_time=500
         )
-        self.lineage4_both_censored = LineageTree(
+        self.lineage4_both_censored = LineageTree.init_from_parameters(
             self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=500
         )
 
