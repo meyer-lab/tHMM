@@ -1,6 +1,7 @@
 """ This file contains the LineageTree class. """
 from copy import deepcopy
 import scipy.stats as sp
+import operator
 
 from .CellVar import CellVar
 from .states.stateCommon import assign_times, basic_censor, fate_censor, time_censor
@@ -16,7 +17,13 @@ class LineageTree:
     The lineage tree is then censord based on the censor condition.
     """
 
-    def __init__(self, pi, T, E, desired_num_cells, censor_condition=0, **kwargs):
+    def __init__(self, list_of_cells):
+        self.output_lineage = sorted(list_of_cells, key=operator.attrgetter('gen'))
+        self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
+        self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
+        
+    @classmethod
+    def init_from_parameters(cls, pi, T, E, desired_num_cells, censor_condition=0, **kwargs):
         """
         Constructor method
 
@@ -37,25 +44,21 @@ class LineageTree:
         - 2 means censor based on the length of the experiment
         - 3 means censor based on both the 'fate' and 'time' conditions
         """
-        self.pi = deepcopy(pi)
         pi_num_states = len(pi)
-        self.T = deepcopy(T)
-        T_shape = self.T.shape
+        T_shape = T.shape
         assert (
             T_shape[0] == T_shape[1]
         ), "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
-        T_num_states = self.T.shape[0]
-        self.E = deepcopy(E)
-        self.desired_num_cells = desired_num_cells
+        T_num_states = T.shape[0]
         E_num_states = len(E)
         assert pi_num_states == T_num_states == E_num_states, \
             f"The number of states in your input Markov probability parameters are mistmatched. \
-        \nPlease check that the dimensions and states match. \npi {self.pi} \nT {self.T} \nE {self.E}"
+        \nPlease check that the dimensions and states match. \npi {pi} \nT {T} \nE {E}"
 
-        self.num_states = pi_num_states
+        num_states = pi_num_states
 
-        self.generate_lineage_list()
-
+        generate_lineage_list(pi=pi,T=T,desired_num_cells=desired_num_cells)
+        # TODO: make this not use self, call the init method once the output_lineage is made
         for i_state in range(self.num_states):
             self.output_assign_obs(i_state)
 
@@ -75,33 +78,26 @@ class LineageTree:
         self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
         
-    @classmethod
-    def init_from_list_of_cells(cls, list_of_cells):
-        cls(pi=None, T=None, E=None, desired_num_cells=None)
-        cls.output_lineage = list_of_cells
-        cls.output_max_gen, cls.output_list_of_gens = max_gen(cls.output_lineage)
-        cls.output_leaves_idx, cls.output_leaves = get_leaves(cls.output_lineage)
-        
 
-    def generate_lineage_list(self):
+    def generate_lineage_list(pi, T, desired_num_cells):
         """Generates a single lineage tree given Markov variables.
         This only generates the hidden variables (i.e., the states) in a output binary tree manner.
         It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
         """
-        first_state_results = sp.multinomial.rvs(1, self.pi)  # roll the dice and yield the state for the first cell
+        first_state_results = sp.multinomial.rvs(1, pi)  # roll the dice and yield the state for the first cell
         first_cell_state = first_state_results.tolist().index(1)
         first_cell = CellVar(parent=None, gen=1, state=first_cell_state, synthetic=True)  # create first cell
-        self.full_lineage = [first_cell]  # instantiate lineage with first cell
+        full_lineage = [first_cell]  # instantiate lineage with first cell
 
-        for cell in self.full_lineage:  # letting the first cell proliferate
+        for cell in full_lineage:  # letting the first cell proliferate
             if cell.isLeaf():  # if the cell has no daughters...
                 # make daughters by dividing and assigning states
-                left_cell, right_cell = cell.divide(self.T)
+                left_cell, right_cell = cell.divide(T)
                 # add daughters to the list of cells
-                self.full_lineage.append(left_cell)
-                self.full_lineage.append(right_cell)
+                full_lineage.append(left_cell)
+                full_lineage.append(right_cell)
 
-            if len(self.full_lineage) >= self.desired_num_cells:
+            if len(full_lineage) >= desired_num_cells:
                 break
 
     def output_assign_obs(self, state):
@@ -143,6 +139,7 @@ class LineageTree:
                 time_censor(cell, self.desired_experiment_time)
             if not cell.censored:
                 self.output_lineage.append(cell)
+        return output_lineage
 
     def get_parents_for_level(self, level):
         """Get the parents's index of a generation in the population list.
