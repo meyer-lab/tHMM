@@ -77,6 +77,7 @@ class LineageTree:
         
     @classmethod
     def init_from_list_of_cells(cls, list_of_cells):
+        cls(pi=None, T=None, E=None, desired_num_cells=None)
         cls.output_lineage = list_of_cells
         cls.output_max_gen, cls.output_list_of_gens = max_gen(cls.output_lineage)
         cls.output_leaves_idx, cls.output_leaves = get_leaves(cls.output_lineage)
