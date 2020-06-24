@@ -2,20 +2,31 @@
 
 import pandas as pd
 import math
-from CellVar import CellVar as c
+from .CellVar import CellVar as c
 
 
 def import_Heiser(path=r"~/Projects/CAPSTONE/lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xlsx"):
+    """
+    Imports data from the Heiser lab
+    Outputs a list of lists containing cells containing observations from the Excel file
+    In this particular dataset, we look at the following phenotypes:
+    
+    1. survival past G1 (death or transition into G2),
+    2. survival past G2 (death or division into daughter cells),
+    3. time spent in G1,
+    4. time spent in G2,
+    5. time spent totally alive
+    
+    The cell's observation are stored in as the following in the observation (obs) attribute:
+    
+    1. Boolean (survived G1, None if G1 didn't happen), 
+    2. Boolean (survived G2, None if G2 didn't happen), 
+    3. Double (time spent in G1), 
+    4. Double (time spent in G2),
+    5. Double (continuous time at cell division Nan/145 if division didn't occur) this helps with internal calculations]
+    """
     excel_file = pd.read_excel(path, header=None)
     data = excel_file.to_numpy()
-    # Cell.obs stored as:
-    #  [Boolean (survived G1, None if G1 didn't happen), 
-    #   Boolean (survived G2, None if G2 didn't happen), 
-    #   Double (time spent in G1), 
-    #   Double (time spent in G2),
-    #   Double (continuous time at cell division Nan/145 if division didn't occur) this helps with internal calculations]
-
-
 
     # position of Lineage Size attribute
     lineageSizeIndex = 0
@@ -98,13 +109,15 @@ def import_Heiser(path=r"~/Projects/CAPSTONE/lineage/data/heiser_data/LT_AU003_A
     return lineages
 
 
-#In the excel files given the top and bottom halves of the tree are mirrored
-#This means that using the same method for import of the whole tree will not work correctly when the tree is full
-#the ranges the recursionB method searches in have to be offset by 1 
-#so that the algorithm will search the proper positions for the last possible generation of cells
+
 def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeIndex, data, firstHalf):
     """
-    Method for Top half of Lineage Tree (They mirrored the posistions for the last set of daughter cells...)
+    Method for Top and Bottom halves of the Lineage Tree as recorded in the Excel files
+    (They mirrored the posistions for the last set of daughter cells...)
+    In the excel files given the top and bottom halves of the tree are mirrored
+    This means that using the same method for import of the whole tree will not work correctly when the tree is full
+    the ranges the recursionB method searches in have to be offset by 1 
+    so that the algorithm will search the proper positions for the last possible generation of cells
     """
     found = False
     # check if this is the last possible cell
