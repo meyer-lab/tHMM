@@ -15,7 +15,7 @@ class TestModel(unittest.TestCase):
         but contains known mistakes/exceptions that the functions
         should be able to handle.
         """
-        self.path_to_synthetic_data = #TODO
+        self.path_to_synthetic_data = r"path"
         
     def test_import_Heiser(self):
         """
