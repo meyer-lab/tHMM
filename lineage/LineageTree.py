@@ -17,7 +17,8 @@ class LineageTree:
     The lineage tree is then censord based on the censor condition.
     """
 
-    def __init__(self, list_of_cells):
+    def __init__(self, list_of_cells, E):
+        self.E = E
         self.output_lineage = sorted(list_of_cells, key=operator.attrgetter('gen'))
         self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
