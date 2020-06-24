@@ -65,14 +65,11 @@ class LineageTree:
         full_max_gen, full_list_of_gens = max_gen(full_lineage)
         full_leaves_idx, full_leaves = get_leaves(full_lineage)
         # TODO: assign_times needs to be moved
-        if len(self.E[0].rvs(1)) > 1:
-            assign_times(self)
-
-        self.censor_condition = censor_condition
+        if len(E[0].rvs(1)) > 1:
+            assign_times(full_lineage)
 
         if kwargs:
-            self.desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
-            self.synthetic = kwargs.get("synthetic", True)
+            desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
 
         self.censor_lineage()
 
@@ -80,43 +77,44 @@ class LineageTree:
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
         
 
-    def generate_lineage_list(pi, T, desired_num_cells):
-        """Generates a single lineage tree given Markov variables.
-        This only generates the hidden variables (i.e., the states) in a output binary tree manner.
-        It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
-        """
-        first_state_results = sp.multinomial.rvs(1, pi)  # roll the dice and yield the state for the first cell
-        first_cell_state = first_state_results.tolist().index(1)
-        first_cell = CellVar(parent=None, gen=1, state=first_cell_state, synthetic=True)  # create first cell
-        full_lineage = [first_cell]  # instantiate lineage with first cell
+def generate_lineage_list(pi, T, desired_num_cells):
+    """Generates a single lineage tree given Markov variables.
+    This only generates the hidden variables (i.e., the states) in a output binary tree manner.
+    It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
+    """
+    first_state_results = sp.multinomial.rvs(1, pi)  # roll the dice and yield the state for the first cell
+    first_cell_state = first_state_results.tolist().index(1)
+    first_cell = CellVar(parent=None, gen=1, state=first_cell_state, synthetic=True)  # create first cell
+    full_lineage = [first_cell]  # instantiate lineage with first cell
 
-        for cell in full_lineage:  # letting the first cell proliferate
-            if cell.isLeaf():  # if the cell has no daughters...
-                # make daughters by dividing and assigning states
-                left_cell, right_cell = cell.divide(T)
-                # add daughters to the list of cells
-                full_lineage.append(left_cell)
-                full_lineage.append(right_cell)
+    for cell in full_lineage:  # letting the first cell proliferate
+        if cell.isLeaf():  # if the cell has no daughters...
+            # make daughters by dividing and assigning states
+            left_cell, right_cell = cell.divide(T)
+            # add daughters to the list of cells
+            full_lineage.append(left_cell)
+            full_lineage.append(right_cell)
 
-            if len(full_lineage) >= desired_num_cells:
-                break
-        return full_lineage
+        if len(full_lineage) >= desired_num_cells:
+            break
+    return full_lineage
 
-    def output_assign_obs(state, full_lineage, E):
-        """Observation assignment give a state.
-        Given the lineageTree object and the intended state, this function assigns the corresponding observations
-        comming from specific distributions for that state.
 
-        :param state: The number assigned to a state.
-        :type state: Int
-        """
-        cells_in_state = [cell for cell in full_lineage if cell.state == state]
-        list_of_tuples_of_obs = E[state].rvs(size=len(cells_in_state))
-        list_of_tuples_of_obs = list(map(list, zip(*list_of_tuples_of_obs)))
+def output_assign_obs(state, full_lineage, E):
+    """Observation assignment give a state.
+    Given the lineageTree object and the intended state, this function assigns the corresponding observations
+    comming from specific distributions for that state.
 
-        assert len(cells_in_state) == len(list_of_tuples_of_obs)
-        for i, cell in enumerate(cells_in_state):
-            cell.obs = list_of_tuples_of_obs[i]
+    :param state: The number assigned to a state.
+    :type state: Int
+    """
+    cells_in_state = [cell for cell in full_lineage if cell.state == state]
+    list_of_tuples_of_obs = E[state].rvs(size=len(cells_in_state))
+    list_of_tuples_of_obs = list(map(list, zip(*list_of_tuples_of_obs)))
+
+    assert len(cells_in_state) == len(list_of_tuples_of_obs)
+    for i, cell in enumerate(cells_in_state):
+        cell.obs = list_of_tuples_of_obs[i]
 
     def censor_lineage(self):
         """This function removes those cells that are intended to be remove
