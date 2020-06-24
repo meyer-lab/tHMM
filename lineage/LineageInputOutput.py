@@ -2,7 +2,7 @@
 
 import pandas as pd
 import math
-from .CellVar import CellVar as c
+from CellVar import CellVar as c
 
 
 def import_Heiser(path=r"~/Projects/CAPSTONE/lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xlsx"):
@@ -86,9 +86,9 @@ def import_Heiser(path=r"~/Projects/CAPSTONE/lineage/data/heiser_data/LT_AU003_A
             else:
                 lower = nextUp - 2
             # find upper daughter and recurse
-            parentCell.left = tryRecursionT(1, lPos, upper, parentCell, currentLineage, lineageSizeIndex, data)
+            parentCell.left = tryRecursion(1, lPos, upper, parentCell, currentLineage, lineageSizeIndex, data, True)
             # find lower daughter and recurse
-            parentCell.right = tryRecursionB(1, lower, lPos, parentCell, currentLineage, lineageSizeIndex, data)
+            parentCell.right = tryRecursion(1, lower, lPos, parentCell, currentLineage, lineageSizeIndex, data, False)
 
             # add first generation to lineage (apparently python passes by reference for objects so this probably can be done before or after)
             currentLineage.append(parentCell)
@@ -102,7 +102,7 @@ def import_Heiser(path=r"~/Projects/CAPSTONE/lineage/data/heiser_data/LT_AU003_A
 #This means that using the same method for import of the whole tree will not work correctly when the tree is full
 #the ranges the recursionB method searches in have to be offset by 1 
 #so that the algorithm will search the proper positions for the last possible generation of cells
-def tryRecursionT(pColumn, lower, upper, parentCell, currentLineage, lineageSizeIndex, data):
+def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeIndex, data, firstHalf):
     """
     Method for Top half of Lineage Tree (They mirrored the posistions for the last set of daughter cells...)
     """
@@ -111,8 +111,19 @@ def tryRecursionT(pColumn, lower, upper, parentCell, currentLineage, lineageSize
     if pColumn + 3 >= lineageSizeIndex:
         return None
     # find branch within provided range
+    
     pColumn += 3
-    for parentPos in range(upper, lower):
+
+    #this will properly offset the range based on whether the algorithm is searching the top half or bottom half of the tree
+    if firstHalf:
+        u = upper
+        l = lower
+        
+    else:
+        u = upper+1
+        l = lower+1
+
+    for parentPos in range(u, l):
         if not math.isnan(data[parentPos][pColumn]):
             found = True
             break
@@ -144,62 +155,12 @@ def tryRecursionT(pColumn, lower, upper, parentCell, currentLineage, lineageSize
             daughterCell.obs[1] = False #died in G2
             daughterCell.obs[3] = data[parentPos][pColumn+1]-data[parentPos][pColumn] #Time spent in G2
     # find upper daughter
-    daughterCell.left = tryRecursionT(pColumn, parentPos, upper, daughterCell, currentLineage, lineageSizeIndex, data)
+    daughterCell.left = tryRecursion(pColumn, parentPos, upper, daughterCell, currentLineage, lineageSizeIndex, data, firstHalf)
     # find lower daughter
-    daughterCell.right = tryRecursionT(pColumn, lower, parentPos, daughterCell, currentLineage, lineageSizeIndex, data)
+    daughterCell.right = tryRecursion(pColumn, lower, parentPos, daughterCell, currentLineage, lineageSizeIndex, data, firstHalf)
 
     # add daughter to current Lineage
     currentLineage.append(daughterCell)
     return daughterCell
 
 
-def tryRecursionB(pColumn, lower, upper, parentCell, currentLineage, lineageSizeIndex, data):
-    """
-    Method for Bottom half of Lineage Tree
-    """
-    found = False
-    # check if this is the last possible cell
-    if pColumn + 3 >= lineageSizeIndex:
-        return None
-    # find branch within provided range
-    pColumn += 3
-    for parentPos in range(upper + 1, lower + 1):
-        if not math.isnan(data[parentPos][pColumn]):
-            found = True
-            break
-    if not found:
-        return None
-    # store values into lineage here
-    daughterCell = c(parent=parentCell, gen=parentCell.gen + 1, synthetic=parentCell.synthetic)
-    daughterCell.obs = [ 0, 0, 0, 0, data[parentPos][pColumn+2] ] # This stores the Time at cell division
-
-    #[x  x] case
-    if data[parentPos][pColumn] == data[parentPos][pColumn+2]:
-        daughterCell.obs[0] = (data[parentPos][pColumn] == 145) #live/die G1
-        daughterCell.obs[2] = data[parentPos][pColumn] - parentCell.obs[4]#Time Spent in G1
-        daughterCell.obs[1] = None #Did not go to G2
-        daughterCell.obs[3] = 0 #Spent no time in G2
-
-    #[x  y]/[x y  ] case (general)
-    else:
-        #[1  y]/[1 y  ] case is not possible anymore
-        daughterCell.obs[0] = True  #survived G1
-        daughterCell.obs[2] = data[parentPos][pColumn] -  parentCell.obs[4]#Time spent in G1
-
-        #[x  y] case (general)
-        if math.isnan(data[parentPos][pColumn + 1]):
-            daughterCell.obs[1] = True  #survived G2
-            daughterCell.obs[3] = data[parentPos][pColumn+2]-data[parentPos][pColumn] #Time spent in G2
-        #[x y  ] case
-        else:
-            daughterCell.obs[1] = False #died in G2
-            daughterCell.obs[3] = data[parentPos][pColumn+1]-data[parentPos][pColumn] #Time spent in G2
-            
-    # find upper daughter
-    daughterCell.left = tryRecursionB(pColumn, parentPos, upper, daughterCell, currentLineage, lineageSizeIndex, data)
-    # find lower daughter
-    daughterCell.right = tryRecursionB(pColumn, lower, parentPos, daughterCell, currentLineage, lineageSizeIndex, data)
-
-    # add daughter to current Lineage
-    currentLineage.append(daughterCell)
-    return daughterCell
