@@ -70,12 +70,17 @@ class LineageTree:
             self.desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
             self.synthetic = kwargs.get("synthetic", True)
 
-        self.censor_boolean = self.censor_condition > 0
-
         self.censor_lineage()
 
         self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
+        
+    @classmethod
+    def init_from_list_of_cells(cls, list_of_cells):
+        cls.output_lineage = list_of_cells
+        cls.output_max_gen, cls.output_list_of_gens = max_gen(cls.output_lineage)
+        cls.output_leaves_idx, cls.output_leaves = get_leaves(cls.output_lineage)
+        
 
     def generate_lineage_list(self):
         """Generates a single lineage tree given Markov variables.
