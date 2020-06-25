@@ -5,7 +5,7 @@ import math
 from .CellVar import CellVar as c
 
 
-def import_Heiser(path=r"~/Projects/CAPSTONE/lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xlsx"):
+def import_Heiser(path=r"lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xlsx"):
     """
     Imports data from the Heiser lab
     Outputs a list of lists containing cells containing observations from the Excel file
