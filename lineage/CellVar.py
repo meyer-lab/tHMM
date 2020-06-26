@@ -24,14 +24,13 @@ class CellVar:
         """
         self.parent = parent
         self.gen = gen
-        self.censored = False
+        self.observed = True
 
         if kwargs:
             self.state = kwargs.get("state", None)
             self.left = kwargs.get("left", None)
             self.right = kwargs.get("right", None)
             self.obs = kwargs.get("obs", [])
-            self.observed = kwargs.get("observed", True)
             self.synthetic = kwargs.get("synthetic", True)
 
     def divide(self, T):
@@ -63,10 +62,10 @@ class CellVar:
         """
         Boolean.
         Returns true when a cell is a leaf because its children are unobserved
-        but it itself is not censored.
+        but it itself is observed.
         """
         if hasattr(self.left, "observed") and hasattr(self.right, "observed"):
-            # if its daughters are unobserved and it itself is not censored
+            # if its daughters are unobserved and it itself is observed
             if not self.left.observed and not self.right.observed and self.observed:
                 return True
         # otherwise, it itself is observed and at least one of its daughters is observed
@@ -135,9 +134,9 @@ class CellVar:
         """
         temp = []
         if hasattr(self, "left") and hasattr(self, "right"):
-            if self.left is not None and not self.left.censored:
+            if self.left is not None and self.left.observed:
                 temp.append(self.left)
-            if self.right is not None and not self.right.censored:
+            if self.right is not None and self.right.observed:
                 temp.append(self.right)
         return temp
 
