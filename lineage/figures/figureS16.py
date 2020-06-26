@@ -1,6 +1,6 @@
 """
-File: figure3.py
-Purpose: Generates figure 3.
+File: figureS16.py
+Purpose: Generates figure S16.
 Figure 3 analyzes heterogeneous (2 state), uncensored,
 populations of lineages (more than one lineage per populations).
 This particular state distribution has phases.

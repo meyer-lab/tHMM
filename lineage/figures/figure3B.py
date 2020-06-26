@@ -1,4 +1,5 @@
-""" This file contains figures related to how big the experment needs to be. """
+""" This file contains figures related to how far the states need to be,
+which is shown by Wasserestein distance. """
 import itertools
 import numpy as np
 import pandas as pd
@@ -9,7 +10,6 @@ from .figureCommon import (
     subplotLabel,
     commonAnalyze,
     pi,
-    E2,
     T,
     max_desired_num_cells,
     lineage_good_to_analyze
@@ -20,11 +20,11 @@ from ..states.StateDistPhase import StateDistribution
 
 def makeFigure():
     """
-    Makes fig 6.
+    Makes fig 3B.
     """
 
     # Get list of axis objects
-    ax, f = getSetup((4.0, 8.0), (3, 1))
+    ax, f = getSetup((4.0, 7.5), (3, 1))
 
     figureMaker2(ax, *accuracy())
 
@@ -43,7 +43,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 0.8, 12, a, 10, 5), StateDistribution(0.99, 0.75, 12, 1, 9, 4)] for a in np.linspace(1, 10, 40)]
+    list_of_Es = [[StateDistribution(0.99, 0.8, 12, a, 10, 5), StateDistribution(0.99, 0.75, 12, 1, 9, 4)] for a in np.linspace(1, 10, 4)]
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
@@ -65,6 +65,7 @@ def accuracy():
         list_of_fE.append(E)
 
     wass, _, Accuracy, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass")
+    print(paramTrues.shape)
     total = []
     for i in range(4):
         tmp1 = list(sp.gamma.rvs(a=paramTrues[i, 0, 3], loc=0.0,
@@ -113,7 +114,6 @@ def figureMaker2(ax, dataframe, violinDF):
     i += 1
     # state accuracy
     sns.boxplot(x="Wasserestein distance", y="state acc.", data=dataframe, ax=ax[i], palette="deep")
-    ax[i].set_ylabel("accuracy")
     ax[i].set_title("state assignemnt accuracy")
     ax[i].set_ylabel("accuracy (%)")
     ax[i].grid(linestyle="--")
