@@ -65,23 +65,9 @@ def accuracy():
 
     percentageS1, _, _, _, _, _, accuracy = commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
 
-    dataframe = pd.DataFrame(columns=['% in S1', 'state acc.'])
-    maxx = len(percentageS1)
-    newperc = np.zeros(len(percentageS1))
-    for indx, _ in enumerate(percentageS1):
-        if 0 <= indx <= maxx / 4:
-            newperc[indx] = np.round(np.mean(percentageS1[0:int(maxx / 4)]), 2)
-        elif maxx / 4 < indx <= maxx / 2:
-            newperc[indx] = np.round(np.mean(percentageS1[int(maxx / 4):int(maxx / 2)]), 2)
-        elif maxx / 2 < indx <= maxx * 3 / 4:
-            newperc[indx] = np.round(np.mean(percentageS1[int(maxx / 2):int(maxx * 3 / 4)]), 2)
-        elif indx >= maxx * 3 / 4:
-            newperc[indx] = np.round(np.mean(percentageS1[int(maxx * 3 / 4):int(maxx)]), 2)
-    dataframe['state acc.'] = accuracy
-    dataframe['% in S1'] = newperc
-    return dataframe, accuracy
+    return percentageS1, accuracy
 
-def figureMaker2(ax, dataframe, accuracy):
+def figureMaker2(ax, percentageS1, accuracy):
     """
     This makes figure 4.
     """
@@ -90,9 +76,10 @@ def figureMaker2(ax, dataframe, accuracy):
     ax[i].axis('off')
     i += 1
     # state assignment accuracy
-    sns.boxplot(x="% in S1", y="state acc.", data=dataframe, ax=ax[i], palette="deep")
+    ax[i].scatter(percentageS1, accuracy)
     ax[i].set_title("state assignemnt accuracy")
     ax[i].set_ylabel("accuracy (%)")
+    ax[i].set_xlabel("% cells in S1")
     ax[i].grid(linestyle="--")
     ax[i].set_ylim(bottom=10.0, top=105.0)
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
