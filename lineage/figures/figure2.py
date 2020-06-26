@@ -20,11 +20,11 @@ from ..LineageTree import LineageTree
 
 def makeFigure():
     """
-    Makes fig 5.
+    Makes fig 3A.
     """
 
     # Get list of axis objects
-    ax, f = getSetup((4.0, 10.0), (5, 1))
+    ax, f = getSetup((10, 2.5), (5, 1))
 
     figureMaker2(ax, *accuracy())
 
@@ -66,7 +66,7 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E2)
 
-    total_cellnum, paramEst, accuracy_after_switching, transition_matrix_norm, pi_vector_norm, paramTrues = commonAnalyze(list_of_populations)
+    total_cellnum, paramEst, accuracy_after_switching, transition_matrix_norm, pi_vector_norm, paramTrues = commonAnalyze(list_of_populations, 2)
 
     dataframe = pd.DataFrame(columns=['cell number', 'state acc.'])
     dataframe['cell number'] = total_cellnum

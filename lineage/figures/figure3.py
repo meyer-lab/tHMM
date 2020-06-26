@@ -1,35 +1,31 @@
-"""
-File: figure3.py
-Purpose: Generates figure 3.
-Figure 3 analyzes heterogeneous (2 state), uncensored,
-populations of lineages (more than one lineage per populations).
-This particular state distribution has phases.
-"""
+""" This file contains figures related to how far the states need to be,
+which is shown by Wasserestein distance. """
+import itertools
 import numpy as np
-
+import pandas as pd
+import scipy.stats as sp
+import seaborn as sns
 from .figureCommon import (
     getSetup,
     subplotLabel,
     commonAnalyze,
     pi,
-    T,
     E2,
-    min_desired_num_cells,
-    lineage_good_to_analyze,
-    min_num_lineages,
-    max_num_lineages,
-    num_data_points,
+    T,
+    max_desired_num_cells,
+    lineage_good_to_analyze
 )
 from ..LineageTree import LineageTree
+from ..states.StateDistPhase import StateDistribution
 
 
 def makeFigure():
     """
-    Makes figure 3.
+    Makes fig 3B.
     """
 
     # Get list of axis objects
-    ax, f = getSetup((7.5, 7.5), (3, 3))
+    ax, f = getSetup((4.0, 7.5), (3, 1))
 
     figureMaker2(ax, *accuracy())
 
@@ -41,140 +37,85 @@ def makeFigure():
 def accuracy():
     """
     Calculates accuracy and parameter estimation
-    over an increasing number of lineages in a population for
-    a uncensored two-state model.
-    We increase the desired number of cells in a lineage by
-    the experiment time.
+    over an increasing number of cells in a lineage for
+    a uncensored two-state model but differing state distribution.
+    We vary the distribution by
+    increasing the Wasserstein divergence between the two states.
     """
 
     # Creating a list of populations to analyze over
-    num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
+    list_of_Es = [[StateDistribution(0.99, 0.8, 12, a, 10, 5), StateDistribution(0.99, 0.75, 12, 1, 9, 4)] for a in np.linspace(1, 10, 40)]
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
     list_of_fE = []
-    for num in num_lineages:
+    for E in list_of_Es:
         population = []
 
-        for _ in range(num):
+        good2go = False
+        while not good2go:
+            tmp_lineage = LineageTree(pi, T, E, max_desired_num_cells)
+            good2go = lineage_good_to_analyze(tmp_lineage)
 
-            good2go = False
-            while not good2go:
-                tmp_lineage = LineageTree(pi, T, E2, min_desired_num_cells)
-                good2go = lineage_good_to_analyze(tmp_lineage)
-
-            population.append(tmp_lineage)
+        population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
         list_of_fpi.append(pi)
         list_of_fT.append(T)
-        list_of_fE.append(E2)
+        list_of_fE.append(E)
 
-    return commonAnalyze(list_of_populations)
+    wass, _, Accuracy, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass")
+    total = []
+    for i in range(4):
+        tmp1 = list(sp.gamma.rvs(a=paramTrues[i, 0, 3], loc=0.0,
+                                 scale=paramTrues[i, 0, 5], size=200))
+        total.append(tmp1)
+        tmp2 = list(sp.gamma.rvs(a=paramTrues[i, 1, 3], loc=0.0,
+                                 scale=paramTrues[i, 1, 5], size=200))
+        total.append(tmp2)
+
+    violinDF = pd.DataFrame(columns=['G2 lifetime', 'state', 'distributions'])
+    violinDF['G2 lifetime'] = list(itertools.chain.from_iterable(total))
+    violinDF['state'] = 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2]
+    violinDF['distributions'] = 400 * ['very similar'] + 400 * ['similar'] + 400 * ['different'] + 400 * ['very different']
+
+    dataframe = pd.DataFrame(columns=['Wasserestein distance', 'state acc.'])
+    maxx = len(wass)
+    newwass = np.zeros(len(wass))
+    for indx, _ in enumerate(wass):
+        if 0 <= indx <= maxx / 4:
+            newwass[indx] = np.round(np.mean(wass[0:int(maxx / 4)]), 2)
+        elif maxx / 4 < indx <= maxx / 2:
+            newwass[indx] = np.round(np.mean(wass[int(maxx / 4):int(maxx / 2)]), 2)
+        elif maxx / 2 < indx <= maxx * 3 / 4:
+            newwass[indx] = np.round(np.mean(wass[int(maxx / 2):int(maxx * 3 / 4)]), 2)
+        elif indx >= maxx * 3 / 4:
+            newwass[indx] = np.round(np.mean(wass[int(maxx * 3 / 4):int(maxx)]), 2)
+
+    dataframe['state acc.'] = Accuracy
+    dataframe['Wasserestein distance'] = newwass
+
+    return dataframe, violinDF
 
 
-def figureMaker2(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
+def figureMaker2(ax, dataframe, violinDF):
     """
-    Makes the common 6 panel figures displaying parameter estimation across lineages
-    of various types and sizes.
+    This makes figure 3B.
     """
+    # cartoon to show different shapes --> similar shapes
     i = 0
-    ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].set_ylim(bottom=0, top=1.02)
-    ax[i].set_ylabel("Bernoulli $p$")
-    ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", alpha=0.5)
-    ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", alpha=0.5)
-    ax[i].set_title(r"Bernoulli $p$ G1")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
+    ax[i].axis('off')
     i += 1
-    ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].set_ylim(bottom=0, top=1.02)
-    ax[i].set_ylabel("Bernoulli $p$")
-    ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", alpha=0.5)
-    ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", alpha=0.5)
-    ax[i].set_title(r"Bernoulli $p$ G2")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
+    sns.violinplot(x="distributions", y="G2 lifetime",
+                   palette="muted", split=True, hue="state",
+                   data=violinDF, ax=ax[i])
+    sns.despine(left=True, ax=ax[i])
     i += 1
-    ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].set_ylabel(r"Gamma $k$")
-    ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", alpha=0.5)
-    ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", alpha=0.5)
-    ax[i].set_title(r"Gamma $k$ G1")
+    # state accuracy
+    sns.boxplot(x="Wasserestein distance", y="state acc.", data=dataframe, ax=ax[i], palette="deep")
+    ax[i].set_title("state assignemnt accuracy")
+    ax[i].set_ylabel("accuracy (%)")
     ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
-    i += 1
-    ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 3], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 3], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].set_ylabel(r"Gamma $\theta$")
-    ax[i].scatter(x, paramTrues[:, 0, 3], marker="_", alpha=0.5, label="State 1")
-    ax[i].scatter(x, paramTrues[:, 1, 3], marker="_", alpha=0.5, label="State 2")
-    ax[i].legend()
-    ax[i].set_title(r"Gamma $\theta$ G1")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
-    i += 1
-    ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 4], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 4], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].set_ylabel(r"Gamma $k$")
-    ax[i].scatter(x, paramTrues[:, 0, 4], marker="_", alpha=0.5)
-    ax[i].scatter(x, paramTrues[:, 1, 4], marker="_", alpha=0.5)
-    ax[i].set_title(r"Gamma $k$ G2")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
-    i += 1
-    ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 5], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 5], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].set_ylabel(r"Gamma $\theta$")
-    ax[i].scatter(x, paramTrues[:, 0, 5], marker="_", alpha=0.5, label="State 1")
-    ax[i].scatter(x, paramTrues[:, 1, 5], marker="_", alpha=0.5, label="State 2")
-    ax[i].legend()
-    ax[i].set_title(r"Gamma $\theta$ G2")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
-    i += 1
-    ax[i].set_xlabel(xlabel)
-    ax[i].set_ylim(bottom=0, top=101)
-    ax[i].scatter(x, accuracies, c="k", marker="o", label="Accuracy", edgecolors="k", alpha=0.25)
-    ax[i].set_ylabel(r"Accuracy [\%]")
-    ax[i].axhline(y=100, linestyle="--", linewidth=2, color="k", alpha=1)
-    ax[i].set_title("State Assignment Accuracy")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
-    i += 1
-    ax[i].set_xlabel(xlabel)
-    ax[i].set_ylim(bottom=0, top=max(tr) + 0.2)
-    ax[i].scatter(x, tr, c="k", marker="o", edgecolors="k", alpha=0.25)
-    ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
-    ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
-    ax[i].set_title("Transition Matrix Estimation")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
-    i += 1
-    ax[i].set_xlabel(xlabel)
-    ax[i].set_ylim(bottom=0, top=max(pii) + 0.2)
-    ax[i].scatter(x, pii, c="k", marker="o", edgecolors="k", alpha=0.25)
-    ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
-    ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
-    ax[i].set_title("Initial Probability Matrix Estimation")
-    ax[i].grid(linestyle="--")
+    ax[i].set_ylim(bottom=10.0, top=105.0)
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
