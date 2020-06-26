@@ -79,12 +79,98 @@ class StateDistribution:
                 for cell in level:
                     assert cell.isRootParent()
                     cell.time = Time(0, cell.obs[2] + cell.obs[3])
+                    cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
             else:
                 for cell in level:
                     cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[2] + cell.obs[3])
+                    cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
+                    
+    def censor_lineage(self, censor_condition, list_of_gens, full_lineage, **kwargs):
+        """
+        This function removes those cells that are intended to be remove
+        from the output binary tree based on emissions.
+        It takes in LineageTree object, walks through all the cells in the output binary tree,
+        applies the pruning to each cell that is supposed to be removed,
+        and returns the censored list of cells.
+        """
+        if kwargs:
+            desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
+
+        if censor_condition == 0:
+            output_lineage = full_lineage
+            return output_lineage
+
+        output_lineage = []
+        for gen_minus_1, level in enumerate(list_of_gens[1:]):
+            true_gen = gen_minus_1 + 1  # generations are 1-indexed
+            if true_gen == 1:
+                for cell in level:
+                    assert cell.isRootParent()
+                    basic_censor(cell)
+                    if censor_condition == 1:
+                        fate_censor(cell)
+                    elif censor_condition == 2:
+                        time_censor(cell, desired_experiment_time)
+                    elif censor_condition == 3:
+                        fate_censor(cell)
+                        time_censor(cell, desired_experiment_time)
+                    if not cell.observed:
+                        self.output_lineage.append(cell)      
+            else:
+                for cell in level:
+                    basic_censor(cell)
+                    if censor_condition == 1:
+                        fate_censor(cell)
+                    elif censor_condition == 2:
+                        time_censor(cell, desired_experiment_time)
+                    elif censor_condition == 3:
+                        fate_censor(cell)
+                        time_censor(cell, desired_experiment_time)
+                    if not cell.observed:
+                        self.output_lineage.append(cell)    
+        return output_lineage
 
     def __repl__(self):
         return f"{self.params}"
 
     def __str__(self):
         return self.__repl__()
+
+    
+def fate_censor(cell):
+    """
+    User-defined function that checks whether a cell's subtree should be removed.
+    Our example is based on the standard requirement that the first observation
+    (index 0) is a measure of the cell's fate (1 being alive, 0 being dead).
+    Clearly if a cell has died, its subtree must be removed.
+    """
+    if cell.obs[0] == 0 or cell.obs[1] == 0:
+        if not cell.isLeafBecauseTerminal():
+            cell.left.observed = False
+            cell.right.observed = False
+            
+def time_censor(cell, desired_experiment_time):
+    """
+    User-defined function that checks whether a cell's subtree should be removed.
+    Our example is based on the standard requirement that the second observation
+    (index 1) is a measure of the cell's lifetime.
+    If a cell has lived beyond a certain experiment time, then its subtree
+    must be removed.
+    """
+    if cell.time.transition_time > desired_experiment_time:
+        cell.time.transition_time = desired_experiment_time
+        cell.obs[2] = desired_experiment_time - cell.time.startT
+        cell.obs[3] = float('nan')
+        cell.obs[4] = 0 # censored
+        cell.obs[5] = float('nan')
+        if not cell.isLeafBecauseTerminal():
+            cell.left.observed = False
+            cell.right.observed = False
+        
+    if cell.time.endT > desired_experiment_time:
+        cell.time.endT = desired_experiment_time
+        cell.obs[3] = desired_experiment_time  - cell.time.startT
+        cell.obs[5] = 0  # no longer observed
+        if not cell.isLeafBecauseTerminal():
+            cell.left.observed = False
+            cell.right.observed = False

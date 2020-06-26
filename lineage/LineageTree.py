@@ -4,8 +4,6 @@ import scipy.stats as sp
 import operator
 
 from .CellVar import CellVar
-from .states.stateCommon import basic_censor
-
 
 class LineageTree:
     """A class for lineage trees.
@@ -70,7 +68,7 @@ class LineageTree:
         # assign times using the state distribution specific time model
         E[0].assign_times(full_list_of_gens)
 
-        output_lineage = E[0].censor_lineage(censor_condition, full_list_of_gens, **kwargs)
+        output_lineage = E[0].censor_lineage(censor_condition, full_list_of_gens, full_lineage, **kwargs)
 
         lineageObj = cls(output_lineage, E)
         

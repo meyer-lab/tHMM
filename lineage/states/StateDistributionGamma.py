@@ -75,7 +75,7 @@ class StateDistribution:
                 for cell in level:
                     cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
 
-    def censor_lineage(self, censor_condition, list_of_gens, **kwargs):
+    def censor_lineage(self, censor_condition, list_of_gens, full_lineage, **kwargs):
         """
         This function removes those cells that are intended to be remove
         from the output binary tree based on emissions.
@@ -100,10 +100,10 @@ class StateDistribution:
                     if censor_condition == 1:
                         fate_censor(cell)
                     elif censor_condition == 2:
-                        time_censor(cell)
+                        time_censor(cell, desired_experiment_time)
                     elif censor_condition == 3:
                         fate_censor(cell)
-                        time_censor(cell)
+                        time_censor(cell, desired_experiment_time)
                     if not cell.observed:
                         self.output_lineage.append(cell)      
             else:
@@ -112,10 +112,10 @@ class StateDistribution:
                     if censor_condition == 1:
                         fate_censor(cell)
                     elif censor_condition == 2:
-                        time_censor(cell)
+                        time_censor(cell, desired_experiment_time)
                     elif censor_condition == 3:
                         fate_censor(cell)
-                        time_censor(cell)
+                        time_censor(cell, desired_experiment_time)
                     if not cell.observed:
                         self.output_lineage.append(cell)    
         return output_lineage
@@ -148,8 +148,9 @@ def time_censor(cell, desired_experiment_time):
     """
     if cell.time.endT > desired_experiment_time:
         cell.time.endT = desired_experiment_time
-        cell.obs[1] = cell.time.endT - cell.time.startT
-        cell.obs[2] = 0  # no longer observed
+        cell.obs[1] = desired_experiment_time - cell.time.startT
+        cell.obs[2] = 0  # censored
         if not cell.isLeafBecauseTerminal():
-            cell.left.censored = True
-            cell.right.censored = True
+            # the daughters are no longer observed
+            cell.left.observed = False
+            cell.right.observed = False
