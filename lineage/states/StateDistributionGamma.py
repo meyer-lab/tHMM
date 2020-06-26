@@ -67,6 +67,7 @@ class StateDistribution:
         # traversing the cells by generation
         for gen_minus_1, level in enumerate(list_of_gens[1:]):
             true_gen = gen_minus_1 + 1  # generations are 1-indexed
+            print(true_gen, level[0])
             if true_gen == 1:
                 for cell in level:
                     assert cell.isRootParent()
@@ -104,7 +105,7 @@ class StateDistribution:
                     elif censor_condition == 3:
                         fate_censor(cell)
                         time_censor(cell, desired_experiment_time)
-                    if not cell.observed:
+                    if cell.observed:
                         output_lineage.append(cell)      
             else:
                 for cell in level:
@@ -116,7 +117,7 @@ class StateDistribution:
                     elif censor_condition == 3:
                         fate_censor(cell)
                         time_censor(cell, desired_experiment_time)
-                    if not cell.observed:
+                    if cell.observed:
                         output_lineage.append(cell)    
         return output_lineage
 

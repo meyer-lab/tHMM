@@ -114,7 +114,7 @@ class StateDistribution:
                     elif censor_condition == 3:
                         fate_censor(cell)
                         time_censor(cell, desired_experiment_time)
-                    if not cell.observed:
+                    if cell.observed:
                         output_lineage.append(cell)      
             else:
                 for cell in level:
@@ -126,7 +126,7 @@ class StateDistribution:
                     elif censor_condition == 3:
                         fate_censor(cell)
                         time_censor(cell, desired_experiment_time)
-                    if not cell.observed:
+                    if cell.observed:
                         output_lineage.append(cell)    
         return output_lineage
 
