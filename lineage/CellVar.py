@@ -31,7 +31,7 @@ class CellVar:
             self.left = kwargs.get("left", None)
             self.right = kwargs.get("right", None)
             self.obs = kwargs.get("obs", [])
-            self.censored = kwargs.get("censored", False)
+            self.observed = kwargs.get("observed", True)
             self.synthetic = kwargs.get("synthetic", True)
 
     def divide(self, T):
@@ -59,15 +59,15 @@ class CellVar:
         # otherwise, it has no left and right daughters
         return True
 
-    def isLeafBecauseDaughtersAreCensored(self):
+    def isLeafBecauseDaughtersAreNotObserved(self):
         """
         Boolean.
-        Returns true when a cell is a leaf because its children are censored
+        Returns true when a cell is a leaf because its children are unobserved
         but it itself is not censored.
         """
-        if hasattr(self.left, "censored") and hasattr(self.right, "censored"):
-            # if its daughters are censored (unobserved) and it itself is not censored
-            if self.left.censored and self.right.censored and not self.censored:
+        if hasattr(self.left, "observed") and hasattr(self.right, "observed"):
+            # if its daughters are unobserved and it itself is not censored
+            if not self.left.observed and not self.right.observed and self.observed:
                 return True
         # otherwise, it itself is observed and at least one of its daughters is observed
         return False
@@ -79,7 +79,7 @@ class CellVar:
         whether a cell is a leaf. A cell only has to satisfy one of the conditions
         (an or statement) for it to be a leaf.
         """
-        return self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreCensored()
+        return self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreNotObserved()
 
     def isParent(self):
         """

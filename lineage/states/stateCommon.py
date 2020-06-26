@@ -104,33 +104,3 @@ def basic_censor(cell):
             if not cell.get_sister().isLeafBecauseTerminal():
                 cell.get_sister().left.censored = True
                 cell.get_sister().right.censored = True
-
-
-def fate_censor(cell):
-    """
-    User-defined function that checks whether a cell's subtree should be removed.
-    Our example is based on the standard requirement that the first observation
-    (index 0) is a measure of the cell's fate (1 being alive, 0 being dead).
-    Clearly if a cell has died, its subtree must be removed.
-    """
-    if cell.obs[0] == 0:
-        if not cell.isLeafBecauseTerminal():
-            cell.left.censored = True
-            cell.right.censored = True
-
-
-def time_censor(cell, desired_experiment_time):
-    """
-    User-defined function that checks whether a cell's subtree should be removed.
-    Our example is based on the standard requirement that the second observation
-    (index 1) is a measure of the cell's lifetime.
-    If a cell has lived beyond a certain experiment time, then its subtree
-    must be removed.
-    """
-    if cell.time.endT > desired_experiment_time:
-        cell.time.endT = desired_experiment_time
-        cell.obs[1] = cell.time.endT - cell.time.startT
-        cell.obs[2] = 0  # no longer observed
-        if not cell.isLeafBecauseTerminal():
-            cell.left.censored = True
-            cell.right.censored = True

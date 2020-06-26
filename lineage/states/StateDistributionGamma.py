@@ -3,7 +3,7 @@ import numpy as np
 import scipy.stats as sp
 
 
-from .stateCommon import bern_pdf, gamma_pdf, bernoulli_estimator, gamma_estimator
+from .stateCommon import bern_pdf, gamma_pdf, bernoulli_estimator, gamma_estimator, basic_censor
 from ..CellVar import Time
 
 class StateDistribution:
@@ -75,8 +75,81 @@ class StateDistribution:
                 for cell in level:
                     cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
 
+    def censor_lineage(self, censor_condition, list_of_gens, **kwargs):
+        """
+        This function removes those cells that are intended to be remove
+        from the output binary tree based on emissions.
+        It takes in LineageTree object, walks through all the cells in the output binary tree,
+        applies the pruning to each cell that is supposed to be removed,
+        and returns the censored list of cells.
+        """
+        if kwargs:
+            desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
+
+        if censor_condition == 0:
+            output_lineage = full_lineage
+            return output_lineage
+
+        output_lineage = []
+        for gen_minus_1, level in enumerate(list_of_gens[1:]):
+            true_gen = gen_minus_1 + 1  # generations are 1-indexed
+            if true_gen == 1:
+                for cell in level:
+                    assert cell.isRootParent()
+                    basic_censor(cell)
+                    if censor_condition == 1:
+                        fate_censor(cell)
+                    elif censor_condition == 2:
+                        time_censor(cell)
+                    elif censor_condition == 3:
+                        fate_censor(cell)
+                        time_censor(cell)
+                    if not cell.observed:
+                        self.output_lineage.append(cell)      
+            else:
+                for cell in level:
+                    basic_censor(cell)
+                    if censor_condition == 1:
+                        fate_censor(cell)
+                    elif censor_condition == 2:
+                        time_censor(cell)
+                    elif censor_condition == 3:
+                        fate_censor(cell)
+                        time_censor(cell)
+                    if not cell.observed:
+                        self.output_lineage.append(cell)    
+        return output_lineage
+
     def __repl__(self):
         return f"{self.params}"
 
     def __str__(self):
         return self.__repl__()
+
+def fate_censor(cell):
+    """
+    User-defined function that checks whether a cell's subtree should be removed.
+    Our example is based on the standard requirement that the first observation
+    (index 0) is a measure of the cell's fate (1 being alive, 0 being dead).
+    Clearly if a cell has died, its subtree must be removed.
+    """
+    if cell.obs[0] == 0:
+        if not cell.isLeafBecauseTerminal():
+            cell.left.observed = False
+            cell.right.observed = False
+            
+def time_censor(cell, desired_experiment_time):
+    """
+    User-defined function that checks whether a cell's subtree should be removed.
+    Our example is based on the standard requirement that the second observation
+    (index 1) is a measure of the cell's lifetime.
+    If a cell has lived beyond a certain experiment time, then its subtree
+    must be removed.
+    """
+    if cell.time.endT > desired_experiment_time:
+        cell.time.endT = desired_experiment_time
+        cell.obs[1] = cell.time.endT - cell.time.startT
+        cell.obs[2] = 0  # no longer observed
+        if not cell.isLeafBecauseTerminal():
+            cell.left.censored = True
+            cell.right.censored = True
