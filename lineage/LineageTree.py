@@ -5,6 +5,7 @@ import operator
 
 from .CellVar import CellVar
 
+
 class LineageTree:
     """A class for lineage trees.
     Every lineage object from this class is a binary tree built based on initial probabilities,
@@ -22,7 +23,7 @@ class LineageTree:
         # assign times using the state distribution specific time model
         E[0].assign_times(self.output_list_of_gens)
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
-        
+
     @classmethod
     def init_from_parameters(cls, pi, T, E, desired_num_cells, censor_condition=0, **kwargs):
         """
@@ -64,14 +65,14 @@ class LineageTree:
 
         full_max_gen, full_list_of_gens = max_gen(full_lineage)
         full_leaves_idx, full_leaves = get_leaves(full_lineage)
-        
+
         # assign times using the state distribution specific time model
         E[0].assign_times(full_list_of_gens)
 
         output_lineage = E[0].censor_lineage(censor_condition, full_list_of_gens, full_lineage, **kwargs)
 
         lineageObj = cls(output_lineage, E)
-        
+
         lineageObj.pi = pi
         lineageObj.T = T
         lineageObj.num_states = num_states
@@ -80,9 +81,9 @@ class LineageTree:
         lineageObj.full_list_of_gens = full_list_of_gens
         lineageObj.full_leaves_idx = full_leaves_idx
         lineageObj.full_leaves = full_leaves
-        
+
         return lineageObj
-        
+
     def get_parents_for_level(self, level):
         """Get the parents's index of a generation in the population list.
         Given the generation level, this function returns the index of parent cells of the cells being in that generation level.
@@ -129,7 +130,7 @@ class LineageTree:
         if true_states_set_len > 1:
             return True
         return False
-        
+
 
 def generate_lineage_list(pi, T, desired_num_cells):
     """
@@ -171,7 +172,6 @@ def output_assign_obs(state, full_lineage, E):
     assert len(cells_in_state) == len(list_of_tuples_of_obs)
     for i, cell in enumerate(cells_in_state):
         cell.obs = list_of_tuples_of_obs[i]
-
 
 
 # tools for analyzing trees

@@ -4,6 +4,7 @@ import scipy.stats as sp
 
 from ..CellVar import Time
 
+
 class StateDistribution:
     def __init__(self, norm_loc=10.0, norm_scale=1.0):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
@@ -44,7 +45,7 @@ class StateDistribution:
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
-        
+
     def assign_times(self, list_of_gens):
         """
         Assigns the start and end time for each cell in the lineage.
@@ -62,7 +63,7 @@ class StateDistribution:
             else:
                 for cell in level:
                     cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[0])
-                    
+
     def censor_lineage(self, censor_condition, full_list_of_gens, full_lineage, **kwargs):
         """
         This function removes those cells that are intended to be remove

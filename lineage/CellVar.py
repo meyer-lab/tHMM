@@ -233,6 +233,7 @@ def get_mixed_subtrees(node_m, node_n, lineage):
             not_mixed.append(cell)
     return mixed_sub, not_mixed
 
+
 class Time:
     """
     Class that stores all the time related observations in a neater format.
@@ -244,10 +245,10 @@ class Time:
     def __init__(self, startT, endT):
         self.startT = startT
         self.endT = endT
-        
+
     def __repl__(self):
         "Print method for Time class"
         return f"Lived from {self.startT} to {self.endT}."
-    
+
     def __str__(self):
         return self.__repl__()

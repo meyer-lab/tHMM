@@ -57,7 +57,7 @@ class StateDistribution:
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
-        
+
     def assign_times(self, list_of_gens):
         """
         Assigns the start and end time for each cell in the lineage.
@@ -75,7 +75,7 @@ class StateDistribution:
             else:
                 for cell in level:
                     cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
-                    
+
     def censor_lineage(self, censor_condition, full_list_of_gens, full_lineage, **kwargs):
         """
         This function removes those cells that are intended to be remove
@@ -106,7 +106,7 @@ class StateDistribution:
                         fate_censor(cell)
                         time_censor(cell, desired_experiment_time)
                     if cell.observed:
-                        output_lineage.append(cell)      
+                        output_lineage.append(cell)
             else:
                 for cell in level:
                     basic_censor(cell)
@@ -118,7 +118,7 @@ class StateDistribution:
                         fate_censor(cell)
                         time_censor(cell, desired_experiment_time)
                     if cell.observed:
-                        output_lineage.append(cell)    
+                        output_lineage.append(cell)
         return output_lineage
 
     def __repl__(self):
@@ -126,7 +126,7 @@ class StateDistribution:
 
     def __str__(self):
         return self.__repl__()
-    
+
 
 def fate_censor(cell):
     """
@@ -139,7 +139,8 @@ def fate_censor(cell):
         if not cell.isLeafBecauseTerminal():
             cell.left.observed = False
             cell.right.observed = False
-            
+
+
 def time_censor(cell, desired_experiment_time):
     """
     User-defined function that checks whether a cell's subtree should be removed.

@@ -6,6 +6,7 @@ import scipy.stats as sp
 from .stateCommon import bern_pdf, gamma_pdf, bernoulli_estimator, gamma_estimator, basic_censor
 from ..CellVar import Time
 
+
 class StateDistribution:
     def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=4.5):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
@@ -56,7 +57,7 @@ class StateDistribution:
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
-        
+
     def assign_times(self, list_of_gens):
         """
         Assigns the start and end time for each cell in the lineage.
@@ -105,7 +106,7 @@ class StateDistribution:
                         fate_censor(cell)
                         time_censor(cell, desired_experiment_time)
                     if cell.observed:
-                        output_lineage.append(cell)      
+                        output_lineage.append(cell)
             else:
                 for cell in level:
                     basic_censor(cell)
@@ -117,7 +118,7 @@ class StateDistribution:
                         fate_censor(cell)
                         time_censor(cell, desired_experiment_time)
                     if cell.observed:
-                        output_lineage.append(cell)    
+                        output_lineage.append(cell)
         return output_lineage
 
     def __repl__(self):
@@ -125,6 +126,7 @@ class StateDistribution:
 
     def __str__(self):
         return self.__repl__()
+
 
 def fate_censor(cell):
     """
@@ -137,7 +139,8 @@ def fate_censor(cell):
         if not cell.isLeafBecauseTerminal():
             cell.left.observed = False
             cell.right.observed = False
-            
+
+
 def time_censor(cell, desired_experiment_time):
     """
     User-defined function that checks whether a cell's subtree should be removed.
