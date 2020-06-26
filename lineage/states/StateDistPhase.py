@@ -79,13 +79,13 @@ class StateDistribution:
                 for cell in level:
                     assert cell.isRootParent()
                     cell.time = Time(0, cell.obs[2] + cell.obs[3])
-                    cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
+                    cell.time.transition_time = 0 + cell.obs[2]
             else:
                 for cell in level:
                     cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[2] + cell.obs[3])
                     cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
                     
-    def censor_lineage(self, censor_condition, list_of_gens, full_lineage, **kwargs):
+    def censor_lineage(self, censor_condition, full_list_of_gens, full_lineage, **kwargs):
         """
         This function removes those cells that are intended to be remove
         from the output binary tree based on emissions.
@@ -101,7 +101,7 @@ class StateDistribution:
             return output_lineage
 
         output_lineage = []
-        for gen_minus_1, level in enumerate(list_of_gens[1:]):
+        for gen_minus_1, level in enumerate(full_list_of_gens[1:]):
             true_gen = gen_minus_1 + 1  # generations are 1-indexed
             if true_gen == 1:
                 for cell in level:
@@ -115,7 +115,7 @@ class StateDistribution:
                         fate_censor(cell)
                         time_censor(cell, desired_experiment_time)
                     if not cell.observed:
-                        self.output_lineage.append(cell)      
+                        output_lineage.append(cell)      
             else:
                 for cell in level:
                     basic_censor(cell)
@@ -127,7 +127,7 @@ class StateDistribution:
                         fate_censor(cell)
                         time_censor(cell, desired_experiment_time)
                     if not cell.observed:
-                        self.output_lineage.append(cell)    
+                        output_lineage.append(cell)    
         return output_lineage
 
     def __repl__(self):
