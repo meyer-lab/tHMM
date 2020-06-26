@@ -5,7 +5,6 @@ Figure 2 analyzes heterogeneous (2 state), uncensored,
 single lineages (no more than one lineage per population).
 """
 import numpy as np
-import matplotlib.pyplot as plt
 
 from .figureCommon import (
     getSetup,

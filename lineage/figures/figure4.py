@@ -1,7 +1,5 @@
 """ This file contains functions for plotting different phenotypes in the manuscript. """
 
-import math
-import numpy as np
 import pandas as pd
 import seaborn as sns
 from .figureCommon import (

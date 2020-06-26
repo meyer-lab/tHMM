@@ -1,6 +1,5 @@
 """ This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
 import scipy.stats as sp
-import numpy as np
 
 # temporary style guide:
 # Boolean functions are in camelCase.
