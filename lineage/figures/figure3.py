@@ -65,7 +65,7 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E)
 
-    wass, _, Accuracy, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass")
+    wass, _, Accuracy, _, _, paramTrues, _ = commonAnalyze(list_of_populations, xtype="wass")
     total = []
     for i in range(4):
         tmp1 = list(sp.gamma.rvs(a=paramTrues[i, 0, 3], loc=0.0,

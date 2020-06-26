@@ -102,7 +102,7 @@ def figureMaker2(ax, percentageS1, accuracy):
 #     sns.boxplot(x="% in S1", y="state acc.", data=dataframe, ax=ax[i], palette="deep")
     ax[i].set_title("state assignemnt accuracy")
     ax[i].set_ylabel("accuracy (%)")
-    ax[i].text(1.0, 80, "total 1023 cells")
+    ax[i].text(1.0, 80, "total 511 cells")
     ax[i].grid(linestyle="--")
     ax[i].set_ylim(bottom=10.0, top=105.0)
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
