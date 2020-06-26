@@ -148,7 +148,7 @@ def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1):
     template.save(figFile)
 
 
-def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, balanced_acc, xlabel="Number of Cells"):
+def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
