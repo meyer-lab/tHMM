@@ -62,6 +62,23 @@ class StateDistribution:
             else:
                 for cell in level:
                     cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[0])
+                    
+    def censor_lineage(self, censor_condition, full_list_of_gens, full_lineage, **kwargs):
+        """
+        This function removes those cells that are intended to be remove
+        from the output binary tree based on emissions.
+        It takes in LineageTree object, walks through all the cells in the output binary tree,
+        applies the pruning to each cell that is supposed to be removed,
+        and returns the censored list of cells.
+        """
+        if kwargs:
+            desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
+
+        if censor_condition == 0:
+            output_lineage = full_lineage
+            return output_lineage
+        else:
+            return full_lineage
 
     def __repl__(self):
         return f"{self.params}"

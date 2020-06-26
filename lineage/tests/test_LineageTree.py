@@ -87,15 +87,15 @@ class TestModel(unittest.TestCase):
         # bernoulli observations == 1 (dead cells have been removed.)
         self.assertGreater(get_experiment_time(self.lineage1), 500)
         for cell in self.lineage1.output_lineage:
-            self.assertFalse(cell.censored)
+            self.assertTrue(cell.observed)
         for cell in self.lineage2_fate_censored.output_lineage:
-            if cell.censored and cell.get_sister().censored:
+            if not cell.observed and not cell.get_sister().observed:
                 self.assertTrue(cell.parent.isLeaf)
         for cell in self.lineage3_time_censored.output_lineage:
-            if cell.censored and cell.get_sister().censored:
+            if not cell.observed and not cell.get_sister().observed:
                 self.assertTrue(cell.parent.isLeaf)
         for cell in self.lineage4_both_censored.output_lineage:
-            if cell.censored and cell.get_sister().censored:
+            if not cell.observed and not cell.get_sister().observed:
                 self.assertTrue(cell.parent.isLeaf)
 
     def test_max_gen(self):

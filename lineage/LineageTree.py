@@ -192,7 +192,7 @@ def max_gen(lineage):
     gens = sorted({cell.gen for cell in lineage})  # appending the generation of cells in the lineage
     list_of_lists_of_cells_by_gen = [[None]]
     for gen in gens:
-        level = [cell for cell in lineage if (cell.gen == gen and not cell.censored)]
+        level = [cell for cell in lineage if (cell.gen == gen and cell.observed)]
         list_of_lists_of_cells_by_gen.append(level)
     return max(gens), list_of_lists_of_cells_by_gen
 
@@ -213,7 +213,8 @@ def get_leaves(lineage):
     for index, cell in enumerate(lineage):
         if cell.isLeaf():
             if not cell.isRootParent:
-                assert not cell.parent.censored
+                assert cell.parent.observed
+                assert cell.observed
             leaves.append(cell)  # appending the leaf cells to a list
             leaf_indices.append(index)  # appending the index of the cells
     return leaf_indices, leaves
