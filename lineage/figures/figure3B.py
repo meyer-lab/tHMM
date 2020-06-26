@@ -10,7 +10,6 @@ from .figureCommon import (
     subplotLabel,
     commonAnalyze,
     pi,
-    E2,
     T,
     max_desired_num_cells,
     lineage_good_to_analyze
@@ -44,7 +43,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 0.8, 12, a, 10, 5), StateDistribution(0.99, 0.75, 12, 1, 9, 4)] for a in np.linspace(1, 10, 40)]
+    list_of_Es = [[StateDistribution(0.99, 0.8, 12, a, 10, 5), StateDistribution(0.99, 0.75, 12, 1, 9, 4)] for a in np.linspace(1, 10, 4)]
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
@@ -65,7 +64,8 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E)
 
-    wass, _, Accuracy, _, _, paramTrues, _ = commonAnalyze(list_of_populations, xtype="wass")
+    wass, _, Accuracy, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass")
+    print(paramTrues.shape)
     total = []
     for i in range(4):
         tmp1 = list(sp.gamma.rvs(a=paramTrues[i, 0, 3], loc=0.0,

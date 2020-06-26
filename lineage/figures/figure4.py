@@ -63,7 +63,7 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E2)
 
-    percentageS1, _, _, _, _, _, accuracy = commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
+    percentageS1, _, accuracy, _, _, _ = commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
 
     return percentageS1, accuracy
 
