@@ -31,7 +31,7 @@ state11 = expon_state(0.75, 8)
 E1 = [state10, state11]
 
 state20 = phaseStateDist(0.99, 0.8, 12, 7, 10, 5)
-state21 = phaseStateDist(0.88, 0.75, 6, 1, 8, 3)
+state21 = phaseStateDist(0.88, 0.75, 6, 1, 5, 10)
 E2 = [state20, state21]
 
 min_desired_num_cells = (2 ** 4) - 1
@@ -120,7 +120,7 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     elif xtype == "bern":
         x = paramTrues[:, 0, 0]
 
-    return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
+    return x, paramEst, dictOut["balanced_accuracy_score"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
 
 
 def subplotLabel(axs):
