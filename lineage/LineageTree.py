@@ -4,7 +4,7 @@ import scipy.stats as sp
 import operator
 
 from .CellVar import CellVar
-from .states.stateCommon import basic_censor, fate_censor, time_censor
+from .states.stateCommon import basic_censor
 
 
 class LineageTree:
