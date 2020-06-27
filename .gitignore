@@ -16,3 +16,5 @@ output/
 profile
 profile.svg
 .DS_Store
+pylint.log
+spell.txt
