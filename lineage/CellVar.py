@@ -1,6 +1,5 @@
 """ This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
 import scipy.stats as sp
-import numpy as np
 
 # temporary style guide:
 # Boolean functions are in camelCase.
@@ -17,24 +16,25 @@ class CellVar:
     Cell class.
     """
 
-    def __init__(self, state, parent, gen, **kwargs):
+    def __init__(self, parent, gen, **kwargs):
         """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
         """
-        self.state = state
         self.parent = parent
         self.gen = gen
-        self.censored = False
+        self.observed = True
 
         if kwargs:
+            self.state = kwargs.get("state", None)
             self.left = kwargs.get("left", None)
             self.right = kwargs.get("right", None)
             self.obs = kwargs.get("obs", [])
-            self.censored = kwargs.get("censored", True)
+            self.synthetic = kwargs.get("synthetic", True)
 
     def divide(self, T):
-        """Member function that performs division of a cell.
+        """
+        Member function that performs division of a cell.
         Equivalent to adding another timestep in a Markov process.
         """
         # roll a loaded die according to the row in the transtion matrix
@@ -57,16 +57,17 @@ class CellVar:
         # otherwise, it has no left and right daughters
         return True
 
-    def isLeafBecauseDaughtersAreCensored(self):
+    def isLeafBecauseDaughtersAreNotObserved(self):
         """
         Boolean.
-        Returns true when a cell is a leaf because its children are censored
-        but it itself is not censored.
+        Returns true when a cell is a leaf because its children are unobserved
+        but it itself is observed.
         """
-        if hasattr(self.left, "censored") and hasattr(self.right, "censored"):
-            if self.left.censored and self.right.censored and not self.censored:
+        if hasattr(self.left, "observed") and hasattr(self.right, "observed"):
+            # if its daughters are unobserved and it itself is observed
+            if not self.left.observed and not self.right.observed and self.observed:
                 return True
-
+        # otherwise, it itself is observed and at least one of its daughters is observed
         return False
 
     def isLeaf(self):
@@ -76,7 +77,7 @@ class CellVar:
         whether a cell is a leaf. A cell only has to satisfy one of the conditions
         (an or statement) for it to be a leaf.
         """
-        return self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreCensored()
+        return self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreNotObserved()
 
     def isParent(self):
         """
@@ -132,9 +133,9 @@ class CellVar:
         """
         temp = []
         if hasattr(self, "left") and hasattr(self, "right"):
-            if self.left is not None and not self.left.censored:
+            if self.left is not None and self.left.observed:
                 temp.append(self.left)
-            if self.right is not None and not self.right.censored:
+            if self.right is not None and self.right.observed:
                 temp.append(self.right)
         return temp
 
@@ -230,3 +231,23 @@ def get_mixed_subtrees(node_m, node_n, lineage):
         if cell not in mixed_sub:
             not_mixed.append(cell)
     return mixed_sub, not_mixed
+
+
+class Time:
+    """
+    Class that stores all the time related observations in a neater format.
+    This will assist in pruning based on experimental time as well as
+    obtaining attributes of the lineage as a whole, such as the
+    average growth rate.
+    """
+
+    def __init__(self, startT, endT):
+        self.startT = startT
+        self.endT = endT
+
+    def __repl__(self):
+        "Print method for Time class"
+        return f"Lived from {self.startT} to {self.endT}."
+
+    def __str__(self):
+        return self.__repl__()

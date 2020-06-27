@@ -68,44 +68,7 @@ def bernoulli_estimator(bern_obs, gammas):
     """
     Add up all the 1s and divide by the total length (finding the average).
     """
-    return sum(gammas * bern_obs) / sum(gammas)
-
-
-class Time:
-    """
-    Class that stores all the time related observations in a neater format.
-    This will assist in pruning based on experimental time as well as
-    obtaining attributes of the lineage as a whole, such as the
-    average growth rate.
-    """
-
-    def __init__(self, startT, endT):
-        self.startT = startT
-        self.endT = endT
-
-
-def assign_times(lineageObj, *kwargs):
-    """
-    Assigns the start and end time for each cell in the lineage.
-    The time observation will be stored in the cell's observation parameter list
-    in the second position (index 1). See the other time functions to understand.
-    """
-    # traversing the cells by generation
-    for gen_minus_1, level in enumerate(lineageObj.full_list_of_gens[1:]):
-        true_gen = gen_minus_1 + 1  # generations are 1-indexed
-        if true_gen == 1:
-            for cell in level:
-                assert cell.isRootParent()
-                if kwargs:
-                    cell.time = Time(0, (cell.obs[1] + cell.ons[2]))
-                else:
-                    cell.time = Time(0, (cell.obs[1]))
-        else:
-            for cell in level:
-                if kwargs:
-                    cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1] + cell.obs[2])
-                else:
-                    cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
+    return sum(np.nan_to_num(gammas * bern_obs)) / sum(gammas)
 
 
 def get_experiment_time(lineageObj):
@@ -130,44 +93,14 @@ def basic_censor(cell):
     censored.
     """
     if not cell.isRootParent():
-        if cell.parent.censored:
+        if not cell.parent.observed:
 
-            cell.censored = True
+            cell.observed = False
             if not cell.isLeafBecauseTerminal():
-                cell.left.censored = True
-                cell.right.censored = True
+                cell.left.observed = False
+                cell.right.observed = False
 
-            cell.get_sister().censored = True
+            cell.get_sister().observed = False
             if not cell.get_sister().isLeafBecauseTerminal():
-                cell.get_sister().left.censored = True
-                cell.get_sister().right.censored = True
-
-
-def fate_censor(cell):
-    """
-    User-defined function that checks whether a cell's subtree should be removed.
-    Our example is based on the standard requirement that the first observation
-    (index 0) is a measure of the cell's fate (1 being alive, 0 being dead).
-    Clearly if a cell has died, its subtree must be removed.
-    """
-    if cell.obs[0] == 0:
-        if not cell.isLeafBecauseTerminal():
-            cell.left.censored = True
-            cell.right.censored = True
-
-
-def time_censor(cell, desired_experiment_time):
-    """
-    User-defined function that checks whether a cell's subtree should be removed.
-    Our example is based on the standard requirement that the second observation
-    (index 1) is a measure of the cell's lifetime.
-    If a cell has lived beyond a certain experiment time, then its subtree
-    must be removed.
-    """
-    if cell.time.endT > desired_experiment_time:
-        cell.time.endT = desired_experiment_time
-        cell.obs[1] = cell.time.endT - cell.time.startT
-        cell.obs[2] = 0  # no longer observed
-        if not cell.isLeafBecauseTerminal():
-            cell.left.censored = True
-            cell.right.censored = True
+                cell.get_sister().left.observed = False
+                cell.get_sister().right.observed = False

@@ -20,13 +20,13 @@ class TestModel(unittest.TestCase):
     def setUp(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
         # Using an unpruned lineage to avoid unforseen issues
-        self.X = [LineageTree(pi, T, E, desired_num_cells=(2 ** 11) - 1)]
+        self.X = [LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 11) - 1)]
         self.pi = np.array([0.55, 0.35, 0.10])
         self.T = np.array([[0.75, 0.20, 0.05], [0.1, 0.85, 0.05], [0.1, 0.1, 0.8]])
 
         # Emissions
         self.E = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
-        self.X3 = [LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)]
+        self.X3 = [LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)]
 
         self.t = tHMM(self.X, num_states=2)  # build the tHMM class with X
         self.t3 = tHMM(self.X3, num_states=3)  # build the tHMM class for 3 states

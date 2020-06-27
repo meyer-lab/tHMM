@@ -14,7 +14,7 @@ from .figureCommon import (
 from ..LineageTree import LineageTree
 from ..Analyze import Analyze
 
-lineage1 = LineageTree(pi, T, E2, desired_num_cells=1023)
+lineage1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=1023)
 x = [lineage1]
 
 
