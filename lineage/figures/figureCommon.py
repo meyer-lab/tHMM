@@ -74,8 +74,12 @@ def getSetup(figsize, gridd):
             "grid.color": "#000000",
             "xtick.bottom": True,
             "xtick.direction": "inout",
+            "xtick.major.width": 2./3, # major tick width in points
+            "xtick.minor.width": 1./3, # minor tick width in points
             "ytick.left": True,
             "ytick.direction": "inout",
+            "ytick.major.width": 2./3, # major tick width in points
+            "ytick.minor.width": 1./3, # minor tick width in points
            },
     )
 
