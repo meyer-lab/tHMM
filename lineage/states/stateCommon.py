@@ -25,7 +25,7 @@ def bernoulli_estimator(bern_obs, gammas):
     """
     Add up all the 1s and divide by the total length (finding the average).
     """
-    gammas2use = gammas[not math.isnan(np.array(bern_obs))]
+    gammas2use = [g in b,g in zip(bern_obs,gammas) if not math.isnan(b)]
     return sum(np.nan_to_num(gammas * bern_obs)) / sum(gammas2use)
 
 
