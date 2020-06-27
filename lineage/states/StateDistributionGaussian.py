@@ -77,13 +77,20 @@ class StateDistribution:
         and returns the censored list of cells.
         """
         if kwargs:
-            desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
+            _ = kwargs.get("desired_experiment_time", 2e12)
 
         if censor_condition == 0:
             output_lineage = full_lineage
             return output_lineage
-        else:
-            return full_lineage
+
+        output_lineage = []
+        for gen_minus_1, level in enumerate(full_list_of_gens[1:]):
+            true_gen = gen_minus_1 + 1  # generations are 1-indexed
+            for cell in level:
+                basic_censor(cell)
+                if cell.observed:
+                    output_lineage.append(cell)
+        return output_lineage
 
     def __repl__(self):
         return f"{self.params}"
