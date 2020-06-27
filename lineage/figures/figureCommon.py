@@ -68,7 +68,14 @@ def getSetup(figsize, gridd):
         font_scale=0.7,
         color_codes=True,
         palette="colorblind",
-        rc={"grid.linestyle": "dotted", "axes.linewidth": 0.6, "axes.prop_cycle": cycler("color", ["#1f77b4", "#ff7f0e", "#1f77b4", "#ff7f0e"])},
+        rc={"grid.linestyle": "--", 
+            "axes.linewidth": 0.6, 
+            "axes.prop_cycle": cycler("color", ["#1f77b4", "#ff7f0e", "#1f77b4", "#ff7f0e"]),
+            "xtick.bottom": True,
+            "xtick.top": True,
+            "ytick.bottom": True,
+            "ytick.top": True,
+           },
     )
 
     # Setup plotting space and grid
@@ -167,8 +174,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
 
     i += 1
     ax[i].set_xlabel(xlabel)
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
     ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", alpha=0.5)
@@ -183,8 +188,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
 
     i += 1
     ax[i].set_xlabel(xlabel)
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
     if number_of_params == 6:
         ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k", marker="o", alpha=0.5)
         ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k", marker="o", alpha=0.5)
@@ -210,8 +213,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].axis('off')
     else:
         ax[i].set_xlabel(xlabel)
-        ax[i].grid(linestyle="--")
-        ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
         ax[i].legend()
         if number_of_params == 6:
             ax[i].scatter(x, paramEst[:, 0,3], edgecolors="k", marker="o", alpha=0.5)
@@ -231,8 +232,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
 
     i += 1
     ax[i].set_xlabel(xlabel)
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
     if number_of_params == 6:
         ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k", marker="o", alpha=0.5)
         ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k", marker="o", alpha=0.5)
@@ -250,8 +249,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
 
     i += 1
     ax[i].set_xlabel(xlabel)
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
     if number_of_params == 6:
         ax[i].scatter(x, paramEst[:, 0, 4], edgecolors="k", marker="o", alpha=0.5)
         ax[i].scatter(x, paramEst[:, 1, 4], edgecolors="k", marker="o", alpha=0.5)
@@ -269,8 +266,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
 
     i += 1
     ax[i].set_xlabel(xlabel)
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
     if number_of_params == 6:
         ax[i].scatter(x, paramEst[:, 0, 5], edgecolors="k", marker="o", alpha=0.5)
         ax[i].scatter(x, paramEst[:, 1, 5], edgecolors="k", marker="o", alpha=0.5)
@@ -288,8 +283,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     if number_of_params == 6:
         i += 1
         ax[i].set_xlabel(xlabel)
-        ax[i].grid(linestyle="--")
-        ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
         ax[i].set_ylim(bottom=0, top=101)
         ax[i].scatter(x, accuracies, c="k", marker="o", label="Accuracy", edgecolors="k", alpha=0.25)
         ax[i].set_ylabel(r"Accuracy [\%]")
@@ -298,8 +291,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         
         i += 1
         ax[i].set_xlabel(xlabel)
-        ax[i].grid(linestyle="--")
-        ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
         ax[i].set_ylim(bottom=0, top=max(tr) + 0.2)
         ax[i].scatter(x, tr, c="k", marker="o", edgecolors="k", alpha=0.25)
         ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
@@ -308,8 +299,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         
         i += 1
         ax[i].set_xlabel(xlabel)
-        ax[i].grid(linestyle="--")
-        ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
         ax[i].set_ylim(bottom=0, top=max(pii) + 0.2)
         ax[i].scatter(x, pii, c="k", marker="o", edgecolors="k", alpha=0.25)
         ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
