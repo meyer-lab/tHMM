@@ -1,7 +1,7 @@
 """
-File: figure22.py
-Purpose: Generates figure 22.
-Figure 22 analyzes heterogeneous (2 state), uncensored,
+File: figure24.py
+Purpose: Generates figure 24.
+Figure 24 analyzes heterogeneous (2 state), censored (by both time and fate),
 single lineages (no more than one lineage per population).
 """
 import numpy as np
@@ -15,17 +15,17 @@ from .figureCommon import (
     T,
     E2,
     max_desired_num_cells,
+    min_experiment_time,
     lineage_good_to_analyze,
+    max_experiment_time,
     num_data_points,
-    min_desired_num_cells,
-    figureMaker
 )
 from ..LineageTree import LineageTree
 
 
 def makeFigure():
     """
-    Makes figure 2.
+    Makes figure 3.
     """
 
     # Get list of axis objects
@@ -42,23 +42,23 @@ def accuracy():
     """
     Calculates accuracy and parameter estimation
     over an increasing number of cells in a lineage for
-    a uncensored two-state model.
+    a censored two-state model.
     We increase the desired number of cells in a lineage by
     the experiment time.
     """
 
     # Creating a list of populations to analyze over
-    cells = np.linspace(min_desired_num_cells, max_desired_num_cells, num_data_points)
+    times = np.linspace(min_experiment_time, max_experiment_time, num_data_points)
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
     list_of_fE = []
-    for cell_num in cells:
+    for experiment_time in times:
         population = []
 
         good2go = False
         while not good2go:
-            tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, cell_num)
+            tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, max_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_time)
             good2go = lineage_good_to_analyze(tmp_lineage)
 
         population.append(tmp_lineage)
