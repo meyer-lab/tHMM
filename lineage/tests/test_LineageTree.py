@@ -40,12 +40,12 @@ class TestModel(unittest.TestCase):
         self.E = [state_obj0, state_obj1]
 
         # creating lineages with the various censor conditions
-        self.lineage1 = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
-        self.lineage2_fate_censored = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=1)
-        self.lineage3_time_censored = LineageTree(
+        self.lineage1 = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
+        self.lineage2_fate_censored = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=1)
+        self.lineage3_time_censored = LineageTree.init_from_parameters(
             self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=2, desired_experiment_time=500
         )
-        self.lineage4_both_censored = LineageTree(
+        self.lineage4_both_censored = LineageTree.init_from_parameters(
             self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=500
         )
 
@@ -87,15 +87,15 @@ class TestModel(unittest.TestCase):
         # bernoulli observations == 1 (dead cells have been removed.)
         self.assertGreater(get_experiment_time(self.lineage1), 500)
         for cell in self.lineage1.output_lineage:
-            self.assertFalse(cell.censored)
+            self.assertTrue(cell.observed)
         for cell in self.lineage2_fate_censored.output_lineage:
-            if cell.censored and cell.get_sister().censored:
+            if not cell.observed and not cell.get_sister().observed:
                 self.assertTrue(cell.parent.isLeaf)
         for cell in self.lineage3_time_censored.output_lineage:
-            if cell.censored and cell.get_sister().censored:
+            if not cell.observed and not cell.get_sister().observed:
                 self.assertTrue(cell.parent.isLeaf)
         for cell in self.lineage4_both_censored.output_lineage:
-            if cell.censored and cell.get_sister().censored:
+            if not cell.observed and not cell.get_sister().observed:
                 self.assertTrue(cell.parent.isLeaf)
 
     def test_max_gen(self):

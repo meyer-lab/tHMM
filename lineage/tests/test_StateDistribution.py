@@ -32,12 +32,12 @@ class TestModel(unittest.TestCase):
         self.E3 = [StateDistGaussian(10.0, 1.0), StateDistGaussian(15.0, 2.0)]
 
         # creating two lineages, one with False for pruning, one with True.
-        self.lineage = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
-        self.lineage2 = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 5.5) - 1, censor_condition=2, desired_experiment_time=50)
-        self.lineage3 = LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800)
-        self.population = [LineageTree(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800) for i in range(50)]
-        self.lineage_E2 = LineageTree(self.pi, self.T, self.E2, desired_num_cells=(2 ** 11) - 1)  # 1 lin unconsored for G1/G2 separated obs.
-        self.lineage_E3 = LineageTree(self.pi, self.T, self.E3, desired_num_cells=(2 ** 11) - 1)  # 1 lin unconsored for Gaussian observations
+        self.lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
+        self.lineage2 = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 5.5) - 1, censor_condition=2, desired_experiment_time=50)
+        self.lineage3 = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800)
+        self.population = [LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800) for i in range(50)]
+        self.lineage_E2 = LineageTree.init_from_parameters(self.pi, self.T, self.E2, desired_num_cells=(2 ** 11) - 1)  # 1 lin uncensored for G1/G2 separated obs.
+        self.lineage_E3 = LineageTree.init_from_parameters(self.pi, self.T, self.E3, desired_num_cells=(2 ** 11) - 1)  # 1 lin uncensored for Gaussian observations
 
     def test_rvs(self):
         """
@@ -51,7 +51,7 @@ class TestModel(unittest.TestCase):
         bern_obs1, gamma_obs1, _ = self.E[1].rvs(size=40)
         self.assertTrue(len(bern_obs1) == len(gamma_obs1) == 40)
 
-        bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, _ = self.E2[0].rvs(size=50)
+        bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, _, _ = self.E2[0].rvs(size=50)
         self.assertTrue(len(bern_obsG1) == len(bern_obsG2) == len(gamma_obsG1) == len(gamma_obsG2) == 50)
 
     def test_pdf(self):

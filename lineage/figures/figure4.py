@@ -17,6 +17,7 @@ from .figureCommon import (
 from ..LineageTree import LineageTree
 from ..states.StateDistPhase import StateDistribution
 
+
 def makeFigure():
     """
     Makes fig 4.
@@ -52,7 +53,7 @@ def accuracy():
 
         good2go = False
         while not good2go:
-            tmp_lineage = LineageTree(pi, T, E2, max_desired_num_cells)
+            tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, max_desired_num_cells)
             good2go = lineage_good_to_analyze(tmp_lineage)
 
         population.append(tmp_lineage)
@@ -66,6 +67,7 @@ def accuracy():
     percentageS1, _, accuracy, _, _, _ = commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
 
     return percentageS1, accuracy
+
 
 def figureMaker2(ax, percentageS1, accuracy):
     """
