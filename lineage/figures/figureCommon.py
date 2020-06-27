@@ -67,7 +67,7 @@ def getSetup(figsize, gridd):
         font_scale=0.7,
         rc={"axes.facecolor": "#ffffff", # axes background color
             "axes.edgecolor": "#000000",  # axes edge color
-            "axes.linewidth": 2./3,
+            "axes.linewidth": 1./3,
             "axes.prop_cycle": cycler("color", ["#1f77b4", "#ff7f0e"]),
             "grid.linestyle": "--", 
             "grid.alpha": 1./3,
