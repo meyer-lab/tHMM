@@ -1,6 +1,6 @@
 """ Common utilities used between states regardless of distribution. """
 
-from math import gamma, isnan
+import math
 import numpy as np
 from numba import njit
 import scipy.stats as sp
@@ -36,7 +36,7 @@ def gamma_pdf(x, a, scale):
     and returns the likelihood of the observation based on the gamma
     probability distribution function.
     """
-    return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / gamma(a) / (scale ** a)
+    return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / math.gamma(a) / (scale ** a)
 
 
 def gamma_estimator(gamma_obs, time_censor_obs, gammas):
