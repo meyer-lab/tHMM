@@ -65,16 +65,14 @@ def getSetup(figsize, gridd):
     """
     sns.set(
         style="whitegrid",
+        palette="colorblind",
         font_scale=0.7,
         color_codes=True,
-        palette="colorblind",
         rc={"grid.linestyle": "--", 
-            "axes.linewidth": 0.6, 
-            "axes.prop_cycle": cycler("color", ["#1f77b4", "#ff7f0e", "#1f77b4", "#ff7f0e"]),
-            "xtick.bottom": True,
-            "xtick.top": True,
-            "ytick.bottom": True,
-            "ytick.top": True,
+            "grid.alpha": 1./3,
+            "axes.prop_cycle": cycler("color", ["#1f77b4", "#ff7f0e"]),
+            "xtick.direction": "inout",
+            "ytick.direction": "inout",
            },
     )
 
@@ -213,7 +211,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].axis('off')
     else:
         ax[i].set_xlabel(xlabel)
-        ax[i].legend()
         if number_of_params == 6:
             ax[i].scatter(x, paramEst[:, 0,3], edgecolors="k", marker="o", alpha=0.5)
             ax[i].scatter(x, paramEst[:, 1, 3], edgecolors="k", marker="o", alpha=0.5)
@@ -229,6 +226,8 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
             ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", alpha=0.5, label="State 2")
             ax[i].set_ylabel(r"Gamma $\theta$")
             ax[i].set_title(r"Gamma $\theta$")
+        ax[i].legend()
+
 
     i += 1
     ax[i].set_xlabel(xlabel)
@@ -254,7 +253,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].scatter(x, paramEst[:, 1, 4], edgecolors="k", marker="o", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 0, 4], marker="_", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 1, 4], marker="_", alpha=0.5)
-        ax[i].set_ylabel("G2 Gamma $k$")
+        ax[i].set_ylabel(r"G2 Gamma $k$")
         ax[i].set_title(r"G2 Gamma $k$")
     else:
         ax[i].set_ylim(bottom=0, top=max(tr) + 0.2)
@@ -271,7 +270,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].scatter(x, paramEst[:, 1, 5], edgecolors="k", marker="o", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 0, 5], marker="_", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 1, 5], marker="_", alpha=0.5)
-        ax[i].set_ylabel("G2 Gamma $\theta$")
+        ax[i].set_ylabel(r"G2 Gamma $\theta$")
         ax[i].set_title(r"G2 Gamma $\theta$")
     else:
         ax[i].set_ylim(bottom=0, top=max(pii) + 0.2)
