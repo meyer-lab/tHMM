@@ -20,11 +20,11 @@ from ..LineageTree import LineageTree
 
 def makeFigure():
     """
-    Makes fig 5.
+    Makes fig 3A.
     """
 
     # Get list of axis objects
-    ax, f = getSetup((4.0, 10.0), (5, 1))
+    ax, f = getSetup((2.5, 10), (5, 1))
 
     figureMaker2(ax, *accuracy())
 

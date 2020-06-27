@@ -1,20 +1,34 @@
+<<<<<<< HEAD
 """ This file contains functions for plotting different phenotypes in the manuscript. """
 
+=======
+""" This file is to show the model works in case we have rare phenotypes. """
+import numpy as np
+>>>>>>> master
 import pandas as pd
+import scipy.stats as sp
+
 import seaborn as sns
 from .figureCommon import (
     getSetup,
     subplotLabel,
+    commonAnalyze,
     pi,
-    T,
-    E2
+    E2,
+    lineage_good_to_analyze,
+    max_desired_num_cells,
+    num_data_points
 )
 from ..LineageTree import LineageTree
+<<<<<<< HEAD
 from ..Analyze import Analyze
 
 lineage1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=1023)
 x = [lineage1]
 
+=======
+from ..states.StateDistPhase import StateDistribution
+>>>>>>> master
 
 def makeFigure():
     """
@@ -22,110 +36,63 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((5.0, 5.0), (2, 2))
+    ax, f = getSetup((3.0, 5.0), (2, 1))
 
-    figureMaker2(ax, *forHistObs(x))
+    figureMaker2(ax, *accuracy())
 
     subplotLabel(ax)
 
     return f
 
 
-def forHistObs(X):
-    """ To plot the histogram of the observations regardless of their state.
-
-    :param X: list of lineages in the population.
-    :type X: list
+def accuracy():
     """
-    # regardless of states
-    # two state model
-    obsBernoulliG1 = []
-    obsBernoulliG2 = []
-    obsG1 = []
-    obsG2 = []
-
-    _, pred_states_by_lineage, _ = Analyze(X, 2)
-    # state 1 observations
-    obsBernoulliG1S1 = []
-    obsBernoulliG2S1 = []
-    obsG1S1 = []
-    obsG2S1 = []
-    # state 2 observations
-    obsBernoulliG1S2 = []
-    obsBernoulliG2S2 = []
-    obsG1S2 = []
-    obsG2S2 = []
-
-    for indx, lineage in enumerate(X):
-        for cell_ind, cell in enumerate(lineage.full_lineage):
-            obsBernoulliG1.append(cell.obs[0])
-            obsBernoulliG2.append(cell.obs[1])
-            obsG1.append(cell.obs[2])
-            obsG2.append(cell.obs[3])
-
-            if pred_states_by_lineage[indx][cell_ind] == 0:  # if the cell is in state 1
-                obsBernoulliG1S1.append(cell.obs[0])
-                obsBernoulliG2S1.append(cell.obs[1])
-                obsG1S1.append(cell.obs[2])
-                obsG2S1.append(cell.obs[3])
-            else:  # if the cell is in state 2
-                obsBernoulliG1S2.append(cell.obs[0])
-                obsBernoulliG2S2.append(cell.obs[1])
-                obsG1S2.append(cell.obs[2])
-                obsG2S2.append(cell.obs[3])
-
-    list_bern_g1 = [obsBernoulliG1, obsBernoulliG1S1, obsBernoulliG1S2]
-    list_bern_g2 = [obsBernoulliG2, obsBernoulliG2S1, obsBernoulliG2S2]
-
-    totalObsG1 = pd.DataFrame(columns=['G1 phase duration [hr]', 'state'])
-    totalObsG1['G1 phase duration [hr]'] = obsG1 + obsG1S1 + obsG1S2
-    totalObsG1['state'] = ['total'] * len(obsG1) + ['state 1'] * len(obsG1S1) + ['state 2'] * len(obsG1S2)
-    totalObsG2 = pd.DataFrame(columns=['G2 phase duration [hr]', 'state'])
-    totalObsG2['G2 phase duration [hr]'] = obsG2 + obsG2S1 + obsG2S2
-    totalObsG2['state'] = ['total'] * len(obsG2) + ['state 1'] * len(obsG2S1) + ['state 2'] * len(obsG2S2)
-
-    return totalObsG1, totalObsG2, list_bern_g1, list_bern_g2
-
-
-def figureMaker2(ax, totalObsG1, totalObsG2, list_bern_g1, list_bern_g2):
+    Calculates accuracy and parameter estimation
+    over an similar number of cells in a lineage for
+    a uncensored two-state model but differing state distribution.
+    We increase the proportion of cells in a lineage by
+    fixing the Transition matrix to be biased towards state 0.
     """
-    Makes the common 6 panel figures displaying parameter estimation across lineages
-    of various types and sizes.
+
+    # Creating a list of populations to analyze over
+    list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.1, 0.9, num_data_points)]
+    list_of_populations = []
+    list_of_fpi = []
+    list_of_fT = []
+    list_of_fE = []
+    for T in list_of_Ts:
+        population = []
+
+        good2go = False
+        while not good2go:
+            tmp_lineage = LineageTree(pi, T, E2, max_desired_num_cells)
+            good2go = lineage_good_to_analyze(tmp_lineage)
+
+        population.append(tmp_lineage)
+
+        # Adding populations into a holder for analysing
+        list_of_populations.append(population)
+        list_of_fpi.append(pi)
+        list_of_fT.append(T)
+        list_of_fE.append(E2)
+
+    percentageS1, _, accuracy, _, _, _ = commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
+
+    return percentageS1, accuracy
+
+def figureMaker2(ax, percentageS1, accuracy):
     """
+    This makes figure 4.
+    """
+    # cartoon to show different shapes --> similar shapes
     i = 0
-    ax[i].set_xlabel("death or division")
-    ax[i].set_ylim(bottom=0.5, top=1.1)
-    ax[i].set_ylabel("division prob.")
-    ax[i].set_title(r"Bernoulli obs. G1")
-    ax[i].grid(linestyle="--")
-    g = sns.barplot(data=list_bern_g1, ax=ax[i], palette="deep")
-    g.text(-0.25, 0.65, "total", rotation=30)
-    g.text(0.7, 0.65, "state 1", rotation=30)
-    g.text(1.7, 0.65, "state 2", rotation=30)
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
+    ax[i].axis('off')
     i += 1
-    ax[i].set_xlabel("death or division")
-    ax[i].set_ylim(bottom=0.5, top=1.1)
-    ax[i].set_ylabel("division prob.")
-    ax[i].set_title(r"Bernoulli obs. G2")
+    # state assignment accuracy
+    ax[i].scatter(percentageS1, accuracy)
+    ax[i].set_title("state assignemnt accuracy")
+    ax[i].set_ylabel("accuracy (%)")
+    ax[i].set_xlabel("% cells in S1")
     ax[i].grid(linestyle="--")
-    f = sns.barplot(data=list_bern_g2, ax=ax[i], palette="deep")
-    f.text(-0.25, 0.55, "total", rotation=30)
-    f.text(0.7, 0.55, "state 1", rotation=30)
-    f.text(1.7, 0.55, "state 2", rotation=30)
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
-    i += 1
-    sns.violinplot(x="G1 phase duration [hr]", y="state", data=totalObsG1, ax=ax[i], palette="deep", scale="count", inner="quartile")
-    ax[i].set_ylabel(r"PDF")
-    ax[i].set_title(r"G1 phase")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
-
-    i += 1
-    sns.violinplot(x="G2 phase duration [hr]", y="state", data=totalObsG2, ax=ax[i], palette="deep", scale="count", inner="quartile")
-    ax[i].set_ylabel(r"PDF")
-    ax[i].set_title(r"G2 phase")
-    ax[i].grid(linestyle="--")
+    ax[i].set_ylim(bottom=10.0, top=105.0)
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
