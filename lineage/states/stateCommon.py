@@ -1,6 +1,6 @@
 """ Common utilities used between states regardless of distribution. """
 
-from math import gamma
+from math import gamma, isnan
 import numpy as np
 from numba import njit
 import scipy.stats as sp
@@ -19,6 +19,14 @@ def bern_pdf(x, p):
     # bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0-self.bern_p)**(1-tuple_of_obs[0])
 
     return (p ** x) * ((1.0 - p) ** (1 - x))
+
+
+def bernoulli_estimator(bern_obs, gammas):
+    """
+    Add up all the 1s and divide by the total length (finding the average).
+    """
+    gammas2use = gammas[not math.isnan(np.array(bern_obs))]
+    return sum(np.nan_to_num(gammas * bern_obs)) / sum(gammas2use)
 
 
 @njit
@@ -62,13 +70,6 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     res = minimize(fun=negative_LL, x0=[a_hat0, scale_hat0], bounds=((1., 20.), (1., 20.),), options={'maxiter': 5})
 
     return res.x[0], res.x[1]
-
-
-def bernoulli_estimator(bern_obs, gammas):
-    """
-    Add up all the 1s and divide by the total length (finding the average).
-    """
-    return sum(np.nan_to_num(gammas * bern_obs)) / sum(gammas)
 
 
 def get_experiment_time(lineageObj):

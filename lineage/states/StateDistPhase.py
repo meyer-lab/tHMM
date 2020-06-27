@@ -68,7 +68,7 @@ class StateDistribution:
             assert math.isnan(tuple_of_obs[3]) and math.isnan(tuple_of_obs[5]) and math.isnan(tuple_of_obs[0]) and math.isnan(tuple_of_obs[1])
             gamma_llG2 = 1
 
-        return gamma_llG1 * gamma_llG2
+        return bern_llG1 * bern_llG2 * gamma_llG1 * gamma_llG2
 
     def estimator(self, list_of_tuples_of_obs, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
