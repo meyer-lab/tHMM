@@ -17,6 +17,7 @@ from .figureCommon import (
 from ..LineageTree import LineageTree
 from ..states.StateDistPhase import StateDistribution
 
+
 def makeFigure():
     """
     Makes fig 4.
@@ -66,6 +67,7 @@ def accuracy():
     percentageS1, _, accuracy, _, _, _ = commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
 
     return percentageS1, accuracy
+
 
 def figureMaker2(ax, percentageS1, accuracy):
     """

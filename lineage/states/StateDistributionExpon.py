@@ -11,6 +11,7 @@ class StateDistribution:
     """
     StateDistribution for cells with exponential distributed times.
     """
+
     def __init__(self, bern_p=0.9, exp_beta=7.0):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.params = [bern_p, exp_beta]

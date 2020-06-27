@@ -9,6 +9,7 @@ class StateDistribution:
     """
     StateDistribution for cells with Gaussian observations.
     """
+
     def __init__(self, norm_loc=10.0, norm_scale=1.0):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         assert norm_scale > 0
