@@ -68,7 +68,7 @@ def bernoulli_estimator(bern_obs, gammas):
     """
     Add up all the 1s and divide by the total length (finding the average).
     """
-    return sum(gammas * bern_obs) / sum(gammas)
+    return sum(np.nan_to_num(gammas * bern_obs)) / sum(gammas)
 
 
 def get_experiment_time(lineageObj):

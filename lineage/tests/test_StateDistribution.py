@@ -51,7 +51,7 @@ class TestModel(unittest.TestCase):
         bern_obs1, gamma_obs1, _ = self.E[1].rvs(size=40)
         self.assertTrue(len(bern_obs1) == len(gamma_obs1) == 40)
 
-        bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, _ = self.E2[0].rvs(size=50)
+        bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, _, _ = self.E2[0].rvs(size=50)
         self.assertTrue(len(bern_obsG1) == len(bern_obsG2) == len(gamma_obsG1) == len(gamma_obsG2) == 50)
 
     def test_pdf(self):

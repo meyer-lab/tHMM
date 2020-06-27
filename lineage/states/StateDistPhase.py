@@ -1,4 +1,5 @@
 """ State distribution class for separated G1 and G2 phase durations as observation. """
+import math
 import scipy.stats as sp
 
 from .stateCommon import bern_pdf, bernoulli_estimator, gamma_pdf, gamma_estimator, basic_censor
@@ -19,10 +20,11 @@ class StateDistribution:
         bern_obsG2 = sp.bernoulli.rvs(p=self.params[1], size=size)
         gamma_obsG1 = sp.gamma.rvs(a=self.params[2], scale=self.params[3], size=size)  # gamma observations
         gamma_obsG2 = sp.gamma.rvs(a=self.params[4], scale=self.params[5], size=size)
-        time_censor = [1] * (len(gamma_obsG1) + len(gamma_obsG2))
+        gamma_censor_obsG1 = [1] * size
+        gamma_censor_obsG2 = [1] * size
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        return bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, time_censor
+        return bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, gamma_censor_obsG1, gamma_censor_obsG2
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
@@ -32,16 +34,41 @@ class StateDistribution:
         # In our example, we assume the observation's are uncorrelated across the dimensions (across the different
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
-        bern_llG1 = bern_pdf(tuple_of_obs[0], self.params[0])
-        bern_llG2 = bern_pdf(tuple_of_obs[1], self.params[1])
-        gamma_llG1 = gamma_pdf(tuple_of_obs[2], self.params[2], self.params[3])
-        gamma_llG2 = gamma_pdf(tuple_of_obs[3], self.params[4], self.params[5])
 
-        if tuple_of_obs[0] == 0:
-            ll = bern_llG2 * gamma_llG1 * gamma_llG2
+        bern_llG1 = 1
+        if not math.isnan(tuple_of_obs[0]):
+            # observed
+            assert tuple_of_obs[0] == 0 or tuple_of_obs[0] == 1
+            bern_llG1 = bern_pdf(tuple_of_obs[0], self.params[0])
+
+        bern_llG2 = 1
+        if not math.isnan(tuple_of_obs[1]):
+            # observed
+            assert tuple_of_obs[1] == 0 or tuple_of_obs[1] == 1
+            bern_llG2 = bern_pdf(tuple_of_obs[1], self.params[1])
+
+        gamma_llG1 = 1
+        if tuple_of_obs[4] == 1:
+            # uncensored
+            gamma_llG1 = gamma_pdf(tuple_of_obs[2], self.params[2], self.params[3])
         else:
-            ll = bern_llG1 * bern_llG2 * gamma_llG1 * gamma_llG2
-        return ll
+            # censored
+            assert tuple_of_obs[4] == 0
+            gamma_llG1 = sp.gamma.sf(tuple_of_obs[2], a=self.params[2], scale=self.params[3])
+
+        gamma_llG2 = 1
+        if tuple_of_obs[5] == 1:
+            # uncensored
+            gamma_llG2 = gamma_pdf(tuple_of_obs[3], self.params[4], self.params[5])
+        elif tuple_of_obs[5] == 0:
+            # censored
+            gamma_llG2 = sp.gamma.sf(tuple_of_obs[3], a=self.params[4], scale=self.params[5])
+        elif math.isnan(tuple_of_obs[5]):
+            # unobserved
+            assert math.isnan(tuple_of_obs[3]) and math.isnan(tuple_of_obs[5]) and math.isnan(tuple_of_obs[0]) and math.isnan(tuple_of_obs[1])
+            gamma_llG2 = 1
+
+        return gamma_llG1 * gamma_llG2
 
     def estimator(self, list_of_tuples_of_obs, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
@@ -54,12 +81,13 @@ class StateDistribution:
         bern_obsG2 = list(unzipped_list_of_tuples_of_obs[1])
         gamma_obsG1 = list(unzipped_list_of_tuples_of_obs[2])
         gamma_obsG2 = list(unzipped_list_of_tuples_of_obs[3])
-        gamma_censor_obs = list(unzipped_list_of_tuples_of_obs[4])
+        gamma_censor_obsG1 = list(unzipped_list_of_tuples_of_obs[4])
+        gamma_censor_obsG2 = list(unzipped_list_of_tuples_of_obs[4])
 
         self.params[0] = bernoulli_estimator(bern_obsG1, gammas)
         self.params[1] = bernoulli_estimator(bern_obsG2, gammas)
-        self.params[2], self.params[3] = gamma_estimator(gamma_obsG1, gamma_censor_obs, gammas)
-        self.params[4], self.params[5] = gamma_estimator(gamma_obsG2, gamma_censor_obs, gammas)
+        self.params[2], self.params[3] = gamma_estimator(gamma_obsG1, gamma_censor_obsG1, gammas)
+        self.params[4], self.params[5] = gamma_estimator(gamma_obsG2, gamma_censor_obsG2, gammas)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
@@ -160,18 +188,21 @@ def time_censor(cell, desired_experiment_time):
     """
     if cell.time.transition_time > desired_experiment_time:
         cell.time.transition_time = desired_experiment_time
+        cell.obs[0] = float('nan')  # unobserved
+        cell.obs[1] = float('nan')  # unobserved
         cell.obs[2] = desired_experiment_time - cell.time.startT
-        cell.obs[3] = float('nan')
+        cell.obs[3] = float('nan')  # unobserved
         cell.obs[4] = 0  # censored
-        cell.obs[5] = float('nan')
+        cell.obs[5] = float('nan')  # unobserved
         if not cell.isLeafBecauseTerminal():
             cell.left.observed = False
             cell.right.observed = False
 
     if cell.time.endT > desired_experiment_time:
         cell.time.endT = desired_experiment_time
+        cell.obs[1] = float('nan')  # unobserved
         cell.obs[3] = desired_experiment_time - cell.time.startT
-        cell.obs[5] = 0  # no longer observed
+        cell.obs[5] = 0  # censored
         if not cell.isLeafBecauseTerminal():
             cell.left.observed = False
             cell.right.observed = False

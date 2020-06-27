@@ -1,4 +1,5 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
+import math
 import numpy as np
 import scipy.stats as sp
 from numba import njit
@@ -21,10 +22,10 @@ class StateDistribution:
         # {
         bern_obs = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
         exp_obs = sp.expon.rvs(scale=self.params[1], size=size)  # gamma observations
-        time_censor = [1] * len(exp_obs)  # 1 if observed
+        exp_obs_censor = [1] * size  # 1 if observed
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
-        return bern_obs, exp_obs, time_censor
+        return bern_obs, exp_obs, exp_obs_censor
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
@@ -34,12 +35,19 @@ class StateDistribution:
         # In our example, we assume the observation's are uncorrelated across the dimensions (across the different
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
+        bern_ll = 1
+        if not math.isnan(tuple_of_obs[0]):
+            # observed
+            assert tuple_of_obs[0] == 0 or tuple_of_obs[0] == 1
+            bern_ll = bern_pdf(tuple_of_obs[0], self.params[0])
 
-        bern_ll = bern_pdf(tuple_of_obs[0], self.params[0]) if tuple_of_obs[2] == 1 else 1.0
-
+        exp_ll = 1
         if tuple_of_obs[2] == 1:
+            # uncensored
             exp_ll = exp_pdf(tuple_of_obs[1], self.params[1])
         else:
+            # censored
+            assert tuple_of_obs[2] == 0
             exp_ll = exp_sf(tuple_of_obs[1], self.params[1])
 
         return bern_ll * exp_ll
@@ -53,10 +61,10 @@ class StateDistribution:
         # {
         bern_obs = list(unzipped_list_of_tuples_of_obs[0])
         exp_obs = list(unzipped_list_of_tuples_of_obs[1])
-        time_censor_obs = np.array(unzipped_list_of_tuples_of_obs[2], dtype=bool)
+        exp_obs_censor = np.array(unzipped_list_of_tuples_of_obs[2], dtype=int)
 
         self.params[0] = bernoulli_estimator(bern_obs, gammas)
-        self.params[1] = exp_estimator(exp_obs, time_censor_obs, gammas)
+        self.params[1] = exp_estimator(exp_obs, exp_obs_censor, gammas)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
@@ -155,6 +163,7 @@ def time_censor(cell, desired_experiment_time):
     """
     if cell.time.endT > desired_experiment_time:
         cell.time.endT = desired_experiment_time
+        cell.obs[0] = float('nan')
         cell.obs[1] = desired_experiment_time - cell.time.startT
         cell.obs[2] = 0  # censored
         if not cell.isLeafBecauseTerminal():
