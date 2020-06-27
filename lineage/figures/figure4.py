@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-""" This file contains functions for plotting different phenotypes in the manuscript. """
-
-=======
 """ This file is to show the model works in case we have rare phenotypes. """
 import numpy as np
->>>>>>> master
 import pandas as pd
 import scipy.stats as sp
 
@@ -20,15 +15,7 @@ from .figureCommon import (
     num_data_points
 )
 from ..LineageTree import LineageTree
-<<<<<<< HEAD
-from ..Analyze import Analyze
-
-lineage1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=1023)
-x = [lineage1]
-
-=======
 from ..states.StateDistPhase import StateDistribution
->>>>>>> master
 
 def makeFigure():
     """
