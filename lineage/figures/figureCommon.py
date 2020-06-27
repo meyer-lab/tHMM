@@ -64,14 +64,17 @@ def getSetup(figsize, gridd):
     Establish figure set-up with subplots.
     """
     sns.set(
-        style="whitegrid",
-        palette="colorblind",
         font_scale=0.7,
-        color_codes=True,
-        rc={"grid.linestyle": "--", 
-            "grid.alpha": 1./3,
+        rc={"axes.facecolor": "#ffffff", # axes background color
+            "axes.edgecolor": "#000000",  # axes edge color
+            "axes.linewidth": 2./3,
             "axes.prop_cycle": cycler("color", ["#1f77b4", "#ff7f0e"]),
+            "grid.linestyle": "--", 
+            "grid.alpha": 1./3,
+            "grid.color": "#000000",
+            "xtick.bottom": True,
             "xtick.direction": "inout",
+            "ytick.left": True,
             "ytick.direction": "inout",
            },
     )
