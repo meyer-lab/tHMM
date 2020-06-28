@@ -67,19 +67,19 @@ def getSetup(figsize, gridd):
         font_scale=0.7,
         rc={"axes.facecolor": "#ffffff",  # axes background color
             "axes.edgecolor": "#000000",  # axes edge color
-            "axes.linewidth": 1. / 3,
+            "axes.linewidth": 1. / 4,
             "axes.prop_cycle": cycler("color", ["#1f77b4", "#ff7f0e"]),
             "grid.linestyle": "--",
-            "grid.alpha": 1. / 3,
+            "grid.alpha": 1. / 4,
             "grid.color": "#000000",
             "xtick.bottom": True,
             "xtick.direction": "inout",
-            "xtick.major.width": 2. / 3,  # major tick width in points
-            "xtick.minor.width": 1. / 3,  # minor tick width in points
+            "xtick.major.width": 2. / 4,  # major tick width in points
+            "xtick.minor.width": 1. / 4,  # minor tick width in points
             "ytick.left": True,
             "ytick.direction": "inout",
-            "ytick.major.width": 2. / 3,  # major tick width in points
-            "ytick.minor.width": 1. / 3,  # minor tick width in points
+            "ytick.major.width": 2. / 4,  # major tick width in points
+            "ytick.minor.width": 1. / 4,  # minor tick width in points
             },
     )
 
@@ -307,4 +307,4 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].scatter(x, pii, c="k", marker="o", edgecolors="k", alpha=0.25)
         ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
         ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
-        ax[i].set_title("Initial Probability Matrix Estimation")
+        ax[i].set_title("Initial Probability Vector Estimation")
