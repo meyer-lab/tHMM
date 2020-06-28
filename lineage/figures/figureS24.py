@@ -55,11 +55,11 @@ def accuracy():
     list_of_fE = []
     for experiment_time in times:
         population = []
-
         good2go = False
         while not good2go:
             tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, max_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_time)
             good2go = lineage_good_to_analyze(tmp_lineage)
+            if good2go: print(tmp_lineage)
 
         population.append(tmp_lineage)
 
@@ -68,5 +68,6 @@ def accuracy():
         list_of_fpi.append(pi)
         list_of_fT.append(T)
         list_of_fE.append(E2)
+        break
 
-    return commonAnalyze(list_of_populations, list_of_fpi=list_of_fpi)
+    return commonAnalyze(list_of_populations, list_of_fpi=list_of_fpi, parallel=False)

@@ -82,7 +82,7 @@ class StateDistribution:
         gamma_obsG1 = list(unzipped_list_of_tuples_of_obs[2])
         gamma_obsG2 = list(unzipped_list_of_tuples_of_obs[3])
         gamma_censor_obsG1 = list(unzipped_list_of_tuples_of_obs[4])
-        gamma_censor_obsG2 = list(unzipped_list_of_tuples_of_obs[4])
+        gamma_censor_obsG2 = list(unzipped_list_of_tuples_of_obs[5])
 
         self.params[0] = bernoulli_estimator(bern_obsG1, gammas)
         self.params[1] = bernoulli_estimator(bern_obsG2, gammas)
@@ -176,6 +176,10 @@ def fate_censor(cell):
         if not cell.isLeafBecauseTerminal():
             cell.left.observed = False
             cell.right.observed = False
+        if cell.obs[0] == 0:
+            cell.obs[1] = float('nan') # unobserved
+            cell.obs[3] = float('nan') # unobserved
+            cell.obs[5] = float('nan') # unobserved
 
 
 def time_censor(cell, desired_experiment_time):
@@ -186,6 +190,15 @@ def time_censor(cell, desired_experiment_time):
     If a cell has lived beyond a certain experiment time, then its subtree
     must be removed.
     """
+    if cell.time.endT > desired_experiment_time:
+        cell.time.endT = desired_experiment_time
+        cell.obs[1] = float('nan')  # unobserved
+        cell.obs[3] = desired_experiment_time - cell.time.transition_time
+        cell.obs[5] = 0  # censored
+        if not cell.isLeafBecauseTerminal():
+            cell.left.observed = False
+            cell.right.observed = False
+
     if cell.time.transition_time > desired_experiment_time:
         cell.time.transition_time = desired_experiment_time
         cell.obs[0] = float('nan')  # unobserved
@@ -194,15 +207,6 @@ def time_censor(cell, desired_experiment_time):
         cell.obs[3] = float('nan')  # unobserved
         cell.obs[4] = 0  # censored
         cell.obs[5] = float('nan')  # unobserved
-        if not cell.isLeafBecauseTerminal():
-            cell.left.observed = False
-            cell.right.observed = False
-
-    if cell.time.endT > desired_experiment_time:
-        cell.time.endT = desired_experiment_time
-        cell.obs[1] = float('nan')  # unobserved
-        cell.obs[3] = desired_experiment_time - cell.time.startT
-        cell.obs[5] = 0  # censored
         if not cell.isLeafBecauseTerminal():
             cell.left.observed = False
             cell.right.observed = False
