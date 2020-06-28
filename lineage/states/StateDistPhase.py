@@ -177,9 +177,9 @@ def fate_censor(cell):
             cell.left.observed = False
             cell.right.observed = False
         if cell.obs[0] == 0:
-            cell.obs[1] = float('nan') # unobserved
-            cell.obs[3] = float('nan') # unobserved
-            cell.obs[5] = float('nan') # unobserved
+            cell.obs[1] = float('nan')  # unobserved
+            cell.obs[3] = float('nan')  # unobserved
+            cell.obs[5] = float('nan')  # unobserved
 
 
 def time_censor(cell, desired_experiment_time):

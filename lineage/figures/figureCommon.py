@@ -65,22 +65,22 @@ def getSetup(figsize, gridd):
     """
     sns.set(
         font_scale=0.7,
-        rc={"axes.facecolor": "#ffffff", # axes background color
+        rc={"axes.facecolor": "#ffffff",  # axes background color
             "axes.edgecolor": "#000000",  # axes edge color
-            "axes.linewidth": 1./3,
+            "axes.linewidth": 1. / 3,
             "axes.prop_cycle": cycler("color", ["#1f77b4", "#ff7f0e"]),
-            "grid.linestyle": "--", 
-            "grid.alpha": 1./3,
+            "grid.linestyle": "--",
+            "grid.alpha": 1. / 3,
             "grid.color": "#000000",
             "xtick.bottom": True,
             "xtick.direction": "inout",
-            "xtick.major.width": 2./3, # major tick width in points
-            "xtick.minor.width": 1./3, # minor tick width in points
+            "xtick.major.width": 2. / 3,  # major tick width in points
+            "xtick.minor.width": 1. / 3,  # minor tick width in points
             "ytick.left": True,
             "ytick.direction": "inout",
-            "ytick.major.width": 2./3, # major tick width in points
-            "ytick.minor.width": 1./3, # minor tick width in points
-           },
+            "ytick.major.width": 2. / 3,  # major tick width in points
+            "ytick.minor.width": 1. / 3,  # minor tick width in points
+            },
     )
 
     # Setup plotting space and grid
@@ -219,7 +219,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     else:
         ax[i].set_xlabel(xlabel)
         if number_of_params == 6:
-            ax[i].scatter(x, paramEst[:, 0,3], edgecolors="k", marker="o", alpha=0.5)
+            ax[i].scatter(x, paramEst[:, 0, 3], edgecolors="k", marker="o", alpha=0.5)
             ax[i].scatter(x, paramEst[:, 1, 3], edgecolors="k", marker="o", alpha=0.5)
             ax[i].scatter(x, paramTrues[:, 0, 3], marker="_", alpha=0.5, label="State 1")
             ax[i].scatter(x, paramTrues[:, 1, 3], marker="_", alpha=0.5, label="State 2")
@@ -234,7 +234,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
             ax[i].set_ylabel(r"Gamma $\theta$")
             ax[i].set_title(r"Gamma $\theta$")
         ax[i].legend()
-
 
     i += 1
     ax[i].set_xlabel(xlabel)
@@ -269,7 +268,6 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
         ax[i].set_title("Transition Matrix Estimation")
 
-
     i += 1
     ax[i].set_xlabel(xlabel)
     if number_of_params == 6:
@@ -285,7 +283,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
         ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
         ax[i].set_title("Initial Probability Matrix Estimation")
-        
+
     if number_of_params == 6:
         i += 1
         ax[i].set_xlabel(xlabel)
@@ -294,7 +292,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].set_ylabel(r"Accuracy [\%]")
         ax[i].axhline(y=100, linestyle="--", linewidth=2, color="k", alpha=1)
         ax[i].set_title("State Assignment Accuracy")
-        
+
         i += 1
         ax[i].set_xlabel(xlabel)
         ax[i].set_ylim(bottom=0, top=max(tr) + 0.2)
@@ -302,7 +300,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
         ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
         ax[i].set_title("Transition Matrix Estimation")
-        
+
         i += 1
         ax[i].set_xlabel(xlabel)
         ax[i].set_ylim(bottom=0, top=max(pii) + 0.2)
