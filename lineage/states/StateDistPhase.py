@@ -65,7 +65,7 @@ class StateDistribution:
             gamma_llG2 = sp.gamma.sf(tuple_of_obs[3], a=self.params[4], scale=self.params[5])
         elif math.isnan(tuple_of_obs[5]):
             # unobserved
-            assert math.isnan(tuple_of_obs[3]) and math.isnan(tuple_of_obs[5]) and math.isnan(tuple_of_obs[0]) and math.isnan(tuple_of_obs[1])
+            assert math.isnan(tuple_of_obs[3]) and math.isnan(tuple_of_obs[5]) and math.isnan(tuple_of_obs[1])
             gamma_llG2 = 1
 
         return bern_llG1 * bern_llG2 * gamma_llG1 * gamma_llG2
