@@ -1,6 +1,6 @@
 """ Common utilities used between states regardless of distribution. """
 
-from math import gamma
+import math
 import numpy as np
 from numba import njit
 import scipy.stats as sp
@@ -21,6 +21,14 @@ def bern_pdf(x, p):
     return (p ** x) * ((1.0 - p) ** (1 - x))
 
 
+def bernoulli_estimator(bern_obs, gammas):
+    """
+    Add up all the 1s and divide by the total length (finding the average).
+    """
+    gammas2use = [g for b,g in zip(bern_obs,gammas) if not math.isnan(b)]
+    return sum(np.nan_to_num(gammas * bern_obs)) / sum(gammas2use)
+
+
 @njit
 def gamma_pdf(x, a, scale):
     """
@@ -28,7 +36,7 @@ def gamma_pdf(x, a, scale):
     and returns the likelihood of the observation based on the gamma
     probability distribution function.
     """
-    return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / gamma(a) / (scale ** a)
+    return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / math.gamma(a) / (scale ** a)
 
 
 def gamma_estimator(gamma_obs, time_censor_obs, gammas):
@@ -36,8 +44,9 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
     """
-    gammaCor = sum(gammas * gamma_obs) / sum(gammas)
-    s = np.log(gammaCor) - sum(gammas * np.log(gamma_obs)) / sum(gammas)
+    gammas2use = [g for b,g in zip(gamma_obs,gammas) if not math.isnan(b)]
+    gammaCor = sum(np.nan_to_num(gammas * gamma_obs)) / sum(gammas2use)
+    s = np.log(gammaCor) - sum(np.nan_to_num(gammas * np.log(gamma_obs))) / sum(gammas2use)
 
     def f(k): return np.log(k) - sc.polygamma(0, k) - s
 
@@ -62,13 +71,6 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     res = minimize(fun=negative_LL, x0=[a_hat0, scale_hat0], bounds=((1., 20.), (1., 20.),), options={'maxiter': 5})
 
     return res.x[0], res.x[1]
-
-
-def bernoulli_estimator(bern_obs, gammas):
-    """
-    Add up all the 1s and divide by the total length (finding the average).
-    """
-    return sum(np.nan_to_num(gammas * bern_obs)) / sum(gammas)
 
 
 def get_experiment_time(lineageObj):

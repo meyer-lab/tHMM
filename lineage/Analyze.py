@@ -10,7 +10,7 @@ from scipy.stats import wasserstein_distance
 from .tHMM import tHMM
 
 
-def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
+def Analyze(X, num_states, fpi=None, fT=None, fE=None):
     """
     Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
 
@@ -47,14 +47,6 @@ def preAnalyze(X, num_states, fpi=None, fT=None, fE=None):
     pred_states_by_lineage = tHMMobj.predict()
 
     return tHMMobj, pred_states_by_lineage, LL
-
-
-def Analyze(X, num_states, fpi=None, fT=None, fE=None):
-    """
-    :func:`Analyze` runs several for loops runnning our model for a given number of states
-    given an input population (a list of lineages).
-    """
-    return preAnalyze(X, num_states, fpi=fpi, fT=fT, fE=fE)
 
 
 def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):

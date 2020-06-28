@@ -121,8 +121,8 @@ class TestModel(unittest.TestCase):
         for lin in self.population:
             for cell in lin.output_lineage:
                 if not cell.isRootParent:
-                    if cell.parent.censored:
-                        self.assertTrue(cell.censored)
+                    if not cell.parent.observed:
+                        self.assertFalse(cell.observed)
 
     def test_get_experiment_time(self):
         """

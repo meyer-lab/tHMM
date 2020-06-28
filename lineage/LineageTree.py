@@ -125,10 +125,7 @@ class LineageTree:
         """Checks whether a lineage is heterogeneous by ensuring that the true states
         of the cells contained within it create a set that has more than one state.
         """
-        true_states_set_len = len({cell.state for cell in self.output_lineage})
-        if true_states_set_len > 1:
-            return True
-        return False
+        return len({cell.state for cell in self.output_lineage}) > 1
 
 
 def generate_lineage_list(pi, T, desired_num_cells):

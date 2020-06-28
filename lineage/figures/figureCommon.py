@@ -30,8 +30,8 @@ state10 = expon_state(0.99, 48)
 state11 = expon_state(0.75, 8)
 E1 = [state10, state11]
 
-state20 = phaseStateDist(0.99, 0.8, 12, 7, 10, 5)
-state21 = phaseStateDist(0.88, 0.75, 6, 1, 5, 10)
+state20 = phaseStateDist(0.99, 0.8, 4, 4, 4, 3)
+state21 = phaseStateDist(0.88, 0.75, 3, 3, 3, 2)
 E2 = [state20, state21]
 
 min_desired_num_cells = (2 ** 4) - 1
@@ -64,11 +64,23 @@ def getSetup(figsize, gridd):
     Establish figure set-up with subplots.
     """
     sns.set(
-        style="whitegrid",
         font_scale=0.7,
-        color_codes=True,
-        palette="colorblind",
-        rc={"grid.linestyle": "dotted", "axes.linewidth": 0.6, "axes.prop_cycle": cycler("color", ["#1f77b4", "#ff7f0e", "#1f77b4", "#ff7f0e"])},
+        rc={"axes.facecolor": "#ffffff", # axes background color
+            "axes.edgecolor": "#000000",  # axes edge color
+            "axes.linewidth": 1./3,
+            "axes.prop_cycle": cycler("color", ["#1f77b4", "#ff7f0e"]),
+            "grid.linestyle": "--", 
+            "grid.alpha": 1./3,
+            "grid.color": "#000000",
+            "xtick.bottom": True,
+            "xtick.direction": "inout",
+            "xtick.major.width": 2./3, # major tick width in points
+            "xtick.minor.width": 1./3, # minor tick width in points
+            "ytick.left": True,
+            "ytick.direction": "inout",
+            "ytick.major.width": 2./3, # major tick width in points
+            "ytick.minor.width": 1./3, # minor tick width in points
+           },
     )
 
     # Setup plotting space and grid
@@ -169,70 +181,132 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     ax[i].set_xlabel(xlabel)
     ax[i].scatter(x, paramEst[:, 0, 0], edgecolors="k", marker="o", alpha=0.5)
     ax[i].scatter(x, paramEst[:, 1, 0], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].set_ylim(bottom=0, top=1.02)
-    ax[i].set_ylabel("Bernoulli $p$")
     ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", alpha=0.5)
     ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", alpha=0.5)
-    ax[i].set_title(r"Bernoulli $p$")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    ax[i].set_ylim(bottom=0, top=1.02)
+    if number_of_params == 6:
+        ax[i].set_ylabel("G1 Bernoulli $p$")
+        ax[i].set_title(r"G1 Bernoulli $p$")
+    else:
+        ax[i].set_ylabel("Bernoulli $p$")
+        ax[i].set_title(r"Bernoulli $p$")
 
     i += 1
     ax[i].set_xlabel(xlabel)
-    ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k", marker="o", alpha=0.5)
-    ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", alpha=0.5)
-    ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", alpha=0.5)
+    if number_of_params == 6:
+        ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", alpha=0.5)
+    else:
+        ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", alpha=0.5)
     if number_of_params == 2:
         ax[i].set_ylabel(r"exponential $\beta$")
         ax[i].set_title(r"exponential $\beta$")
+    elif number_of_params == 6:
+        ax[i].set_ylabel(r"G1 Gamma $k$")
+        ax[i].set_title(r"G1 Gamma $k$")
     else:
         ax[i].set_ylabel(r"Gamma $k$")
         ax[i].set_title(r"Gamma $k$")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
     if number_of_params == 2:
         ax[i].axis('off')
     else:
         ax[i].set_xlabel(xlabel)
-        ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k", marker="o", alpha=0.5)
-        ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k", marker="o", alpha=0.5)
-        ax[i].set_ylabel(r"Gamma $\theta$")
-        ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", alpha=0.5, label="State 1")
-        ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", alpha=0.5, label="State 2")
+        if number_of_params == 6:
+            ax[i].scatter(x, paramEst[:, 0,3], edgecolors="k", marker="o", alpha=0.5)
+            ax[i].scatter(x, paramEst[:, 1, 3], edgecolors="k", marker="o", alpha=0.5)
+            ax[i].scatter(x, paramTrues[:, 0, 3], marker="_", alpha=0.5, label="State 1")
+            ax[i].scatter(x, paramTrues[:, 1, 3], marker="_", alpha=0.5, label="State 2")
+            ax[i].set_ylabel(r"G1 Gamma $\theta$")
+            ax[i].set_title(r"G1 Gamma $\theta$")
+        else:
+            ax[i].set_xlabel(xlabel)
+            ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k", marker="o", alpha=0.5)
+            ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k", marker="o", alpha=0.5)
+            ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", alpha=0.5, label="State 1")
+            ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", alpha=0.5, label="State 2")
+            ax[i].set_ylabel(r"Gamma $\theta$")
+            ax[i].set_title(r"Gamma $\theta$")
         ax[i].legend()
-        ax[i].set_title(r"Gamma $\theta$")
-        ax[i].grid(linestyle="--")
-        ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+
 
     i += 1
     ax[i].set_xlabel(xlabel)
-    ax[i].set_ylim(bottom=0, top=101)
-    ax[i].scatter(x, accuracies, c="k", marker="o", label="Accuracy", edgecolors="k", alpha=0.25)
-    ax[i].set_ylabel(r"Accuracy [\%]")
-    ax[i].axhline(y=100, linestyle="--", linewidth=2, color="k", alpha=1)
-    ax[i].set_title("State Assignment Accuracy")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    if number_of_params == 6:
+        ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", alpha=0.5)
+        ax[i].set_ylim(bottom=0, top=1.02)
+        ax[i].set_ylabel("G2 Bernoulli $p$")
+        ax[i].set_title(r"G2 Bernoulli $p$")
+    else:
+        ax[i].set_ylim(bottom=0, top=101)
+        ax[i].scatter(x, accuracies, c="k", marker="o", label="Accuracy", edgecolors="k", alpha=0.25)
+        ax[i].set_ylabel(r"Accuracy [\%]")
+        ax[i].axhline(y=100, linestyle="--", linewidth=2, color="k", alpha=1)
+        ax[i].set_title("State Assignment Accuracy")
 
     i += 1
     ax[i].set_xlabel(xlabel)
-    ax[i].set_ylim(bottom=0, top=max(tr) + 0.2)
-    ax[i].scatter(x, tr, c="k", marker="o", edgecolors="k", alpha=0.25)
-    ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
-    ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
-    ax[i].set_title("Transition Matrix Estimation")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    if number_of_params == 6:
+        ax[i].scatter(x, paramEst[:, 0, 4], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 1, 4], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 0, 4], marker="_", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 1, 4], marker="_", alpha=0.5)
+        ax[i].set_ylabel(r"G2 Gamma $k$")
+        ax[i].set_title(r"G2 Gamma $k$")
+    else:
+        ax[i].set_ylim(bottom=0, top=max(tr) + 0.2)
+        ax[i].scatter(x, tr, c="k", marker="o", edgecolors="k", alpha=0.25)
+        ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
+        ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
+        ax[i].set_title("Transition Matrix Estimation")
+
 
     i += 1
     ax[i].set_xlabel(xlabel)
-    ax[i].set_ylim(bottom=0, top=max(pii) + 0.2)
-    ax[i].scatter(x, pii, c="k", marker="o", edgecolors="k", alpha=0.25)
-    ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
-    ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
-    ax[i].set_title("Initial Probability Matrix Estimation")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    if number_of_params == 6:
+        ax[i].scatter(x, paramEst[:, 0, 5], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 1, 5], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 0, 5], marker="_", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 1, 5], marker="_", alpha=0.5)
+        ax[i].set_ylabel(r"G2 Gamma $\theta$")
+        ax[i].set_title(r"G2 Gamma $\theta$")
+    else:
+        ax[i].set_ylim(bottom=0, top=max(pii) + 0.2)
+        ax[i].scatter(x, pii, c="k", marker="o", edgecolors="k", alpha=0.25)
+        ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
+        ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
+        ax[i].set_title("Initial Probability Matrix Estimation")
+        
+    if number_of_params == 6:
+        i += 1
+        ax[i].set_xlabel(xlabel)
+        ax[i].set_ylim(bottom=0, top=101)
+        ax[i].scatter(x, accuracies, c="k", marker="o", label="Accuracy", edgecolors="k", alpha=0.25)
+        ax[i].set_ylabel(r"Accuracy [\%]")
+        ax[i].axhline(y=100, linestyle="--", linewidth=2, color="k", alpha=1)
+        ax[i].set_title("State Assignment Accuracy")
+        
+        i += 1
+        ax[i].set_xlabel(xlabel)
+        ax[i].set_ylim(bottom=0, top=max(tr) + 0.2)
+        ax[i].scatter(x, tr, c="k", marker="o", edgecolors="k", alpha=0.25)
+        ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
+        ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
+        ax[i].set_title("Transition Matrix Estimation")
+        
+        i += 1
+        ax[i].set_xlabel(xlabel)
+        ax[i].set_ylim(bottom=0, top=max(pii) + 0.2)
+        ax[i].scatter(x, pii, c="k", marker="o", edgecolors="k", alpha=0.25)
+        ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
+        ax[i].axhline(y=0, linestyle="--", linewidth=2, color="k", alpha=1)
+        ax[i].set_title("Initial Probability Matrix Estimation")
