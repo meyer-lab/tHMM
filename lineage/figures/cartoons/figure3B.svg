@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 1280 400" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g transform="matrix(1.64595,0,0,1.64595,635.028,547.068)">
-        <g id="Figure-3B-draft--dragged-" serif:id="Figure 3B draft (dragged)" transform="matrix(1,0,0,1,-306,-396)">
-            <g transform="matrix(1.26849,0,0,1.26849,-84.7171,-50.763)">
+<svg width="100%" height="100%" viewBox="0 0 980 400" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(2.08787,0,0,2.08787,-150.757,-188.811)">
+        <g id="Figure-3B-draft--dragged-" serif:id="Figure 3B draft (dragged)">
+            <g>
                 <g>
                     <g transform="matrix(0.788342,0,0,0.788342,41.7825,24.4794)">
                         <g>
@@ -185,8 +185,6 @@
                     </g>
                 </g>
             </g>
-        </g>
-        <g id="Figure-3B-draft--dragged-1" serif:id="Figure 3B draft (dragged)">
         </g>
     </g>
 </svg>
