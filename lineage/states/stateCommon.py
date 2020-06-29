@@ -25,8 +25,7 @@ def bernoulli_estimator(bern_obs, gammas):
     """
     Add up all the 1s and divide by the total length (finding the average).
     """
-    gammas2use = [g for b, g in zip(bern_obs, gammas) if not math.isnan(b)]
-    return sum(np.nan_to_num(gammas * bern_obs)) / sum(gammas2use)
+    return sum(gammas * bern_obs) / sum(gammas)
 
 
 @njit
@@ -44,9 +43,8 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
     """
-    gammas2use = [g for b, g in zip(gamma_obs, gammas) if not math.isnan(b)]
-    gammaCor = sum(np.nan_to_num(gammas * gamma_obs)) / sum(gammas2use)
-    s = np.log(gammaCor) - sum(np.nan_to_num(gammas * np.log(gamma_obs))) / sum(gammas2use)
+    gammaCor = sum(gammas * gamma_obs) / sum(gammas)
+    s = np.log(gammaCor) - sum(gammas * np.log(gamma_obs)) / sum(gammas)
 
     def f(k): return np.log(k) - sc.polygamma(0, k) - s
 
