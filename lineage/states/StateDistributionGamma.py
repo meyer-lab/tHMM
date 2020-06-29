@@ -3,7 +3,6 @@ import math
 import numpy as np
 import scipy.stats as sp
 
-
 from .stateCommon import bern_pdf, gamma_pdf, bernoulli_estimator, gamma_estimator, basic_censor
 from ..CellVar import Time
 
@@ -60,11 +59,12 @@ class StateDistribution:
 
         # getting the observations as individual lists
         # {
-        bern_obs = list(unzipped_list_of_tuples_of_obs[0])
+        bern_obs = np.array((unzipped_list_of_tuples_of_obs[0]))
         γ_obs = np.array(unzipped_list_of_tuples_of_obs[1])
         gamma_obs_censor = np.array(unzipped_list_of_tuples_of_obs[2], dtype=int)
 
-        self.params[0] = bernoulli_estimator(bern_obs, gammas)
+        b_mask = np.logical_not(np.isnan(bern_obs))
+        self.params[0] = bernoulli_estimator(bern_obs[b_mask], gammas[b_mask])
         self.params[1], self.params[2] = gamma_estimator(γ_obs, gamma_obs_censor, gammas)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters

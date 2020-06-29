@@ -59,11 +59,12 @@ class StateDistribution:
 
         # getting the observations as individual lists
         # {
-        bern_obs = list(unzipped_list_of_tuples_of_obs[0])
-        exp_obs = list(unzipped_list_of_tuples_of_obs[1])
+        bern_obs = np.array(unzipped_list_of_tuples_of_obs[0])
+        exp_obs = np.array(unzipped_list_of_tuples_of_obs[1])
         exp_obs_censor = np.array(unzipped_list_of_tuples_of_obs[2], dtype=int)
 
-        self.params[0] = bernoulli_estimator(bern_obs, gammas)
+        b_mask = np.logical_not(np.isnan(bern_obs))
+        self.params[0] = bernoulli_estimator(bern_obs[b_mask], gammas[b_mask])
         self.params[1] = exp_estimator(exp_obs, exp_obs_censor, gammas)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters

@@ -78,12 +78,12 @@ class StateDistribution:
 
         # getting the observations as individual lists
         # {
-        bern_obsG1 = np.array(list(unzipped_list_of_tuples_of_obs[0]))
-        bern_obsG2 = np.array(list(unzipped_list_of_tuples_of_obs[1]))
-        gamma_obsG1 = np.array(list(unzipped_list_of_tuples_of_obs[2]))
-        gamma_obsG2 = np.array(list(unzipped_list_of_tuples_of_obs[3]))
-        gamma_censor_obsG1 = np.array(list(unzipped_list_of_tuples_of_obs[4]))
-        gamma_censor_obsG2 = np.array(list(unzipped_list_of_tuples_of_obs[5]))
+        bern_obsG1 = np.array(unzipped_list_of_tuples_of_obs[0])
+        bern_obsG2 = np.array(unzipped_list_of_tuples_of_obs[1])
+        gamma_obsG1 = np.array(unzipped_list_of_tuples_of_obs[2])
+        gamma_obsG2 = np.array(unzipped_list_of_tuples_of_obs[3])
+        gamma_censor_obsG1 = np.array(unzipped_list_of_tuples_of_obs[4])
+        gamma_censor_obsG2 = np.array(unzipped_list_of_tuples_of_obs[5])
 
         b1_mask = np.logical_not(np.isnan(bern_obsG1))
         self.params[0] = bernoulli_estimator(bern_obsG1[b1_mask], gammas[b1_mask])
