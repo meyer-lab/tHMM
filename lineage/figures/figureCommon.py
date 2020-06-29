@@ -69,7 +69,7 @@ def getSetup(figsize, gridd):
             "axes.edgecolor": "#000000",  # axes edge color
             "axes.linewidth": 1. / 4,
             "axes.prop_cycle": cycler("color", ["#1f77b4", "#ff7f0e"]),
-            "grid.linestyle": "--",
+            "grid.linestyle": "-",
             "grid.alpha": 1. / 4,
             "grid.color": "#000000",
             "xtick.bottom": True,
