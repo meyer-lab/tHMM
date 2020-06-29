@@ -1,5 +1,6 @@
 """ State distribution class for separated G1 and G2 phase durations as observation. """
 import math
+import numpy as np
 import scipy.stats as sp
 
 from .stateCommon import bern_pdf, bernoulli_estimator, gamma_pdf, gamma_estimator, basic_censor
@@ -84,13 +85,13 @@ class StateDistribution:
         gamma_censor_obsG1 = np.array(list(unzipped_list_of_tuples_of_obs[4]))
         gamma_censor_obsG2 = np.array(list(unzipped_list_of_tuples_of_obs[5]))
 
-        b1_mask = np.where(not math.isnan(bern_obsG1))
+        b1_mask = np.logical_not(np.isnan(bern_obsG1))
         self.params[0] = bernoulli_estimator(bern_obsG1[b1_mask], gammas[b1_mask])
-        b2_mask = np.where(not math.isnan(bern_obsG2))
+        b2_mask = np.logical_not(np.isnan(bern_obsG2))
         self.params[1] = bernoulli_estimator(bern_obsG2[b2_mask], gammas[b2_mask])
-        ga1_mask = np.where(not math.isnan(gamma_obsG1))
+        ga1_mask = np.logical_not(np.isnan(gamma_obsG1))
         self.params[2], self.params[3] = gamma_estimator(gamma_obsG1[ga1_mask], gamma_censor_obsG1[ga1_mask], gammas[ga1_mask])
-        ga2_mask = np.where(not math.isnan(gamma_obsG2))
+        ga2_mask = np.logical_not(np.isnan(gamma_obsG2))
         self.params[4], self.params[5] = gamma_estimator(gamma_obsG2[ga2_mask], gamma_censor_obsG2[ga2_mask], gammas[ga2_mask])
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
