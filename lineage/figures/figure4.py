@@ -15,7 +15,7 @@ from .figureCommon import (
     num_data_points
 )
 from ..LineageTree import LineageTree
-from ..states.StateDistPhase import StateDistribution
+from ..states.StateDistributionGaPhs import StateDistribution
 
 
 def makeFigure():
