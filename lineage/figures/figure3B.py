@@ -15,7 +15,7 @@ from .figureCommon import (
     lineage_good_to_analyze
 )
 from ..LineageTree import LineageTree
-from ..states.StateDistPhase import StateDistribution
+from ..states.StateDistributionGaPhs import StateDistribution
 
 
 def makeFigure():
