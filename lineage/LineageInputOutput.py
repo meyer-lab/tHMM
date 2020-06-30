@@ -48,7 +48,11 @@ def import_Heiser(path=r"lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xls
         # find Next Lineage Position
         while(lPos < len(data) and math.isnan(data[lPos][0])):
             lPos += 1
-        lineageNo += 1
+
+        #checking if file for errors (if lineage# lines up)
+        if(lPos<len(data)):
+            lineageNo += 1
+            assert lineageNo == data[lPos][0]
 
         # determine if lineage has cells
         if(lPos < len(data) and not math.isnan(data[lPos][1])):
@@ -56,6 +60,7 @@ def import_Heiser(path=r"lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xls
             currentLineage = []
             # make Parent
             parentCell = c(parent=None, gen=1, synthetic=False)
+<<<<<<< HEAD
 
             parentCell.obs = [0, 0, 0, 0, data[lPos][1 + 2]]  # this stores the time of division
 
@@ -67,9 +72,33 @@ def import_Heiser(path=r"lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xls
                 parentCell.obs[3] = 0  # Spent no time in G2
 
             # [x  y]/[x y  ] case (general)
+=======
+            divisionTime = data[lPos][1+2]
+            parentCell.obs = [0,0,0,0,0,0] 
+
+            #[x  x] case
+            if data[lPos][1] == data[lPos][1+2]:
+
+                #Time Censored [145  145]
+                if (data[lPos][1] == 145):  
+                    parentCell.obs[0] = float('nan')  #live/die G1
+                    parentCell.obs[4] = 0
+                #Not Time Censored [x=/=145   x=/=145]
+                else:
+                    parentCell.obs[0] = 0
+                    parentCell[4] = 1
+                    
+                parentCell.obs[1] = float('nan') #Did not go to G2
+                parentCell.obs[2] = data[lPos][1] #Time Spent in G1
+                parentCell.obs[3] = float('nan') #Spent no time in G2
+                parentCell.obs[5] = float('nan') #G2 outcome unknown
+            
+            #[x  y]/[x y  ] case (general)
+>>>>>>> 21c8af1ec2a228979cc0296c6ba0a040bcee7646
             else:
                 # [1  y]/[1 y  ] case
                 if data[lPos][1] == 1:
+<<<<<<< HEAD
                     parentCell.obs[0] = None  # did not start in G1
                     parentCell.obs[2] = 0  # Spent no time in G1
 
@@ -77,15 +106,39 @@ def import_Heiser(path=r"lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xls
                 else:
                     parentCell.obs[0] = True  # survived G1
                     parentCell.obs[2] = data[lPos][1]  # Time spent in G1
+=======
+                    parentCell.obs[0]  = 1  #did not start in G1
+                    parentCell.obs[2] = float('nan') #Spent no time in G1
+                    parentCell.obs[4] = float('nan') #G1 outcome unknown
+                    
+                #[x=/=1   y]/[x=/=1 y  ] case
+                else:
+                    parentCell.obs[0] = 1  #survived G1
+                    parentCell.obs[2] = data[lPos][1] #Time spent in G1
+                    parentCell.obs[4] = 1 #G1 uncensored
+>>>>>>> 21c8af1ec2a228979cc0296c6ba0a040bcee7646
 
                 # [x  y] case (general)
                 if math.isnan(data[lPos][1 + 1]):
+<<<<<<< HEAD
                     parentCell.obs[1] = True  # survived G2
                     parentCell.obs[3] = data[lPos][1 + 2] - parentCell.obs[2]  # Time spent in G2
                 # [x y  ] case
                 else:
                     parentCell.obs[1] = False  # died in G2
                     parentCell.obs[3] = data[lPos][1 + 1] - parentCell.obs[2]  # Time spent in G2
+=======
+                    parentCell.obs[1] = float('nan') if (data[lPos][1+2] == 145) else 1  #survived G2
+                    parentCell.obs[3] = data[lPos][1+2] if (math.isnan(parentCell.obs[2])) else data[lPos][1+2]-parentCell.obs[2] #Time spent in G2
+                
+                #[x y  ] case
+                else:
+                    parentCell.obs[1] = 0 #died in G2
+                    parentCell.obs[3] = data[lPos][1+1]-parentCell.obs[2] #Time spent in G2
+>>>>>>> 21c8af1ec2a228979cc0296c6ba0a040bcee7646
+
+                #Time Censored Case  [x  145]
+                parentCell.obs[5] = 0 if (data[lPos][1+2] == 145 or data[lPos][1] == 1) else 1 #Censored if the cell started in G2 or total time is 145
 
             # find lower value of range and store next upper
             upper = nextUp
@@ -97,9 +150,9 @@ def import_Heiser(path=r"lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xls
             else:
                 lower = nextUp - 2
             # find upper daughter and recurse
-            parentCell.left = tryRecursion(1, lPos, upper, parentCell, currentLineage, lineageSizeIndex, data, True)
+            parentCell.left = tryRecursion(1, lPos, upper, parentCell, currentLineage, lineageSizeIndex, data,divisionTime, True)
             # find lower daughter and recurse
-            parentCell.right = tryRecursion(1, lower, lPos, parentCell, currentLineage, lineageSizeIndex, data, False)
+            parentCell.right = tryRecursion(1, lower, lPos, parentCell, currentLineage, lineageSizeIndex, data, divisionTime, False)
 
             # add first generation to lineage (apparently python passes by reference for objects so this probably can be done before or after)
             currentLineage.append(parentCell)
@@ -109,7 +162,12 @@ def import_Heiser(path=r"lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xls
     return lineages
 
 
+<<<<<<< HEAD
 def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeIndex, data, firstHalf):
+=======
+
+def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeIndex, data, divisionTime, firstHalf):
+>>>>>>> 21c8af1ec2a228979cc0296c6ba0a040bcee7646
     """
     Method for Top and Bottom halves of the Lineage Tree as recorded in the Excel files
     (They mirrored the posistions for the last set of daughter cells...)
@@ -143,6 +201,7 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeI
         return None
     # store values into lineage here
     daughterCell = c(parent=parentCell, gen=parentCell.gen + 1, synthetic=parentCell.synthetic)
+<<<<<<< HEAD
     daughterCell.obs = [0, 0, 0, 0, data[parentPos][pColumn + 2]]  # This stores the Time at cell division
 
     # [x  x] case
@@ -151,25 +210,65 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeI
         daughterCell.obs[2] = data[parentPos][pColumn] - parentCell.obs[4]  # Time Spent in G1
         daughterCell.obs[1] = None  # Did not go to G2
         daughterCell.obs[3] = 0  # Spent no time in G2
+=======
+    daughterCell.obs = [ 0, 0, 0, 0, 0, 0 ] # This stores the Time at cell division
+
+    #[x  x] case
+    if data[parentPos][pColumn] == data[parentPos][pColumn+2]:
+        
+        # Time Censored [145  145]
+        if (data[pColumn][pColumn] == 145):
+            daughterCell.obs[0] = float('nan')   #We don't know the outcome of G1
+            daughterCell.obs[4] = 0  #G1 censored
+        
+        #Not Time Censored [x=/=145   x=/=145]
+        else:
+            daughterCell.obs[0] = 0  #G1 death
+            daughterCell.obs[4] = 1  #G1 uncensored
+
+        daughterCell.obs[1] = float('nan')  #Did not go to G2
+        daughterCell.obs[2] = data[parentPos][pColumn] - divisionTime#Time Spent in G1
+        daughterCell.obs[3] = float('nan') #Spent no time in G2
+        daughterCell.obs[5] = float('nan') #We don't have information about G2
+>>>>>>> 21c8af1ec2a228979cc0296c6ba0a040bcee7646
 
     # [x  y]/[x y  ] case (general)
     else:
+<<<<<<< HEAD
         # [1  y]/[1 y  ] case is not possible anymore
         daughterCell.obs[0] = True  # survived G1
         daughterCell.obs[2] = data[parentPos][pColumn] - parentCell.obs[4]  # Time spent in G1
+=======
+        #[1  y]/[1 y  ] case is not possible anymore
+        daughterCell.obs[0] =  1  #survived G1
+        daughterCell.obs[2] = data[parentPos][pColumn] -  divisionTime#Time spent in G1
+        daughterCell.obs[4] = 1  #G1 uncensored
+>>>>>>> 21c8af1ec2a228979cc0296c6ba0a040bcee7646
 
         # [x  y] case (general)
         if math.isnan(data[parentPos][pColumn + 1]):
+<<<<<<< HEAD
             daughterCell.obs[1] = True  # survived G2
             daughterCell.obs[3] = data[parentPos][pColumn + 2] - data[parentPos][pColumn]  # Time spent in G2
         # [x y  ] case
         else:
             daughterCell.obs[1] = False  # died in G2
             daughterCell.obs[3] = data[parentPos][pColumn + 1] - data[parentPos][pColumn]  # Time spent in G2
+=======
+            daughterCell.obs[1] = float('nan') if (data[parentPos][pColumn+2] == 145) else 1  #survived G2
+            daughterCell.obs[3] = data[parentPos][pColumn+2]-data[parentPos][pColumn] #Time spent in G2
+        #[x y  ] case
+        else:
+            daughterCell.obs[1] = 0 #died in G2
+            daughterCell.obs[3] = data[parentPos][pColumn+1]-data[parentPos][pColumn] #Time spent in G2
+        #Time Censored Case ([x  145])
+        daughterCell.obs[5] = 0 if (data[parentPos][pColumn+2] == 145) else 1  #Censored if final time is 145, otherise uncensored
+
+>>>>>>> 21c8af1ec2a228979cc0296c6ba0a040bcee7646
     # find upper daughter
-    daughterCell.left = tryRecursion(pColumn, parentPos, upper, daughterCell, currentLineage, lineageSizeIndex, data, firstHalf)
+    daughterCell.left = tryRecursion(pColumn, parentPos, upper, daughterCell, currentLineage, lineageSizeIndex, data, data[parentPos][pColumn+2], firstHalf)
     # find lower daughter
-    daughterCell.right = tryRecursion(pColumn, lower, parentPos, daughterCell, currentLineage, lineageSizeIndex, data, firstHalf)
+    daughterCell.right = tryRecursion(pColumn, lower, parentPos, daughterCell, currentLineage, lineageSizeIndex, data, data[parentPos][pColumn+2], firstHalf)
 
     # add daughter to current Lineage
     currentLineage.append(daughterCell)
