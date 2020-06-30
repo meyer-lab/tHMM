@@ -67,24 +67,18 @@ def import_Heiser(path=r"lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xls
             if data[lPos][1] == data[lPos][1+2]:
 
                 #Time Censored [145  145]
-                if (data[lPos][1] == 145):  
-                    parentCell.obs[0] = float('nan')  #live/die G1
-                    parentCell.obs[4] = 0
-                #Not Time Censored [x=/=145   x=/=145]
-                else:
-                    parentCell.obs[0] = 0
-                    parentCell[4] = 1
-                    
+                parentCell.obs[0] = float('nan') if (data[lPos][1] == 145) else 0  #live/die G1
                 parentCell.obs[1] = float('nan') #Did not go to G2
                 parentCell.obs[2] = data[lPos][1] #Time Spent in G1
                 parentCell.obs[3] = float('nan') #Spent no time in G2
+                parentCell.obs[4] = 0 #G1 is always censored for the first cell
                 parentCell.obs[5] = float('nan') #G2 outcome unknown
             
             #[x  y]/[x y  ] case (general)
             else:
                 #[1  y]/[1 y  ] case
                 if data[lPos][1] == 1:
-                    parentCell.obs[0]  = 1  #did not start in G1
+                    parentCell.obs[0]  = 1  #did not start in G1, but did transition
                     parentCell.obs[2] = float('nan') #Spent no time in G1
                     parentCell.obs[4] = float('nan') #G1 outcome unknown
                     
@@ -92,7 +86,7 @@ def import_Heiser(path=r"lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xls
                 else:
                     parentCell.obs[0] = 1  #survived G1
                     parentCell.obs[2] = data[lPos][1] #Time spent in G1
-                    parentCell.obs[4] = 1 #G1 uncensored
+                    parentCell.obs[4] = 0 #G1 is always censored in the first cell
 
                 #[x  y] case (general)
                 if math.isnan(data[lPos][1 + 1]):
