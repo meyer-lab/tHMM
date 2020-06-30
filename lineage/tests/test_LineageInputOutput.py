@@ -25,7 +25,7 @@ class TestModel(unittest.TestCase):
         # manually setting up trees from Synth_data
         # 1
         self.parent1 = c(parent=None, gen=1, synthetic=False)
-        self.parent1.obs = [1, 1, 10, 10, 1, 1]
+        self.parent1.obs = [1, 1, 10, 10, 0, 1]
         self.left1 = c(parent=self.parent1, gen=2, synthetic=False)
         self.left1.obs = [1, 0, 10, 10, 1, 1]
         self.right1 = c(parent=self.parent1, gen=2, synthetic=False)
@@ -36,7 +36,7 @@ class TestModel(unittest.TestCase):
 
         # 2
         self.parent2 = c(parent=None, gen=1, synthetic=False)
-        self.parent2.obs = [1, 1, 10, 10, 1, 1]
+        self.parent2.obs = [1, 1, 10, 10, 0, 1]
         self.left2 = c(parent=self.parent2, gen=2, synthetic=False)
         self.left2.obs = [0, float('nan'), 60, float('nan'), 1, float('nan')]
         self.right2 = c(parent=self.parent2, gen=2, synthetic=False)
