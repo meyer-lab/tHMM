@@ -86,3 +86,8 @@ if __name__ == '__main__':
         # Overlay Figure 3b cartoon
         overlayCartoon(fdir + 'figure3B.svg',
                        f'{cartoon_dir}/figure3B.svg', 50, 40, scalee=0.24)
+
+    if sys.argv[1] == '0':
+        # Overlay Figure 0 cartoon
+        overlayCartoon(fdir + 'figure0.svg',
+                       f'{cartoon_dir}/lineageTree.svg', 0, 0, scalee=0.7)

@@ -5,10 +5,13 @@ the figure creation files.
 from string import ascii_lowercase
 from cycler import cycler
 import numpy as np
-from matplotlib import gridspec, pyplot as plt
+from Bio.Phylo.BaseTree import Tree, Clade
+from Bio import Phylo
+from matplotlib import gridspec, pylab, pyplot as plt
 import seaborn as sns
 import svgutils.transform as st
 from ..Analyze import run_Results_over, run_Analyze_over
+from ..LineageInputOutput import CensoredRecursive
 
 from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistributionExpon import StateDistribution as expon_state
@@ -159,6 +162,20 @@ def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1):
     template.append(cartoon)
     template.save(figFile)
 
+def plotLineage(lineage):
+    """
+    Makes lineage tree.
+    """
+
+    a = [Clade(lineage.full_lineage[0].obs[2]+lineage.full_lineage[0].obs[3])]
+
+    # input the root cells in the lineage
+    c = CensoredRecursive(lineage.full_lineage[0], a)
+
+    Phylo.draw(c)
+    pylab.axis('off')
+    pylab.savefig('lineage/figures/cartoons/lineageTree.svg',format='svg', bbox_inches='tight', dpi=300)
+#     plt.savefig("lineage/figures/cartoons/lineageTree.svg")
 
 def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """

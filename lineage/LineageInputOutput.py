@@ -199,4 +199,6 @@ def CensoredRecursive(cell, a):
         elif cell.obs[1] == 0:
             return Clade(branch_length=(cell.obs[2]+cell.obs[3]), color="blue") # dead in G2
         else:
-            return Clade(branch_length=(cell.obs[2]+cell.obs[3]), clades=[CensoredRecursive(cell.left, a), CensoredRecursive(cell.right, a)])
+            return Clade(branch_length=(cell.obs[2]+cell.obs[3]), 
+                         clades=[CensoredRecursive(cell.left, a), CensoredRecursive(cell.right, a)])
+
