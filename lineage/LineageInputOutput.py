@@ -3,7 +3,7 @@
 import pandas as pd
 import math
 from .CellVar import CellVar as c
-
+from Bio.Phylo.BaseTree import Tree, Clade
 
 def import_Heiser(path=r"lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xlsx"):
     """
@@ -174,3 +174,29 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeI
     # add daughter to current Lineage
     currentLineage.append(daughterCell)
     return daughterCell
+
+def fullRecursive(cell, a):
+    """ To plot the <full> binary tree based on inter-mitotic time (lifetime) of cells.
+    a should be: a = [Clade(lineage1.full_lineage[0].obs[2]+lineage1.full_lineage[0].obs[3])]
+    """
+    if cell.isLeaf():
+        return Clade(branch_length=(cell.obs[2]+cell.obs[3]))
+    else:
+        return Clade(branch_length=(cell.obs[2]+cell.obs[3]), clades=[fullRecursive(cell.left, a), fullRecursive(cell.right, a)])
+
+def CensoredRecursive(cell, a):
+    """ To plot the lineage while censored (from G1 or G2).
+    If cell died in G1, the lifetime of the cell until dies is shown in red.
+    If cell died in G2, the lifetime of the cell until dies is shown in blue.
+    If none of the above, the cell continues to divide and is shown in black.
+    a should be: a = [Clade(lineage1.full_lineage[0].obs[2]+lineage1.full_lineage[0].obs[3])]
+    """
+    if cell.isLeaf():
+        return Clade(branch_length=(cell.obs[2]+cell.obs[3]))
+    else:
+        if cell.obs[0] == 0:
+            return Clade(branch_length=(cell.obs[2]), color="red") # dead in G1
+        elif cell.obs[1] == 0:
+            return Clade(branch_length=(cell.obs[2]+cell.obs[3]), color="blue") # dead in G2
+        else:
+            return Clade(branch_length=(cell.obs[2]+cell.obs[3]), clades=[CensoredRecursive(cell.left, a), CensoredRecursive(cell.right, a)])
