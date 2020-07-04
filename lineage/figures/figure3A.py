@@ -99,7 +99,7 @@ def accuracy():
     return total_cellnum, dataframe, dataParams, paramTrues
 
 
-def figureMaker2(ax, total_cellnum, dataframe, dataParams, paramTrues):
+def figureMaker2(ax, dataframe, dataParams, paramTrues):
     """
     This makes figure 3A.
     """

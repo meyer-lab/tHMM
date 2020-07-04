@@ -1,9 +1,6 @@
 """ This file is to show the model works in case we have rare phenotypes. """
 import numpy as np
-import pandas as pd
-import scipy.stats as sp
 
-import seaborn as sns
 from .figureCommon import (
     getSetup,
     subplotLabel,
@@ -15,8 +12,6 @@ from .figureCommon import (
     num_data_points
 )
 from ..LineageTree import LineageTree
-from ..states.StateDistributionGaPhs import StateDistribution
-
 
 def makeFigure():
     """
@@ -64,12 +59,12 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E2)
 
-    percentageS1, _, accuracy, _, _, _ = commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
+    percentageS1, _, acc, _, _, _ = commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
 
     return percentageS1, accuracy
 
 
-def figureMaker2(ax, percentageS1, accuracy):
+def figureMaker2(ax, percentageS1, acc):
     """
     This makes figure 4.
     """
@@ -78,7 +73,7 @@ def figureMaker2(ax, percentageS1, accuracy):
     ax[i].axis('off')
     i += 1
     # state assignment accuracy
-    ax[i].scatter(percentageS1, accuracy)
+    ax[i].scatter(percentageS1, acc)
     ax[i].set_title("state assignemnt accuracy")
     ax[i].set_ylabel("accuracy (%)")
     ax[i].set_xlabel("% cells in S1")

@@ -5,8 +5,8 @@ the figure creation files.
 from string import ascii_lowercase
 from cycler import cycler
 import numpy as np
-from Bio.Phylo.BaseTree import Tree, Clade
 from Bio import Phylo
+from Bio.Phylo.BaseTree import Clade
 from matplotlib import gridspec, pylab, pyplot as plt
 import seaborn as sns
 import svgutils.transform as st
@@ -175,7 +175,6 @@ def plotLineage(lineage):
     Phylo.draw(c)
     pylab.axis('off')
     pylab.savefig('lineage/figures/cartoons/lineageTree.svg',format='svg', bbox_inches='tight', dpi=300)
-#     plt.savefig("lineage/figures/cartoons/lineageTree.svg")
 
 def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """

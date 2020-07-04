@@ -1,9 +1,9 @@
 """ The file contains the methods used to input lineage data from the Heiser lab. """
 
-import pandas as pd
 import math
+import pandas as pd
+from Bio.Phylo.BaseTree import Clade
 from .CellVar import CellVar as c
-from Bio.Phylo.BaseTree import Tree, Clade
 
 def import_Heiser(path=r"lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xlsx"):
     """
@@ -50,7 +50,7 @@ def import_Heiser(path=r"lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xls
             lPos += 1
 
         # checking if file for errors (if lineage# lines up)
-        if(lPos < len(data)):
+        if lPos < len(data):
             lineageNo += 1
             assert lineageNo == data[lPos][0]
 
@@ -163,7 +163,7 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeI
     if data[parentPos][pColumn] == data[parentPos][pColumn + 2]:
 
         # Time Censored [145  145]
-        if (data[pColumn][pColumn] == 145):
+        if data[pColumn][pColumn] == 145:
             daughterCell.obs[0] = float('nan')  # We don't know the outcome of G1
             daughterCell.obs[4] = 0  # G1 censored
 
@@ -228,6 +228,5 @@ def CensoredRecursive(cell, a):
         elif cell.obs[1] == 0:
             return Clade(branch_length=(cell.obs[2]+cell.obs[3]), color="blue") # dead in G2
         else:
-            return Clade(branch_length=(cell.obs[2]+cell.obs[3]), 
+            return Clade(branch_length=(cell.obs[2]+cell.obs[3]),
                          clades=[CensoredRecursive(cell.left, a), CensoredRecursive(cell.right, a)])
-
