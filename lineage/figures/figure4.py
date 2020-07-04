@@ -61,7 +61,7 @@ def accuracy():
 
     percentageS1, _, acc, _, _, _ = commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
 
-    return percentageS1, accuracy
+    return percentageS1, acc
 
 
 def figureMaker2(ax, percentageS1, acc):
