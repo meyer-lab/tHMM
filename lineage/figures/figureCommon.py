@@ -103,9 +103,10 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
     list_of_fE = kwargs.get("list_of_fE", [None] * len(list_of_populations))
+    predicted_num_states = kwargs.get("predicted_num_states", 2)
     parallel = kwargs.get("parallel", True)
     # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, 2, parallel=parallel, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
+    output = run_Analyze_over(list_of_populations, predicted_num_states, parallel=parallel, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
 
     # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)

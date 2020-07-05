@@ -181,6 +181,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         results_dict["wasserstein"] = wasserstein_distance(
             random.sample(obs_by_state_rand_sampled[0], num2use), random.sample(obs_by_state_rand_sampled[1], num2use)
         )
+    
 
     return results_dict
 
