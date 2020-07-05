@@ -3,7 +3,6 @@ from concurrent.futures import ProcessPoolExecutor
 import random
 import itertools
 import numpy as np
-from sklearn import metrics
 from sklearn.metrics import balanced_accuracy_score
 from scipy.stats import wasserstein_distance
 
@@ -193,7 +192,6 @@ def run_Results_over(output):
     :type output: list
     """
     results_holder = []
-    pred_states_bylin = []
     for _, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
         results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL))
 

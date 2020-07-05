@@ -174,7 +174,7 @@ def plotLineage(lineage):
 
     Phylo.draw(c)
     pylab.axis('off')
-    pylab.savefig('lineage/figures/cartoons/lineageTree.svg',format='svg', bbox_inches='tight', dpi=300)
+    pylab.savefig('lineage/figures/cartoons/lineageTree.svg', format='svg', bbox_inches='tight', dpi=300)
 
 def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """
