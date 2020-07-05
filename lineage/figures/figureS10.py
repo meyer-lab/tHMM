@@ -8,7 +8,7 @@ import numpy as np
 from matplotlib.ticker import MaxNLocator
 
 from .figureCommon import getSetup
-from ..Analyze import run_Analyze_over
+from ..Analyze import run_Analyze_over, Analyze
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
 
@@ -51,13 +51,23 @@ def run_AIC(relative_state_change, E, num_to_evaluate=10):
     lineages = []
     for _ in range(num_to_evaluate):
         lineages.append([LineageTree.init_from_parameters(pi, T, E, 2**7-1)])
-
-    AICs = np.empty((len(lineages), num_states_shown))
-    for states in range(0,num_states_shown):
-        output = run_Analyze_over(lineages, states+1)
-        for lineageNo in range(len(lineages)):  
-            AIC, _ = output[lineageNo][0].get_AIC(output[lineageNo][2])
-            AICs[lineageNo][states]= AIC[0]
+    
+    ls = []
+    for lineage in lineages:
+        ls.append(lineage[0])
+    AICs = np.empty((len(lineages), num_states_shown)) 
+    for state in range(num_states_shown):
+        tHMM, _, LL = Analyze(ls, state+1)
+        AIC, _ = tHMM.get_AIC(LL)
+        for lineage in range(len(lineages)):
+            AICs[lineage][state] = AIC[lineage]
+   
+   # AICs = np.empty((len(lineages), num_states_shown))
+   # for states in range(0,num_states_shown):
+       # output = run_Analyze_over(lineages, states+1)
+       # for lineageNo in range(len(lineages)):  
+           # AIC, _ = output[lineageNo][0].get_AIC(output[lineageNo][2])
+           # AICs[lineageNo][states]= AIC[0]
     
     return AICs.T
 
