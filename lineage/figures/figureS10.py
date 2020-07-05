@@ -15,7 +15,7 @@ from ..states.StateDistributionGamma import StateDistribution
 
 def makeFigure():
     """
-    Makes figure 7.
+    Makes figure 10.
     """
     ax, f = getSetup((7, 3), (1, 4))
 
@@ -37,47 +37,39 @@ def makeFigure():
 desired_num_states = np.arange(1, 6)
 
 
-def run_AIC(Trate, E, num_to_evaluate=10):
+def run_AIC(relative_state_change, E, num_to_evaluate=10):
     """
     Run's AIC for known lineages with known pi,
     and T values and stores the output for
     figure drawing.
     """
-    # Normalize the transition matrix
-    T = Trate + np.eye(len(E))
-    T = T / np.sum(T, axis=0)[np.newaxis, :]
+    num_states_shown = 5
+    pi = np.ones(len(E))/len(E)
+    T = (np.eye(len(E)) + relative_state_change)
+    T = T/np.sum(T, axis=1)[:,np.newaxis]
 
-    # pi: the initial probability vector
-    # make an even starting p
-    pi = np.ones(T.shape[0]) / T.shape[0]
+    lineages = []
+    for _ in range(num_to_evaluate):
+        lineages.append([LineageTree.init_from_parameters(pi, T, E, 2**7-1)])
 
-    list_of_populations = []
-    for idx in range(num_to_evaluate):
-        # Creating an unpruned and pruned lineage
-        list_of_populations.append([LineageTree(pi, T, E, (2 ** 8) - 1)])
-
-    AIC_holder = np.empty((len(desired_num_states), num_to_evaluate))
-    for ii, num_states_to_evaluate in enumerate(desired_num_states):
-        # Analyze the lineages in the list of populations
-        output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
-        # Collecting the results of analyzing the lineages
-        for idx, (tHMMobj, pred_states_by_lineage, _) in enumerate(output):
-            # Get the likelihood of states
-            LLtemp = tHMMobj.log_score(pred_states_by_lineage)
-            LL = np.sum(LLtemp)
-            AIC_holder[ii, idx] = tHMMobj.get_AIC(LL)[0]
-
-    return AIC_holder
+    AICs = np.empty((len(lineages), num_states_shown))
+    for states in range(0,num_states_shown):
+        output = run_Analyze_over(lineages, states+1)
+        for lineageNo in range(len(lineages)):  
+            AIC, _ = output[lineageNo][0].get_AIC(output[lineageNo][2])
+            AICs[lineageNo][states]= AIC[0]
+    
+    return AICs.T
 
 
 def figure_maker(ax, AIC_holder):
     """
-    Makes figure 11.
+    Makes figure 10.
     """
-    AIC_holder = AIC_holder - np.min(AIC_holder, axis=0)[np.newaxis, :]
+    AIC_holder = AIC_holder  #- np.min(AIC_holder, axis=0)[np.newaxis, :]
     ax.set_xlabel("Number of States")
     ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
-    ax.set_ylabel("Normalized AIC")
-    ax.set_ylim(0.0, 50.0)
+    ax.set_ylabel("AIC")
+    #ax.set_ylim(0.0, 50.0)
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     ax.set_title("State Assignment AIC")
