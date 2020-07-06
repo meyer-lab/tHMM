@@ -1,3 +1,9 @@
+#TODO     
+    #look at figure 5
+    #init_from_parameters(censor_condition=3, experiment_time = 1200)
+    #add a 4th column where there are 4 true states
+    #add a min marker to each lineage
+
 """
 File: figure10.py
 Purpose: Generates figure 10.
@@ -9,10 +15,11 @@ import numpy as np
 from matplotlib.ticker import MaxNLocator
 
 from .figureCommon import getSetup
-from ..Analyze import run_Analyze_over, Analyze
+from ..Analyze import run_Analyze_AIC
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
-
+# States to evaluate with the model
+desired_num_states = np.arange(1, 8)
 
 def makeFigure():
     """
@@ -27,15 +34,19 @@ def makeFigure():
     Etwo = [Sone, Stwo]
     Ethree = [Sone, Stwo, StateDistribution(0.40, 30, 1)]
 
-    figure_maker(ax[0], run_AIC(0.02, Eone))
-    figure_maker(ax[1], run_AIC(0.02, Etwo))
-    figure_maker(ax[2], run_AIC(0.02, Ethree))
+    AIC1 = run_AIC(0.02, Eone)
+    AIC2 = run_AIC(0.02, Etwo)
+    AIC3 = run_AIC(0.02, Ethree)
+    #Finding proper ylim range for all 3 graphs and rounding up
+    upper_ylim = int(1+max(np.max(np.ptp(AIC1, axis=0)), np.max(np.ptp(AIC2, axis=0)), np.max(np.ptp(AIC3, axis=0)))/25.0)*25
+
+    figure_maker(ax[0], AIC1,1,upper_ylim)
+    figure_maker(ax[1], AIC2,2, upper_ylim)
+    figure_maker(ax[2], AIC3,3, upper_ylim)
 
     return f
 
 
-# States to evaluate with the model
-desired_num_states = np.arange(1, 8)
 
 
 def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10):
@@ -44,69 +55,39 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10):
     and T values and stores the output for
     figure drawing.
     """
+    #Setting up pi and Transition matrix T:
+    #   pi: All states have equal initial probabilities
+    #   T:  States have high likelihood of NOT changing, with frequency of change determined mostly by the relative_state_change variable
+    #           (If relative_state_change>1 then states are more likely to change than stay the same)
     pi = np.ones(len(E))/len(E)
     T = (np.eye(len(E)) + relative_state_change)
     T = T/np.sum(T, axis=1)[:,np.newaxis]
 
+    #Creating lineages from provided E and generated pi and T
     lineages = [LineageTree.init_from_parameters(pi, T, E, 2**6-1) for _ in range(num_lineages_to_evaluate)]
 
-   # AICs = np.empty((len(lineages), num_states_shown)) 
-   # for state in range(num_states_shown):
-   #     tHMM, _, LL = Analyze(lineages, state+1)
-   #     AIC, _ = tHMM.get_AIC(LL)
-   #     for lineage in range(len(lineages)):
-   #         AICs[lineage][state] = AIC[lineage]
-   
-    AICs = np.empty((len(lineages), len(desired_num_states)))
+    #Creating np array to store AICs (better for plotting)
+    AICs = np.empty((len(desired_num_states), len(lineages)))
+    #runnning analysis
     output = run_Analyze_AIC(lineages, desired_num_states)
-    for idx, states in enumerate(desired_num_states):
+    #storing AICs from output
+    for idx in range(len(desired_num_states)):
+        #getting AICs for each lineage from created model
         AIC, _ = output[idx][0].get_AIC(output[idx][2])
-        for lineageNo in range(len(lineages)):
-            AICs[lineageNo][idx]= AIC[lineageNo]
+        AICs[idx] = np.array([ind_AIC for ind_AIC in AIC])
     
-    return AICs.T
+    return AICs 
 
-
-def run_Analyze_AIC(population, state_list, **kwargs):
-    """
-    A function that can be parallelized to speed up figure creation.
-
-    This function is the outermost for-loop we will end up using
-    when analyzing heterogenous populations or lineages.
-
-    Analyze is the bottleneck in the figure creation process. The
-    rest of the code involved in figure creation deals with collecting
-    and computing certain statistics, most of which can be done in an
-    additional for loop over the results from Analyze.
-
-    :param population: A list of populations that contain lineages.
-    :type: list
-    :param state_list: An integer number of states to identify (a hyper-parameter of our model)
-    :type state_list: Int
-    """
-    list_of_fpi = kwargs.get("list_of_fpi", [None] * len(population))
-    list_of_fT = kwargs.get("list_of_fT", [None] * len(population))
-    list_of_fE = kwargs.get("list_of_fE", [None] * len(population))
-    output = []
-    exe = ProcessPoolExecutor()
-
-    prom_holder = []
-    for idx, num_states in enumerate(state_list):
-        prom_holder.append(exe.submit(Analyze, population, num_states, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
-
-    for _, prom in enumerate(prom_holder):
-        output.append(prom.result())
-
-    return output
-
-def figure_maker(ax, AIC_holder):
+def figure_maker(ax, AIC_holder, true_state_no, upper_ylim):
     """
     Makes figure 10.
     """
-    AIC_holder = AIC_holder  #- np.min(AIC_holder, axis=0)[np.newaxis, :]
-    ax.set_xlabel("Number of States")
+    AIC_holder = AIC_holder  - np.min(AIC_holder, axis=0)[np.newaxis, :]
+    ax.set_xlabel("Number of States Predicted")
     ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
-    ax.set_ylabel("AIC")
-    #ax.set_ylim(0.0, 50.0)
+    ax.set_ylabel("Normalized AIC")
+    ax.set_ylim(0.0, upper_ylim)
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-    ax.set_title("State Assignment AIC")
+    title =f"AIC Under {true_state_no} True "
+    title += "States" if true_state_no!=1 else "State"
+    ax.set_title(title)
