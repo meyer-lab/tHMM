@@ -44,7 +44,6 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10):
     and T values and stores the output for
     figure drawing.
     """
-    num_states_shown = 5
     pi = np.ones(len(E))/len(E)
     T = (np.eye(len(E)) + relative_state_change)
     T = T/np.sum(T, axis=1)[:,np.newaxis]
@@ -58,7 +57,7 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10):
    #     for lineage in range(len(lineages)):
    #         AICs[lineage][state] = AIC[lineage]
    
-    AICs = np.empty((len(lineages), num_states_shown))
+    AICs = np.empty((len(lineages), len(desired_num_states)))
     output = run_Analyze_AIC(lineages, desired_num_states)
     for idx, states in enumerate(desired_num_states):
         AIC, _ = output[idx][0].get_AIC(output[idx][2])
