@@ -23,9 +23,9 @@ def CensoredRecursive(cell, a):
         return Clade(branch_length=(cell.time))
     else:
         if cell.obs[0] == 0:
-            return Clade(branch_length=(cell.time), color="red") # dead in G1
+            return Clade(branch_length=(cell.obs[2]), color="red") # dead in G1
         elif cell.obs[1] == 0:
-            return Clade(branch_length=(cell.time), color="blue") # dead in G2
+            return Clade(branch_length=(cell.obs[2]+cell.obs[3]), color="blue") # dead in G2
         else:
             return Clade(branch_length=(cell.time),
                          clades=[CensoredRecursive(cell.left, a), CensoredRecursive(cell.right, a)])
