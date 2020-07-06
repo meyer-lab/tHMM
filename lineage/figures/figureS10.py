@@ -4,6 +4,7 @@ Purpose: Generates figure 10.
 
 AIC.
 """
+from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 
@@ -92,7 +93,7 @@ def run_Analyze_AIC(population, state_list, **kwargs):
     exe = ProcessPoolExecutor()
 
     prom_holder = []
-    for idx, num_states in enumerate(states_list):
+    for idx, num_states in enumerate(state_list):
         prom_holder.append(exe.submit(Analyze, population, num_states, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
     for _, prom in enumerate(prom_holder):
