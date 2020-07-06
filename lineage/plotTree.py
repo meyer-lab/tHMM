@@ -1,6 +1,7 @@
 """ In this file we plot! """
 
 from Bio.Phylo.BaseTree import Clade
+from Bio import Phylo
 
 def fullRecursive(cell, a):
     """ To plot the <full> binary tree based on inter-mitotic time (lifetime) of cells.

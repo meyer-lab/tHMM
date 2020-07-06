@@ -5,8 +5,6 @@ the figure creation files.
 from string import ascii_lowercase
 from cycler import cycler
 import numpy as np
-from Bio import Phylo
-from Bio.Phylo.BaseTree import Clade
 from matplotlib import gridspec, pylab, pyplot as plt
 import seaborn as sns
 import svgutils.transform as st
