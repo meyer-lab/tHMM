@@ -50,7 +50,7 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10):
     T = T/np.sum(T, axis=1)[:,np.newaxis]
 
     lineages = [LineageTree.init_from_parameters(pi, T, E, 2**7-1) for _ in range(num_lineages_to_evaluate)]
-    state_list = np.arange(1,6)
+    state_list = np.arange(1,8)
 
    # AICs = np.empty((len(lineages), num_states_shown)) 
    # for state in range(num_states_shown):
