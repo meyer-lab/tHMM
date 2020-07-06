@@ -3,7 +3,6 @@
 import pandas as pd
 import seaborn as sns
 from .figureCommon import (
-    plotLineage,
     getSetup,
     subplotLabel,
     pi,
@@ -12,11 +11,12 @@ from .figureCommon import (
 )
 from ..LineageTree import LineageTree
 from ..Analyze import Analyze
+from ..plotTree import plotLineage
 
 lineage1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8-1)
 x = [lineage1]
 
-plotLineage(lineage1)
+plotLineage(lineage1, 'lineage/figures/cartoons/lineageTree.svg')
 
 def makeFigure():
     """

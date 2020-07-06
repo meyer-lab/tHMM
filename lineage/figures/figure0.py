@@ -16,7 +16,7 @@ def makeFigure():
 
 def figureMaker(ax):
     """
-    This makes figure 3B.
+    This makes figure 0.
     """
     # cartoon to show different shapes --> similar shapes
     ax[0].axis('off')
