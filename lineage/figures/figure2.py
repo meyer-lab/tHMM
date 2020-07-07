@@ -20,9 +20,8 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((5.0, 7.5), (3, 2))
-    lineage1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8 - 1)
-    x = [lineage1]
-    figureMaker2(ax, *forHistObs(x))
+
+    figureMaker2(ax, *forHistObs(LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8 - 1)))
 
     subplotLabel(ax)
 
