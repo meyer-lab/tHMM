@@ -185,6 +185,8 @@ def fate_censor(cell):
             cell.obs[1] = float('nan')  # unobserved
             cell.obs[3] = float('nan')  # unobserved
             cell.obs[5] = float('nan')  # unobserved
+            cell.time.endT = cell.time.startT + cell.obs[2]
+            cell.time.transition_time = cell.time.endT
 
 
 def time_censor(cell, desired_experiment_time):
