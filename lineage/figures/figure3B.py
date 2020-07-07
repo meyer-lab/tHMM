@@ -65,7 +65,6 @@ def accuracy():
         list_of_fE.append(E)
 
     wass, _, Accuracy, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass")
-    print(paramTrues.shape)
     total = []
     for i in range(4):
         tmp1 = list(sp.gamma.rvs(a=paramTrues[i, 0, 3], loc=0.0,
@@ -94,7 +93,9 @@ def accuracy():
             newwass[indx] = np.round(np.mean(wass[int(maxx * 3 / 4):int(maxx)]), 2)
 
     dataframe['state acc.'] = Accuracy
-    dataframe['Wasserestein distance'] = newwass
+    dataframe['Wasserestein distance'] = wass
+    print("this is newwass", newwass)
+    print("this is acc", Accuracy)
 
     return dataframe, violinDF
 

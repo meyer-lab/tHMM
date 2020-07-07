@@ -20,12 +20,6 @@ def makeFigure():
 
     figureMaker(ax)
 
-    lineage_uncensored = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8 - 1)
-    plotLineage(lineage_uncensored, 'lineage/figures/cartoons/lineage_uncensored.svg')
-
-    lineage_censored = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8 - 1, censor_condition=3, desired_experiment_time=200)
-    plotLineage(lineage_censored, 'lineage/figures/cartoons/lineage_censored.svg')
-
     return f
 
 
