@@ -9,7 +9,7 @@ from matplotlib.ticker import MaxNLocator
 
 from .figureCommon import getSetup
 from ..Analyze import run_Analyze_over
-from ..LineageTree import LineageTree
+# from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
 
 
@@ -49,12 +49,12 @@ def run_AIC(Trate, E, num_to_evaluate=10):
 
     # pi: the initial probability vector
     # make an even starting p
-    pi = np.ones(T.shape[0]) / T.shape[0]
+    #pi = np.ones(T.shape[0]) / T.shape[0]
 
     list_of_populations = []
-    for idx in range(num_to_evaluate):
-        # Creating an unpruned and pruned lineage
-        list_of_populations.append([LineageTree(pi, T, E, (2 ** 8) - 1)])
+    #for idx in range(num_to_evaluate):
+    # Creating an unpruned and pruned lineage
+    # list_of_populations.append([LineageTree(pi, T, E, (2 ** 8) - 1)])
 
     AIC_holder = np.empty((len(desired_num_states), num_to_evaluate))
     for ii, num_states_to_evaluate in enumerate(desired_num_states):

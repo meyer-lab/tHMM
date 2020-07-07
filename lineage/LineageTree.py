@@ -17,7 +17,7 @@ class LineageTree:
 
     def __init__(self, list_of_cells, E, synthetic=False):
         self.E = E
-        self.output_lineage = sorted(list_of_cells, key=operator.attrgetter('gen'))
+        self.output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
         self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
         if not synthetic:
             # assign times using the state distribution specific time model
@@ -48,13 +48,12 @@ class LineageTree:
         """
         pi_num_states = len(pi)
         T_shape = T.shape
-        assert (
-            T_shape[0] == T_shape[1]
-        ), "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
+        assert T_shape[0] == T_shape[1], "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
         T_num_states = T.shape[0]
         E_num_states = len(E)
-        assert pi_num_states == T_num_states == E_num_states, \
-            f"The number of states in your input Markov probability parameters are mistmatched. \
+        assert (
+            pi_num_states == T_num_states == E_num_states
+        ), f"The number of states in your input Markov probability parameters are mistmatched. \
         \nPlease check that the dimensions and states match. \npi {pi} \nT {T} \nE {E}"
 
         num_states = pi_num_states
