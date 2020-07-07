@@ -15,12 +15,13 @@ class LineageTree:
     The lineage tree is then censord based on the censor condition.
     """
 
-    def __init__(self, list_of_cells, E):
+    def __init__(self, list_of_cells, E, synthetic=False):
         self.E = E
         self.output_lineage = sorted(list_of_cells, key=operator.attrgetter('gen'))
         self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
-        # assign times using the state distribution specific time model
-        E[0].assign_times(self.output_list_of_gens)
+        if not synthetic:
+            # assign times using the state distribution specific time model
+            E[0].assign_times(self.output_list_of_gens)
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
 
     @classmethod
@@ -70,7 +71,7 @@ class LineageTree:
 
         output_lineage = E[0].censor_lineage(censor_condition, full_list_of_gens, full_lineage, **kwargs)
 
-        lineageObj = cls(output_lineage, E)
+        lineageObj = cls(output_lineage, E, synthetic=True)
 
         lineageObj.pi = pi
         lineageObj.T = T

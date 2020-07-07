@@ -2,6 +2,7 @@
 import numpy as np
 import scipy.stats as sp
 
+from .stateCommon import basic_censor
 from ..CellVar import Time
 
 
@@ -85,7 +86,6 @@ class StateDistribution:
 
         output_lineage = []
         for gen_minus_1, level in enumerate(full_list_of_gens[1:]):
-            true_gen = gen_minus_1 + 1  # generations are 1-indexed
             for cell in level:
                 basic_censor(cell)
                 if cell.observed:

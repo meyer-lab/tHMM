@@ -1,7 +1,5 @@
 """ This file contains functions for plotting different phenotypes in the manuscript. """
 
-import math
-import numpy as np
 import pandas as pd
 import seaborn as sns
 from .figureCommon import (
@@ -14,9 +12,6 @@ from .figureCommon import (
 from ..LineageTree import LineageTree
 from ..Analyze import Analyze
 
-lineage1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=1023)
-x = [lineage1]
-
 
 def makeFigure():
     """
@@ -26,7 +21,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((5.0, 7.5), (3, 2))
 
-    figureMaker2(ax, *forHistObs(x))
+    figureMaker2(ax, *forHistObs([LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8 - 1)]))
 
     subplotLabel(ax)
 

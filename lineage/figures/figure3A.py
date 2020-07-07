@@ -96,10 +96,10 @@ def accuracy():
     dataParams['T and pi'] = np.concatenate((transition_matrix_norm, pi_vector_norm), axis=0)
     dataParams['hue'] = ['T'] * len(transition_matrix_norm) + ['pi'] * len(pi_vector_norm)
 
-    return total_cellnum, dataframe, dataParams, paramTrues
+    return dataframe, dataParams, paramTrues
 
 
-def figureMaker2(ax, total_cellnum, dataframe, dataParams, paramTrues):
+def figureMaker2(ax, dataframe, dataParams, paramTrues):
     """
     This makes figure 3A.
     """
