@@ -2,6 +2,9 @@
 import numpy as np
 
 
+# pylint: disable=too-many-nested-blocks
+
+
 def get_leaf_deltas(tHMMobj):
     """Delta matrix and base case at the leaves. Each element in this N by K matrix is the probability for the leaves :math:`P(x_n = x | z_n = k)`.
 

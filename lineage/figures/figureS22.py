@@ -10,7 +10,6 @@ from .figureCommon import (
     getSetup,
     subplotLabel,
     commonAnalyze,
-    figureMaker,
     pi,
     T,
     E2,
