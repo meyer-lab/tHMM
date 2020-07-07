@@ -52,7 +52,7 @@ def run_AIC(Trate, E, num_to_evaluate=10):
     #pi = np.ones(T.shape[0]) / T.shape[0]
 
     list_of_populations = []
-    #for idx in range(num_to_evaluate):
+    # for idx in range(num_to_evaluate):
     # Creating an unpruned and pruned lineage
     # list_of_populations.append([LineageTree(pi, T, E, (2 ** 8) - 1)])
 
