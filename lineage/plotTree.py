@@ -14,17 +14,15 @@ def CladeRecursive(cell, a):
     https://github.com/biopython/biopython/blob/fce4b11b4b8e414f1bf093a76e04a3260d782905/Bio/Phylo/BaseTree.py#L801
     """
     if cell.isLeaf():
-         if cell.time.transition_time >= cell.time.endT:  # the cell transitioned in G1
-            return Clade(branch_length=cell.time.endT - cell.time.startT, color="gray") # dead in G1
+        if cell.time.transition_time >= cell.time.endT:  # the cell transitioned in G1
+            return Clade(branch_length=cell.time.endT - cell.time.startT, color="gray")  # dead in G1
         elif cell.time.transition_time < cell.time.endT: # the cell spent some time in G2
             return Clade(branch_length=cell.time.endT - cell.time.startT, color="red") # dead in G2    
     else:
         if cell.time.transition_time >= cell.time.endT:
-            return Clade(branch_length=cell.time.endT - cell.time.startT,
-                         clades=[CladeRecursive(cell.left, a), CladeRecursive(cell.right, a)], color="gray")
-        elif cell.time.transition_time < cell.time.endT: # the cell spent some time in G2
-            return Clade(branch_length=cell.time.endT - cell.time.startT,
-                         clades=[CladeRecursive(cell.left, a), CladeRecursive(cell.right, a)], color="red")
+            return Clade(branch_length=cell.time.endT - cell.time.startT, clades=[CladeRecursive(cell.left, a), CladeRecursive(cell.right, a)], color="gray")
+        elif cell.time.transition_time < cell.time.endT:
+            return Clade(branch_length=cell.time.endT - cell.time.startT, clades=[CladeRecursive(cell.left, a), CladeRecursive(cell.right, a)], color="red")
 
 def plotLineage(lineage, path):
     """
