@@ -49,6 +49,7 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
     separate functions.
     """
     if tHMMobj.estimate.fpi is None:
+        print("doing stuff")
         tHMMobj.estimate.pi = do_M_pi_step(tHMMobj, gammas)
 
     if tHMMobj.estimate.fT is None:

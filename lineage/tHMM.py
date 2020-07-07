@@ -33,6 +33,7 @@ class estimate:
             self.E = [X[0].E[0].__class__() for _ in range(self.num_states)]
         else:
             self.E = self.fE
+        print(self.E[0], self.E[1])
 
 
 class tHMM:
@@ -63,9 +64,10 @@ class tHMM:
         """Runs the tHMM function through Baum Welch fitting"""
 
         # Step 0: initialize with random assignments and do an M step
-        random_gammas = [sp.multinomial.rvs(n=1, p=[1. / self.num_states] * self.num_states, size=len(lineage))
-                         for lineage in self.X]
-        do_M_E_step(self, random_gammas)
+        if self.fE is not None:
+            random_gammas = [sp.multinomial.rvs(n=1, p=[1. / self.num_states] * self.num_states, size=len(lineage))
+                             for lineage in self.X]
+            do_M_E_step(self, random_gammas)
 
         # Step 1: first E step
         MSD, NF, betas, gammas = do_E_step(self)
