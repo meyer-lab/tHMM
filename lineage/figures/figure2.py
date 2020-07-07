@@ -1,4 +1,4 @@
-""" This file contains functions for plotting different phenotypes in the manuscript. """
+""" This file contains functions for plotting different phenotypes in the manuscript. """ 
 
 import pandas as pd
 import seaborn as sns
