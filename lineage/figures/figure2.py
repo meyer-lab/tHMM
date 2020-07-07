@@ -11,12 +11,7 @@ from .figureCommon import (
 )
 from ..LineageTree import LineageTree
 from ..Analyze import Analyze
-from ..plotTree import plotLineage
 
-lineage1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8-1)
-x = [lineage1]
-
-plotLineage(lineage1, 'lineage/figures/cartoons/lineageTree.svg')
 
 def makeFigure():
     """
@@ -25,7 +20,8 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((5.0, 7.5), (3, 2))
-
+    lineage1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8 - 1)
+    x = [lineage1]
     figureMaker2(ax, *forHistObs(x))
 
     subplotLabel(ax)

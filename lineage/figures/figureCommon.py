@@ -9,7 +9,6 @@ from matplotlib import gridspec, pyplot as plt
 import seaborn as sns
 import svgutils.transform as st
 from ..Analyze import run_Results_over, run_Analyze_over
-from ..plotTree import CensoredRecursive
 
 from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistributionExpon import StateDistribution as expon_state
@@ -159,6 +158,7 @@ def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1):
 
     template.append(cartoon)
     template.save(figFile)
+
 
 def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """

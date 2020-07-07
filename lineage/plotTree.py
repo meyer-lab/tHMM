@@ -1,8 +1,10 @@
 """ In this file we plot! """
 
+import math
 from Bio.Phylo.BaseTree import Clade
 from Bio import Phylo
 from matplotlib import pylab
+
 
 def CladeRecursive(cell, a):
     """ To plot the lineage while censored (from G1 or G2).
@@ -14,25 +16,28 @@ def CladeRecursive(cell, a):
     https://github.com/biopython/biopython/blob/fce4b11b4b8e414f1bf093a76e04a3260d782905/Bio/Phylo/BaseTree.py#L801
     """
     if cell.isLeaf():
-        if cell.time.transition_time >= cell.time.endT:  # the cell transitioned in G1
-            return Clade(branch_length=cell.time.endT - cell.time.startT, color="gray")  # dead in G1
-        elif cell.time.transition_time < cell.time.endT: # the cell spent some time in G2
-            return Clade(branch_length=cell.time.endT - cell.time.startT, color="red") # dead in G2    
+        if cell.time.transition_time >= cell.time.endT:  # the cell died in G1
+            return Clade(branch_length=cell.time.endT - cell.time.startT, color="red")
+        else:  # the cell spent some time in G2
+            return Clade(branch_length=cell.time.endT - cell.time.startT, color="blue")  # dead in G2
     else:
-        if cell.time.transition_time >= cell.time.endT:
-            return Clade(branch_length=cell.time.endT - cell.time.startT, clades=[CladeRecursive(cell.left, a), CladeRecursive(cell.right, a)], color="gray")
-        elif cell.time.transition_time < cell.time.endT:
-            return Clade(branch_length=cell.time.endT - cell.time.startT, clades=[CladeRecursive(cell.left, a), CladeRecursive(cell.right, a)], color="red")
+        clades = []
+        if cell.left is not None and cell.left.observed:
+            clades.append(CladeRecursive(cell.left, a))
+        if cell.right is not None and cell.right.observed:
+            clades.append(CladeRecursive(cell.right, a))
+        return Clade(branch_length=cell.time.endT - cell.time.startT, clades=clades, color="olive")
+
 
 def plotLineage(lineage, path):
     """
     Makes lineage tree.
     """
 
-    a = [Clade(lineage.full_lineage[0].time.endT - lineage.full_lineage[0].time.startT)]
+    a = [Clade(lineage.output_lineage[0].time.endT)]
 
     # input the root cells in the lineage
-    c = CladeRecursive(lineage.full_lineage[0], a)
+    c = CladeRecursive(lineage.output_lineage[0], a)
 
     Phylo.draw(c)
     pylab.axis('off')
