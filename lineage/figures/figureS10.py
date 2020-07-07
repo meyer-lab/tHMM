@@ -1,8 +1,13 @@
 #TODO     
-    #look at figure 5
-    #init_from_parameters(censor_condition=3, experiment_time = 1200)
-    #add a 4th column where there are 4 true states
-    #add a min marker to each lineage
+    #tweak state 4
+    #add more cells/tweak states for censored cells?
+
+    #Add better visual for best prediction
+    #Ideas:
+    #add a min marker to each lineage (this works betterfor unnormalized)
+    #Histogram plot w/ each graph
+    #usually easy to tell for normalized plot so leave it?
+    
 
 """
 File: figure10.py
@@ -25,7 +30,7 @@ def makeFigure():
     """
     Makes figure 10.
     """
-    ax, f = getSetup((7, 3), (1, 3))
+    ax, f = getSetup((10, 6), (2, 4))
 
     # bern, gamma_a, gamma_scale
     Sone = StateDistribution(0.99, 20, 5)
@@ -33,23 +38,39 @@ def makeFigure():
     Eone = [Sone, Sone]
     Etwo = [Sone, Stwo]
     Ethree = [Sone, Stwo, StateDistribution(0.40, 30, 1)]
+    Efour = [Sone, Stwo, StateDistribution(0.40, 30, 1),StateDistribution(0.9, 60, 10)]
 
     AIC1 = run_AIC(0.02, Eone)
     AIC2 = run_AIC(0.02, Etwo)
     AIC3 = run_AIC(0.02, Ethree)
-    #Finding proper ylim range for all 3 graphs and rounding up
-    upper_ylim = int(1+max(np.max(np.ptp(AIC1, axis=0)), np.max(np.ptp(AIC2, axis=0)), np.max(np.ptp(AIC3, axis=0)))/25.0)*25
+    AIC4 = run_AIC(0.02, Efour)
 
-    figure_maker(ax[0], AIC1,1,upper_ylim)
+    #Finding proper ylim range for all 4 graphs and rounding up
+    upper_ylim = int(1+max(np.max(np.ptp(AIC1, axis=0)), np.max(np.ptp(AIC2, axis=0)), np.max(np.ptp(AIC3, axis=0)), np.max(np.ptp(AIC4, axis=0)))/25.0)*25
+
+    AIC5 = run_AIC(0.02, Eone, 10,True)
+    AIC6 = run_AIC(0.02, Etwo,10, True)
+    AIC7 = run_AIC(0.02, Ethree, 10,True)
+    AIC8 = run_AIC(0.02, Efour, 10,True)
+    
+    #Finding proper ylim range for all 4 censored graphs and rounding up
+    upper_ylim_censored= int(1+max(np.max(np.ptp(AIC5, axis=0)), np.max(np.ptp(AIC6, axis=0)), np.max(np.ptp(AIC7, axis=0)), np.max(np.ptp(AIC8, axis=0)))/25.0)*25
+
+    figure_maker(ax[0], AIC1,1,upper_ylim)  
     figure_maker(ax[1], AIC2,2, upper_ylim)
     figure_maker(ax[2], AIC3,3, upper_ylim)
+    figure_maker(ax[3], AIC4,4, upper_ylim)
+    figure_maker(ax[4], AIC5,1,upper_ylim_censored, True)
+    figure_maker(ax[5], AIC6,2, upper_ylim_censored, True)
+    figure_maker(ax[6], AIC7,3, upper_ylim_censored, True)
+    figure_maker(ax[7], AIC8,4, upper_ylim_censored, True)
 
     return f
 
 
 
 
-def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10):
+def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10, censored= False):
     """
     Run's AIC for known lineages with known pi,
     and T values and stores the output for
@@ -64,7 +85,11 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10):
     T = T/np.sum(T, axis=1)[:,np.newaxis]
 
     #Creating lineages from provided E and generated pi and T
-    lineages = [LineageTree.init_from_parameters(pi, T, E, 2**6-1) for _ in range(num_lineages_to_evaluate)]
+    if censored:
+        lineages = [LineageTree.init_from_parameters(pi, T, E, 2**6-1, censor_condition = 3, experiment_time = 1200) for _ in range(num_lineages_to_evaluate)]
+
+    else:
+        lineages =  [LineageTree.init_from_parameters(pi, T, E, 2**6-1) for _ in range(num_lineages_to_evaluate)]
 
     #Creating np array to store AICs (better for plotting)
     AICs = np.empty((len(desired_num_states), len(lineages)))
@@ -78,7 +103,7 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10):
     
     return AICs 
 
-def figure_maker(ax, AIC_holder, true_state_no, upper_ylim):
+def figure_maker(ax, AIC_holder, true_state_no, upper_ylim, censored = False):
     """
     Makes figure 10.
     """
@@ -88,6 +113,7 @@ def figure_maker(ax, AIC_holder, true_state_no, upper_ylim):
     ax.set_ylabel("Normalized AIC")
     ax.set_ylim(0.0, upper_ylim)
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-    title =f"AIC Under {true_state_no} True "
+    title = "Censored " if censored else ""
+    title +=f"AIC Under {true_state_no} True "
     title += "States" if true_state_no!=1 else "State"
     ax.set_title(title)
