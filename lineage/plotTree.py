@@ -4,15 +4,6 @@ from Bio.Phylo.BaseTree import Clade
 from Bio import Phylo
 from matplotlib import pylab
 
-def fullRecursive(cell, a):
-    """ To plot the <full> binary tree based on inter-mitotic time (lifetime) of cells.
-    a should be: a = [Clade(lineage1.full_lineage[0].obs[2]+lineage1.full_lineage[0].obs[3])]
-    """
-    if cell.isLeaf():
-        return Clade(branch_length=(cell.time.endT - cell.time.startT))
-    else:
-        return Clade(branch_length=(cell.time.endT - cell.time.startT), clades=[fullRecursive(cell.left, a), fullRecursive(cell.right, a)])
-
 def CensoredRecursive(cell, a):
     """ To plot the lineage while censored (from G1 or G2).
     If cell died in G1, the lifetime of the cell until dies is shown in red.
