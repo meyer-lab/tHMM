@@ -9,7 +9,7 @@ from .figureCommon import (
     pi,
     E2,
     T,
-    max_desired_num_cells,
+    min_desired_num_cells,
     min_num_lineages,
     max_num_lineages,
     lineage_good_to_analyze,
@@ -55,7 +55,7 @@ def accuracy():
 
             good2go = False
             while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, max_desired_num_cells)
+                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, min_desired_num_cells)
                 good2go = lineage_good_to_analyze(tmp_lineage)
 
             population.append(tmp_lineage)
