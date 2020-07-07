@@ -205,6 +205,7 @@ def time_censor(cell, desired_experiment_time):
             cell.right.observed = False
 
     if cell.time.transition_time > desired_experiment_time:
+        cell.time.endT = desired_experiment_time
         cell.time.transition_time = desired_experiment_time
         cell.obs[0] = float('nan')  # unobserved
         cell.obs[1] = float('nan')  # unobserved
