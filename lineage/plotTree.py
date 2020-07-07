@@ -15,12 +15,16 @@ def CladeRecursive(cell, a):
     """
     if cell.isLeaf():
          if cell.time.transition_time >= cell.time.endT:  # the cell transitioned in G1
-            return Clade(branch_length=cell.time.endT - cell.time.startT, color="red") # dead in G1
+            return Clade(branch_length=cell.time.endT - cell.time.startT, color="gray") # dead in G1
         elif cell.time.transition_time < cell.time.endT: # the cell spent some time in G2
-            return Clade(branch_length=cell.time.endT - cell.time.startT, color="blue") # dead in G2    
+            return Clade(branch_length=cell.time.endT - cell.time.startT, color="red") # dead in G2    
     else:
-        return Clade(branch_length=cell.time.endT - cell.time.startT,
-                         clades=[CladeRecursive(cell.left, a), CladeRecursive(cell.right, a)])
+        if cell.time.transition_time >= cell.time.endT:
+            return Clade(branch_length=cell.time.endT - cell.time.startT,
+                         clades=[CladeRecursive(cell.left, a), CladeRecursive(cell.right, a)], color="gray")
+        elif cell.time.transition_time < cell.time.endT: # the cell spent some time in G2
+            return Clade(branch_length=cell.time.endT - cell.time.startT,
+                         clades=[CladeRecursive(cell.left, a), CladeRecursive(cell.right, a)], color="red")
 
 def plotLineage(lineage, path):
     """
