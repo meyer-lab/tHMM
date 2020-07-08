@@ -33,15 +33,8 @@ def makeFigure():
     return f
 
 
-def accuracy():
-    """
-    Calculates accuracy and parameter estimation
-    over an increasing number of cells in a lineage for
-    a uncensored two-state model but differing state distribution.
-    We vary the distribution by
-    increasing the Wasserstein divergence between the two states.
-    """
-
+def repeat():
+    """ A Helper function to create more random copies of a population. """
     # Creating a list of populations to analyze over
     list_of_Es = [[StateDistribution(0.99, 0.8, 12, a, 10, 5), StateDistribution(0.99, 0.75, 12, 1, 9, 4)] for a in np.linspace(1, 10, 4)]
     list_of_populations = []
@@ -63,8 +56,25 @@ def accuracy():
         list_of_fpi.append(pi)
         list_of_fT.append(T)
         list_of_fE.append(E)
+    return list_of_fpi, list_of_populations
 
-    wass, _, Accuracy, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass")
+def accuracy():
+    """
+    Calculates accuracy and parameter estimation
+    over an increasing number of cells in a lineage for
+    a uncensored two-state model but differing state distribution.
+    We vary the distribution by
+    increasing the Wasserstein divergence between the two states.
+    """
+
+    Wass = []
+    accuracies = []
+    for j in range(10):
+        list_of_fpi, list_of_populations = repeat()
+        wass, _, Accuracy, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass", list_of_fpi=list_of_fpi)
+        Wass.append(wass)
+        accuracies.append(Accuracy)
+
     total = []
     for i in range(4):
         tmp1 = list(sp.gamma.rvs(a=paramTrues[i, 0, 3], loc=0.0,
@@ -74,28 +84,30 @@ def accuracy():
                                  scale=paramTrues[i, 1, 5], size=200))
         total.append(tmp2)
 
+    # for the violin plot (distributions)
     violinDF = pd.DataFrame(columns=['G2 lifetime', 'state', 'distributions'])
     violinDF['G2 lifetime'] = list(itertools.chain.from_iterable(total))
     violinDF['state'] = 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2]
     violinDF['distributions'] = 400 * ['very similar'] + 400 * ['similar'] + 400 * ['different'] + 400 * ['very different']
 
+    # for the boxplot (accuracies)
     dataframe = pd.DataFrame(columns=['Wasserestein distance', 'state acc.'])
-    maxx = len(wass)
-    newwass = np.zeros(len(wass))
-    for indx, _ in enumerate(wass):
-        if 0 <= indx <= maxx / 4:
-            newwass[indx] = np.round(np.mean(wass[0:int(maxx / 4)]), 2)
-        elif maxx / 4 < indx <= maxx / 2:
-            newwass[indx] = np.round(np.mean(wass[int(maxx / 4):int(maxx / 2)]), 2)
-        elif maxx / 2 < indx <= maxx * 3 / 4:
-            newwass[indx] = np.round(np.mean(wass[int(maxx / 2):int(maxx * 3 / 4)]), 2)
-        elif indx >= maxx * 3 / 4:
-            newwass[indx] = np.round(np.mean(wass[int(maxx * 3 / 4):int(maxx)]), 2)
+    # reshape
+    newwass = []
+    newacc = []
+    for j in range(4):
+        tmp = []
+        tmp2 = []
+        for i in range(len(Wass)):
+            tmp.append(Wass[i][j])
+            tmp2.append(accuracies[i][j])
+        newwass.append(round(np.mean(tmp), 2))
+        newacc.append(tmp2)
 
-    dataframe['state acc.'] = Accuracy
-    dataframe['Wasserestein distance'] = wass
-    print("this is newwass", newwass)
-    print("this is acc", Accuracy)
+    newAcc = list(itertools.chain(*newacc))
+    newWass = 10 * [newwass[0]] + 10 * [newwass[1]] + 10 * [newwass[2]] + 10 * [newwass[3]]
+    dataframe['state acc.'] = newAcc
+    dataframe['Wasserestein distance'] = newWass
 
     return dataframe, violinDF
 

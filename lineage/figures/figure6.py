@@ -28,10 +28,10 @@ def makeFigure():
     """
     x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, _, _ = accuracy()
 
-    lineage_uncensored = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8 - 1)
+    lineage_uncensored = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**7 - 1)
     plotLineage(lineage_uncensored, 'lineage/figures/cartoons/lineage_notcen.svg')
 
-    lineage_censored = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8 - 1, censor_condition=3, desired_experiment_time=400)
+    lineage_censored = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**7 - 1, censor_condition=3, desired_experiment_time=400)
     plotLineage(lineage_censored, 'lineage/figures/cartoons/lineage_cen.svg')
     # Get list of axis objects
     ax, f = getSetup((6, 5), (2, 2))
