@@ -87,9 +87,14 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figure3B.svg',
                        f'{cartoon_dir}/figure3B.svg', 50, 40, scalee=0.24)
 
-    if sys.argv[1] == '0':
-        # Overlay Figure 0 cartoon
-        overlayCartoon(fdir + 'figure0.svg',
-                       f'{cartoon_dir}/lineage_uncensored.svg', 0, 0, scalee=0.7)
-        overlayCartoon(fdir + 'figure0.svg',
-                       f'{cartoon_dir}/lineage_censored.svg', 200, 0, scalee=0.7)
+    if sys.argv[1] == '4':
+        # Overlay Figure 4 cartoon
+        overlayCartoon(fdir + 'figure4.svg',
+                       f'{cartoon_dir}/figureS06.svg', 10, 5, scalee=0.27)
+
+    if sys.argv[1] == '6':
+        # Overlay Figure 6 cartoon
+        overlayCartoon(fdir + 'figure6.svg',
+                       f'{cartoon_dir}/lineage_notcen.svg', 0, 0, scalee=0.5)
+        overlayCartoon(fdir + 'figure6.svg',
+                       f'{cartoon_dir}/lineage_cen.svg', 230, 0, scalee=0.5)

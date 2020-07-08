@@ -30,12 +30,12 @@ state10 = expon_state(0.99, 48)
 state11 = expon_state(0.75, 8)
 E1 = [state10, state11]
 
-state20 = phaseStateDist(0.99, 0.8, 4, 4, 4, 3)
-state21 = phaseStateDist(0.88, 0.75, 3, 3, 3, 2)
+state20 = phaseStateDist(0.99, 0.9, 8, 7, 4, 2)
+state21 = phaseStateDist(0.9, 0.85, 6, 4, 3, 5)
 E2 = [state20, state21]
 
 min_desired_num_cells = (2 ** 4) - 1
-max_desired_num_cells = (2 ** 8) - 1
+max_desired_num_cells = (2 ** 9) - 1
 
 min_experiment_time = 72
 max_experiment_time = 144
