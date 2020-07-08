@@ -109,7 +109,18 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         for state_assignment in pred_states_by_lineage:
             temp_pred_states_by_lineage.append([switcher[state] for state in state_assignment])
         new_pred_states_by_lineage_holder.append(temp_pred_states_by_lineage)
-        switcher_LL_holder.append(np.sum(tHMMobj.log_score(temp_pred_states_by_lineage, pi=tHMMobj.X[0].pi, T=tHMMobj.X[0].T, E=tHMMobj.X[0].E)))
+        
+        pi_arg = tHMMobj.X[0].pi
+        T_arg = tHMMobj.X[0].T
+        E_arg = tHMMobj.X[0].E
+        if tHMMobj.fpi is not None:
+            pi_arg = tHMMobj.fpi
+        if tHMMobj.fT is not None:
+            T_arg = tHMMobj.fT
+        if tHMMobj.fE is not None:
+            E_arg = tHMMobj.fE
+        
+        switcher_LL_holder.append(np.sum(tHMMobj.log_score(temp_pred_states_by_lineage, pi=pi_arg, T=T_arg, E=E_arg)))
     max_idx = switcher_LL_holder.index(max(switcher_LL_holder))
 
     # Create switcher map based on the minimal likelihood of different permutations of state
@@ -122,7 +133,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["ravel_switched_pred_states"] = ravel_switched_pred_states
 
     # Rearrange the values in the transition matrix
-    temp_T = np.copy(tHMMobj.estimate.T)
+    temp_T = np.zeros(tHMMobj.estimate.T.shape)
     for row in range(tHMMobj.num_states):
         for col in range(tHMMobj.num_states):
             temp_T[row, col] = tHMMobj.estimate.T[switcher_map[row], switcher_map[col]]
@@ -131,7 +142,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
 
     # Rearrange the values in the pi vector
-    temp_pi = np.copy(tHMMobj.estimate.pi)
+    temp_pi = np.zeros(tHMMobj.estimate.pi.shape)
     for val_idx in range(tHMMobj.num_states):
         temp_pi[val_idx] = tHMMobj.estimate.pi[switcher_map[val_idx]]
 
