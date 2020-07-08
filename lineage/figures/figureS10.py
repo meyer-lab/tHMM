@@ -108,10 +108,18 @@ def figure_maker(ax, AIC_holder, true_state_no, upper_ylim, censored = False):
     Makes figure 10.
     """
     AIC_holder = AIC_holder  - np.min(AIC_holder, axis=0)[np.newaxis, :]
+    ax2 = ax.twinx()
+    
+    ax2.set_ylabel("Number of Lineages Predicted")
+    ax2.hist(np.argmin(AIC_holder, axis=0)+1, rwidth = 1, alpha = .2, bins = desired_num_states, align = 'left')
     ax.set_xlabel("Number of States Predicted")
     ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
+    #ax.plot(np.argmin(AIC_holder, axis = 0)+1, np.min(AIC_holder,axis=0), 'ro', alpha = .5)
     ax.set_ylabel("Normalized AIC")
-    ax.set_ylim(0.0, upper_ylim)
+    ax.margins(0)
+    ax2.margins(0)
+    ax2.set_yticks(np.linspace(0,10,6))
+    ax.set_yticks(np.linspace(0,upper_ylim,len(ax2.get_yticks())))
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     title = "Censored " if censored else ""
     title +=f"AIC Under {true_state_no} True "
