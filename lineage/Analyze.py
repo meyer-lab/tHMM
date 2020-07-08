@@ -85,11 +85,12 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
 
     return output
 
+
 def run_Analyze_AIC(population, state_list, **kwargs):
     """
     A function that can be parallelized to speed up figure creation.
 
-    Instead of iterating over different population (like run_Analyze_over) 
+    Instead of iterating over different population (like run_Analyze_over)
     this function iterates over a list of states it will predict. Used for
     figure S10.
 
@@ -98,7 +99,7 @@ def run_Analyze_AIC(population, state_list, **kwargs):
     :param state_list: An list of integer states to identify (a hyper-parameter of our model)
     :type state_list: list[int]
     """
-    #Initialize starting points for pi, T, E prediction
+    # Initialize starting points for pi, T, E prediction
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(state_list))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(state_list))
     list_of_fE = kwargs.get("list_of_fE", [None] * len(state_list))
@@ -113,6 +114,7 @@ def run_Analyze_AIC(population, state_list, **kwargs):
         output.append(prom.result())
 
     return output
+
 
 def Results(tHMMobj, pred_states_by_lineage, LL):
     """
@@ -209,7 +211,6 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         results_dict["wasserstein"] = wasserstein_distance(
             random.sample(obs_by_state_rand_sampled[0], num2use), random.sample(obs_by_state_rand_sampled[1], num2use)
         )
-    
 
     return results_dict
 
