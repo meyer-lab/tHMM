@@ -33,7 +33,6 @@ class estimate:
             self.E = [X[0].E[0].__class__() for _ in range(self.num_states)]
         else:
             self.E = self.fE
-        print(self.E[0], self.E[1])
 
 
 class tHMM:

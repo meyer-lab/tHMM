@@ -18,7 +18,7 @@ from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 pi = np.array([0.75, 0.25], dtype="float")
 
 # T: transition probability matrix
-T = np.array([[0.9, 0.1], [0.15, 0.85]], dtype="float")
+T = np.array([[0.9, 0.1], [0.35, 0.65]], dtype="float")
 
 # bern, gamma_a, gamma_scale
 state0 = StateDistribution(0.99, 8, 6)
