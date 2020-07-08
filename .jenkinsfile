@@ -17,7 +17,6 @@ pipeline {
           sh 'make output/manuscript.html'
         }
         archiveArtifacts artifacts: 'output/*.svg, spell.txt', onlyIfSuccessful: true
-        recordIssues qualityGates: [[threshold: 50, type: 'TOTAL', unstable: true]], tools: [pyLint(pattern: 'pylint.log')]
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'output', reportFiles: 'manuscript.html', reportName: 'Manuscript'])
       }
     }
