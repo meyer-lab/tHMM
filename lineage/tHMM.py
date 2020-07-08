@@ -39,7 +39,7 @@ class tHMM:
     """Main tHMM class.
     """
 
-    def __init__(self, X, num_states, fpi=None, fT=None, fE=None):
+    def __init__(self, X, num_states: int, fpi=None, fT=None, fE=None):
         """Instantiates a tHMM.
 
         This function uses the following functions and assings them to the cells

@@ -155,25 +155,6 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         temp_emissions[val_idx] = tHMMobj.estimate.E[switcher_map[val_idx]]
 
     results_dict["switched_emissions"] = temp_emissions
-    if results_dict["transition_matrix_norm"] > 0:
-        print("switcher map: ", switcher_map)
-        print("estimated pi: ", tHMMobj.estimate.pi)
-        print("switched  pi: ", temp_pi)
-        print("input     pi: ", tHMMobj.X[0].pi)
-        print("fixed     pi: ", tHMMobj.fpi)
-        print("estimated  T:\n", tHMMobj.estimate.T)
-        print("switched   T:\n", temp_T)
-        print("input      T:\n", tHMMobj.X[0].T)
-        print("fixed      T:\n", tHMMobj.fT)
-        print("estimated  E:\n", tHMMobj.estimate.E[0], tHMMobj.estimate.E[1])
-        print("switched   E:\n", temp_emissions[0], temp_emissions[1])
-        print("input      E:\n", tHMMobj.X[0].E[0], tHMMobj.X[0].E[1])
-        #print("fixed      E:\n", tHMMobj.fE[0], tHMMobj.fE[1])
-        print(switcher_LL_holder)
-        print(switcher_map_holder)
-        print(new_pred_states_by_lineage_holder)
-        print(ravel_true_states)
-        print("\n\n")
 
     # Get the estimated parameter values
     results_dict["param_estimates"] = []
