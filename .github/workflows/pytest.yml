@@ -34,7 +34,7 @@ jobs:
       run: |
         pytest --cov=lineage --cov-report=xml --cov-config=.github/workflows/coveragerc
     - name: Lint with pylint
-      run: pylint --rcfile=./common/pylintrc --fail-under=3.0 lineage
+      run: pylint --rcfile=./common/pylintrc --fail-under=3 lineage
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
