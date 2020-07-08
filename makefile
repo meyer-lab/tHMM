@@ -4,7 +4,7 @@ SHELL := /bin/bash
 
 flist = 0 2 3A 3B 4 S02 S03 S04 S05 S06 S07 S08 S09 S12 S13 S14 S15 S22 S23 S24 S25
 
-all: pylint.log spell.txt $(patsubst %, output/figure%.svg, $(flist))
+all: spell.txt $(patsubst %, output/figure%.svg, $(flist))
 
 venv: venv/bin/activate
 
@@ -38,9 +38,5 @@ testprofile: venv
 	. venv/bin/activate && python3 -m cProfile -o profile /usr/local/bin/pytest
 	gprof2dot -f pstats --node-thres=5.0 profile | dot -Tsvg -o profile.svg
 
-pylint.log: venv
-	. venv/bin/activate && pip install pylint
-	. venv/bin/activate && (pylint --rcfile=./common/pylintrc lineage > pylint.log || echo "pylint exited with $?")
-
 clean:
-	rm -rf prof output coverage.xml .coverage .coverage* junit.xml coverage.xml profile profile.svg pylint.log
+	rm -rf prof output coverage.xml .coverage .coverage* junit.xml coverage.xml profile profile.svg
