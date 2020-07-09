@@ -63,7 +63,7 @@ class tHMM:
         """Runs the tHMM function through Baum Welch fitting"""
 
         # Step 0: initialize with random assignments and do an M step
-        if self.fE is None: # when there are no fixed emissions, we need to randomize the start
+        if self.fE is None:  # when there are no fixed emissions, we need to randomize the start
             random_gammas = [sp.multinomial.rvs(n=1, p=[1. / self.num_states] * self.num_states, size=len(lineage))
                              for lineage in self.X]
             do_M_E_step(self, random_gammas)
