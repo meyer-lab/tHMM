@@ -163,7 +163,7 @@ def figureMaker2(ax, dataframe, dataParams, paramTrues):
                    alpha=0.6)
         ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 4][0], paramTrues[:, 1, 4][0]], color='red',
                    alpha=0.6)
-    sns.stripplot(x="cell number", y='shape G2', hue='state', data=dataParams, dodge=False, jitter=True, 
+    sns.stripplot(x="cell number", y='shape G2', hue='state', data=dataParams, dodge=False, jitter=True,
                   ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
     ax[i].set_ylim(bottom=-0.05, top=15.0)
