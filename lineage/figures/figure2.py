@@ -119,14 +119,14 @@ def figureMaker2(ax, totalObsG1, totalObsG2, list_bern_g1, list_bern_g2):
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-    sns.violinplot(x="G1 phase duration [hr]", y="state", data=totalObsG1, ax=ax[i], palette="deep", scale="count", inner="quartile")
+    sns.violinplot(x="state", y="G1 phase duration [hr]", data=totalObsG1, ax=ax[i], palette="deep", scale="count", inner="quartile")
     ax[i].set_ylabel(r"PDF")
     ax[i].set_title(r"G1 phase")
     ax[i].grid(linestyle="--")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-    sns.violinplot(x="G2 phase duration [hr]", y="state", data=totalObsG2, ax=ax[i], palette="deep", scale="count", inner="quartile")
+    sns.violinplot(x="state", y="G2 phase duration [hr]", data=totalObsG2, ax=ax[i], palette="deep", scale="count", inner="quartile")
     ax[i].set_ylabel(r"PDF")
     ax[i].set_title(r"G2 phase")
     ax[i].grid(linestyle="--")
