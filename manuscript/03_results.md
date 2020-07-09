@@ -7,7 +7,7 @@ TODO at last.
 ### How to use tHMM model with different Phenotypes
 Any observable heritable phenotype could be used as Emissions. The following (Figure 2A) shows schematic of a lineage tree in which we can observe phenotypes such as, cell fate, inter mitotic times (lifetime), G1 cell cycle phase duration, G2 cell cycle phase duration, and cell shape. For each of these features we consider a distribution, shown in parts b-e.
 
-![**This figure shows the flexibility of the model and that we can use any tracktable phenotype.](./output/figure2.svg){#fig:2}
+![**This figure shows the flexibility of the model and that we can use any tracktable phenotype.](./output/figure2A.svg){#fig:2}
 
 
 ### How big the experiments need to be

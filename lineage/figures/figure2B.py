@@ -25,7 +25,7 @@ def makeFigure():
     results_dict = Results(*Analyze(X, 2))
     pred_states_by_lineage = results_dict["switched_pred_states_by_lineage"][0]  # only one lineage
 
-    figureMaker2(ax, *forHistObs(X, pred_states_by_lineage))
+    figureMaker2(ax, forHistObs(X, pred_states_by_lineage))
 
     subplotLabel(ax)
 

@@ -23,7 +23,7 @@ def makeFigure():
     X = [LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8 - 1)]
     results_dict = Results(*Analyze(X, 2))
     pred_states_by_lineage = results_dict["switched_pred_states_by_lineage"][0]  # only one lineage
-    figureMaker2(ax, *forHistObs(X, pred_states_by_lineage))
+    figureMaker2(ax, forHistObs(X, pred_states_by_lineage))
 
     subplotLabel(ax)
 
@@ -47,8 +47,8 @@ def forHistObs(X, pred_states_by_lineage):
                                 [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[0] == 0])] +\
                                 [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[0] == 1])]
     BernoulliG1_hist["Fate"] = ["Death"] + ["Transition to G2"] +\
-        ["Death"] + ["Transition to G2"] +\
-        ["Death"] + ["Transition to G2"]
+                               ["Death"] + ["Transition to G2"] +\
+                               ["Death"] + ["Transition to G2"]
 
     BernoulliG2_hist = pd.DataFrame(columns=["States", "Count", "Fate"])
     BernoulliG2_hist["States"] = BernoulliG1_hist["States"]
@@ -59,8 +59,8 @@ def forHistObs(X, pred_states_by_lineage):
                                 [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[1] == 0])] +\
                                 [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[1] == 1])]
     BernoulliG2_hist["Fate"] = ["Death"] + ["Division"] +\
-        ["Death"] + ["Division"] +\
-        ["Death"] + ["Division"]
+                               ["Death"] + ["Division"] +\
+                               ["Death"] + ["Division"]
 
     BernoulliG1_hist_est = pd.DataFrame(columns=["States", "Count", "Fate"])
     BernoulliG1_hist_est["States"] = BernoulliG1_hist["States"]
@@ -116,14 +116,17 @@ def forHistObs(X, pred_states_by_lineage):
     GammaG2_hist_est['Time spent in G2'] = obsGammaG2S1_est + obsGammaG2S2_est + obsGammaG2_est
     GammaG2_hist_est['States'] = ['State 1'] * len(obsGammaG2S1_est) + ['State 2'] * len(obsGammaG2S2_est) + ['Total'] * len(obsGammaG2_est)
 
-    return BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_hist, BernoulliG1_hist_est, GammaG1_hist_est, BernoulliG2_hist_est, GammaG2_hist_est
+    data = (BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_hist, BernoulliG1_hist_est, GammaG1_hist_est, BernoulliG2_hist_est, GammaG2_hist_est)
+
+    return data
 
 
-def figureMaker2(ax, BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_hist, BernoulliG1_hist_est, GammaG1_hist_est, BernoulliG2_hist_est, GammaG2_hist_est):
+def figureMaker2(ax, data):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
     """
+    BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_hist, BernoulliG1_hist_est, GammaG1_hist_est, BernoulliG2_hist_est, GammaG2_hist_est = data
     i = 0
     ax[i].axis('off')
 
@@ -137,11 +140,12 @@ def figureMaker2(ax, BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_h
     ax[i].axis('off')
 
     i += 1
+    ylim = max(BernoulliG1_hist["Count"]) + 10
     sns.barplot(x="States", y="Count", hue="Fate", data=BernoulliG1_hist, ax=ax[i])
     ax[i].set_xlabel("")
     ax[i].set_ylabel("Bernoulli distribution")
     ax[i].set_title(r"Fate after G1")
-    ax[i].set_ylim(0, 250)
+    ax[i].set_ylim(0, ylim)
 
     i += 1
     sns.violinplot(x="States", y="Time spent in G1", data=GammaG1_hist, ax=ax[i], scale="count", inner="quartile")
@@ -154,7 +158,7 @@ def figureMaker2(ax, BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_h
     ax[i].set_xlabel("")
     ax[i].set_ylabel("Bernoulli distribution")
     ax[i].set_title(r"Fate after G2")
-    ax[i].set_ylim(0, 250)
+    ax[i].set_ylim(0, ylim)
 
     i += 1
     sns.violinplot(x="States", y="Time spent in G2", data=GammaG2_hist, ax=ax[i], scale="count", inner="quartile")
@@ -167,7 +171,7 @@ def figureMaker2(ax, BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_h
     ax[i].set_xlabel("")
     ax[i].set_ylabel("Bernoulli distribution")
     ax[i].set_title(r"Fate after G1")
-    ax[i].set_ylim(0, 250)
+    ax[i].set_ylim(0, ylim)
 
     i += 1
     sns.violinplot(x="States", y="Time spent in G1", data=GammaG1_hist_est, ax=ax[i], scale="count", inner="quartile")
@@ -180,7 +184,7 @@ def figureMaker2(ax, BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_h
     ax[i].set_xlabel("")
     ax[i].set_ylabel("Bernoulli distribution")
     ax[i].set_title(r"Fate after G2")
-    ax[i].set_ylim(0, 250)
+    ax[i].set_ylim(0, ylim)
 
     i += 1
     sns.violinplot(x="States", y="Time spent in G2", data=GammaG2_hist_est, ax=ax[i], scale="count", inner="quartile")
