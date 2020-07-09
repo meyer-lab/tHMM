@@ -10,7 +10,7 @@ from .figureCommon import (
     E2
 )
 from ..LineageTree import LineageTree
-from ..Analyze import Analyze
+from ..Analyze import Analyze, Results
 
 
 def makeFigure():
@@ -19,7 +19,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((5.0, 7.5), (3, 2))
+    ax, f = getSetup((10.0, 7.5), (3, 4))
 
     figureMaker2(ax, *forHistObs([LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8 - 1)]))
 
@@ -34,100 +34,155 @@ def forHistObs(X):
     :param X: list of lineages in the population.
     :type X: list
     """
-    # regardless of states
-    # two state model
-    obsBernoulliG1 = []
-    obsBernoulliG2 = []
-    obsG1 = []
-    obsG2 = []
 
-    _, pred_states_by_lineage, _ = Analyze(X, 2)
+    results_dict = Results(*Analyze(X, 2))
+    pred_states_by_lineage = results_dict["switched_pred_states_by_lineage"][0]  # only one lineage
+
+    BernoulliG1_hist = pd.DataFrame(columns=["States", "Count", "Fate"])
+    BernoulliG1_hist["States"] = ["State 1"] + ["State 1"] +\
+                                 ["State 2"] + ["State 2"] +\
+                                 ["Cumulative"] + ["Cumulative"]
+    BernoulliG1_hist["Count"] = [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[0] == 0 and cell.state == 0])] +\
+                                [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[0] == 1 and cell.state == 0])] +\
+                                [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[0] == 0 and cell.state == 1])] +\
+                                [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[0] == 1 and cell.state == 1])] +\
+                                [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[0] == 0])] +\
+                                [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[0] == 1])]
+    BernoulliG1_hist["Fate"] = ["Death"] + ["Transition to G2"] +\
+                              ["Death"] + ["Transition to G2"] +\
+                              ["Death"] + ["Transition to G2"]
+
+    BernoulliG2_hist = pd.DataFrame(columns=["States", "Count", "Fate"])
+    BernoulliG2_hist["States"] = BernoulliG1_hist["States"]
+    BernoulliG2_hist["Count"] = [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[1] == 0 and cell.state == 0])] +\
+                                [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[1] == 1 and cell.state == 0])] +\
+                                [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[1] == 0 and cell.state == 1])] +\
+                                [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[1] == 1 and cell.state == 1])] +\
+                                [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[1] == 0])] +\
+                                [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[1] == 1])]
+    BernoulliG2_hist["Fate"] = ["Death"] + ["Division"] +\
+                              ["Death"] + ["Division"] +\
+                              ["Death"] + ["Division"]
+
+    BernoulliG1_hist_est = pd.DataFrame(columns=["States", "Count", "Fate"])
+    BernoulliG1_hist_est["States"] = BernoulliG1_hist["States"]
+    BernoulliG1_hist_est["Count"] = [sum([1 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if cell.obs[0] == 0 and pred_states_by_lineage[idx] == 0])] +\
+                                    [sum([1 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if cell.obs[0] == 1 and pred_states_by_lineage[idx] == 0])] +\
+                                    [sum([1 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if cell.obs[0] == 0 and pred_states_by_lineage[idx] == 1])] +\
+                                    [sum([1 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if cell.obs[0] == 1 and pred_states_by_lineage[idx] == 1])] +\
+                                    [sum([1 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if cell.obs[0] == 0])] +\
+                                    [sum([1 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if cell.obs[0] == 1])]
+    BernoulliG1_hist_est["Fate"] = BernoulliG1_hist["Fate"]
+
+    BernoulliG2_hist_est = pd.DataFrame(columns=["States", "Count", "Fate"])
+    BernoulliG2_hist_est["States"] = BernoulliG1_hist["States"]
+    BernoulliG2_hist_est["Count"] = [sum([1 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if cell.obs[1] == 0 and pred_states_by_lineage[idx] == 0])] +\
+                                    [sum([1 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if cell.obs[1] == 1 and pred_states_by_lineage[idx] == 0])] +\
+                                    [sum([1 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if cell.obs[1] == 0 and pred_states_by_lineage[idx] == 1])] +\
+                                    [sum([1 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if cell.obs[1] == 1 and pred_states_by_lineage[idx] == 1])] +\
+                                    [sum([1 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if cell.obs[1] == 0])] +\
+                                    [sum([1 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if cell.obs[1] == 1])]
+    BernoulliG2_hist_est["Fate"] = BernoulliG2_hist["Fate"]
+
     # state 1 observations
-    obsBernoulliG1S1 = []
-    obsBernoulliG2S1 = []
-    obsG1S1 = []
-    obsG2S1 = []
+    obsGammaG1S1 = [cell.obs[2] for lineage in X for cell in lineage.output_lineage if cell.state == 0]
+    obsGammaG1S2 = [cell.obs[2] for lineage in X for cell in lineage.output_lineage if cell.state == 1]
+    obsGammaG1 = obsGammaG1S1 + obsGammaG1S2
+
+    obsGammaG1S1_est = [cell.obs[2] for lineage in X for idx, cell in enumerate(lineage.output_lineage) if pred_states_by_lineage[idx] == 0]
+    obsGammaG1S2_est = [cell.obs[2] for lineage in X for idx, cell in enumerate(lineage.output_lineage) if pred_states_by_lineage[idx] == 1]
+    obsGammaG1_est = obsGammaG1S1_est + obsGammaG1S2_est
+
     # state 2 observations
-    obsBernoulliG1S2 = []
-    obsBernoulliG2S2 = []
-    obsG1S2 = []
-    obsG2S2 = []
+    obsGammaG2S1 = [cell.obs[3 for lineage in X for cell in lineage.output_lineage if cell.state == 0]
+    obsGammaG2S2= [cell.obs[3] for lineage in X for cell in lineage.output_lineage if cell.state == 1]
+    obsGammaG2= obsGammaG2S1 + obsGammaG2S2
 
-    for indx, lineage in enumerate(X):
-        for cell_ind, cell in enumerate(lineage.full_lineage):
-            obsBernoulliG1.append(cell.obs[0])
-            obsBernoulliG2.append(cell.obs[1])
-            obsG1.append(cell.obs[2])
-            obsG2.append(cell.obs[3])
-
-            if pred_states_by_lineage[indx][cell_ind] == 0:  # if the cell is in state 1
-                obsBernoulliG1S1.append(cell.obs[0])
-                obsBernoulliG2S1.append(cell.obs[1])
-                obsG1S1.append(cell.obs[2])
-                obsG2S1.append(cell.obs[3])
-            else:  # if the cell is in state 2
-                obsBernoulliG1S2.append(cell.obs[0])
-                obsBernoulliG2S2.append(cell.obs[1])
-                obsG1S2.append(cell.obs[2])
-                obsG2S2.append(cell.obs[3])
-
-    list_bern_g1 = [obsBernoulliG1, obsBernoulliG1S1, obsBernoulliG1S2]
-    list_bern_g2 = [obsBernoulliG2, obsBernoulliG2S1, obsBernoulliG2S2]
-
-    totalObsG1 = pd.DataFrame(columns=['G1 phase duration [hr]', 'state'])
-    totalObsG1['G1 phase duration [hr]'] = obsG1 + obsG1S1 + obsG1S2
-    totalObsG1['state'] = ['total'] * len(obsG1) + ['state 1'] * len(obsG1S1) + ['state 2'] * len(obsG1S2)
-    totalObsG2 = pd.DataFrame(columns=['G2 phase duration [hr]', 'state'])
-    totalObsG2['G2 phase duration [hr]'] = obsG2 + obsG2S1 + obsG2S2
-    totalObsG2['state'] = ['total'] * len(obsG2) + ['state 1'] * len(obsG2S1) + ['state 2'] * len(obsG2S2)
-
-    return totalObsG1, totalObsG2, list_bern_g1, list_bern_g2
+    obsGammaG2S1_est= [cell.obs[3 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if pred_states_by_lineage[idx] == 0]
+    obsGammaG2S2_est= [cell.obs[3 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if pred_states_by_lineage[idx] == 1]
+    obsGammaG2_est= obsGammaG2S1_est + obsGammaG2S2_est
 
 
-def figureMaker2(ax, totalObsG1, totalObsG2, list_bern_g1, list_bern_g2):
+    GammaG1_hist= pd.DataFrame(columns=['States', 'Time spent in G1'])
+    GammaG1_hist['Time spent in G1']= obsGammaG1S1 + obsGammaG1S2 + obsGammaG1
+    GammaG1_hist['States']= ['State 1'] * len(obsGammaG1S1) + ['State 2'] * len(obsGammaG1S2) + ['Total'] * len(obsGammaG1)
+
+    GammaG2_hist= pd.DataFrame(columns=['States', 'Time spent in G1'])
+    GammaG2_hist['Time spent in G2']= obsGammaG2S1 + obsGammaG2S2 + obsGammaG2
+    GammaG2_hist['States']= ['State 1'] * len(obsGammaG2S1) + ['State 2'] * len(obsGammaG2S2) + ['Total'] * len(obsGammaG2)
+
+    GammaG1_hist_est= pd.DataFrame(columns=['States', 'Time spent in G1'])
+    GammaG1_hist_est['Time spent in G1']= obsGammaG1S1_est + obsGammaG1S2_est + obsGammaG1_est
+    GammaG1_hist_est['States']= ['State 1'] * len(obsGammaG1S1_est) + ['State 2'] * len(obsGammaG1S2_est) + ['Total'] * len(obsGammaG1_est)
+
+    GammaG2_hist_est= pd.DataFrame(columns=['States', 'Time spent in G1'])
+    GammaG2_hist_est['Time spent in G1']= obsGammaG2S1_est + obsGammaG2S2_est + obsGammaG2_est
+    GammaG2_hist_est['States']= ['State 1'] * len(obsGammaG2S1_est) + ['State 2'] * len(obsGammaG2S2_est) + ['Total'] * len(obsGammaG2_est)
+
+    return BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_hist, BernoulliG1_hist_est, GammaG1_hist_est, BernoulliG2_hist_est, GammaG2_hist_est
+
+
+def figureMaker2(ax, BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_hist, BernoulliG1_hist_est, GammaG1_hist_est, BernoulliG2_hist_est, GammaG2_hist_est):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
     """
-    # cartoon to show different shapes --> similar shapes
-    i = 0
+    i= 0
     ax[i].axis('off')
+
     i += 1
     ax[i].axis('off')
-    i += 1
-    ax[i].set_xlabel("death or division")
-    ax[i].set_ylim(bottom=0.5, top=1.1)
-    ax[i].set_ylabel("division prob.")
-    ax[i].set_title(r"Bernoulli obs. G1")
-    ax[i].grid(linestyle="--")
-    g = sns.barplot(data=list_bern_g1, ax=ax[i], palette="deep")
-    g.text(-0.25, 0.65, "total", rotation=30)
-    g.text(0.7, 0.65, "state 1", rotation=30)
-    g.text(1.7, 0.65, "state 2", rotation=30)
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
-    ax[i].set_xlabel("death or division")
-    ax[i].set_ylim(bottom=0.5, top=1.1)
-    ax[i].set_ylabel("division prob.")
-    ax[i].set_title(r"Bernoulli obs. G2")
-    ax[i].grid(linestyle="--")
-    f = sns.barplot(data=list_bern_g2, ax=ax[i], palette="deep")
-    f.text(-0.25, 0.55, "total", rotation=30)
-    f.text(0.7, 0.55, "state 1", rotation=30)
-    f.text(1.7, 0.55, "state 2", rotation=30)
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    ax[i].axis('off')
 
     i += 1
-    sns.violinplot(x="G1 phase duration [hr]", y="state", data=totalObsG1, ax=ax[i], palette="deep", scale="count", inner="quartile")
-    ax[i].set_ylabel(r"PDF")
-    ax[i].set_title(r"G1 phase")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    ax[i].axis('off')
 
     i += 1
-    sns.violinplot(x="G2 phase duration [hr]", y="state", data=totalObsG2, ax=ax[i], palette="deep", scale="count", inner="quartile")
-    ax[i].set_ylabel(r"PDF")
-    ax[i].set_title(r"G2 phase")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    sns.barplot(x="States", y="Count", hue="Fate", data=BernoulliG1_hist, ax=ax[i])
+    ax[i].set_xlabel("")
+    ax[i].set_ylabel("Bernoulli distribution")
+    ax[i].set_title(r"Fate after G1")
+
+    i += 1
+    sns.violinplot(x="States", y="Time spent in G1", data=GammaG1_hist, ax=ax[i], scale="count", inner="quartile")
+    ax[i].set_xlabel("")
+    ax[i].set_ylabel(r"Gamma distribution")
+    ax[i].set_title(r"Time spent in G1")
+
+    i += 1
+    sns.barplot(x="States", y="Count", hue="Fate", data=BernoulliG2_hist, ax=ax[i])
+    ax[i].set_xlabel("")
+    ax[i].set_ylabel("Bernoulli distribution")
+    ax[i].set_title(r"Fate after G2")
+
+    i += 1
+    sns.violinplot(x="States", y="Time spent in G2", data=GammaG2_hist, ax=ax[i], scale="count", inner="quartile")
+    ax[i].set_xlabel("")
+    ax[i].set_ylabel(r"Gamma distribution")
+    ax[i].set_title(r"Time spent in G2")
+
+    i += 1
+    sns.barplot(x="States", y="Count", hue="Fate", data=BernoulliG1_hist_est, ax=ax[i])
+    ax[i].set_xlabel("")
+    ax[i].set_ylabel("Bernoulli distribution")
+    ax[i].set_title(r"Fate after G1")
+
+    i += 1
+    sns.violinplot(x="States", y="Time spent in G1", data=GammaG1_hist_est, ax=ax[i], scale="count", inner="quartile")
+    ax[i].set_xlabel("")
+    ax[i].set_ylabel(r"Gamma distribution")
+    ax[i].set_title(r"Time spent in G1")
+
+    i += 1
+    sns.barplot(x="States", y="Count", hue="Fate", data=BernoulliG2_hist_est, ax=ax[i])
+    ax[i].set_xlabel("")
+    ax[i].set_ylabel("Bernoulli distribution")
+    ax[i].set_title(r"Fate after G2")
+
+    i += 1
+    sns.violinplot(x="States", y="Time spent in G2", data=GammaG2_hist_est, ax=ax[i], scale="count", inner="quartile")
+    ax[i].set_xlabel("")
+    ax[i].set_ylabel(r"Gamma distribution")
+    ax[i].set_title(r"Time spent in G2")

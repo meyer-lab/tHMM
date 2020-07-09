@@ -109,7 +109,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         for state_assignment in pred_states_by_lineage:
             temp_pred_states_by_lineage.append([switcher[state] for state in state_assignment])
         new_pred_states_by_lineage_holder.append(temp_pred_states_by_lineage)
-        
+
         pi_arg = tHMMobj.X[0].pi
         T_arg = tHMMobj.X[0].T
         E_arg = tHMMobj.X[0].E
@@ -119,7 +119,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
             T_arg = tHMMobj.fT
         if tHMMobj.fE is not None:
             E_arg = tHMMobj.fE
-        
+
         switcher_LL_holder.append(np.sum(tHMMobj.log_score(temp_pred_states_by_lineage, pi=pi_arg, T=T_arg, E=E_arg)))
     max_idx = switcher_LL_holder.index(max(switcher_LL_holder))
 

@@ -109,20 +109,15 @@ def figureMaker2(ax, dataframe, dataParams, paramTrues):
 
     i += 1
     sns.boxplot(x="cell number", y="state acc.", data=dataframe, ax=ax[i], palette="deep")
-    ax[i].set_ylabel("accuracy")
-    ax[i].set_title("state assignemnt accuracy")
-    ax[i].set_ylabel("accuracy (%)")
-    ax[i].grid(linestyle="--")
+    ax[i].set_title("State Assignment Accuracy")
+    ax[i].set_ylabel("Accuracy (%)")
     ax[i].set_ylim(bottom=50.0, top=105.0)
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     # T and pi matrix distance to their true value
     i += 1
     sns.stripplot(x="cell number", y='T and pi', hue='hue', dodge=False, jitter=True, data=dataParams, ax=ax[i], palette="deep", marker='o', linewidth=0.5, edgecolor="white", alpha=0.6)
     ax[i].set_ylim(bottom=-0.2, top=1.02)
     ax[i].set_ylabel("dif. from true value")
-    ax[i].grid(linestyle="--")
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
 
     i += 1
     # Bernoulli parameter estimation
@@ -142,11 +137,9 @@ def figureMaker2(ax, dataframe, dataParams, paramTrues):
     sns.stripplot(x="cell number", y='Bern. G2 p', hue='state', data=dataParams, dodge=False,
                   jitter=True, ax=ax[i], marker='^', linewidth=0.5, edgecolor="white",
                   palette=sns.xkcd_palette(['orange', 'red']))
-    ax[i].grid(linestyle="--")
     ax[i].set_ylim(bottom=0.6, top=1.2)
     ax[i].set_ylabel("bernoulli parameters")
     ax[i].text(5.0, 1.0, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
     ax[i].legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
     i += 1
@@ -163,7 +156,7 @@ def figureMaker2(ax, dataframe, dataParams, paramTrues):
                    alpha=0.6)
         ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 4][0], paramTrues[:, 1, 4][0]], color='red',
                    alpha=0.6)
-    sns.stripplot(x="cell number", y='shape G2', hue='state', data=dataParams, dodge=False, jitter=True, 
+    sns.stripplot(x="cell number", y='shape G2', hue='state', data=dataParams, dodge=False, jitter=True,
                   ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
     ax[i].set_ylim(bottom=-0.05, top=15.0)
@@ -187,9 +180,7 @@ def figureMaker2(ax, dataframe, dataParams, paramTrues):
                    alpha=0.6)
     sns.stripplot(x="cell number", y='scale G2', hue='state', data=dataParams, dodge=True, jitter=True,
                   ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
-    ax[i].grid(linestyle="--")
     ax[i].set_ylim(bottom=-0.05, top=11.0)
     ax[i].set_ylabel("scale parameter")
     ax[i].text(1.1, 7.5, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
     ax[i].legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)

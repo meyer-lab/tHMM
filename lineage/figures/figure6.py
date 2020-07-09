@@ -22,6 +22,7 @@ from .figureCommon import (
 from ..LineageTree import LineageTree
 from ..plotTree import plotLineage
 
+
 def makeFigure():
     """
     Makes fig 6.
@@ -41,6 +42,7 @@ def makeFigure():
     subplotLabel(ax)
 
     return f
+
 
 def accuracy():
     """
@@ -83,6 +85,7 @@ def accuracy():
     x_Sim, _, Accuracy_Sim, _, _, _ = commonAnalyze(list_of_populationsSim, list_of_fpi=list_of_fpi)
     x_Cen, _, Accuracy_Cen, _, _, _ = commonAnalyze(list_of_populations, list_of_fpi=list_of_fpi)
     return x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, list_of_populationsSim, list_of_populations
+
 
 def figureMaker(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, xlabel="Number of Cells"):
     """

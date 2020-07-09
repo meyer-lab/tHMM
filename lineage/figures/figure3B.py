@@ -58,6 +58,7 @@ def repeat():
         list_of_fE.append(E)
     return list_of_fpi, list_of_populations
 
+
 def accuracy():
     """
     Calculates accuracy and parameter estimation

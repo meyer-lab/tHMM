@@ -64,22 +64,22 @@ def getSetup(figsize, gridd):
     Establish figure set-up with subplots.
     """
     sns.set(
+        palette="husl",
         font_scale=0.7,
         rc={"axes.facecolor": "#ffffff",  # axes background color
             "axes.edgecolor": "#000000",  # axes edge color
             "axes.linewidth": 1. / 4,
-            "axes.prop_cycle": cycler("color", ["#1f77b4", "#ff7f0e"]),
             "grid.linestyle": "-",
             "grid.alpha": 1. / 4,
             "grid.color": "#000000",
             "xtick.bottom": True,
             "xtick.direction": "inout",
-            "xtick.major.width": 2. / 4,  # major tick width in points
-            "xtick.minor.width": 1. / 4,  # minor tick width in points
+            "xtick.major.width": 1. / 4,  # major tick width in points
+            "xtick.minor.width": 0.5 / 4,  # minor tick width in points
             "ytick.left": True,
             "ytick.direction": "inout",
-            "ytick.major.width": 2. / 4,  # major tick width in points
-            "ytick.minor.width": 1. / 4,  # minor tick width in points
+            "ytick.major.width": 1. / 4,  # major tick width in points
+            "ytick.minor.width": 0.5 / 4,  # minor tick width in points
             },
     )
 
@@ -141,7 +141,7 @@ def subplotLabel(axs):
     """
     i = 0
     for _, ax in enumerate(axs):
-        if ax.has_data() or i==0:  # only label plots with graphs on them
+        if ax.has_data() or i == 0:  # only label plots with graphs on them
             ax.text(-0.2, 1.25, ascii_lowercase[i], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
             i += 1
 
