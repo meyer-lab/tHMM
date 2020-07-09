@@ -87,20 +87,20 @@ def forHistObs(X):
     # state 1 observations
     obsGammaG1S1 = [cell.obs[2] for lineage in X for cell in lineage.output_lineage if cell.state == 0]
     obsGammaG1S2 = [cell.obs[2] for lineage in X for cell in lineage.output_lineage if cell.state == 1]
-    obsGammaG1 = obsGammaG1S1 + obsGammaG1S2
+    obsGammaG1 = [cell.obs[2] for lineage in X for cell in lineage.output_lineage]
 
     obsGammaG1S1_est = [cell.obs[2] for lineage in X for idx, cell in enumerate(lineage.output_lineage) if pred_states_by_lineage[idx] == 0]
     obsGammaG1S2_est = [cell.obs[2] for lineage in X for idx, cell in enumerate(lineage.output_lineage) if pred_states_by_lineage[idx] == 1]
-    obsGammaG1_est = obsGammaG1S1_est + obsGammaG1S2_est
+    obsGammaG1_est = [cell.obs[2] for lineage in X for idx, cell in enumerate(lineage.output_lineage)]
 
     # state 2 observations
-    obsGammaG2S1 = [cell.obs[3 for lineage in X for cell in lineage.output_lineage if cell.state == 0]
+    obsGammaG2S1 = [cell.obs[3] for lineage in X for cell in lineage.output_lineage if cell.state == 0]
     obsGammaG2S2= [cell.obs[3] for lineage in X for cell in lineage.output_lineage if cell.state == 1]
-    obsGammaG2= obsGammaG2S1 + obsGammaG2S2
+    obsGammaG2= [cell.obs[3] for lineage in X for cell in lineage.output_lineage]
 
-    obsGammaG2S1_est= [cell.obs[3 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if pred_states_by_lineage[idx] == 0]
-    obsGammaG2S2_est= [cell.obs[3 for lineage in X for idx, cell in enumerate(lineage.output_lineage) if pred_states_by_lineage[idx] == 1]
-    obsGammaG2_est= obsGammaG2S1_est + obsGammaG2S2_est
+    obsGammaG2S1_est= [cell.obs[3] for lineage in X for idx, cell in enumerate(lineage.output_lineage) if pred_states_by_lineage[idx] == 0]
+    obsGammaG2S2_est= [cell.obs[3] for lineage in X for idx, cell in enumerate(lineage.output_lineage) if pred_states_by_lineage[idx] == 1]
+    obsGammaG2_est= [cell.obs[3] for lineage in X for idx, cell in enumerate(lineage.output_lineage)]
 
 
     GammaG1_hist= pd.DataFrame(columns=['States', 'Time spent in G1'])
@@ -115,8 +115,8 @@ def forHistObs(X):
     GammaG1_hist_est['Time spent in G1']= obsGammaG1S1_est + obsGammaG1S2_est + obsGammaG1_est
     GammaG1_hist_est['States']= ['State 1'] * len(obsGammaG1S1_est) + ['State 2'] * len(obsGammaG1S2_est) + ['Total'] * len(obsGammaG1_est)
 
-    GammaG2_hist_est= pd.DataFrame(columns=['States', 'Time spent in G1'])
-    GammaG2_hist_est['Time spent in G1']= obsGammaG2S1_est + obsGammaG2S2_est + obsGammaG2_est
+    GammaG2_hist_est= pd.DataFrame(columns=['States', 'Time spent in G2'])
+    GammaG2_hist_est['Time spent in G2']= obsGammaG2S1_est + obsGammaG2S2_est + obsGammaG2_est
     GammaG2_hist_est['States']= ['State 1'] * len(obsGammaG2S1_est) + ['State 2'] * len(obsGammaG2S2_est) + ['Total'] * len(obsGammaG2_est)
 
     return BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_hist, BernoulliG1_hist_est, GammaG1_hist_est, BernoulliG2_hist_est, GammaG2_hist_est
@@ -144,6 +144,7 @@ def figureMaker2(ax, BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_h
     ax[i].set_xlabel("")
     ax[i].set_ylabel("Bernoulli distribution")
     ax[i].set_title(r"Fate after G1")
+    ax[i].set_ylim(0,250)
 
     i += 1
     sns.violinplot(x="States", y="Time spent in G1", data=GammaG1_hist, ax=ax[i], scale="count", inner="quartile")
@@ -156,6 +157,7 @@ def figureMaker2(ax, BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_h
     ax[i].set_xlabel("")
     ax[i].set_ylabel("Bernoulli distribution")
     ax[i].set_title(r"Fate after G2")
+    ax[i].set_ylim(0,250)
 
     i += 1
     sns.violinplot(x="States", y="Time spent in G2", data=GammaG2_hist, ax=ax[i], scale="count", inner="quartile")
@@ -168,6 +170,7 @@ def figureMaker2(ax, BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_h
     ax[i].set_xlabel("")
     ax[i].set_ylabel("Bernoulli distribution")
     ax[i].set_title(r"Fate after G1")
+    ax[i].set_ylim(0,250)
 
     i += 1
     sns.violinplot(x="States", y="Time spent in G1", data=GammaG1_hist_est, ax=ax[i], scale="count", inner="quartile")
@@ -180,6 +183,7 @@ def figureMaker2(ax, BernoulliG1_hist, GammaG1_hist, BernoulliG2_hist, GammaG2_h
     ax[i].set_xlabel("")
     ax[i].set_ylabel("Bernoulli distribution")
     ax[i].set_title(r"Fate after G2")
+    ax[i].set_ylim(0,250)
 
     i += 1
     sns.violinplot(x="States", y="Time spent in G2", data=GammaG2_hist_est, ax=ax[i], scale="count", inner="quartile")

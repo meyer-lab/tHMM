@@ -64,7 +64,7 @@ def getSetup(figsize, gridd):
     Establish figure set-up with subplots.
     """
     sns.set(
-        palette="husl",
+        palette="deep",
         font_scale=0.7,
         rc={"axes.facecolor": "#ffffff",  # axes background color
             "axes.edgecolor": "#000000",  # axes edge color
