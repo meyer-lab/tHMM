@@ -141,7 +141,7 @@ def subplotLabel(axs):
     """
     i = 0
     for _, ax in enumerate(axs):
-        if ax.has_data():  # only label plots with graphs on them
+        if ax.has_data() or i==0:  # only label plots with graphs on them
             ax.text(-0.2, 1.25, ascii_lowercase[i], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
             i += 1
 
