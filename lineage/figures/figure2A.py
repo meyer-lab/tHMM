@@ -20,24 +20,22 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((10.0, 7.5), (3, 4))
-
-    figureMaker2(ax, *forHistObs([LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8 - 1)]))
+    X = [LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8 - 1)]
+    results_dict = Results(*Analyze(X, 2))
+    pred_states_by_lineage = results_dict["switched_pred_states_by_lineage"][0]  # only one lineage
+    figureMaker2(ax, *forHistObs(X, pred_states_by_lineage))
 
     subplotLabel(ax)
 
     return f
 
 
-def forHistObs(X):
+def forHistObs(X, pred_states_by_lineage):
     """ To plot the histogram of the observations regardless of their state.
 
     :param X: list of lineages in the population.
     :type X: list
     """
-
-    results_dict = Results(*Analyze(X, 2))
-    pred_states_by_lineage = results_dict["switched_pred_states_by_lineage"][0]  # only one lineage
-
     BernoulliG1_hist = pd.DataFrame(columns=["States", "Count", "Fate"])
     BernoulliG1_hist["States"] = ["State 1"] + ["State 1"] +\
                                  ["State 2"] + ["State 2"] +\
