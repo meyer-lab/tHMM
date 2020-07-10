@@ -137,7 +137,7 @@ def figureMaker2(ax, data):
     ax[i].axis('off')
 
     i += 1
-    ax[i].axis('off')  
+    ax[i].axis('off')
 
     i += 1
     ylim = max(BernoulliG1_hist["Count"]) + 10

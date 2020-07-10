@@ -11,7 +11,7 @@ from .figureCommon import (
 )
 from ..LineageTree import LineageTree
 from ..Analyze import Analyze, Results
-from .figure2A import forHistObs, figureMaker2
+from .figure2 import forHistObs, figureMaker2
 
 
 def makeFigure():
