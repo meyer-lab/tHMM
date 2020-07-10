@@ -4,13 +4,13 @@
 TODO at last.
 
 ### tHMM can handle several observable phenotypes as emissions.
-Any observable heritable phenotype with a definable distribution could be used as an emission. The following (Figure 2A) shows schematic of a lineage tree in which we can observe phenotypes such as, cell fate, inter mitotic times (lifetime), G1 cell cycle phase duration, G2 cell cycle phase duration, and cell shape. For each of these features we consider a distribution, shown in parts b-e.
+Any observable heritable phenotype with a definable distribution could be used as an emission. The following (Figure 2) shows a schematic of a lineage tree in which we can observe phenotypes such as, cell fate, inter-mitotic times (lifetimes), G1 cell cycle phase duration, G2 cell cycle phase duration, and cell shape. For each of these features we consider a probabilistic distribution, shown in parts b-e.
 
-![**This figure shows the flexibility of the model and that we can use any tracktable phenotype.](./output/figure2A.svg){#fig:2}
+![**This figure shows the flexibility of the model and that we can use any tracktable phenotype.](./output/figure2.svg){#fig:2}
 
 
 ### Increasing depth and breadth of the lineage increases the accuracy of state assignment and parameter estimation.
-Here we show the performance of the model by increasing the cell numbers. The figure shows the state assignment accuracy and parameter estimations.
+Here we show the performance of the model by increasing the cell numbers. The figure shows the state assignment accuracy and parameter estimations for censored lineages.
 
 ![**A figure to show how many cells we would need to obtain a reasonable performance.](./output/figure3.svg){#fig:3}
 
