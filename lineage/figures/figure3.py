@@ -156,7 +156,7 @@ def figureMaker2(ax, accuracy_df, data_df, paramTrues):
     sns.stripplot(x="cell number", y='shape G2', hue='state', data=data_df, dodge=False, jitter=True,
                   ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].set_ylim(bottom=-0.05, top=15.0)
-    ax[i].text(1.2, 2.5, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
+    ax[i].text(5.0, 7.1, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
     ax[i].set_ylabel("shape parameter")
     ax[i].legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
