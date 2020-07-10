@@ -15,7 +15,7 @@ from .figureCommon import (
     lineage_good_to_analyze,
     num_data_points
 )
-from .figure3A import figureMaker3, accuracy
+from .figureS53 import figureMaker3, accuracy
 from ..LineageTree import LineageTree
 
 

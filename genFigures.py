@@ -9,9 +9,6 @@ matplotlib.use('AGG')
 fdir = './output/'
 cartoon_dir = r"./lineage/figures/cartoons"
 
-# TODO: Remove this one day.
-np.random.seed(1)
-
 if __name__ == '__main__':
     start = time.time()
     nameOut = 'figure' + sys.argv[1]
