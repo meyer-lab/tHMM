@@ -20,13 +20,13 @@ from ..LineageTree import LineageTree
 
 def makeFigure():
     """
-    Makes fig 3A.
+    Makes fig S53.
     """
 
     # Get list of axis objects
     ax, f = getSetup((10, 10), (3, 3))
     lin_params = {"pi": pi, "T": T, "E": E2, "desired_num_cells": min_desired_num_cells}
-    number_of_columns = 5
+    number_of_columns = 25
     figureMaker3(ax, *accuracy(lin_params, number_of_columns))
 
     subplotLabel(ax)
@@ -98,20 +98,20 @@ def accuracy(lin_params, number_of_columns):
 
 def figureMaker3(ax, accuracy_df, param_df, data_df, paramTrues):
     """
-    This makes figure 3A.
+    This makes figure 3.
     """
     i = 0
     ax[i].axis('off')
 
     i += 1
-    sns.barplot(x="Approximate Cell Number", y="State Assignment Accuracy", data=accuracy_df, ax=ax[i])
+    sns.lineplot(x="Approximate Cell Number", y="State Assignment Accuracy", data=accuracy_df, ax=ax[i])
     ax[i].set_title("State Assignment Accuracy")
     ax[i].set_ylabel("Accuracy [%]")
-    ax[i].set_ylim(bottom=25.0, top=102.5)
+    ax[i].set_ylim(bottom=25.0, top=101)
 
     # T and pi matrix distance to their true value
     i += 1
-    sns.barplot(x="Approximate Cell Number", y="Error", hue="Parameter", data=param_df, ax=ax[i])
+    sns.lineplot(x="Approximate Cell Number", y="Error", hue="Parameter", data=param_df, ax=ax[i])
     ax[i].set_title(r"Error in estimating $T$ & $\pi$")
     ax[i].set_ylabel(r"Error [$||x-\hat{x}||$]")
     ax[i].set_ylim(bottom=0.01, top=1.02)
@@ -120,7 +120,7 @@ def figureMaker3(ax, accuracy_df, param_df, data_df, paramTrues):
     # Bernoulli parameter estimation
     ax[i].axhline(y=paramTrues[:, 0, 0][0], ls='--', c='k', alpha=0.5)
     ax[i].axhline(y=paramTrues[:, 1, 0][0], ls='--', c='k', alpha=0.5)
-    sns.boxplot(x="Approximate Cell Number", y='Bern. G1 p', hue='State', data=data_df, ax=ax[i])
+    sns.lineplot(x="Approximate Cell Number", y='Bern. G1 p', hue='State', data=data_df, ax=ax[i])
     ax[i].set_title(r"G1 fate parameter estimation ($p$)")
     ax[i].set_ylabel("Bernoulli rate estimate ($p$)")
     ax[i].set_ylim(0.75, 1.01)
@@ -128,7 +128,7 @@ def figureMaker3(ax, accuracy_df, param_df, data_df, paramTrues):
     i += 1
     ax[i].axhline(y=paramTrues[:, 0, 2][0], ls='--', c='k', alpha=0.5)
     ax[i].axhline(y=paramTrues[:, 1, 2][0], ls='--', c='k', alpha=0.5)
-    sns.boxplot(x="Approximate Cell Number", y='shape G1', hue='State', data=data_df, ax=ax[i])
+    sns.lineplot(x="Approximate Cell Number", y='shape G1', hue='State', data=data_df, ax=ax[i])
     ax[i].set_title(r"G1 lifetime parameter estimation ($k$, $\theta$)")
     ax[i].set_ylabel("Gamma shape estimate ($k$)")
     ax[i].set_ylim(1, 15)
@@ -136,7 +136,7 @@ def figureMaker3(ax, accuracy_df, param_df, data_df, paramTrues):
     i += 1
     ax[i].axhline(y=paramTrues[:, 0, 3][0], ls='--', c='k', alpha=0.5)
     ax[i].axhline(y=paramTrues[:, 1, 3][0], ls='--', c='k', alpha=0.5)
-    sns.boxplot(x="Approximate Cell Number", y='scale G1', hue='State', data=data_df, ax=ax[i])
+    sns.lineplot(x="Approximate Cell Number", y='scale G1', hue='State', data=data_df, ax=ax[i])
     ax[i].set_title(r"G1 lifetime parameter estimation ($k$, $\theta$)")
     ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
     ax[i].set_ylim(1, 15)
@@ -144,7 +144,7 @@ def figureMaker3(ax, accuracy_df, param_df, data_df, paramTrues):
     i += 1
     ax[i].axhline(y=paramTrues[:, 0, 1][0], ls='--', c='k', alpha=0.5)
     ax[i].axhline(y=paramTrues[:, 1, 1][0], ls='--', c='k', alpha=0.5)
-    sns.boxplot(x="Approximate Cell Number", y='Bern. G2 p', hue='State', data=data_df, ax=ax[i])
+    sns.lineplot(x="Approximate Cell Number", y='Bern. G2 p', hue='State', data=data_df, ax=ax[i])
     ax[i].set_title(r"G2 fate parameter estimation ($p$)")
     ax[i].set_ylabel(r"Bernoulli rate estimate ($p$)")
     ax[i].set_ylim(0.75, 1.01)
@@ -152,7 +152,7 @@ def figureMaker3(ax, accuracy_df, param_df, data_df, paramTrues):
     i += 1
     ax[i].axhline(y=paramTrues[:, 0, 4][0], ls='--', c='k', alpha=0.5)
     ax[i].axhline(y=paramTrues[:, 1, 4][0], ls='--', c='k', alpha=0.5)
-    sns.boxplot(x="Approximate Cell Number", y='shape G2', hue='State', data=data_df, ax=ax[i])
+    sns.lineplot(x="Approximate Cell Number", y='shape G2', hue='State', data=data_df, ax=ax[i])
     ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
     ax[i].set_ylabel(r"Gamma shape estimate ($k$)")
     ax[i].set_ylim(0, 10)
@@ -160,7 +160,7 @@ def figureMaker3(ax, accuracy_df, param_df, data_df, paramTrues):
     i += 1
     ax[i].axhline(y=paramTrues[:, 0, 5][0], ls='--', c='k', alpha=0.5)
     ax[i].axhline(y=paramTrues[:, 1, 5][0], ls='--', c='k', alpha=0.5)
-    sns.boxplot(x="Approximate Cell Number", y='scale G2', hue='State', data=data_df, ax=ax[i])
+    sns.lineplot(x="Approximate Cell Number", y='scale G2', hue='State', data=data_df, ax=ax[i])
     ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
     ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
     ax[i].set_ylim(0, 10)
