@@ -119,48 +119,48 @@ def figureMaker2(ax, accuracy_df, param_df, data_df, paramTrues):
 
     i += 1
     # Bernoulli parameter estimation
-    ax[i].axhline(y=paramTrues[:, 0, 0][0])
-    ax[i].axhline(y=paramTrues[:, 1, 0][0])
+    ax[i].axhline(y=paramTrues[:, 0, 0][0], ls='--', c='k')
+    ax[i].axhline(y=paramTrues[:, 1, 0][0], ls='--', c='k')
     sns.boxplot(x="Approximate Cell Number", y='Bern. G1 p', hue='State', data=data_df, ax=ax[i])
     ax[i].set_title(r"G1 fate parameter estimation ($p$)")
     ax[i].set_ylabel("Bernoulli rate estimate ($p$)")
     ax[i].set_ylim(0.75, 1.01)
 
     i += 1
-    ax[i].axhline(y=paramTrues[:, 0, 2][0])
-    ax[i].axhline(y=paramTrues[:, 1, 2][0])
+    ax[i].axhline(y=paramTrues[:, 0, 2][0], ls='--', c='k')
+    ax[i].axhline(y=paramTrues[:, 1, 2][0], ls='--', c='k')
     sns.boxplot(x="Approximate Cell Number", y='shape G1', hue='State', data=data_df, ax=ax[i])
     ax[i].set_title(r"G1 lifetime parameter estimation ($k$, $\theta$)")
     ax[i].set_ylabel("Gamma shape estimate ($k$)")
     ax[i].set_ylim(1, 15)
 
     i += 1
-    ax[i].axhline(y=paramTrues[:, 0, 3][0])
-    ax[i].axhline(y=paramTrues[:, 1, 3][0])
+    ax[i].axhline(y=paramTrues[:, 0, 3][0], ls='--', c='k')
+    ax[i].axhline(y=paramTrues[:, 1, 3][0], ls='--', c='k')
     sns.boxplot(x="Approximate Cell Number", y='scale G1', hue='State', data=data_df, ax=ax[i])
     ax[i].set_title(r"G1 lifetime parameter estimation ($k$, $\theta$)")
     ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
     ax[i].set_ylim(1, 15)
 
     i += 1
-    ax[i].axhline(y=paramTrues[:, 0, 1][0])
-    ax[i].axhline(y=paramTrues[:, 1, 1][0])
+    ax[i].axhline(y=paramTrues[:, 0, 1][0], ls='--', c='k')
+    ax[i].axhline(y=paramTrues[:, 1, 1][0], ls='--', c='k')
     sns.boxplot(x="Approximate Cell Number", y='Bern. G2 p', hue='State', data=data_df, ax=ax[i])
     ax[i].set_title(r"G2 fate parameter estimation ($p$)")
     ax[i].set_ylabel(r"Bernoulli rate estimate ($p$)")
     ax[i].set_ylim(0.75, 1.01)
     
     i += 1
-    ax[i].axhline(y=paramTrues[:, 0, 4][0])
-    ax[i].axhline(y=paramTrues[:, 1, 4][0])
+    ax[i].axhline(y=paramTrues[:, 0, 4][0], ls='--', c='k')
+    ax[i].axhline(y=paramTrues[:, 1, 4][0], ls='--', c='k')
     sns.boxplot(x="Approximate Cell Number", y='shape G2', hue='State', data=data_df, ax=ax[i])
     ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
     ax[i].set_ylabel(r"Gamma shape estimate ($k$)")
     ax[i].set_ylim(0, 10)
 
     i += 1
-    ax[i].axhline(y=paramTrues[:, 0, 5][0])
-    ax[i].axhline(y=paramTrues[:, 1, 5][0])
+    ax[i].axhline(y=paramTrues[:, 0, 5][0], ls='--', c='k')
+    ax[i].axhline(y=paramTrues[:, 1, 5][0], ls='--', c='k')
     sns.boxplot(x="Approximate Cell Number", y='scale G2', hue='State', data=data_df, ax=ax[i])
     ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
     ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
