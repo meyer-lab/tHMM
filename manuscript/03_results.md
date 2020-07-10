@@ -16,9 +16,9 @@ Here we show the performance of the model by increasing the cell numbers. The fi
 
 
 ### tHMM performs best when the difference between cell states is significant.
-Employing Wasserestein distance, we show the more different the states, the higher the accuracy of state assignments.
+Employing Wasserstein distance, we show the more different the states, the higher the accuracy of state assignments.
 
-![**Wasserestein distance shows in a 2-state population, the accuracy increases if the states are farther to each oteher.](./output/figure4.svg){#fig:4}
+![**Wasserstein distance shows in a 2-state population, the accuracy increases if the states are distant from each other.](./output/figure4.svg){#fig:4}
 
 
 ### tHMM model can pick up even rare phenotypes within the lineage
