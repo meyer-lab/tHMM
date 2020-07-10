@@ -24,7 +24,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((7.5, 5), (2, 3))
+    ax, f = getSetup((10, 10), (3,3))
     number_of_columns = 5
     figureMaker2(ax, *accuracy(number_of_columns))
 
@@ -68,21 +68,22 @@ def accuracy(number_of_columns):
 
     cell_number_x, paramEst, accuracy_after_switching, transition_matrix_norm, pi_vector_norm, paramTrues = commonAnalyze(list_of_populations)
 
-    accuracy_df = pd.DataFrame(columns=["Approximate Cell Number", 'State Assignment Accuracy'])
-    accuracy_df['Approximate Cell Number'] = cell_number_x
+    accuracy_df = pd.DataFrame(columns=["Cell Number", "Approximate Cell Number", 'State Assignment Accuracy'])
+    accuracy_df['Cell Number'] = cell_number_x
     accuracy_df['State Assignment Accuracy'] = accuracy_after_switching
     maxx = np.max(cell_number_x)
-    cell_number_columns = [maxx*(i+1)/number_of_columns for i in range(number_of_columns)]
+    cell_number_columns = [int(maxx*(2*i+1)/2/number_of_columns) for i in range(number_of_columns)]
     assert len(cell_number_columns) == number_of_columns
     for indx, num in enumerate(cell_number_x):
-        bottom_range = 0
-        for i in range(number_of_columns):
-            if bottom_range < num <= cell_number_columns[i]:
-                accuracy_df['Approximate Cell Number'][indx] = maxx*((2*i+1)/(2*number_of_columns))
-            bottom_range += cell_number_columns[i]
+        accuracy_df.loc[indx, 'Approximate Cell Number'] = return_closest(num, cell_number_columns)
+    
+    param_df = pd.DataFrame(columns=["Approximate Cell Number", "T", "pi"])
+    param_df["Approximate Cell Number"] = accuracy_df["Approximate Cell Number"].to_list() + accuracy_df["Approximate Cell Number"].to_list()
+    param_df['Error'] = transition_matrix_norm + pi_vector_norm
+    param_df["Parameter"] = len(transition_matrix_norm)*[r"$T$"] + len(pi_vector_norm)*[r"$\pi$"]
 
-    data_df = pd.DataFrame(columns=["Approximate Cell Number", "State", 'Bern. G1 p', 'Bern. G2 p', 'shape G1', 'scale G1', 'shape G2', 'scale G2', 'T and pi', 'Parameter'])
-    data_df["Approximate Cell Number"] = accuracy_df["Approximate Cell Number"]
+    data_df = pd.DataFrame(columns=["Approximate Cell Number", "State", 'Bern. G1 p', 'Bern. G2 p', 'shape G1', 'scale G1', 'shape G2', 'scale G2'])
+    data_df["Approximate Cell Number"] = accuracy_df["Approximate Cell Number"].to_list() + accuracy_df["Approximate Cell Number"].to_list()
     data_df["State"] = ["State 1"] * paramEst[:, 0, 0].shape[0] + ["State 2"] * paramEst[:, 1, 0].shape[0]
     data_df['Bern. G1 p'] = np.concatenate((paramEst[:, 0, 0], paramEst[:, 1, 0]), axis=0)
     data_df['Bern. G2 p'] = np.concatenate((paramEst[:, 0, 1], paramEst[:, 1, 1]), axis=0)
@@ -90,13 +91,12 @@ def accuracy(number_of_columns):
     data_df['scale G1'] = np.concatenate((paramEst[:, 0, 3], paramEst[:, 1, 3]), axis=0)
     data_df['shape G2'] = np.concatenate((paramEst[:, 0, 4], paramEst[:, 1, 4]), axis=0)
     data_df['scale G2'] = np.concatenate((paramEst[:, 0, 5], paramEst[:, 1, 5]), axis=0)
-    data_df['T and pi'] = np.concatenate((transition_matrix_norm, pi_vector_norm), axis=0)
-    data_df["Parameter"] = ['T'] * len(transition_matrix_norm) + ['pi'] * len(pi_vector_norm)
-
-    return accuracy_df, data_df, paramTrues
 
 
-def figureMaker2(ax, accuracy_df, data_df, paramTrues):
+    return accuracy_df, param_df, data_df, paramTrues
+
+
+def figureMaker2(ax, accuracy_df, param_df, data_df, paramTrues):
     """
     This makes figure 3A.
     """
@@ -105,77 +105,69 @@ def figureMaker2(ax, accuracy_df, data_df, paramTrues):
     
 
     i += 1
-    sns.boxplot(x="cell number", y="state acc.", data=accuracy_df, ax=ax[i])
+    sns.barplot(x="Approximate Cell Number", y="State Assignment Accuracy", data=accuracy_df, ax=ax[i])
     ax[i].set_title("State Assignment Accuracy")
-    ax[i].set_ylabel("Accuracy (%)")
-    ax[i].set_ylim(bottom=50.0, top=105.0)
+    ax[i].set_ylabel("Accuracy [%]")
+    ax[i].set_ylim(bottom=25.0, top=102.5)
 
     # T and pi matrix distance to their true value
     i += 1
-    sns.stripplot(x="cell number", y='T and pi', hue='hue', dodge=False, jitter=True, data=data_df, ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", alpha=0.6)
-    ax[i].set_ylim(bottom=-0.2, top=1.02)
-    ax[i].set_ylabel("dif. from true value")
+    sns.barplot(x="Approximate Cell Number", y="Error", hue="Parameter", data=param_df, ax=ax[i])
+    ax[i].set_title(r"Error in estimating $T$ & $\pi$")
+    ax[i].set_ylabel(r"Error [$||x-\hat{x}||$]")
+    ax[i].set_ylim(bottom=0.01, top=1.02)
 
     i += 1
     # Bernoulli parameter estimation
-    sns.stripplot(x="cell number", y='Bern. G1 p', hue='state', data=data_df, dodge=False,
-                  jitter=True, ax=ax[i], marker='o', linewidth=0.5, edgecolor="white",
-                  palette=sns.xkcd_palette(['blue', 'green']))
-    for tick, _ in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
-        # plot horizontal lines across the column, centered on the tick
-        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 0][0], paramTrues[:, 0, 0][0]],
-                   color='blue', alpha=0.6)
-        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 0][0], paramTrues[:, 1, 0][0]], color='green',
-                   alpha=0.6)
-        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 1][0], paramTrues[:, 0, 1][0]],
-                   color='orange', alpha=0.6)
-        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 1][0], paramTrues[:, 1, 1][0]], color='red',
-                   alpha=0.6)
-    sns.stripplot(x="cell number", y='Bern. G2 p', hue='state', data=data_df, dodge=False,
-                  jitter=True, ax=ax[i], marker='^', linewidth=0.5, edgecolor="white",
-                  palette=sns.xkcd_palette(['orange', 'red']))
-    ax[i].set_ylim(bottom=0.6, top=1.2)
-    ax[i].set_ylabel("bernoulli parameters")
-    ax[i].text(5.0, 1.0, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
-    ax[i].legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    ax[i].axhline(y=paramTrues[:, 0, 0][0])
+    ax[i].axhline(y=paramTrues[:, 1, 0][0])
+    sns.boxplot(x="Approximate Cell Number", y='Bern. G1 p', hue='State', data=data_df, ax=ax[i])
+    ax[i].set_title(r"G1 fate parameter estimation ($p$)")
+    ax[i].set_ylabel("Bernoulli rate estimate ($p$)")
+    ax[i].set_ylim(0.75, 1.01)
 
     i += 1
-    sns.stripplot(x="cell number", y='shape G1', hue='state', jitter=True, dodge=False, data=data_df,
-                  ax=ax[i], marker='o', linewidth=0.5, edgecolor="white",
-                  palette=sns.xkcd_palette(['blue', 'green']))
-    for tick, _ in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
-        # plot horizontal lines across the column, centered on the tick
-        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 2][0], paramTrues[:, 0, 2][0]], color='blue',
-                   alpha=0.6)
-        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 2][0], paramTrues[:, 1, 2][0]], color='green',
-                   alpha=0.6)
-        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 4][0], paramTrues[:, 0, 4][0]], color='orange',
-                   alpha=0.6)
-        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 4][0], paramTrues[:, 1, 4][0]], color='red',
-                   alpha=0.6)
-    sns.stripplot(x="cell number", y='shape G2', hue='state', data=data_df, dodge=False, jitter=True,
-                  ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
-    ax[i].set_ylim(bottom=-0.05, top=15.0)
-    ax[i].text(5.0, 7.1, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
-    ax[i].set_ylabel("shape parameter")
-    ax[i].legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    ax[i].axhline(y=paramTrues[:, 0, 2][0])
+    ax[i].axhline(y=paramTrues[:, 1, 2][0])
+    sns.boxplot(x="Approximate Cell Number", y='shape G1', hue='State', data=data_df, ax=ax[i])
+    ax[i].set_title(r"G1 lifetime parameter estimation ($k$, $\theta$)")
+    ax[i].set_ylabel("Gamma shape estimate ($k$)")
+    ax[i].set_ylim(1, 15)
 
     i += 1
-    sns.stripplot(x="cell number", y='scale G1', hue='state', data=data_df, dodge=False, jitter=True,
-                  ax=ax[i], marker='o', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['blue', 'green']))
-    for tick, _ in zip(ax[i].get_xticks(), ax[i].get_xticklabels()):
-        # plot horizontal lines across the column, centered on the tick
-        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 3][0], paramTrues[:, 0, 3][0]], color='blue',
-                   alpha=0.6)
-        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 3][0], paramTrues[:, 1, 3][0]], color='green',
-                   alpha=0.6)
-        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 0, 5][0], paramTrues[:, 0, 5][0]], color='orange',
-                   alpha=0.6)
-        ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 5][0], paramTrues[:, 1, 5][0]], color='red',
-                   alpha=0.6)
-    sns.stripplot(x="cell number", y='scale G2', hue='state', data=data_df, dodge=True, jitter=True,
-                  ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
-    ax[i].set_ylim(bottom=-0.05, top=11.0)
-    ax[i].set_ylabel("scale parameter")
-    ax[i].text(1.1, 7.5, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
-    ax[i].legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    ax[i].axhline(y=paramTrues[:, 0, 3][0])
+    ax[i].axhline(y=paramTrues[:, 1, 3][0])
+    sns.boxplot(x="Approximate Cell Number", y='scale G1', hue='State', data=data_df, ax=ax[i])
+    ax[i].set_title(r"G1 lifetime parameter estimation ($k$, $\theta$)")
+    ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
+    ax[i].set_ylim(1, 15)
+
+    i += 1
+    ax[i].axhline(y=paramTrues[:, 0, 1][0])
+    ax[i].axhline(y=paramTrues[:, 1, 1][0])
+    sns.boxplot(x="Approximate Cell Number", y='Bern. G2 p', hue='State', data=data_df, ax=ax[i])
+    ax[i].set_title(r"G2 fate parameter estimation ($p$)")
+    ax[i].set_ylabel(r"Bernoulli rate estimate ($p$)")
+    ax[i].set_ylim(0.75, 1.01)
+    
+    i += 1
+    ax[i].axhline(y=paramTrues[:, 0, 4][0])
+    ax[i].axhline(y=paramTrues[:, 1, 4][0])
+    sns.boxplot(x="Approximate Cell Number", y='shape G2', hue='State', data=data_df, ax=ax[i])
+    ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
+    ax[i].set_ylabel(r"Gamma shape estimate ($k$)")
+    ax[i].set_ylim(0, 10)
+
+    i += 1
+    ax[i].axhline(y=paramTrues[:, 0, 5][0])
+    ax[i].axhline(y=paramTrues[:, 1, 5][0])
+    sns.boxplot(x="Approximate Cell Number", y='scale G2', hue='State', data=data_df, ax=ax[i])
+    ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
+    ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
+    ax[i].set_ylim(0, 10)
+
+def return_closest(n, value_set):
+    """
+    Returns closest value from a set of values.
+    """
+    return int(min(value_set, key=lambda x:abs(x-n)))
