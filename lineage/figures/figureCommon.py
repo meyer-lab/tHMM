@@ -106,7 +106,8 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     predicted_num_states = kwargs.get("predicted_num_states", 2)
     parallel = kwargs.get("parallel", True)
     # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, predicted_num_states, parallel=parallel, list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
+    output = run_Analyze_over(list_of_populations, predicted_num_states, parallel=parallel,
+                              list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
 
     # Collecting the results of analyzing the lineages
     results_holder = run_Results_over(output)
@@ -143,7 +144,8 @@ def subplotLabel(axs):
     i = 0
     for _, ax in enumerate(axs):
         if ax.has_data():  # only label plots with graphs on them
-            ax.text(-0.2, 1.25, ascii_lowercase[i], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
+            ax.text(-0.2, 1.25, ascii_lowercase[i], transform=ax.transAxes,
+                    fontsize=16, fontweight="bold", va="top")
             i += 1
 
 
@@ -195,13 +197,17 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     i += 1
     ax[i].set_xlabel(xlabel)
     if number_of_params == 6:
-        ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k", marker="o", alpha=0.5)
-        ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k",
+                      marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k",
+                      marker="o", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", alpha=0.5)
     else:
-        ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k", marker="o", alpha=0.5)
-        ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k",
+                      marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k",
+                      marker="o", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", alpha=0.5)
     if number_of_params == 2:
@@ -220,18 +226,26 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     else:
         ax[i].set_xlabel(xlabel)
         if number_of_params == 6:
-            ax[i].scatter(x, paramEst[:, 0, 3], edgecolors="k", marker="o", alpha=0.5)
-            ax[i].scatter(x, paramEst[:, 1, 3], edgecolors="k", marker="o", alpha=0.5)
-            ax[i].scatter(x, paramTrues[:, 0, 3], marker="_", alpha=0.5, label="State 1")
-            ax[i].scatter(x, paramTrues[:, 1, 3], marker="_", alpha=0.5, label="State 2")
+            ax[i].scatter(x, paramEst[:, 0, 3], edgecolors="k",
+                          marker="o", alpha=0.5)
+            ax[i].scatter(x, paramEst[:, 1, 3], edgecolors="k",
+                          marker="o", alpha=0.5)
+            ax[i].scatter(x, paramTrues[:, 0, 3], marker="_",
+                          alpha=0.5, label="State 1")
+            ax[i].scatter(x, paramTrues[:, 1, 3], marker="_",
+                          alpha=0.5, label="State 2")
             ax[i].set_ylabel(r"G1 Gamma $\theta$")
             ax[i].set_title(r"G1 Gamma $\theta$")
         else:
             ax[i].set_xlabel(xlabel)
-            ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k", marker="o", alpha=0.5)
-            ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k", marker="o", alpha=0.5)
-            ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", alpha=0.5, label="State 1")
-            ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", alpha=0.5, label="State 2")
+            ax[i].scatter(x, paramEst[:, 0, 2], edgecolors="k",
+                          marker="o", alpha=0.5)
+            ax[i].scatter(x, paramEst[:, 1, 2], edgecolors="k",
+                          marker="o", alpha=0.5)
+            ax[i].scatter(x, paramTrues[:, 0, 2], marker="_",
+                          alpha=0.5, label="State 1")
+            ax[i].scatter(x, paramTrues[:, 1, 2], marker="_",
+                          alpha=0.5, label="State 2")
             ax[i].set_ylabel(r"Gamma $\theta$")
             ax[i].set_title(r"Gamma $\theta$")
         ax[i].legend()
@@ -239,8 +253,10 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     i += 1
     ax[i].set_xlabel(xlabel)
     if number_of_params == 6:
-        ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k", marker="o", alpha=0.5)
-        ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 0, 1], edgecolors="k",
+                      marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 1, 1], edgecolors="k",
+                      marker="o", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", alpha=0.5)
         ax[i].set_ylim(bottom=0, top=1.02)
@@ -248,7 +264,8 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].set_title(r"G2 Bernoulli $p$")
     else:
         ax[i].set_ylim(bottom=0, top=101)
-        ax[i].scatter(x, accuracies, c="k", marker="o", label="Accuracy", edgecolors="k", alpha=0.25)
+        ax[i].scatter(x, accuracies, c="k", marker="o",
+                      label="Accuracy", edgecolors="k", alpha=0.25)
         ax[i].set_ylabel(r"Accuracy [\%]")
         ax[i].axhline(y=100, linestyle="--", linewidth=2, color="k", alpha=1)
         ax[i].set_title("State Assignment Accuracy")
@@ -256,8 +273,10 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     i += 1
     ax[i].set_xlabel(xlabel)
     if number_of_params == 6:
-        ax[i].scatter(x, paramEst[:, 0, 4], edgecolors="k", marker="o", alpha=0.5)
-        ax[i].scatter(x, paramEst[:, 1, 4], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 0, 4], edgecolors="k",
+                      marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 1, 4], edgecolors="k",
+                      marker="o", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 0, 4], marker="_", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 1, 4], marker="_", alpha=0.5)
         ax[i].set_ylabel(r"G2 Gamma $k$")
@@ -272,8 +291,10 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     i += 1
     ax[i].set_xlabel(xlabel)
     if number_of_params == 6:
-        ax[i].scatter(x, paramEst[:, 0, 5], edgecolors="k", marker="o", alpha=0.5)
-        ax[i].scatter(x, paramEst[:, 1, 5], edgecolors="k", marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 0, 5], edgecolors="k",
+                      marker="o", alpha=0.5)
+        ax[i].scatter(x, paramEst[:, 1, 5], edgecolors="k",
+                      marker="o", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 0, 5], marker="_", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 1, 5], marker="_", alpha=0.5)
         ax[i].set_ylabel(r"G2 Gamma $\theta$")
@@ -289,7 +310,8 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         i += 1
         ax[i].set_xlabel(xlabel)
         ax[i].set_ylim(bottom=0, top=101)
-        ax[i].scatter(x, accuracies, c="k", marker="o", label="Accuracy", edgecolors="k", alpha=0.25)
+        ax[i].scatter(x, accuracies, c="k", marker="o",
+                      label="Accuracy", edgecolors="k", alpha=0.25)
         ax[i].set_ylabel(r"Accuracy [\%]")
         ax[i].axhline(y=100, linestyle="--", linewidth=2, color="k", alpha=1)
         ax[i].set_title("State Assignment Accuracy")

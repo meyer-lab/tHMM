@@ -1,6 +1,5 @@
 # TODO
-# lint
-# check if AICc helps
+# Read about/properly derive AICc for this model and check censored lineages with corrected AIC
 
 
 """
@@ -13,7 +12,7 @@ from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 
-from .figureCommon import getSetup
+from .figureCommon import getSetup, lineage_good_to_analyze
 from ..Analyze import run_Analyze_AIC
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
@@ -38,8 +37,8 @@ def makeFigure():
     Efour = [Sone, Stwo, Sthree, Sfour]
     E = [Eone, Etwo, Ethree, Efour, Eone, Etwo, Ethree, Efour]
 
-    # making lineages and finding AICs
-    AIC = [run_AIC(.02, e, 10, idx > 4) for idx, e in enumerate(E)]
+    # making lineages and finding AICs (assign number of lineages here)
+    AIC = [run_AIC(.1, e, 10, idx > 4) for idx, e in enumerate(E)]
 
     # Finding proper ylim range for all 4 uncensored graphs and rounding up
     upper_ylim_uncensored = int(1 + max(np.max(np.ptp(AIC[0], axis=0)), np.max(np.ptp(
@@ -68,7 +67,7 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10, censored=Fals
     # Setting up pi and Transition matrix T:
     #   pi: All states have equal initial probabilities
     #   T:  States have high likelihood of NOT changing, with frequency of change determined mostly by the relative_state_change variable
-    #   (If relative_state_change>1 then states are more likely to change than stay the same)
+    #   (as relative state change -> inf state change probabilities approach equality)
     pi = np.ones(len(E)) / len(E)
     T = (np.eye(len(E)) + relative_state_change)
     T = T / np.sum(T, axis=1)[:, np.newaxis]
@@ -82,7 +81,7 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10, censored=Fals
     else:
         lineages = [LineageTree.init_from_parameters(
             pi, T, E, 2**6 - 1) for _ in range(num_lineages_to_evaluate)]
-
+    lineages = [l for l in lineages if lineage_good_to_analyze(l)]
     # Storing AICs into array
     AICs = np.empty((len(desired_num_states), len(lineages)))
     output = run_Analyze_AIC(lineages, desired_num_states)
@@ -106,7 +105,7 @@ def figure_maker(ax, AIC_holder, true_state_no, upper_ylim, censored=False):
     ax2.hist(np.argmin(AIC_holder, axis=0) + 1, rwidth=1,
              alpha=.2, bins=desired_num_states, align='left')
     ax2.margins(0)
-    ax2.set_yticks(np.linspace(0, 10, 6))
+    ax2.set_yticks(np.linspace(0, len(AIC_holder[0]), 1+len(AIC_holder[0])))
 
     # Creating AIC plot and matching gridlines
     ax.set_xlabel("Number of States Predicted")
