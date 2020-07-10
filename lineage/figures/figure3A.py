@@ -25,7 +25,7 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((10, 10), (3, 3))
-    lin_params = {"pi":pi, "T":T, "E":E2, "desired_num_cells":min_desired_num_cells}
+    lin_params = {"pi": pi, "T": T, "E": E2, "desired_num_cells": min_desired_num_cells}
     number_of_columns = 5
     figureMaker3(ax, *accuracy(lin_params, number_of_columns))
 
