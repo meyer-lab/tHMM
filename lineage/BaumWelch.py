@@ -49,12 +49,15 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
     separate functions.
     """
     if tHMMobj.estimate.fpi is None:
+        assert tHMMobj.fpi is None
         tHMMobj.estimate.pi = do_M_pi_step(tHMMobj, gammas)
 
     if tHMMobj.estimate.fT is None:
+        assert tHMMobj.fT is None
         tHMMobj.estimate.T = do_M_T_step(tHMMobj, MSD, betas, gammas)
 
     if tHMMobj.estimate.fE is None:
+        assert tHMMobj.fE is None
         do_M_E_step(tHMMobj, gammas)
 
 

@@ -8,13 +8,13 @@ Purpose: Generates figure 10.
 
 AIC.
 """
-from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 
 from .figureCommon import getSetup, lineage_good_to_analyze
 from ..Analyze import run_Analyze_AIC
 from ..LineageTree import LineageTree
+
 from ..states.StateDistributionGamma import StateDistribution
 # States to evaluate with the model
 desired_num_states = np.arange(1, 8)

@@ -10,3 +10,4 @@ pandoc-eqnos==2.1.1
 pandoc-tablenos==2.1.1
 numba==0.49.1
 xlrd==1.2.0
+Biopython==1.76

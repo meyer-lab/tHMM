@@ -9,7 +9,7 @@ from .figureCommon import (
     pi,
     E2,
     T,
-    max_desired_num_cells,
+    min_desired_num_cells,
     min_num_lineages,
     max_num_lineages,
     lineage_good_to_analyze,
@@ -24,7 +24,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((2.5, 10), (5, 1))
+    ax, f = getSetup((7.5, 5), (2, 3))
 
     figureMaker2(ax, *accuracy())
 
@@ -55,7 +55,7 @@ def accuracy():
 
             good2go = False
             while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, max_desired_num_cells)
+                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, min_desired_num_cells)
                 good2go = lineage_good_to_analyze(tmp_lineage)
 
             population.append(tmp_lineage)
@@ -96,15 +96,18 @@ def accuracy():
     dataParams['T and pi'] = np.concatenate((transition_matrix_norm, pi_vector_norm), axis=0)
     dataParams['hue'] = ['T'] * len(transition_matrix_norm) + ['pi'] * len(pi_vector_norm)
 
-    return total_cellnum, dataframe, dataParams, paramTrues
+    return dataframe, dataParams, paramTrues
 
 
-def figureMaker2(ax, total_cellnum, dataframe, dataParams, paramTrues):
+def figureMaker2(ax, dataframe, dataParams, paramTrues):
     """
     This makes figure 3A.
     """
     # state assignment accuracy
     i = 0
+    ax[i].axis('off')
+
+    i += 1
     sns.boxplot(x="cell number", y="state acc.", data=dataframe, ax=ax[i], palette="deep")
     ax[i].set_ylabel("accuracy")
     ax[i].set_title("state assignemnt accuracy")
@@ -140,10 +143,11 @@ def figureMaker2(ax, total_cellnum, dataframe, dataParams, paramTrues):
                   jitter=True, ax=ax[i], marker='^', linewidth=0.5, edgecolor="white",
                   palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
-    ax[i].set_ylim(bottom=-0.05, top=1.2)
+    ax[i].set_ylim(bottom=0.6, top=1.2)
     ax[i].set_ylabel("bernoulli parameters")
-    ax[i].text(1.15, 0.25, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
+    ax[i].text(5.0, 0.87, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    ax[i].legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
     i += 1
     sns.stripplot(x="cell number", y='shape G1', hue='state', jitter=True, dodge=False, data=dataParams,
@@ -163,9 +167,10 @@ def figureMaker2(ax, total_cellnum, dataframe, dataParams, paramTrues):
                   ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
     ax[i].set_ylim(bottom=-0.05, top=15.0)
-    ax[i].text(1.2, 2.5, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
+    ax[i].text(5.0, 7.1, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
     ax[i].set_ylabel("shape parameter")
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    ax[i].legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
     i += 1
     sns.stripplot(x="cell number", y='scale G1', hue='state', data=dataParams, dodge=False, jitter=True,
@@ -180,10 +185,11 @@ def figureMaker2(ax, total_cellnum, dataframe, dataParams, paramTrues):
                    alpha=0.6)
         ax[i].plot([tick - 0.5, tick + 0.5], [paramTrues[:, 1, 5][0], paramTrues[:, 1, 5][0]], color='red',
                    alpha=0.6)
-    sns.stripplot(x="cell number", y='scale G2', hue='state', data=dataParams, dodge=False, jitter=True,
+    sns.stripplot(x="cell number", y='scale G2', hue='state', data=dataParams, dodge=True, jitter=True,
                   ax=ax[i], marker='^', linewidth=0.5, edgecolor="white", palette=sns.xkcd_palette(['orange', 'red']))
     ax[i].grid(linestyle="--")
     ax[i].set_ylim(bottom=-0.05, top=11.0)
     ax[i].set_ylabel("scale parameter")
-    ax[i].text(1.1, 7.5, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
+    ax[i].text(5.0, 5.0, str(repr('o') + " G1 \n" + str(repr('^')) + " G2"))
     ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    ax[i].legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)

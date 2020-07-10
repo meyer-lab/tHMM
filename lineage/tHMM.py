@@ -39,7 +39,7 @@ class tHMM:
     """Main tHMM class.
     """
 
-    def __init__(self, X, num_states, fpi=None, fT=None, fE=None):
+    def __init__(self, X, num_states: int, fpi=None, fT=None, fE=None):
         """Instantiates a tHMM.
 
         This function uses the following functions and assings them to the cells
@@ -64,9 +64,10 @@ class tHMM:
         """Runs the tHMM function through Baum Welch fitting"""
 
         # Step 0: initialize with random assignments and do an M step
-        random_gammas = [sp.multinomial.rvs(n=1, p=[1. / self.num_states] * self.num_states, size=len(lineage))
-                         for lineage in self.X]
-        do_M_E_step(self, random_gammas)
+        if self.fE is None:  # when there are no fixed emissions, we need to randomize the start
+            random_gammas = [sp.multinomial.rvs(n=1, p=[1. / self.num_states] * self.num_states, size=len(lineage))
+                             for lineage in self.X]
+            do_M_E_step(self, random_gammas)
 
         # Step 1: first E step
         MSD, NF, betas, gammas = do_E_step(self)

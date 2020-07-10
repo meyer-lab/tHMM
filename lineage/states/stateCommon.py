@@ -6,7 +6,6 @@ from numba import njit
 import scipy.stats as sp
 import scipy.special as sc
 from scipy.optimize import brentq, minimize
-import math
 
 
 @njit

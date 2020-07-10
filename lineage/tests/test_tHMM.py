@@ -9,7 +9,7 @@ from ..UpwardRecursion import (
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
-from lineage.figures.figureCommon import pi, T, E
+from ..figures.figureCommon import pi, T, E
 
 
 class TestModel(unittest.TestCase):
