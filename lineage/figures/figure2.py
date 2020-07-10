@@ -19,7 +19,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((10.0, 7.5), (3, 4))
+    ax, f = getSetup((10, 7.5), (3, 4))
     X = [LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**8 - 1)]
     results_dict = Results(*Analyze(X, 2))
     pred_states_by_lineage = results_dict["switched_pred_states_by_lineage"][0]  # only one lineage
@@ -39,7 +39,7 @@ def forHistObs(X, pred_states_by_lineage):
     BernoulliG1_hist = pd.DataFrame(columns=["States", "Count", "Fate"])
     BernoulliG1_hist["States"] = ["State 1"] + ["State 1"] +\
                                  ["State 2"] + ["State 2"] +\
-                                 ["Cumulative"] + ["Cumulative"]
+                                 ["Total"] + ["Total"]
     BernoulliG1_hist["Count"] = [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[0] == 0 and cell.state == 0])] +\
                                 [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[0] == 1 and cell.state == 0])] +\
                                 [sum([1 for lineage in X for cell in lineage.output_lineage if cell.obs[0] == 0 and cell.state == 1])] +\
@@ -137,7 +137,7 @@ def figureMaker2(ax, data):
     ax[i].axis('off')
 
     i += 1
-    ax[i].axis('off')
+    ax[i].axis('off')  
 
     i += 1
     ylim = max(BernoulliG1_hist["Count"]) + 10

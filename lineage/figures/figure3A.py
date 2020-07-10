@@ -83,7 +83,7 @@ def accuracy(number_of_columns):
 
     data_df = pd.DataFrame(columns=["Approximate Cell Number", "State", 'Bern. G1 p', 'Bern. G2 p', 'shape G1', 'scale G1', 'shape G2', 'scale G2', 'T and pi', 'Parameter'])
     data_df["Approximate Cell Number"] = accuracy_df["Approximate Cell Number"]
-    data_df['state'] = ["State 1"] * paramEst[:, 0, 0].shape[0] + ["State 2"] * paramEst[:, 1, 0].shape[0]
+    data_df["State"] = ["State 1"] * paramEst[:, 0, 0].shape[0] + ["State 2"] * paramEst[:, 1, 0].shape[0]
     data_df['Bern. G1 p'] = np.concatenate((paramEst[:, 0, 0], paramEst[:, 1, 0]), axis=0)
     data_df['Bern. G2 p'] = np.concatenate((paramEst[:, 0, 1], paramEst[:, 1, 1]), axis=0)
     data_df['shape G1'] = np.concatenate((paramEst[:, 0, 2], paramEst[:, 1, 2]), axis=0)
@@ -91,7 +91,7 @@ def accuracy(number_of_columns):
     data_df['shape G2'] = np.concatenate((paramEst[:, 0, 4], paramEst[:, 1, 4]), axis=0)
     data_df['scale G2'] = np.concatenate((paramEst[:, 0, 5], paramEst[:, 1, 5]), axis=0)
     data_df['T and pi'] = np.concatenate((transition_matrix_norm, pi_vector_norm), axis=0)
-    data_df['hue'] = ['T'] * len(transition_matrix_norm) + ['pi'] * len(pi_vector_norm)
+    data_df["Parameter"] = ['T'] * len(transition_matrix_norm) + ['pi'] * len(pi_vector_norm)
 
     return accuracy_df, data_df, paramTrues
 

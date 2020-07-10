@@ -102,4 +102,9 @@ if __name__ == '__main__':
     if sys.argv[1] == '2A':
         # Overlay Figure 2 cartoon
         overlayCartoon(fdir + 'figure2A.svg',
-                       f'{cartoon_dir}/figure2.svg', 0, 0, scalee=0.4)
+                       f'{cartoon_dir}/figure2.svg', 120, 0, scalee=0.675)
+        
+    if sys.argv[1] == '2B':
+        # Overlay Figure 2 cartoon
+        overlayCartoon(fdir + 'figure2B.svg',
+                       f'{cartoon_dir}/figure2.svg', 120, 0, scalee=0.675)

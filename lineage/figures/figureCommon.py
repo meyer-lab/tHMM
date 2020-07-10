@@ -63,36 +63,61 @@ def getSetup(figsize, gridd):
     """
     Establish figure set-up with subplots.
     """
-    sns.set(
-        palette="deep",
-        font_scale=0.7,
-        rc={"axes.facecolor": "#ffffff",  # axes background color
-            "axes.edgecolor": "#000000",  # axes edge color
-            "axes.linewidth": 1. / 4,
-            "grid.linestyle": "-",
-            "grid.alpha": 1. / 4,
-            "grid.color": "#000000",
-            "xtick.bottom": True,
-            "xtick.direction": "inout",
-            "xtick.major.width": 1. / 4,  # major tick width in points
-            "xtick.minor.width": 0.5 / 4,  # minor tick width in points
-            "ytick.left": True,
-            "ytick.direction": "inout",
-            "ytick.major.width": 1. / 4,  # major tick width in points
-            "ytick.minor.width": 0.5 / 4,  # minor tick width in points
-            },
-    )
+    with sns.plotting_context("paper"):
+        sns.set(
+            palette="deep",
+            rc={"axes.facecolor": "#ffffff",  # axes background color
+                "axes.edgecolor": "#000000",  # axes edge color
+                "axes.linewidth": 1. / 4,
+                "grid.linestyle": "-",
+                "grid.alpha": 1. / 4,
+                "grid.color": "#000000",
+                "xtick.bottom": True,
+                "xtick.direction": "inout",
+                "xtick.major.width": 1. / 4,  # major tick width in points
+                "xtick.minor.width": 0.5 / 4,  # minor tick width in points
+                "ytick.left": True,
+                "ytick.direction": "inout",
+                "ytick.major.width": 1. / 4,  # major tick width in points
+                "ytick.minor.width": 0.5 / 4,  # minor tick width in points
+                },
+        )
 
-    # Setup plotting space and grid
-    f = plt.figure(figsize=figsize, constrained_layout=True)
-    gs1 = gridspec.GridSpec(*gridd, figure=f)
+        # Setup plotting space and grid
+        f = plt.figure(figsize=figsize, constrained_layout=True)
+        gs1 = gridspec.GridSpec(*gridd, figure=f)
 
-    # Get list of axis objects
-    ax = list()
-    for x in range(gridd[0] * gridd[1]):
-        ax.append(f.add_subplot(gs1[x]))
+        # Get list of axis objects
+        ax = list()
+        for x in range(gridd[0] * gridd[1]):
+            ax.append(f.add_subplot(gs1[x]))
 
-    return (ax, f)
+    return ax, f
+
+
+def subplotLabel(axs):
+    """
+    Sublot labels
+    """
+    i = 0
+    for _, ax in enumerate(axs):
+        if ax.has_data() or i == 0:  # only label plots with graphs on them
+            ax.text(-0.2, 1.25, ascii_lowercase[i], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
+            i += 1
+
+
+def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1):
+    """ Add cartoon to a figure file. """
+
+    # Overlay Figure cartoons
+    template = st.fromfile(figFile)
+    cartoon = st.fromfile(cartoonFile).getroot()
+
+    cartoon.moveto(x, y, scale=scalee)
+    cartoon.scale_xy(scale_x, scale_y)
+
+    template.append(cartoon)
+    template.save(figFile)
 
 
 def commonAnalyze(list_of_populations, xtype="length", **kwargs):
@@ -133,31 +158,6 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
         x = paramTrues[:, 0, 0]
 
     return x, paramEst, dictOut["balanced_accuracy_score"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
-
-
-def subplotLabel(axs):
-    """
-    Sublot labels
-    """
-    i = 0
-    for _, ax in enumerate(axs):
-        if ax.has_data() or i == 0:  # only label plots with graphs on them
-            ax.text(-0.2, 1.25, ascii_lowercase[i], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
-            i += 1
-
-
-def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1):
-    """ Add cartoon to a figure file. """
-
-    # Overlay Figure cartoons
-    template = st.fromfile(figFile)
-    cartoon = st.fromfile(cartoonFile).getroot()
-
-    cartoon.moveto(x, y, scale=scalee)
-    cartoon.scale_xy(scale_x, scale_y)
-
-    template.append(cartoon)
-    template.save(figFile)
 
 
 def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
