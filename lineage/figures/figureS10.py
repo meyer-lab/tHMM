@@ -1,7 +1,3 @@
-# TODO
-# Read about/properly derive AICc for this model and check censored lineages with corrected AIC
-
-
 """
 File: figure10.py
 Purpose: Generates figure 10.
@@ -11,12 +7,17 @@ AIC.
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 
-from .figureCommon import getSetup, lineage_good_to_analyze
 from ..Analyze import run_Analyze_AIC
 from ..LineageTree import LineageTree
 
-from ..states.StateDistributionGamma import StateDistribution
 # States to evaluate with the model
+from ..states.StateDistributionGamma import StateDistribution
+
+from .figureCommon import getSetup, lineage_good_to_analyze, subplotLabel
+
+# TODO
+# Read about/properly derive AICc for this model and check censored lineages with corrected AI
+
 desired_num_states = np.arange(1, 8)
 
 
@@ -35,10 +36,10 @@ def makeFigure():
     Etwo = [Sone, Stwo]
     Ethree = [Sone, Stwo, Sthree]
     Efour = [Sone, Stwo, Sthree, Sfour]
-    E = [Eone, Etwo, Ethree, Efour, Eone, Etwo, Ethree, Efour]
+    Es = [Eone, Etwo, Ethree, Efour, Eone, Etwo, Ethree, Efour]
 
     # making lineages and finding AICs (assign number of lineages here)
-    AIC = [run_AIC(.1, e, 10, idx > 4) for idx, e in enumerate(E)]
+    AIC = [run_AIC(.1, e, 10, idx > 4) for idx, e in enumerate(Es)]
 
     # Finding proper ylim range for all 4 uncensored graphs and rounding up
     upper_ylim_uncensored = int(1 + max(np.max(np.ptp(AIC[0], axis=0)), np.max(np.ptp(
@@ -54,6 +55,7 @@ def makeFigure():
     for idx, a in enumerate(AIC):
         figure_maker(ax[idx], a, (idx % 4) + 1,
                      upper_ylim[int(idx / 4)], idx > 3)
+    subplotLabel(ax)
 
     return f
 
@@ -104,14 +106,12 @@ def figure_maker(ax, AIC_holder, true_state_no, upper_ylim, censored=False):
     ax2.set_ylabel("Number of Lineages Predicted")
     ax2.hist(np.argmin(AIC_holder, axis=0) + 1, rwidth=1,
              alpha=.2, bins=desired_num_states, align='left')
-    ax2.margins(0)
     ax2.set_yticks(np.linspace(0, len(AIC_holder[0]), 1 + len(AIC_holder[0])))
 
     # Creating AIC plot and matching gridlines
     ax.set_xlabel("Number of States Predicted")
     ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
     ax.set_ylabel("Normalized AIC")
-    ax.margins(0)
     ax.set_yticks(np.linspace(0, upper_ylim, len(ax2.get_yticks())))
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 

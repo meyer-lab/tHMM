@@ -1,7 +1,3 @@
-# TODO
-# Read about/properly derive AICc for this model and check censored lineages with corrected AIC
-
-
 """
 File: figure10.py
 Purpose: Generates figure 10.
@@ -9,14 +5,18 @@ Purpose: Generates figure 10.
 AIC.
 """
 import numpy as np
-from matplotlib.ticker import MaxNLocator
 
-from .figureCommon import getSetup, lineage_good_to_analyze
+
 from ..Analyze import run_Analyze_AIC
 from ..LineageTree import LineageTree
 
-from ..states.StateDistributionGamma import StateDistribution
 # States to evaluate with the model
+from ..states.StateDistributionGamma import StateDistribution
+
+from .figureCommon import getSetup, lineage_good_to_analyze, subplotLabel
+from .figureS10 import run_AIC, figure_maker
+
+
 desired_num_states = np.arange(1, 8)
 
 
@@ -25,6 +25,7 @@ def makeFigure():
     Makes figure 10.
     """
     ax, f = getSetup((10, 6), (2, 4))
+    desired_num_states = np.arange(1, 8)
 
     # Setting up state distributions and E
     Sone = StateDistribution(0.99, 20, 5)
@@ -54,69 +55,6 @@ def makeFigure():
     for idx, a in enumerate(AIC):
         figure_maker(ax[idx], a, (idx % 4) + 1,
                      upper_ylim[int(idx / 4)], idx > 3)
+    subplotLabel(ax)
 
     return f
-
-
-def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10, censored=False):
-    """
-    Run's AIC for known lineages with known pi,
-    and T values and stores the output for
-    figure drawing.
-    """
-    # Setting up pi and Transition matrix T:
-    #   pi: All states have equal initial probabilities
-    #   T:  States have high likelihood of NOT changing, with frequency of change determined mostly by the relative_state_change variable
-    #   (as relative state change -> inf state change probabilities approach equality)
-    pi = np.ones(len(E)) / len(E)
-    T = (np.eye(len(E)) + relative_state_change)
-    T = T / np.sum(T, axis=1)[:, np.newaxis]
-
-    # Creating censored lineages
-    if censored:
-        lineages = [LineageTree.init_from_parameters(
-            pi, T, E, 2**6 - 1, censor_condition=3, experiment_time=1200) for _ in range(num_lineages_to_evaluate)]
-
-    # Creating uncensored lineages
-    else:
-        lineages = [LineageTree.init_from_parameters(
-            pi, T, E, 2**6 - 1) for _ in range(num_lineages_to_evaluate)]
-    lineages = [l for l in lineages if lineage_good_to_analyze(l)]
-    # Storing AICs into array
-    AICs = np.empty((len(desired_num_states), len(lineages)))
-    output = run_Analyze_AIC(lineages, desired_num_states)
-    for idx in range(len(desired_num_states)):
-        AIC, _ = output[idx][0].get_AIC(output[idx][2])
-        AICs[idx] = np.array([ind_AIC for ind_AIC in AIC])
-
-    return AICs
-
-
-def figure_maker(ax, AIC_holder, true_state_no, upper_ylim, censored=False):
-    """
-    Makes figure 10.
-    """
-    # Normalizing AIC
-    AIC_holder = AIC_holder - np.min(AIC_holder, axis=0)[np.newaxis, :]
-
-    # Creating Histogram and setting ylim
-    ax2 = ax.twinx()
-    ax2.set_ylabel("Number of Lineages Predicted")
-    ax2.hist(np.argmin(AIC_holder, axis=0) + 1, rwidth=1,
-             alpha=.2, bins=desired_num_states, align='left')
-    ax2.margins(0)
-    ax2.set_yticks(np.linspace(0, len(AIC_holder[0]), 1 + len(AIC_holder[0])))
-
-    # Creating AIC plot and matching gridlines
-    ax.set_xlabel("Number of States Predicted")
-    ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
-    ax.set_ylabel("Normalized AIC")
-    ax.margins(0)
-    ax.set_yticks(np.linspace(0, upper_ylim, len(ax2.get_yticks())))
-    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-
-    # Adding title
-    title = "Censored " if censored else ""
-    title += f"AIC Under {true_state_no} True "
-    title += "States" if true_state_no != 1 else "State"
-    ax.set_title(title)
