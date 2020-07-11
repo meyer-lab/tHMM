@@ -58,7 +58,8 @@ class TestModel(unittest.TestCase):
         self.left3_2.obs = [1, float('nan'), 30, 25, 1, 0]
         self.right3_2 = c(parent=self.left3_1, gen=3, synthetic=False)
         self.right3_2.obs = [1, float('nan'), 25, 30, 1, 0]
-        self.lin3 = [self.left3_2, self.right3_2, self.left3_1, self.right3_1, self.parent3]
+        self.lin3 = [self.left3_2, self.right3_2,
+                     self.left3_1, self.right3_1, self.parent3]
         self.lin = [self.lin1, self.lin2, self.lin3]
 
     def test_import_Heiser(self):
@@ -66,7 +67,7 @@ class TestModel(unittest.TestCase):
         Tests the main import function for Heiser lab data.
         """
         path2use = self.path_to_synthetic_data
-        lineages = import_Heiser(path2use)
+        lineages = import_Heiser(path2use, 145)
         self.assertTrue(len(lineages) == 3)
         self.assertTrue(len(lineages[0]) == 3)
         self.assertTrue(len(lineages[1]) == 3)
@@ -74,10 +75,12 @@ class TestModel(unittest.TestCase):
 
         # This won't work if the order the cells are stored is changed
         for i in range(len(lineages)):
-            assert lineages[i][len(lineages[i]) - 1].gen == 1  # soft check that the order is probably the same
+            # soft check that the order is probably the same
+            assert lineages[i][len(lineages[i]) - 1].gen == 1
             for j in range(len(lineages[i])):
                 for k in range(6):
-                    self.assertTrue(lineages[i][j].obs[k] == self.lin[i][j].obs[k] or (math.isnan(lineages[i][j].obs[k]) and math.isnan(self.lin[i][j].obs[k])))
+                    self.assertTrue(lineages[i][j].obs[k] == self.lin[i][j].obs[k] or (
+                        math.isnan(lineages[i][j].obs[k]) and math.isnan(self.lin[i][j].obs[k])))
 
     def test_tryRecursion(self):
         """
@@ -88,14 +91,18 @@ class TestModel(unittest.TestCase):
         excel_file = pd.read_excel(path2use, header=None)
         data = excel_file.to_numpy()
         cLin = []
-        _ = tryRecursion(1, 45, 37, self.parent3, cLin, 16, data, 30, True)
+        _ = tryRecursion(1, 45, 37, self.parent3, cLin, 16, data, 30, 145)
         self.assertTrue(len(cLin) == 3)
         i = 0
         while i < len(cLin) and cLin[i].gen != 2:
             i += 1
         assert i < len(cLin)
         for j in range(6):
-            self.assertTrue(cLin[i].obs[j] == self.left3_1.obs[j] or (math.isnan(self.left3_1.obs[j]) and math.isnan(cLin[i].obs[j])))
-            self.assertTrue(cLin[i].right.obs[j] == self.right3_2.obs[j] or (math.isnan(self.right3_2.obs[j]) and math.isnan(cLin[i].right.obs[j])))
-            self.assertTrue(cLin[i].left.obs[j] == self.left3_2.obs[j] or (math.isnan(self.left3_2.obs[j]) and math.isnan(cLin[i].left.obs[j])))
-            self.assertTrue(cLin[i].parent.obs[j] == self.parent3.obs[j] or (math.isnan(self.parent3.obs[j]) and math.isnan(cLin[i].parent.obs[j])))
+            self.assertTrue(cLin[i].obs[j] == self.left3_1.obs[j] or (
+                math.isnan(self.left3_1.obs[j]) and math.isnan(cLin[i].obs[j])))
+            self.assertTrue(cLin[i].right.obs[j] == self.right3_2.obs[j] or (
+                math.isnan(self.right3_2.obs[j]) and math.isnan(cLin[i].right.obs[j])))
+            self.assertTrue(cLin[i].left.obs[j] == self.left3_2.obs[j] or (
+                math.isnan(self.left3_2.obs[j]) and math.isnan(cLin[i].left.obs[j])))
+            self.assertTrue(cLin[i].parent.obs[j] == self.parent3.obs[j] or (
+                math.isnan(self.parent3.obs[j]) and math.isnan(cLin[i].parent.obs[j])))
