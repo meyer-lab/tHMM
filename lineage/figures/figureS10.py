@@ -105,7 +105,7 @@ def figure_maker(ax, AIC_holder, true_state_no, upper_ylim, censored=False):
     ax2.hist(np.argmin(AIC_holder, axis=0) + 1, rwidth=1,
              alpha=.2, bins=desired_num_states, align='left')
     ax2.margins(0)
-    ax2.set_yticks(np.linspace(0, len(AIC_holder[0]), 1+len(AIC_holder[0])))
+    ax2.set_yticks(np.linspace(0, len(AIC_holder[0]), 1 + len(AIC_holder[0])))
 
     # Creating AIC plot and matching gridlines
     ax.set_xlabel("Number of States Predicted")
