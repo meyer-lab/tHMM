@@ -68,6 +68,8 @@ def getSetup(figsize, gridd):
             palette="deep",
             rc={"axes.facecolor": "#ffffff",  # axes background color
                 "axes.edgecolor": "#000000",  # axes edge color
+                "axes.xmargin": 0,            # x margin.  See `axes.Axes.margins`
+                "axes.ymargin": 0,            # y margin See `axes.Axes.margins`
                 "axes.linewidth": 1. / 4,
                 "grid.linestyle": "-",
                 "grid.alpha": 1. / 4,
