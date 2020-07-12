@@ -25,7 +25,7 @@ def makeFigure():
     """
     Makes figure 10.
     """
-    ax, f = getSetup((10, 6), (2, 4))
+    ax, f = getSetup((13.333, 6.666), (2, 4))
 
     # Setting up state distributions and E
     Sone = StateDistribution(0.99, 20, 5)
