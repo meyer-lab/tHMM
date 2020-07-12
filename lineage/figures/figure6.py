@@ -11,7 +11,7 @@ from ..Analyze import run_Analyze_AIC
 from ..LineageTree import LineageTree
 
 # States to evaluate with the model
-from ..states.StateDistributionGamma import StateDistribution
+from ..states.StateDistributionGaPhs import StateDistribution
 
 from .figureCommon import getSetup, lineage_good_to_analyze, subplotLabel
 from .figureS10 import run_AIC, figure_maker
@@ -28,10 +28,10 @@ def makeFigure():
     desired_num_states = np.arange(1, 8)
 
     # Setting up state distributions and E
-    Sone = StateDistribution(0.99, 0.8, 8, 7, 5, 8)
-    Stwo = StateDistribution(0.9, 0.75, 6, 4, 12, 10)
-    Sthree = StateDistribution(0.85, 0.7, 10, 7, 6, 2)
-    Sfour = StateDistribution(0.8, 0.9, 12, 9, 3, 6)
+    Sone = StateDistribution(0.99, 0.9, 16, 8, 12, 4)
+    Stwo = StateDistribution(0.9, 0.9, 15, 7, 11, 3)
+    Sthree = StateDistribution(0.85, 0.9, 14, 6, 10, 2)
+    Sfour = StateDistribution(0.8, 0.9, 13, 5, 9, 1)
     Eone = [Sone, Sone]
     Etwo = [Sone, Stwo]
     Ethree = [Sone, Stwo, Sthree]
