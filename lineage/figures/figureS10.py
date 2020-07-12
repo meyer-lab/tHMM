@@ -7,77 +7,116 @@ AIC.
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 
-from .figureCommon import getSetup
-from ..Analyze import run_Analyze_over
-# from ..LineageTree import LineageTree
+from ..Analyze import run_Analyze_AIC
+from ..LineageTree import LineageTree
+
+# States to evaluate with the model
 from ..states.StateDistributionGamma import StateDistribution
+
+from .figureCommon import getSetup, lineage_good_to_analyze, subplotLabel
+
+# TODO
+# Read about/properly derive AICc for this model and check censored lineages with corrected AI
+
+desired_num_states = np.arange(1, 8)
 
 
 def makeFigure():
     """
-    Makes figure 7.
+    Makes figure 10.
     """
-    ax, f = getSetup((7, 3), (1, 4))
+    ax, f = getSetup((10, 6), (2, 4))
 
-    # bern, gamma_a, gamma_scale
+    # Setting up state distributions and E
     Sone = StateDistribution(0.99, 20, 5)
     Stwo = StateDistribution(0.88, 10, 1)
+    Sthree = StateDistribution(0.40, 30, 1)
+    Sfour = StateDistribution(0.9, 60, 10)
     Eone = [Sone, Sone]
     Etwo = [Sone, Stwo]
-    Ethree = [Sone, Stwo, StateDistribution(0.40, 30, 1)]
+    Ethree = [Sone, Stwo, Sthree]
+    Efour = [Sone, Stwo, Sthree, Sfour]
+    Es = [Eone, Etwo, Ethree, Efour, Eone, Etwo, Ethree, Efour]
 
-    figure_maker(ax[0], run_AIC(0.02, Eone))
-    figure_maker(ax[1], run_AIC(0.02, Etwo))
-    figure_maker(ax[2], run_AIC(0.02, Ethree))
+    # making lineages and finding AICs (assign number of lineages here)
+    AIC = [run_AIC(.1, e, 10, idx > 4) for idx, e in enumerate(Es)]
+
+    # Finding proper ylim range for all 4 uncensored graphs and rounding up
+    upper_ylim_uncensored = int(1 + max(np.max(np.ptp(AIC[0], axis=0)), np.max(np.ptp(
+        AIC[1], axis=0)), np.max(np.ptp(AIC[2], axis=0)), np.max(np.ptp(AIC[3], axis=0))) / 25.0) * 25
+
+    # Finding proper ylim range for all 4 censored graphs and rounding up
+    upper_ylim_censored = int(1 + max(np.max(np.ptp(AIC[4], axis=0)), np.max(np.ptp(
+        AIC[5], axis=0)), np.max(np.ptp(AIC[6], axis=0)), np.max(np.ptp(AIC[7], axis=0))) / 25.0) * 25
+
+    upper_ylim = [upper_ylim_uncensored, upper_ylim_censored]
+
+    # Plotting AICs
+    for idx, a in enumerate(AIC):
+        figure_maker(ax[idx], a, (idx % 4) + 1,
+                     upper_ylim[int(idx / 4)], idx > 3)
+    subplotLabel(ax)
 
     return f
 
 
-# States to evaluate with the model
-desired_num_states = np.arange(1, 6)
-
-
-def run_AIC(Trate, E, num_to_evaluate=10):
+def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10, censored=False):
     """
     Run's AIC for known lineages with known pi,
     and T values and stores the output for
     figure drawing.
     """
-    # Normalize the transition matrix
-    T = Trate + np.eye(len(E))
-    T = T / np.sum(T, axis=0)[np.newaxis, :]
+    # Setting up pi and Transition matrix T:
+    #   pi: All states have equal initial probabilities
+    #   T:  States have high likelihood of NOT changing, with frequency of change determined mostly by the relative_state_change variable
+    #   (as relative state change -> inf state change probabilities approach equality)
+    pi = np.ones(len(E)) / len(E)
+    T = (np.eye(len(E)) + relative_state_change)
+    T = T / np.sum(T, axis=1)[:, np.newaxis]
 
-    # pi: the initial probability vector
-    # make an even starting p
-    #pi = np.ones(T.shape[0]) / T.shape[0]
+    # Creating censored lineages
+    if censored:
+        lineages = [LineageTree.init_from_parameters(
+            pi, T, E, 2**6 - 1, censor_condition=3, experiment_time=1200) for _ in range(num_lineages_to_evaluate)]
 
-    list_of_populations = []
-    # for idx in range(num_to_evaluate):
-    # Creating an unpruned and pruned lineage
-    # list_of_populations.append([LineageTree(pi, T, E, (2 ** 8) - 1)])
+    # Creating uncensored lineages
+    else:
+        lineages = [LineageTree.init_from_parameters(
+            pi, T, E, 2**6 - 1) for _ in range(num_lineages_to_evaluate)]
+    lineages = [l for l in lineages if lineage_good_to_analyze(l)]
+    # Storing AICs into array
+    AICs = np.empty((len(desired_num_states), len(lineages)))
+    output = run_Analyze_AIC(lineages, desired_num_states)
+    for idx in range(len(desired_num_states)):
+        AIC, _ = output[idx][0].get_AIC(output[idx][2])
+        AICs[idx] = np.array([ind_AIC for ind_AIC in AIC])
 
-    AIC_holder = np.empty((len(desired_num_states), num_to_evaluate))
-    for ii, num_states_to_evaluate in enumerate(desired_num_states):
-        # Analyze the lineages in the list of populations
-        output = run_Analyze_over(list_of_populations, num_states_to_evaluate)
-        # Collecting the results of analyzing the lineages
-        for idx, (tHMMobj, pred_states_by_lineage, _) in enumerate(output):
-            # Get the likelihood of states
-            LLtemp = tHMMobj.log_score(pred_states_by_lineage)
-            LL = np.sum(LLtemp)
-            AIC_holder[ii, idx] = tHMMobj.get_AIC(LL)[0]
-
-    return AIC_holder
+    return AICs
 
 
-def figure_maker(ax, AIC_holder):
+def figure_maker(ax, AIC_holder, true_state_no, upper_ylim, censored=False):
     """
-    Makes figure 11.
+    Makes figure 10.
     """
+    # Normalizing AIC
     AIC_holder = AIC_holder - np.min(AIC_holder, axis=0)[np.newaxis, :]
-    ax.set_xlabel("Number of States")
+
+    # Creating Histogram and setting ylim
+    ax2 = ax.twinx()
+    ax2.set_ylabel("Number of Lineages Predicted")
+    ax2.hist(np.argmin(AIC_holder, axis=0) + 1, rwidth=1,
+             alpha=.2, bins=desired_num_states, align='left')
+    ax2.set_yticks(np.linspace(0, len(AIC_holder[0]), 1 + len(AIC_holder[0])))
+
+    # Creating AIC plot and matching gridlines
+    ax.set_xlabel("Number of States Predicted")
     ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
     ax.set_ylabel("Normalized AIC")
-    ax.set_ylim(0.0, 50.0)
+    ax.set_yticks(np.linspace(0, upper_ylim, len(ax2.get_yticks())))
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-    ax.set_title("State Assignment AIC")
+
+    # Adding title
+    title = "Censored " if censored else ""
+    title += f"AIC Under {true_state_no} True "
+    title += "States" if true_state_no != 1 else "State"
+    ax.set_title(title)
