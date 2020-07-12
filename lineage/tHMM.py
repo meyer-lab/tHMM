@@ -56,7 +56,8 @@ class tHMM:
         self.fE = fE
         self.X = X  # list containing lineages
         self.num_states = num_states  # number of discrete hidden states, should be integral
-        self.estimate = estimate(self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
+        self.estimate = estimate(
+            self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
         self.EL = get_Emission_Likelihoods(self)
 
     def fit(self, tolerance=np.spacing(1), max_iter=100):
@@ -139,7 +140,8 @@ class tHMM:
             # the first term is the value of pi for the state of the first cell
             log_score += np.log(pi[X_state_tree_sequence[idx][0]])
             log_score += log_T_score(T, X_state_tree_sequence[idx], lineageObj)
-            log_score += log_E_score(get_Emission_Likelihoods(self, E)[idx], X_state_tree_sequence[idx])
+            log_score += log_E_score(get_Emission_Likelihoods(self, E)
+                                     [idx], X_state_tree_sequence[idx])
             log_scores.append(log_score)
         return log_scores
 
@@ -153,7 +155,8 @@ def log_T_score(T, state_tree_sequence, lineageObj):
     """
     log_T_score_holder = 0
     log_T = np.log(T)
-    for level in lineageObj.output_list_of_gens[1:]:  # we start with the first transition, from the root cell
+    # we start with the first transition, from the root cell
+    for level in lineageObj.output_list_of_gens[1:]:
         for cell in level:
             cell_idx = lineageObj.output_lineage.index(cell)
             cell_state = state_tree_sequence[cell_idx]

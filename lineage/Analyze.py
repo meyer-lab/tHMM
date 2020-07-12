@@ -85,6 +85,36 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
     return output
 
 
+def run_Analyze_AIC(population, state_list, **kwargs):
+    """
+    A function that can be parallelized to speed up figure creation.
+
+    Instead of iterating over different population (like run_Analyze_over)
+    this function iterates over a list of states it will predict. Used for
+    figure S10.
+
+    :param population: A single list of lineages.
+    :type: list[LineageTree]
+    :param state_list: An list of integer states to identify (a hyper-parameter of our model)
+    :type state_list: list[int]
+    """
+    # Initialize starting points for pi, T, E prediction
+    list_of_fpi = kwargs.get("list_of_fpi", [None] * len(state_list))
+    list_of_fT = kwargs.get("list_of_fT", [None] * len(state_list))
+    list_of_fE = kwargs.get("list_of_fE", [None] * len(state_list))
+    output = []
+    exe = ProcessPoolExecutor()
+
+    prom_holder = []
+    for idx, num_states in enumerate(state_list):
+        prom_holder.append(exe.submit(Analyze, population, num_states, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
+
+    for _, prom in enumerate(prom_holder):
+        output.append(prom.result())
+
+    return output
+
+
 def Results(tHMMobj, pred_states_by_lineage, LL):
     """
     This function calculates several results of fitting a synthetic lineage.
