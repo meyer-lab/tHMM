@@ -28,10 +28,10 @@ def makeFigure():
     desired_num_states = np.arange(1, 8)
 
     # Setting up state distributions and E
-    Sone = StateDistribution(0.99, 20, 5)
-    Stwo = StateDistribution(0.88, 10, 1)
-    Sthree = StateDistribution(0.40, 30, 1)
-    Sfour = StateDistribution(0.9, 60, 10)
+    Sone = StateDistribution(0.99, 0.8, 8, 7, 5, 8)
+    Stwo = StateDistribution(0.9, 0.75, 6, 4, 12, 10)
+    Sthree = StateDistribution(0.85, 0.7, 10, 7, 6, 2)
+    Sfour = StateDistribution(0.8, 0.9, 12, 9, 3, 6)
     Eone = [Sone, Sone]
     Etwo = [Sone, Stwo]
     Ethree = [Sone, Stwo, Sthree]
