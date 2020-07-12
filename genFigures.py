@@ -9,9 +9,6 @@ matplotlib.use('AGG')
 fdir = './output/'
 cartoon_dir = r"./lineage/figures/cartoons"
 
-# TODO: Remove this one day.
-np.random.seed(1)
-
 if __name__ == '__main__':
     start = time.time()
     nameOut = 'figure' + sys.argv[1]
@@ -83,9 +80,9 @@ if __name__ == '__main__':
                        f'{cartoon_dir}/figureS05.svg', 65, 0, scalee=0.3)
 
     if sys.argv[1] == '4':
-        # Overlay Figure 3b cartoon
+        # Overlay Figure 4 cartoon
         overlayCartoon(fdir + 'figure4.svg',
-                       f'{cartoon_dir}/figure3B.svg', 40, 30, scalee=0.24)
+                       f'{cartoon_dir}/figure4.svg', 0, 30, scalee=0.235)
 
     if sys.argv[1] == '5':
         # Overlay Figure 4 cartoon
@@ -99,7 +96,13 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figure7.svg',
                        f'{cartoon_dir}/lineage_cen.svg', 230, 0, scalee=0.5)
 
-    if sys.argv[1] == '2':
-        # Overlay Figure 2 cartoon
-        overlayCartoon(fdir + 'figure2.svg',
-                       f'{cartoon_dir}/figure2.svg', 0, 0, scalee=0.3)
+# TODO: JC will fix the cartoon later
+#     if sys.argv[1] == '2':
+#         # Overlay Figure 2 cartoon
+#         overlayCartoon(fdir + 'figure2.svg',
+#                        f'{cartoon_dir}/figure2.svg', 120, 0, scalee=0.675)
+        
+#     if sys.argv[1] == 'S52':
+#         # Overlay Figure 2 cartoon
+#         overlayCartoon(fdir + 'figureS52.svg',
+#                        f'{cartoon_dir}/figure2.svg', 120, 0, scalee=0.675)

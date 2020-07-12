@@ -123,7 +123,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict = {}
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
-    results_dict["total_number_of_cells"] = sum([len(lineage) for lineage in tHMMobj.X])
+    results_dict["total_number_of_cells"] = sum([len(lineage.output_lineage) for lineage in tHMMobj.X])
 
     true_states_by_lineage = [[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X]
     ravel_true_states = np.array([state for sublist in true_states_by_lineage for state in sublist])

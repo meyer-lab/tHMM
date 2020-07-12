@@ -12,10 +12,12 @@ from .figureCommon import (
     pi,
     T,
     max_desired_num_cells,
-    lineage_good_to_analyze
+    lineage_good_to_analyze,
+    num_data_points,
 )
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGaPhs import StateDistribution
+from .figureS53 import return_closest
 
 
 def makeFigure():
@@ -24,19 +26,19 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((4, 7.5), (3, 1))
-
-    figureMaker2(ax, *accuracy())
+    ax, f = getSetup((10. / 3, 10), (3, 1))
+    number_of_columns = 25
+    figureMaker4(ax, *accuracy(number_of_columns))
 
     subplotLabel(ax)
 
     return f
 
 
-def repeat():
+def accuracy(number_of_columns):
     """ A Helper function to create more random copies of a population. """
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 0.8, 12, a, 10, 5), StateDistribution(0.99, 0.75, 12, 1, 9, 4)] for a in np.linspace(1, 10, 4)]
+    list_of_Es = [[StateDistribution(0.99, 0.8, 12, a, 10, 5), StateDistribution(0.99, 0.75, 12, 1, 10, 4)] for a in np.linspace(1, 10, num_data_points)]
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
@@ -56,80 +58,46 @@ def repeat():
         list_of_fpi.append(pi)
         list_of_fT.append(T)
         list_of_fE.append(E)
-    return list_of_fpi, list_of_populations
 
+    wass, _, accuracy_after_switching, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass", list_of_fpi=list_of_fpi)
 
-def accuracy():
-    """
-    Calculates accuracy and parameter estimation
-    over an increasing number of cells in a lineage for
-    a uncensored two-state model but differing state distribution.
-    We vary the distribution by
-    increasing the Wasserstein divergence between the two states.
-    """
-
-    Wass = []
-    accuracies = []
-    for j in range(10):
-        list_of_fpi, list_of_populations = repeat()
-        wass, _, Accuracy, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass", list_of_fpi=list_of_fpi)
-        Wass.append(wass)
-        accuracies.append(Accuracy)
-
-    total = []
-    for i in range(4):
-        tmp1 = list(sp.gamma.rvs(a=paramTrues[i, 0, 3], loc=0.0,
-                                 scale=paramTrues[i, 0, 5], size=200))
-        total.append(tmp1)
-        tmp2 = list(sp.gamma.rvs(a=paramTrues[i, 1, 3], loc=0.0,
-                                 scale=paramTrues[i, 1, 5], size=200))
-        total.append(tmp2)
+    distribution_df = pd.DataFrame(columns=["Distribution type", "G2 Lifetime", "State"])
+    lineages = [list_of_populations[int(num_data_points * i / 4.)][0] for i in range(4)]
+    len_lineages = [len(lineage) for lineage in lineages]
+    distribution_df["G1 lifetime"] = [cell.obs[2] for lineage in lineages for cell in lineage.output_lineage]
+    distribution_df["State"] = ["State 1" if cell.state == 0 else "State 2" for lineage in lineages for cell in lineage.output_lineage]
+    distribution_df["Distribution type"] = len_lineages[0] * ["Same"] +\
+        len_lineages[1] * ["Similar"] +\
+        len_lineages[2] * ["Different"] +\
+        len_lineages[3] * ["Distinct"]
 
     # for the violin plot (distributions)
-    violinDF = pd.DataFrame(columns=['G2 lifetime', 'state', 'distributions'])
-    violinDF['G2 lifetime'] = list(itertools.chain.from_iterable(total))
-    violinDF['state'] = 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2] + 200 * [1] + 200 * [2]
-    violinDF['distributions'] = 400 * ['very similar'] + 400 * ['similar'] + 400 * ['different'] + 400 * ['very different']
+    wasser_df = pd.DataFrame(columns=["Wasserstein distance", "Approximate Wasserstein distance", "State Assignment Accuracy"])
+    wasser_df["Wasserstein distance"] = wass
+    wasser_df["State Assignment Accuracy"] = accuracy_after_switching
+    maxx = np.max(wass)
+    wass_columns = [int(maxx * (2 * i + 1) / 2 / number_of_columns) for i in range(number_of_columns)]
+    assert len(wass_columns) == number_of_columns
+    for indx, num in enumerate(wass):
+        wasser_df.loc[indx, 'Approximate Wasserstein distance'] = return_closest(num, wass_columns)
 
-    # for the boxplot (accuracies)
-    dataframe = pd.DataFrame(columns=['Wasserestein distance', 'state acc.'])
-    # reshape
-    newwass = []
-    newacc = []
-    for j in range(4):
-        tmp = []
-        tmp2 = []
-        for i in range(len(Wass)):
-            tmp.append(Wass[i][j])
-            tmp2.append(accuracies[i][j])
-        newwass.append(round(np.mean(tmp), 2))
-        newacc.append(tmp2)
-
-    newAcc = list(itertools.chain(*newacc))
-    newWass = 10 * [newwass[0]] + 10 * [newwass[1]] + 10 * [newwass[2]] + 10 * [newwass[3]]
-    dataframe['state acc.'] = newAcc
-    dataframe['Wasserestein distance'] = newWass
-
-    return dataframe, violinDF
+    return distribution_df, wasser_df
 
 
-def figureMaker2(ax, dataframe, violinDF):
+def figureMaker4(ax, distribution_df, wasser_df):
     """
-    This makes figure 3B.
+    This makes figure 4.
     """
     # cartoon to show different shapes --> similar shapes
     i = 0
     ax[i].axis('off')
+
     i += 1
-    sns.violinplot(x="distributions", y="G2 lifetime",
-                   palette="muted", split=True, hue="state",
-                   data=violinDF, ax=ax[i])
-    sns.despine(left=True, ax=ax[i])
+    sns.violinplot(x="Distribution type", y="G1 lifetime", hue="State", split=True, data=distribution_df, ax=ax[i])
+
     i += 1
     # state accuracy
-    sns.boxplot(x="Wasserestein distance", y="state acc.", data=dataframe, ax=ax[i], palette="deep")
-    ax[i].set_title("state assignemnt accuracy")
-    ax[i].set_ylabel("accuracy (%)")
-    ax[i].grid(linestyle="--")
-    ax[i].set_ylim(bottom=10.0, top=105.0)
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    sns.lineplot(x="Approximate Wasserstein distance", y="State Assignment Accuracy", data=wasser_df, ax=ax[i])
+    ax[i].set_title("State Assignment Accuracy")
+    ax[i].set_ylabel("Accuracy [%]")
+    ax[i].set_ylim(bottom=50.0, top=101)
