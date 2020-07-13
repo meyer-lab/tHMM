@@ -1,6 +1,7 @@
 """ This file is to show the model works in case we have rare phenotypes. """
 import numpy as np
-
+import pandas as pd
+import seaborn as sns
 from .figureCommon import (
     getSetup,
     subplotLabel,
@@ -12,24 +13,25 @@ from .figureCommon import (
     num_data_points
 )
 from ..LineageTree import LineageTree
+from .figureS53 import return_closest
 
 
 def makeFigure():
     """
-    Makes fig 4.
+    Makes fig 5.
     """
 
     # Get list of axis objects
-    ax, f = getSetup((5.0, 4.0), (2, 1))
-
-    figureMaker2(ax, *accuracy())
+    ax, f = getSetup((3.333, 6.666), (2, 1))
+    number_of_columns = 25
+    figureMaker5(ax, accuracy(number_of_columns))
 
     subplotLabel(ax)
 
     return f
 
 
-def accuracy():
+def accuracy(number_of_columns):
     """
     Calculates accuracy and parameter estimation
     over an similar number of cells in a lineage for
@@ -62,22 +64,32 @@ def accuracy():
 
     percentageS1, _, acc, _, _, _ = commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
 
-    return percentageS1, acc
+    accuracy_df = pd.DataFrame(columns=["Proportions", "Approximate proportions", "State Assignment Accuracy"])
+
+    accuracy_df["Proportions"] = percentageS1
+    accuracy_df["State Assignment Accuracy"] = acc
+
+    maxx = np.max(percentageS1)
+    prop_columns = [int(maxx * (2 * i + 1) / 2 / number_of_columns) for i in range(number_of_columns)]
+    assert len(prop_columns) == number_of_columns
+    for indx, num in enumerate(percentageS1):
+        accuracy_df.loc[indx, 'Approximate proportions'] = return_closest(num, prop_columns)
+
+    return accuracy_df
 
 
-def figureMaker2(ax, percentageS1, acc):
+def figureMaker5(ax, accuracy_df):
     """
-    This makes figure 4.
+    This makes figure 5.
     """
     # cartoon to show different shapes --> similar shapes
     i = 0
     ax[i].axis('off')
+
     i += 1
     # state assignment accuracy
-    ax[i].scatter(percentageS1, acc)
-    ax[i].set_title("state assignemnt accuracy")
-    ax[i].set_ylabel("accuracy (%)")
-    ax[i].set_xlabel("% cells in S1")
-    ax[i].grid(linestyle="--")
-    ax[i].set_ylim(bottom=10.0, top=105.0)
-    ax[i].tick_params(axis="both", which="major", grid_alpha=0.25)
+    sns.lineplot(x="Approximate proportions", y="State Assignment Accuracy", data=accuracy_df, ax=ax[i])
+    ax[i].set_title("Accuracy relative to presence of state")
+    ax[i].set_ylabel("Accuracy [%]")
+    ax[i].set_xlabel("Approximate percentage of cells in state 1 [%]")
+    ax[i].set_ylim(bottom=50.0, top=105.0)
