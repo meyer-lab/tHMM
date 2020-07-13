@@ -63,12 +63,12 @@ def accuracy(number_of_columns):
         list_of_fE.append(E2)
 
     percentageS1, _, acc, _, _, _ = commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
-    
+
     accuracy_df = pd.DataFrame(columns=["Proportions", "Approximate proportions", "State Assignment Accuracy"])
-    
+
     accuracy_df["Proportions"] = percentageS1
     accuracy_df["State Assignment Accuracy"] = acc
-    
+
     maxx = np.max(percentageS1)
     prop_columns = [int(maxx * (2 * i + 1) / 2 / number_of_columns) for i in range(number_of_columns)]
     assert len(prop_columns) == number_of_columns
