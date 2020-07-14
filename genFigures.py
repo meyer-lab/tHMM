@@ -97,12 +97,12 @@ if __name__ == '__main__':
                        f'{cartoon_dir}/lineage_cen.svg', 230, 0, scalee=0.5)
 
 # TODO: JC will fix the cartoon later
-#     if sys.argv[1] == '2':
-#         # Overlay Figure 2 cartoon
-#         overlayCartoon(fdir + 'figure2.svg',
-#                        f'{cartoon_dir}/figure2.svg', 120, 0, scalee=0.675)
+    if sys.argv[1] == '2':
+        #Overlay Figure 2 cartoon
+        overlayCartoon(fdir + 'figure2.svg',
+                       f'{cartoon_dir}/figure2.svg', 30, 0, scalee=0.8)
 
-#     if sys.argv[1] == 'S52':
-#         # Overlay Figure 2 cartoon
-#         overlayCartoon(fdir + 'figureS52.svg',
-#                        f'{cartoon_dir}/figure2.svg', 120, 0, scalee=0.675)
+    if sys.argv[1] == 'S52':
+        #Overlay Figure 2 cartoon
+        overlayCartoon(fdir + 'figureS52.svg',
+                        f'{cartoon_dir}/figure2.svg', 30, 0, scalee=0.8)
