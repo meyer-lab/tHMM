@@ -10,7 +10,6 @@ from .figureCommon import (
     E2,
     T,
     min_desired_num_cells,
-    max_desired_num_cells,
     min_num_lineages,
     max_num_lineages,
     lineage_good_to_analyze,
@@ -26,16 +25,15 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((10, 10), (3, 3))
-    lin_params = {"pi": pi, "T": T, "E": E2}
     number_of_columns = 25
-    figureMaker3(ax, *accuracy(lin_params, number_of_columns))
+    figureMaker3(ax, *accuracy(number_of_columns))
 
     subplotLabel(ax)
 
     return f
 
 
-def accuracy(lin_params, number_of_columns):
+def accuracy(number_of_columns):
     """
     Calculates accuracy and parameter estimation
     over an increasing number of lineages in a population for
