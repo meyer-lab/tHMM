@@ -25,7 +25,7 @@ This parts explains how the model performs in the case of an under-represented p
 
 ![**State assignment accuracy when we have different proportions of each state, showing the model performs well even when there is an under- (or over-) represented population.](./output/figure5.svg){#fig:5}
 
-### AIC metric indicates the model's capability to detemine the right number of states in a population.
+### AIC metric indicates the model's capability to detemine the closest number of states in a population.
 
 In this part we explain the AIC figures.
 
