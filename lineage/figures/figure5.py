@@ -22,7 +22,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((3.333, 6.666), (2, 1))
+    ax, f = getSetup((5, 5), (2, 1)) # each figure will take twice its normal size horizontally
     number_of_columns = 25
     figureMaker5(ax, accuracy(number_of_columns))
 
