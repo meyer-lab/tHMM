@@ -14,7 +14,14 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((7, 7), (1, 1))
-
+    figureMaker(ax)
     subplotLabel(ax)
 
     return f
+
+def figureMaker(ax):
+    """
+    Makes figure 1.
+    """
+    i = 0
+    ax[i].axis('off')
