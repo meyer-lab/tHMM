@@ -43,8 +43,8 @@ def accuracy(number_of_columns):
     """
 
     # Creating a list of populations to analyze over
-    num_lineages = np.linspace(min_num_lineages, int(0.35*max_num_lineages), num_data_points, dtype=int)
-    num_cells = np.linspace(min_desired_num_cells, int(2.5*min_desired_num_cells), num_data_points)
+    num_lineages = np.linspace(min_num_lineages, int(0.35 * max_num_lineages), num_data_points, dtype=int)
+    num_cells = np.linspace(min_desired_num_cells, int(2.5 * min_desired_num_cells), num_data_points)
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
