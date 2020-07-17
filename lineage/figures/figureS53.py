@@ -25,16 +25,15 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((10, 10), (3, 3))
-    lin_params = {"pi": pi, "T": T, "E": E2, "desired_num_cells": min_desired_num_cells}
     number_of_columns = 25
-    figureMaker3(ax, *accuracy(lin_params, number_of_columns))
+    figureMaker3(ax, *accuracy(number_of_columns))
 
     subplotLabel(ax)
 
     return f
 
 
-def accuracy(lin_params, number_of_columns):
+def accuracy(number_of_columns):
     """
     Calculates accuracy and parameter estimation
     over an increasing number of lineages in a population for
@@ -44,19 +43,19 @@ def accuracy(lin_params, number_of_columns):
     """
 
     # Creating a list of populations to analyze over
-    num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
+    num_lineages = np.linspace(min_num_lineages, int(0.35 * max_num_lineages), num_data_points, dtype=int)
+    num_cells = np.linspace(min_desired_num_cells, int(2.5 * min_desired_num_cells), num_data_points)
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
     list_of_fE = []
-    for num in num_lineages:
+    for indx, num in enumerate(num_lineages):
         population = []
-
         for _ in range(num):
 
             good2go = False
             while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(**lin_params)
+                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=num_cells[indx])
                 good2go = lineage_good_to_analyze(tmp_lineage)
 
             population.append(tmp_lineage)
