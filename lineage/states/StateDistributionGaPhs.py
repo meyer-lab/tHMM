@@ -52,10 +52,14 @@ class StateDistribution:
         if tuple_of_obs[4] == 1:
             # uncensored
             gamma_llG1 = gamma_pdf(tuple_of_obs[2], self.params[2], self.params[3])
-        else:
+        elif tuple_of_obs[4] == 0:
             # censored
-            assert tuple_of_obs[4] == 0
             gamma_llG1 = sp.gamma.sf(tuple_of_obs[2], a=self.params[2], scale=self.params[3])
+        else:
+            assert math.isnan(tuple_of_obs[4])
+            # G1 lifetime not observed
+            assert math.isnan(tuple_of_obs[2])
+            gamma_llG1 = 1
 
         gamma_llG2 = 1
         if tuple_of_obs[5] == 1:
