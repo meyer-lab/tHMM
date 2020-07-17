@@ -38,7 +38,7 @@ def makeFigure():
 def accuracy(number_of_columns):
     """ A Helper function to create more random copies of a population. """
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 0.8, 12, a, 10, 5), StateDistribution(0.99, 0.75, 12, 1, 10, 5)] for a in np.linspace(1, 2.5, num_data_points)]
+    list_of_Es = [[StateDistribution(0.99, 0.8, 12, a, 10, 5), StateDistribution(0.99, 0.8, 12, 1, 10, 5)] for a in np.linspace(1, 2.5, num_data_points)]
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
