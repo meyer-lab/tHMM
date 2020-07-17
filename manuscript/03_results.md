@@ -1,8 +1,8 @@
 ## Results
 
-### a tree hidden Markov model can disentangle single-cell states in a population, given only heritable observations.
+### A tree hidden Markov model can disentangle single-cell states in a population, given only heritable observations.
 
-TODO at last.
+![A tree hidden Markov model can disentangle single-cell states in a population, given only heritable observations.](./output/figure1.svg){#fig:1}
 
 ### tHMM can handle several observable phenotypes as emissions.
 Any observable heritable phenotype with a definable distribution could be used as an emission. The following (Figure 2) shows a schematic of a lineage tree in which we can observe phenotypes such as, cell fate, inter-mitotic times (lifetimes), G1 cell cycle phase duration, G2 cell cycle phase duration, and cell shape. For each of these features we consider a probabilistic distribution, shown in parts b-e.
