@@ -13,7 +13,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((7, 7), (1, 1))
+    ax, f = getSetup((7, 10 / 3), (1, 1))
     figureMaker(ax)
     subplotLabel(ax)
 
