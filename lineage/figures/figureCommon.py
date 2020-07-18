@@ -43,7 +43,7 @@ max_experiment_time = 144
 min_num_lineages = 1
 max_num_lineages = 50
 
-num_data_points = 400
+num_data_points = 200
 
 
 def lineage_good_to_analyze(tmp_lineage, min_lineage_length=10):
