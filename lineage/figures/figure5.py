@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import scipy.stats as sp
 import seaborn as sns
-from .figureCommon import (
+from .figureCommon import ( 
     getSetup,
     subplotLabel,
     commonAnalyze,

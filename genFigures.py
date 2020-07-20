@@ -87,7 +87,7 @@ if __name__ == '__main__':
     if sys.argv[1] == '5':
         # Overlay Figure 4 cartoon
         overlayCartoon(fdir + 'figure5.svg',
-                       f'{cartoon_dir}/figureS06.svg', 10, 5, scalee=0.27)
+                       f'{cartoon_dir}/figure5.svg', 10, 20, scalee=0.6)
 
     if sys.argv[1] == '7':
         # Overlay Figure 6 cartoon
@@ -107,7 +107,6 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figureS52.svg',
                        f'{cartoon_dir}/figure2.svg', 80, -20, scalee=0.85)
 
-# TODO: JC will overlay cartoon 1 once figure 1 is in the makefile
     if sys.argv[1] == '1':
         # Overlay Figure 1 cartoon
         overlayCartoon(fdir + 'figure1.svg',
