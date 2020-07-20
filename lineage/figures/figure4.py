@@ -26,7 +26,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((10. / 3, 10), (3, 1))
+    ax, f = getSetup((5, 5), (2, 2))
     number_of_columns = 25
     figureMaker4(ax, *accuracy(number_of_columns))
 
@@ -90,6 +90,9 @@ def figureMaker4(ax, distribution_df, wasser_df):
     """
     # cartoon to show different shapes --> similar shapes
     i = 0
+    ax[i].axis('off')
+
+    i += 1
     ax[i].axis('off')
 
     i += 1
