@@ -70,7 +70,7 @@ def accuracy():
         for _ in range(num):
             good2go = False
             while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, 2**7 - 1, censor_condition=3, desired_experiment_time=900)
+                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, 2**7 - 1)
                 tmp_lineageSim = LineageTree.init_from_parameters(pi, T, E2, 2**7 - 1)
                 good2go1 = lineage_good_to_analyze(tmp_lineage)
                 good2go2 = lineage_good_to_analyze(tmp_lineageSim)
