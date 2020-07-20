@@ -82,12 +82,12 @@ if __name__ == '__main__':
     if sys.argv[1] == '5':
         # Overlay Figure 5 cartoon
         overlayCartoon(fdir + 'figure5.svg',
-                       f'{cartoon_dir}/figure5.svg', 0, 30, scalee=0.35)
+                       f'{cartoon_dir}/figure5.svg', 0, 30, scalee=0.5)
 
     if sys.argv[1] == '6':
         # Overlay Figure 6 cartoon
         overlayCartoon(fdir + 'figure6.svg',
-                       f'{cartoon_dir}/figure6.svg', 10, 20, scalee=0.6)
+                       f'{cartoon_dir}/figure6.svg', 10, 20, scalee=0.61)
 
     if sys.argv[1] == '7':
         # Overlay Figure 6 cartoon
