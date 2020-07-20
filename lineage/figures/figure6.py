@@ -1,60 +1,95 @@
-"""
-File: figure10.py
-Purpose: Generates figure 10.
-
-AIC.
-"""
+""" This file is to show the model works in case we have rare phenotypes. """
 import numpy as np
-
-
-from ..Analyze import run_Analyze_AIC
+import pandas as pd
+import seaborn as sns
+from .figureCommon import (
+    getSetup,
+    subplotLabel,
+    commonAnalyze,
+    pi,
+    E2,
+    lineage_good_to_analyze,
+    max_desired_num_cells,
+    num_data_points,
+    return_closest,
+)
 from ..LineageTree import LineageTree
-
-# States to evaluate with the model
-from ..states.StateDistributionGaPhs import StateDistribution
-
-from .figureCommon import getSetup, lineage_good_to_analyze, subplotLabel
-from .figureS10 import run_AIC, figure_maker
-
-
-desired_num_states = np.arange(1, 8)
 
 
 def makeFigure():
     """
-    Makes figure 10.
+    Makes fig 5.
     """
-    ax, f = getSetup((13.333, 6.666), (2, 4))
-    desired_num_states = np.arange(1, 8)
 
-    # Setting up state distributions and E
-    Sone = StateDistribution(0.99, 0.9, 10, 2, 10, 2)
-    Stwo = StateDistribution(0.9, 0.9, 20, 3, 20, 3)
-    Sthree = StateDistribution(0.85, 0.9, 30, 4, 30, 4)
-    Sfour = StateDistribution(0.8, 0.9, 40, 5, 40, 5)
-    Eone = [Sone, Sone]
-    Etwo = [Sone, Stwo]
-    Ethree = [Sone, Stwo, Sthree]
-    Efour = [Sone, Stwo, Sthree, Sfour]
-    E = [Eone, Etwo, Ethree, Efour, Eone, Etwo, Ethree, Efour]
+    # Get list of axis objects
+    ax, f = getSetup((5, 5), (2, 1)) # each figure will take twice its normal size horizontally
+    number_of_columns = 25
+    figureMaker5(ax, accuracy(number_of_columns))
 
-    # making lineages and finding AICs (assign number of lineages here)
-    AIC = [run_AIC(.1, e, 10, idx > 4) for idx, e in enumerate(E)]
-
-    # Finding proper ylim range for all 4 uncensored graphs and rounding up
-    upper_ylim_uncensored = int(1 + max(np.max(np.ptp(AIC[0], axis=0)), np.max(np.ptp(
-        AIC[1], axis=0)), np.max(np.ptp(AIC[2], axis=0)), np.max(np.ptp(AIC[3], axis=0))) / 25.0) * 25
-
-    # Finding proper ylim range for all 4 censored graphs and rounding up
-    upper_ylim_censored = int(1 + max(np.max(np.ptp(AIC[4], axis=0)), np.max(np.ptp(
-        AIC[5], axis=0)), np.max(np.ptp(AIC[6], axis=0)), np.max(np.ptp(AIC[7], axis=0))) / 25.0) * 25
-
-    upper_ylim = [upper_ylim_uncensored, upper_ylim_censored]
-
-    # Plotting AICs
-    for idx, a in enumerate(AIC):
-        figure_maker(ax[idx], a, (idx % 4) + 1,
-                     upper_ylim[int(idx / 4)], idx > 3)
     subplotLabel(ax)
 
     return f
+
+
+def accuracy(number_of_columns):
+    """
+    Calculates accuracy and parameter estimation
+    over an similar number of cells in a lineage for
+    a uncensored two-state model but differing state distribution.
+    We increase the proportion of cells in a lineage by
+    fixing the Transition matrix to be biased towards state 0.
+    """
+
+    # Creating a list of populations to analyze over
+    list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.1, 0.9, num_data_points)]
+    list_of_populations = []
+    list_of_fpi = []
+    list_of_fT = []
+    list_of_fE = []
+    for T in list_of_Ts:
+        population = []
+
+        good2go = False
+        while not good2go:
+            tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, max_desired_num_cells)
+            good2go = lineage_good_to_analyze(tmp_lineage)
+
+        population.append(tmp_lineage)
+
+        # Adding populations into a holder for analysing
+        list_of_populations.append(population)
+        list_of_fpi.append(pi)
+        list_of_fT.append(T)
+        list_of_fE.append(E2)
+
+    percentageS1, _, acc, _, _, _ = commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
+
+    accuracy_df = pd.DataFrame(columns=["Proportions", "Approximate proportions", "State Assignment Accuracy"])
+
+    accuracy_df["Proportions"] = percentageS1
+    accuracy_df["State Assignment Accuracy"] = acc
+
+    maxx = np.max(percentageS1)
+    prop_columns = [int(maxx * (2 * i + 1) / 2 / number_of_columns) for i in range(number_of_columns)]
+    assert len(prop_columns) == number_of_columns
+    for indx, num in enumerate(percentageS1):
+        accuracy_df.loc[indx, 'Approximate proportions'] = return_closest(num, prop_columns)
+
+    return accuracy_df
+
+
+def figureMaker5(ax, accuracy_df):
+    """
+    This makes figure 5.
+    """
+    # cartoon to show different shapes --> similar shapes
+    i = 0
+    ax[i].axis('off')
+
+    i += 1
+    # state assignment accuracy
+    sns.lineplot(x="Approximate proportions", y="State Assignment Accuracy", data=accuracy_df, ax=ax[i])
+    ax[i].set_title("Accuracy relative to presence of state")
+    ax[i].set_ylabel("Accuracy [%]")
+    ax[i].set_xlabel("Approximate percentage of cells in state 1 [%]")
+    ax[i].set_ylim(bottom=50.0, top=105.0)

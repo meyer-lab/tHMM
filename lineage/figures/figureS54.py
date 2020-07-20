@@ -13,20 +13,21 @@ from .figureCommon import (
     min_num_lineages,
     max_num_lineages,
     lineage_good_to_analyze,
-    num_data_points
+    num_data_points,
+    return_closest,
 )
 from ..LineageTree import LineageTree
 
 
 def makeFigure():
     """
-    Makes fig S53.
+    Makes fig S54.
     """
 
     # Get list of axis objects
     ax, f = getSetup((10, 10), (3, 3))
     number_of_columns = 25
-    figureMaker3(ax, *accuracy(number_of_columns))
+    figureMaker4(ax, *accuracy(number_of_columns))
 
     subplotLabel(ax)
 
@@ -95,9 +96,9 @@ def accuracy(number_of_columns):
     return accuracy_df, param_df, data_df, paramTrues
 
 
-def figureMaker3(ax, accuracy_df, param_df, data_df, paramTrues):
+def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     """
-    This makes figure 3.
+    This makes figure 4.
     """
     i = 0
     ax[i].axis('off')
@@ -163,10 +164,3 @@ def figureMaker3(ax, accuracy_df, param_df, data_df, paramTrues):
     ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
     ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
     ax[i].set_ylim(0, 10)
-
-
-def return_closest(n, value_set):
-    """
-    Returns closest value from a set of values.
-    """
-    return int(min(value_set, key=lambda x: abs(x - n)))
