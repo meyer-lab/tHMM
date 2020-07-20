@@ -58,6 +58,12 @@ def lineage_good_to_analyze(tmp_lineage, min_lineage_length=10):
     is_heterogeneous = tmp_lineage.is_heterogeneous()
     return is_sufficient_length and is_heterogeneous
 
+def return_closest(n, value_set):
+    """
+    Returns closest value from a set of values.
+    """
+    return int(min(value_set, key=lambda x: abs(x - n)))
+
 
 def getSetup(figsize, gridd):
     """
