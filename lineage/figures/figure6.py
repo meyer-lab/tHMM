@@ -22,7 +22,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((5, 5), (2, 1)) # each figure will take twice its normal size horizontally
+    ax, f = getSetup((5, 5), (2, 1))  # each figure will take twice its normal size horizontally
     number_of_columns = 25
     figureMaker5(ax, accuracy(number_of_columns))
 
@@ -88,7 +88,7 @@ def figureMaker5(ax, accuracy_df):
 
     i += 1
     # state assignment accuracy
-    sns.lineplot(x="Approximate proportions", y="State Assignment Accuracy", data=accuracy_df, ax=ax[i])
+    sns.scatterplot(x="Proportions", y="State Assignment Accuracy", data=accuracy_df, ax=ax[i])
     ax[i].set_title("Accuracy relative to presence of state")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_xlabel("Approximate percentage of cells in state 1 [%]")

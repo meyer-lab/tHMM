@@ -45,7 +45,7 @@ def accuracy(number_of_columns):
 
     # Creating a list of populations to analyze over
     num_lineages = np.linspace(min_num_lineages, int(0.35 * max_num_lineages), num_data_points, dtype=int)
-    num_cells = np.linspace(min_desired_num_cells, int(2.5 * min_desired_num_cells), num_data_points)
+    experiment_times = np.linspace(1000, int(2.5 * 1000), num_data_points)
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
@@ -56,7 +56,7 @@ def accuracy(number_of_columns):
 
             good2go = False
             while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=num_cells[indx])
+                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
                 good2go = lineage_good_to_analyze(tmp_lineage)
 
             population.append(tmp_lineage)
