@@ -14,7 +14,6 @@ from .figureCommon import (
     max_desired_num_cells,
     lineage_good_to_analyze,
     num_data_points,
-    return_closest,
 )
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGaPhs import StateDistribution
@@ -28,7 +27,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((5, 5), (2, 2))
     number_of_columns = 25
-    figureMaker4(ax, *accuracy(number_of_columns))
+    figureMaker5(ax, *accuracy(number_of_columns))
 
     subplotLabel(ax)
 
@@ -72,21 +71,16 @@ def accuracy(number_of_columns):
         len_lineages[3] * ["Distinct"]
 
     # for the violin plot (distributions)
-    wasser_df = pd.DataFrame(columns=["Wasserstein distance", "Approximate Wasserstein distance", "State Assignment Accuracy"])
+    wasser_df = pd.DataFrame(columns=["Wasserstein distance", "State Assignment Accuracy"])
     wasser_df["Wasserstein distance"] = wass
     wasser_df["State Assignment Accuracy"] = accuracy_after_switching
-    maxx = np.max(wass)
-    wass_columns = [int(maxx * (2 * i + 1) / 2 / number_of_columns) for i in range(number_of_columns)]
-    assert len(wass_columns) == number_of_columns
-    for indx, num in enumerate(wass):
-        wasser_df.loc[indx, 'Approximate Wasserstein distance'] = return_closest(num, wass_columns)
 
     return distribution_df, wasser_df
 
 
-def figureMaker4(ax, distribution_df, wasser_df):
+def figureMaker5(ax, distribution_df, wasser_df):
     """
-    This makes figure 4.
+    This makes figure 5.
     """
     # cartoon to show different shapes --> similar shapes
     i = 0
@@ -100,7 +94,7 @@ def figureMaker4(ax, distribution_df, wasser_df):
 
     i += 1
     # state accuracy
-    sns.lineplot(x="Approximate Wasserstein distance", y="State Assignment Accuracy", data=wasser_df, ax=ax[i])
+    sns.regplot(x="Wasserstein distance", y="State Assignment Accuracy", data=wasser_df, ax=ax[i], lowess=True)
     ax[i].set_title("State Assignment Accuracy")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_ylim(bottom=50.0, top=101)

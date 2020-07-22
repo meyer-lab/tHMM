@@ -31,7 +31,7 @@ state11 = expon_state(0.75, 8)
 E1 = [state10, state11]
 
 state20 = phaseStateDist(0.99, 0.9, 8, 7, 4, 2)
-state21 = phaseStateDist(0.9, 0.85, 6, 4, 3, 5)
+state21 = phaseStateDist(0.99, 0.9, 6, 4, 3, 5)
 E2 = [state20, state21]
 
 min_desired_num_cells = (2 ** 4) - 1
@@ -57,13 +57,6 @@ def lineage_good_to_analyze(tmp_lineage, min_lineage_length=10):
     is_sufficient_length = len(tmp_lineage) >= min_lineage_length
     is_heterogeneous = tmp_lineage.is_heterogeneous()
     return is_sufficient_length and is_heterogeneous
-
-
-def return_closest(n, value_set):
-    """
-    Returns closest value from a set of values.
-    """
-    return int(min(value_set, key=lambda x: abs(x - n)))
 
 
 def getSetup(figsize, gridd):

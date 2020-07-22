@@ -33,8 +33,7 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((5, 5), (2, 2))
-    number_of_columns = 25
-    figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, number_of_columns)
+    figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen)
 
     subplotLabel(ax)
     
@@ -90,7 +89,7 @@ def accuracy():
     return x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, list_of_populationsSim, list_of_populations
 
 
-def figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, number_of_columns, xlabel="Number of Cells"):
+def figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, xlabel="Number of Cells"):
     """
     Makes a 2 panel figures displaying state accuracy estimation across lineages
     of different censoring states.
@@ -111,7 +110,7 @@ def figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, number_of_columns
 
     i += 1
     ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
-    sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_sim_df, ax=ax[i])
+    sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_sim_df, ax=ax[i], lowess=True)
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=50, top=101)
     ax[i].set_ylabel(r"State Accuracy [%]")
@@ -119,7 +118,7 @@ def figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, number_of_columns
 
     i += 1
     ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
-    sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_cen_df, ax=ax[i])
+    sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_cen_df, ax=ax[i], lowess=True)
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=50, top=101)
     ax[i].set_ylabel(r"State Accuracy [%]")
