@@ -50,6 +50,7 @@ def makeFigure():
 
     return f
 
+
 def run_AIC(lineages):
     """
     Run AIC for experimental data.
