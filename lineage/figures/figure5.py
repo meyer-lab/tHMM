@@ -91,7 +91,7 @@ def figureMaker4(ax, distribution_df, wasser_df):
     # cartoon to show different shapes --> similar shapes
     i = 0
     ax[i].axis('off')
-    
+
     i += 1
     ax[i].axis('off')
 
