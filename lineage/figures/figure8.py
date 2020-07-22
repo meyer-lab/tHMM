@@ -1,4 +1,4 @@
-""" This file contains functions for plotting the performance of the model for censored data. """
+""" This file plots the AIC for the real data. """
 
 import numpy as np
 
