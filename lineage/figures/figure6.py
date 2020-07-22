@@ -88,7 +88,7 @@ def figureMaker5(ax, accuracy_df):
 
     i += 1
     # state assignment accuracy
-    sns.lineplot(x="Approximate proportions", y="State Assignment Accuracy", data=accuracy_df, ax=ax[i])
+    sns.scatter(x="Proportions", y="State Assignment Accuracy", data=accuracy_df, ax=ax[i])
     ax[i].set_title("Accuracy relative to presence of state")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_xlabel("Approximate percentage of cells in state 1 [%]")
