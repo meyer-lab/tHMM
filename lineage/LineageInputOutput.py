@@ -5,7 +5,7 @@ import pandas as pd
 from .CellVar import CellVar as c
 
 
-def import_Heiser(path=r"lineage/data/heiser_data/LT_AU003_A3_4_Lapatinib_V2.xlsx", exp_time=192):
+def import_Heiser(path, exp_time=192):
     """
     Imports data from the Heiser lab
     Outputs a list of lists containing cells containing observations from the Excel file

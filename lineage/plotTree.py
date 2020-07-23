@@ -40,5 +40,5 @@ def plotLineage(lineage, path):
     c = CladeRecursive(lineage.output_lineage[0], a)
 
     Phylo.draw(c)
-    pylab.axis("off")
+#     pylab.axis("off")
     pylab.savefig(path, format="svg", bbox_inches="tight", dpi=300)
