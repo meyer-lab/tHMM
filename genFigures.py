@@ -79,24 +79,23 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figureS15.svg',
                        f'{cartoon_dir}/figureS05.svg', 65, 0, scalee=0.3)
 
-    if sys.argv[1] == '4':
-        # Overlay Figure 4 cartoon
-        overlayCartoon(fdir + 'figure4.svg',
-                       f'{cartoon_dir}/figure4.svg', 0, 30, scalee=0.35)
-
     if sys.argv[1] == '5':
-        # Overlay Figure 4 cartoon
+        # Overlay Figure 5 cartoon
         overlayCartoon(fdir + 'figure5.svg',
-                       f'{cartoon_dir}/figureS06.svg', 10, 5, scalee=0.27)
+                       f'{cartoon_dir}/figure5.svg', 0, 20, scalee=0.6)
 
-    if sys.argv[1] == '7':
+    if sys.argv[1] == '6':
         # Overlay Figure 6 cartoon
-        overlayCartoon(fdir + 'figure7.svg',
-                       f'{cartoon_dir}/lineage_notcen.svg', 0, 0, scalee=0.5)
-        overlayCartoon(fdir + 'figure7.svg',
-                       f'{cartoon_dir}/lineage_cen.svg', 230, 0, scalee=0.5)
+        overlayCartoon(fdir + 'figure6.svg',
+                       f'{cartoon_dir}/figure6.svg', 10, 20, scalee=0.61)
 
-# TODO: JC will fix the cartoon later
+    if sys.argv[1] == '3':
+        # Overlay Figure 3 cartoon
+        overlayCartoon(fdir + 'figure3.svg',
+                       f'{cartoon_dir}/lineage_notcen.svg', 20, 20, scalee=0.4)
+        overlayCartoon(fdir + 'figure3.svg',
+                       f'{cartoon_dir}/lineage_cen.svg', 190, 20, scalee=0.4)
+
     if sys.argv[1] == '2':
         # Overlay Figure 2 cartoon
         overlayCartoon(fdir + 'figure2.svg',
@@ -107,7 +106,6 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figureS52.svg',
                        f'{cartoon_dir}/figure2.svg', 80, -20, scalee=0.85)
 
-# TODO: JC will overlay cartoon 1 once figure 1 is in the makefile
     if sys.argv[1] == '1':
         # Overlay Figure 1 cartoon
         overlayCartoon(fdir + 'figure1.svg',
