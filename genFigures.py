@@ -89,14 +89,13 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figure6.svg',
                        f'{cartoon_dir}/figure6.svg', 10, 20, scalee=0.61)
 
-    if sys.argv[1] == '7':
-        # Overlay Figure 6 cartoon
-        overlayCartoon(fdir + 'figure7.svg',
+    if sys.argv[1] == '3':
+        # Overlay Figure 3 cartoon
+        overlayCartoon(fdir + 'figure3.svg',
                        f'{cartoon_dir}/lineage_notcen.svg', 0, 0, scalee=0.5)
-        overlayCartoon(fdir + 'figure7.svg',
+        overlayCartoon(fdir + 'figure3.svg',
                        f'{cartoon_dir}/lineage_cen.svg', 230, 0, scalee=0.5)
 
-# TODO: JC will fix the cartoon later
     if sys.argv[1] == '2':
         # Overlay Figure 2 cartoon
         overlayCartoon(fdir + 'figure2.svg',
