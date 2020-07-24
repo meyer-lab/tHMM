@@ -92,9 +92,9 @@ if __name__ == '__main__':
     if sys.argv[1] == '3':
         # Overlay Figure 3 cartoon
         overlayCartoon(fdir + 'figure3.svg',
-                       f'{cartoon_dir}/lineage_notcen.svg', 0, 0, scalee=0.5)
+                       f'{cartoon_dir}/lineage_notcen.svg', 20, 20, scalee=0.4)
         overlayCartoon(fdir + 'figure3.svg',
-                       f'{cartoon_dir}/lineage_cen.svg', 230, 0, scalee=0.5)
+                       f'{cartoon_dir}/lineage_cen.svg', 190, 20, scalee=0.4)
 
     if sys.argv[1] == '2':
         # Overlay Figure 2 cartoon
