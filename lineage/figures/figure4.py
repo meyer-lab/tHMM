@@ -14,14 +14,14 @@ from .figureCommon import (
     max_num_lineages,
     lineage_good_to_analyze,
     num_data_points,
-    return_closest,
 )
 from ..LineageTree import LineageTree
+import statsmodels
 
 
 def makeFigure():
     """
-    Makes fig S54.
+    Makes fig S4.
     """
 
     # Get list of axis objects
@@ -105,7 +105,8 @@ def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
 
     # T and pi matrix distance to their true value
     i += 1
-    sns.lmplot(x="Cell Number", y="Error", hue="Parameter", data=param_df, ax=ax[i], lowess=True)
+    ax[i] = sns.regplot(x="Cell Number", y="Error", data=param_df.loc["Parameter" == r"$T$"], ax=ax[i], lowess=True)
+    ax[i] = sns.regplot(x="Cell Number", y="Error", data=param_df.loc["Parameter" == r"$\pi$"], ax=ax[i], lowess=True)
     ax[i].set_title(r"Error in estimating $T$ & $\pi$")
     ax[i].set_ylabel(r"Error [$||x-\hat{x}||$]")
     ax[i].set_ylim(bottom=0.01, top=1.02)
@@ -114,7 +115,7 @@ def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     # Bernoulli parameter estimation
     ax[i].axhline(y=paramTrues[:, 0, 0][0], ls='--', c='k', alpha=0.5)
     ax[i].axhline(y=paramTrues[:, 1, 0][0], ls='--', c='k', alpha=0.5)
-    sns.lmplot(x="Cell Number", y='Bern. G1 p', hue='State', data=data_df, ax=ax[i], lowess=True)
+    ax[i] = sns.lmplot(x="Cell Number", y='Bern. G1 p', hue='State', data=data_df, lowess=True).fig.axes[0]
     ax[i].set_title(r"G1 fate parameter estimation ($p$)")
     ax[i].set_ylabel("Bernoulli rate estimate ($p$)")
     ax[i].set_ylim(0.75, 1.01)
@@ -122,7 +123,7 @@ def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     i += 1
     ax[i].axhline(y=paramTrues[:, 0, 2][0], ls='--', c='k', alpha=0.5)
     ax[i].axhline(y=paramTrues[:, 1, 2][0], ls='--', c='k', alpha=0.5)
-    sns.lmplot(x="Cell Number", y='shape G1', hue='State', data=data_df, ax=ax[i], lowess=True)
+    ax[i] = sns.lmplot(x="Cell Number", y='shape G1', hue='State', data=data_df, lowess=True).fig.axes[0]
     ax[i].set_title(r"G1 lifetime parameter estimation ($k$, $\theta$)")
     ax[i].set_ylabel("Gamma shape estimate ($k$)")
     ax[i].set_ylim(1, 15)
@@ -130,7 +131,7 @@ def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     i += 1
     ax[i].axhline(y=paramTrues[:, 0, 3][0], ls='--', c='k', alpha=0.5)
     ax[i].axhline(y=paramTrues[:, 1, 3][0], ls='--', c='k', alpha=0.5)
-    sns.lmplot(x="Cell Number", y='scale G1', hue='State', data=data_df, ax=ax[i], lowess=True)
+    ax[i] = sns.lmplot(x="Cell Number", y='scale G1', hue='State', data=data_df, lowess=True).fig.axes[0]
     ax[i].set_title(r"G1 lifetime parameter estimation ($k$, $\theta$)")
     ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
     ax[i].set_ylim(1, 15)
@@ -138,7 +139,7 @@ def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     i += 1
     ax[i].axhline(y=paramTrues[:, 0, 1][0], ls='--', c='k', alpha=0.5)
     ax[i].axhline(y=paramTrues[:, 1, 1][0], ls='--', c='k', alpha=0.5)
-    sns.lmplot(x="Cell Number", y='Bern. G2 p', hue='State', data=data_df, ax=ax[i], lowess=True)
+    ax[i] = sns.lmplot(x="Cell Number", y='Bern. G2 p', hue='State', data=data_df, lowess=True).fig.axes[0]
     ax[i].set_title(r"G2 fate parameter estimation ($p$)")
     ax[i].set_ylabel(r"Bernoulli rate estimate ($p$)")
     ax[i].set_ylim(0.75, 1.01)
@@ -146,7 +147,7 @@ def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     i += 1
     ax[i].axhline(y=paramTrues[:, 0, 4][0], ls='--', c='k', alpha=0.5)
     ax[i].axhline(y=paramTrues[:, 1, 4][0], ls='--', c='k', alpha=0.5)
-    sns.lmplot(x="Cell Number", y='shape G2', hue='State', data=data_df, ax=ax[i], lowess=True)
+    ax[i] = sns.lmplot(x="Cell Number", y='shape G2', hue='State', data=data_df, lowess=True).fig.axes[0]
     ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
     ax[i].set_ylabel(r"Gamma shape estimate ($k$)")
     ax[i].set_ylim(0, 10)
@@ -154,7 +155,7 @@ def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     i += 1
     ax[i].axhline(y=paramTrues[:, 0, 5][0], ls='--', c='k', alpha=0.5)
     ax[i].axhline(y=paramTrues[:, 1, 5][0], ls='--', c='k', alpha=0.5)
-    sns.lmplot(x="Cell Number", y='scale G2', hue='State', data=data_df, ax=ax[i], lowess=True)
+    ax[i] = sns.lmplot(x="Cell Number", y='scale G2', hue='State', data=data_df, lowess=True).fig.axes[0]
     ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
     ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
     ax[i].set_ylim(0, 10)
