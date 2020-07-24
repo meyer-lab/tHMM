@@ -26,7 +26,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((5, 5), (2, 2))
+    ax, f = getSetup((5.9, 5), (2, 2))
     number_of_columns = 25
     figureMaker4(ax, *accuracy(number_of_columns))
 
