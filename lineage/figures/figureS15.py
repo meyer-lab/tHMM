@@ -30,7 +30,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((7, 7), (3, 3))
+    ax, f = getSetup((10, 10), (3, 3))
 
     figureMaker(ax, *accuracy())
 

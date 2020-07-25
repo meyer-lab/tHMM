@@ -2,6 +2,7 @@
 
 import numpy as np
 import scipy.stats as sp
+from sklearn.cluster import KMeans
 
 from .UpwardRecursion import get_Emission_Likelihoods
 from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step
@@ -65,9 +66,18 @@ class tHMM:
 
         # Step 0: initialize with random assignments and do an M step
         if self.fE is None:  # when there are no fixed emissions, we need to randomize the start
-            random_gammas = [sp.multinomial.rvs(n=1, p=[1. / self.num_states] * self.num_states, size=len(lineage))
+            init_gammas = [sp.multinomial.rvs(n=1, p=[1. / self.num_states] * self.num_states, size=len(lineage))
                              for lineage in self.X]
-            do_M_E_step(self, random_gammas)
+            obsX = np.array([cell.obs for lineage in self.X for cell in lineage.output_lineage])
+            if not np.isnan(obsX).any():
+                kmeans_solver = KMeans(n_clusters=self.num_states).fit(obsX)
+                init_gammas = [np.zeros((len(lineage),self.num_states)) for lineage in self.X]
+                count = 0
+                for _, lineage_gammas in enumerate(init_gammas):
+                    for _, cell_gamma in enumerate(lineage_gammas):
+                        cell_gamma[kmeans_solver.labels_[count]] = 1
+                        count += 1
+            do_M_E_step(self, init_gammas)
 
         # Step 1: first E step
         MSD, NF, betas, gammas = do_E_step(self)
@@ -80,7 +90,6 @@ class tHMM:
             do_M_step(self, MSD, betas, gammas)
             MSD, NF, betas, gammas = do_E_step(self)
             new_LL = calculate_log_likelihood(NF)
-
             diff = np.linalg.norm(old_LL - new_LL)
 
             if diff < tolerance:

@@ -28,7 +28,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((7, 7), (3, 3))
+    ax, f = getSetup((10, 10), (3, 3))
 
     figureMaker(ax, *accuracy())
 
@@ -47,7 +47,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    cells = np.linspace(min_desired_num_cells, max_desired_num_cells, num_data_points)
+    cells = np.linspace(min_desired_num_cells, max_desired_num_cells, 1000)
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
@@ -68,4 +68,4 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E1)
 
-    return commonAnalyze(list_of_populations, list_of_fpi=list_of_fpi)
+    return commonAnalyze(list_of_populations, list_of_fpi=list_of_fpi, list_of_fE=list_of_fE, list_of_fT=list_of_fT)

@@ -14,6 +14,7 @@ from .figureCommon import (
     max_desired_num_cells,
     lineage_good_to_analyze,
     num_data_points,
+    scatter_kws_list,
 )
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGaPhs import StateDistribution
@@ -58,7 +59,7 @@ def accuracy(number_of_columns):
         list_of_fT.append(T)
         list_of_fE.append(E)
 
-    wass, _, accuracy_after_switching, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass", list_of_fpi=list_of_fpi)
+    wass, _, accuracy_after_switching, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass", list_of_fpi=list_of_fpi, parallel=True)
 
     distribution_df = pd.DataFrame(columns=["Distribution type", "G2 Lifetime", "State"])
     lineages = [list_of_populations[int(num_data_points * i / 4.)][0] for i in range(4)]
@@ -94,7 +95,7 @@ def figureMaker5(ax, distribution_df, wasser_df):
 
     i += 1
     # state accuracy
-    sns.regplot(x="Wasserstein distance", y="State Assignment Accuracy", data=wasser_df, ax=ax[i], lowess=True)
+    sns.regplot(x="Wasserstein distance", y="State Assignment Accuracy", data=wasser_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
     ax[i].set_title("State Assignment Accuracy")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_ylim(bottom=50.0, top=101)
