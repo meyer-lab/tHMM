@@ -14,6 +14,7 @@ from .figureCommon import (
     max_num_lineages,
     lineage_good_to_analyze,
     num_data_points,
+    scatter_kws_list,
 )
 from ..LineageTree import LineageTree
 import statsmodels
@@ -79,12 +80,18 @@ def accuracy():
 
     data_df = pd.DataFrame(columns=["Cell Number", "State", 'Bern. G1 p', 'Bern. G2 p', 'shape G1', 'scale G1', 'shape G2', 'scale G2'])
     data_df["Cell Number"] = accuracy_df["Cell Number"].to_list()
-    data_df['Bern. G1 p'] = np.concatenate((paramEst[:, 0, 0], paramEst[:, 1, 0]), axis=0)
-    data_df['Bern. G2 p'] = np.concatenate((paramEst[:, 0, 1], paramEst[:, 1, 1]), axis=0)
-    data_df['shape G1'] = np.concatenate((paramEst[:, 0, 2], paramEst[:, 1, 2]), axis=0)
-    data_df['scale G1'] = np.concatenate((paramEst[:, 0, 3], paramEst[:, 1, 3]), axis=0)
-    data_df['shape G2'] = np.concatenate((paramEst[:, 0, 4], paramEst[:, 1, 4]), axis=0)
-    data_df['scale G2'] = np.concatenate((paramEst[:, 0, 5], paramEst[:, 1, 5]), axis=0)
+    data_df['Bern. G1 0'] = paramEst[:, 0, 0]
+    data_df['Bern. G1 1'] = paramEst[:, 1, 0]
+    data_df['Bern. G2 0'] = paramEst[:, 0, 1]
+    data_df['Bern. G2 1'] = paramEst[:, 1, 1]
+    data_df['shape G1 0'] = paramEst[:, 0, 2]
+    data_df['shape G1 1'] = paramEst[:, 1, 2]
+    data_df['scale G1 0'] = paramEst[:, 0, 3]
+    data_df['scale G1 1'] = paramEst[:, 1, 3]
+    data_df['shape G2 0'] = paramEst[:, 0, 4]
+    data_df['shape G2 1'] = paramEst[:, 1, 4]
+    data_df['scale G2 0'] = paramEst[:, 0, 5]
+    data_df['scale G2 1'] = paramEst[:, 1, 5]
 
     return accuracy_df, param_df, data_df, paramTrues
 
@@ -92,69 +99,75 @@ def accuracy():
 def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     """
     This makes figure 4.
-    """
+    """    
     i = 0
     ax[i].axis('off')
 
     i += 1
-    sns.regplot(x="Cell Number", y="State Assignment Accuracy", data=accuracy_df, ax=ax[i], lowess=True)
+    sns.regplot(x="Cell Number", y="State Assignment Accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
     ax[i].set_title("State Assignment Accuracy")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_ylim(bottom=25.0, top=101)
 
     # T and pi matrix distance to their true value
     i += 1
-    sns.regplot(x="Cell Number", y="T Error", data=param_df, ax=ax[i], lowess=True)
-    sns.regplot(x="Cell Number", y="pi Error", data=param_df, ax=ax[i], lowess=True)
+    sns.regplot(x="Cell Number", y="T Error", data=param_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+    sns.regplot(x="Cell Number", y="pi Error", data=param_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
     ax[i].set_title(r"Error in estimating $T$ & $\pi$")
     ax[i].set_ylabel(r"Error [$||x-\hat{x}||$]")
     ax[i].set_ylim(bottom=0.01, top=1.02)
 
-#     i += 1
-#     # Bernoulli parameter estimation
-#     ax[i].axhline(y=paramTrues[:, 0, 0][0], ls='--', c='k', alpha=0.5)
-#     ax[i].axhline(y=paramTrues[:, 1, 0][0], ls='--', c='k', alpha=0.5)
-#     ax[i] = sns.lmplot(x="Cell Number", y='Bern. G1 p', hue='State', data=data_df, lowess=True).fig.axes[0]
-#     ax[i].set_title(r"G1 fate parameter estimation ($p$)")
-#     ax[i].set_ylabel("Bernoulli rate estimate ($p$)")
-#     ax[i].set_ylim(0.75, 1.01)
+    i += 1
+    # Bernoulli parameter estimation
+    ax[i].axhline(y=paramTrues[:, 0, 0][0], ls='--', c='b', alpha=0.75)
+    ax[i].axhline(y=paramTrues[:, 1, 0][0], ls='--', c='orange', alpha=0.75)
+    sns.regplot(x="Cell Number", y='Bern. G1 0', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+    sns.regplot(x="Cell Number", y='Bern. G1 1', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
+    ax[i].set_title(r"G1 fate parameter estimation ($p$)")
+    ax[i].set_ylabel("Bernoulli rate estimate ($p$)")
+    ax[i].set_ylim(paramTrues[:, 1, 0][0]-0.025, 1.001)
 
-#     i += 1
-#     ax[i].axhline(y=paramTrues[:, 0, 2][0], ls='--', c='k', alpha=0.5)
-#     ax[i].axhline(y=paramTrues[:, 1, 2][0], ls='--', c='k', alpha=0.5)
-#     ax[i] = sns.lmplot(x="Cell Number", y='shape G1', hue='State', data=data_df, lowess=True).fig.axes[0]
-#     ax[i].set_title(r"G1 lifetime parameter estimation ($k$, $\theta$)")
-#     ax[i].set_ylabel("Gamma shape estimate ($k$)")
-#     ax[i].set_ylim(1, 15)
+    i += 1
+    ax[i].axhline(y=paramTrues[:, 0, 2][0], ls='--', c='b', alpha=0.75)
+    ax[i].axhline(y=paramTrues[:, 1, 2][0], ls='--', c='orange', alpha=0.75)
+    sns.regplot(x="Cell Number", y='shape G1 0', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+    sns.regplot(x="Cell Number", y='shape G1 1', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
+    ax[i].set_title(r"G1 lifetime parameter estimation ($k$, $\theta$)")
+    ax[i].set_ylabel("Gamma shape estimate ($k$)")
+    ax[i].set_ylim(1, 15)
 
-#     i += 1
-#     ax[i].axhline(y=paramTrues[:, 0, 3][0], ls='--', c='k', alpha=0.5)
-#     ax[i].axhline(y=paramTrues[:, 1, 3][0], ls='--', c='k', alpha=0.5)
-#     ax[i] = sns.lmplot(x="Cell Number", y='scale G1', hue='State', data=data_df, lowess=True).fig.axes[0]
-#     ax[i].set_title(r"G1 lifetime parameter estimation ($k$, $\theta$)")
-#     ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
-#     ax[i].set_ylim(1, 15)
+    i += 1
+    ax[i].axhline(y=paramTrues[:, 0, 3][0], ls='--', c='b', alpha=0.75)
+    ax[i].axhline(y=paramTrues[:, 1, 3][0], ls='--', c='orange', alpha=0.75)
+    sns.regplot(x="Cell Number", y='scale G1 0', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+    sns.regplot(x="Cell Number", y='scale G1 1', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
+    ax[i].set_title(r"G1 lifetime parameter estimation ($k$, $\theta$)")
+    ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
+    ax[i].set_ylim(1, 15)
 
-#     i += 1
-#     ax[i].axhline(y=paramTrues[:, 0, 1][0], ls='--', c='k', alpha=0.5)
-#     ax[i].axhline(y=paramTrues[:, 1, 1][0], ls='--', c='k', alpha=0.5)
-#     ax[i] = sns.lmplot(x="Cell Number", y='Bern. G2 p', hue='State', data=data_df, lowess=True).fig.axes[0]
-#     ax[i].set_title(r"G2 fate parameter estimation ($p$)")
-#     ax[i].set_ylabel(r"Bernoulli rate estimate ($p$)")
-#     ax[i].set_ylim(0.75, 1.01)
+    i += 1
+    ax[i].axhline(y=paramTrues[:, 0, 1][0], ls='--', c='b', alpha=0.75)
+    ax[i].axhline(y=paramTrues[:, 1, 1][0], ls='--', c='orange', alpha=0.75)
+    sns.regplot(x="Cell Number", y='Bern. G2 0', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+    sns.regplot(x="Cell Number", y='Bern. G2 1', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
+    ax[i].set_title(r"G2 fate parameter estimation ($p$)")
+    ax[i].set_ylabel(r"Bernoulli rate estimate ($p$)")
+    ax[i].set_ylim(paramTrues[:, 1, 1][0]-0.025, 1.001)
 
-#     i += 1
-#     ax[i].axhline(y=paramTrues[:, 0, 4][0], ls='--', c='k', alpha=0.5)
-#     ax[i].axhline(y=paramTrues[:, 1, 4][0], ls='--', c='k', alpha=0.5)
-#     ax[i] = sns.lmplot(x="Cell Number", y='shape G2', hue='State', data=data_df, lowess=True).fig.axes[0]
-#     ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
-#     ax[i].set_ylabel(r"Gamma shape estimate ($k$)")
-#     ax[i].set_ylim(0, 10)
+    i += 1
+    ax[i].axhline(y=paramTrues[:, 0, 4][0], ls='--', c='b', alpha=0.75)
+    ax[i].axhline(y=paramTrues[:, 1, 4][0], ls='--', c='orange', alpha=0.75)
+    sns.regplot(x="Cell Number", y='shape G2 0', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+    sns.regplot(x="Cell Number", y='shape G2 1', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
+    ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
+    ax[i].set_ylabel(r"Gamma shape estimate ($k$)")
+    ax[i].set_ylim(0, 10)
 
-#     i += 1
-#     ax[i].axhline(y=paramTrues[:, 0, 5][0], ls='--', c='k', alpha=0.5)
-#     ax[i].axhline(y=paramTrues[:, 1, 5][0], ls='--', c='k', alpha=0.5)
-#     ax[i] = sns.lmplot(x="Cell Number", y='scale G2', hue='State', data=data_df, lowess=True).fig.axes[0]
-#     ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
-#     ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
-#     ax[i].set_ylim(0, 10)
+    i += 1
+    ax[i].axhline(y=paramTrues[:, 0, 5][0], ls='--', c='b', alpha=0.75)
+    ax[i].axhline(y=paramTrues[:, 1, 5][0], ls='--', c='orange', alpha=0.75)
+    sns.regplot(x="Cell Number", y='scale G2 0', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+    sns.regplot(x="Cell Number", y='scale G2 1', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
+    ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
+    ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
+    ax[i].set_ylim(0, 10)
