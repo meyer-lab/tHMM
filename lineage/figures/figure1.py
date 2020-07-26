@@ -24,6 +24,7 @@ HomoX = LineageTree.init_from_parameters(pi, T1, E2, desired_num_cells=2**7 - 1,
 T2 = np.array([[0.9, 0.1], [0.0, 1.0]], dtype="float")
 HeteroX = LineageTree.init_from_parameters(pi, T2, E2, desired_num_cells=2**7 - 1, censor_condition=0, desired_experiment_time=400)
 
+
 def makeFigure():
     """
     Makes figure 1.
@@ -37,6 +38,7 @@ def makeFigure():
     subplotLabel(ax)
 
     return f
+
 
 def figureMaker(ax):
     """
