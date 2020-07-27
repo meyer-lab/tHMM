@@ -15,9 +15,11 @@ if __name__ == '__main__':
 
     exec('from lineage.figures import ' + nameOut)
     ff = eval(nameOut + '.makeFigure()')
-    ff.savefig(fdir + nameOut + '.svg', dpi=ff.dpi, bbox_inches='tight', pad_inches=0)
+    ff.savefig(fdir + nameOut + '.svg', dpi=ff.dpi,
+               bbox_inches='tight', pad_inches=0)
 
-    print(f'Figure {sys.argv[1]} is done after {time.time() - start} seconds.\n')
+    print(
+        f'Figure {sys.argv[1]} is done after {time.time() - start} seconds.\n')
 
     if sys.argv[1] == 'S02':
         # Overlay Figure 2 cartoon
@@ -89,14 +91,14 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figure5.svg',
                        f'{cartoon_dir}/figureS06.svg', 10, 5, scalee=0.27)
 
-    if sys.argv[1] == '7':
+    # if sys.argv[1] == '7':
         # Overlay Figure 6 cartoon
-        overlayCartoon(fdir + 'figure7.svg',
-                       f'{cartoon_dir}/lineage_notcen.svg', 0, 0, scalee=0.5)
-        overlayCartoon(fdir + 'figure7.svg',
-                       f'{cartoon_dir}/lineage_cen.svg', 230, 0, scalee=0.5)
+        # overlayCartoon(fdir + 'figure7.svg',
+        # f'{cartoon_dir}/lineage_notcen.svg', 0, 0, scalee=0.5)
+        # overlayCartoon(fdir + 'figure7.svg',
+        # f'{cartoon_dir}/lineage_cen.svg', 230, 0, scalee=0.5)
 
-# TODO: JC will fix the cartoon later
+        # TODO: JC will fix the cartoon later
     if sys.argv[1] == '2':
         # Overlay Figure 2 cartoon
         overlayCartoon(fdir + 'figure2.svg',

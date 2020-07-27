@@ -5,7 +5,7 @@ Purpose: Generates figure 10.
 AIC.
 """
 import numpy as np
-
+import matplotlib.gridspec as gridspec
 
 from ..Analyze import run_Analyze_AIC
 from ..LineageTree import LineageTree
@@ -24,7 +24,10 @@ def makeFigure():
     """
     Makes figure 10.
     """
-    ax, f = getSetup((13.333, 6.666), (2, 4))
+    ax, f = getSetup((16, 8), (3, 4))
+    for i in range(8, 12):
+        ax[i].axis('off')
+    ax = ax[0:8]
     desired_num_states = np.arange(1, 8)
 
     # Setting up state distributions and E
@@ -57,4 +60,17 @@ def makeFigure():
                      upper_ylim[int(idx / 4)], idx > 3)
     subplotLabel(ax)
 
+    parameters = [['State', 'BernG1', 'ShapeG1', 'ScaleG1', 'BernG2', 'ShapeG2', 'ScaleG2'],
+                  ['State 1', .99, 10, 2, .9, 10, 2],
+                  ['State 2', .9, 20, 3, .9, 20, 3],
+                  ['State 3', .85, 30, 4, .9, 30, 4],
+                  ['State 4', .8, 40, 5, .9, 40, 5]]
+    spec = gridspec.GridSpec(3, 4, f)
+    table = f.add_subplot(spec[2, :])
+    table.axis('tight')
+    table.axis('off')
+    table.table(parameters, loc='center')
+    table.text(-0.02, .85, 'i', transform=table.transAxes,
+               fontsize=16, fontweight="bold", va="top")
+    f.subplots_adjust(hspace=.5, wspace=.6)
     return f
