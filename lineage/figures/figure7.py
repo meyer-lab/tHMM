@@ -28,7 +28,6 @@ def makeFigure():
     for i in range(8, 12):
         ax[i].axis('off')
     ax = ax[0:8]
-    desired_num_states = np.arange(1, 8)
 
     # Setting up state distributions and E
     Sone = StateDistribution(0.99, 0.9, 10, 2, 10, 2)
@@ -59,18 +58,22 @@ def makeFigure():
         figure_maker(ax[idx], a, (idx % 4) + 1,
                      upper_ylim[int(idx / 4)], idx > 3)
     subplotLabel(ax)
+    states = [[f'State {i+1}'] for i in range(4)]
+    for idx, state in enumerate(states):
+        state.extend(Efour[idx].params)
 
-    parameters = [['State', 'BernG1', 'ShapeG1', 'ScaleG1', 'BernG2', 'ShapeG2', 'ScaleG2'],
-                  ['State 1', .99, 10, 2, .9, 10, 2],
-                  ['State 2', .9, 20, 3, .9, 20, 3],
-                  ['State 3', .85, 30, 4, .9, 30, 4],
-                  ['State 4', .8, 40, 5, .9, 40, 5]]
+    parameters = [['State', r'$Bern_{G1}$', r'$Bern_{G2}$', r'$Shape_{G1}$', r'$Scale_{G1}$', r'$Shape_{G2}$', r'$Scale_{G2}$'],
+                  states[0],
+                  states[1],
+                  states[2],
+                  states[3]]
     spec = gridspec.GridSpec(3, 4, f)
     table = f.add_subplot(spec[2, :])
     table.axis('tight')
     table.axis('off')
-    table.table(parameters, loc='center')
-    table.text(-0.02, .85, 'i', transform=table.transAxes,
+    table.table(parameters, loc='center', bbox=[0, 0, 1, .7], cellLoc='center')
+    table.set_title('State Parameters', y=.8)
+    table.text(-0.02, 1.1, 'i', transform=table.transAxes,
                fontsize=16, fontweight="bold", va="top")
     f.subplots_adjust(hspace=.5, wspace=.6)
     return f
