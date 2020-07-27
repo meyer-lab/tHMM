@@ -38,10 +38,17 @@ def makeFigure():
     subplotLabel(ax)
     
     lineage_uncensored = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**7 - 1)
-    plotLineage(lineage_uncensored, 'lineage/figures/cartoons/lineage_notcen.svg')
+    plotLineage(lineage_uncensored, 'lineage/figures/cartoons/lineage_notcen.svg', censore=True)
 
     lineage_censored = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**7 - 1, censor_condition=3, desired_experiment_time=400)
-    plotLineage(lineage_censored, 'lineage/figures/cartoons/lineage_cen.svg')
+    plotLineage(lineage_censored, 'lineage/figures/cartoons/lineage_cen.svg', censore=True)
+    
+    # Get list of axis objects
+    ax, f = getSetup((5, 5), (2, 2))
+    number_of_columns = 25
+    figureMaker7(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, number_of_columns)
+
+    subplotLabel(ax)
 
     return f
 
