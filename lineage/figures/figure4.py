@@ -99,7 +99,7 @@ def accuracy():
 def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     """
     This makes figure 4.
-    """    
+    """
     i = 0
     ax[i].axis('off')
 
@@ -125,7 +125,7 @@ def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     sns.regplot(x="Cell Number", y='Bern. G1 1', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
     ax[i].set_title(r"G1 fate parameter estimation ($p$)")
     ax[i].set_ylabel("Bernoulli rate estimate ($p$)")
-    ax[i].set_ylim(paramTrues[:, 1, 0][0]-0.025, 1.001)
+    ax[i].set_ylim(paramTrues[:, 1, 0][0] - 0.025, 1.001)
 
     i += 1
     ax[i].axhline(y=paramTrues[:, 0, 2][0], ls='--', c='b', alpha=0.75)
@@ -152,7 +152,7 @@ def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     sns.regplot(x="Cell Number", y='Bern. G2 1', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
     ax[i].set_title(r"G2 fate parameter estimation ($p$)")
     ax[i].set_ylabel(r"Bernoulli rate estimate ($p$)")
-    ax[i].set_ylim(paramTrues[:, 1, 1][0]-0.025, 1.001)
+    ax[i].set_ylim(paramTrues[:, 1, 1][0] - 0.025, 1.001)
 
     i += 1
     ax[i].axhline(y=paramTrues[:, 0, 4][0], ls='--', c='b', alpha=0.75)

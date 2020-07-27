@@ -47,13 +47,13 @@ max_num_lineages = 50
 num_data_points = 200
 
 scatter_state_1_kws = {
-    "alpha":0.33,
+    "alpha": 0.33,
     "marker": "+",
     "s": 20,
 }
 
 scatter_state_2_kws = {
-    "alpha":0.33,
+    "alpha": 0.33,
     "marker": "x",
     "s": 20,
 }
@@ -187,7 +187,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     """
     # Checks whether we are plotting exponential results, or gamma results
     number_of_params = paramEst.shape[-1]
-    
+
     accuracy_df = pd.DataFrame(columns=["x", 'accuracy'])
     accuracy_df['x'] = x
     accuracy_df['accuracy'] = accuracies
@@ -207,14 +207,13 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         accuracy_df['gamma 0 5'] = paramEst[:, 0, 5]
         accuracy_df['gamma 1 5'] = paramEst[:, 1, 5]
     elif number_of_params == 2:
-        accuracy_df['0 1'] =  paramEst[:, 0, 1]
-        accuracy_df['1 1'] =  paramEst[:, 1, 1]
+        accuracy_df['0 1'] = paramEst[:, 0, 1]
+        accuracy_df['1 1'] = paramEst[:, 1, 1]
     else:
-        accuracy_df['0 1'] =  paramEst[:, 0, 1]
-        accuracy_df['1 1'] =  paramEst[:, 1, 1]
+        accuracy_df['0 1'] = paramEst[:, 0, 1]
+        accuracy_df['1 1'] = paramEst[:, 1, 1]
         accuracy_df['gamma 0 2'] = paramEst[:, 0, 2]
         accuracy_df['gamma 1 2'] = paramEst[:, 1, 2]
-
 
     i = 0
     ax[i].axis('off')
@@ -228,8 +227,8 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     i += 1
     sns.regplot(x="x", y="bern 0 0", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
     sns.regplot(x="x", y="bern 1 0", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
-    ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", s=20, alpha=0.5)
-    ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", s=20, alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", s=20, c="#add8e6", alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", s=20, c="#feba4f", alpha=0.5)
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=0.5, top=1.02)
     if number_of_params == 6:
@@ -243,13 +242,13 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     if number_of_params == 6:
         sns.regplot(x="x", y="gamma 0 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         sns.regplot(x="x", y="gamma 1 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
-        ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", s=20, alpha=0.5)
-        ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", s=20, alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", s=20, c="#add8e6", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", s=20, c="#feba4f", alpha=0.5)
     else:
         sns.regplot(x="x", y="0 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         sns.regplot(x="x", y="1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
-        ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, alpha=0.5)
-        ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#add8e6", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#feba4f", alpha=0.5)
     ax[i].set_xlabel(xlabel)
     if number_of_params == 2:
         ax[i].set_ylabel(r"exponential $\beta$")
@@ -269,9 +268,9 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
             sns.regplot(x="x", y="gamma 0 3", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
             sns.regplot(x="x", y="gamma 1 3", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
             ax[i].scatter(x, paramTrues[:, 0, 3], marker="_", s=20,
-                          alpha=0.5, label="State 1")
+                          c="#add8e6", alpha=0.5, label="State 1")
             ax[i].scatter(x, paramTrues[:, 1, 3], marker="_", s=20,
-                          alpha=0.5, label="State 2")
+                          c="#feba4f", alpha=0.5, label="State 2")
             ax[i].set_xlabel(xlabel)
             ax[i].set_ylabel(r"G1 Gamma $\theta$")
             ax[i].set_title(r"G1 Gamma $\theta$")
@@ -279,9 +278,9 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
             sns.regplot(x="x", y="gamma 0 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
             sns.regplot(x="x", y="gamma 1 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
             ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", s=20,
-                          alpha=0.5, label="State 1")
+                          c="#add8e6", alpha=0.5, label="State 1")
             ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", s=20,
-                          alpha=0.5, label="State 2")
+                          c="#feba4f", alpha=0.5, label="State 2")
             ax[i].set_xlabel(xlabel)
             ax[i].set_ylabel(r"Gamma $\theta$")
             ax[i].set_title(r"Gamma $\theta$")
@@ -291,13 +290,13 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     if number_of_params == 6:
         sns.regplot(x="x", y="bern 0 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         sns.regplot(x="x", y="bern 1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
-        ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, alpha=0.5)
-        ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#add8e6", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#feba4f", alpha=0.5)
         ax[i].set_ylim(bottom=0.5, top=1.02)
         ax[i].set_ylabel("G2 Bernoulli $p$")
         ax[i].set_title(r"G2 Bernoulli $p$")
     else:
-        ax[i].set_ylim(bottom=np.mean(accuracies)-10, top=101)
+        ax[i].set_ylim(bottom=np.mean(accuracies) - 10, top=101)
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_ylabel(r"Accuracy [\%]")
         ax[i].set_title("State Assignment Accuracy")
@@ -307,8 +306,8 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     if number_of_params == 6:
         sns.regplot(x="x", y="gamma 0 4", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         sns.regplot(x="x", y="gamma 1 4", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
-        ax[i].scatter(x, paramTrues[:, 0, 4], marker="_", s=20, alpha=0.5)
-        ax[i].scatter(x, paramTrues[:, 1, 4], marker="_", s=20, alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 0, 4], marker="_", s=20, c="#add8e6", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 1, 4], marker="_", s=20, c="#feba4f", alpha=0.5)
         ax[i].set_ylabel(r"G2 Gamma $k$")
         ax[i].set_title(r"G2 Gamma $k$")
     else:
@@ -322,8 +321,8 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     if number_of_params == 6:
         sns.regplot(x="x", y="gamma 0 5", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         sns.regplot(x="x", y="gamma 1 5", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
-        ax[i].scatter(x, paramTrues[:, 0, 5], marker="_", s=20, alpha=0.5)
-        ax[i].scatter(x, paramTrues[:, 1, 5], marker="_", s=20, alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 0, 5], marker="_", s=20, c="#add8e6", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 1, 5], marker="_", s=20, c="#feba4f", alpha=0.5)
         ax[i].set_ylabel(r"G2 Gamma $\theta$")
         ax[i].set_title(r"G2 Gamma $\theta$")
     else:
@@ -335,7 +334,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
 
     if number_of_params == 6:
         i += 1
-        ax[i].set_ylim(bottom=np.mean(accuracies)-10, top=101)
+        ax[i].set_ylim(bottom=np.mean(accuracies) - 10, top=101)
         ax[i].set_ylabel(r"Accuracy [\%]")
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_title("State Assignment Accuracy")

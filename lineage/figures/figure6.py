@@ -67,7 +67,7 @@ def accuracy():
 
     percentageS1un, _, acc_un, _, _, _ = commonAnalyze(list_of_uncen_populations, xtype="prop", list_of_fpi=list_of_fpi)
     percentageS1, _, acc, _, _, _ = commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
-    
+
     un_accuracy_df = pd.DataFrame(columns=["Proportions", "State Assignment Accuracy"])
     un_accuracy_df["Proportions"] = percentageS1un
     un_accuracy_df["State Assignment Accuracy"] = acc_un
@@ -86,7 +86,7 @@ def figureMaker6(ax, un_accuracy_df, accuracy_df):
     # cartoon to show different shapes --> similar shapes
     i = 0
     ax[i].axis('off')
-    
+
     i += 1
     # state assignment accuracy
     sns.regplot(x="Proportions", y="State Assignment Accuracy", data=un_accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
@@ -94,7 +94,7 @@ def figureMaker6(ax, un_accuracy_df, accuracy_df):
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_xlabel("Approximate percentage of cells in state 1 [%]")
     ax[i].set_ylim(bottom=50.0, top=105.0)
-    
+
     i += 1
     # state assignment accuracy
     sns.regplot(x="Proportions", y="State Assignment Accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
