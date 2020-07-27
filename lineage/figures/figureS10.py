@@ -6,17 +6,18 @@ AIC.
 """
 import numpy as np
 from matplotlib.ticker import MaxNLocator
+import matplotlib.gridspec as gridspec
 
 from ..Analyze import run_Analyze_AIC
 from ..LineageTree import LineageTree
 
 # States to evaluate with the model
-from ..states.StateDistributionGamma import StateDistribution
+from ..states.StateDistributionGaPhs import StateDistribution
 
 from .figureCommon import getSetup, lineage_good_to_analyze, subplotLabel
 
 # TODO
-# Read about/properly derive AICc for this model and check censored lineages with corrected AI
+# Read about/properly derive AICc for this model and check censored lineages with corrected AIC
 
 desired_num_states = np.arange(1, 8)
 
