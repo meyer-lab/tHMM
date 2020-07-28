@@ -15,9 +15,11 @@ if __name__ == '__main__':
 
     exec('from lineage.figures import ' + nameOut)
     ff = eval(nameOut + '.makeFigure()')
-    ff.savefig(fdir + nameOut + '.svg', dpi=ff.dpi, bbox_inches='tight', pad_inches=0)
+    ff.savefig(fdir + nameOut + '.svg', dpi=ff.dpi,
+               bbox_inches='tight', pad_inches=0)
 
-    print(f'Figure {sys.argv[1]} is done after {time.time() - start} seconds.\n')
+    print(
+        f'Figure {sys.argv[1]} is done after {time.time() - start} seconds.\n')
 
     if sys.argv[1] == 'S02':
         # Overlay Figure 2 cartoon
