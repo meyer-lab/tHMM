@@ -4,6 +4,7 @@ the figure creation files.
 """
 from string import ascii_lowercase
 from cycler import cycler
+import math
 import numpy as np
 import pandas as pd
 from matplotlib import gridspec, pyplot as plt
@@ -57,7 +58,6 @@ scatter_state_2_kws = {
     "marker": "x",
     "s": 20,
 }
-
 
 scatter_kws_list = [scatter_state_1_kws, scatter_state_2_kws]
 
@@ -177,7 +177,7 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     elif xtype == "bern":
         x = paramTrues[:, 0, 0]
 
-    return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
+    return x, paramEst, dictOut["balanced_accuracy_score"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
 
 
 def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
@@ -326,10 +326,13 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].set_ylabel(r"G2 Gamma $\theta$")
         ax[i].set_title(r"G2 Gamma $\theta$")
     else:
-        ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
-        sns.regplot(x="x", y="pii", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-        ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
-        ax[i].set_title("Initial Probability Matrix Estimation")
+        if len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1]):
+            ax[i].axis('off')
+        else:
+            ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
+            sns.regplot(x="x", y="pii", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+            ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
+            ax[i].set_title("Initial Probability Matrix Estimation")
     ax[i].set_xlabel(xlabel)
 
     if number_of_params == 6:
@@ -348,8 +351,11 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].set_xlabel(xlabel)
 
         i += 1
-        ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
-        sns.regplot(x="x", y="pii", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-        ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
-        ax[i].set_title("Initial Probability Vector Estimation")
-        ax[i].set_xlabel(xlabel)
+        if len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1]):
+            ax[i].axis('off')
+        else:
+            ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
+            sns.regplot(x="x", y="pii", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+            ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
+            ax[i].set_title("Initial Probability Vector Estimation")
+            ax[i].set_xlabel(xlabel)

@@ -17,7 +17,6 @@ from .figureCommon import (
     scatter_kws_list,
 )
 from ..LineageTree import LineageTree
-import statsmodels
 
 
 def makeFigure():

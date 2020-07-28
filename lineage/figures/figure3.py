@@ -45,8 +45,7 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((5, 5), (2, 2))
-    number_of_columns = 25
-    figureMaker7(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, number_of_columns)
+    figureMaker7(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen)
 
     subplotLabel(ax)
 
