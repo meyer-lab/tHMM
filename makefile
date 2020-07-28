@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 .PHONY: clean test testprofile testcover docs
 
-flist = 1 4 5 6 7 S02 S03 S12 S13 S04 S05 S14 S15
+flist = 1 4 5 6 7 S02 S03 S12 S13 S05 S15
 
 all: spell.txt $(patsubst %, output/figure%.svg, $(flist))
 
