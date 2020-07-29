@@ -68,23 +68,7 @@ class tHMM:
         if self.fE is None:  # when there are no fixed emissions, we need to randomize the start
             init_gammas = [sp.multinomial.rvs(n=1, p=[1. / self.num_states] * self.num_states, size=len(lineage))
                            for lineage in self.X]
-            obsX = np.array([cell.obs for lineage in self.X for cell in lineage.output_lineage])
 
-            if not np.isnan(obsX).any():
-                # TODO: need to figure out a better way to init for censored data when considering nans
-                # Replace nans with mean of the columns
-                col_mean = np.nanmean(obsX, axis=0)
-                # Find indices that you need to replace
-                inds = np.where(np.isnan(obsX))
-                # Place column means in the indices. Align the arrays using take
-                obsX[inds] = np.take(col_mean, inds[1])
-                kmeans_solver = KMeans(n_clusters=self.num_states).fit(obsX)
-                init_gammas = [np.zeros((len(lineage), self.num_states)) for lineage in self.X]
-                count = 0
-                for _, lineage_gammas in enumerate(init_gammas):
-                    for _, cell_gamma in enumerate(lineage_gammas):
-                        cell_gamma[kmeans_solver.labels_[count]] = 1
-                        count += 1
             do_M_E_step(self, init_gammas)
 
         # Step 1: first E step
