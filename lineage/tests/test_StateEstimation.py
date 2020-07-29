@@ -88,4 +88,4 @@ class TestModel(unittest.TestCase):
         by comparing the parameter estimates to their true values.
         Exponential censored.
         """
-        self.assertGreater(5., abs(self.expon_state_censored_estimate.params[1] - self.E_expon[0].params[1]))
+        self.assertGreater(20., abs(self.expon_state_censored_estimate.params[1] - self.E_expon[0].params[1]))
