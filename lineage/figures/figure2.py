@@ -10,7 +10,7 @@ def makeFigure():
     """
     Makes figure 2.
     """
-    ax, f = getSetup((7, 10 / 3), (1, 1))
+    ax, f = getSetup((10, 5), (1, 1))
     figureMaker(ax)
 
     return f
