@@ -102,3 +102,17 @@ class TestModel(unittest.TestCase):
         for ind, NFlin in enumerate(NF):
             self.assertGreaterEqual(NFlin.shape[0], 0)  # at least zero cells in each lineage
             self.assertGreaterEqual(NF3[ind].shape[0], 0)
+            
+    def test_level_of_performance(self):
+        """
+        Really defined states should get an accuracy >95%. 
+        Lineages used should be large and distinct.
+        """
+        X = [LineageTree.init_from_parameters(pi, T, E, (2**11))]
+        solver = tHMM(X, 2)
+        solver.fit()
+        predicted_states = solver.predict()
+        true_states = [cell.state for lineage in X for cell in lineage.output_lineage]
+        accuracy = sum([1 if i == j else 0 for i,j in zip(predicted_states[0], true_states)])/len(predicted_states)
+        self.assertGreaterEqual (accuracy, 95)
+
