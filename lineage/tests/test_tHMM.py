@@ -109,9 +109,9 @@ class TestModel(unittest.TestCase):
         Lineages used should be large and distinct.
         """
         X = [LineageTree.init_from_parameters(pi, T, E, (2**11))]
-        solver = tHMM(X, 2)
-        solver.fit()
-        predicted_states = solver.predict()
+        tree = tHMM(X, 2)
+        tree.fit()
+        predicted_states = tree.predict()
         true_states = [cell.state for lineage in X for cell in lineage.output_lineage]
         accuracy = sum([1 if i == j else 0 for i,j in zip(predicted_states[0], true_states)])/len(predicted_states)
         self.assertGreaterEqual (accuracy, 95)
