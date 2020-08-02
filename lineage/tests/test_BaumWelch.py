@@ -16,24 +16,26 @@ class TestBW(unittest.TestCase):
         """ This setup will be used to test the model for the cases with 3 number of states. """
         # ingredients for LineageTree with 3 states
         self.pi = np.array([0.55, 0.35, 0.10])
-        self.T = np.array([[0.75, 0.20, 0.05], [0.1, 0.85, 0.05], [0.1, 0.1, 0.8]])
+        self.T = np.array(
+            [[0.75, 0.20, 0.05], [0.1, 0.85, 0.05], [0.1, 0.1, 0.8]])
 
         # Emissions
-        self.E = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
+        self.E = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(
+            0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
 
     def commonTest(self, **kwargs):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
-        X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 11) - 1, **kwargs)
-        good2go = lineage_good_to_analyze(X)
+        good2go = False
         while not good2go:
-            X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 11) - 1, **kwargs)
+            X = LineageTree.init_from_parameters(
+                pi, T, E, desired_num_cells=(2 ** 11) - 1, **kwargs)
             good2go = lineage_good_to_analyze(X)
         tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
-        X3s = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, **kwargs)
-        good2go = lineage_good_to_analyze(X3s)
+        good2go = False
         while not good2go:
-            X3s = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, **kwargs)
+            X3s = LineageTree.init_from_parameters(
+                self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, **kwargs)
             good2go = lineage_good_to_analyze(X3s)
         tHMMobj3s = tHMM([X3s], num_states=3)
 

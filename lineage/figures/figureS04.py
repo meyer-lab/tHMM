@@ -29,7 +29,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((7, 7), (3, 3))
+    ax, f = getSetup((10, 10), (3, 3))
 
     figureMaker(ax, *accuracy())
 
@@ -48,7 +48,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    times = np.linspace(min_experiment_time, max_experiment_time, num_data_points)
+    times = np.linspace(max_experiment_time, 2 * max_experiment_time, num_data_points)
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []

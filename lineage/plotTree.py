@@ -18,7 +18,7 @@ def CladeRecursive(cell, a, censore):
     if cell.state == 0:
         colorr = "olive"
     else:
-        colorr = "salmon" 
+        colorr = "salmon"
 
     if cell.isLeaf() and censore:
         if cell.time.transition_time >= cell.time.endT:  # the cell died in G1

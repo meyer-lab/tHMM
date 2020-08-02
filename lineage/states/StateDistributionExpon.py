@@ -13,7 +13,7 @@ class StateDistribution:
     StateDistribution for cells with exponential distributed times.
     """
 
-    def __init__(self, bern_p=0.9, exp_beta=7.0):
+    def __init__(self, bern_p=0.9, exp_beta=49.0):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.params = [bern_p, exp_beta]
 
@@ -187,7 +187,7 @@ def exp_estimator(exp_obs, time_censor_obs, gammas):
     This is a closed-form estimator for the lambda parameter of the
     exponential distribution, which is right-censored.
     """
-    return sum(gammas * exp_obs) / sum(gammas * time_censor_obs)
+    return np.dot(gammas, exp_obs) / np.dot(gammas, time_censor_obs)
 
 
 @njit
