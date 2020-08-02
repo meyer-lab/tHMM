@@ -11,6 +11,7 @@ from ..tHMM import tHMM
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
 from ..figures.figureCommon import pi, T, E
 from ..Analyze import Analyze
+from ..Analyze import Results
 
 
 class TestModel(unittest.TestCase):
@@ -109,12 +110,11 @@ class TestModel(unittest.TestCase):
         Really defined states should get an accuracy >95%. 
         Lineages used should be large and distinct.
         """
-        X = [LineageTree.init_from_parameters(self.pi, self.T, self.E, (2**11))]
-        tree = Analyze(X, 2)
-        predicted_states = tree[1]
-        true_states = [cell.state for lineage in X for cell in lineage.output_lineage]
-        accuracy = sum([1 if i == j else 0 for i,j in zip(predicted_states[0], true_states)])/len(predicted_states[0])
-        self.assertGreaterEqual(accuracy, 95)
+        X = [LineageTree.init_from_parameters(self.pi, self.T, self.E, (2**10)-1)]
+        tree_solver, predicted_states, LL = Analyze(X, 3)
+        results_dict = Results(tree_solver, predicted_states, LL)
+        accuracy = results_dict["balanced_accuracy_score"]
+        self.assertGreaterEqual(accuracy, 0.95)
 
         
         

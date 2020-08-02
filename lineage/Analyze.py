@@ -170,7 +170,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
 
     results_dict["switched_transition_matrix"] = temp_T
     results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
-
+    
     # Rearrange the values in the pi vector
     temp_pi = np.zeros(tHMMobj.estimate.pi.shape)
     for val_idx in range(tHMMobj.num_states):
