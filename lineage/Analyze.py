@@ -170,7 +170,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
 
     results_dict["switched_transition_matrix"] = temp_T
     results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
-    
+
     # Rearrange the values in the pi vector
     temp_pi = np.zeros(tHMMobj.estimate.pi.shape)
     for val_idx in range(tHMMobj.num_states):
@@ -203,7 +203,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["accuracy_before_switching"] = 100 * np.mean(ravel_pred_states == ravel_true_states)
     results_dict["accuracy_after_switching"] = 100 * np.mean(ravel_switched_pred_states == ravel_true_states)
     results_dict["balanced_accuracy_score"] = 100 * balanced_accuracy_score(ravel_true_states, ravel_switched_pred_states)
-        
+
     # 4. Calculate the Wasserstein distance
     obs_index = 1
     if len(tHMMobj.X[0].E[0].params) == 6:
