@@ -10,8 +10,7 @@ from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
 from ..figures.figureCommon import pi, T, E
-from ..Analyze import Analyze
-from ..Analyze import Results
+from ..Analyze import Analyze, Results
 
 
 class TestModel(unittest.TestCase):
