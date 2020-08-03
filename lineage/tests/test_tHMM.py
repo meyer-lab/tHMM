@@ -113,7 +113,7 @@ class TestModel(unittest.TestCase):
         tree_obj, predicted_states, LL = Analyze(X, 3)
         results_dict = Results(tree_obj, predicted_states, LL)
         accuracy = results_dict["balanced_accuracy_score"]
-        self.assertGreaterEqual(accuracy, 0.95)
+        self.assertGreaterEqual(accuracy, 95)
 
     def test_level_of_performance2(self):
         """
@@ -123,4 +123,4 @@ class TestModel(unittest.TestCase):
         tree_obj, predicted_states, LL = Analyze(self.X, 2)
         results_dict = Results(tree_obj, predicted_states, LL)
         accuracy = results_dict["balanced_accuracy_score"]
-        self.assertGreaterEqual(accuracy, 0.95)
+        self.assertGreaterEqual(accuracy, 95)
