@@ -26,7 +26,7 @@ output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.s
 	cp output/*.svg output/output/
 	. venv/bin/activate && pandoc --verbose \
 		--defaults=./common/templates/manubot/pandoc/common.yaml \
-		--defaults=./common/templates/manubot/pandoc/html.yaml output/manuscript.md
+		--defaults=./common/templates/manubot/pandoc/html.yaml
 
 test: venv
 	. venv/bin/activate; pytest -s
