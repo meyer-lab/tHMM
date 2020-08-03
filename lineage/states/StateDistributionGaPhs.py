@@ -49,6 +49,8 @@ class StateDistribution:
         else:
             assert math.isnan(tuple_of_obs[1])
 
+        assert math.isfinite(bern_ll)
+
         gamma_ll = 1.0
         if tuple_of_obs[4] == 1:
             # uncensored
@@ -70,6 +72,8 @@ class StateDistribution:
         else:
             # unobserved
             assert math.isnan(tuple_of_obs[3]) and math.isnan(tuple_of_obs[5]) and math.isnan(tuple_of_obs[1])
+
+        assert math.isfinite(gamma_ll)
 
         return bern_ll * gamma_ll
 
