@@ -36,44 +36,42 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        bern_llG1 = 1
-        if not math.isnan(tuple_of_obs[0]):
+        bern_ll = 1.0
+        if tuple_of_obs[0] == 0 or tuple_of_obs[0] == 1:
             # observed
-            assert tuple_of_obs[0] == 0 or tuple_of_obs[0] == 1
-            bern_llG1 = bern_pdf(tuple_of_obs[0], self.params[0])
+            bern_ll *= bern_pdf(tuple_of_obs[0], self.params[0])
+        else:
+            assert math.isnan(tuple_of_obs[0])
 
-        bern_llG2 = 1
-        if not math.isnan(tuple_of_obs[1]):
+        if tuple_of_obs[1] == 0 or tuple_of_obs[1] == 1:
             # observed
-            assert tuple_of_obs[1] == 0 or tuple_of_obs[1] == 1
-            bern_llG2 = bern_pdf(tuple_of_obs[1], self.params[1])
+            bern_ll *= bern_pdf(tuple_of_obs[1], self.params[1])
+        else:
+            assert math.isnan(tuple_of_obs[1])
 
-        gamma_llG1 = 1
+        gamma_ll = 1.0
         if tuple_of_obs[4] == 1:
             # uncensored
-            gamma_llG1 = gamma_pdf(tuple_of_obs[2], self.params[2], self.params[3])
+            gamma_ll *= gamma_pdf(tuple_of_obs[2], self.params[2], self.params[3])
         elif tuple_of_obs[4] == 0:
             # censored
-            gamma_llG1 = sp.gamma.sf(tuple_of_obs[2], a=self.params[2], scale=self.params[3])
+            gamma_ll *= sp.gamma.sf(tuple_of_obs[2], a=self.params[2], scale=self.params[3])
         else:
             assert math.isnan(tuple_of_obs[4])
             # G1 lifetime not observed
             assert math.isnan(tuple_of_obs[2])
-            gamma_llG1 = 1
 
-        gamma_llG2 = 1
         if tuple_of_obs[5] == 1:
             # uncensored
-            gamma_llG2 = gamma_pdf(tuple_of_obs[3], self.params[4], self.params[5])
+            gamma_ll *= gamma_pdf(tuple_of_obs[3], self.params[4], self.params[5])
         elif tuple_of_obs[5] == 0:
             # censored
-            gamma_llG2 = sp.gamma.sf(tuple_of_obs[3], a=self.params[4], scale=self.params[5])
-        elif math.isnan(tuple_of_obs[5]):
+            gamma_ll *= sp.gamma.sf(tuple_of_obs[3], a=self.params[4], scale=self.params[5])
+        else:
             # unobserved
             assert math.isnan(tuple_of_obs[3]) and math.isnan(tuple_of_obs[5]) and math.isnan(tuple_of_obs[1])
-            gamma_llG2 = 1
 
-        return bern_llG1 * bern_llG2 * gamma_llG1 * gamma_llG2
+        return bern_ll * gamma_ll
 
     def estimator(self, list_of_tuples_of_obs, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """

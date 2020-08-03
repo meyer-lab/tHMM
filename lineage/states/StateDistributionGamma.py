@@ -41,7 +41,6 @@ class StateDistribution:
             assert tuple_of_obs[0] == 0 or tuple_of_obs[0] == 1
             bern_ll = bern_pdf(tuple_of_obs[0], self.params[0])
 
-        gamma_ll = 1
         if tuple_of_obs[2] == 1:
             # uncensored
             gamma_ll = gamma_pdf(tuple_of_obs[1], self.params[1], self.params[2])
