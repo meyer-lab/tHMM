@@ -38,41 +38,27 @@ def gamma_pdf(x, a, scale):
 
 
 @njit
-def gamma_sf_largea(x, a, scale):
+def gamma_sf(x, a, scale):
     """
-    This function takes in 1 observation and gamma shape and scale parameters and returns
-    the gamma survival function (NOTE: error will increase as a and scale decrease and x increases,
-    this may become significant if a and b < 5 and log(x)>3)
+    This function will fail when scale <<< x (~log10 =  3) since terms in the sum become too large and overflow
+    If this will drastically affect the result the method will likely throw an assertion error
     """
-    space = int(1000*np.log(x/scale)) if x/scale > 10 else 1000
-    tarr = np.linspace(0, x/scale, space)
-    incgamma = np.trapz([t**(a-1) * np.exp(-1*t) for t in tarr], x=tarr)
-    return 1-(incgamma/(math.gamma(a)))
-
-
-@njit
-def gamma_sf_smalla(x, a, scale):
     xinc = x/scale
     terms = np.array([((xinc**k))/(math.gamma(a+k+1))
                       for k in np.arange(0, 150)])
     gammainc = (np.exp(-xinc))*(xinc**a)*np.sum(terms)
+    assert not math.isnan(gammainc)
     return 1-(gammainc)
-
-# @TODO try different methods for calculating gammainc
-
-
-def gamma_sf(x, a, scale):
-    """
-    NOTE: this method will break if a<1 and log(x)-log(scale)>=2
-    """
-    if(a >= 1):
-        return gamma_sf_largea(x, a, scale)
-    return gamma_sf_smalla(x, a, scale)
 
 
 @njit
 def log_gamma_sf(x, a, scale):
     return np.log(gamma_sf(x, a, scale))
+
+
+@njit
+def log_gamma_pdf(x, a, scale):
+    return np.log(gamma_pdf(x, a, scale))
 
 
 def gamma_estimator(gamma_obs, time_censor_obs, gammas):
