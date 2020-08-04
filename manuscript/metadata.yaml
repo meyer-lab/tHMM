@@ -11,18 +11,28 @@ authors:
     github: shak360
     name: Shakthi Visagan
     initials: SV
+    orcid: 0000-0000-0000-0000
     affiliations:
       - Department of Bioengineering, University of California, Los Angeles
   -
-    github: janeroe
-    name: Nikan K. Namiri
-    initials: NKN
-    affiliations:
-      - Department of Something, University of Whatever
-  -
-    github: Farnazmdi
+    github: farnazmdi
     name: Farnaz Mohammadi
     initials: FM
+    orcid: 0000-0002-0197-4670
+    affiliations:
+      - Department of Bioengineering, University of California, Los Angeles
+  -
+    github: lkargi
+    name: Luka Karginov
+    initials: LK
+    orcid: 0000-0000-0000-0000
+    affiliations:
+      - Department of Bioengineering, University of Illinois, Urbana Champaign
+  -
+    github: jclagarde
+    name: JC Lagarde
+    initials: JL
+    orcid: 0000-0000-0000-0000
     affiliations:
       - Department of Bioengineering, University of California, Los Angeles
   -
