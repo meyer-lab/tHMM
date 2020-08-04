@@ -39,7 +39,7 @@ if __name__ == '__main__':
     if sys.argv[1] == 'S05':
         # Overlay Figure 5 cartoon
         overlayCartoon(fdir + 'figureS05.svg',
-                       f'{cartoon_dir}/figureS05.svg', 75, 0, scalee=0.3)
+                       f'{cartoon_dir}/figureS05.svg', 60, 0, scalee=0.7)
 
     if sys.argv[1] == 'S06':
         # Overlay Figure 6 cartoon
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     if sys.argv[1] == 'S15':
         # Overlay Figure 15 cartoon
         overlayCartoon(fdir + 'figureS15.svg',
-                       f'{cartoon_dir}/figureS05.svg', 65, 0, scalee=0.3)
+                       f'{cartoon_dir}/figureS05.svg', 60, 0, scalee=0.7)
         
     if sys.argv[1] == 'S22':
         # Overlay Figure 22 cartoon
@@ -95,6 +95,11 @@ if __name__ == '__main__':
         # Overlay Figure 24 cartoon
         overlayCartoon(fdir + 'figureS24.svg',
                        f'{cartoon_dir}/figureS04.svg', 60, -10, scalee=0.8)
+        
+    if sys.argv[1] == 'S25':
+        # Overlay Figure 25 cartoon
+        overlayCartoon(fdir + 'figureS25.svg',
+                       f'{cartoon_dir}/figureS05.svg', 60, 0, scalee=0.7)
 
     if sys.argv[1] == 'S52':
         # Overlay Figure 2 cartoon
