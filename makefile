@@ -2,7 +2,11 @@ SHELL := /bin/bash
 
 .PHONY: clean test testprofile testcover docs
 
+<<<<<<< HEAD
 flist = 1 3 4 5 6 7 8 S02 S03 S12 S13 S22 S23 S04 S05 S14 S15 S24 S25
+=======
+flist = 1 2 4 5 6 7 S02 S03 S12 S13 S22 S23 S04 S05 S14 S15 S24 S25
+>>>>>>> 772712076eaeeca5247ff830bcaaab58e47c7759
 
 all: spell.txt $(patsubst %, output/figure%.svg, $(flist))
 
@@ -26,7 +30,7 @@ output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.s
 	cp output/*.svg output/output/
 	. venv/bin/activate && pandoc --verbose \
 		--defaults=./common/templates/manubot/pandoc/common.yaml \
-		--defaults=./common/templates/manubot/pandoc/html.yaml output/manuscript.md
+		--defaults=./common/templates/manubot/pandoc/html.yaml
 
 test: venv
 	. venv/bin/activate; pytest -s

@@ -121,4 +121,3 @@ if __name__ == '__main__':
         # Overlay Figure 2 cartoon
         overlayCartoon(fdir + 'figureS52.svg',
                        f'{cartoon_dir}/figure2.svg', 80, -20, scalee=0.85)
-
