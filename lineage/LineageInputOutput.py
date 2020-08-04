@@ -67,6 +67,8 @@ def import_Heiser(path, exp_time=192):
             if data[lPos][1] == data[lPos][1 + 2]:
 
                 # Time Censored [exp_time  exp_time]
+                if not data[lPos][1] == exp_time:
+                    print(path)
                 parentCell.obs[0] = float("nan") if (
                     data[lPos][1] == exp_time) else 0  # live/die G1
                 parentCell.obs[1] = float("nan")  # Did not go to G2
@@ -169,13 +171,14 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeI
     if data[parentPos][pColumn] == data[parentPos][pColumn + 2]:
 
         # Time Censored [exp_time  exp_time]
-        if data[pColumn][pColumn] == exp_time:
+        if data[parentPos][pColumn] == exp_time:
             # We don't know the outcome of G1
             daughterCell.obs[0] = float("nan")
             daughterCell.obs[4] = 0  # G1 censored
 
         # Not Time Censored [x=/=exp_time   x=/=exp_time]
         else:
+            print(data[parentPos][pColumn])
             daughterCell.obs[0] = 0  # G1 death
             daughterCell.obs[4] = 1  # G1 uncensored
 
