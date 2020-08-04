@@ -13,7 +13,6 @@ import svgutils.transform as st
 from ..Analyze import run_Results_over, run_Analyze_over
 
 from ..states.StateDistributionGamma import StateDistribution
-from ..states.StateDistributionExpon import StateDistribution as expon_state
 from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 
 # pi: the initial probability vector
@@ -26,11 +25,6 @@ T = np.array([[0.9, 0.1], [0.3, 0.7]], dtype="float")
 state0 = StateDistribution(0.99, 8, 6)
 state1 = StateDistribution(0.75, 8, 1)
 E = [state0, state1]
-
-# bern, exp_beta
-state10 = expon_state(0.99, 48)
-state11 = expon_state(0.75, 8)
-E1 = [state10, state11]
 
 state20 = phaseStateDist(0.99, 0.95, 8, 7, 4, 2)
 state21 = phaseStateDist(0.95, 0.9, 6, 4, 3, 5)
@@ -298,7 +292,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     else:
         ax[i].set_ylim(bottom=np.mean(accuracies) - 10, top=101)
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-        ax[i].set_ylabel(r"Accuracy [\%]")
+        ax[i].set_ylabel(r"Accuracy [%]")
         ax[i].set_title("State Assignment Accuracy")
     ax[i].set_xlabel(xlabel)
 
@@ -338,7 +332,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     if number_of_params == 6:
         i += 1
         ax[i].set_ylim(bottom=np.mean(accuracies) - 10, top=101)
-        ax[i].set_ylabel(r"Accuracy [\%]")
+        ax[i].set_ylabel(r"Accuracy [%]")
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_title("State Assignment Accuracy")
         ax[i].set_xlabel(xlabel)
