@@ -104,9 +104,14 @@ if __name__ == '__main__':
                        f'{cartoon_dir}/lineage_notcen.svg', 20, 20, scalee=0.4)
         overlayCartoon(fdir + 'figure3.svg',
                        f'{cartoon_dir}/lineage_cen.svg', 190, 20, scalee=0.4)
+        
+    if sys.argv[1] == '4':
+        # Overlay Figure 4 cartoon 
+        overlayCartoon(fdir + 'figure4.svg',
+                       f'{cartoon_dir}/figure4.svg', 0, 0, scalee=0.29)
 
     if sys.argv[1] == '5':
-        # Overlay Figure 6 cartoon
+        # Overlay Figure 5 cartoon
         overlayCartoon(fdir + 'figure5.svg',
                        f'{cartoon_dir}/figure5.svg', 0, 20, scalee=0.6)
 
