@@ -68,7 +68,7 @@ def import_Heiser(path, exp_time=192):
 
                 # Time Censored [exp_time  exp_time]
                 if not data[lPos][1] == exp_time:
-                    print(path)
+                    print(data[lPos][1])
                 parentCell.obs[0] = float("nan") if (
                     data[lPos][1] == exp_time) else 0  # live/die G1
                 parentCell.obs[1] = float("nan")  # Did not go to G2
@@ -80,37 +80,46 @@ def import_Heiser(path, exp_time=192):
 
             # [x  y]/[x y  ] case (general)
             else:
-                # [1  y]/[1 y  ] case
-                if data[lPos][1] == 1:
-                    # did not start in G1, but did transition
-                    parentCell.obs[0] = 1
-                    parentCell.obs[2] = float("nan")  # Spent no time in G1
-                    parentCell.obs[4] = float("nan")  # G1 outcome unknown
-
-                # [x=/=1   y]/[x=/=1 y  ] case
-                else:
-                    parentCell.obs[0] = 1  # survived G1
+                # [x x  ] case
+                if data[lPos][1] == data[lPos][2]:
+                    parentCell.obs[0] = 0
                     parentCell.obs[2] = data[lPos][1]  # Time spent in G1
-                    # G1 is always censored in the first cell
-                    parentCell.obs[4] = 0
-
-                # [x  y] case (general)
-                if math.isnan(data[lPos][1 + 1]):
-                    parentCell.obs[1] = float("nan") if (
-                        data[lPos][1 + 2] == exp_time) else 1  # survived G2
-                    parentCell.obs[3] = data[lPos][1 + 2] if (math.isnan(
-                        parentCell.obs[2])) else data[lPos][1 + 2] - parentCell.obs[2]  # Time spent in G2
-
-                # [x y  ] case
+                    parentCell.obs[4] = 1
+                    parentCell.obs[1] = float("nan")  # No info G2
+                    parentCell.obs[3] = float("nan")  # No info G2
+                    parentCell.obs[5] = float("nan")  # No info G2
                 else:
-                    parentCell.obs[1] = 0  # died in G2
-                    parentCell.obs[3] = data[lPos][1 + 1] - \
-                        parentCell.obs[2]  # Time spent in G2
+                    # [1  y]/[1 y  ] case
+                    if data[lPos][1] == 1:
+                        # did not start in G1, but did transition
+                        parentCell.obs[0] = 1
+                        parentCell.obs[2] = float("nan")  # Spent no time in G1
+                        parentCell.obs[4] = float("nan")  # G1 outcome unknown
 
-                # Time Censored Case  [x  exp_time]
-                # Censored if the cell started in G2 or total time is exp_time
-                parentCell.obs[5] = 0 if (
-                    data[lPos][1 + 2] == exp_time or data[lPos][1] == 1) else 1
+                    # [x=/=1   y]/[x=/=1 y  ] case
+                    else:
+                        parentCell.obs[0] = 1  # survived G1
+                        parentCell.obs[2] = data[lPos][1]  # Time spent in G1
+                        # G1 is always censored in the first cell
+                        parentCell.obs[4] = 0
+
+                    # [x  y] case (general)
+                    if math.isnan(data[lPos][1 + 1]):
+                        parentCell.obs[1] = float("nan") if (
+                            data[lPos][1 + 2] == exp_time) else 1  # survived G2
+                        parentCell.obs[3] = data[lPos][1 + 2] if (math.isnan(
+                            parentCell.obs[2])) else data[lPos][1 + 2] - parentCell.obs[2]  # Time spent in G2
+
+                    # [x y  ] case
+                    else:
+                        parentCell.obs[1] = 0  # died in G2
+                        parentCell.obs[3] = data[lPos][1 + 1] - \
+                            parentCell.obs[2]  # Time spent in G2
+
+                    # Time Censored Case  [x  exp_time]
+                    # Censored if the cell started in G2 or total time is exp_time
+                    parentCell.obs[5] = 0 if (
+                        data[lPos][1 + 2] == exp_time or data[lPos][1] == 1) else 1
 
             # find lower value of range and store next upper
             upper = nextUp
@@ -191,27 +200,38 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeI
 
     # [x  y]/[x y  ] case (general)
     else:
-        # [1  y]/[1 y  ] case is not possible anymore
-        daughterCell.obs[0] = 1  # survived G1
-        daughterCell.obs[2] = data[parentPos][pColumn] - \
-            divisionTime  # Time spent in G1
-        daughterCell.obs[4] = 1  # G1 uncensored
+        # [x x  ] case
+        if data[parentPos][pColumn+1] == data[parentPos][pColumn]:
+            daughterCell.obs[0] = 0
+            daughterCell.obs[2] = data[parentPos][pColumn] - \
+                divisionTime  # Time spent in G1
+            daughterCell.obs[4] = 1
+            daughterCell.obs[1] = float("nan")  # No info G2
+            daughterCell.obs[3] = float("nan")  # No info G2
+            daughterCell.obs[5] = float("nan")  # No info G2
 
-        # [x  y] case (general)
-        if math.isnan(data[parentPos][pColumn + 1]):
-            daughterCell.obs[1] = float("nan") if (
-                data[parentPos][pColumn + 2] == exp_time) else 1  # survived G2
-            daughterCell.obs[3] = data[parentPos][pColumn + 2] - \
-                data[parentPos][pColumn]  # Time spent in G2
-        # [x y  ] case
         else:
-            daughterCell.obs[1] = 0  # died in G2
-            daughterCell.obs[3] = data[parentPos][pColumn + 1] - \
-                data[parentPos][pColumn]  # Time spent in G2
-        # Time Censored Case ([x  exp_time])
-        # Censored if final time is exp_time, otherise uncensored
-        daughterCell.obs[5] = 0 if (
-            data[parentPos][pColumn + 2] == exp_time) else 1
+            # [1  y]/[1 y  ] case is not possible anymore
+            daughterCell.obs[0] = 1  # survived G1
+            daughterCell.obs[2] = data[parentPos][pColumn] - \
+                divisionTime  # Time spent in G1
+            daughterCell.obs[4] = 1  # G1 uncensored
+
+            # [x  y] case (general)
+            if math.isnan(data[parentPos][pColumn + 1]):
+                daughterCell.obs[1] = float("nan") if (
+                    data[parentPos][pColumn + 2] == exp_time) else 1  # survived G2
+                daughterCell.obs[3] = data[parentPos][pColumn + 2] - \
+                    data[parentPos][pColumn]  # Time spent in G2
+            # [x y  ] case
+            else:
+                daughterCell.obs[1] = 0  # died in G2
+                daughterCell.obs[3] = data[parentPos][pColumn + 1] - \
+                    data[parentPos][pColumn]  # Time spent in G2
+            # Time Censored Case ([x  exp_time])
+            # Censored if final time is exp_time, otherise uncensored
+            daughterCell.obs[5] = 0 if (
+                data[parentPos][pColumn + 2] == exp_time) else 1
 
     # find upper daughter
     daughterCell.left = tryRecursion(pColumn, parentPos, upper, daughterCell,

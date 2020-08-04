@@ -38,7 +38,8 @@ class TestModel(unittest.TestCase):
         self.parent2 = c(parent=None, gen=1, synthetic=False)
         self.parent2.obs = [1, 1, 10, 10, 0, 1]
         self.left2 = c(parent=self.parent2, gen=2, synthetic=False)
-        self.left2.obs = [0, float('nan'), 60, float('nan'), 1, float('nan')]
+        self.left2.obs = [float('nan'), float(
+            'nan'), 125, float('nan'), 0, float('nan')]
         self.right2 = c(parent=self.parent2, gen=2, synthetic=False)
         self.right2.obs = [1, 0, 10, 10, 1, 1]
         self.parent2.left = self.left2
