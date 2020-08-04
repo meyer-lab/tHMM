@@ -71,7 +71,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
         # if nothing is censored, then there is no need to use the numerical solver
         return x0[0], x0[1]
     else:
-        res = minimize(fun=negative_LL, x0=x0, bounds=((1., 20.), (1., 20.),), options={'maxiter': 5})
+        res = minimize(fun=negative_LL, x0=x0, bounds=((1., 20.), (1., 40.),), options={'maxiter': 5})
         return res.x[0], res.x[1]
 
 

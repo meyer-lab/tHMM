@@ -62,8 +62,9 @@ def import_Heiser(path, exp_time=192):
             parentCell = c(parent=None, gen=1, synthetic=False)
             divisionTime = data[lPos][1 + 2]
             parentCell.obs = [0, 0, 0, 0, 0, 0]
+            # [G1_bern, G2_bern, G1_dur., G2_dur., G1_cens, G2_cens]
 
-            # [x  x] case
+            # [x  x] case: G1 censored, G2 unobserved
             if data[lPos][1] == data[lPos][1 + 2]:
 
                 # Time Censored [exp_time  exp_time]
@@ -205,6 +206,7 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeI
             daughterCell.obs[1] = 0  # died in G2
             daughterCell.obs[3] = data[parentPos][pColumn + 1] - \
                 data[parentPos][pColumn]  # Time spent in G2
+
         # Time Censored Case ([x  exp_time])
         # Censored if final time is exp_time, otherise uncensored
         daughterCell.obs[5] = 0 if (

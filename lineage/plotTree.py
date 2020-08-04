@@ -31,6 +31,8 @@ def CladeRecursive(cell, a, censore):
             clades.append(CladeRecursive(cell.left, a, censore))
         if cell.right is not None and cell.right.observed:
             clades.append(CladeRecursive(cell.right, a, censore))
+        if cell.isRootParent():
+            return Clade(branch_length=cell.time.endT - 0, clades=clades, color=colorr)
         return Clade(branch_length=cell.time.endT - cell.time.startT, clades=clades, color=colorr)
 
 

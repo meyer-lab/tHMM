@@ -81,6 +81,25 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figureS15.svg',
                        f'{cartoon_dir}/figureS05.svg', 65, 0, scalee=0.3)
 
+    if sys.argv[1] == '1':
+        # Overlay Figure 1 cartoon
+        overlayCartoon(fdir + 'figure1.svg',
+                       f'{cartoon_dir}/figure1a.svg', 10, 0, scalee=0.77)
+        overlayCartoon(fdir + 'figure1.svg',
+                       f'{cartoon_dir}/figure1b.svg', 240, 0, scalee=0.77)
+
+    if sys.argv[1] == '2':
+        # Overlay Figure 2 cartoon
+        overlayCartoon(fdir + 'figure2.svg',
+                       f'{cartoon_dir}/figure2.svg', 80, -20, scalee=0.85)
+
+    if sys.argv[1] == '3':
+        # Overlay Figure 3 cartoon
+        overlayCartoon(fdir + 'figure3.svg',
+                       f'{cartoon_dir}/lineage_notcen.svg', 20, 20, scalee=0.4)
+        overlayCartoon(fdir + 'figure3.svg',
+                       f'{cartoon_dir}/lineage_cen.svg', 190, 20, scalee=0.4)
+
     if sys.argv[1] == '5':
         # Overlay Figure 5 cartoon
         overlayCartoon(fdir + 'figure5.svg',
@@ -91,26 +110,15 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figure6.svg',
                        f'{cartoon_dir}/figure6.svg', 10, 20, scalee=0.61)
 
-    if sys.argv[1] == '3':
+    if sys.argv[1] == '9':
         # Overlay Figure 3 cartoon
-        overlayCartoon(fdir + 'figure3.svg',
-                       f'{cartoon_dir}/lineage_notcen.svg', 20, 20, scalee=0.4)
-        overlayCartoon(fdir + 'figure3.svg',
-                       f'{cartoon_dir}/lineage_cen.svg', 190, 20, scalee=0.4)
-
-    if sys.argv[1] == '2':
-        # Overlay Figure 2 cartoon
-        overlayCartoon(fdir + 'figure2.svg',
-                       f'{cartoon_dir}/figure2.svg', 80, -20, scalee=0.85)
+        overlayCartoon(fdir + 'figure9.svg',
+                       f'{cartoon_dir}/exp_data_fig9a.svg', 20, 20, scalee=0.4)
+        overlayCartoon(fdir + 'figure9.svg',
+                       f'{cartoon_dir}/exp_data_fig9b.svg', 190, 20, scalee=0.4)
 
     if sys.argv[1] == 'S52':
         # Overlay Figure 2 cartoon
         overlayCartoon(fdir + 'figureS52.svg',
                        f'{cartoon_dir}/figure2.svg', 80, -20, scalee=0.85)
 
-    if sys.argv[1] == '1':
-        # Overlay Figure 1 cartoon
-        overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1a.svg', 10, 0, scalee=0.77)
-        overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1b.svg', 240, 0, scalee=0.77)
