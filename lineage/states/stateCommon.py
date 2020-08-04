@@ -37,30 +37,6 @@ def gamma_pdf(x, a, scale):
     return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / math.gamma(a) / (scale ** a)
 
 
-@njit
-def gamma_sf(x, a, scale):
-    """
-    This function will fail when scale <<< x (~log10 =  3) since terms in the sum become too large and overflow
-    If this will drastically affect the result the method will likely throw an assertion error
-    """
-    xinc = x/scale
-    terms = np.array([((xinc**k))/(math.gamma(a+k+1))
-                      for k in np.arange(0, 150)])
-    gammainc = (np.exp(-xinc))*(xinc**a)*np.sum(terms)
-    assert not math.isnan(gammainc)
-    return 1-(gammainc)
-
-
-@njit
-def log_gamma_sf(x, a, scale):
-    return np.log(gamma_sf(x, a, scale))
-
-
-@njit
-def log_gamma_pdf(x, a, scale):
-    return np.log(gamma_pdf(x, a, scale))
-
-
 def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     """
     This is a weighted, closed-form estimator for two parameters
@@ -79,17 +55,12 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     scale_hat0 = gammaCor / a_hat0
 
     def negative_LL(x):
-        uncens_gammas = np.array(
-            [gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 1])
-        uncens_obs = np.array([obs for obs, idx in zip(
-            gamma_obs, time_censor_obs) if idx == 1])
+        uncens_gammas = np.array([gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 1])
+        uncens_obs = np.array([obs for obs, idx in zip(gamma_obs, time_censor_obs) if idx == 1])
         assert uncens_gammas.shape[0] == uncens_obs.shape[0]
-        uncens = uncens_gammas * \
-            sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
-        cens_gammas = np.array(
-            [gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 0])
-        cens_obs = np.array([obs for obs, idx in zip(
-            gamma_obs, time_censor_obs) if idx == 0])
+        uncens = uncens_gammas * sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
+        cens_gammas = np.array([gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 0])
+        cens_obs = np.array([obs for obs, idx in zip(gamma_obs, time_censor_obs) if idx == 0])
         cens = cens_gammas * sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
 
         return -1 * (np.sum(uncens) + np.sum(cens))
@@ -100,8 +71,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
         # if nothing is censored, then there is no need to use the numerical solver
         return x0[0], x0[1]
     else:
-        res = minimize(fun=negative_LL, x0=x0, bounds=(
-            (1., 20.), (1., 20.),), options={'maxiter': 5})
+        res = minimize(fun=negative_LL, x0=x0, bounds=((1., 20.), (1., 20.),), options={'maxiter': 5})
         return res.x[0], res.x[1]
 
 
