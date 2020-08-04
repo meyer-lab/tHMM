@@ -9,7 +9,7 @@ matplotlib.use('AGG')
 fdir = './output/'
 cartoon_dir = r"./lineage/figures/cartoons"
 
-if __name__ == '__main__':
+if __name__ == '__main__': 
     start = time.time()
     nameOut = 'figure' + sys.argv[1]
 
