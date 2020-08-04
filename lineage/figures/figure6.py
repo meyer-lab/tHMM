@@ -22,7 +22,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((5, 7.5), (3, 1))  # each figure will take twice its normal size horizontally
+    ax, f = getSetup((6.9, 7.5), (2, 2))  # each figure will take twice its normal size horizontally
     figureMaker6(ax, *accuracy())
 
     subplotLabel(ax)
@@ -88,9 +88,12 @@ def figureMaker6(ax, un_accuracy_df, accuracy_df):
     ax[i].axis('off')
 
     i += 1
+    ax[i].axis('off')
+
+    i += 1
     # state assignment accuracy
     sns.regplot(x="Proportions", y="State Assignment Accuracy", data=un_accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    ax[i].set_title("Accuracy relative to presence of state")
+    ax[i].set_title("Uncensored Data")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_xlabel("Approximate percentage of cells in state 1 [%]")
     ax[i].set_ylim(bottom=50.0, top=105.0)
@@ -98,7 +101,7 @@ def figureMaker6(ax, un_accuracy_df, accuracy_df):
     i += 1
     # state assignment accuracy
     sns.regplot(x="Proportions", y="State Assignment Accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    ax[i].set_title("Accuracy relative to presence of state")
+    ax[i].set_title("Censored Data")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_xlabel("Approximate percentage of cells in state 1 [%]")
     ax[i].set_ylim(bottom=50.0, top=105.0)
