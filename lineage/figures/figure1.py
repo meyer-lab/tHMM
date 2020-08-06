@@ -34,8 +34,8 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((4.5, 5.5), (3, 2))
     figureMaker(ax)
-    ax[0].text(-0.2, 1.25, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
-    ax[1].text(0.6, 1.25, ascii_lowercase[1], transform=ax[1].transAxes, fontsize=16, fontweight="bold", va="top")
+    ax[0].text(-0.2, 1.22, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
+    ax[1].text(-0.2, 1.22, ascii_lowercase[1], transform=ax[1].transAxes, fontsize=16, fontweight="bold", va="top")
 
     return f
     

@@ -15,90 +15,90 @@ L 371.52 280.512
 L 371.52 0 
 L 0 0 
 z
-" style="fill:#ffffff;"/>
+" style="fill:none;"/>
   </g>
   <g id="axes_1">
    <g id="LineCollection_1">
-    <path clip-path="url(#p661462df6c)" d="M 20.935385 160.416 
+    <path clip-path="url(#p1ca419166f)" d="M 20.935385 160.416 
 L 80.716333 160.416 
 " style="fill:none;stroke:#fa8072;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_2">
-    <path clip-path="url(#p661462df6c)" d="M 80.716333 99.936 
+    <path clip-path="url(#p1ca419166f)" d="M 80.716333 99.936 
 L 178.927892 99.936 
 " style="fill:none;stroke:#808000;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_3">
-    <path clip-path="url(#p661462df6c)" d="M 178.927892 59.616 
+    <path clip-path="url(#p1ca419166f)" d="M 178.927892 59.616 
 L 254.365755 59.616 
 " style="fill:none;stroke:#808000;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_4">
-    <path clip-path="url(#p661462df6c)" d="M 254.365755 39.456 
+    <path clip-path="url(#p1ca419166f)" d="M 254.365755 39.456 
 " style="fill:none;stroke:#808000;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_5">
-    <path clip-path="url(#p661462df6c)" d="M 254.365755 79.776 
+    <path clip-path="url(#p1ca419166f)" d="M 254.365755 79.776 
 L 295.643077 79.776 
 " style="fill:none;stroke:#fa8072;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_6">
-    <path clip-path="url(#p661462df6c)" d="M 178.927892 140.256 
+    <path clip-path="url(#p1ca419166f)" d="M 178.927892 140.256 
 L 265.752603 140.256 
 " style="fill:none;stroke:#808000;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_7">
-    <path clip-path="url(#p661462df6c)" d="M 265.752603 120.096 
+    <path clip-path="url(#p1ca419166f)" d="M 265.752603 120.096 
 " style="fill:none;stroke:#fa8072;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_8">
-    <path clip-path="url(#p661462df6c)" d="M 265.752603 160.416 
+    <path clip-path="url(#p1ca419166f)" d="M 265.752603 160.416 
 " style="fill:none;stroke:#fa8072;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_9">
-    <path clip-path="url(#p661462df6c)" d="M 80.716333 220.896 
+    <path clip-path="url(#p1ca419166f)" d="M 80.716333 220.896 
 L 178.927892 220.896 
 " style="fill:none;stroke:#fa8072;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_10">
-    <path clip-path="url(#p661462df6c)" d="M 178.927892 200.736 
+    <path clip-path="url(#p1ca419166f)" d="M 178.927892 200.736 
 L 295.643077 200.736 
 " style="fill:none;stroke:#fa8072;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_11">
-    <path clip-path="url(#p661462df6c)" d="M 178.927892 241.056 
+    <path clip-path="url(#p1ca419166f)" d="M 178.927892 241.056 
 L 295.643077 241.056 
 " style="fill:none;stroke:#fa8072;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_12">
-    <path clip-path="url(#p661462df6c)" d="M 80.716333 220.896 
+    <path clip-path="url(#p1ca419166f)" d="M 80.716333 220.896 
 L 80.716333 99.936 
 " style="fill:none;stroke:#fa8072;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_13">
-    <path clip-path="url(#p661462df6c)" d="M 178.927892 140.256 
+    <path clip-path="url(#p1ca419166f)" d="M 178.927892 140.256 
 L 178.927892 59.616 
 " style="fill:none;stroke:#808000;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_14">
-    <path clip-path="url(#p661462df6c)" d="M 254.365755 79.776 
+    <path clip-path="url(#p1ca419166f)" d="M 254.365755 79.776 
 L 254.365755 39.456 
 " style="fill:none;stroke:#808000;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_15">
-    <path clip-path="url(#p661462df6c)" d="M 265.752603 160.416 
+    <path clip-path="url(#p1ca419166f)" d="M 265.752603 160.416 
 L 265.752603 120.096 
 " style="fill:none;stroke:#808000;stroke-width:1.5;"/>
    </g>
    <g id="LineCollection_16">
-    <path clip-path="url(#p661462df6c)" d="M 178.927892 241.056 
+    <path clip-path="url(#p1ca419166f)" d="M 178.927892 241.056 
 L 178.927892 200.736 
 " style="fill:none;stroke:#fa8072;stroke-width:1.5;"/>
    </g>
   </g>
  </g>
  <defs>
-  <clipPath id="p661462df6c">
+  <clipPath id="p1ca419166f">
    <rect height="266.112" width="357.12" x="7.2" y="7.2"/>
   </clipPath>
  </defs>
