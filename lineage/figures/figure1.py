@@ -32,10 +32,10 @@ def makeFigure():
     plotLineage(gem[14], 'lineage/figures/cartoons/figure1f.svg', censore=False)
 
     # Get list of axis objects
-    ax, f = getSetup((4.5, 5.5), (3, 1))
+    ax, f = getSetup((4.5, 5.5), (3, 2))
     figureMaker(ax)
-    ax[0].text(-0.25, 1.25, ascii_lowercase[0], fontsize=16, fontweight="bold")
-    ax[0].text(0.6, 0.25, ascii_lowercase[1], fontsize=16, fontweight="bold")
+    ax[0].text(-0.2, 1.25, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
+    ax[1].text(0.6, 1.25, ascii_lowercase[1], transform=ax[1].transAxes, fontsize=16, fontweight="bold", va="top")
 
     return f
     
@@ -44,6 +44,12 @@ def figureMaker(ax):
     Makes figure 1.
     """
     i = 0
+    ax[i].axis('off')
+    i += 1
+    ax[i].axis('off')
+    i += 1
+    ax[i].axis('off')
+    i += 1
     ax[i].axis('off')
     i += 1
     ax[i].axis('off')
