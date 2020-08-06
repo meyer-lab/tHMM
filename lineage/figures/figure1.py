@@ -21,7 +21,7 @@ def makeFigure():
     plotLineage(gem[13], 'lineage/figures/cartoons/figure1b.svg', censore=False)
     plotLineage(gem[14], 'lineage/figures/cartoons/figure1c.svg', censore=False)
 
-    index = [1,3,4,7]
+    index = [1, 3, 4, 7]
     for i in index:
         gem[4].output_lineage[i].state = 0
         gem[13].output_lineage[i].state = 0
@@ -38,7 +38,8 @@ def makeFigure():
     ax[1].text(-0.2, 1.22, ascii_lowercase[1], transform=ax[1].transAxes, fontsize=16, fontweight="bold", va="top")
 
     return f
-    
+
+
 def figureMaker(ax):
     """
     Makes figure 1.
