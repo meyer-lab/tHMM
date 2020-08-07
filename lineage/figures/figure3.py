@@ -37,11 +37,11 @@ def makeFigure():
     x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, _, _ = accuracy()
 
     lineage_uncensored1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**4 - 1)
-    plotLineage(lineage_uncensored1, 'lineage/figures/cartoons/uncen_fig3_1.svg', censore=True)
+    plotLineage(lineage_uncensored1, 'lineage/figures/cartoons/uncen_fig3_1.svg', censore=False)
     lineage_uncensored2 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**4 - 1)
-    plotLineage(lineage_uncensored2, 'lineage/figures/cartoons/uncen_fig3_2.svg', censore=True)
+    plotLineage(lineage_uncensored2, 'lineage/figures/cartoons/uncen_fig3_2.svg', censore=False)
     lineage_uncensored3 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**4 - 1)
-    plotLineage(lineage_uncensored3, 'lineage/figures/cartoons/uncen_fig3_3.svg', censore=True)
+    plotLineage(lineage_uncensored3, 'lineage/figures/cartoons/uncen_fig3_3.svg', censore=False)
     
     lineage_censored1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=300)
     plotLineage(lineage_censored1, 'lineage/figures/cartoons/cen_fig3_1.svg', censore=True)
