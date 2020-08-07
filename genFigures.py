@@ -98,9 +98,17 @@ if __name__ == '__main__':
     if sys.argv[1] == '3':
         # Overlay Figure 3 cartoon
         overlayCartoon(fdir + 'figure3.svg',
-                       f'{cartoon_dir}/lineage_notcen.svg', 20, 20, scalee=0.4)
+                       f'{cartoon_dir}/uncen_fig3_1.svg', 20, 5, scalee=0.3)
         overlayCartoon(fdir + 'figure3.svg',
-                       f'{cartoon_dir}/lineage_cen.svg', 190, 20, scalee=0.4)
+                       f'{cartoon_dir}/uncen_fig3_2.svg', 20, 90, scalee=0.3)
+        overlayCartoon(fdir + 'figure3.svg',
+                       f'{cartoon_dir}/uncen_fig3_3.svg', 20, 180, scalee=0.3)
+        overlayCartoon(fdir + 'figure3.svg',
+                       f'{cartoon_dir}/cen_fig3_1.svg', 210, 5, scalee=0.3)
+        overlayCartoon(fdir + 'figure3.svg',
+                       f'{cartoon_dir}/cen_fig3_2.svg', 210, 90, scalee=0.3)
+        overlayCartoon(fdir + 'figure3.svg',
+                       f'{cartoon_dir}/cen_fig3_3.svg', 210, 180, scalee=0.3)
 
     if sys.argv[1] == '4':
         # Overlay Figure 4 cartoon
