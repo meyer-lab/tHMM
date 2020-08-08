@@ -22,7 +22,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((6.9, 7.5), (2, 2))  # each figure will take twice its normal size horizontally
+    ax, f = getSetup((6.9, 5.5), (2, 2))  # each figure will take twice its normal size horizontally
     figureMaker6(ax, *accuracy())
 
     subplotLabel(ax)
