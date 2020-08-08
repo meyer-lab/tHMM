@@ -1,11 +1,18 @@
 """ The file contains the methods used to input lineage data from the Heiser lab. """
+# TODO Exp time is added to the files so now I just have to implement using that
+# Also Add assertions and stuff to make sure that the new method is always consistent (next lineage is 10 after the previous lineage)
+# Possibilites:  Assert non negative time values
+# Assert Lineage detection works properly (always 18 apart)
+# Assert exp_time is correct (exp_time is always larger than inputted values)
+# Remove LineageSizeIndex
 
 import math
 import pandas as pd
 from .CellVar import CellVar as c
+import numpy as np
 
 
-def import_Heiser(path, exp_time=192):
+def import_Heiser(path):
     """
     Imports data from the Heiser lab
     Outputs a list of lists containing cells containing observations from the Excel file
@@ -27,18 +34,14 @@ def import_Heiser(path, exp_time=192):
     """
     excel_file = pd.read_excel(path, header=None)
     data = excel_file.to_numpy()
-
-    # position of Lineage Size attribute
-    lineageSizeIndex = 0
+    assert "exp_time" in data[0], "Data not properly formatted (exp_time hasn't been added to the file)"
+    exp_time = data[1][np.where(data[0] == "exp_time")[0]]
     # current Lineage Posistion
     lPos = 0
     # current Lineage Number
     lineageNo = 0
     # Next Upper range value
     nextUp = 1
-    # find Lineage Size attribute
-    while data[0][lineageSizeIndex] != "Lineage Size":
-        lineageSizeIndex += 1
 
     # find Lineages
     lineages = []
@@ -127,13 +130,15 @@ def import_Heiser(path, exp_time=192):
             if nextUp >= len(data):
                 lower = len(data)-1
             else:
+                assert not math.isnan(
+                    data[nextUp+8][0]), "File is improperly formatted (lineages spaced differently"
                 lower = nextUp - 2
             # find upper daughter and recurse
             parentCell.left = tryRecursion(
-                1, lPos, upper, parentCell, currentLineage, lineageSizeIndex, data, divisionTime, exp_time)
+                1, lPos, upper, parentCell, currentLineage, data, divisionTime, exp_time)
             # find lower daughter and recurse
             parentCell.right = tryRecursion(
-                1, lower, lPos, parentCell, currentLineage, lineageSizeIndex, data, divisionTime, exp_time)
+                1, lower, lPos, parentCell, currentLineage, data, divisionTime, exp_time)
 
             # add first generation to lineage (apparently python passes by reference for objects so this probably can be done before or after)
             currentLineage.append(parentCell)
@@ -143,7 +148,7 @@ def import_Heiser(path, exp_time=192):
     return lineages
 
 
-def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeIndex, data, divisionTime, exp_time):
+def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisionTime, exp_time):
     """
     Method for Top and Bottom halves of the Lineage Tree as recorded in the Excel files
     (They mirrored the posistions for the last set of daughter cells...)
@@ -154,7 +159,7 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeI
     """
     found = False
     # check if this is the last possible cell
-    if pColumn + 3 >= lineageSizeIndex:
+    if pColumn + 3 >= np.where(data[0] == "Lineage Size")[0]:
         return None
     # find branch within provided range
 
@@ -232,10 +237,10 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeI
 
     # find upper daughter
     daughterCell.left = tryRecursion(pColumn, parentPos, upper, daughterCell,
-                                     currentLineage, lineageSizeIndex, data, data[parentPos][pColumn + 2], exp_time)
+                                     currentLineage, data, data[parentPos][pColumn + 2], exp_time)
     # find lower daughter
     daughterCell.right = tryRecursion(pColumn, lower, parentPos, daughterCell,
-                                      currentLineage, lineageSizeIndex, data, data[parentPos][pColumn + 2], exp_time)
+                                      currentLineage, data, data[parentPos][pColumn + 2], exp_time)
 
     # add daughter to current Lineage
     currentLineage.append(daughterCell)
