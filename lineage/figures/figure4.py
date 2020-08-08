@@ -18,6 +18,7 @@ from .figureCommon import (
 )
 from ..LineageTree import LineageTree
 
+
 def makeFigure():
     """
     Makes fig S4.
