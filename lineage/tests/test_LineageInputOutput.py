@@ -68,7 +68,7 @@ class TestModel(unittest.TestCase):
         Tests the main import function for Heiser lab data.
         """
         path2use = self.path_to_synthetic_data
-        lineages = import_Heiser(path2use, 145)
+        lineages = import_Heiser(path2use)
         self.assertTrue(len(lineages) == 3)
         self.assertTrue(len(lineages[0]) == 3)
         self.assertTrue(len(lineages[1]) == 3)
@@ -92,7 +92,7 @@ class TestModel(unittest.TestCase):
         excel_file = pd.read_excel(path2use, header=None)
         data = excel_file.to_numpy()
         cLin = []
-        _ = tryRecursion(1, 45, 37, self.parent3, cLin, 16, data, 30, 145)
+        _ = tryRecursion(1, 45, 37, self.parent3, cLin, data, 30, 145)
         self.assertTrue(len(cLin) == 3)
         i = 0
         while i < len(cLin) and cLin[i].gen != 2:

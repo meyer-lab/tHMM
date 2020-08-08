@@ -1,10 +1,9 @@
 """ The file contains the methods used to input lineage data from the Heiser lab. """
-# TODO Exp time is added to the files so now I just have to implement using that
+# TODO
 # Also Add assertions and stuff to make sure that the new method is always consistent (next lineage is 10 after the previous lineage)
 # Possibilites:  Assert non negative time values
 # Assert Lineage detection works properly (always 18 apart)
 # Assert exp_time is correct (exp_time is always larger than inputted values)
-# Remove LineageSizeIndex
 
 import math
 import pandas as pd
@@ -34,8 +33,12 @@ def import_Heiser(path):
     """
     excel_file = pd.read_excel(path, header=None)
     data = excel_file.to_numpy()
-    assert "exp_time" in data[0], "Data not properly formatted (exp_time hasn't been added to the file)"
-    exp_time = data[1][np.where(data[0] == "exp_time")[0]]
+    # assert "exp_time" in data[0], "Data not properly formatted (exp_time hasn't been added to the file)"
+    if "exp_time" in data[0]:
+        exp_time = data[1][np.where(data[0] == "exp_time")[0]]
+    else:
+        print("exp_time has not beend added to this file")
+        exp_time = -1
     # current Lineage Posistion
     lPos = 0
     # current Lineage Number
@@ -59,12 +62,34 @@ def import_Heiser(path):
 
         # determine if lineage has cells
         if lPos < len(data) and not math.isnan(data[lPos][1]):
+            assert not math.isnan(
+                data[lPos][2]) or not math.isnan(data[lPos][3]), f"Value missing in first cell of lineage {lineageNo}"
+
             # add list for the lineage
             currentLineage = []
             # make Parent
             parentCell = c(parent=None, gen=1, synthetic=False)
             divisionTime = data[lPos][1 + 2]
             parentCell.obs = [0, 0, 0, 0, 0, 0]
+
+            # find lower value of range and store next upper
+            upper = nextUp
+            nextUp = lPos + 10
+            if nextUp >= len(data):
+                lower = len(data)
+            else:
+                assert not math.isnan(
+                    data[nextUp+8][0]), "File is improperly formatted (lineages spaced differently"
+                lower = nextUp - 2
+            # find upper daughter and recurse
+            parentCell.left = tryRecursion(
+                1, lPos, upper, parentCell, currentLineage, data, divisionTime, exp_time)
+            # find lower daughter and recurse
+            parentCell.right = tryRecursion(
+                1, lower, lPos, parentCell, currentLineage, data, divisionTime, exp_time)
+
+            if exp_time == -1 and not math.isnan(data[lPos][1+2]) and parentCell.left == None and parentCell.right == None:
+                exp_time = data[lPos][1+2]
 
             # [x  x] case
             if data[lPos][1] == data[lPos][1 + 2]:
@@ -124,22 +149,6 @@ def import_Heiser(path):
                     parentCell.obs[5] = 0 if (
                         data[lPos][1 + 2] == exp_time or data[lPos][1] == 1) else 1
 
-            # find lower value of range and store next upper
-            upper = nextUp
-            nextUp = lPos + 10
-            if nextUp >= len(data):
-                lower = len(data)-1
-            else:
-                assert not math.isnan(
-                    data[nextUp+8][0]), "File is improperly formatted (lineages spaced differently"
-                lower = nextUp - 2
-            # find upper daughter and recurse
-            parentCell.left = tryRecursion(
-                1, lPos, upper, parentCell, currentLineage, data, divisionTime, exp_time)
-            # find lower daughter and recurse
-            parentCell.right = tryRecursion(
-                1, lower, lPos, parentCell, currentLineage, data, divisionTime, exp_time)
-
             # add first generation to lineage (apparently python passes by reference for objects so this probably can be done before or after)
             currentLineage.append(parentCell)
 
@@ -172,11 +181,22 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
             break
     if not found:
         return None
+    assert not math.isnan(data[parentPos][pColumn+1]) or not math.isnan(
+        data[parentPos][pColumn+2]), f"Value missing in cell"
     # store values into lineage here
     daughterCell = c(parent=parentCell, gen=parentCell.gen +
                      1, synthetic=parentCell.synthetic)
     # This stores the Time at cell division
     daughterCell.obs = [0, 0, 0, 0, 0, 0]
+    # find upper daughter
+    daughterCell.left = tryRecursion(pColumn, parentPos, upper, daughterCell,
+                                     currentLineage, data, data[parentPos][pColumn + 2], exp_time)
+    # find lower daughter
+    daughterCell.right = tryRecursion(pColumn, lower, parentPos, daughterCell,
+                                      currentLineage, data, data[parentPos][pColumn + 2], exp_time)
+
+    if exp_time == -1 and not math.isnan(data[parentPos][pColumn+2]) and daughterCell.left == None and daughterCell.right == None:
+        exp_time = data[parentPos][pColumn+2]
 
     # [x  x] case
     if data[parentPos][pColumn] == data[parentPos][pColumn + 2]:
@@ -234,13 +254,6 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
             # Censored if final time is exp_time, otherise uncensored
             daughterCell.obs[5] = 0 if (
                 data[parentPos][pColumn + 2] == exp_time) else 1
-
-    # find upper daughter
-    daughterCell.left = tryRecursion(pColumn, parentPos, upper, daughterCell,
-                                     currentLineage, data, data[parentPos][pColumn + 2], exp_time)
-    # find lower daughter
-    daughterCell.right = tryRecursion(pColumn, lower, parentPos, daughterCell,
-                                      currentLineage, data, data[parentPos][pColumn + 2], exp_time)
 
     # add daughter to current Lineage
     currentLineage.append(daughterCell)
