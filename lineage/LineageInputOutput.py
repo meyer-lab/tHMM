@@ -67,8 +67,8 @@ def import_Heiser(path, exp_time=192):
             if data[lPos][1] == data[lPos][1 + 2]:
 
                 # Time Censored [exp_time  exp_time]
-                if not data[lPos][1] == exp_time:
-                    print(data[lPos][1])
+                # if not data[lPos][1] == exp_time:
+                # print(data[lPos][1])
                 parentCell.obs[0] = float("nan") if (
                     data[lPos][1] == exp_time) else 0  # live/die G1
                 parentCell.obs[1] = float("nan")  # Did not go to G2
@@ -123,11 +123,9 @@ def import_Heiser(path, exp_time=192):
 
             # find lower value of range and store next upper
             upper = nextUp
-            nextUp += 1
-            while nextUp < len(data) and math.isnan(data[nextUp][lineageSizeIndex]):
-                nextUp += 1
-            if nextUp == len(data):
-                lower = nextUp - 1
+            nextUp = lPos + 10
+            if nextUp >= len(data):
+                lower = len(data)-1
             else:
                 lower = nextUp - 2
             # find upper daughter and recurse
@@ -163,7 +161,6 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeI
     pColumn += 3
 
     # this will properly offset the range based on whether the algorithm is searching the top half or bottom half of the tree
-
     for parentPos in range(upper, lower):
         if not math.isnan(data[parentPos][pColumn]):
             found = True
@@ -187,7 +184,7 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, lineageSizeI
 
         # Not Time Censored [x=/=exp_time   x=/=exp_time]
         else:
-            print(data[parentPos][pColumn])
+            # print(data[parentPos][pColumn])
             daughterCell.obs[0] = 0  # G1 death
             daughterCell.obs[4] = 1  # G1 uncensored
 
