@@ -5,7 +5,6 @@ import numpy as np
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 from ..states.StateDistributionGamma import StateDistribution as gamma_state
-from ..states.StateDistributionExpon import StateDistribution as expon_state
 
 
 class TestModel(unittest.TestCase):
@@ -20,7 +19,6 @@ class TestModel(unittest.TestCase):
         self.pi = np.array([1])
         self.T = np.array([[1]])
         self.E_gamma = [gamma_state(bern_p=1., gamma_a=7, gamma_scale=4.5)]
-        self.E_expon = [expon_state(bern_p=1., exp_beta=7.0)]
         # Setting the bern_p to 1. ensures that all cells live and censoring is only
         # due to living past the experiment time
 
@@ -28,11 +26,6 @@ class TestModel(unittest.TestCase):
         self.solver_gamma = tHMM([self.lineage_gamma], 1)  # evaluating for one state
         self.solver_gamma.fit()
         self.gamma_state_estimate = self.solver_gamma.estimate.E[0]
-
-        self.lineage_expon = LineageTree.init_from_parameters(self.pi, self.T, self.E_expon, 2**9)
-        self.solver_expon = tHMM([self.lineage_expon], 1)  # evaluating for one state
-        self.solver_expon.fit()
-        self.expon_state_estimate = self.solver_expon.estimate.E[0]
 
         lineage_gamma_censored = LineageTree.init_from_parameters(self.pi, self.T, self.E_gamma, 2**9, censor_condition=3, desired_experiment_time=50)
         good2go = len(lineage_gamma_censored) >= 10
@@ -45,16 +38,6 @@ class TestModel(unittest.TestCase):
         self.solver_gamma_censored.fit()
         self.gamma_state_censored_estimate = self.solver_gamma_censored.estimate.E[0]
 
-        lineage_expon_censored = LineageTree.init_from_parameters(self.pi, self.T, self.E_expon, 2**9, censor_condition=3, desired_experiment_time=50)
-        good2go = len(lineage_expon_censored) >= 10
-        while not good2go:
-            lineage_expon_censored = LineageTree.init_from_parameters(self.pi, self.T, self.E_expon, 2**9, censor_condition=3, desired_experiment_time=50)
-            good2go = len(lineage_expon_censored) >= 10
-        self.lineage_expon_censored = lineage_expon_censored
-        assert not all([cell.obs[2] == 1 for cell in self.lineage_expon_censored.output_lineage])  # ensures that at least some cells are censored
-        self.solver_expon_censored = tHMM([self.lineage_expon_censored], 1)  # evaluating for one state
-        self.solver_expon_censored.fit()
-        self.expon_state_censored_estimate = self.solver_expon_censored.estimate.E[0]
 
     def test_estimationEvaluationGamma(self):
         """
@@ -65,13 +48,6 @@ class TestModel(unittest.TestCase):
         self.assertGreater(5., abs(self.gamma_state_estimate.params[1] - self.E_gamma[0].params[1]))
         self.assertGreater(5., abs(self.gamma_state_estimate.params[2] - self.E_gamma[0].params[2]))
 
-    def test_estimationEvaluationExpon(self):
-        """
-        Evaluates the performance of fitting and the underlying estimator
-        by comparing the parameter estimates to their true values.
-        Exponential uncensored.
-        """
-        self.assertGreater(5., abs(self.expon_state_estimate.params[1] - self.E_expon[0].params[1]))
 
     def test_estimationEvaluationGammaCensored(self):
         """
@@ -81,11 +57,3 @@ class TestModel(unittest.TestCase):
         """
         self.assertGreater(20., abs(self.gamma_state_censored_estimate.params[1] - self.E_gamma[0].params[1]))
         self.assertGreater(20., abs(self.gamma_state_censored_estimate.params[2] - self.E_gamma[0].params[2]))
-
-    def test_estimationEvaluationExponCensored(self):
-        """
-        Evaluates the performance of fitting and the underlying estimator
-        by comparing the parameter estimates to their true values.
-        Exponential censored.
-        """
-        self.assertGreater(20., abs(self.expon_state_censored_estimate.params[1] - self.E_expon[0].params[1]))

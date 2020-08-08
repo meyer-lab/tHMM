@@ -1,10 +1,10 @@
 """
-File: figure6.py
-Purpose: Generates figure 6.
-Figure 6 analyzes heterogeneous (2 state), NOT censored,
+File: figureS06.py
+Purpose: Generates figure S06.
+Figure S06 analyzes heterogeneous (2 state), NOT censored,
 single lineages (no more than one lineage per population)
-with different proportions of cells in states by
-changing the values in the transition matrices.
+with similar proportions of cells in states but
+of varying distributions.
 """
 import numpy as np
 
@@ -14,23 +14,25 @@ from .figureCommon import (
     commonAnalyze,
     figureMaker,
     pi,
-    E,
+    T,
     max_desired_num_cells,
     lineage_good_to_analyze,
     num_data_points,
+    state1,
 )
 from ..LineageTree import LineageTree
+from ..states.StateDistributionGamma import StateDistribution
 
 
 def makeFigure():
     """
-    Makes figure 6.
+    Makes figure 8.
     """
 
     # Get list of axis objects
     ax, f = getSetup((7, 7), (3, 3))
 
-    figureMaker(ax, *accuracy(), xlabel=r"Cells in State 0 [$\%$]")
+    figureMaker(ax, *accuracy(), xlabel="Wasserstein Divergence")
 
     subplotLabel(ax)
 
@@ -40,19 +42,19 @@ def makeFigure():
 def accuracy():
     """
     Calculates accuracy and parameter estimation
-    over an similar number of cells in a lineage for
+    over an increasing number of cells in a lineage for
     a uncensored two-state model but differing state distribution.
-    We increase the proportion of cells in a lineage by
-    fixing the Transition matrix to be biased towards state 0.
+    We vary the distribution by
+    increasing the Wasserstein divergence between the two states.
     """
 
     # Creating a list of populations to analyze over
-    list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.1, 0.9, num_data_points)]
+    list_of_Es = [[StateDistribution(0.99, 7, a), state1] for a in np.logspace(0, 1, num_data_points, base=7)]
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
     list_of_fE = []
-    for T in list_of_Ts:
+    for E in list_of_Es:
         population = []
 
         good2go = False
@@ -68,4 +70,4 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E)
 
-    return commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
+    return commonAnalyze(list_of_populations, xtype="wass", list_of_fpi=list_of_fpi)
