@@ -21,6 +21,7 @@ from .figureCommon import (
 )
 from ..LineageTree import LineageTree
 
+
 def makeFigure():
     """
     Makes figure 2.
