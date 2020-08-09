@@ -30,6 +30,7 @@ scatter_state_1_kws = {
     "s": 20,
 }
 
+
 def makeFigure():
     """
     Makes fig 3.
@@ -42,7 +43,7 @@ def makeFigure():
     plotLineage(lineage_uncensored2, 'lineage/figures/cartoons/uncen_fig3_2.svg', censore=False)
     lineage_uncensored3 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
     plotLineage(lineage_uncensored3, 'lineage/figures/cartoons/uncen_fig3_3.svg', censore=False)
-    
+
     lineage_censored1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=300)
     plotLineage(lineage_censored1, 'lineage/figures/cartoons/cen_fig3_1.svg', censore=True)
     lineage_censored2 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=300)
