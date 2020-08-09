@@ -2,7 +2,7 @@
 File: figureS06.py
 Purpose: Generates figure S06.
 Figure S06 analyzes heterogeneous (2 state), NOT censored,
-single lineages (no more than one lineage per population)
+single lineages (more than one lineage per population)
 with similar proportions of cells in states but
 of varying distributions.
 """
@@ -56,13 +56,14 @@ def accuracy():
     list_of_fE = []
     for E in list_of_Es:
         population = []
+        for _ in range(3):
 
-        good2go = False
-        while not good2go:
-            tmp_lineage = LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)
-            good2go = lineage_good_to_analyze(tmp_lineage)
+            good2go = False
+            while not good2go:
+                tmp_lineage = LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)
+                good2go = lineage_good_to_analyze(tmp_lineage)
 
-        population.append(tmp_lineage)
+            population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)

@@ -2,7 +2,7 @@
 File: figureS07.py
 Purpose: Generates figure S07.
 Figure S07 analyzes heterogeneous (2 state), censored (by both time and fate),
-single lineages (no more than one lineage per population)
+single lineages (more than one lineage per population)
 with similar proportions of cells in states but
 of varying distributions.
 """

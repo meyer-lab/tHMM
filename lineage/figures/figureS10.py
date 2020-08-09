@@ -32,7 +32,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((10, 13.333), (4, 3))
 
-    figureMaker(ax, *accuracy(), xlabel="Number of Lineages")
+    figureMaker(ax, *accuracy(), xlabel="Number of Cells")
 
     subplotLabel(ax)
 
