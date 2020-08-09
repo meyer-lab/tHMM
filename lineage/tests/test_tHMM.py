@@ -109,7 +109,7 @@ class TestModel(unittest.TestCase):
         Really defined states should get an accuracy >95%.
         Lineages used should be large and distinct.
         """
-        X = [LineageTree.init_from_parameters(self.pi, self.T, self.E, (2**10))]
+        X = [LineageTree.init_from_parameters(self.pi, self.T, self.E, (2**12))]
         tree_obj, predicted_states, LL = Analyze(X, 3)
         results_dict = Results(tree_obj, predicted_states, LL)
         accuracy = results_dict["balanced_accuracy_score"]
