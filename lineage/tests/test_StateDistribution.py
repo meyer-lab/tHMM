@@ -199,6 +199,12 @@ class TestModel(unittest.TestCase):
         self.assertTrue(gamma_ll <= 0.1)
 
     def test_gamma_sf(self):
+        """
+        Testing the gamma survival function by comparing
+        the result of the outputted likelihood against
+        a known calculated value.
+        """
+
         alist = np.linspace(.5, 5, 10)
         blist = np.linspace(.5, 10, 20)
         xlist = np.linspace(1, 10, 10)

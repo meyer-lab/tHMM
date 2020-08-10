@@ -40,12 +40,14 @@ def gamma_pdf(x, a, scale):
 @njit
 def gamma_sf(x, a, scale):
     """
+    This functions takes in 1 observation and the gamma shape and scale parameters
+    and returns the probablility that the cell will survive longer than the observed time.
     This function will fail when scale <<< x (~log10 =  3) since terms in the sum become too large and overflow
     If this will drastically affect the result the method will likely throw an assertion error
     """
     xinc = x/scale
     terms = np.array([((xinc**k))/(math.gamma(a+k+1))
-                      for k in np.arange(0, 150)])
+                      for k in np.arange(0, 100)])
     gammainc = (np.exp(-xinc))*(xinc**a)*np.sum(terms)
     assert not math.isnan(gammainc)
     return 1-(gammainc)
