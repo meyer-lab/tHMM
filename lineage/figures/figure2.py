@@ -6,6 +6,7 @@ Figure 2 is the tHMM model interface.
 
 from .figureCommon import getSetup
 
+
 def makeFigure():
     """
     Makes figure 2.
@@ -14,6 +15,7 @@ def makeFigure():
     figureMaker(ax)
 
     return f
+
 
 def figureMaker(ax):
     """
