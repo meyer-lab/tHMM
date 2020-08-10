@@ -38,7 +38,6 @@ class TestModel(unittest.TestCase):
         self.solver_gamma_censored.fit()
         self.gamma_state_censored_estimate = self.solver_gamma_censored.estimate.E[0]
 
-
     def test_estimationEvaluationGamma(self):
         """
         Evaluates the performance of fitting and the underlying estimator
@@ -47,7 +46,6 @@ class TestModel(unittest.TestCase):
         """
         self.assertGreater(5., abs(self.gamma_state_estimate.params[1] - self.E_gamma[0].params[1]))
         self.assertGreater(5., abs(self.gamma_state_estimate.params[2] - self.E_gamma[0].params[2]))
-
 
     def test_estimationEvaluationGammaCensored(self):
         """
