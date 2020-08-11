@@ -37,19 +37,31 @@ def makeFigure():
     """
     x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, _, _ = accuracy()
 
-    lineage_uncensored1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
-    plotLineage(lineage_uncensored1, 'lineage/figures/cartoons/uncen_fig3_1.svg', censore=False)
-    lineage_uncensored2 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
-    plotLineage(lineage_uncensored2, 'lineage/figures/cartoons/uncen_fig3_2.svg', censore=False)
-    lineage_uncensored3 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
-    plotLineage(lineage_uncensored3, 'lineage/figures/cartoons/uncen_fig3_3.svg', censore=False)
+    lineage_uncensored1 = LineageTree.init_from_parameters(
+        pi, T, E2, desired_num_cells=2**5 - 1)
+    plotLineage(lineage_uncensored1,
+                'lineage/figures/cartoons/uncen_fig3_1.svg', censore=False)
+    lineage_uncensored2 = LineageTree.init_from_parameters(
+        pi, T, E2, desired_num_cells=2**5 - 1)
+    plotLineage(lineage_uncensored2,
+                'lineage/figures/cartoons/uncen_fig3_2.svg', censore=False)
+    lineage_uncensored3 = LineageTree.init_from_parameters(
+        pi, T, E2, desired_num_cells=2**5 - 1)
+    plotLineage(lineage_uncensored3,
+                'lineage/figures/cartoons/uncen_fig3_3.svg', censore=False)
 
-    lineage_censored1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=300)
-    plotLineage(lineage_censored1, 'lineage/figures/cartoons/cen_fig3_1.svg', censore=True)
-    lineage_censored2 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=300)
-    plotLineage(lineage_censored2, 'lineage/figures/cartoons/cen_fig3_2.svg', censore=True)
-    lineage_censored3 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=300)
-    plotLineage(lineage_censored3, 'lineage/figures/cartoons/cen_fig3_3.svg', censore=True)
+    lineage_censored1 = LineageTree.init_from_parameters(
+        pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=300)
+    plotLineage(lineage_censored1,
+                'lineage/figures/cartoons/cen_fig3_1.svg', censore=True)
+    lineage_censored2 = LineageTree.init_from_parameters(
+        pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=300)
+    plotLineage(lineage_censored2,
+                'lineage/figures/cartoons/cen_fig3_2.svg', censore=True)
+    lineage_censored3 = LineageTree.init_from_parameters(
+        pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=300)
+    plotLineage(lineage_censored3,
+                'lineage/figures/cartoons/cen_fig3_3.svg', censore=True)
 
     # Get list of axis objects
     ax, f = getSetup((5, 6), (3, 2))
@@ -70,7 +82,8 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
+    num_lineages = np.linspace(
+        min_desired_num_cells, max_desired_num_cells, num_data_points, dtype=int)
     list_of_populations = []
     list_of_populationsSim = []
     list_of_fpi = []
@@ -81,13 +94,16 @@ def accuracy():
         populationSim = []
 
         for _ in range(num):
-            good2go = False
-            while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, 2**4 - 1)
-                tmp_lineageSim = LineageTree.init_from_parameters(pi, T, E2, 2**4 - 1)
+            good2go1 = False
+            good2go2 = False
+            while not good2go1:
+                tmp_lineage = LineageTree.init_from_parameters(
+                    pi, T, E2, 2**4 - 1)
                 good2go1 = lineage_good_to_analyze(tmp_lineage)
+            while not good2go2:
+                tmp_lineageSim = LineageTree.init_from_parameters(
+                    pi, T, E2, 2**4 - 1)
                 good2go2 = lineage_good_to_analyze(tmp_lineageSim)
-                good2go = good2go1 and good2go2
             population.append(tmp_lineage)
             populationSim.append(tmp_lineageSim)
 
@@ -98,8 +114,10 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE2.append(E2)
 
-    x_Sim, _, Accuracy_Sim, _, _, _ = commonAnalyze(list_of_populationsSim, list_of_fpi=list_of_fpi)
-    x_Cen, _, Accuracy_Cen, _, _, _ = commonAnalyze(list_of_populations, list_of_fpi=list_of_fpi)
+    x_Sim, _, Accuracy_Sim, _, _, _ = commonAnalyze(
+        list_of_populationsSim, list_of_fpi=list_of_fpi, parallel=True)
+    x_Cen, _, Accuracy_Cen, _, _, _ = commonAnalyze(
+        list_of_populations, list_of_fpi=list_of_fpi, parallel=True)
     return x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, list_of_populationsSim, list_of_populations
 
 
@@ -108,11 +126,13 @@ def figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, xlabel="Number of
     Makes a 2 panel figures displaying state accuracy estimation across lineages
     of different censoring states.
     """
-    accuracy_sim_df = pd.DataFrame(columns=["Cell number", "State Assignment Accuracy"])
+    accuracy_sim_df = pd.DataFrame(
+        columns=["Cell number", "State Assignment Accuracy"])
     accuracy_sim_df["Cell number"] = x_Sim
     accuracy_sim_df["State Assignment Accuracy"] = Accuracy_Sim
 
-    accuracy_cen_df = pd.DataFrame(columns=["Cell number", "State Assignment Accuracy"])
+    accuracy_cen_df = pd.DataFrame(
+        columns=["Cell number", "State Assignment Accuracy"])
     accuracy_cen_df["Cell number"] = x_Cen
     accuracy_cen_df["State Assignment Accuracy"] = Accuracy_Cen
 
@@ -130,7 +150,8 @@ def figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, xlabel="Number of
 
     i += 1
     ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
-    sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_sim_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
+    sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_sim_df,
+                ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=50, top=101)
     ax[i].set_ylabel(r"State Accuracy [%]")
@@ -138,7 +159,8 @@ def figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, xlabel="Number of
 
     i += 1
     ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
-    sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_cen_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
+    sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_cen_df,
+                ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=50, top=101)
     ax[i].set_ylabel(r"State Accuracy [%]")

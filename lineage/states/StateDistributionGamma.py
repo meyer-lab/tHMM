@@ -3,7 +3,7 @@ import math
 import numpy as np
 import scipy.stats as sp
 
-from .stateCommon import bern_pdf, gamma_pdf, bernoulli_estimator, gamma_estimator, basic_censor
+from .stateCommon import bern_pdf, gamma_pdf, gamma_sf, bernoulli_estimator, gamma_estimator, basic_censor
 from ..CellVar import Time
 
 
@@ -19,8 +19,10 @@ class StateDistribution:
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
-        bern_obs = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
-        gamma_obs = sp.gamma.rvs(a=self.params[1], scale=self.params[2], size=size)  # gamma observations
+        bern_obs = sp.bernoulli.rvs(
+            p=self.params[0], size=size)  # bernoulli observations
+        gamma_obs = sp.gamma.rvs(
+            a=self.params[1], scale=self.params[2], size=size)  # gamma observations
         gamma_obs_censor = [1] * size  # 1 if observed
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
@@ -44,11 +46,13 @@ class StateDistribution:
         gamma_ll = 1
         if tuple_of_obs[2] == 1:
             # uncensored
-            gamma_ll = gamma_pdf(tuple_of_obs[1], self.params[1], self.params[2])
+            gamma_ll = gamma_pdf(
+                tuple_of_obs[1], self.params[1], self.params[2])
         else:
             # censored
             assert tuple_of_obs[2] == 0
-            gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.params[1], scale=self.params[2])
+            gamma_ll = gamma_sf(
+                tuple_of_obs[1], a=self.params[1], scale=self.params[2])
 
         return bern_ll * gamma_ll
 
@@ -61,11 +65,13 @@ class StateDistribution:
         # {
         bern_obs = np.array((unzipped_list_of_tuples_of_obs[0]))
         γ_obs = np.array(unzipped_list_of_tuples_of_obs[1])
-        gamma_obs_censor = np.array(unzipped_list_of_tuples_of_obs[2], dtype=int)
+        gamma_obs_censor = np.array(
+            unzipped_list_of_tuples_of_obs[2], dtype=int)
 
         b_mask = np.logical_not(np.isnan(bern_obs))
         self.params[0] = bernoulli_estimator(bern_obs[b_mask], gammas[b_mask])
-        self.params[1], self.params[2] = gamma_estimator(γ_obs, gamma_obs_censor, gammas)
+        self.params[1], self.params[2] = gamma_estimator(
+            γ_obs, gamma_obs_censor, gammas)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
@@ -87,7 +93,8 @@ class StateDistribution:
                     cell.time = Time(0, cell.obs[1])
             else:
                 for cell in level:
-                    cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
+                    cell.time = Time(cell.parent.time.endT,
+                                     cell.parent.time.endT + cell.obs[1])
 
     def censor_lineage(self, censor_condition, full_list_of_gens, full_lineage, **kwargs):
         """
@@ -98,7 +105,8 @@ class StateDistribution:
         and returns the censored list of cells.
         """
         if kwargs:
-            desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
+            desired_experiment_time = kwargs.get(
+                "desired_experiment_time", 2e12)
 
         if censor_condition == 0:
             output_lineage = full_lineage
