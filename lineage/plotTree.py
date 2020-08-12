@@ -1,6 +1,5 @@
 """ In this file we plot! """
 
-import math
 from Bio.Phylo.BaseTree import Clade
 from Bio import Phylo
 from matplotlib import pylab

@@ -95,7 +95,7 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10, censored=Fals
 
 def figure_maker(ax, AIC_holder, true_state_no, upper_ylim, censored=False):
     """
-    Makes figure 10.
+    Makes figure 11.
     """
     # Normalizing AIC
     AIC_holder = AIC_holder - np.min(AIC_holder, axis=0)[np.newaxis, :]

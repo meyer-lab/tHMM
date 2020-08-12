@@ -45,7 +45,8 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     gammaCor = sum(gammas * gamma_obs) / sum(gammas)
     s = np.log(gammaCor) - sum(gammas * np.log(gamma_obs)) / sum(gammas)
 
-    def f(k): return np.log(k) - sc.polygamma(0, k) - s
+    def f(k): 
+        return np.log(k) - sc.polygamma(0, k) - s
 
     if f(0.01) * f(100.0) > 0.0:
         a_hat0 = 10.0
