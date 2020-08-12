@@ -7,13 +7,10 @@ AIC.
 import numpy as np
 import matplotlib.gridspec as gridspec
 
-from ..Analyze import run_Analyze_AIC
-from ..LineageTree import LineageTree
-
 # States to evaluate with the model
 from ..states.StateDistributionGaPhs import StateDistribution
 
-from .figureCommon import getSetup, lineage_good_to_analyze, subplotLabel
+from .figureCommon import getSetup, subplotLabel
 from .figureS11 import run_AIC, figure_maker
 
 

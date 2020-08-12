@@ -1,7 +1,6 @@
 """ Unit test file for Viterbi. """
 import unittest
 from numpy.random import randint
-import itertools
 from ..tHMM import tHMM
 from ..LineageTree import LineageTree
 from ..figures.figureCommon import pi, T, E
@@ -17,8 +16,6 @@ class TestViterbi(unittest.TestCase):
 
         _, _, _, _, _, _ = tHMMobj.fit()
         pred_states_by_lineage = tHMMobj.predict()
-        # switch the states if needed
-        true_states_by_lineage = [[cell.state for cell in X.output_lineage] for X in tHMMobj.X]
 
         pred_states_flipped = []
         for lineage in pred_states_by_lineage:

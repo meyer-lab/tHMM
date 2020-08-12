@@ -12,12 +12,8 @@ from .figureCommon import (
     pi,
     T,
     E2,
-    max_desired_num_cells,
     lineage_good_to_analyze,
     num_data_points,
-    min_desired_num_cells,
-    max_experiment_time,
-    min_experiment_time,
     min_num_lineages,
     max_num_lineages,
 )

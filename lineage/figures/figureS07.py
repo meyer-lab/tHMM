@@ -17,7 +17,6 @@ from .figureCommon import (
     T,
     max_desired_num_cells,
     lineage_good_to_analyze,
-    max_experiment_time,
     num_data_points,
     state1,
 )
@@ -50,7 +49,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 7, a), state1] for a in np.logspace(0.1, 1, num_data_points, base=7)]
+    list_of_Es = [[StateDistribution(0.99, 7, a), state1] for a in np.linspace(1, 8, num_data_points)]
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []

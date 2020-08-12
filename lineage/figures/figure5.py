@@ -1,9 +1,7 @@
 """ This file contains figures related to how far the states need to be,
 which is shown by Wasserestein distance. """
-import itertools
 import numpy as np
 import pandas as pd
-import scipy.stats as sp
 import seaborn as sns
 from .figureCommon import (
     getSetup,
@@ -27,15 +25,14 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((7, 5), (2, 2))
-    number_of_columns = 25
-    figureMaker5(ax, *accuracy(number_of_columns))
+    figureMaker5(ax, *accuracy())
 
     subplotLabel(ax)
 
     return f
 
 
-def accuracy(number_of_columns):
+def accuracy():
     """ A Helper function to create more random copies of a population. """
     # Creating a list of populations to analyze over
     list_of_Es = [[StateDistribution(0.99, 0.9, 12, a, 4, 5), StateDistribution(0.99, 0.8, 12, 1.5, 8, 5)] for a in np.linspace(1.5, 4, num_data_points)]
@@ -59,7 +56,7 @@ def accuracy(number_of_columns):
         list_of_fT.append(T)
         list_of_fE.append(E)
 
-    wass, _, accuracy_after_switching, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass", list_of_fpi=list_of_fpi, parallel=True)
+    wass, _, accuracy_after_switching, _, _, _ = commonAnalyze(list_of_populations, xtype="wass", list_of_fpi=list_of_fpi, parallel=True)
 #     for indx, a in enumerate(accuracy_after_switching):
 #         if a <= 60:
 #             print(list_of_populations[indx])
