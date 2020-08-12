@@ -9,7 +9,7 @@ from ..UpwardRecursion import (
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
-from ..figures.figureCommon import pi, T, E
+from ..figures.figureCommon import pi, T, E, lineage_good_to_analyze
 from ..Analyze import Analyze, Results
 
 
@@ -109,11 +109,18 @@ class TestModel(unittest.TestCase):
         Really defined states should get an accuracy >95%.
         Lineages used should be large and distinct.
         """
-        X = [LineageTree.init_from_parameters(self.pi, self.T, self.E, (2**12))]
+        X = []
+        for _ in range(10):
+            good2go = False
+            while not good2go:
+                tmp_lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, 2 ** 11 - 1)
+                good2go = lineage_good_to_analyze(tmp_lineage)
+            
+        X.append(tmp_lineage)
         tree_obj, predicted_states, LL = Analyze(X, 3)
         results_dict = Results(tree_obj, predicted_states, LL)
         accuracy = results_dict["balanced_accuracy_score"]
-        self.assertGreaterEqual(accuracy, 90)
+        self.assertGreaterEqual(accuracy, 95)
 
     def test_level_of_performance2(self):
         """

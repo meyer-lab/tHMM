@@ -60,9 +60,9 @@ def accuracy(number_of_columns):
         list_of_fE.append(E)
 
     wass, _, accuracy_after_switching, _, _, paramTrues = commonAnalyze(list_of_populations, xtype="wass", list_of_fpi=list_of_fpi, parallel=True)
-    for indx, a in enumerate(accuracy_after_switching):
-        if a <= 60:
-            print(list_of_populations[indx])
+#     for indx, a in enumerate(accuracy_after_switching):
+#         if a <= 60:
+#             print(list_of_populations[indx])
 
     distribution_df = pd.DataFrame(columns=["Distribution type", "G1 lifetime", "State"])
     lineages = [list_of_populations[int(num_data_points * i / 4.)][0] for i in range(4)]
