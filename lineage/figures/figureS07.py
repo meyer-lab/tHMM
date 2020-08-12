@@ -2,7 +2,7 @@
 File: figureS07.py
 Purpose: Generates figure S07.
 Figure S07 analyzes heterogeneous (2 state), censored (by both time and fate),
-single lineages (no more than one lineage per population)
+single lineages (more than one lineage per population)
 with similar proportions of cells in states but
 of varying distributions.
 """
@@ -17,7 +17,6 @@ from .figureCommon import (
     T,
     max_desired_num_cells,
     lineage_good_to_analyze,
-    max_experiment_time,
     num_data_points,
     state1,
 )
@@ -50,7 +49,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 7, a), state1] for a in np.logspace(0, 1, num_data_points, base=7)]
+    list_of_Es = [[StateDistribution(0.99, 7, a), state1] for a in np.linspace(1, 8, num_data_points)]
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
@@ -58,12 +57,13 @@ def accuracy():
     for E in list_of_Es:
         population = []
 
-        good2go = False
-        while not good2go:
-            tmp_lineage = LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells, censor_condition=3, desired_experiment_time=max_experiment_time)
-            good2go = lineage_good_to_analyze(tmp_lineage)
+        for _ in range(3):
+            good2go = False
+            while not good2go:
+                tmp_lineage = LineageTree.init_from_parameters(pi, T, E, 0.5*max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
+                good2go = lineage_good_to_analyze(tmp_lineage)
 
-        population.append(tmp_lineage)
+            population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
