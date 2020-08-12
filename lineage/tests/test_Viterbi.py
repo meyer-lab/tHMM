@@ -19,7 +19,7 @@ class TestViterbi(unittest.TestCase):
 
         pred_states_flipped = []
         for lineage in pred_states_by_lineage:
-            pred_states_flipped.append(1-lineage)
+            pred_states_flipped.append(1 - lineage)
         log_scores_orig = tHMMobj.log_score(pred_states_by_lineage)
         log_scores_flipped = tHMMobj.log_score(pred_states_flipped)
 

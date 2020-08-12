@@ -115,7 +115,7 @@ class TestModel(unittest.TestCase):
             while not good2go:
                 tmp_lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, 2 ** 11 - 1)
                 good2go = lineage_good_to_analyze(tmp_lineage)
-         
+
         X.append(tmp_lineage)
         tree_obj, predicted_states, LL = Analyze(X, 3)
         results_dict = Results(tree_obj, predicted_states, LL)
