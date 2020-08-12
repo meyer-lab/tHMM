@@ -64,7 +64,7 @@ def accuracy():
     distribution_df = pd.DataFrame(columns=["Distribution type", "G1 lifetime", "State"])
     lineages = [list_of_populations[int(num_data_points * i / 4.)][0] for i in range(4)]
     len_lineages = [len(lineage) for lineage in lineages]
-    distribution_df["G1 lifetime"] = [(cell.obs[1]+cell.obs[2]) for lineage in lineages for cell in lineage.output_lineage]
+    distribution_df["G1 lifetime"] = [(cell.obs[1] + cell.obs[2]) for lineage in lineages for cell in lineage.output_lineage]
     distribution_df["State"] = ["State 1" if cell.state == 0 else "State 2" for lineage in lineages for cell in lineage.output_lineage]
     distribution_df["Distribution type"] = len_lineages[0] * ["Same"] +\
         len_lineages[1] * ["Similar"] +\
@@ -76,6 +76,7 @@ def accuracy():
     wasser_df["Wasserstein distance"] = wass
     wasser_df["State Assignment Accuracy"] = accuracy_after_switching
     return distribution_df, wasser_df
+
 
 def figureMaker5(ax, distribution_df, wasser_df):
     """

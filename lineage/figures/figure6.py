@@ -49,14 +49,14 @@ def accuracy():
     for T in list_of_Ts:
         uncensored_pop = []
         for _ in range(3):
-            uncensored_lineage = LineageTree.init_from_parameters(pi, T, E2, 0.5*max_desired_num_cells)
+            uncensored_lineage = LineageTree.init_from_parameters(pi, T, E2, 0.5 * max_desired_num_cells)
             uncensored_pop.append(uncensored_lineage)
 
         population = []
         for _ in range(3):
             good2go = False
             while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, 0.5*max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
+                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, 0.5 * max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
                 good2go = lineage_good_to_analyze(tmp_lineage)
             population.append(tmp_lineage)
 
