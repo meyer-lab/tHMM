@@ -171,7 +171,7 @@ def commonAnalyze(list_of_populations, xtype="length", **kwargs):
     elif xtype == "bern":
         x = paramTrues[:, 0, 0]
 
-    return x, paramEst, dictOut["balanced_accuracy_score"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
+    return x, paramEst, dictOut["accuracy_after_switching"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
 
 
 def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
