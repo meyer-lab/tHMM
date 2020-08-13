@@ -5,7 +5,6 @@ Purpose: Generates figure 7.
 AIC.
 """
 import numpy as np
-import matplotlib.gridspec as gridspec
 
 # States to evaluate with the model
 from ..states.StateDistributionGaPhs import StateDistribution
@@ -21,10 +20,7 @@ def makeFigure():
     """
     Makes figure 7.
     """
-    ax, f = getSetup((16, 8), (3, 4))
-    for i in range(8, 12):
-        ax[i].axis('off')
-    ax = ax[0:8]
+    ax, f = getSetup((12, 6), (2, 4))
 
     # Setting up state distributions and E
     Sone = StateDistribution(0.99, 0.9, 10, 2, 10, 2)
@@ -38,7 +34,7 @@ def makeFigure():
     E = [Eone, Etwo, Ethree, Efour, Eone, Etwo, Ethree, Efour]
 
     # making lineages and finding AICs (assign number of lineages here)
-    AIC = [run_AIC(.1, e, 10, idx > 4) for idx, e in enumerate(E)]
+    AIC = [run_AIC(.1, e, 10, idx > 3) for idx, e in enumerate(E)]
 
     # Finding proper ylim range for all 4 uncensored graphs and rounding up
     upper_ylim_uncensored = int(1 + max(np.max(np.ptp(AIC[0], axis=0)), np.max(np.ptp(
@@ -55,22 +51,5 @@ def makeFigure():
         figure_maker(ax[idx], a, (idx % 4) + 1,
                      upper_ylim[int(idx / 4)], idx > 3)
     subplotLabel(ax)
-    states = [[f'State {i+1}'] for i in range(4)]
-    for idx, state in enumerate(states):
-        state.extend(Efour[idx].params)
 
-    parameters = [['State', r'$Bern_{G1}$', r'$Bern_{G2}$', r'$Shape_{G1}$', r'$Scale_{G1}$', r'$Shape_{G2}$', r'$Scale_{G2}$'],
-                  states[0],
-                  states[1],
-                  states[2],
-                  states[3]]
-    spec = gridspec.GridSpec(3, 4, f)
-    table = f.add_subplot(spec[2, :])
-    table.axis('tight')
-    table.axis('off')
-    table.table(parameters, loc='center', bbox=[0, 0, 1, .7], cellLoc='center')
-    table.set_title('State Parameters', y=.8)
-    table.text(-0.02, 1.1, 'i', transform=table.transAxes,
-               fontsize=16, fontweight="bold", va="top")
-    f.subplots_adjust(hspace=.5, wspace=.6)
     return f
