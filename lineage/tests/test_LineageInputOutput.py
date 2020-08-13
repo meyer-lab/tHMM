@@ -1,7 +1,7 @@
 """" Unit test file. """
 import unittest
-import pandas as pd
 import math
+import pandas as pd
 
 from ..LineageInputOutput import import_Heiser, tryRecursion
 from ..CellVar import CellVar as c
@@ -75,13 +75,13 @@ class TestModel(unittest.TestCase):
         self.assertTrue(len(lineages[2]) == 5)
 
         # This won't work if the order the cells are stored is changed
-        for i in range(len(lineages)):
+        for i, lineage in enumerate(lineages):
             # soft check that the order is probably the same
-            assert lineages[i][len(lineages[i]) - 1].gen == 1
-            for j in range(len(lineages[i])):
+            assert lineage[len(lineage) - 1].gen == 1
+            for j, value in enumerate(lineage):
                 for k in range(6):
-                    self.assertTrue(lineages[i][j].obs[k] == self.lin[i][j].obs[k] or (
-                        math.isnan(lineages[i][j].obs[k]) and math.isnan(self.lin[i][j].obs[k])))
+                    self.assertTrue(value.obs[k] == self.lin[i][j].obs[k] or (
+                        math.isnan(value.obs[k]) and math.isnan(self.lin[i][j].obs[k])))
 
     def test_tryRecursion(self):
         """

@@ -1,20 +1,17 @@
 """
-File: figure10.py
-Purpose: Generates figure 10.
+File: figure7.py
+Purpose: Generates figure 7.
 
 AIC.
 """
 import numpy as np
 import matplotlib.gridspec as gridspec
 
-from ..Analyze import run_Analyze_AIC
-from ..LineageTree import LineageTree
-
 # States to evaluate with the model
 from ..states.StateDistributionGaPhs import StateDistribution
 
-from .figureCommon import getSetup, lineage_good_to_analyze, subplotLabel
-from .figureS10 import run_AIC, figure_maker
+from .figureCommon import getSetup, subplotLabel
+from .figureS11 import run_AIC, figure_maker
 
 
 desired_num_states = np.arange(1, 8)
@@ -22,7 +19,7 @@ desired_num_states = np.arange(1, 8)
 
 def makeFigure():
     """
-    Makes figure 10.
+    Makes figure 7.
     """
     ax, f = getSetup((16, 8), (3, 4))
     for i in range(8, 12):

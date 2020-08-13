@@ -2,7 +2,6 @@
 
 import numpy as np
 import scipy.stats as sp
-from sklearn.cluster import KMeans
 
 from .UpwardRecursion import get_Emission_Likelihoods
 from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step
