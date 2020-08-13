@@ -12,6 +12,8 @@ import numpy as np
 
 
 def import_Heiser(path):
+    global global_exp_time
+    global_exp_time = -1
     """
     Imports data from the Heiser lab
     Outputs a list of lists containing cells containing observations from the Excel file
@@ -35,10 +37,10 @@ def import_Heiser(path):
     data = excel_file.to_numpy()
     # assert "exp_time" in data[0], "Data not properly formatted (exp_time hasn't been added to the file)"
     if "exp_time" in data[0]:
-        exp_time = data[1][np.where(data[0] == "exp_time")[0]]
+        exp_time = data[1][np.where(data[0] == "exp_time")[0][0]]
+        global_exp_time = exp_time
     else:
-        print("exp_time has not beend added to this file")
-        exp_time = -1
+        print("exp_time has not been added to this file")
     # current Lineage Posistion
     lPos = 0
     # current Lineage Number
@@ -49,6 +51,8 @@ def import_Heiser(path):
     # find Lineages
     lineages = []
     while lPos < len(data):
+        if not "exp_time" in data[0]:
+            exp_time =-1
         # increment to find next lineage (so it doesn't find the same one)
         lPos += 1
         # find Next Lineage Position
@@ -82,15 +86,21 @@ def import_Heiser(path):
                     data[nextUp+8][0]), "File is improperly formatted (lineages spaced differently"
                 lower = nextUp - 2
             # find upper daughter and recurse
+            
             parentCell.left = tryRecursion(
                 1, lPos, upper, parentCell, currentLineage, data, divisionTime, exp_time)
             # find lower daughter and recurse
             parentCell.right = tryRecursion(
                 1, lower, lPos, parentCell, currentLineage, data, divisionTime, exp_time)
 
+            
             if exp_time == -1 and not math.isnan(data[lPos][1+2]) and parentCell.left == None and parentCell.right == None:
                 exp_time = data[lPos][1+2]
-
+                if global_exp_time != -1:
+                    assert exp_time == global_exp_time, f"Exp_time discrepancy in file {exp_time} and {global_exp_time}"
+            if global_exp_time == -1 and exp_time != -1:
+                global_exp_time = exp_time
+            
             # [x  x] case
             if data[lPos][1] == data[lPos][1 + 2]:
 
@@ -150,8 +160,11 @@ def import_Heiser(path):
                         data[lPos][1 + 2] == exp_time or data[lPos][1] == 1) else 1
 
             # add first generation to lineage (apparently python passes by reference for objects so this probably can be done before or after)
+            if not math.isnan(parentCell.obs[2]):
+                assert parentCell.obs[2]>=0, "negative time value encountered"
+            if not math.isnan(parentCell.obs[3]):
+                assert parentCell.obs[3]>=0, "negative time value encountered"
             currentLineage.append(parentCell)
-
             # store lineage in list of lineages
             lineages.append(currentLineage)
     return lineages
@@ -166,6 +179,7 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
     the ranges the recursionB method searches in have to be offset by 1
     so that the algorithm will search the proper positions for the last possible generation of cells
     """
+  
     found = False
     # check if this is the last possible cell
     if pColumn + 3 >= np.where(data[0] == "Lineage Size")[0]:
@@ -181,6 +195,7 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
             break
     if not found:
         return None
+    
     assert not math.isnan(data[parentPos][pColumn+1]) or not math.isnan(
         data[parentPos][pColumn+2]), f"Value missing in cell"
     # store values into lineage here
@@ -194,10 +209,15 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
     # find lower daughter
     daughterCell.right = tryRecursion(pColumn, lower, parentPos, daughterCell,
                                       currentLineage, data, data[parentPos][pColumn + 2], exp_time)
-
+    
+    global global_exp_time
     if exp_time == -1 and not math.isnan(data[parentPos][pColumn+2]) and daughterCell.left == None and daughterCell.right == None:
         exp_time = data[parentPos][pColumn+2]
-
+        if global_exp_time != -1:
+            assert exp_time == global_exp_time, f"Exp_time discrepancy in file {exp_time} and {global_exp_time}"
+    if global_exp_time == -1 and exp_time != -1:
+        global_exp_time = exp_time
+    
     # [x  x] case
     if data[parentPos][pColumn] == data[parentPos][pColumn + 2]:
 
@@ -254,7 +274,10 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
             # Censored if final time is exp_time, otherise uncensored
             daughterCell.obs[5] = 0 if (
                 data[parentPos][pColumn + 2] == exp_time) else 1
-
+    if not math.isnan(daughterCell.obs[2]):
+        assert daughterCell.obs[2]>=0, "negative time value encountered"
+    if not math.isnan(daughterCell.obs[3]):
+        assert daughterCell.obs[3]>=0, "negative time value encountered"
     # add daughter to current Lineage
     currentLineage.append(daughterCell)
     return daughterCell
