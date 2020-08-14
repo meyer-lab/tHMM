@@ -6,7 +6,6 @@ import pandas as pd
 from ..LineageInputOutput import import_Heiser, tryRecursion
 from ..CellVar import CellVar as c
 
-
 class TestModel(unittest.TestCase):
     """
     Unit test class for importing data.
@@ -38,7 +37,8 @@ class TestModel(unittest.TestCase):
         self.parent2 = c(parent=None, gen=1, synthetic=False)
         self.parent2.obs = [1, 1, 10, 10, 0, 1]
         self.left2 = c(parent=self.parent2, gen=2, synthetic=False)
-        self.left2.obs = [0, float('nan'), 60, float('nan'), 1, float('nan')]
+        self.left2.obs = [float('nan'), float(
+            'nan'), 125, float('nan'), 0, float('nan')]
         self.right2 = c(parent=self.parent2, gen=2, synthetic=False)
         self.right2.obs = [1, 0, 10, 10, 1, 1]
         self.parent2.left = self.left2
@@ -67,7 +67,7 @@ class TestModel(unittest.TestCase):
         Tests the main import function for Heiser lab data.
         """
         path2use = self.path_to_synthetic_data
-        lineages = import_Heiser(path2use, 145)
+        lineages = import_Heiser(path2use)
         self.assertTrue(len(lineages) == 3)
         self.assertTrue(len(lineages[0]) == 3)
         self.assertTrue(len(lineages[1]) == 3)
@@ -81,7 +81,7 @@ class TestModel(unittest.TestCase):
                 for k in range(6):
                     self.assertTrue(value.obs[k] == self.lin[i][j].obs[k] or (
                         math.isnan(value.obs[k]) and math.isnan(self.lin[i][j].obs[k])))
-
+    
     def test_tryRecursion(self):
         """
         Tests the recursion function used to recurse acros Excel cells
@@ -91,7 +91,7 @@ class TestModel(unittest.TestCase):
         excel_file = pd.read_excel(path2use, header=None)
         data = excel_file.to_numpy()
         cLin = []
-        _ = tryRecursion(1, 45, 37, self.parent3, cLin, 16, data, 30, 145)
+        _ = tryRecursion(1, 45, 37, self.parent3, cLin, data, 30, 145, [145])
         self.assertTrue(len(cLin) == 3)
         i = 0
         while i < len(cLin) and cLin[i].gen != 2:
