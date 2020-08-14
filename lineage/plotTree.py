@@ -1,6 +1,5 @@
 """ In this file we plot! """
 
-import math
 from Bio.Phylo.BaseTree import Clade
 from Bio import Phylo
 from matplotlib import pylab
@@ -48,4 +47,4 @@ def plotLineage(lineage, path, censore=True):
 
     Phylo.draw(c)
     pylab.axis("off")
-    pylab.savefig(path, format="svg", bbox_inches="tight", dpi=400)
+    pylab.savefig(path, format="svg", transparent=True, bbox_inches="tight", dpi=400)

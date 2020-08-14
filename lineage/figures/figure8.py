@@ -2,15 +2,15 @@
 
 import numpy as np
 from matplotlib.ticker import MaxNLocator
-
 from ..Analyze import run_Analyze_AIC
 from ..LineageTree import LineageTree
 import matplotlib.gridspec as gridspec
-from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Lapt25uM, Tax2uM
+from ..data.Lineage_collections import gemControl, gem5uM, lap25uM, taxs
 
 # States to evaluate with the model
 from ..states.StateDistributionGaPhs import StateDistribution
-from .figureCommon import getSetup, lineage_good_to_analyze, subplotLabel
+from .figureCommon import getSetup, subplotLabel
+from .figureS11 import run_AIC, figure_maker
 
 
 desired_num_states = np.arange(1, 5)
@@ -23,7 +23,7 @@ def makeFigure():
     ax, f = getSetup((13.333, 3.333), (1, 4))
 
     # making lineages and finding AICs (assign number of lineages here)
-    AIC = [run_AIC(Gemcitabine_Control[1:9]), run_AIC(Gem5uM[1:9]), run_AIC(Lapt25uM[1:9]), run_AIC(Tax2uM[1:9])]
+    AIC = [run_AIC(gemControl[1:9]), run_AIC(gem5uM[1:9]), run_AIC(lap25uM[1:9]), run_AIC(taxs[1:9])]
 
     # Finding proper ylim range for all 4 censored graphs and rounding up
     upper_ylim_censored = int(1 + max(np.max(np.ptp(AIC[0], axis=0)), np.max(np.ptp(
