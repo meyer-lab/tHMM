@@ -1,11 +1,11 @@
-""" This file plots the AIC for the real data. """
+""" This file plots the AIC for the experimental data. """
 
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import run_Analyze_AIC
 from ..LineageTree import LineageTree
 import matplotlib.gridspec as gridspec
-from ..data.Lineage_collections import gemControl, gem5uM, lap25uM, taxs
+from ..data.Lineage_collections import gemControl, gem5uM, lap25uM, taxs, Lap250uM, Gem30uM
 
 # States to evaluate with the model
 from ..states.StateDistributionGaPhs import StateDistribution
@@ -23,14 +23,14 @@ def makeFigure():
     ax, f = getSetup((13.333, 3.333), (1, 4))
 
     # making lineages and finding AICs (assign number of lineages here)
-    AIC = [run_AIC(gemControl[1:9]), run_AIC(gem5uM[1:9]), run_AIC(lap25uM[1:9]), run_AIC(taxs[1:9])]
-
+    AIC = [run_AIC(gemControl), run_AIC(gem5uM), run_AIC(Gem30uM), run_AIC(Lap250uM)]
+    print(len(Lap250uM[1:20]))
     # Finding proper ylim range for all 4 censored graphs and rounding up
     upper_ylim_censored = int(1 + max(np.max(np.ptp(AIC[0], axis=0)), np.max(np.ptp(
         AIC[1], axis=0)), np.max(np.ptp(AIC[2], axis=0)), np.max(np.ptp(AIC[3], axis=0))) / 25.0) * 25
 
     upper_ylim = [upper_ylim_censored]
-    titles = ["Cntrl", "Gem 5uM", "Lapt 25uM", "Tax 2uM"]
+    titles = ["Cntrl", "Gem 5uM", "Gem 30uM", "Lap 250uM"]
 
     # Plotting AICs
     for idx, a in enumerate(AIC):
@@ -53,12 +53,11 @@ def run_AIC(lineages):
         AIC, _ = output[idx][0].get_AIC(output[idx][2])
         AICs[idx] = np.array([ind_AIC for ind_AIC in AIC])
 
-    print(AICs)
     return AICs
 
 def figure_maker(ax, AIC_holder, title, upper_ylim, censored=False):
     """
-    Makes figure 10.
+    Makes figure 8.
     """
     # Normalizing AIC
     AIC_holder = AIC_holder - np.min(AIC_holder, axis=0)[np.newaxis, :]
@@ -74,7 +73,7 @@ def figure_maker(ax, AIC_holder, title, upper_ylim, censored=False):
     ax.set_xlabel("Number of States Predicted")
     ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
     ax.set_ylabel("Normalized AIC")
-    ax.set_yticks(np.linspace(0, upper_ylim, len(ax2.get_yticks())))
+    ax.set_yticks(np.linspace(0, upper_ylim, 0.5*len(ax2.get_yticks())))
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
     # Adding title
