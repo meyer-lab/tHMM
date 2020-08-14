@@ -17,6 +17,7 @@ from .figureCommon import (
     max_num_lineages,
 )
 from ..LineageTree import LineageTree
+from ..plotTree import plotLineage
 
 scatter_state_1_kws = {
     "alpha": 0.33,
