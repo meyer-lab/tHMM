@@ -4,10 +4,8 @@ import pandas as pd
 from .CellVar import CellVar as c
 import numpy as np
 
-
 def import_Heiser(path):
-    global global_exp_time
-    global_exp_time = -1
+    global_exp_time = [-1]
     """
     Imports data from the Heiser lab
     Outputs a list of lists containing cells containing observations from the Excel file
@@ -26,7 +24,7 @@ def import_Heiser(path):
     #Checking if exp_time was added to the file. The function will work even if exp_time isn't set, but may need proofreading
     if "exp_time" in data[0]:
         exp_time = data[1][np.where(data[0] == "exp_time")[0][0]]
-        global_exp_time = exp_time
+        global_exp_time = [exp_time]
     else:
         print("exp_time has not been added to this file")
     # current Lineage Posistion
@@ -77,18 +75,18 @@ def import_Heiser(path):
 
             # find upper daughter and recurse
             parentCell.left = tryRecursion(
-                1, lPos, upper, parentCell, currentLineage, data, divisionTime, exp_time)
+                1, lPos, upper, parentCell, currentLineage, data, divisionTime, exp_time, global_exp_time)
             # find lower daughter and recurse
             parentCell.right = tryRecursion(
-                1, lower, lPos, parentCell, currentLineage, data, divisionTime, exp_time)
+                1, lower, lPos, parentCell, currentLineage, data, divisionTime, exp_time, global_exp_time)
 
             # This will only run if exp_time has not been put into the file
             if exp_time == -1 and not math.isnan(data[lPos][1+2]) and parentCell.left == None and parentCell.right == None:
                 exp_time = data[lPos][1+2]
-                if global_exp_time != -1:
-                    assert exp_time == global_exp_time, f"Exp_time discrepancy in file {exp_time} and {global_exp_time}"
-            if global_exp_time == -1 and exp_time != -1:
-                global_exp_time = exp_time
+                if global_exp_time[0] != -1:
+                    assert exp_time == global_exp_time[0], f"Exp_time discrepancy in file {exp_time} and {global_exp_time[0]}"
+            if global_exp_time[0] == -1 and exp_time != -1:
+                global_exp_time[0] = exp_time
             
             # [exp_time  exp_time] case
             if data[lPos][1] == data[lPos][1 + 2]:
@@ -156,7 +154,7 @@ def import_Heiser(path):
     return lineages
 
 
-def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisionTime, exp_time):
+def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisionTime, exp_time, global_exp_time):
     """
     Method for Top and Bottom halves of the Lineage Tree as recorded in the Excel files
     (They mirrored the posistions for the last set of daughter cells...)
@@ -165,7 +163,6 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
     the ranges the recursionB method searches in have to be offset by 1
     so that the algorithm will search the proper positions for the last possible generation of cells
     """
-  
     found = False
     # check if this is the last possible cell
     if pColumn + 3 >= np.where(data[0] == "Lineage Size")[0]:
@@ -191,19 +188,18 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
 
     # find upper daughter
     daughterCell.left = tryRecursion(pColumn, parentPos, upper, daughterCell,
-                                     currentLineage, data, data[parentPos][pColumn + 2], exp_time)
+                                     currentLineage, data, data[parentPos][pColumn + 2], exp_time, global_exp_time)
     # find lower daughter
     daughterCell.right = tryRecursion(pColumn, lower, parentPos, daughterCell,
-                                      currentLineage, data, data[parentPos][pColumn + 2], exp_time)
+                                      currentLineage, data, data[parentPos][pColumn + 2], exp_time, global_exp_time)
     
     # This will only run if exp_time has not been put into the file
-    global global_exp_time
     if exp_time == -1 and not math.isnan(data[parentPos][pColumn+2]) and daughterCell.left == None and daughterCell.right == None:
         exp_time = data[parentPos][pColumn+2]
-        if global_exp_time != -1:
-            assert exp_time == global_exp_time, f"Exp_time discrepancy in file {exp_time} and {global_exp_time}"
-    if global_exp_time == -1 and exp_time != -1:
-        global_exp_time = exp_time
+        if global_exp_time[0] != -1:
+            assert exp_time == global_exp_time[0], f"Exp_time discrepancy in file {exp_time} and {global_exp_time[0]}"
+    if global_exp_time[0] == -1 and exp_time != -1:
+        global_exp_time[0] = exp_time
     
     # [x  x] case
     if data[parentPos][pColumn] == data[parentPos][pColumn + 2]:
