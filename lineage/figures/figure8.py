@@ -3,13 +3,12 @@
 import numpy as np
 
 from ..Analyze import run_Analyze_AIC
-from ..LineageTree import LineageTree
 from ..data.Lineage_collections import Gemcitabine_Control
 
 # States to evaluate with the model
 from ..states.StateDistributionGaPhs import StateDistribution
-from .figureCommon import getSetup, lineage_good_to_analyze, subplotLabel
-from .figureS10 import run_AIC, figure_maker
+from .figureCommon import getSetup, subplotLabel
+from .figureS11 import run_AIC, figure_maker
 
 
 desired_num_states = np.arange(1, 8)
@@ -21,17 +20,6 @@ def makeFigure():
     """
     ax, f = getSetup((13.333, 3.333), (1, 4))
     desired_num_states = np.arange(1, 8)
-
-    # Setting up state distributions and E
-    Sone = StateDistribution(0.99, 0.9, 10, 2, 10, 2)
-    Stwo = StateDistribution(0.9, 0.9, 20, 3, 20, 3)
-    Sthree = StateDistribution(0.85, 0.9, 30, 4, 30, 4)
-    Sfour = StateDistribution(0.8, 0.9, 40, 5, 40, 5)
-    Eone = [Sone, Sone]
-    Etwo = [Sone, Stwo]
-    Ethree = [Sone, Stwo, Sthree]
-    Efour = [Sone, Stwo, Sthree, Sfour]
-    E = [Eone, Etwo, Ethree, Efour]
 
     # making lineages and finding AICs (assign number of lineages here)
     AIC = run_AIC(Gemcitabine_Control)

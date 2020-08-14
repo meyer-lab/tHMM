@@ -36,7 +36,7 @@ def accuracy():
     over an similar number of cells in a lineage for
     a uncensored two-state model but differing state distribution.
     We increase the proportion of cells in a lineage by
-    fixing the Transition matrix to be biased towards state 0.
+    fixing the Transitions matrix to be biased towards state 0.
     """
 
     # Creating a list of populations to analyze over
@@ -48,15 +48,17 @@ def accuracy():
     list_of_fE = []
     for T in list_of_Ts:
         uncensored_pop = []
-        uncensored_lineage = LineageTree.init_from_parameters(pi, T, E2, max_desired_num_cells)
-        uncensored_pop.append(uncensored_lineage)
+        for _ in range(3):
+            uncensored_lineage = LineageTree.init_from_parameters(pi, T, E2, 0.5 * max_desired_num_cells)
+            uncensored_pop.append(uncensored_lineage)
 
         population = []
-        good2go = False
-        while not good2go:
-            tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
-            good2go = lineage_good_to_analyze(tmp_lineage)
-        population.append(tmp_lineage)
+        for _ in range(3):
+            good2go = False
+            while not good2go:
+                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, 0.5 * max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
+                good2go = lineage_good_to_analyze(tmp_lineage)
+            population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
         list_of_uncen_populations.append(uncensored_pop)
