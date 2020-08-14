@@ -6,6 +6,7 @@ import pandas as pd
 from ..LineageInputOutput import import_Heiser, tryRecursion
 from ..CellVar import CellVar as c
 
+
 class TestModel(unittest.TestCase):
     """
     Unit test class for importing data.
@@ -81,7 +82,7 @@ class TestModel(unittest.TestCase):
                 for k in range(6):
                     self.assertTrue(value.obs[k] == self.lin[i][j].obs[k] or (
                         math.isnan(value.obs[k]) and math.isnan(self.lin[i][j].obs[k])))
-    
+
     def test_tryRecursion(self):
         """
         Tests the recursion function used to recurse acros Excel cells

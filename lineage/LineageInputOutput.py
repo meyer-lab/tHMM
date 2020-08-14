@@ -4,6 +4,7 @@ import pandas as pd
 from .CellVar import CellVar as c
 import numpy as np
 
+
 def import_Heiser(path):
     global_exp_time = [-1]
     """
@@ -20,8 +21,8 @@ def import_Heiser(path):
     """
     excel_file = pd.read_excel(path, header=None)
     data = excel_file.to_numpy()
-    
-    #Checking if exp_time was added to the file. The function will work even if exp_time isn't set, but may need proofreading
+
+    # Checking if exp_time was added to the file. The function will work even if exp_time isn't set, but may need proofreading
     if "exp_time" in data[0]:
         exp_time = data[1][np.where(data[0] == "exp_time")[0][0]]
         global_exp_time = [exp_time]
@@ -37,8 +38,8 @@ def import_Heiser(path):
     # find Lineages
     lineages = []
     while lPos < len(data):
-        if not "exp_time" in data[0]:
-            exp_time =-1
+        if "exp_time" not in data[0]:
+            exp_time = -1
         lPos += 1
         # find Next Lineage Position
         while lPos < len(data) and math.isnan(data[lPos][0]):
@@ -51,7 +52,7 @@ def import_Heiser(path):
 
         # determine if lineage has cells
         if lPos < len(data) and not math.isnan(data[lPos][1]):
-            #Check that there is a value
+            # Check that there is a value
             assert not math.isnan(
                 data[lPos][2]) or not math.isnan(data[lPos][3]), f"Value missing in first cell of lineage {lineageNo}"
 
@@ -68,9 +69,9 @@ def import_Heiser(path):
             if nextUp >= len(data):
                 lower = len(data)
             else:
-                #checking that spacing is correct
+                # checking that spacing is correct
                 assert not math.isnan(
-                    data[nextUp+8][0]), "File is improperly formatted (lineages spaced differently)"
+                    data[nextUp + 8][0]), "File is improperly formatted (lineages spaced differently)"
                 lower = nextUp - 2
 
             # find upper daughter and recurse
@@ -81,32 +82,32 @@ def import_Heiser(path):
                 1, lower, lPos, parentCell, currentLineage, data, divisionTime, exp_time, global_exp_time)
 
             # This will only run if exp_time has not been put into the file
-            if exp_time == -1 and not math.isnan(data[lPos][1+2]) and parentCell.left == None and parentCell.right == None:
-                exp_time = data[lPos][1+2]
+            if exp_time == -1 and not math.isnan(data[lPos][1 + 2]) and parentCell.left is None and parentCell.right is None:
+                exp_time = data[lPos][1 + 2]
                 if global_exp_time[0] != -1:
                     assert exp_time == global_exp_time[0], f"Exp_time discrepancy in file {exp_time} and {global_exp_time[0]}"
             if global_exp_time[0] == -1 and exp_time != -1:
                 global_exp_time[0] = exp_time
-            
+
             # [exp_time  exp_time] case
             if data[lPos][1] == data[lPos][1 + 2]:
-                #check that they are both exp_time (non exp_time should not exist)
+                # check that they are both exp_time (non exp_time should not exist)
                 assert data[lPos][1] == exp_time, '[x  _  x] case where x =/= exp time'
                 parentCell.obs[0] = float("nan") if (
                     data[lPos][1] == exp_time) else 0  # live/die G1
                 parentCell.obs[1] = float("nan")  # Did not go to G2
                 parentCell.obs[2] = data[lPos][1]  # Time Spent in G1
                 parentCell.obs[3] = float("nan")  # Spent no time in G2
-                parentCell.obs[4] = 0 # G1 is always censored for the first cell
+                parentCell.obs[4] = 0  # G1 is always censored for the first cell
                 parentCell.obs[5] = float("nan")  # G2 outcome unknown
 
             # [x  y]/[x y  ] case (general)
             else:
                 # [x x  ] case
                 if data[lPos][1] == data[lPos][2]:
-                    parentCell.obs[0] = 0 #Cell does not survive G1
+                    parentCell.obs[0] = 0  # Cell does not survive G1
                     parentCell.obs[2] = data[lPos][1]  # Time spent in G1
-                    parentCell.obs[4] = 1 #G1 is not time censored
+                    parentCell.obs[4] = 1  # G1 is not time censored
                     parentCell.obs[1] = float("nan")  # No info G2
                     parentCell.obs[3] = float("nan")  # No info G2
                     parentCell.obs[5] = float("nan")  # No info G2
@@ -114,7 +115,7 @@ def import_Heiser(path):
                     # [1  y]/[1 y  ] case
                     if data[lPos][1] == 1:
                         # did not start in G1, but did transition
-                        parentCell.obs[0] = 1 #survived G1
+                        parentCell.obs[0] = 1  # survived G1
                         parentCell.obs[2] = float("nan")  # Spent no time in G1
                         parentCell.obs[4] = float("nan")  # G1 outcome unknown
 
@@ -145,9 +146,9 @@ def import_Heiser(path):
 
             # check all time values end up positive
             if not math.isnan(parentCell.obs[2]):
-                assert parentCell.obs[2]>=0, "negative time value encountered"
+                assert parentCell.obs[2] >= 0, "negative time value encountered"
             if not math.isnan(parentCell.obs[3]):
-                assert parentCell.obs[3]>=0, "negative time value encountered"
+                assert parentCell.obs[3] >= 0, "negative time value encountered"
             currentLineage.append(parentCell)
             # store lineage in list of lineages
             lineages.append(currentLineage)
@@ -176,10 +177,10 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
             break
     if not found:
         return None
-    
+
     # Check that there is a value
-    assert not math.isnan(data[parentPos][pColumn+1]) or not math.isnan(
-        data[parentPos][pColumn+2]), f"Value missing in cell"
+    assert not math.isnan(data[parentPos][pColumn + 1]) or not math.isnan(
+        data[parentPos][pColumn + 2]), f"Value missing in cell"
 
     # Creating daughter
     daughterCell = c(parent=parentCell, gen=parentCell.gen +
@@ -192,15 +193,15 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
     # find lower daughter
     daughterCell.right = tryRecursion(pColumn, lower, parentPos, daughterCell,
                                       currentLineage, data, data[parentPos][pColumn + 2], exp_time, global_exp_time)
-    
+
     # This will only run if exp_time has not been put into the file
-    if exp_time == -1 and not math.isnan(data[parentPos][pColumn+2]) and daughterCell.left == None and daughterCell.right == None:
-        exp_time = data[parentPos][pColumn+2]
+    if exp_time == -1 and not math.isnan(data[parentPos][pColumn + 2]) and daughterCell.left is None and daughterCell.right is None:
+        exp_time = data[parentPos][pColumn + 2]
         if global_exp_time[0] != -1:
             assert exp_time == global_exp_time[0], f"Exp_time discrepancy in file {exp_time} and {global_exp_time[0]}"
     if global_exp_time[0] == -1 and exp_time != -1:
         global_exp_time[0] = exp_time
-    
+
     # [x  x] case
     if data[parentPos][pColumn] == data[parentPos][pColumn + 2]:
         # Time Censored [exp_time  exp_time]
@@ -211,7 +212,7 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
             daughterCell.obs[4] = 0  # G1 censored
 
         # Not Time Censored [x=/=exp_time   x=/=exp_time]
-        #This Should not happen
+        # This Should not happen
         else:
             daughterCell.obs[0] = 0  # G1 death
             daughterCell.obs[4] = 1  # G1 uncensored
@@ -220,12 +221,12 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
         daughterCell.obs[2] = data[parentPos][pColumn] - \
             divisionTime  # Time Spent in G1
         daughterCell.obs[3] = float("nan")  # Spent no time in G2
-        daughterCell.obs[5] = float("nan") # We don't have information about G2
+        daughterCell.obs[5] = float("nan")  # We don't have information about G2
 
     # [x  y]/[x y  ] case (general)
     else:
         # [x x  ] case
-        if data[parentPos][pColumn+1] == data[parentPos][pColumn]:
+        if data[parentPos][pColumn + 1] == data[parentPos][pColumn]:
             daughterCell.obs[0] = 0
             daughterCell.obs[2] = data[parentPos][pColumn] - \
                 divisionTime  # Time spent in G1
@@ -258,9 +259,9 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
                 data[parentPos][pColumn + 2] == exp_time) else 1
     # check all time values end up positive
     if not math.isnan(daughterCell.obs[2]):
-        assert daughterCell.obs[2]>=0, "negative time value encountered"
+        assert daughterCell.obs[2] >= 0, "negative time value encountered"
     if not math.isnan(daughterCell.obs[3]):
-        assert daughterCell.obs[3]>=0, "negative time value encountered"
+        assert daughterCell.obs[3] >= 0, "negative time value encountered"
     # add daughter to current Lineage
     currentLineage.append(daughterCell)
     return daughterCell
