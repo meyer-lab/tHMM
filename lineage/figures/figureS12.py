@@ -5,6 +5,7 @@ Figure S12 shows the accuracy of state assignment versus
 increasing cell numbers for 2-state, 3-state, and 4-state models.
 """
 import numpy as np
+from ..Analyze import Analyze, Results
 
 from .figureCommon import (
     getSetup,
@@ -47,28 +48,32 @@ def accuracy():
     the experiment time.
     """
 
-    # Creating a list of populations to analyze over
-    num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
-    list_of_populations = []
-    list_of_fpi = []
-    list_of_fT = []
-    list_of_fE = []
-    for num in num_lineages:
-        population = []
+    self.X = [LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 11) - 1)]
+    self.pi = np.array([0.55, 0.35, 0.10])
+    self.T = np.array([[0.75, 0.20, 0.05], [0.1, 0.85, 0.05], [0.1, 0.1, 0.8]])
 
-        for _ in range(num):
-
+    X2 = []
+    X3 = []
+    X4 = []
+        for _ in range(10):
             good2go = False
             while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(pi, T, E, min_desired_num_cells)
+                tmp_lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, 2 ** 11 - 1)
                 good2go = lineage_good_to_analyze(tmp_lineage)
 
-            population.append(tmp_lineage)
-
-        # Adding populations into a holder for analysing
-        list_of_populations.append(population)
-        list_of_fpi.append(pi)
-        list_of_fT.append(T)
-        list_of_fE.append(E)
+        X2.append(tmp_lineage)
+        tree_obj, predicted_states, LL = Analyze(X, 2)
+        results_dict = Results(tree_obj, predicted_states, LL)
+        accuracy = results_dict["accuracy_after_switching"]
+        
+        X3.append(tmp_lineage)
+        tree_obj, predicted_states, LL = Analyze(X, 3)
+        results_dict = Results(tree_obj, predicted_states, LL)
+        accuracy = results_dict["accuracy_after_switching"]
+        
+        X4.append(tmp_lineage)
+        tree_obj, predicted_states, LL = Analyze(X, 4)
+        results_dict = Results(tree_obj, predicted_states, LL)
+        accuracy = results_dict["accuracy_after_switching"]
 
     return commonAnalyze(list_of_populations)
