@@ -34,6 +34,7 @@ def gamma_pdf(x, a, scale):
     and returns the likelihood of the observation based on the gamma
     probability distribution function.
     """
+    assert(scale != 0), f" scale is zero! "
     return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / math.gamma(a) / (scale ** a)
 
 
@@ -42,8 +43,8 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
     """
-    gammaCor = sum(gammas * gamma_obs) / (sum(gammas) + 0.001)
-    s = np.log(gammaCor) - sum(gammas * np.log(gamma_obs)) / (sum(gammas) + 0.001)
+    gammaCor = sum(gammas * gamma_obs) / sum(gammas)
+    s = np.log(gammaCor) - sum(gammas * np.log(gamma_obs)) / sum(gammas)
 
     def f(k):
         return np.log(k) - sc.polygamma(0, k) - s
@@ -52,8 +53,10 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
         a_hat0 = 10.0
     else:
         a_hat0 = brentq(f, 0.01, 100.0)
+    assert a_hat0 != 0, f"shape is estimated to be 0"
 
     scale_hat0 = gammaCor / a_hat0
+    assert scale_hat0 != 0, f"scale is estimated to be 0"
 
     def negative_LL(x):
         uncens_gammas = np.array([gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 1])

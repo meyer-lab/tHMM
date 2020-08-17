@@ -1,4 +1,5 @@
 """ Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch. """
+import math
 import numpy as np
 
 from .UpwardRecursion import (
@@ -97,11 +98,14 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
         gamma_array = gammas[num]
 
         # local T estimate
-        numer_estimate += get_all_zetas(lineageObj, betas[num], MSD[num], gamma_array, tHMMobj.estimate.T)
-        denom_estimate += sum_nonleaf_gammas(lineageObj, gamma_array)
+        numer_estimate = get_all_zetas(lineageObj, betas[num], MSD[num], gamma_array, tHMMobj.estimate.T)
+        denom_estimate = sum_nonleaf_gammas(lineageObj, gamma_array)
 
     T_estimate_prenorm = numer_estimate / denom_estimate[:, np.newaxis]
     T_estimate = T_estimate_prenorm / T_estimate_prenorm.sum(axis=1)[:, np.newaxis]
+    for _, T in enumerate(T_estimate):
+        assert not math.isnan(np.all(T)), f"some row in T is nan"
+    # assert np.allclose(np.sum(T_estimate, axis=1), 1.0, atol=0.1), f"row sums in T is not close to 1."
 
     return T_estimate
 

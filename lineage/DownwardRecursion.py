@@ -1,5 +1,6 @@
 """ File holds the code for the downward recursion. """
 
+import math
 import numpy as np
 from .UpwardRecursion import beta_parent_child_func
 
@@ -28,8 +29,10 @@ def get_nonroot_gammas(tHMMobj, MSD, gammas, betas):
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lineageObj.output_lineage
 
+        assert not math.isnan(np.all(MSD[num])), f"MSD for some lineage/lineages is nan!"
         with np.errstate(divide="ignore", invalid="ignore"):
             coeffs = betas[num] / MSD[num]
+            assert not math.isnan(np.all(coeffs)), f"beta over MSD which is coeffs is nan"
 
         for level in lineageObj.output_list_of_gens[1:]:
             for cell in level:
@@ -42,13 +45,14 @@ def get_nonroot_gammas(tHMMobj, MSD, gammas, betas):
 
                     with np.errstate(divide="ignore", invalid="ignore"):
                         sum_holder = np.matmul(gammas[num][parent_idx, :] / beta_parent, T)
+                        assert not math.isnan(np.all(sum_holder))
 
                     gammas[num][child_idx, :] = coeffs[child_idx, :] * sum_holder
 
         assert np.all(gammas[num][0, :] == betas[num][0, :])
 
     for _, gg in enumerate(gammas):
-        assert np.allclose(np.sum(gg, axis=1), 1.0, atol=0.4)
+        assert np.allclose(np.sum(gg, axis=1), 1.0, atol=0.01), f"sum of gammas are not right {gg}"
 
 
 def sum_nonleaf_gammas(lineageObj, gamma_arr):

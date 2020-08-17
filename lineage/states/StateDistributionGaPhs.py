@@ -73,6 +73,7 @@ class StateDistribution:
             assert math.isnan(tuple_of_obs[3]) and math.isnan(tuple_of_obs[5]) and math.isnan(tuple_of_obs[1])
             gamma_llG2 = 1
 
+        assert not math.isnan(np.all([bern_llG1, bern_llG2, gamma_llG1, gamma_llG2])), f"one of the ll s is nan"
         return bern_llG1 * bern_llG2 * gamma_llG1 * gamma_llG2
 
     def estimator(self, list_of_tuples_of_obs, gammas):

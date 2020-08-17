@@ -1,5 +1,5 @@
 """This file contains the methods that completes the downward recursion and evaulates the beta values."""
-
+import math
 import numpy as np
 
 
@@ -28,8 +28,9 @@ def get_Marginal_State_Distributions(tHMMobj):
 
         MSD_array = np.zeros((len(lineage), tHMMobj.num_states))  # instantiating N by K array
         MSD_array[0, :] = tHMMobj.estimate.pi
+        assert not math.isnan(np.all(MSD_array)), f"there is nan in estimation of pi"
 
-        assert np.isclose(np.sum(MSD_array[0]), 1.0)
+        assert np.isclose(np.sum(MSD_array[0]), 1.0), f"sum of pi = MSD[0] elements is not 1."
         MSD.append(MSD_array)
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
@@ -40,10 +41,13 @@ def get_Marginal_State_Distributions(tHMMobj):
                 parent_cell_idx = lineage.index(cell.parent)  # get the index of the parent cell
                 current_cell_idx = lineage.index(cell)
 
+                for row in tHMMobj.estimate.T:
+                    assert not math.isnan(np.all(row)), f"there is nan in estimation of T"
+
+                assert not math.isnan(np.all(MSD[num][parent_cell_idx, :])), f"MSD[num][parent_cell_idx, :] = {MSD[num][parent_cell_idx, :]}"
                 # recursion based on parent cell
                 MSD[num][current_cell_idx, :] = np.matmul(MSD[num][parent_cell_idx, :], tHMMobj.estimate.T)
-
-        assert np.allclose(np.sum(MSD[num], axis=1), 1.0)
+        assert np.allclose(np.sum(MSD[num], axis=1), 1.0, atol=0.1), f"sum of MSD for lineage number {num} is not 1. MSD[num]= {MSD[num]} and T= {tHMMobj.estimate.T}"
 
     return MSD
 
@@ -70,6 +74,7 @@ def get_Emission_Likelihoods(tHMMobj, E=None):
         for current_cell_idx, cell in enumerate(lineage):  # for each cell in the lineage
             for state_k in range(tHMMobj.num_states):  # for each state
                 EL_array[current_cell_idx, state_k] = E[state_k].pdf(cell.obs)
+                assert not math.isnan(EL_array[current_cell_idx, state_k]), f"EL is nan. E[state_k]: {E[state_k]},  obs:  {cell.obs}, state  {state_k}"
 
         EL.append(EL_array)  # append the EL_array for each lineage
     return EL
@@ -115,7 +120,7 @@ def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
             # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
             # the sum of the joint probabilities is the marginal probability
             NF_array[leaf_cell_idx] = np.sum(MSD_array[leaf_cell_idx, :] * EL_array[leaf_cell_idx, :])  # def of conditional prob
-            assert NF_array[leaf_cell_idx] > 0.0, "{} and {} and {} and {}".format(
+            assert NF_array[leaf_cell_idx] > 0.0, "NF_array={} \n and NF_array[leaf_cell_idx]={} \n and MSD_array[leaf_cell_idx, :]={} \n and EL_array[leaf_cell_idx, :]={}".format(
                 NF_array, NF_array[leaf_cell_idx], MSD_array[leaf_cell_idx, :], EL_array[leaf_cell_idx, :]
             )
         NF.append(NF_array)
