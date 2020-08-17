@@ -55,10 +55,16 @@ def accuracy():
     
     X_2 = [LineageTree.init_from_parameters(pi2, T2, E2, desired_num_cells=(2 ** 11) - 1)]
     
-    pi = np.array([0.55, 0.35, 0.10])
-    T = np.array([[0.75, 0.20, 0.05], [0.1, 0.85, 0.05], [0.1, 0.1, 0.8]])
-    E = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
-    X = [LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 11) - 1)]
+    pi3 = np.array([0.55, 0.35, 0.10])
+    T3 = np.array([[0.75, 0.20, 0.05], [0.1, 0.85, 0.05], [0.1, 0.1, 0.8]])
+    E3 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
+    X_3 = [LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 11) - 1)]
+    
+    pi4 = np.array([0.55, 0.35, 0.06, 0.04])
+    T4 = np.array([[0.70, 0.20, 0.05, 0.05], [0.1, 0.80, 0.06, 0.04], [0.1, 0.1, 0.6, 0.02], [0.1, 0.1, 0.5, 0.03]])
+    E4 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5), StateDistPhase(0.66, 0.95, 17, 6, 15, 5)]
+    
+    X_4 = [LineageTree.init_from_parameters(pi4, T4, E4, desired_num_cells=(2 ** 11) - 1)]
     
     X2 = []
     X3 = []
@@ -72,8 +78,14 @@ def accuracy():
     for _ in range(10):
         good2go = False
         while not good2go:
-            tmp_lineage = LineageTree.init_from_parameters(pi, T, E, 2 ** 11 - 1)
-            good2go = lineage_good_to_analyze(tmp_lineage)
+            tmp_lineage3 = LineageTree.init_from_parameters(pi3, T3, E3, 2 ** 11 - 1)
+            good2go = lineage_good_to_analyze(tmp_lineage3)
+            
+    for _ in range(10):
+        good2go = False
+        while not good2go:
+            tmp_lineage4 = LineageTree.init_from_parameters(pi4, T4, E4, 2 ** 11 - 1)
+            good2go = lineage_good_to_analyze(tmp_lineage4)
 
     X2.append(tmp_lineage2)
     tree_obj, predicted_states, LL = Analyze(X_2, 2)
@@ -81,14 +93,14 @@ def accuracy():
     accuracy = results_dict["accuracy_after_switching"]
 
         
-    X3.append(tmp_lineage)
-    tree_obj, predicted_states, LL = Analyze(X, 3)
+    X3.append(tmp_lineage3)
+    tree_obj, predicted_states, LL = Analyze(X_3, 3)
     results_dict = Results(tree_obj, predicted_states, LL)
     accuracy = results_dict["accuracy_after_switching"]
         
-    #X4.append(tmp_lineage)
-    #tree_obj, predicted_states, LL = Analyze(X, 4)
-    #results_dict = Results(tree_obj, predicted_states, LL)
-    #accuracy = results_dict["accuracy_after_switching"]
+    X4.append(tmp_lineage4)
+    tree_obj, predicted_states, LL = Analyze(X_4, 4)
+    results_dict = Results(tree_obj, predicted_states, LL)
+    accuracy = results_dict["accuracy_after_switching"]
 
     return accuracy
