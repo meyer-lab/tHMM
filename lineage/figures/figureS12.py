@@ -94,7 +94,7 @@ def accuracy():
             population3.append(tmp_lineage3)
     
     # Adding populations into a holder for analysing
-        list_of_populations2.append(population2)
+        list_of_populations3.append(population3)
 
     cell_number_x3, _, accuracy3_after_switching, _, _, _ = commonAnalyze(list_of_populations3)
             
@@ -112,7 +112,7 @@ def accuracy():
             population4.append(tmp_lineage4)
     
     # Adding populations into a holder for analysing
-        list_of_populations2.append(population2)
+        list_of_populations4.append(population4)
 
     cell_number_x4, _, accuracy4_after_switching, _, _, _ = commonAnalyze(list_of_populations4)
 
