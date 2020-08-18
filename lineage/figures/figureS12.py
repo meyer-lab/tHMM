@@ -117,7 +117,7 @@ def accuracy():
     cell_number_x4, _, accuracy4_after_switching, _, _, _ = commonAnalyze(list_of_populations4, 4)
     print ("after state 4 analyze")
     # Create the dataframe for the data.
-    accuracy_df = pd.DataFrame(columns=["x2", "x3", "x4", "accuracy2", "accuracy3", "accuracy4"])
+    accuracy_df = pd.DataFrame(columns=['x2', 'x3', 'x4', 'accuracy2', 'accuracy3', 'accuracy4'])
     accuracy_df['x2'] = cell_number_x2
     accuracy_df['accuracy2'] = accuracy2_after_switching
     accuracy_df['x3'] = cell_number_x3
