@@ -94,8 +94,8 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE2.append(E2)
 
-    x_Sim, _, Accuracy_Sim, _, _, _ = commonAnalyze(list_of_populationsSim, list_of_fpi=list_of_fpi)
-    x_Cen, _, Accuracy_Cen, _, _, _ = commonAnalyze(list_of_populations, list_of_fpi=list_of_fpi)
+    x_Sim, _, Accuracy_Sim, _, _, _ = commonAnalyze(list_of_populationsSim, 2, list_of_fpi=list_of_fpi)
+    x_Cen, _, Accuracy_Cen, _, _, _ = commonAnalyze(list_of_populations, 2, list_of_fpi=list_of_fpi)
     return x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, list_of_populationsSim, list_of_populations
 
 

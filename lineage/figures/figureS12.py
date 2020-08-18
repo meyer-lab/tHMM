@@ -6,7 +6,7 @@ increasing cell numbers for 2-state, 3-state, and 4-state models.
 """
 import numpy as np
 import pandas as pd
-from ..Analyze import Analyze, Results, run_Analyze_over
+from ..Analyze import Analyze, Results
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
 
 from .figureCommon import (
@@ -77,9 +77,9 @@ def accuracy():
 
         # Adding populations into a holder for analysing
         list_of_populations2.append(population2)
-    #print ("before state 2 analyze")
+    print ("before state 2 analyze")
     cell_number_x2, _, accuracy2_after_switching, _, _, _ = commonAnalyze(list_of_populations2, 2)
-    #print ("after state 2 analyze")
+    print ("after state 2 analyze")
     #3 state population
     list_of_populations3 = []
     
@@ -96,9 +96,9 @@ def accuracy():
     
     # Adding populations into a holder for analysing
         list_of_populations3.append(population3)
-    #print ("before state 3 analyze")
+    print ("before state 3 analyze")
     cell_number_x3, _, accuracy3_after_switching, _, _, _ = commonAnalyze(list_of_populations3, 3)
-    #print ("after state 3 analyze")
+    print ("after state 3 analyze")
     #4 state population
     list_of_populations4 = []
     
@@ -114,9 +114,9 @@ def accuracy():
     
     # Adding populations into a holder for analysing
         list_of_populations4.append(population4)
-    #print ("before state 4 analyze")
+    print ("before state 4 analyze")
     cell_number_x4, _, accuracy4_after_switching, _, _, _ = commonAnalyze(list_of_populations4, 4)
-    #print ("after state 4 analyze")
+    print ("after state 4 analyze")
     # Create the dataframe for the data.
     accuracy_df = pd.DataFrame(columns=["x2", "x3", "x4", "accuracy2", "accuracy3", "accuracy4"])
     accuracy_df['x2'] = cell_number_x2
@@ -125,7 +125,7 @@ def accuracy():
     accuracy_df['accuracy3'] = accuracy3_after_switching
     accuracy_df['x4'] = cell_number_x4
     accuracy_df['accuracy4'] = accuracy4_after_switching
-    #print ("after accuracy df")
+    print ("after accuracy df")
 
     return accuracy_df
 
