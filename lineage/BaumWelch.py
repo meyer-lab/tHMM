@@ -1,6 +1,7 @@
 """ Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch. """
 import math
 import numpy as np
+import logging
 
 from .UpwardRecursion import (
     get_Marginal_State_Distributions,
@@ -17,6 +18,7 @@ from .DownwardRecursion import (
     sum_nonleaf_gammas,
 )
 
+logging.basicConfig(filename='example.log',level=logging.DEBUG)
 
 def do_E_step(tHMMobj):
     """
@@ -90,6 +92,7 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
     Does the parameter estimation for the T
     Markov stochastic transition matrix.
     """
+    logging.info('started M step for calculating T')
     num_states = tHMMobj.num_states
 
     numer_estimate = np.zeros((num_states, num_states), dtype=float)

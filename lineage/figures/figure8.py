@@ -10,7 +10,7 @@ from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem
 # States to evaluate with the model
 from ..states.StateDistributionGaPhs import StateDistribution
 from .figureCommon import getSetup, subplotLabel
-from .figureS11 import run_AIC
+# from .figureS11 import run_AIC
 
 
 desired_num_states = np.arange(1, 5)
@@ -20,25 +20,19 @@ def makeFigure():
     """
     Makes figure 8.
     """
-    ax, f = getSetup((13.333, 6.666), (2, 4))
+    ax, f = getSetup((13.333, 3.333), (1, 4))
 
-    data = [Lapatinib_Control[0:12], Lapt25uM[0:12], Lapt50uM[0:12], Lapt50uM[12:24], Gemcitabine_Control[0:12], Gem5uM[0:12], Tax2uM[0:12]]
-
-    for indx, population in enumerate(data):
-        assert len(population) > 0, f"The length of population number {indx} in the data is 0."
+    data = [Lapatinib_Control[0:12], Lapt25uM[0:12], Gem5uM[0:12], Gem10uM[0:12]]
 
     # making lineages and finding AICs (assign number of lineages here)
     AIC = [run_AIC(data[i]) for i in range(len(data))]
 
     # Finding proper ylim range for all 4 censored graphs and rounding up
     upper_ylim_censored = int(1 + max(np.max(np.ptp(AIC[0], axis=0)), \
-    np.max(np.ptp(AIC[1], axis=0)), np.max(np.ptp(AIC[2], axis=0)), \
-    np.max(np.ptp(AIC[3], axis=0)), np.max(np.ptp(AIC[4], axis=0)), \
-    np.max(np.ptp(AIC[5], axis=0)), np.max(np.ptp(AIC[6], axis=0)), \
-    np.max(np.ptp(AIC[7], axis=0))) / 25.0) * 25
+    np.max(np.ptp(AIC[1], axis=0)), np.max(np.ptp(AIC[2], axis=0))) / 25.0) * 25
 
     upper_ylim = [upper_ylim_censored]
-    titles = ["Lpt cntrl", "Lpt 25uM", "Lpt 50uM", "Lpt 50uM", "Gem cntrl", "Gem 5uM", "Gem 10uM", "Pax 2uM"]
+    titles = ["Lpt cntrl", "Lpt 25uM", "Gem 5uM", "Gem 10uM"]
 
     # Plotting AICs
     for idx, a in enumerate(AIC):

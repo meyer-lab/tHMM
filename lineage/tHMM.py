@@ -1,12 +1,14 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 import math
 import numpy as np
+import logging
 import scipy.stats as sp
 
 from .UpwardRecursion import get_Emission_Likelihoods
 from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 
+logging.basicConfig(filename='example.log',level=logging.DEBUG)
 
 class estimate:
     """Estimation class.
@@ -38,7 +40,7 @@ class estimate:
 class tHMM:
     """Main tHMM class.
     """
-
+    logging.info('started tHMM class')
     def __init__(self, X, num_states: int, fpi=None, fT=None, fE=None):
         """Instantiates a tHMM.
 
@@ -63,6 +65,7 @@ class tHMM:
     def fit(self, tolerance=np.spacing(1), max_iter=100):
         """Runs the tHMM function through Baum Welch fitting"""
 
+        logging.info('started fitting')
         # Step 0: initialize with KMeans and do an M step
         if self.fE is None:  # when there are no fixed emissions, we need to randomize the start
             init_gammas = [sp.multinomial.rvs(n=1, p=[1. / self.num_states] * self.num_states, size=len(lineage))
@@ -86,6 +89,7 @@ class tHMM:
             if diff < tolerance:
                 break
 
+        logging.info('...finished fitting')
         return self, MSD, NF, betas, gammas, new_LL
 
     def predict(self):

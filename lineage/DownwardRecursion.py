@@ -2,12 +2,15 @@
 
 import math
 import numpy as np
+import logging
 from .UpwardRecursion import beta_parent_child_func
 
+logging.basicConfig(filename='example.log',level=logging.DEBUG)
 
 def get_root_gammas(tHMMobj, betas):
     """Need the first gamma terms in the baum welch, which are just the beta values of the root nodes.
     """
+    logging.info('started get_root_gammas')
     gammas = []
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
@@ -24,6 +27,7 @@ def get_root_gammas(tHMMobj, betas):
 def get_nonroot_gammas(tHMMobj, MSD, gammas, betas):
     """Get the gammas for all other nodes using recursion from the root nodes.
     """
+    logging.info('started get_nonroot_gammas')
     T = tHMMobj.estimate.T
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population

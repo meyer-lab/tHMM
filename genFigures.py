@@ -4,6 +4,8 @@ import sys
 import time
 import matplotlib
 import numpy as np
+import random
+random.seed(234)
 matplotlib.use('AGG')
 
 fdir = './output/'

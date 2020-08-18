@@ -13,7 +13,7 @@ def popout_single_lineages(lineages):
     """ To remove lineages with cell numbers <= 5. """
     trimed_lineages = []
     for cells in lineages:
-        if len(cells) <= 5:
+        if len(cells) <= 7:
             pass
         else:
             trimed_lineages.append(cells)
@@ -77,8 +77,8 @@ lapD56 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=
 lapD57 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00601_D5_3_V4.xlsx")]
 lapD58 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_D5_3_V4.xlsx")]
 
-lap250uM = lapD51 + lapD52 + lapD53 + lapD54 + lapD55 + lapD56 + lapD57 + lapD58
-Lap250uM = popout_single_lineages(lap250uM)
+Lap250uM = lapD51 + lapD52 + lapD53 + lapD54 + lapD55 + lapD56 + lapD57 + lapD58
+# Lap250uM = popout_single_lineages(lap250uM)
 
 # -- Gemcitabine control
 
@@ -142,8 +142,8 @@ gemD36 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=
 gemD37 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00601_D3_3_V4.xlsx")]
 gemD38 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_D3_2_V4.xlsx")]
 
-gem30uM = gemD31 + gemD32 + gemD33 + gemD34 + gemD35 + gemD36 + gemD37 + gemD38
-Gem30uM = popout_single_lineages(gem30uM)
+Gem30uM = gemD31 + gemD32 + gemD33 + gemD34 + gemD35 + gemD36 + gemD37 + gemD38
+# Gem30uM = popout_single_lineages(gem30uM)
 
 #-- PACLITAXEL 2 uMolars
 
@@ -162,8 +162,8 @@ Tax2uM = popout_single_lineages(taxs)
 taxD301 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00602_D3_1_V4.xlsx")]
 taxD302 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00602_D3_2_V4.xlsx")]
 
-tax75 = taxD301 + taxD302
-Tax7uM = popout_single_lineages(tax75)
+Tax7uM = taxD301 + taxD302
+# Tax7uM = popout_single_lineages(tax75)
 #-- PALBOCICLIB 250 uMolars
 palbD11 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00602_D3_1_V4.xlsx")]
 palbD12 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00702_D1_1_V4.xlsx")]

@@ -1,6 +1,8 @@
 """This file contains the methods that completes the downward recursion and evaulates the beta values."""
 import math
 import numpy as np
+import logging
+logging.basicConfig(filename='example.log',level=logging.DEBUG)
 
 
 def get_Marginal_State_Distributions(tHMMobj):
@@ -21,6 +23,7 @@ def get_Marginal_State_Distributions(tHMMobj):
 
     :math:`P(z_u = k) = \sum_j(Transition(j -> k) * P(parent_{cell_u}) = j)`
     """
+    logging.info('started MSD')
     MSD = []
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
@@ -62,6 +65,7 @@ def get_Emission_Likelihoods(tHMMobj, E=None):
     for all :math:`x_n` and :math:`z_n` in our observed and hidden state tree
     and for all possible discrete states k.
     """
+    logging.info('started EL')
     if E is None:
         E = tHMMobj.estimate.E
 
@@ -103,6 +107,7 @@ def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
     :math:`P(x_n = x) = sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x)`.
     """
 
+    logging.info('started NF')
     NF = []  # full Normalizing Factors holder
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
@@ -150,6 +155,7 @@ def get_leaf_betas(tHMMobj, MSD, EL, NF):
     the Marginal State Distributions. The value in the
     denominator is the Normalizing Factor.
     """
+    logging.info('started leaf betas')
     betas = []  # full betas holder
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
