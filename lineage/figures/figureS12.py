@@ -31,7 +31,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((9, 3), (1, 3))
+    ax, f = getSetup((10, 3.333), (1, 3))
 
     acc_df = accuracy()
     figureMaker(ax, acc_df)
