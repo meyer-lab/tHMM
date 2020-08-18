@@ -53,7 +53,7 @@ def accuracy():
     E3 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
     
     pi4 = np.array([0.55, 0.35, 0.06, 0.04])
-    T4 = np.array([[0.70, 0.20, 0.05, 0.05], [0.1, 0.80, 0.06, 0.04], [0.1, 0.1, 0.6, 0.02], [0.1, 0.1, 0.5, 0.03]])
+    T4 = np.array([[0.70, 0.20, 0.05, 0.05], [0.1, 0.80, 0.06, 0.04], [0.1, 0.1, 0.6, 0.2], [0.1, 0.1, 0.5, 0.3]])
     E4 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5), StateDistPhase(0.66, 0.95, 17, 6, 15, 5)]
 
     # common for all three populations
@@ -96,7 +96,7 @@ def accuracy():
     # Adding populations into a holder for analysing
         list_of_populations2.append(population2)
 
-    cell_number_x2, _, accuracy2_after_switching, _, _, _ = commonAnalyze(list_of_populations2)
+    cell_number_x3, _, accuracy3_after_switching, _, _, _ = commonAnalyze(list_of_populations3)
             
     #4 state population
     list_of_populations4 = []
@@ -114,7 +114,7 @@ def accuracy():
     # Adding populations into a holder for analysing
         list_of_populations2.append(population2)
 
-    cell_number_x2, _, accuracy2_after_switching, _, _, _ = commonAnalyze(list_of_populations2)
+    cell_number_x4, _, accuracy4_after_switching, _, _, _ = commonAnalyze(list_of_populations4)
 
     # Create the dataframe for the data.
     accuracy_df = pd.DataFrame(columns=["x2", "x3", "x4", "accuracy2", "accuracy3", "accuracy4"])
