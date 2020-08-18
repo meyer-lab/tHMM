@@ -59,7 +59,7 @@ def accuracy():
     # common for all three populations
     num_lineages = np.linspace(min_num_lineages, int(0.35 * max_num_lineages), num_data_points, dtype=int)
     experiment_times = np.linspace(1000, int(2.5 * 1000), num_data_points)
-
+    
     #2 state population
     list_of_populations2 = []
 
@@ -77,7 +77,7 @@ def accuracy():
         # Adding populations into a holder for analysing
         list_of_populations2.append(population2)
 
-    cell_number_x2, _, accuracy2_after_switching, _, _, _ = commonAnalyze(list_of_populations2)
+    cell_number_x2, _, accuracy2_after_switching, _, _, _ = commonAnalyze(list_of_populations2, 2)
 
     #3 state population
     list_of_populations3 = []
@@ -95,8 +95,8 @@ def accuracy():
     
     # Adding populations into a holder for analysing
         list_of_populations3.append(population3)
-
-    cell_number_x3, _, accuracy3_after_switching, _, _, _ = commonAnalyze(list_of_populations3)
+    
+    cell_number_x3, _, accuracy3_after_switching, _, _, _ = commonAnalyze(list_of_populations3, 3)
             
     #4 state population
     list_of_populations4 = []
@@ -114,7 +114,7 @@ def accuracy():
     # Adding populations into a holder for analysing
         list_of_populations4.append(population4)
 
-    cell_number_x4, _, accuracy4_after_switching, _, _, _ = commonAnalyze(list_of_populations4)
+    cell_number_x4, _, accuracy4_after_switching, _, _, _ = commonAnalyze(list_of_populations4, 4)
 
     # Create the dataframe for the data.
     accuracy_df = pd.DataFrame(columns=["x2", "x3", "x4", "accuracy2", "accuracy3", "accuracy4"])
