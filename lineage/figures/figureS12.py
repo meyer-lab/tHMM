@@ -66,10 +66,7 @@ def accuracy():
     
     X_4 = [LineageTree.init_from_parameters(pi4, T4, E4, desired_num_cells=(2 ** 11) - 1)]
     
-    X2 = []
-    X3 = []
-    X4 = []
-    
+  
     #2 state population
     num_lineages = np.linspace(min_num_lineages, int(0.35 * max_num_lineages), num_data_points, dtype=int)
     experiment_times = np.linspace(1000, int(2.5 * 1000), num_data_points)
