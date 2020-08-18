@@ -103,7 +103,7 @@ def accuracy():
     
     for indx, num in enumerate(num_lineages):
         population4 = []
-        for _ in range(num):
+        for _ in range(10):
             good2go = False
             while not good2go:
                 tmp_lineage4 = LineageTree.init_from_parameters(pi4, T4, E4, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
@@ -117,13 +117,13 @@ def accuracy():
     cell_number_x4, _, accuracy4_after_switching, _, _, _ = commonAnalyze(list_of_populations4, 4)
     print ("after state 4 analyze")
     # Create the dataframe for the data.
-    accuracy_df = pd.DataFrame(columns=['x2', 'x3', 'x4', 'accuracy2', 'accuracy3', 'accuracy4'])
-    accuracy_df['x2'] = cell_number_x2
-    accuracy_df['accuracy2'] = accuracy2_after_switching
-    accuracy_df['x3'] = cell_number_x3
-    accuracy_df['accuracy3'] = accuracy3_after_switching
-    accuracy_df['x4'] = cell_number_x4
-    accuracy_df['accuracy4'] = accuracy4_after_switching
+    accuracy_df = pd.DataFrame(columns=["x2", "x3", "x4", "accuracy2", "accuracy3", "accuracy4"])
+    accuracy_df["x2"] = cell_number_x2
+    accuracy_df["accuracy2"] = accuracy2_after_switching
+    accuracy_df["x3"] = cell_number_x3
+    accuracy_df["accuracy3"] = accuracy3_after_switching
+    accuracy_df["x4"] = cell_number_x4
+    accuracy_df["accuracy4"] = accuracy4_after_switching
     print ("after accuracy df")
 
     return accuracy_df
