@@ -84,7 +84,7 @@ def accuracy():
     
     for indx, num in enumerate(num_lineages):
         population3 = []
-        for _ in range(10):
+        for _ in range(num):
             
             good2go = False
             while not good2go:
@@ -103,7 +103,7 @@ def accuracy():
     
     for indx, num in enumerate(num_lineages):
         population4 = []
-        for _ in range(10):
+        for _ in range(num):
             good2go = False
             while not good2go:
                 tmp_lineage4 = LineageTree.init_from_parameters(pi4, T4, E4, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
