@@ -2,7 +2,7 @@
 
 import math
 import numpy as np
-from numba import njit
+from numba import njit, vectorize, float64
 import scipy.stats as sp
 import scipy.special as sc
 from scipy.optimize import brentq, minimize
@@ -36,7 +36,7 @@ def gamma_pdf(x, a, scale):
     """
     return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / math.gamma(a) / (scale ** a)
 
-
+@vectorize([float64(float64, float64, float64)], nopython = True, target = "parallel")
 @njit
 def gamma_sf(x, a, scale):
     """
@@ -47,11 +47,10 @@ def gamma_sf(x, a, scale):
     """
     xinc = x/scale
     terms = np.array([((xinc**k))/(math.gamma(a+k+1))
-                      for k in np.arange(0, 100)])
+                      for k in np.arange(0, 50)])
     gammainc = (np.exp(-xinc))*(xinc**a)*np.sum(terms)
-    assert not math.isnan(gammainc)
+    assert not np.isnan(gammainc)
     return 1-(gammainc)
-
 
 @njit
 def log_gamma_sf(x, a, scale):
@@ -87,12 +86,12 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
             gamma_obs, time_censor_obs) if idx == 1])
         assert uncens_gammas.shape[0] == uncens_obs.shape[0]
         uncens = uncens_gammas * \
-            sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
+            log_gamma_pdf(uncens_obs, a=x[0], scale=x[1])
         cens_gammas = np.array(
             [gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 0])
         cens_obs = np.array([obs for obs, idx in zip(
             gamma_obs, time_censor_obs) if idx == 0])
-        cens = cens_gammas * sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
+        cens = cens_gammas * log_gamma_sf(cens_obs, a=x[0], scale=x[1])
 
         return -1 * (np.sum(uncens) + np.sum(cens))
 
