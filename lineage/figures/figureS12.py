@@ -6,7 +6,6 @@ increasing cell numbers for 2-state, 3-state, and 4-state models.
 """
 import numpy as np
 import pandas as pd
-from ..Analyze import Analyze, Results
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
 
 from .figureCommon import (
