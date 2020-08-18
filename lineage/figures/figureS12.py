@@ -6,6 +6,7 @@ increasing cell numbers for 2-state, 3-state, and 4-state models.
 """
 import numpy as np
 import pandas as pd
+import seaborn as sns
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
 
 from .figureCommon import (
@@ -32,7 +33,8 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((9, 3), (1, 3))
 
-    figureMaker(ax, *accuracy())
+    acc_df = accuracy()
+    figureMaker(ax, acc_df)
 
     subplotLabel(ax)
 
