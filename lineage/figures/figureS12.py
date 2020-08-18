@@ -47,10 +47,6 @@ def accuracy():
     We increase the desired number of cells in a lineage by
     the experiment time.
     """
-
-    pi2 = np.array([0.60, 0.40])
-    T2 = np.array([[0.75, 0.25], [0.1, 0.90]])
-    E2 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4)]
         
     pi3 = np.array([0.55, 0.35, 0.10]) 
     T3 = np.array([[0.75, 0.20, 0.05], [0.1, 0.85, 0.05], [0.1, 0.1, 0.8]])
@@ -68,18 +64,18 @@ def accuracy():
     list_of_populations2 = []
 
     for indx, num in enumerate(num_lineages):
-        population = []
+        population2 = []
         for _ in range(num):
 
             good2go = False
             while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(pi2, T2, E2, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
-                good2go = lineage_good_to_analyze(tmp_lineage)
+                tmp_lineage2 = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
+                good2go = lineage_good_to_analyze(tmp_lineage2)
 
-            population.append(tmp_lineage)
+            population2.append(tmp_lineage2)
 
         # Adding populations into a holder for analysing
-        list_of_populations2.append(population)
+        list_of_populations2.append(population2)
 
     cell_number_x2, _, accuracy2_after_switching, _, _, _ = commonAnalyze(list_of_populations2)
 
@@ -89,6 +85,7 @@ def accuracy():
     for indx, num in enumerate(num_lineages):
         population3 = []
         for _ in range(10):
+            
             good2go = False
             while not good2go:
                 tmp_lineage3 = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
@@ -96,9 +93,10 @@ def accuracy():
             
             population3.append(tmp_lineage3)
     
-    tree_obj, predicted_states, LL = run_Analyze_over(population3, 3)
-    results_dict = Results(tree_obj, predicted_states, LL)
-    accuracy_3 = results_dict["accuracy_after_switching"]
+    # Adding populations into a holder for analysing
+        list_of_populations2.append(population2)
+
+    cell_number_x2, _, accuracy2_after_switching, _, _, _ = commonAnalyze(list_of_populations2)
             
     #4 state population
     list_of_populations4 = []
@@ -113,14 +111,19 @@ def accuracy():
             
             population4.append(tmp_lineage4)
     
-    tree_obj, predicted_states, LL = run_Analyze_over(population4, 4)
-    results_dict = Results(tree_obj, predicted_states, LL)
-    accuracy_4 = results_dict["accuracy_after_switching"]
+    # Adding populations into a holder for analysing
+        list_of_populations2.append(population2)
+
+    cell_number_x2, _, accuracy2_after_switching, _, _, _ = commonAnalyze(list_of_populations2)
 
     # Create the dataframe for the data.
     accuracy_df = pd.DataFrame(columns=["x2", "x3", "x4", "accuracy2", "accuracy3", "accuracy4"])
     accuracy_df['x2'] = cell_number_x2
     accuracy_df['accuracy2'] = accuracy2_after_switching
+    accuracy_df['x3'] = cell_number_x3
+    accuracy_df['accuracy3'] = accuracy3_after_switching
+    accuracy_df['x4'] = cell_number_x4
+    accuracy_df['accuracy4'] = accuracy4_after_switching
     
 
     return accuracy_df
@@ -135,6 +138,14 @@ def figureMaker(accuracy_df):
     ax[i].set_ylim(bottom=25.0, top=101)
 
     i += 1
+    sns.regplot(x="x3", y="accuracy3", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+    ax[i].set_title("State Assignment Accuracy")
+    ax[i].set_ylabel("Accuracy [%]")
+    ax[i].set_ylim(bottom=25.0, top=101)
     
-    
+    i += 1
+    sns.regplot(x="x4", y="accuracy4", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+    ax[i].set_title("State Assignment Accuracy")
+    ax[i].set_ylabel("Accuracy [%]")
+    ax[i].set_ylim(bottom=25.0, top=101)
 
