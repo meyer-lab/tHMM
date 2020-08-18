@@ -77,9 +77,9 @@ def accuracy():
 
         # Adding populations into a holder for analysing
         list_of_populations2.append(population2)
-
+    #print ("before state 2 analyze")
     cell_number_x2, _, accuracy2_after_switching, _, _, _ = commonAnalyze(list_of_populations2, 2)
-
+    #print ("after state 2 analyze")
     #3 state population
     list_of_populations3 = []
     
@@ -96,9 +96,9 @@ def accuracy():
     
     # Adding populations into a holder for analysing
         list_of_populations3.append(population3)
-    
+    #print ("before state 3 analyze")
     cell_number_x3, _, accuracy3_after_switching, _, _, _ = commonAnalyze(list_of_populations3, 3)
-            
+    #print ("after state 3 analyze")
     #4 state population
     list_of_populations4 = []
     
@@ -114,9 +114,9 @@ def accuracy():
     
     # Adding populations into a holder for analysing
         list_of_populations4.append(population4)
-
+    #print ("before state 4 analyze")
     cell_number_x4, _, accuracy4_after_switching, _, _, _ = commonAnalyze(list_of_populations4, 4)
-
+    #print ("after state 4 analyze")
     # Create the dataframe for the data.
     accuracy_df = pd.DataFrame(columns=["x2", "x3", "x4", "accuracy2", "accuracy3", "accuracy4"])
     accuracy_df['x2'] = cell_number_x2
@@ -125,28 +125,28 @@ def accuracy():
     accuracy_df['accuracy3'] = accuracy3_after_switching
     accuracy_df['x4'] = cell_number_x4
     accuracy_df['accuracy4'] = accuracy4_after_switching
-    
+    #print ("after accuracy df")
 
     return accuracy_df
 
-def figureMaker(accuracy_df):
+def figureMaker(ax, accuracy_df):
     """ This creates figure S12. Includes 3 subplots for accuracy of state assignment for 2, 3, and 4 states. """
 
     i = 0
     sns.regplot(x="x2", y="accuracy2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    ax[i].set_title("State Assignment Accuracy")
+    ax[i].set_title("2 State Assignment Accuracy")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_ylim(bottom=25.0, top=101)
 
     i += 1
     sns.regplot(x="x3", y="accuracy3", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    ax[i].set_title("State Assignment Accuracy")
+    ax[i].set_title("3 State Assignment Accuracy")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_ylim(bottom=25.0, top=101)
     
     i += 1
     sns.regplot(x="x4", y="accuracy4", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    ax[i].set_title("State Assignment Accuracy")
+    ax[i].set_title("4 State Assignment Accuracy")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_ylim(bottom=25.0, top=101)
 
