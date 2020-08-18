@@ -17,12 +17,13 @@ from .figureCommon import (
     T,
     E,
     lineage_good_to_analyze,
-    min_num_lineages,
-    num_data_points,
     scatter_kws_list,
 )
 from ..LineageTree import LineageTree
 
+num_lineages = 50
+num_data_points = 50
+max_deired_num_cells = 2 ** 6 - 1
 
 def makeFigure():
     """
@@ -58,7 +59,7 @@ def accuracy():
     E4 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5), StateDistPhase(0.66, 0.95, 17, 6, 15, 5)]
 
     # common for all three populations
-    num_lineages = np.linspace(min_num_lineages, 50, 50, dtype=int)
+    num_lineages = np.linspace(min_num_lineages, num_lineages, num_data_points, dtype=int)
     experiment_times = np.linspace(1000, int(2.5 * 1000), num_data_points)
     
     #2 state population
@@ -77,9 +78,9 @@ def accuracy():
 
         # Adding populations into a holder for analysing
         list_of_populations2.append(population2)
-    print ("before state 2 analyze")
+
     cell_number_x2, _, accuracy2_after_switching, _, _, _ = commonAnalyze(list_of_populations2, 2)
-    print ("after state 2 analyze")
+
     #3 state population
     list_of_populations3 = []
     
@@ -96,9 +97,9 @@ def accuracy():
     
     # Adding populations into a holder for analysing
         list_of_populations3.append(population3)
-    print ("before state 3 analyze")
+
     cell_number_x3, _, accuracy3_after_switching, _, _, _ = commonAnalyze(list_of_populations3, 3)
-    print ("after state 3 analyze")
+
     #4 state population
     list_of_populations4 = []
     
@@ -114,9 +115,9 @@ def accuracy():
     
     # Adding populations into a holder for analysing
         list_of_populations4.append(population4)
-    print ("before state 4 analyze")
+
     cell_number_x4, _, accuracy4_after_switching, _, _, _ = commonAnalyze(list_of_populations4, 4)
-    print ("after state 4 analyze")
+
     # Create the dataframe for the data.
     accuracy_df = pd.DataFrame(columns=["x2", "x3", "x4", "accuracy2", "accuracy3", "accuracy4"])
     accuracy_df["x2"] = cell_number_x2
