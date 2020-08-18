@@ -72,6 +72,7 @@ def accuracy():
     
     #2 state population
     num_lineages = np.linspace(min_num_lineages, int(0.35 * max_num_lineages), num_data_points, dtype=int)
+    experiment_times = np.linspace(1000, int(2.5 * 1000), num_data_points)
     list_of_populations2 = []
     
     for indx, num in enumerate(num_lineages):
@@ -80,7 +81,7 @@ def accuracy():
         for _ in range(10):
             good2go = False
             while not good2go:
-                tmp_lineage2 = LineageTree.init_from_parameters(pi2, T2, E2, 2 ** 11 - 1)
+                tmp_lineage2 = LineageTree.init_from_parameters(pi2, T2, E2, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
                 good2go = lineage_good_to_analyze(tmp_lineage2)
             
             population2.append(tmp_lineage2)
@@ -97,7 +98,7 @@ def accuracy():
         for _ in range(10):
             good2go = False
             while not good2go:
-                tmp_lineage3 = LineageTree.init_from_parameters(pi3, T3, E3, 2 ** 11 - 1)
+                tmp_lineage3 = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
                 good2go = lineage_good_to_analyze(tmp_lineage3)
             
             population3.append(tmp_lineage3)
@@ -114,7 +115,7 @@ def accuracy():
         for _ in range(10):
             good2go = False
             while not good2go:
-                tmp_lineage4 = LineageTree.init_from_parameters(pi4, T4, E4, 2 ** 11 - 1)
+                tmp_lineage4 = LineageTree.init_from_parameters(pi4, T4, E4, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
                 good2go = lineage_good_to_analyze(tmp_lineage4)
             
             population4.append(tmp_lineage4)
