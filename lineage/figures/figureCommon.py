@@ -178,6 +178,7 @@ def commonAnalyze(list_of_populations, num_states, xtype="length", **kwargs):
 
     return x, paramEst, dictOut["balanced_accuracy_score"], dictOut["transition_matrix_norm"], dictOut["pi_vector_norm"], paramTrues
 
+
 def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number of Cells"):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
