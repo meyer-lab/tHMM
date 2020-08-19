@@ -52,6 +52,7 @@ def gamma_sf(x, a, scale):
     assert not np.isnan(gammainc)
     return 1-(gammainc)
 
+
 @njit
 def log_gamma_sf(x, a, scale):
     return np.log(gamma_sf(x, a, scale))
@@ -91,7 +92,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
             [gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 0])
         cens_obs = np.array([obs for obs, idx in zip(
             gamma_obs, time_censor_obs) if idx == 0])
-        cens = cens_gammas * log_gamma_sf(cens_obs, a=x[0], scale=x[1])
+        cens = cens_gammas * np.log(gamma_sf(cens_obs, a=x[0], scale=x[1]))
 
         return -1 * (np.sum(uncens) + np.sum(cens))
 
