@@ -8,7 +8,8 @@ from .UpwardRecursion import get_Emission_Likelihoods
 from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 
-logging.basicConfig(filename='example.log',level=logging.DEBUG)
+logging.basicConfig(filename='example.log', level=logging.DEBUG)
+
 
 class estimate:
     """Estimation class.
@@ -41,6 +42,7 @@ class tHMM:
     """Main tHMM class.
     """
     logging.info('started tHMM class')
+
     def __init__(self, X, num_states: int, fpi=None, fT=None, fE=None):
         """Instantiates a tHMM.
 

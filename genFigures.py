@@ -4,8 +4,10 @@ import sys
 import time
 import matplotlib
 import numpy as np
-import random
-random.seed(234)
+import logging
+
+logging.basicConfig(filename='example.log',level=logging.DEBUG)
+
 matplotlib.use('AGG')
 
 fdir = './output/'

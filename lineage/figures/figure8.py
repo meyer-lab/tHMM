@@ -27,8 +27,8 @@ def makeFigure():
     AIC = [run_AIC(data[i]) for i in range(len(data))]
 
     # Finding proper ylim range for all 4 censored graphs and rounding up
-    upper_ylim_censored = int(1 + max(np.max(np.ptp(AIC[0], axis=0)), \
-    np.max(np.ptp(AIC[1], axis=0)), np.max(np.ptp(AIC[2], axis=0)), np.max(np.ptp(AIC[3], axis=0))) / 25.0) * 25
+    upper_ylim_censored = int(1 + max(np.max(np.ptp(AIC[0], axis=0)),
+                                      np.max(np.ptp(AIC[1], axis=0)), np.max(np.ptp(AIC[2], axis=0)), np.max(np.ptp(AIC[3], axis=0))) / 25.0) * 25
 
     upper_ylim = [upper_ylim_censored]
     titles = ["Lpt cntrl", "Gem cntrl", "Lpt 25uM", "Gem 5uM"]
@@ -55,6 +55,7 @@ def run_AIC(lineages):
         AICs[idx] = np.array([ind_AIC for ind_AIC in AIC])
 
     return AICs
+
 
 def figure_maker(ax, AIC_holder, title, upper_ylim, censored=False):
     """

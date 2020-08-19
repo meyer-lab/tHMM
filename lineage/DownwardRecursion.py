@@ -5,7 +5,6 @@ import numpy as np
 import logging
 from .UpwardRecursion import beta_parent_child_func
 
-logging.basicConfig(filename='example.log',level=logging.DEBUG)
 
 def get_root_gammas(tHMMobj, betas):
     """Need the first gamma terms in the baum welch, which are just the beta values of the root nodes.

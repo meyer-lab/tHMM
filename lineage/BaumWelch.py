@@ -18,7 +18,6 @@ from .DownwardRecursion import (
     sum_nonleaf_gammas,
 )
 
-logging.basicConfig(filename='example.log',level=logging.DEBUG)
 
 def do_E_step(tHMMobj):
     """
@@ -101,8 +100,8 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
         gamma_array = gammas[num]
 
         # local T estimate
-        numer_estimate = get_all_zetas(lineageObj, betas[num], MSD[num], gamma_array, tHMMobj.estimate.T)
-        denom_estimate = sum_nonleaf_gammas(lineageObj, gamma_array)
+        numer_estimate += get_all_zetas(lineageObj, betas[num], MSD[num], gamma_array, tHMMobj.estimate.T)
+        denom_estimate += sum_nonleaf_gammas(lineageObj, gamma_array)
 
     T_estimate_prenorm = numer_estimate / denom_estimate[:, np.newaxis]
     T_estimate = T_estimate_prenorm / T_estimate_prenorm.sum(axis=1)[:, np.newaxis]

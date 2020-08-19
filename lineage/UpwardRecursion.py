@@ -2,7 +2,6 @@
 import math
 import numpy as np
 import logging
-logging.basicConfig(filename='example.log',level=logging.DEBUG)
 
 
 def get_Marginal_State_Distributions(tHMMobj):
