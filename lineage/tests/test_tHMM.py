@@ -9,8 +9,8 @@ from ..UpwardRecursion import (
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
-from ..figures.figureCommon import pi, T, E, lineage_good_to_analyze
-from ..Analyze import Analyze, Results
+from ..figures.figureCommon import pi, T, E, lineage_good_to_analyze, commonAnalyze
+from ..Analyze import Analyze, Results, run_Analyze_over
 
 
 class TestModel(unittest.TestCase):
@@ -106,28 +106,38 @@ class TestModel(unittest.TestCase):
 
     def test_level_of_performance3(self):
         """
-        Really defined states should get an accuracy >95%.
+        Really defined states should get an accuracy >80%.
         Lineages used should be large and distinct.
         """
-        X = []
-        for _ in range(10):
+        num_lineages = 5
+        population3 = []
+        for _ in range(num_lineages):
+            
             good2go = False
             while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, 2 ** 11 - 1)
-                good2go = lineage_good_to_analyze(tmp_lineage)
+                tmp_lineage3 = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=2 ** 12 - 1)
+                good2go = lineage_good_to_analyze(tmp_lineage3)
+            
+            population3.append(tmp_lineage3)
 
-        X.append(tmp_lineage)
-        tree_obj, predicted_states, LL = Analyze(X, 3)
-        results_dict = Results(tree_obj, predicted_states, LL)
-        accuracy = results_dict["balanced_accuracy_score"]
-        self.assertGreaterEqual(accuracy, 95)
+        _, _, accuracy_score, _, _, _  = commonAnalyze([population3], 3)
+        self.assertGreaterEqual(accuracy_score[0], 80)
 
     def test_level_of_performance2(self):
         """
         Really defined states should get an accuracy >95%.
         Lineages used should be large and distinct.
         """
-        tree_obj, predicted_states, LL = Analyze(self.X, 2)
-        results_dict = Results(tree_obj, predicted_states, LL)
-        accuracy = results_dict["balanced_accuracy_score"]
-        self.assertGreaterEqual(accuracy, 95)
+        num_lineages = 5
+        population2 = []
+        for _ in range(num_lineages):
+            
+            good2go = False
+            while not good2go:
+                tmp_lineage2 = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=2 ** 5 - 1)
+                good2go = lineage_good_to_analyze(tmp_lineage2)
+            
+            population2.append(tmp_lineage2)
+
+        _, _, accuracy_score, _, _, _  = commonAnalyze([population2], 2)
+        self.assertGreaterEqual(accuracy_score[0], 95)
