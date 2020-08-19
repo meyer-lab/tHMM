@@ -1,7 +1,7 @@
 """
 File: figureS12.py
 Purpose: Generates figure S12.
-Figure S12 shows the accuracy of state assignment versus 
+Figure S12 shows the accuracy of state assignment versus
 increasing cell numbers for 2-state, 3-state, and 4-state models.
 """
 import numpy as np
@@ -25,6 +25,7 @@ from ..LineageTree import LineageTree
 max_num_lineages = 50
 num_data_points = 50
 max_deired_num_cells = 2 ** 6 - 1
+
 
 def makeFigure():
     """
@@ -50,11 +51,11 @@ def accuracy():
     We increase the desired number of cells in a lineage by
     the experiment time.
     """
-        
-    pi3 = np.array([0.55, 0.35, 0.10]) 
+
+    pi3 = np.array([0.55, 0.35, 0.10])
     T3 = np.array([[0.75, 0.20, 0.05], [0.1, 0.85, 0.05], [0.1, 0.1, 0.8]])
     E3 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
-    
+
     pi4 = np.array([0.55, 0.35, 0.06, 0.04])
     T4 = np.array([[0.70, 0.20, 0.05, 0.05], [0.1, 0.80, 0.06, 0.04], [0.1, 0.1, 0.6, 0.2], [0.1, 0.1, 0.5, 0.3]])
     E4 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5), StateDistPhase(0.66, 0.95, 17, 6, 15, 5)]
@@ -62,8 +63,8 @@ def accuracy():
     # common for all three populations
     num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
     experiment_times = np.linspace(1000, int(2.5 * 1000), num_data_points)
-    
-    #2 state population
+
+    # 2 state population
     list_of_populations2 = []
 
     for indx, num in enumerate(num_lineages):
@@ -72,7 +73,7 @@ def accuracy():
 
             good2go = False
             while not good2go:
-                tmp_lineage2 = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=0.5*max_deired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
+                tmp_lineage2 = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=0.5 * max_deired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
                 good2go = lineage_good_to_analyze(tmp_lineage2)
 
             population2.append(tmp_lineage2)
@@ -82,38 +83,38 @@ def accuracy():
 
     cell_number_x2, _, accuracy2_after_switching, _, _, _ = commonAnalyze(list_of_populations2, 2)
 
-    #3 state population
+    # 3 state population
     list_of_populations3 = []
-    
+
     for indx, num in enumerate(num_lineages):
         population3 = []
         for _ in range(num):
-            
+
             good2go = False
             while not good2go:
-                tmp_lineage3 = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=0.5*max_deired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
+                tmp_lineage3 = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=0.5 * max_deired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
                 good2go = lineage_good_to_analyze(tmp_lineage3)
-            
+
             population3.append(tmp_lineage3)
-    
+
     # Adding populations into a holder for analysing
         list_of_populations3.append(population3)
 
     cell_number_x3, _, accuracy3_after_switching, _, _, _ = commonAnalyze(list_of_populations3, 3)
 
-    #4 state population
+    # 4 state population
     list_of_populations4 = []
-    
+
     for indx, num in enumerate(num_lineages):
         population4 = []
         for _ in range(num):
             good2go = False
             while not good2go:
-                tmp_lineage4 = LineageTree.init_from_parameters(pi4, T4, E4, desired_num_cells=0.5*max_deired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
+                tmp_lineage4 = LineageTree.init_from_parameters(pi4, T4, E4, desired_num_cells=0.5 * max_deired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
                 good2go = lineage_good_to_analyze(tmp_lineage4)
-            
+
             population4.append(tmp_lineage4)
-    
+
     # Adding populations into a holder for analysing
         list_of_populations4.append(population4)
 
@@ -127,9 +128,10 @@ def accuracy():
     accuracy_df["accuracy3"] = accuracy3_after_switching
     accuracy_df["x4"] = cell_number_x4
     accuracy_df["accuracy4"] = accuracy4_after_switching
-    print ("after accuracy df")
+    print("after accuracy df")
 
     return accuracy_df
+
 
 def figureMaker(ax, accuracy_df):
     """ This creates figure S12. Includes 3 subplots for accuracy of state assignment for 2, 3, and 4 states. """
@@ -147,11 +149,10 @@ def figureMaker(ax, accuracy_df):
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_xlabel("Number of Cells")
     ax[i].set_ylim(bottom=25.0, top=101)
-    
+
     i += 1
     sns.regplot(x="x4", y="accuracy4", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
     ax[i].set_title("4 State Assignment Accuracy")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_xlabel("Number of Cells")
     ax[i].set_ylim(bottom=25.0, top=101)
-
