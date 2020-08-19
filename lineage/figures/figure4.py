@@ -66,7 +66,7 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E2)
 
-    cell_number_x, paramEst, accuracy_after_switching, transition_matrix_norm, pi_vector_norm, paramTrues = commonAnalyze(list_of_populations)
+    cell_number_x, paramEst, accuracy_after_switching, transition_matrix_norm, pi_vector_norm, paramTrues = commonAnalyze(list_of_populations, 2)
 
     accuracy_df = pd.DataFrame(columns=["Cell Number", 'State Assignment Accuracy'])
     accuracy_df['Cell Number'] = cell_number_x
