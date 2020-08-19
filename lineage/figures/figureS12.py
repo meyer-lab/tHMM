@@ -18,6 +18,7 @@ from .figureCommon import (
     E,
     lineage_good_to_analyze,
     scatter_kws_list,
+    min_num_lineages
 )
 from ..LineageTree import LineageTree
 
