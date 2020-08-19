@@ -21,7 +21,7 @@ from .figureCommon import (
 )
 from ..LineageTree import LineageTree
 
-num_lineages = 50
+max_num_lineages = 50
 num_data_points = 50
 max_deired_num_cells = 2 ** 6 - 1
 
@@ -59,7 +59,7 @@ def accuracy():
     E4 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5), StateDistPhase(0.66, 0.95, 17, 6, 15, 5)]
 
     # common for all three populations
-    num_lineages = np.linspace(min_num_lineages, num_lineages, num_data_points, dtype=int)
+    num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
     experiment_times = np.linspace(1000, int(2.5 * 1000), num_data_points)
     
     #2 state population
