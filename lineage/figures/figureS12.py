@@ -138,17 +138,20 @@ def figureMaker(ax, accuracy_df):
     sns.regplot(x="x2", y="accuracy2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
     ax[i].set_title("2 State Assignment Accuracy")
     ax[i].set_ylabel("Accuracy [%]")
+    ax[i].set_xlabel("Number of Cells")
     ax[i].set_ylim(bottom=25.0, top=101)
 
     i += 1
     sns.regplot(x="x3", y="accuracy3", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
     ax[i].set_title("3 State Assignment Accuracy")
     ax[i].set_ylabel("Accuracy [%]")
+    ax[i].set_xlabel("Number of Cells")
     ax[i].set_ylim(bottom=25.0, top=101)
     
     i += 1
     sns.regplot(x="x4", y="accuracy4", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
     ax[i].set_title("4 State Assignment Accuracy")
     ax[i].set_ylabel("Accuracy [%]")
+    ax[i].set_xlabel("Number of Cells")
     ax[i].set_ylim(bottom=25.0, top=101)
 
