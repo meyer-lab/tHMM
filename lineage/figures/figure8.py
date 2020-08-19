@@ -22,7 +22,7 @@ def makeFigure():
     """
     ax, f = getSetup((13.333, 3.333), (1, 4))
 
-    data = [Lapatinib_Control[0:12], Lapt25uM[0:12], Gem5uM[0:12], Gem10uM[0:12]]
+    data = [Lapatinib_Control[0:12], Gemcitabine_Control, Gem5uM[0:12], Gem5uM[12:24]]
 
     # making lineages and finding AICs (assign number of lineages here)
     AIC = [run_AIC(data[i]) for i in range(len(data))]
@@ -32,7 +32,7 @@ def makeFigure():
     np.max(np.ptp(AIC[1], axis=0)), np.max(np.ptp(AIC[2], axis=0))) / 25.0) * 25
 
     upper_ylim = [upper_ylim_censored]
-    titles = ["Lpt cntrl", "Lpt 25uM", "Gem 5uM", "Gem 10uM"]
+    titles = ["Lpt cntrl", "Gem cntrl", "Gem 5uM", "Gem 5uM"]
 
     # Plotting AICs
     for idx, a in enumerate(AIC):
