@@ -87,12 +87,12 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
             gamma_obs, time_censor_obs) if idx == 1])
         assert uncens_gammas.shape[0] == uncens_obs.shape[0]
         uncens = uncens_gammas * \
-            log_gamma_pdf(uncens_obs, a=x[0], scale=x[1])
+            sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
         cens_gammas = np.array(
             [gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 0])
         cens_obs = np.array([obs for obs, idx in zip(
             gamma_obs, time_censor_obs) if idx == 0])
-        cens = cens_gammas * np.log(gamma_sf(cens_obs, a=x[0], scale=x[1]))
+        cens = cens_gammas * sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
 
         return -1 * (np.sum(uncens) + np.sum(cens))
 
