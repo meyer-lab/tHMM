@@ -181,6 +181,7 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
     if not found:
         return None
 
+    assert divisionTime != exp_time, f'Cell time censorship, but daughters were found in row {parentPos+1}, column {pColumn+1} of sheet'
     # Check that the parent cell didn't get time censored
     
 
@@ -215,7 +216,6 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
         assert data[parentPos][pColumn] == exp_time, '[x  _  x] case where x =/= exp time'
         if data[parentPos][pColumn] == exp_time:
             # We don't know the outcome of G1
-            assert daughterCell.left is None and daughterCell.right is None, f'Cell time censorship in row {parentPos+1}, column {pColumn+1} of sheet, but daughters were found'
             daughterCell.obs[0] = float("nan")
             daughterCell.obs[4] = 0  # G1 censored
 
