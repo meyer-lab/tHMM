@@ -87,7 +87,7 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10, censored=Fals
     AICs = np.empty((len(desired_num_states), len(lineages)))
     output = run_Analyze_AIC(lineages, desired_num_states)
     for idx in range(len(desired_num_states)):
-        AIC, _ = output[idx][0].get_AIC(output[idx][2])
+        AIC, _ = output[idx][0].get_AIC(output[idx][2], None)
         AICs[idx] = np.array([ind_AIC for ind_AIC in AIC])
 
     return AICs

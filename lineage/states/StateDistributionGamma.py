@@ -65,7 +65,7 @@ class StateDistribution:
 
         b_mask = np.logical_not(np.isnan(bern_obs))
         self.params[0] = bernoulli_estimator(bern_obs[b_mask], gammas[b_mask])
-        self.params[1], self.params[2] = gamma_estimator(γ_obs, gamma_obs_censor, gammas)
+        self.params[1], self.params[2] = gamma_estimator(γ_obs, gamma_obs_censor, gammas, None)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated

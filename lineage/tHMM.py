@@ -1,5 +1,6 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
+import math
 import numpy as np
 import scipy.stats as sp
 
@@ -60,7 +61,7 @@ class tHMM:
             self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
         self.EL = get_Emission_Likelihoods(self)
 
-    def fit(self, tolerance=np.spacing(1), max_iter=100):
+    def fit(self, const, tolerance=np.spacing(1), max_iter=100):
         """Runs the tHMM function through Baum Welch fitting"""
 
         # Step 0: initialize with KMeans and do an M step
@@ -68,7 +69,7 @@ class tHMM:
             init_gammas = [sp.multinomial.rvs(n=1, p=[1. / self.num_states] * self.num_states, size=len(lineage))
                            for lineage in self.X]
 
-            do_M_E_step(self, init_gammas)
+            do_M_E_step(self, init_gammas, const)
 
         # Step 1: first E step
         MSD, NF, betas, gammas = do_E_step(self)
@@ -78,7 +79,7 @@ class tHMM:
         for _ in range(max_iter):
             old_LL = new_LL
 
-            do_M_step(self, MSD, betas, gammas)
+            do_M_step(self, MSD, betas, gammas, const)
             MSD, NF, betas, gammas = do_E_step(self)
             new_LL = calculate_log_likelihood(NF)
             diff = np.linalg.norm(old_LL - new_LL)
@@ -98,7 +99,7 @@ class tHMM:
         pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
         return pred_states_by_lineage
 
-    def get_AIC(self, LL):
+    def get_AIC(self, LL, DoF=None):
         """
         Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.
@@ -113,7 +114,11 @@ class tHMM:
         :param AIC_degrees_of_freedom: the degrees of freedom in AIC calculation :math:`(num_{states}^2 + num_{states} * numberOfParameters - 1)` - same for each lineage
         """
         num_states = self.num_states
-        number_of_parameters = len(self.estimate.E[0].params)
+        # This is for the case when we want to keep some parameters fixed.
+        if DoF == None:
+            number_of_parameters = len(self.estimate.E[0].params)
+        else:
+            number_of_parameters = DoF
         AIC_degrees_of_freedom = num_states ** 2 + num_states * number_of_parameters - 1
         AIC_value = [-2 * LL_val + 2 * AIC_degrees_of_freedom for LL_val in LL]
         return AIC_value, AIC_degrees_of_freedom
@@ -142,6 +147,7 @@ class tHMM:
             log_score += log_T_score(T, X_state_tree_sequence[idx], lineageObj)
             log_score += log_E_score(get_Emission_Likelihoods(self, E)
                                      [idx], X_state_tree_sequence[idx])
+            assert not math.isnan(log_score), f"log score is nan"
             log_scores.append(log_score)
         return log_scores
 

@@ -152,7 +152,7 @@ class TestModel(unittest.TestCase):
         gamma_censor_obs = np.ones_like(gamma_obs)
         gammas = [1] * len(gamma_obs)
 
-        shape, scale = gamma_estimator(gamma_obs, gamma_censor_obs, gammas)
+        shape, scale = gamma_estimator(gamma_obs, gamma_censor_obs, gammas, None)
         self.assertTrue(10 <= shape <= 15)
         self.assertTrue(2 <= scale <= 4)
 

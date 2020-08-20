@@ -1,5 +1,6 @@
 """ File holds the code for the downward recursion. """
 
+import math
 import numpy as np
 from .UpwardRecursion import beta_parent_child_func
 
@@ -44,11 +45,12 @@ def get_nonroot_gammas(tHMMobj, MSD, gammas, betas):
                         sum_holder = np.matmul(gammas[num][parent_idx, :] / beta_parent, T)
 
                     gammas[num][child_idx, :] = coeffs[child_idx, :] * sum_holder
+                    assert not math.isnan(np.all(gammas[num][child_idx, :])), f"gamma nan. lin_num:{num}, child_index={child_idx}"
 
         assert np.all(gammas[num][0, :] == betas[num][0, :])
 
-    for _, gg in enumerate(gammas):
-        assert np.allclose(np.sum(gg, axis=1), 1.0)
+    for indx, gg in enumerate(gammas):
+        assert np.allclose(np.sum(gg, axis=1), 1.0), f"sum(gamma, axis=1) = {np.sum(gg, axis=1)}, lin={tHMMobj.X[indx]}"
 
 
 def sum_nonleaf_gammas(lineageObj, gamma_arr):
