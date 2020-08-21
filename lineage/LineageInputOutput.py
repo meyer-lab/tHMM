@@ -136,19 +136,25 @@ def import_Heiser(path):
                     # [x y  ] case
                     else:
                         parentCell.obs[1] = 0  # died in G2
-                        parentCell.obs[3] = data[lPos][1 + 1] - \
-                            parentCell.obs[2]  # Time spent in G2
+                        parentCell.obs[3] = data[lPos][1 + 1] if (math.isnan(
+                            parentCell.obs[2])) else data[lPos][1 + 1] - parentCell.obs[2]  # Time spent in G2
 
                     # Time Censored Case  [x  exp_time]
                     # Censored if the cell started in G2 or total time is exp_time
                     parentCell.obs[5] = 0 if (
                         data[lPos][1 + 2] == exp_time or data[lPos][1] == 1) else 1
 
+            # check that if there is one daughter there are both
+            if parentCell.left is None or parentCell.right is None:
+                assert parentCell.left is None and parentCell.right is None, f'Only one cell after division detected row {lPos+1}, column 2 of sheet' 
+            #check that the cell did not divide if the cell is dead
+            if parentCell.obs[0] == 0 or parentCell.obs[1] == 0:
+                assert parentCell.left is None and parentCell.right is None, f'Cell death in row {lPos+1}, column 2 of sheet, but daughters were found'   
             # check all time values end up positive
             if not math.isnan(parentCell.obs[2]):
-                assert parentCell.obs[2] >= 0, "negative time value encountered"
+                assert parentCell.obs[2] >= 0, f"negative time value encountered, row {lPos+1}, column 2"
             if not math.isnan(parentCell.obs[3]):
-                assert parentCell.obs[3] >= 0, "negative time value encountered"
+                assert parentCell.obs[3] >= 0, f"negative time value encountered, row {lPos+1}, column 2"
             currentLineage.append(parentCell)
             # store lineage in list of lineages
             lineages.append(currentLineage)
@@ -177,6 +183,13 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
             break
     if not found:
         return None
+
+
+    # Check that the parent cell didn't get time censored (Likely divided in last frame)
+    if divisionTime == exp_time:
+        print(f'Cell time censorship, but daughters were found in row {parentPos+1}, column {pColumn+1} of sheet')
+        return None
+
 
     # Check that there is a value
     assert not math.isnan(data[parentPos][pColumn + 1]) or not math.isnan(
@@ -257,11 +270,18 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
             # Censored if final time is exp_time, otherise uncensored
             daughterCell.obs[5] = 0 if (
                 data[parentPos][pColumn + 2] == exp_time) else 1
+
+    # check that if there is one daughter there are both
+    if daughterCell.left is None or daughterCell.right is None:
+        assert daughterCell.left is None and daughterCell.right is None, f'Only one cell after division detected row {parentPos+1}, column {pColumn+1} of sheet' 
+    # check that the cell did not divide if the cell is dead
+    if daughterCell.obs[0] == 0 or daughterCell.obs[1] == 0:
+        assert daughterCell.left is None and daughterCell.right is None, f'Cell death in row {parentPos+1}, column {pColumn+1} of sheet, but daughters were found'   
     # check all time values end up positive
     if not math.isnan(daughterCell.obs[2]):
-        assert daughterCell.obs[2] >= 0, "negative time value encountered"
+        assert daughterCell.obs[2] >= 0, f"negative time value encountered, row {parentPos+1}, column {pColumn+1}"
     if not math.isnan(daughterCell.obs[3]):
-        assert daughterCell.obs[3] >= 0, "negative time value encountered"
+        assert daughterCell.obs[3] >= 0, f"negative time value encountered, row {parentPos+1}, column {pColumn+1}"
     # add daughter to current Lineage
     currentLineage.append(daughterCell)
     return daughterCell
