@@ -67,8 +67,8 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E2)
 
-    percentageS1un, _, acc_un, _, _, _ = commonAnalyze(list_of_uncen_populations, xtype="prop", list_of_fpi=list_of_fpi)
-    percentageS1, _, acc, _, _, _ = commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
+    percentageS1un, _, acc_un, _, _, _ = commonAnalyze(list_of_uncen_populations, 2, xtype="prop", list_of_fpi=list_of_fpi)
+    percentageS1, _, acc, _, _, _ = commonAnalyze(list_of_populations, 2, xtype="prop", list_of_fpi=list_of_fpi)
 
     un_accuracy_df = pd.DataFrame(columns=["Proportions", "State Assignment Accuracy"])
     un_accuracy_df["Proportions"] = percentageS1un

@@ -56,7 +56,7 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E)
 
-    wass, _, accuracy_after_switching, _, _, _ = commonAnalyze(list_of_populations, xtype="wass", list_of_fpi=list_of_fpi, parallel=True)
+    wass, _, accuracy_after_switching, _, _, _ = commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=list_of_fpi, parallel=True)
 #     for indx, a in enumerate(accuracy_after_switching):
 #         if a <= 60:
 #             print(list_of_populations[indx])
