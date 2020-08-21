@@ -88,7 +88,7 @@ class TestModel(unittest.TestCase):
         tuples_of_obsPhase = list(map(list, zip(*tuples_of_obsPhase)))
         gammas = np.array([1] * len(tuples_of_obsPhase))
         estimator_objPhase = deepcopy(self.E2[0])
-        estimator_objPhase.estimator(tuples_of_obsPhase, gammas)
+        estimator_objPhase.estimator(tuples_of_obsPhase, gammas, const=None)
 
         # Gaussian Dist.
         tuples_of_obsGaus = self.E3[0].rvs(size=3000)

@@ -52,7 +52,7 @@ class StateDistribution:
 
         return bern_ll * gamma_ll
 
-    def estimator(self, list_of_tuples_of_obs, gammas):
+    def estimator(self, list_of_tuples_of_obs, gammas, const=None):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
         # unzipping the list of tuples
         unzipped_list_of_tuples_of_obs = list(zip(*list_of_tuples_of_obs))

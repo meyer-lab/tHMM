@@ -1,6 +1,5 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
-import math
 import numpy as np
 import scipy.stats as sp
 
@@ -147,10 +146,9 @@ class tHMM:
             log_score += log_T_score(T, X_state_tree_sequence[idx], lineageObj)
             log_score += log_E_score(get_Emission_Likelihoods(self, E)
                                      [idx], X_state_tree_sequence[idx])
-            assert not math.isnan(log_score), f"log score is nan"
+            assert not np.isnan(log_score), f"log score is nan"
             log_scores.append(log_score)
         return log_scores
-
 
 def log_T_score(T, state_tree_sequence, lineageObj):
     """
