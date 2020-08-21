@@ -5,7 +5,7 @@ from matplotlib.ticker import MaxNLocator
 from ..Analyze import run_Analyze_AIC
 from ..LineageTree import LineageTree
 import matplotlib.gridspec as gridspec
-from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM, Tax2uM, Tax7uM
+from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 
 # States to evaluate with the model
 from ..states.StateDistributionGaPhs import StateDistribution
@@ -31,28 +31,29 @@ def makeFigure():
     ax, f = getSetup((13.333, 6.666), (2, 4))
 
     data = [Lapatinib_Control[0:9], Lapt25uM[0:9], Lapt50uM[0:9], Lap250uM[0:9],\
-       Gemcitabine_Control[0:9], Gem5uM[0:9], Gem30uM[0:9]]
+       Gemcitabine_Control[0:9], Gem5uM[0:9], Gem10uM[0:9], Gem30uM[0:9]]
 
     # making lineages and finding AICs (assign number of lineages here)
     AIC = [run_AIC(data[i]) for i in range(len(data))]
 
     # Finding proper ylim range for all 4 censored graphs and rounding up
-    upper_ylim_censored = int(1 + max(np.max(np.ptp(AIC[0], axis=0)),
+    upper_ylim1 = int(1 + max(np.max(np.ptp(AIC[0], axis=0)),
                                       np.max(np.ptp(AIC[1], axis=0)),
                                       np.max(np.ptp(AIC[2], axis=0)),
-                                      np.max(np.ptp(AIC[3], axis=0)),
-                                      np.max(np.ptp(AIC[4], axis=0)),
-                                      np.max(np.ptp(AIC[5], axis=0))
-                                      ) / 25.0) * 25
+                                      np.max(np.ptp(AIC[3], axis=0))) / 25.0) * 25
+    upper_ylim2 = int(1 + max(np.max(np.ptp(AIC[4], axis=0)),
+                                      np.max(np.ptp(AIC[5], axis=0)),
+                                      np.max(np.ptp(AIC[6], axis=0)),
+                                      np.max(np.ptp(AIC[7], axis=0))) / 25.0) * 25
 
-    upper_ylim = [upper_ylim_censored]
+    upper_ylim = [upper_ylim1, upper_ylim2]
     titles = ["Lpt cntrl", "Lpt 25uM", "Lpt 50uM", "Lpt 250uM",\
         "Gem cntrl", "Gem 5uM", "Gem 10uM", "Gem 30uM"]
 
     # Plotting AICs
     for idx, a in enumerate(AIC):
         figure_maker(ax[idx], a, titles[idx],
-                     upper_ylim[0], True)
+                     upper_ylim[int(idx / 4)], True)
     subplotLabel(ax)
 
     return f
@@ -95,5 +96,5 @@ def figure_maker(ax, AIC_holder, title, upper_ylim, censored=False):
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
     # Adding title
-    title = f"AIC for {title} "
+    title = f"{title} "
     ax.set_title(title)
