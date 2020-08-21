@@ -146,10 +146,10 @@ def import_Heiser(path):
 
             # check that if there is one daughter there are both
             if parentCell.left is None or parentCell.right is None:
-                assert parentCell.left is None and parentCell.right is None, f'Only one cell after division detected row {lPos+1}, column 2 of sheet' 
-            #check that the cell did not divide if the cell is dead
+                assert parentCell.left is None and parentCell.right is None, f'Only one cell after division detected row {lPos+1}, column 2 of sheet'
+            # check that the cell did not divide if the cell is dead
             if parentCell.obs[0] == 0 or parentCell.obs[1] == 0:
-                assert parentCell.left is None and parentCell.right is None, f'Cell death in row {lPos+1}, column 2 of sheet, but daughters were found'   
+                assert parentCell.left is None and parentCell.right is None, f'Cell death in row {lPos+1}, column 2 of sheet, but daughters were found'
             # check all time values end up positive
             if not math.isnan(parentCell.obs[2]):
                 assert parentCell.obs[2] >= 0, f"negative time value encountered, row {lPos+1}, column 2"
@@ -184,12 +184,11 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
     if not found:
         return None
 
-
     # Check that the parent cell didn't get time censored (Likely divided in last frame)
     if divisionTime == exp_time:
         print(f'Cell time censorship, but daughters were found in row {parentPos+1}, column {pColumn+1}. By default they will be set to None')
-        return None
 
+        return None
 
     # Check that there is a value
     assert not math.isnan(data[parentPos][pColumn + 1]) or not math.isnan(
@@ -273,10 +272,10 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
 
     # check that if there is one daughter there are both
     if daughterCell.left is None or daughterCell.right is None:
-        assert daughterCell.left is None and daughterCell.right is None, f'Only one cell after division detected row {parentPos+1}, column {pColumn+1} of sheet' 
+        assert daughterCell.left is None and daughterCell.right is None, f'Only one cell after division detected row {parentPos+1}, column {pColumn+1} of sheet'
     # check that the cell did not divide if the cell is dead
     if daughterCell.obs[0] == 0 or daughterCell.obs[1] == 0:
-        assert daughterCell.left is None and daughterCell.right is None, f'Cell death in row {parentPos+1}, column {pColumn+1} of sheet, but daughters were found'   
+        assert daughterCell.left is None and daughterCell.right is None, f'Cell death in row {parentPos+1}, column {pColumn+1} of sheet, but daughters were found'
     # check all time values end up positive
     if not math.isnan(daughterCell.obs[2]):
         assert daughterCell.obs[2] >= 0, f"negative time value encountered, row {parentPos+1}, column {pColumn+1}"

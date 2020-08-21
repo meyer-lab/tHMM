@@ -9,7 +9,7 @@ from scipy.stats import wasserstein_distance
 from .tHMM import tHMM
 
 
-def Analyze(X, num_states, fpi=None, fT=None, fE=None):
+def Analyze(X, num_states, const=None, fpi=None, fT=None, fE=None):
     """
     Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
 
@@ -28,7 +28,7 @@ def Analyze(X, num_states, fpi=None, fT=None, fE=None):
     for num_tries in range(1, 15):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            _, _, _, _, _, LL = tHMMobj.fit()
+            _, _, _, _, _, LL = tHMMobj.fit(const)
             break
         except (AssertionError, ZeroDivisionError, RuntimeError) as error:
             error_holder.append(error)
@@ -68,19 +68,20 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
     list_of_fE = kwargs.get("list_of_fE", [None] * len(list_of_populations))
+    const = kwargs.get("const", None)
     output = []
     if parallel:
         exe = ProcessPoolExecutor()
 
         prom_holder = []
         for idx, population in enumerate(list_of_populations):
-            prom_holder.append(exe.submit(Analyze, population, num_states, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
+            prom_holder.append(exe.submit(Analyze, population, num_states, const=const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
         for _, prom in enumerate(prom_holder):
             output.append(prom.result())
     else:
         for idx, population in enumerate(list_of_populations):
-            output.append(Analyze(population, num_states, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
+            output.append(Analyze(population, num_states, const=const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
     return output
 
@@ -102,12 +103,13 @@ def run_Analyze_AIC(population, state_list, **kwargs):
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(state_list))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(state_list))
     list_of_fE = kwargs.get("list_of_fE", [None] * len(state_list))
+    const = kwargs.get("const", None)
     output = []
     exe = ProcessPoolExecutor()
 
     prom_holder = []
     for idx, num_states in enumerate(state_list):
-        prom_holder.append(exe.submit(Analyze, population, num_states, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
+        prom_holder.append(exe.submit(Analyze, population, num_states, const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
     for _, prom in enumerate(prom_holder):
         output.append(prom.result())

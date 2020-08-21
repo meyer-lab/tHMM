@@ -75,7 +75,7 @@ class StateDistribution:
 
         return bern_llG1 * bern_llG2 * gamma_llG1 * gamma_llG2
 
-    def estimator(self, list_of_tuples_of_obs, gammas):
+    def estimator(self, list_of_tuples_of_obs, gammas, const):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
         # unzipping the list of tuples
         unzipped_list_of_tuples_of_obs = list(zip(*list_of_tuples_of_obs))
@@ -89,14 +89,28 @@ class StateDistribution:
         gamma_censor_obsG1 = np.array(unzipped_list_of_tuples_of_obs[4])
         gamma_censor_obsG2 = np.array(unzipped_list_of_tuples_of_obs[5])
 
+        if const is None:
+            shapeG1 = None
+            shapeG2 = None
+        else:
+            shapeG1 = const[0]
+            shapeG2 = const[1]
+
         b1_mask = np.logical_not(np.isnan(bern_obsG1))
         self.params[0] = bernoulli_estimator(bern_obsG1[b1_mask], gammas[b1_mask])
         b2_mask = np.logical_not(np.isnan(bern_obsG2))
         self.params[1] = bernoulli_estimator(bern_obsG2[b2_mask], gammas[b2_mask])
         ga1_mask = np.logical_not(np.isnan(gamma_obsG1))
-        self.params[2], self.params[3] = gamma_estimator(gamma_obsG1[ga1_mask], gamma_censor_obsG1[ga1_mask], gammas[ga1_mask])
+        self.params[2], self.params[3] = gamma_estimator(gamma_obsG1[ga1_mask], gamma_censor_obsG1[ga1_mask], gammas[ga1_mask], shapeG1)
         ga2_mask = np.logical_not(np.isnan(gamma_obsG2))
-        self.params[4], self.params[5] = gamma_estimator(gamma_obsG2[ga2_mask], gamma_censor_obsG2[ga2_mask], gammas[ga2_mask])
+        self.params[4], self.params[5] = gamma_estimator(gamma_obsG2[ga2_mask], gamma_censor_obsG2[ga2_mask], gammas[ga2_mask], shapeG2)
+
+        assert not math.isnan(np.all(b1_mask)), f"b1 has nans after mask"
+        assert not math.isnan(np.all(b2_mask)), f"b2 has nans after mask"
+        assert not math.isnan(np.all(ga1_mask)), f"g1 has nans after mask"
+        assert not math.isnan(np.all(ga2_mask)), f"g2 has nans after mask"
+
+        # const is used when we want to keep the shape parameter of gamma constant. shapeG1=const[0], shapeG2=const[1]
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
