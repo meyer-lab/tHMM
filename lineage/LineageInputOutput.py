@@ -144,6 +144,9 @@ def import_Heiser(path):
                     parentCell.obs[5] = 0 if (
                         data[lPos][1 + 2] == exp_time or data[lPos][1] == 1) else 1
 
+            # check that if there is one daughter there are both
+            if parentCell.left is None or parentCell.right is None:
+                assert parentCell.left is None and parentCell.right is None, f'Only one cell after division detected row {lPos+1}, column 2 of sheet' 
             #check that the cell did not divide if the cell is dead
             if parentCell.obs[0] == 0 or parentCell.obs[1] == 0:
                 assert parentCell.left is None and parentCell.right is None, f'Cell death in row {lPos+1}, column 2 of sheet, but daughters were found'   
@@ -181,9 +184,11 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
     if not found:
         return None
 
-    assert divisionTime != exp_time, f'Cell time censorship, but daughters were found in row {parentPos+1}, column {pColumn+1} of sheet'
-    # Check that the parent cell didn't get time censored
-    
+
+    # Check that the parent cell didn't get time censored (Likely divided in last frame)
+    if divisionTime == exp_time:
+        print(f'Cell time censorship, but daughters were found in row {parentPos+1}, column {pColumn+1} of sheet')
+        return None
 
 
     # Check that there is a value
@@ -266,7 +271,10 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
             daughterCell.obs[5] = 0 if (
                 data[parentPos][pColumn + 2] == exp_time) else 1
 
-    #check that the cell did not divide if the cell is dead
+    # check that if there is one daughter there are both
+    if daughterCell.left is None or daughterCell.right is None:
+        assert daughterCell.left is None and daughterCell.right is None, f'Only one cell after division detected row {parentPos+1}, column {pColumn+1} of sheet' 
+    # check that the cell did not divide if the cell is dead
     if daughterCell.obs[0] == 0 or daughterCell.obs[1] == 0:
         assert daughterCell.left is None and daughterCell.right is None, f'Cell death in row {parentPos+1}, column {pColumn+1} of sheet, but daughters were found'   
     # check all time values end up positive
