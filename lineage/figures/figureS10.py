@@ -32,7 +32,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((10, 13.333), (4, 3))
 
-    figureMaker(ax, *accuracy(), xlabel="Number of Lineages")
+    figureMaker(ax, *accuracy(), xlabel="Number of Cells")
 
     subplotLabel(ax)
 
@@ -70,4 +70,4 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E2)
 
-    return commonAnalyze(list_of_populations)
+    return commonAnalyze(list_of_populations, 2)

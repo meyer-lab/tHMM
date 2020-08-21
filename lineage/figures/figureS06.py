@@ -2,7 +2,7 @@
 File: figureS06.py
 Purpose: Generates figure S06.
 Figure S06 analyzes heterogeneous (2 state), NOT censored,
-single lineages (no more than one lineage per population)
+single lineages (more than one lineage per population)
 with similar proportions of cells in states but
 of varying distributions.
 """
@@ -49,20 +49,21 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 7, a), state1] for a in np.logspace(0, 1, num_data_points, base=7)]
+    list_of_Es = [[StateDistribution(0.99, 7, a), state1] for a in np.linspace(1, 8, num_data_points)]
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
     list_of_fE = []
     for E in list_of_Es:
         population = []
+        for _ in range(10):
 
-        good2go = False
-        while not good2go:
-            tmp_lineage = LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)
-            good2go = lineage_good_to_analyze(tmp_lineage)
+            good2go = False
+            while not good2go:
+                tmp_lineage = LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)
+                good2go = lineage_good_to_analyze(tmp_lineage)
 
-        population.append(tmp_lineage)
+            population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
@@ -70,4 +71,4 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E)
 
-    return commonAnalyze(list_of_populations, xtype="wass", list_of_fpi=list_of_fpi)
+    return commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=list_of_fpi)

@@ -2,7 +2,7 @@
 File: figureS05.py
 Purpose: Generates figure S05.
 Figure 05 analyzes heterogeneous (2 state), censored (by both time and fate),
-single lineages (no more than one lineage per population)
+single lineages (more than one lineage per population)
 with different proportions of cells in states by
 changing the values in the transition matrices.
 """
@@ -56,12 +56,13 @@ def accuracy():
     for T in list_of_Ts:
         population = []
 
-        good2go = False
-        while not good2go:
-            tmp_lineage = LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells, censor_condition=3, desired_experiment_time=max_experiment_time)
-            good2go = lineage_good_to_analyze(tmp_lineage)
+        for _ in range(10):
+            good2go = False
+            while not good2go:
+                tmp_lineage = LineageTree.init_from_parameters(pi, T, E, 0.6 * max_desired_num_cells, censor_condition=3, desired_experiment_time=max_experiment_time)
+                good2go = lineage_good_to_analyze(tmp_lineage)
 
-        population.append(tmp_lineage)
+            population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
@@ -69,4 +70,4 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE.append(E)
 
-    return commonAnalyze(list_of_populations, xtype="prop", list_of_fpi=list_of_fpi)
+    return commonAnalyze(list_of_populations, 2, xtype="prop", list_of_fpi=list_of_fpi)

@@ -11,25 +11,24 @@ from .figureCommon import getSetup
 from ..plotTree import plotLineage
 from lineage.data.Lineage_collections import Gemcitabine_Control as gem
 
-
 def makeFigure():
     """
     Makes figure 1.
     """
 
-    plotLineage(gem[4], 'lineage/figures/cartoons/figure1a.svg', censore=False)
-    plotLineage(gem[13], 'lineage/figures/cartoons/figure1b.svg', censore=False)
-    plotLineage(gem[14], 'lineage/figures/cartoons/figure1c.svg', censore=False)
+    plotLineage(gem[101], 'lineage/figures/cartoons/figure1a.svg', censore=False)
+    plotLineage(gem[83], 'lineage/figures/cartoons/figure1b.svg', censore=False)
+    plotLineage(gem[84], 'lineage/figures/cartoons/figure1c.svg', censore=False)
 
-    index = [1, 3, 4, 7]
+    index = [1, 3, 4, 6]
     for i in index:
-        gem[4].output_lineage[i].state = 0
-        gem[13].output_lineage[i].state = 0
-        gem[14].output_lineage[i].state = 0
+        gem[101].output_lineage[i].state = 0
+        gem[83].output_lineage[i].state = 0
+        gem[84].output_lineage[i].state = 0
 
-    plotLineage(gem[4], 'lineage/figures/cartoons/figure1d.svg', censore=False)
-    plotLineage(gem[13], 'lineage/figures/cartoons/figure1e.svg', censore=False)
-    plotLineage(gem[14], 'lineage/figures/cartoons/figure1f.svg', censore=False)
+    plotLineage(gem[101], 'lineage/figures/cartoons/figure1d.svg', censore=False)
+    plotLineage(gem[83], 'lineage/figures/cartoons/figure1e.svg', censore=False)
+    plotLineage(gem[84], 'lineage/figures/cartoons/figure1f.svg', censore=False)
 
     # Get list of axis objects
     ax, f = getSetup((4.5, 5.5), (3, 2))

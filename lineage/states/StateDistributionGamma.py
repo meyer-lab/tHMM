@@ -56,7 +56,7 @@ class StateDistribution:
 
         return bern_ll * gamma_ll
 
-    def estimator(self, list_of_tuples_of_obs, gammas):
+    def estimator(self, list_of_tuples_of_obs, gammas, const=None):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
         # unzipping the list of tuples
         unzipped_list_of_tuples_of_obs = list(zip(*list_of_tuples_of_obs))
@@ -70,8 +70,12 @@ class StateDistribution:
 
         b_mask = np.logical_not(np.isnan(bern_obs))
         self.params[0] = bernoulli_estimator(bern_obs[b_mask], gammas[b_mask])
+<<<<<<< HEAD
         self.params[1], self.params[2] = gamma_estimator(
             γ_obs, gamma_obs_censor, gammas)
+=======
+        self.params[1], self.params[2] = gamma_estimator(γ_obs, gamma_obs_censor, gammas, None)
+>>>>>>> master
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated

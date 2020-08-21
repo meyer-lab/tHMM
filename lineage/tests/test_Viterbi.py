@@ -1,7 +1,6 @@
 """ Unit test file for Viterbi. """
 import unittest
 from numpy.random import randint
-
 from ..tHMM import tHMM
 from ..LineageTree import LineageTree
 from ..figures.figureCommon import pi, T, E
@@ -15,14 +14,19 @@ class TestViterbi(unittest.TestCase):
         X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 9) - 1)
         tHMMobj = tHMM([X], num_states=2)
 
-        _, _, _, _, _, _ = tHMMobj.fit()
+        _, _, _, _, _, _ = tHMMobj.fit(const=None)
         pred_states_by_lineage = tHMMobj.predict()
 
-        true_log_scores = tHMMobj.log_score(pred_states_by_lineage)
+        pred_states_flipped = []
+        for lineage in pred_states_by_lineage:
+            pred_states_flipped.append(1 - lineage)
+        log_scores_orig = tHMMobj.log_score(pred_states_by_lineage)
+        log_scores_flipped = tHMMobj.log_score(pred_states_flipped)
 
         for _ in range(10):
             rand = randint(0, 2, (2 ** 9) - 1)
             # generate a sequence of integers between 0 (inclusive)
             # and 2 (exclusive)
             random_log_scores = tHMMobj.log_score([rand])
-            self.assertTrue(random_log_scores[0] <= true_log_scores[0])
+            model_log_score = max(log_scores_orig[0], log_scores_flipped[0])
+            self.assertTrue(random_log_scores[0] <= model_log_score)

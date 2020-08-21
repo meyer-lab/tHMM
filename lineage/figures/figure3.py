@@ -12,12 +12,8 @@ from .figureCommon import (
     pi,
     T,
     E2,
-    max_desired_num_cells,
     lineage_good_to_analyze,
     num_data_points,
-    min_desired_num_cells,
-    max_experiment_time,
-    min_experiment_time,
     min_num_lineages,
     max_num_lineages,
 )
@@ -94,11 +90,18 @@ def accuracy():
         populationSim = []
 
         for _ in range(num):
+<<<<<<< HEAD
             good2go1 = False
             good2go2 = False
             while not good2go1:
                 tmp_lineage = LineageTree.init_from_parameters(
                     pi, T, E2, 2**4 - 1)
+=======
+            good2go = False
+            while not good2go:
+                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, 2**5 - 1)
+                tmp_lineageSim = LineageTree.init_from_parameters(pi, T, E2, 2**5 - 1)
+>>>>>>> master
                 good2go1 = lineage_good_to_analyze(tmp_lineage)
             while not good2go2:
                 tmp_lineageSim = LineageTree.init_from_parameters(
@@ -114,10 +117,15 @@ def accuracy():
         list_of_fT.append(T)
         list_of_fE2.append(E2)
 
+<<<<<<< HEAD
     x_Sim, _, Accuracy_Sim, _, _, _ = commonAnalyze(
         list_of_populationsSim, list_of_fpi=list_of_fpi, parallel=True)
     x_Cen, _, Accuracy_Cen, _, _, _ = commonAnalyze(
         list_of_populations, list_of_fpi=list_of_fpi, parallel=True)
+=======
+    x_Sim, _, Accuracy_Sim, _, _, _ = commonAnalyze(list_of_populationsSim, 2, list_of_fpi=list_of_fpi)
+    x_Cen, _, Accuracy_Cen, _, _, _ = commonAnalyze(list_of_populations, 2, list_of_fpi=list_of_fpi)
+>>>>>>> master
     return x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, list_of_populationsSim, list_of_populations
 
 
