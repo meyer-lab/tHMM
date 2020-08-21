@@ -73,13 +73,9 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
 
     if sum(time_censor_obs) == len(time_censor_obs):
         # if nothing is censored, then there is no need to use the numerical solver
-        assert 1.0 <= a_hat0 <= 20.0, f"shape is estimated out of range"
-        assert 1.0 <= scale_hat0 <= 20.0, f"scale is estimated out of range"
         return x0[0], x0[1]
     else:
         res = minimize(fun=negative_LL, x0=x0, bounds=((1., 20.), (1., 20.),), options={'maxiter': 5})
-        assert 1.0 <= res.x[0] <= 20.0, f"shape is estimated out of range {res.x[0]}"
-        assert 1.0 <= res.x[1] <= 20.0, f"scale is estimated out of range {res.x[1]}"
         return res.x[0], res.x[1]
 
 
