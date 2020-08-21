@@ -37,7 +37,7 @@ def gamma_pdf(x, a, scale):
     return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / math.gamma(a) / (scale ** a)
 
 
-def gamma_estimator(gamma_obs, time_censor_obs, gammas):
+def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
@@ -48,10 +48,13 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas):
     def f(k):
         return np.log(k) - sc.polygamma(0, k) - s
 
-    if f(0.01) * f(100.0) > 0.0:
-        a_hat0 = 10.0
+    if shape is not None:
+        a_hat0 = shape
     else:
-        a_hat0 = brentq(f, 0.01, 100.0)
+        if f(0.01) * f(100.0) > 0.0:
+            a_hat0 = 10.0
+        else:
+            a_hat0 = brentq(f, 0.01, 100.0)
 
     scale_hat0 = gammaCor / a_hat0
 

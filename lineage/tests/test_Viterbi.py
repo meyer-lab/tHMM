@@ -14,7 +14,7 @@ class TestViterbi(unittest.TestCase):
         X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 9) - 1)
         tHMMobj = tHMM([X], num_states=2)
 
-        _, _, _, _, _, _ = tHMMobj.fit()
+        _, _, _, _, _, _ = tHMMobj.fit(const=None)
         pred_states_by_lineage = tHMMobj.predict()
 
         pred_states_flipped = []

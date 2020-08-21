@@ -1,5 +1,6 @@
 """This file contains the methods that completes the downward recursion and evaulates the beta values."""
 
+import math
 import numpy as np
 
 
@@ -43,7 +44,7 @@ def get_Marginal_State_Distributions(tHMMobj):
                 # recursion based on parent cell
                 MSD[num][current_cell_idx, :] = np.matmul(MSD[num][parent_cell_idx, :], tHMMobj.estimate.T)
 
-        assert np.allclose(np.sum(MSD[num], axis=1), 1.0)
+        assert np.allclose(np.sum(MSD[num], axis=1), 1.0), f"sum msd: {np.sum(MSD[num], axis=1)}, num={num}"
 
     return MSD
 
@@ -70,6 +71,7 @@ def get_Emission_Likelihoods(tHMMobj, E=None):
         for current_cell_idx, cell in enumerate(lineage):  # for each cell in the lineage
             for state_k in range(tHMMobj.num_states):  # for each state
                 EL_array[current_cell_idx, state_k] = E[state_k].pdf(cell.obs)
+                assert not math.isnan(EL_array[current_cell_idx, state_k]), f"EL has nans. this is obs:{cell.obs}"
 
         EL.append(EL_array)  # append the EL_array for each lineage
     return EL

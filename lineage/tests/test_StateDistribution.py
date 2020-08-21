@@ -88,7 +88,7 @@ class TestModel(unittest.TestCase):
         tuples_of_obsPhase = list(map(list, zip(*tuples_of_obsPhase)))
         gammas = np.array([1] * len(tuples_of_obsPhase))
         estimator_objPhase = deepcopy(self.E2[0])
-        estimator_objPhase.estimator(tuples_of_obsPhase, gammas)
+        estimator_objPhase.estimator(tuples_of_obsPhase, gammas, const=None)
 
         # Gaussian Dist.
         tuples_of_obsGaus = self.E3[0].rvs(size=3000)
@@ -152,7 +152,7 @@ class TestModel(unittest.TestCase):
         gamma_censor_obs = np.ones_like(gamma_obs)
         gammas = [1] * len(gamma_obs)
 
-        shape, scale = gamma_estimator(gamma_obs, gamma_censor_obs, gammas)
+        shape, scale = gamma_estimator(gamma_obs, gamma_censor_obs, gammas, None)
         self.assertTrue(10 <= shape <= 15)
         self.assertTrue(2 <= scale <= 4)
 

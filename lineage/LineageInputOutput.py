@@ -187,6 +187,7 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
     # Check that the parent cell didn't get time censored (Likely divided in last frame)
     if divisionTime == exp_time:
         print(f'Cell time censorship, but daughters were found in row {parentPos+1}, column {pColumn+1}. By default they will be set to None')
+
         return None
 
     # Check that there is a value
