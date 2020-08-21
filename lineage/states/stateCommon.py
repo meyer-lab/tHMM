@@ -36,7 +36,8 @@ def gamma_pdf(x, a, scale):
     """
     return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / math.gamma(a) / (scale ** a)
 
-@vectorize([float64(float64, float64, float64)], nopython = True, target = "parallel")
+#Not vectorized until vectorization is implemented for the whole estimator
+#@vectorize([float64(float64, float64, float64)], nopython = True, target = "parallel")
 @njit
 def gamma_sf(x, a, scale):
     """
