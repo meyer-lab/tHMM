@@ -28,26 +28,17 @@ class TestModel(unittest.TestCase):
         self.T = np.array([[0.85, 0.15], [0.20, 0.80]])
 
         # Emissions
-        self.E = [StateDistribution(0.99, 20, 5),
-                  StateDistribution(0.80, 10, 1)]
-        self.E2 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(
-            0.8, 0.75, 10, 2, 15, 4)]
+        self.E = [StateDistribution(0.99, 20, 5), StateDistribution(0.80, 10, 1)]
+        self.E2 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.8, 0.75, 10, 2, 15, 4)]
         self.E3 = [StateDistGaussian(10.0, 1.0), StateDistGaussian(15.0, 2.0)]
 
         # creating two lineages, one with False for pruning, one with True.
-        self.lineage = LineageTree.init_from_parameters(
-            self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
-        self.lineage2 = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(
-            2 ** 5.5) - 1, censor_condition=2, desired_experiment_time=50)
-        self.lineage3 = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(
-            2 ** 11) - 1, censor_condition=3, desired_experiment_time=800)
-        self.population = [LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(
-            2 ** 11) - 1, censor_condition=3, desired_experiment_time=800) for i in range(50)]
-        # 1 lin uncensored for G1/G2 separated obs.
-        self.lineage_E2 = LineageTree.init_from_parameters(
-            self.pi, self.T, self.E2, desired_num_cells=(2 ** 11) - 1)
-        self.lineage_E3 = LineageTree.init_from_parameters(self.pi, self.T, self.E3, desired_num_cells=(
-            2 ** 11) - 1)  # 1 lin uncensored for Gaussian observations
+        self.lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
+        self.lineage2 = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 5.5) - 1, censor_condition=2, desired_experiment_time=50)
+        self.lineage3 = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800)
+        self.population = [LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800) for i in range(50)]
+        self.lineage_E2 = LineageTree.init_from_parameters(self.pi, self.T, self.E2, desired_num_cells=(2 ** 11) - 1)  # 1 lin uncensored for G1/G2 separated obs.
+        self.lineage_E3 = LineageTree.init_from_parameters(self.pi, self.T, self.E3, desired_num_cells=(2 ** 11) - 1)  # 1 lin uncensored for Gaussian observations
 
     def test_rvs(self):
         """
@@ -61,10 +52,8 @@ class TestModel(unittest.TestCase):
         bern_obs1, gamma_obs1, _ = self.E[1].rvs(size=40)
         self.assertTrue(len(bern_obs1) == len(gamma_obs1) == 40)
 
-        bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, _, _ = self.E2[0].rvs(
-            size=50)
-        self.assertTrue(len(bern_obsG1) == len(bern_obsG2) ==
-                        len(gamma_obsG1) == len(gamma_obsG2) == 50)
+        bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, _, _ = self.E2[0].rvs(size=50)
+        self.assertTrue(len(bern_obsG1) == len(bern_obsG2) == len(gamma_obsG1) == len(gamma_obsG2) == 50)
 
     def test_pdf(self):
         """
@@ -110,30 +99,20 @@ class TestModel(unittest.TestCase):
         estimator_objGaus.estimator(tuples_of_obsGaus, gammas)
 
         # here we check the estimated parameters to be close for Gamma distribution
-        self.assertTrue(0.0 <= abs(
-            estimator_obj.params[0] - self.E[0].params[0]) <= 0.1)
-        self.assertTrue(0.0 <= abs(
-            estimator_obj.params[1] - self.E[0].params[1]) <= 3.0)
-        self.assertTrue(0.0 <= abs(
-            estimator_obj.params[2] - self.E[0].params[2]) <= 3.0)
+        self.assertTrue(0.0 <= abs(estimator_obj.params[0] - self.E[0].params[0]) <= 0.1)
+        self.assertTrue(0.0 <= abs(estimator_obj.params[1] - self.E[0].params[1]) <= 3.0)
+        self.assertTrue(0.0 <= abs(estimator_obj.params[2] - self.E[0].params[2]) <= 3.0)
 
         # For StateDistPhase
-        self.assertTrue(0.0 <= abs(
-            estimator_objPhase.params[0] - self.E2[0].params[0]) <= 0.1)
-        self.assertTrue(0.0 <= abs(
-            estimator_objPhase.params[1] - self.E2[0].params[1]) <= 0.1)
-        self.assertTrue(0.0 <= abs(
-            estimator_objPhase.params[2] - self.E2[0].params[2]) <= 3.0)
-        self.assertTrue(0.0 <= abs(
-            estimator_objPhase.params[3] - self.E2[0].params[3]) <= 2.0)
-        self.assertTrue(0.0 <= abs(
-            estimator_objPhase.params[4] - self.E2[0].params[4]) <= 3.0)
-        self.assertTrue(0.0 <= abs(
-            estimator_objPhase.params[5] - self.E2[0].params[5]) <= 2.0)
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[0] - self.E2[0].params[0]) <= 0.1)
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[1] - self.E2[0].params[1]) <= 0.1)
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[2] - self.E2[0].params[2]) <= 3.0)
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[3] - self.E2[0].params[3]) <= 2.0)
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[4] - self.E2[0].params[4]) <= 3.0)
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[5] - self.E2[0].params[5]) <= 2.0)
 
         # For Gaussian Distribution
-        self.assertTrue(0.0 <= abs(
-            estimator_objGaus.params[0] - self.E3[0].params[0]) <= 0.1)
+        self.assertTrue(0.0 <= abs(estimator_objGaus.params[0] - self.E3[0].params[0]) <= 0.1)
 
     def test_censor(self):
         """
@@ -160,8 +139,7 @@ class TestModel(unittest.TestCase):
         by comparing the result of the estimator
         to the result of scipy random variable generator.
         """
-        bern_obs = sp.bernoulli.rvs(
-            p=0.90, size=1000)  # bernoulli observations
+        bern_obs = sp.bernoulli.rvs(p=0.90, size=1000)  # bernoulli observations
         gammas = np.array([1] * len(bern_obs))
         self.assertTrue(0.87 <= bernoulli_estimator(bern_obs, gammas) <= 0.93)
 
@@ -171,8 +149,7 @@ class TestModel(unittest.TestCase):
         by comparing the result of the estimator
         to the result of scipy random variable generator.
         """
-        gamma_obs = sp.gamma.rvs(
-            a=12.5, scale=3, size=1000)  # gamma observations
+        gamma_obs = sp.gamma.rvs(a=12.5, scale=3, size=1000)  # gamma observations
         gamma_censor_obs = np.ones_like(gamma_obs)
         gammas = [1] * len(gamma_obs)
 
@@ -197,7 +174,7 @@ class TestModel(unittest.TestCase):
         """
         gamma_ll = gamma_pdf(x=1, a=10, scale=5)
         self.assertTrue(gamma_ll <= 0.1)
-
+        
     def test_gamma_sf(self):
         """
         Testing the gamma survival function by comparing
