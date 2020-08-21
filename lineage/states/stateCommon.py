@@ -48,7 +48,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     def f(k):
         return np.log(k) - sc.polygamma(0, k) - s
 
-    if shape != None:
+    if shape is not None:
         a_hat0 = shape
     else:
         if f(0.01) * f(100.0) > 0.0:

@@ -89,7 +89,7 @@ class StateDistribution:
         gamma_censor_obsG1 = np.array(unzipped_list_of_tuples_of_obs[4])
         gamma_censor_obsG2 = np.array(unzipped_list_of_tuples_of_obs[5])
 
-        if const == None:
+        if const is None:
             shapeG1 = None
             shapeG2 = None
         else:

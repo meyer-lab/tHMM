@@ -114,7 +114,7 @@ class tHMM:
         """
         num_states = self.num_states
         # This is for the case when we want to keep some parameters fixed.
-        if DoF == None:
+        if DoF is None:
             number_of_parameters = len(self.estimate.E[0].params)
         else:
             number_of_parameters = DoF
@@ -149,6 +149,7 @@ class tHMM:
             assert not np.isnan(log_score), f"log score is nan"
             log_scores.append(log_score)
         return log_scores
+
 
 def log_T_score(T, state_tree_sequence, lineageObj):
     """

@@ -16,12 +16,12 @@ desired_num_states = np.arange(1, 5)
 fpi_list = [[1.0], [0.66150779, 0.33849221], [6.94307126e-09, 6.99518861e-01, 3.00481132e-01], [6.67672155e-01, 3.32327845e-01, 2.86425040e-16, 4.61223911e-22]]
 
 fT_list = [[1.0], [[0.99277139, 0.00722861],
-       [0.07170348, 0.92829652]], [[9.42386563e-01, 5.76134371e-02, 6.90068935e-28],
-       [4.77431313e-26, 7.85762403e-01, 2.14237597e-01],
-       [3.76423244e-01, 1.26698093e-02, 6.10906947e-01]], [[8.13843165e-01, 1.86156835e-01, 2.05422147e-13, 1.54246580e-15],
-       [4.65858601e-16, 1.45876129e-01, 1.13605784e-25, 8.54123871e-01],
-       [2.88389336e-01, 7.08946381e-01, 2.66398469e-03, 2.98246671e-07],
-       [1.19831901e-10, 2.22561316e-06, 9.72941919e-01, 2.70558550e-02]]]
+                   [0.07170348, 0.92829652]], [[9.42386563e-01, 5.76134371e-02, 6.90068935e-28],
+                                               [4.77431313e-26, 7.85762403e-01, 2.14237597e-01],
+                                               [3.76423244e-01, 1.26698093e-02, 6.10906947e-01]], [[8.13843165e-01, 1.86156835e-01, 2.05422147e-13, 1.54246580e-15],
+                                                                                                   [4.65858601e-16, 1.45876129e-01, 1.13605784e-25, 8.54123871e-01],
+                                                                                                   [2.88389336e-01, 7.08946381e-01, 2.66398469e-03, 2.98246671e-07],
+                                                                                                   [1.19831901e-10, 2.22561316e-06, 9.72941919e-01, 2.70558550e-02]]]
 
 
 def makeFigure():
@@ -30,25 +30,25 @@ def makeFigure():
     """
     ax, f = getSetup((13.333, 6.666), (2, 4))
 
-    data = [Lapatinib_Control[0:9], Lapt25uM[0:9], Lapt50uM[0:9], Lap250uM[0:9],\
-       Gemcitabine_Control[0:9], Gem5uM[0:9], Gem10uM[0:9], Gem30uM[0:9]]
+    data = [Lapatinib_Control[0:9], Lapt25uM[0:9], Lapt50uM[0:9], Lap250uM[0:9],
+            Gemcitabine_Control[0:9], Gem5uM[0:9], Gem10uM[0:9], Gem30uM[0:9]]
 
     # making lineages and finding AICs (assign number of lineages here)
     AIC = [run_AIC(data[i]) for i in range(len(data))]
 
     # Finding proper ylim range for all 4 censored graphs and rounding up
     upper_ylim1 = int(1 + max(np.max(np.ptp(AIC[0], axis=0)),
-                                      np.max(np.ptp(AIC[1], axis=0)),
-                                      np.max(np.ptp(AIC[2], axis=0)),
-                                      np.max(np.ptp(AIC[3], axis=0))) / 25.0) * 25
+                              np.max(np.ptp(AIC[1], axis=0)),
+                              np.max(np.ptp(AIC[2], axis=0)),
+                              np.max(np.ptp(AIC[3], axis=0))) / 25.0) * 25
     upper_ylim2 = int(1 + max(np.max(np.ptp(AIC[4], axis=0)),
-                                      np.max(np.ptp(AIC[5], axis=0)),
-                                      np.max(np.ptp(AIC[6], axis=0)),
-                                      np.max(np.ptp(AIC[7], axis=0))) / 25.0) * 25
+                              np.max(np.ptp(AIC[5], axis=0)),
+                              np.max(np.ptp(AIC[6], axis=0)),
+                              np.max(np.ptp(AIC[7], axis=0))) / 25.0) * 25
 
     upper_ylim = [upper_ylim1, upper_ylim2]
-    titles = ["Lpt cntrl", "Lpt 25uM", "Lpt 50uM", "Lpt 250uM",\
-        "Gem cntrl", "Gem 5uM", "Gem 10uM", "Gem 30uM"]
+    titles = ["Lpt cntrl", "Lpt 25uM", "Lpt 50uM", "Lpt 250uM",
+              "Gem cntrl", "Gem 5uM", "Gem 10uM", "Gem 30uM"]
 
     # Plotting AICs
     for idx, a in enumerate(AIC):
