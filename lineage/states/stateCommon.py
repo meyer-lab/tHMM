@@ -2,7 +2,7 @@
 
 import math
 import numpy as np
-from numba import njit, vectorize, float64
+from numba import njit #, vectorize, float64
 import scipy.stats as sp
 import scipy.special as sc
 from scipy.optimize import brentq, minimize
@@ -63,7 +63,6 @@ def log_gamma_sf(x, a, scale):
 def log_gamma_pdf(x, a, scale):
     return np.log(gamma_pdf(x, a, scale))
 
-
 def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     """
     This is a weighted, closed-form estimator for two parameters
@@ -86,17 +85,12 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     scale_hat0 = gammaCor / a_hat0
 
     def negative_LL(x):
-        uncens_gammas = np.array(
-            [gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 1])
-        uncens_obs = np.array([obs for obs, idx in zip(
-            gamma_obs, time_censor_obs) if idx == 1])
+        uncens_gammas = np.array([gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 1])
+        uncens_obs = np.array([obs for obs, idx in zip(gamma_obs, time_censor_obs) if idx == 1])
         assert uncens_gammas.shape[0] == uncens_obs.shape[0]
-        uncens = uncens_gammas * \
-            sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
-        cens_gammas = np.array(
-            [gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 0])
-        cens_obs = np.array([obs for obs, idx in zip(
-            gamma_obs, time_censor_obs) if idx == 0])
+        uncens = uncens_gammas * sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
+        cens_gammas = np.array([gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 0])
+        cens_obs = np.array([obs for obs, idx in zip(gamma_obs, time_censor_obs) if idx == 0])
         cens = cens_gammas * sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
 
         return -1 * (np.sum(uncens) + np.sum(cens))
@@ -107,8 +101,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
         # if nothing is censored, then there is no need to use the numerical solver
         return x0[0], x0[1]
     else:
-        res = minimize(fun=negative_LL, x0=x0, bounds=(
-            (1., 20.), (1., 20.),), options={'maxiter': 5})
+        res = minimize(fun=negative_LL, x0=x0, bounds=((1., 20.), (1., 20.),), options={'maxiter': 5})
         return res.x[0], res.x[1]
 
 

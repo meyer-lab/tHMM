@@ -3,29 +3,24 @@ import math
 import numpy as np
 import scipy.stats as sp
 
-from .stateCommon import bern_pdf, bernoulli_estimator, gamma_pdf, gamma_estimator, basic_censor, gamma_sf
+from .stateCommon import bern_pdf, bernoulli_estimator, gamma_pdf, gamma_sf, gamma_estimator, basic_censor
 from ..CellVar import Time
 
 
 class StateDistribution:
     """ For G1 and G2 separated as observations. """
 
-    # user has to identify what parameters to use for each state
-    def __init__(self, bern_p1=0.9, bern_p2=0.75, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6):
+    def __init__(self, bern_p1=0.9, bern_p2=0.75, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
-        self.params = [bern_p1, bern_p2, gamma_a1,
-                       gamma_scale1, gamma_a2, gamma_scale2]
+        self.params = [bern_p1, bern_p2, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2]
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
-        bern_obsG1 = sp.bernoulli.rvs(
-            p=self.params[0], size=size)  # bernoulli observations
+        bern_obsG1 = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
         bern_obsG2 = sp.bernoulli.rvs(p=self.params[1], size=size)
-        gamma_obsG1 = sp.gamma.rvs(
-            a=self.params[2], scale=self.params[3], size=size)  # gamma observations
-        gamma_obsG2 = sp.gamma.rvs(
-            a=self.params[4], scale=self.params[5], size=size)
+        gamma_obsG1 = sp.gamma.rvs(a=self.params[2], scale=self.params[3], size=size)  # gamma observations
+        gamma_obsG2 = sp.gamma.rvs(a=self.params[4], scale=self.params[5], size=size)
         gamma_censor_obsG1 = [1] * size
         gamma_censor_obsG2 = [1] * size
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
@@ -56,12 +51,10 @@ class StateDistribution:
         gamma_llG1 = 1
         if tuple_of_obs[4] == 1:
             # uncensored
-            gamma_llG1 = gamma_pdf(
-                tuple_of_obs[2], self.params[2], self.params[3])
+            gamma_llG1 = gamma_pdf(tuple_of_obs[2], self.params[2], self.params[3])
         elif tuple_of_obs[4] == 0:
             # censored
-            gamma_llG1 = gamma_sf(
-                tuple_of_obs[2], a=self.params[2], scale=self.params[3])
+            gamma_llG1 = gamma_sf(tuple_of_obs[2], a=self.params[2], scale=self.params[3])
         else:
             assert math.isnan(tuple_of_obs[4])
             # G1 lifetime not observed
@@ -71,16 +64,13 @@ class StateDistribution:
         gamma_llG2 = 1
         if tuple_of_obs[5] == 1:
             # uncensored
-            gamma_llG2 = gamma_pdf(
-                tuple_of_obs[3], self.params[4], self.params[5])
+            gamma_llG2 = gamma_pdf(tuple_of_obs[3], self.params[4], self.params[5])
         elif tuple_of_obs[5] == 0:
             # censored
-            gamma_llG2 = gamma_sf(
-                tuple_of_obs[3], a=self.params[4], scale=self.params[5])
+            gamma_llG2 = gamma_sf(tuple_of_obs[3], a=self.params[4], scale=self.params[5])
         elif math.isnan(tuple_of_obs[5]):
             # unobserved
-            assert math.isnan(tuple_of_obs[3]) and math.isnan(
-                tuple_of_obs[5]) and math.isnan(tuple_of_obs[1])
+            assert math.isnan(tuple_of_obs[3]) and math.isnan(tuple_of_obs[5]) and math.isnan(tuple_of_obs[1])
             gamma_llG2 = 1
 
         return bern_llG1 * bern_llG2 * gamma_llG1 * gamma_llG2
@@ -107,11 +97,9 @@ class StateDistribution:
             shapeG2 = const[1]
 
         b1_mask = np.logical_not(np.isnan(bern_obsG1))
-        self.params[0] = bernoulli_estimator(
-            bern_obsG1[b1_mask], gammas[b1_mask])
+        self.params[0] = bernoulli_estimator(bern_obsG1[b1_mask], gammas[b1_mask])
         b2_mask = np.logical_not(np.isnan(bern_obsG2))
-        self.params[1] = bernoulli_estimator(
-            bern_obsG2[b2_mask], gammas[b2_mask])
+        self.params[1] = bernoulli_estimator(bern_obsG2[b2_mask], gammas[b2_mask])
         ga1_mask = np.logical_not(np.isnan(gamma_obsG1))
         self.params[2], self.params[3] = gamma_estimator(gamma_obsG1[ga1_mask], gamma_censor_obsG1[ga1_mask], gammas[ga1_mask], shapeG1)
         ga2_mask = np.logical_not(np.isnan(gamma_obsG2))
@@ -145,10 +133,8 @@ class StateDistribution:
                     cell.time.transition_time = 0 + cell.obs[2]
             else:
                 for cell in level:
-                    cell.time = Time(
-                        cell.parent.time.endT, cell.parent.time.endT + cell.obs[2] + cell.obs[3])
-                    cell.time.transition_time = cell.parent.time.endT + \
-                        cell.obs[2]
+                    cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[2] + cell.obs[3])
+                    cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
 
     def censor_lineage(self, censor_condition, full_list_of_gens, full_lineage, **kwargs):
         """
@@ -159,8 +145,7 @@ class StateDistribution:
         and returns the censored list of cells.
         """
         if kwargs:
-            desired_experiment_time = kwargs.get(
-                "desired_experiment_time", 2e12)
+            desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
 
         if censor_condition == 0:
             output_lineage = full_lineage
