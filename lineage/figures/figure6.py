@@ -1,4 +1,5 @@
-""" This file is to show the model works in case we have rare phenotypes. """
+""" This file contains figures related to how far the states need to be,
+which is shown by Wasserestein distance. """
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -7,23 +8,24 @@ from .figureCommon import (
     subplotLabel,
     commonAnalyze,
     pi,
-    E2,
-    lineage_good_to_analyze,
+    T,
     max_desired_num_cells,
+    lineage_good_to_analyze,
     num_data_points,
     scatter_kws_list,
 )
 from ..LineageTree import LineageTree
+from ..states.StateDistributionGaPhs import StateDistribution
 
 
 def makeFigure():
     """
-    Makes fig 6.
+    Makes fig 5.
     """
 
     # Get list of axis objects
-    ax, f = getSetup((6.9, 5.5), (2, 2))  # each figure will take twice its normal size horizontally
-    figureMaker6(ax, *accuracy())
+    ax, f = getSetup((7, 5), (2, 2))
+    figureMaker5(ax, *accuracy())
 
     subplotLabel(ax)
 
@@ -31,59 +33,54 @@ def makeFigure():
 
 
 def accuracy():
-    """
-    Calculates accuracy and parameter estimation
-    over an similar number of cells in a lineage for
-    a uncensored two-state model but differing state distribution.
-    We increase the proportion of cells in a lineage by
-    fixing the Transitions matrix to be biased towards state 0.
-    """
-
+    """ A Helper function to create more random copies of a population. """
     # Creating a list of populations to analyze over
-    list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.1, 0.9, num_data_points)]
-    list_of_uncen_populations = []
+    list_of_Es = [[StateDistribution(0.99, 0.9, 12, a, 4, 5), StateDistribution(0.99, 0.8, 12, 1.5, 8, 5)] for a in np.linspace(1.5, 4, num_data_points)]
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
     list_of_fE = []
-    for T in list_of_Ts:
-        uncensored_pop = []
-        for _ in range(3):
-            uncensored_lineage = LineageTree.init_from_parameters(pi, T, E2, 0.5 * max_desired_num_cells)
-            uncensored_pop.append(uncensored_lineage)
-
+    for E in list_of_Es:
         population = []
-        for _ in range(3):
-            good2go = False
-            while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, 0.5 * max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
-                good2go = lineage_good_to_analyze(tmp_lineage)
-            population.append(tmp_lineage)
+
+        good2go = False
+        while not good2go:
+            tmp_lineage = LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)
+            good2go = lineage_good_to_analyze(tmp_lineage)
+
+        population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
-        list_of_uncen_populations.append(uncensored_pop)
         list_of_populations.append(population)
         list_of_fpi.append(pi)
         list_of_fT.append(T)
-        list_of_fE.append(E2)
+        list_of_fE.append(E)
 
-    percentageS1un, _, acc_un, _, _, _ = commonAnalyze(list_of_uncen_populations, 2, xtype="prop", list_of_fpi=list_of_fpi)
-    percentageS1, _, acc, _, _, _ = commonAnalyze(list_of_populations, 2, xtype="prop", list_of_fpi=list_of_fpi)
+    wass, _, accuracy_after_switching, _, _, _ = commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=list_of_fpi, parallel=True)
+#     for indx, a in enumerate(accuracy_after_switching):
+#         if a <= 60:
+#             print(list_of_populations[indx])
 
-    un_accuracy_df = pd.DataFrame(columns=["Proportions", "State Assignment Accuracy"])
-    un_accuracy_df["Proportions"] = percentageS1un
-    un_accuracy_df["State Assignment Accuracy"] = acc_un
+    distribution_df = pd.DataFrame(columns=["Distribution type", "G1 lifetime", "State"])
+    lineages = [list_of_populations[int(num_data_points * i / 4.)][0] for i in range(4)]
+    len_lineages = [len(lineage) for lineage in lineages]
+    distribution_df["G1 lifetime"] = [(cell.obs[1] + cell.obs[2]) for lineage in lineages for cell in lineage.output_lineage]
+    distribution_df["State"] = ["State 1" if cell.state == 0 else "State 2" for lineage in lineages for cell in lineage.output_lineage]
+    distribution_df["Distribution type"] = len_lineages[0] * ["Same"] +\
+        len_lineages[1] * ["Similar"] +\
+        len_lineages[2] * ["Different"] +\
+        len_lineages[3] * ["Distinct"]
 
-    accuracy_df = pd.DataFrame(columns=["Proportions", "State Assignment Accuracy"])
-    accuracy_df["Proportions"] = percentageS1
-    accuracy_df["State Assignment Accuracy"] = acc
+    # for the violin plot (distributions)
+    wasser_df = pd.DataFrame(columns=["Wasserstein distance", "State Assignment Accuracy"])
+    wasser_df["Wasserstein distance"] = wass
+    wasser_df["State Assignment Accuracy"] = accuracy_after_switching
+    return distribution_df, wasser_df
 
-    return un_accuracy_df, accuracy_df
 
-
-def figureMaker6(ax, un_accuracy_df, accuracy_df):
+def figureMaker5(ax, distribution_df, wasser_df):
     """
-    This makes figure 6.
+    This makes figure 5.
     """
     # cartoon to show different shapes --> similar shapes
     i = 0
@@ -93,17 +90,11 @@ def figureMaker6(ax, un_accuracy_df, accuracy_df):
     ax[i].axis('off')
 
     i += 1
-    # state assignment accuracy
-    sns.regplot(x="Proportions", y="State Assignment Accuracy", data=un_accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    ax[i].set_title("Uncensored Data")
-    ax[i].set_ylabel("Accuracy [%]")
-    ax[i].set_xlabel("Approximate percentage of cells in state 1 [%]")
-    ax[i].set_ylim(bottom=50.0, top=105.0)
+    sns.violinplot(x="Distribution type", y="G1 lifetime", hue="State", split=True, data=distribution_df, ax=ax[i])
 
     i += 1
-    # state assignment accuracy
-    sns.regplot(x="Proportions", y="State Assignment Accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    ax[i].set_title("Censored Data")
+    # state accuracy
+    sns.regplot(x="Wasserstein distance", y="State Assignment Accuracy", data=wasser_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+    ax[i].set_title("State Assignment Accuracy")
     ax[i].set_ylabel("Accuracy [%]")
-    ax[i].set_xlabel("Approximate percentage of cells in state 1 [%]")
-    ax[i].set_ylim(bottom=50.0, top=105.0)
+    ax[i].set_ylim(bottom=10.0, top=101)
