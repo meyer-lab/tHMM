@@ -1,5 +1,6 @@
 """ This file contains functions for plotting the performance of the model for censored data. """
 
+from string import ascii_lowercase
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -35,21 +36,27 @@ def makeFigure():
 
     lineage_uncensored1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
     plotLineage(lineage_uncensored1, 'lineage/figures/cartoons/uncen_fig3_1.svg', censore=False)
+
     lineage_uncensored2 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
     plotLineage(lineage_uncensored2, 'lineage/figures/cartoons/uncen_fig3_2.svg', censore=False)
+
     lineage_uncensored3 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
     plotLineage(lineage_uncensored3, 'lineage/figures/cartoons/uncen_fig3_3.svg', censore=False)
 
-    lineage_censored1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=300)
+    lineage_censored1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=250)
     plotLineage(lineage_censored1, 'lineage/figures/cartoons/cen_fig3_1.svg', censore=True)
-    lineage_censored2 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=300)
+
+    lineage_censored2 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=250)
     plotLineage(lineage_censored2, 'lineage/figures/cartoons/cen_fig3_2.svg', censore=True)
-    lineage_censored3 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=300)
+
+    lineage_censored3 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=250)
     plotLineage(lineage_censored3, 'lineage/figures/cartoons/cen_fig3_3.svg', censore=True)
 
     # Get list of axis objects
-    ax, f = getSetup((5, 6), (3, 2))
+    ax, f = getSetup((6.5, 4), (2, 2))
     figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen)
+    ax[0].text(-0.2, 1.22, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
+    ax[1].text(-0.2, 1.22, ascii_lowercase[1], transform=ax[1].transAxes, fontsize=16, fontweight="bold", va="top")
 
     subplotLabel(ax)
 
@@ -113,12 +120,6 @@ def figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, xlabel="Number of
     accuracy_cen_df["State Assignment Accuracy"] = Accuracy_Cen
 
     i = 0
-    ax[i].axis('off')
-
-    i += 1
-    ax[i].axis('off')
-
-    i += 1
     ax[i].axis('off')
 
     i += 1
