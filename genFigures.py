@@ -74,21 +74,21 @@ if __name__ == '__main__':
     if sys.argv[1] == '1':
         # Overlay Figure 1 cartoon
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1a.svg', 10, 0, scalee=0.48)
+                       f'{cartoon_dir}/figure1a.svg', 10, 0, scalee=0.18)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1b.svg', 10, 120, scalee=0.48)
+                       f'{cartoon_dir}/figure1b.svg', 10, 120, scalee=0.18)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1c.svg', 10, 240, scalee=0.48)
+                       f'{cartoon_dir}/figure1c.svg', 10, 240, scalee=0.18)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1d.svg', 165, 0, scalee=0.48)
+                       f'{cartoon_dir}/figure1d.svg', 165, 0, scalee=0.18)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1e.svg', 165, 120, scalee=0.48)
+                       f'{cartoon_dir}/figure1e.svg', 165, 120, scalee=0.18)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1f.svg', 165, 240, scalee=0.48)
+                       f'{cartoon_dir}/figure1f.svg', 165, 240, scalee=0.18)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/xaxis.svg', 10, 360, scalee=1.28)
+                       f'{cartoon_dir}/xaxis.svg', 10, 360, scalee=1.0)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/xaxis.svg', 165, 360, scalee=1.28)
+                       f'{cartoon_dir}/xaxis.svg', 165, 360, scalee=1.0)
 
     if sys.argv[1] == '2':
         # Overlay Figure 2 cartoon
