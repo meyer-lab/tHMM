@@ -21,16 +21,16 @@ def CladeRecursive(cell, a, censore):
 
     if cell.isLeaf() and censore:
         if cell.time.transition_time >= cell.time.endT:  # the cell died in G1
-            return Clade(branch_length=cell.time.endT - cell.time.startT, color="pink")
+            return Clade(branch_length=cell.time.endT - cell.time.startT, width=3, color="pink")
         else:  # the cell spent some time in G2
-            return Clade(branch_length=cell.time.endT - cell.time.startT, color="gold")  # dead in G2
+            return Clade(branch_length=cell.time.endT - cell.time.startT, width=3, color="gold")  # dead in G2
     else:
         clades = []
         if cell.left is not None and cell.left.observed:
             clades.append(CladeRecursive(cell.left, a, censore))
         if cell.right is not None and cell.right.observed:
             clades.append(CladeRecursive(cell.right, a, censore))
-        return Clade(branch_length=cell.time.endT - cell.time.startT, clades=clades, color=colorr)
+        return Clade(branch_length=cell.time.endT - cell.time.startT, width=3, clades=clades, color=colorr)
 
 
 def plotLineage(lineage, path, censore=True):
@@ -45,4 +45,4 @@ def plotLineage(lineage, path, censore=True):
 
     Phylo.draw(c)
     pylab.axis("off")
-    pylab.savefig(path, format="svg", transparent=True, bbox_inches="tight", dpi=400)
+    pylab.savefig(path, format="svg", transparent=True, bbox_inches="tight", dpi=900)
