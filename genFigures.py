@@ -111,10 +111,9 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figure4.svg',
                        f'{cartoon_dir}/cen_fig4_1.svg', 260, 75, scalee=0.35, scale_x=0.5, rotate=90)
         overlayCartoon(fdir + 'figure4.svg',
-                       f'{cartoon_dir}/cen_fig4_2.svg', 310, 90, scalee=0.35, scale_x=0.5,rotate=90)
+                       f'{cartoon_dir}/cen_fig4_2.svg', 310, 90, scalee=0.35, scale_x=0.5, rotate=90)
         overlayCartoon(fdir + 'figure4.svg',
-                       f'{cartoon_dir}/cen_fig4_3.svg', 360, 105, scalee=0.35, scale_x=0.5,rotate=90)
-
+                       f'{cartoon_dir}/cen_fig4_3.svg', 360, 105, scalee=0.35, scale_x=0.5, rotate=90)
 
     if sys.argv[1] == '5':
         # Overlay Figure 5 cartoon
