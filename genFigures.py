@@ -74,21 +74,21 @@ if __name__ == '__main__':
     if sys.argv[1] == '1':
         # Overlay Figure 1 cartoon
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1a.svg', 10, 0, scalee=0.48)
+                       f'{cartoon_dir}/figure1a.svg', 60, 30, scalee=0.35, scale_x=0.6, rotate=90)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1b.svg', 10, 120, scalee=0.48)
+                       f'{cartoon_dir}/figure1b.svg', 100, 42, scalee=0.35, scale_x=0.6, rotate=90)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1c.svg', 10, 240, scalee=0.48)
+                       f'{cartoon_dir}/figure1c.svg', 140, 54, scalee=0.35, scale_x=0.6, rotate=90)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1d.svg', 165, 0, scalee=0.48)
+                       f'{cartoon_dir}/figure1d.svg', 205, 66, scalee=0.35, scale_x=0.6, rotate=90)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1e.svg', 165, 120, scalee=0.48)
+                       f'{cartoon_dir}/figure1e.svg', 245, 78, scalee=0.35, scale_x=0.6, rotate=90)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1f.svg', 165, 240, scalee=0.48)
+                       f'{cartoon_dir}/figure1f.svg', 285, 90, scalee=0.35, scale_x=0.6, rotate=90)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/xaxis.svg', 10, 360, scalee=1.28)
+                       f'{cartoon_dir}/xaxis.svg', 0, 20, scalee=0.72)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/xaxis.svg', 165, 360, scalee=1.28)
+                       f'{cartoon_dir}/xaxis.svg', 180, 20, scalee=0.72)
 
     if sys.argv[1] == '2':
         # Overlay Figure 2 cartoon
@@ -98,29 +98,35 @@ if __name__ == '__main__':
     if sys.argv[1] == '3':
         # Overlay Figure 3 cartoon
         overlayCartoon(fdir + 'figure3.svg',
-                       f'{cartoon_dir}/uncen_fig3_1.svg', 20, 5, scalee=0.3)
-        overlayCartoon(fdir + 'figure3.svg',
-                       f'{cartoon_dir}/uncen_fig3_2.svg', 20, 90, scalee=0.3)
-        overlayCartoon(fdir + 'figure3.svg',
-                       f'{cartoon_dir}/uncen_fig3_3.svg', 20, 180, scalee=0.3)
-        overlayCartoon(fdir + 'figure3.svg',
-                       f'{cartoon_dir}/cen_fig3_1.svg', 210, 5, scalee=0.3)
-        overlayCartoon(fdir + 'figure3.svg',
-                       f'{cartoon_dir}/cen_fig3_2.svg', 210, 90, scalee=0.3)
-        overlayCartoon(fdir + 'figure3.svg',
-                       f'{cartoon_dir}/cen_fig3_3.svg', 210, 180, scalee=0.3)
+                       f'{cartoon_dir}/figure3.svg', 5, 0, scalee=0.83)
 
     if sys.argv[1] == '4':
         # Overlay Figure 4 cartoon
         overlayCartoon(fdir + 'figure4.svg',
-                       f'{cartoon_dir}/figure4.svg', 0, 15, scalee=0.46)
+                       f'{cartoon_dir}/uncen_fig4_1.svg', 70, 30, scalee=0.35, scale_x=0.5, rotate=90)
+        overlayCartoon(fdir + 'figure4.svg',
+                       f'{cartoon_dir}/uncen_fig4_2.svg', 120, 43, scalee=0.35, scale_x=0.5, rotate=90)
+        overlayCartoon(fdir + 'figure4.svg',
+                       f'{cartoon_dir}/uncen_fig4_3.svg', 170, 56, scalee=0.35, scale_x=0.5, rotate=90)
+        overlayCartoon(fdir + 'figure4.svg',
+                       f'{cartoon_dir}/cen_fig4_1.svg', 260, 75, scalee=0.35, scale_x=0.5, rotate=90)
+        overlayCartoon(fdir + 'figure4.svg',
+                       f'{cartoon_dir}/cen_fig4_2.svg', 310, 90, scalee=0.35, scale_x=0.5,rotate=90)
+        overlayCartoon(fdir + 'figure4.svg',
+                       f'{cartoon_dir}/cen_fig4_3.svg', 360, 105, scalee=0.35, scale_x=0.5,rotate=90)
+
 
     if sys.argv[1] == '5':
         # Overlay Figure 5 cartoon
         overlayCartoon(fdir + 'figure5.svg',
-                       f'{cartoon_dir}/figure5.svg', 35, 0, scalee=0.65)
+                       f'{cartoon_dir}/figure5.svg', 0, 15, scalee=0.46)
 
     if sys.argv[1] == '6':
         # Overlay Figure 6 cartoon
         overlayCartoon(fdir + 'figure6.svg',
-                       f'{cartoon_dir}/figure6.svg', 0, 20, scalee=0.85)
+                       f'{cartoon_dir}/figure6.svg', 35, 0, scalee=0.65)
+
+    if sys.argv[1] == '7':
+        # Overlay Figure 7 cartoon
+        overlayCartoon(fdir + 'figure7.svg',
+                       f'{cartoon_dir}/figure7.svg', 0, 20, scalee=0.85)

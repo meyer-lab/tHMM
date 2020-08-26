@@ -11,6 +11,7 @@ from .figureCommon import getSetup
 from ..plotTree import plotLineage
 from lineage.data.Lineage_collections import Gemcitabine_Control as gem
 
+
 def makeFigure():
     """
     Makes figure 1.
@@ -31,7 +32,7 @@ def makeFigure():
     plotLineage(gem[84], 'lineage/figures/cartoons/figure1f.svg', censore=False)
 
     # Get list of axis objects
-    ax, f = getSetup((4.5, 5.5), (3, 2))
+    ax, f = getSetup((5.1, 2.0), (1, 2))
     figureMaker(ax)
     ax[0].text(-0.2, 1.22, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
     ax[1].text(-0.2, 1.22, ascii_lowercase[1], transform=ax[1].transAxes, fontsize=16, fontweight="bold", va="top")
@@ -45,13 +46,7 @@ def figureMaker(ax):
     """
     i = 0
     ax[i].axis('off')
+    ax[i].set_title("Homogeneous")
     i += 1
     ax[i].axis('off')
-    i += 1
-    ax[i].axis('off')
-    i += 1
-    ax[i].axis('off')
-    i += 1
-    ax[i].axis('off')
-    i += 1
-    ax[i].axis('off')
+    ax[i].set_title("Heterogeneous")
