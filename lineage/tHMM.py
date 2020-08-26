@@ -98,7 +98,7 @@ class tHMM:
         pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
         return pred_states_by_lineage
 
-    def get_AIC(self, LL, DoF=None):
+    def get_AIC(self, LL, num_params=None):
         """
         Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.
@@ -113,14 +113,17 @@ class tHMM:
         :param AIC_degrees_of_freedom: the degrees of freedom in AIC calculation :math:`(num_{states}^2 + num_{states} * numberOfParameters - 1)` - same for each lineage
         """
         num_states = self.num_states
+
         # This is for the case when we want to keep some parameters fixed.
-        if DoF is None:
+        if num_params is None:
             number_of_parameters = len(self.estimate.E[0].params)
+            degrees_of_freedom = num_states * (num_states - 1) + num_states * number_of_parameters + (num_states - 1)
         else:
-            number_of_parameters = DoF
-        AIC_degrees_of_freedom = num_states ** 2 + num_states * number_of_parameters - 1
-        AIC_value = [-2 * LL_val + 2 * AIC_degrees_of_freedom for LL_val in LL]
-        return AIC_value, AIC_degrees_of_freedom
+            number_of_parameters = num_params
+            degrees_of_freedom = num_states * num_params
+    
+        AIC_value = [(-2 * LL_val + 2 * degrees_of_freedom) for LL_val in LL]
+        return AIC_value, degrees_of_freedom
 
     def log_score(self, X_state_tree_sequence, pi=None, T=None, E=None):
         """

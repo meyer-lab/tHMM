@@ -30,8 +30,8 @@ def makeFigure():
     """
     ax, f = getSetup((12, 6), (2, 4))
 
-    data = [Lapatinib_Control[0:9], Lapt25uM[0:9], Lapt50uM[0:9], Lap250uM[0:9],
-            Gemcitabine_Control[0:9], Gem5uM[0:9], Gem10uM[0:9], Gem30uM[0:9]]
+    data = [Lapatinib_Control[0:10], Lapt25uM[0:10], Lapt50uM[0:10], Lap250uM[0:10],
+            Gemcitabine_Control[0:10], Gem5uM[0:10], Gem10uM[0:10], Gem30uM[0:10]]
 
     # making lineages and finding AICs (assign number of lineages here)
     AIC = [run_AIC(data[i]) for i in range(len(data))]
