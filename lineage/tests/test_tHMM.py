@@ -9,6 +9,7 @@ from ..UpwardRecursion import (
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
+from ..states.StateDistributionGamma import StateDistribution as StateDistributionGamma
 from ..figures.figureCommon import pi, T, E, lineage_good_to_analyze
 from ..Analyze import Analyze, Results
 
@@ -104,30 +105,51 @@ class TestModel(unittest.TestCase):
             self.assertGreaterEqual(NFlin.shape[0], 0)  # at least zero cells in each lineage
             self.assertGreaterEqual(NF3[ind].shape[0], 0)
 
-    def test_level_of_performance3(self):
-        """
-        Really defined states should get an accuracy >95%.
-        Lineages used should be large and distinct.
-        """
-        X = []
-        for _ in range(10):
-            good2go = False
-            while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, 2 ** 11 - 1)
-                good2go = lineage_good_to_analyze(tmp_lineage)
+    # def test_level_of_performance3(self):
+    #     """
+    #     Really defined states should get an accuracy >95%.
+    #     Lineages used should be large and distinct.
+    #     """
+    #     X = []
+    #     for _ in range(10):
+    #         good2go = False
+    #         while not good2go:
+    #             tmp_lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, 2 ** 11 - 1)
+    #             good2go = lineage_good_to_analyze(tmp_lineage)
 
-        X.append(tmp_lineage)
-        tree_obj, predicted_states, LL = Analyze(X, 3)
-        results_dict = Results(tree_obj, predicted_states, LL)
-        accuracy = results_dict["balanced_accuracy_score"]
-        self.assertGreaterEqual(accuracy, 95)
+    #     X.append(tmp_lineage)
+    #     tree_obj, predicted_states, LL = Analyze(X, 3)
+    #     results_dict = Results(tree_obj, predicted_states, LL)
+    #     accuracy = results_dict["balanced_accuracy_score"]
+    #     self.assertGreaterEqual(accuracy, 95)
 
-    def test_level_of_performance2(self):
-        """
-        Really defined states should get an accuracy >95%.
-        Lineages used should be large and distinct.
-        """
-        tree_obj, predicted_states, LL = Analyze(self.X, 2)
-        results_dict = Results(tree_obj, predicted_states, LL)
-        accuracy = results_dict["balanced_accuracy_score"]
-        self.assertGreaterEqual(accuracy, 95)
+    # def test_level_of_performance2(self):
+    #     """
+    #     Really defined states should get an accuracy >95%.
+    #     Lineages used should be large and distinct.
+    #     """
+    #     tree_obj, predicted_states, LL = Analyze(self.X, 2)
+    #     results_dict = Results(tree_obj, predicted_states, LL)
+    #     accuracy = results_dict["balanced_accuracy_score"]
+    #     self.assertGreaterEqual(accuracy, 95)
+
+    def test_small_lineages_SimpleGamma(self):
+        """ To test lineages with 3 cells in them for simple gamma. """
+        # test with 2 state model
+        tmp_lineage1 = LineageTree.init_from_parameters(pi, T, E, 3)
+        tree_obj1, predicted_states1, LL1 = Analyze([tmp_lineage1], 2)
+
+        # test with 3 state model
+        E3 = [StateDistributionGamma(0.99, 10, 6), StateDistributionGamma(0.94, 15, 3), StateDistributionGamma(0.88, 6, 9)]
+        tmp_lineage = LineageTree.init_from_parameters(self.pi, self.T, E3, 3)
+        tree_obj, predicted_states, LL = Analyze([tmp_lineage], 3)
+
+    def test_small_lineages_PhaseGamma(self):
+        """ To test lineages with 3 cells in them for phase specific gamma. """
+        # test with 2 state model
+        tmp_lineage1 = LineageTree.init_from_parameters(pi, T, E, 3)
+        tree_obj1, predicted_states1, LL1 = Analyze([tmp_lineage1], 2)
+
+        # test with 3 state model
+        tmp_lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, 3)
+        tree_obj, predicted_states, LL = Analyze([tmp_lineage], 3)
