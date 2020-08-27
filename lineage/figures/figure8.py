@@ -39,12 +39,10 @@ def makeFigure():
     AIC = [run_AIC(.1, e, 10, idx > 3) for idx, e in enumerate(E)]
 
     # Finding proper ylim range for all 4 uncensored graphs and rounding up
-    upper_ylim_uncensored = int(1 + max(np.max(np.ptp(AIC[0], axis=0)), np.max(np.ptp(
-        AIC[1], axis=0)), np.max(np.ptp(AIC[2], axis=0)), np.max(np.ptp(AIC[3], axis=0))) / 25.0) * 25
+    upper_ylim_uncensored = int(1 + max([np.max(np.ptp(AIC[i], axis=0)) for i in range(4)]) / 25.0) * 25
 
     # Finding proper ylim range for all 4 censored graphs and rounding up
-    upper_ylim_censored = int(1 + max(np.max(np.ptp(AIC[4], axis=0)), np.max(np.ptp(
-        AIC[5], axis=0)), np.max(np.ptp(AIC[6], axis=0)), np.max(np.ptp(AIC[7], axis=0))) / 25.0) * 25
+    upper_ylim_censored = int(1 + max([np.max(np.ptp(AIC[i], axis=0)) for i in range(4, 8)]) / 25.0) * 25
 
     upper_ylim = [upper_ylim_uncensored, upper_ylim_censored]
 

@@ -37,14 +37,8 @@ def makeFigure():
     AIC = [run_AIC(data[i]) for i in range(len(data))]
 
     # Finding proper ylim range for all 4 censored graphs and rounding up
-    upper_ylim1 = int(1 + max(np.max(np.ptp(AIC[0], axis=0)),
-                              np.max(np.ptp(AIC[1], axis=0)),
-                              np.max(np.ptp(AIC[2], axis=0)),
-                              np.max(np.ptp(AIC[3], axis=0))) / 25.0) * 25
-    upper_ylim2 = int(1 + max(np.max(np.ptp(AIC[4], axis=0)),
-                              np.max(np.ptp(AIC[5], axis=0)),
-                              np.max(np.ptp(AIC[6], axis=0)),
-                              np.max(np.ptp(AIC[7], axis=0))) / 25.0) * 25
+    upper_ylim1 = int(1 + max([max(p) for p in AIC[0:4]]) / 25.0) * 25
+    upper_ylim2 = int(1 + max([max(p) for p in AIC[5:8]]) / 25.0) * 25
 
     upper_ylim = [upper_ylim1, upper_ylim2]
     titles = ["Lpt cntrl", "Lpt 25uM", "Lpt 50uM", "Lpt 250uM",
@@ -70,15 +64,15 @@ def run_AIC(lineages):
     for idx in range(len(desired_num_states)):
         AICs[idx], _ = output[idx][0].get_AIC(output[idx][2], 4)
 
+    # Normalizing AIC
+    AICs = AICs - np.min(AICs)
     return AICs
 
 
-def figure_maker(ax, AIC_holders, title, upper_ylim, censored=False):
+def figure_maker(ax, AIC_holder, title, upper_ylim, censored=False):
     """
     Makes figure 9.
     """
-    # Normalizing AIC
-    AIC_holder = AIC_holders - np.min(AIC_holders)
 
     # Creating Histogram and setting ylim
     ax2 = ax.twinx()
