@@ -35,8 +35,8 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        tuple_of_obsG1 = list(zip(tuple_of_obs[0], tuple_of_obs[2], tuple_of_obs[4]))
-        tuple_of_obsG2 = list(zip(tuple_of_obs[1], tuple_of_obs[3], tuple_of_obs[5]))
+        tuple_of_obsG1 = (tuple_of_obs[0], tuple_of_obs[2], tuple_of_obs[4])
+        tuple_of_obsG2 = (tuple_of_obs[1], tuple_of_obs[3], tuple_of_obs[5])
         G1_LL = self.G1.pdf(tuple_of_obsG1)
         G2_LL = self.G1.pdf(tuple_of_obsG2)
 #         bern_llG1 = 1
@@ -104,8 +104,8 @@ class StateDistribution:
         ga1_mask = np.logical_not(np.isnan(gamma_obsG1))
         ga2_mask = np.logical_not(np.isnan(gamma_obsG2))
 
-        list_of_tuples_of_obsG1 = zip(bern_obsG1, gamma_obsG1, gamma_censor_obsG1)
-        list_of_tuples_of_obsG2 = zip(bern_obsG2, gamma_obsG2, gamma_censor_obsG2)
+        list_of_tuples_of_obsG1 = [(a, b, c) for a, b, c in zip(bern_obsG1, gamma_obsG1, gamma_censor_obsG1)]
+        list_of_tuples_of_obsG2 = [(a, b, c) for a, b, c in zip(bern_obsG2, gamma_obsG2, gamma_censor_obsG2)]
         
         self.G1.estimator(list_of_tuples_of_obsG1, gammas[ga1_mask], const)
         self.G2.estimator(list_of_tuples_of_obsG2, gammas[ga2_mask], const)
