@@ -26,7 +26,7 @@ fT_list = [[1.0], [[0.99277139, 0.00722861],
 
 def makeFigure():
     """
-    Makes figure 8.
+    Makes figure 9.
     """
     ax, f = getSetup((12, 6), (2, 4))
 
@@ -65,28 +65,27 @@ def run_AIC(lineages):
     """
 
     # Storing AICs into array
-    AICs = np.empty((len(desired_num_states), len(lineages)))
+    AICs = np.empty(len(desired_num_states))
     output = run_Analyze_AIC(lineages, desired_num_states, const=[10, 6], list_of_fpi=fpi_list, list_if_fT=fT_list)
     for idx in range(len(desired_num_states)):
-        AIC, _ = output[idx][0].get_AIC(output[idx][2], 4)
-        AICs[idx] = np.array([ind_AIC for ind_AIC in AIC])
+        AICs[idx], _ = output[idx][0].get_AIC(output[idx][2], 4)
 
     return AICs
 
 
-def figure_maker(ax, AIC_holder, title, upper_ylim, censored=False):
+def figure_maker(ax, AIC_holders, title, upper_ylim, censored=False):
     """
-    Makes figure 8.
+    Makes figure 9.
     """
     # Normalizing AIC
-    AIC_holder = AIC_holder - np.min(AIC_holder, axis=0)[np.newaxis, :]
+    AIC_holder = AIC_holders - np.min(AIC_holders)
 
     # Creating Histogram and setting ylim
     ax2 = ax.twinx()
     ax2.set_ylabel("Lineages Predicted")
-    ax2.hist(np.argmin(AIC_holder, axis=0) + 1, rwidth=1,
+    ax2.hist(np.argmin(AIC_holder) + 1, rwidth=1.0,
              alpha=.2, bins=desired_num_states, align='left')
-    ax2.set_yticks(np.linspace(0, len(AIC_holder[0]), 5))
+    ax2.set_yticks(np.linspace(0, len(AIC_holder), 5))
 
     # Creating AIC plot and matching gridlines
     ax.set_xlabel("Number of States Predicted")

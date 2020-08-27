@@ -121,8 +121,7 @@ class tHMM:
         else:
             number_of_parameters = num_params
             degrees_of_freedom = num_states * num_params
-    
-        AIC_value = [(-2 * LL_val + 2 * degrees_of_freedom) for LL_val in LL]
+        AIC_value = -2 * np.sum(LL) + 2 * degrees_of_freedom
         return AIC_value, degrees_of_freedom
 
     def log_score(self, X_state_tree_sequence, pi=None, T=None, E=None):
