@@ -129,7 +129,7 @@ class tHMM:
             degrees_of_freedom = num_states * num_params
             # the whole population has one AIC value.
             AIC_value = -2 * np.sum(LL) + 2 * degrees_of_freedom
-        
+
         return AIC_value, degrees_of_freedom
 
     def log_score(self, X_state_tree_sequence, pi=None, T=None, E=None):
