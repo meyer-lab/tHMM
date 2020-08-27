@@ -104,25 +104,7 @@ class TestModel(unittest.TestCase):
             self.assertGreaterEqual(NFlin.shape[0], 0)  # at least zero cells in each lineage
             self.assertGreaterEqual(NF3[ind].shape[0], 0)
 
-    def test_level_of_performance3(self):
-        """
-        Really defined states should get an accuracy >95%.
-        Lineages used should be large and distinct.
-        """
-        X = []
-        for _ in range(10):
-            good2go = False
-            while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, 2 ** 11 - 1)
-                good2go = lineage_good_to_analyze(tmp_lineage)
-
-        X.append(tmp_lineage)
-        tree_obj, predicted_states, LL = Analyze(X, 3)
-        results_dict = Results(tree_obj, predicted_states, LL)
-        accuracy = results_dict["balanced_accuracy_score"]
-        self.assertGreaterEqual(accuracy, 95)
-
-    def test_level_of_performance2(self):
+    def test_fit_performance(self):
         """
         Really defined states should get an accuracy >95%.
         Lineages used should be large and distinct.
@@ -131,3 +113,13 @@ class TestModel(unittest.TestCase):
         results_dict = Results(tree_obj, predicted_states, LL)
         accuracy = results_dict["balanced_accuracy_score"]
         self.assertGreaterEqual(accuracy, 95)
+
+    def test_small_lineages(self):
+        """ To test lineages with 3 cells in them for simple gamma. """
+        # test with 2 state model
+        lin = [LineageTree.init_from_parameters(pi, T, E, 3) for _ in range(3)]
+
+        # test with varying number of states
+        for stateNum in range(2, 5):
+            _, _, LL1 = Analyze(lin, stateNum)
+            self.assertTrue(np.all(np.isfinite(LL1)))
