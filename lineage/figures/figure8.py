@@ -1,8 +1,7 @@
 """
-File: figureS11.py
-Purpose: Generates figure S11.
-
-AIC.
+File: figure8.py
+Purpose: Generates figure 8.
+AIC for synthetic data.
 """
 import numpy as np
 from matplotlib.ticker import MaxNLocator
@@ -15,40 +14,38 @@ from ..states.StateDistributionGaPhs import StateDistribution
 
 from .figureCommon import getSetup, lineage_good_to_analyze, subplotLabel
 
-# TODO
-# Calculate A-AIC where you removed the count of elements in T and pi that are zero, and add for those that are 1.
 
 desired_num_states = np.arange(1, 8)
-
-# Setting up state distributions and E
-Sone = StateDistribution(0.99, 0.9, 10, 2, 10, 2)
-Stwo = StateDistribution(0.9, 0.9, 20, 3, 20, 3)
-Sthree = StateDistribution(0.85, 0.9, 30, 4, 30, 4)
-Sfour = StateDistribution(0.8, 0.9, 40, 5, 40, 5)
-Eone = [Sone, Sone]
-Etwo = [Sone, Stwo]
-Ethree = [Sone, Stwo, Sthree]
-Efour = [Sone, Stwo, Sthree, Sfour]
-E = [Eone, Etwo, Ethree, Efour, Eone, Etwo, Ethree, Efour]
 
 
 def makeFigure():
     """
-    Makes figure 10.
+    Makes figure 8.
     """
     ax, f = getSetup((12, 6), (2, 4))
+
+    # Setting up state distributions and E
+    Sone = StateDistribution(0.99, 0.9, 10, 2, 10, 2)
+    Stwo = StateDistribution(0.9, 0.9, 20, 3, 20, 3)
+    Sthree = StateDistribution(0.85, 0.9, 30, 4, 30, 4)
+    Sfour = StateDistribution(0.8, 0.9, 40, 5, 40, 5)
+    Eone = [Sone, Sone]
+    Etwo = [Sone, Stwo]
+    Ethree = [Sone, Stwo, Sthree]
+    Efour = [Sone, Stwo, Sthree, Sfour]
+    E = [Eone, Etwo, Ethree, Efour, Eone, Etwo, Ethree, Efour]
+
     # making lineages and finding AICs (assign number of lineages here)
     AIC = [run_AIC(.1, e, 10, idx > 3) for idx, e in enumerate(E)]
 
     # Finding proper ylim range for all 4 uncensored graphs and rounding up
-    upper_ylim_uncensored = int(1 + max(np.max(np.ptp(AIC[0], axis=0)),
-                              np.max(np.ptp(AIC[1], axis=0)),
-                              np.max(np.ptp(AIC[2], axis=0)),
-                              np.max(np.ptp(AIC[3], axis=0))) / 25.0) * 25
-    upper_ylim_censored = int(1 + max(np.max(np.ptp(AIC[4], axis=0)),
-                              np.max(np.ptp(AIC[5], axis=0)),
-                              np.max(np.ptp(AIC[6], axis=0)),
-                              np.max(np.ptp(AIC[7], axis=0))) / 25.0) * 25
+    upper_ylim_uncensored = int(1 + max(np.max(np.ptp(AIC[0], axis=0)), np.max(np.ptp(
+        AIC[1], axis=0)), np.max(np.ptp(AIC[2], axis=0)), np.max(np.ptp(AIC[3], axis=0))) / 25.0) * 25
+
+    # Finding proper ylim range for all 4 censored graphs and rounding up
+    upper_ylim_censored = int(1 + max(np.max(np.ptp(AIC[4], axis=0)), np.max(np.ptp(
+        AIC[5], axis=0)), np.max(np.ptp(AIC[6], axis=0)), np.max(np.ptp(AIC[7], axis=0))) / 25.0) * 25
+
     upper_ylim = [upper_ylim_uncensored, upper_ylim_censored]
 
     # Plotting AICs
@@ -83,33 +80,33 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10, censored=Fals
         lineages = [LineageTree.init_from_parameters(
             pi, T, E, 2**6 - 1) for _ in range(num_lineages_to_evaluate)]
     lineages = [l for l in lineages if lineage_good_to_analyze(l)]
-
     # Storing AICs into array
-    AICs = np.empty(len(desired_num_states))
+    AICs = np.empty((len(desired_num_states), len(lineages)))
     output = run_Analyze_AIC(lineages, desired_num_states)
     for idx in range(len(desired_num_states)):
-        AICs[idx], _ = output[idx][0].get_AIC(output[idx][2], None)
+        AIC, _ = output[idx][0].get_AIC(output[idx][2], None)
+        AICs[idx] = np.array([ind_AIC for ind_AIC in AIC])
 
     return AICs
 
 
 def figure_maker(ax, AIC_holder, true_state_no, upper_ylim, censored=False):
     """
-    Makes figure 11.
+    Makes figure 8.
     """
     # Normalizing AIC
-    AIC_holder = AIC_holder - np.min(AIC_holder)
+    AIC_holder = AIC_holder - np.min(AIC_holder, axis=0)[np.newaxis, :]
 
     # Creating Histogram and setting ylim
     ax2 = ax.twinx()
     ax2.set_ylabel("Lineages Predicted")
-    ax2.hist(np.argmin(AIC_holder) + 1, rwidth=1,
+    ax2.hist(np.argmin(AIC_holder, axis=0) + 1, rwidth=1,
              alpha=.2, bins=desired_num_states, align='left')
-    ax2.set_yticks(np.linspace(0, len(AIC_holder), 5))
+    ax2.set_yticks(np.linspace(0, len(AIC_holder[0]), 1 + len(AIC_holder[0])))
 
     # Creating AIC plot and matching gridlines
     ax.set_xlabel("Number of States Predicted")
-    ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5, linewidth=2)
+    ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
     ax.set_ylabel("Normalized AIC")
     ax.set_yticks(np.linspace(0, upper_ylim, len(ax2.get_yticks())))
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))

@@ -115,13 +115,21 @@ class tHMM:
         num_states = self.num_states
 
         # This is for the case when we want to keep some parameters fixed.
+        # It is the same case that we want to have the sum of likelihoods for all lineages
         if num_params is None:
             number_of_parameters = len(self.estimate.E[0].params)
+            # dof = k * (k - 1) + k * num_params + k - 1
+            # first term: transition matrix, second term: number of parameters, third term: initial prob. matrix
             degrees_of_freedom = num_states * (num_states - 1) + num_states * number_of_parameters + (num_states - 1)
+            # each lineage has an AIC value.
+            AIC_value = [-2 * LL_val + 2 * degrees_of_freedom for LL_val in LL]
         else:
+            # This is the case that we use for figure 8 (AIC for synthetic data)
             number_of_parameters = num_params
             degrees_of_freedom = num_states * num_params
-        AIC_value = -2 * np.sum(LL) + 2 * degrees_of_freedom
+            # the whole population has one AIC value.
+            AIC_value = -2 * np.sum(LL) + 2 * degrees_of_freedom
+        
         return AIC_value, degrees_of_freedom
 
     def log_score(self, X_state_tree_sequence, pi=None, T=None, E=None):
