@@ -43,7 +43,7 @@ def accuracy():
         population = LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)
 
         # Adding populations into a holder for analysing
-        list_of_populations.append(population)
+        list_of_populations.append([population])
         list_of_fpi.append(pi)
         list_of_fT.append(T)
         list_of_fE.append(E)
