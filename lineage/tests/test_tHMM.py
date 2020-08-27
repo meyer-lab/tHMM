@@ -113,7 +113,7 @@ class TestModel(unittest.TestCase):
         for _ in range(10):
             good2go = False
             while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, 2 ** 11 - 1)
+                tmp_lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, 2 ** 12 - 1)
                 good2go = lineage_good_to_analyze(tmp_lineage)
 
         X.append(tmp_lineage)
