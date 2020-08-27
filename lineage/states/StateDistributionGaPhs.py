@@ -4,6 +4,7 @@ import numpy as np
 import scipy.stats as sp
 
 from .stateCommon import bern_pdf, bernoulli_estimator, gamma_pdf, gamma_estimator, basic_censor
+from .StateDistributionGamma import StateDistribution as GammaSD
 from ..CellVar import Time
 
 
@@ -13,16 +14,14 @@ class StateDistribution:
     def __init__(self, bern_p1=0.9, bern_p2=0.75, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.params = [bern_p1, bern_p2, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2]
+        self.G1 = GammaSD(bern_p=bern_p1, gamma_a=gamma_a1, gamma_scale=gamma_scale1)
+        self.G2 = GammaSD(bern_p=bern_p2, gamma_a=gamma_a2, gamma_scale=gamma_scale2)
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
-        bern_obsG1 = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
-        bern_obsG2 = sp.bernoulli.rvs(p=self.params[1], size=size)
-        gamma_obsG1 = sp.gamma.rvs(a=self.params[2], scale=self.params[3], size=size)  # gamma observations
-        gamma_obsG2 = sp.gamma.rvs(a=self.params[4], scale=self.params[5], size=size)
-        gamma_censor_obsG1 = [1] * size
-        gamma_censor_obsG2 = [1] * size
+        bern_obsG1, gamma_obsG1, gamma_censor_obsG1 = self.G1.rvs(size)
+        bern_obsG2, gamma_obsG2, gamma_censor_obsG2 = self.G2.rvs(size)
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         return bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, gamma_censor_obsG1, gamma_censor_obsG2
