@@ -12,7 +12,6 @@ from .figureCommon import (
     min_desired_num_cells,
     min_num_lineages,
     max_num_lineages,
-    lineage_good_to_analyze,
     num_data_points,
     scatter_kws_list,
 )
@@ -52,11 +51,7 @@ def accuracy():
     for indx, num in enumerate(num_lineages):
         population = []
         for _ in range(num):
-
-            good2go = False
-            while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
-                good2go = lineage_good_to_analyze(tmp_lineage)
+            tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
 
             population.append(tmp_lineage)
 

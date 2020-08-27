@@ -13,7 +13,6 @@ from .figureCommon import (
     pi,
     T,
     E2,
-    lineage_good_to_analyze,
     num_data_points,
     min_num_lineages,
     max_num_lineages,
@@ -84,13 +83,8 @@ def accuracy():
         populationSim = []
 
         for _ in range(num):
-            good2go = False
-            while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, 2**5 - 1)
-                tmp_lineageSim = LineageTree.init_from_parameters(pi, T, E2, 2**5 - 1)
-                good2go1 = lineage_good_to_analyze(tmp_lineage)
-                good2go2 = lineage_good_to_analyze(tmp_lineageSim)
-                good2go = good2go1 and good2go2
+            tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, 2**5 - 1)
+            tmp_lineageSim = LineageTree.init_from_parameters(pi, T, E2, 2**5 - 1)
             population.append(tmp_lineage)
             populationSim.append(tmp_lineageSim)
 
