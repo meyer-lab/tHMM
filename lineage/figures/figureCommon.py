@@ -56,7 +56,7 @@ scatter_state_2_kws = {
 scatter_kws_list = [scatter_state_1_kws, scatter_state_2_kws]
 
 
-def lineage_good_to_analyze(tmp_lineage, min_lineage_length=5):
+def lineage_good_to_analyze(tmp_lineage, min_lineage_length=10):
     """
     Boolean function that returns True when a lineage is
     good for analysis.
