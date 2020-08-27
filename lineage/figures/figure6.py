@@ -36,30 +36,10 @@ def accuracy():
     """ A Helper function to create more random copies of a population. """
     # Creating a list of populations to analyze over
     list_of_Es = [[StateDistribution(0.99, 0.9, 12, a, 4, 5), StateDistribution(0.99, 0.8, 12, 1.5, 8, 5)] for a in np.linspace(1.5, 4, num_data_points)]
-    list_of_populations = []
-    list_of_fpi = []
-    list_of_fT = []
-    list_of_fE = []
-    for E in list_of_Es:
-        population = []
-
-        good2go = False
-        while not good2go:
-            tmp_lineage = LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)
-            good2go = lineage_good_to_analyze(tmp_lineage)
-
-        population.append(tmp_lineage)
-
-        # Adding populations into a holder for analysing
-        list_of_populations.append(population)
-        list_of_fpi.append(pi)
-        list_of_fT.append(T)
-        list_of_fE.append(E)
+    list_of_fpi = [pi] * len(list_of_Es)
+    list_of_populations = [LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells) for E in list_of_Es]
 
     wass, _, accuracy_after_switching, _, _, _ = commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=list_of_fpi, parallel=True)
-#     for indx, a in enumerate(accuracy_after_switching):
-#         if a <= 60:
-#             print(list_of_populations[indx])
 
     distribution_df = pd.DataFrame(columns=["Distribution type", "G1 lifetime", "State"])
     lineages = [list_of_populations[int(num_data_points * i / 4.)][0] for i in range(4)]

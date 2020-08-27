@@ -15,7 +15,6 @@ from .figureCommon import (
     T,
     E,
     max_desired_num_cells,
-    lineage_good_to_analyze,
     num_data_points,
     min_desired_num_cells,
 )
@@ -48,24 +47,9 @@ def accuracy():
 
     # Creating a list of populations to analyze over
     cells = np.linspace(min_desired_num_cells, max_desired_num_cells, num_data_points)
-    list_of_populations = []
-    list_of_fpi = []
-    list_of_fT = []
-    list_of_fE = []
-    for cell_num in cells:
-        population = []
+    list_of_fpi = [pi] * cells.size
 
-        good2go = False
-        while not good2go:
-            tmp_lineage = LineageTree.init_from_parameters(pi, T, E, cell_num)
-            good2go = lineage_good_to_analyze(tmp_lineage)
-
-        population.append(tmp_lineage)
-
-        # Adding populations into a holder for analysing
-        list_of_populations.append(population)
-        list_of_fpi.append(pi)
-        list_of_fT.append(T)
-        list_of_fE.append(E)
+    # Generate populations
+    list_of_populations = [[LineageTree.init_from_parameters(pi, T, E, cell_num)] for cell_num in cells]
 
     return commonAnalyze(list_of_populations, 2, list_of_fpi=list_of_fpi)
