@@ -26,25 +26,19 @@ fT_list = [[1.0], [[0.99277139, 0.00722861],
 
 def makeFigure():
     """
-    Makes figure 8.
+    Makes figure 9.
     """
     ax, f = getSetup((12, 6), (2, 4))
 
-    data = [Lapatinib_Control[0:9], Lapt25uM[0:9], Lapt50uM[0:9], Lap250uM[0:9],
-            Gemcitabine_Control[0:9], Gem5uM[0:9], Gem10uM[0:9], Gem30uM[0:9]]
+    data = [Lapatinib_Control[0:10], Lapt25uM[0:10], Lapt50uM[0:10], Lap250uM[0:10],
+            Gemcitabine_Control[0:10], Gem5uM[0:10], Gem10uM[0:10], Gem30uM[0:10]]
 
     # making lineages and finding AICs (assign number of lineages here)
     AIC = [run_AIC(data[i]) for i in range(len(data))]
 
     # Finding proper ylim range for all 4 censored graphs and rounding up
-    upper_ylim1 = int(1 + max(np.max(np.ptp(AIC[0], axis=0)),
-                              np.max(np.ptp(AIC[1], axis=0)),
-                              np.max(np.ptp(AIC[2], axis=0)),
-                              np.max(np.ptp(AIC[3], axis=0))) / 25.0) * 25
-    upper_ylim2 = int(1 + max(np.max(np.ptp(AIC[4], axis=0)),
-                              np.max(np.ptp(AIC[5], axis=0)),
-                              np.max(np.ptp(AIC[6], axis=0)),
-                              np.max(np.ptp(AIC[7], axis=0))) / 25.0) * 25
+    upper_ylim1 = int(1 + max([max(p) for p in AIC[0:4]]) / 25.0) * 25
+    upper_ylim2 = int(1 + max([max(p) for p in AIC[5:8]]) / 25.0) * 25
 
     upper_ylim = [upper_ylim1, upper_ylim2]
     titles = ["Lpt cntrl", "Lpt 25uM", "Lpt 50uM", "Lpt 250uM",
@@ -65,28 +59,27 @@ def run_AIC(lineages):
     """
 
     # Storing AICs into array
-    AICs = np.empty((len(desired_num_states), len(lineages)))
+    AICs = np.empty(len(desired_num_states))
     output = run_Analyze_AIC(lineages, desired_num_states, const=[10, 6], list_of_fpi=fpi_list, list_if_fT=fT_list)
     for idx in range(len(desired_num_states)):
-        AIC, _ = output[idx][0].get_AIC(output[idx][2], 4)
-        AICs[idx] = np.array([ind_AIC for ind_AIC in AIC])
+        AICs[idx], _ = output[idx][0].get_AIC(output[idx][2], 4)
 
+    # Normalizing AIC
+    AICs = AICs - np.min(AICs)
     return AICs
 
 
 def figure_maker(ax, AIC_holder, title, upper_ylim, censored=False):
     """
-    Makes figure 8.
+    Makes figure 9.
     """
-    # Normalizing AIC
-    AIC_holder = AIC_holder - np.min(AIC_holder, axis=0)[np.newaxis, :]
 
     # Creating Histogram and setting ylim
     ax2 = ax.twinx()
     ax2.set_ylabel("Lineages Predicted")
-    ax2.hist(np.argmin(AIC_holder, axis=0) + 1, rwidth=1,
+    ax2.hist(np.argmin(AIC_holder) + 1, rwidth=1.0,
              alpha=.2, bins=desired_num_states, align='left')
-    ax2.set_yticks(np.linspace(0, len(AIC_holder[0]), 5))
+    ax2.set_yticks(np.linspace(0, len(AIC_holder), 5))
 
     # Creating AIC plot and matching gridlines
     ax.set_xlabel("Number of States Predicted")

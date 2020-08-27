@@ -98,7 +98,7 @@ class tHMM:
         pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
         return pred_states_by_lineage
 
-    def get_AIC(self, LL, DoF=None):
+    def get_AIC(self, LL, num_params=None):
         """
         Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.
@@ -113,14 +113,24 @@ class tHMM:
         :param AIC_degrees_of_freedom: the degrees of freedom in AIC calculation :math:`(num_{states}^2 + num_{states} * numberOfParameters - 1)` - same for each lineage
         """
         num_states = self.num_states
+
         # This is for the case when we want to keep some parameters fixed.
-        if DoF is None:
+        # It is the same case that we want to have the sum of likelihoods for all lineages
+        if num_params is None:
             number_of_parameters = len(self.estimate.E[0].params)
+            # dof = k * (k - 1) + k * num_params + k - 1
+            # first term: transition matrix, second term: number of parameters, third term: initial prob. matrix
+            degrees_of_freedom = num_states * (num_states - 1) + num_states * number_of_parameters + (num_states - 1)
+            # each lineage has an AIC value.
+            AIC_value = [-2 * LL_val + 2 * degrees_of_freedom for LL_val in LL]
         else:
-            number_of_parameters = DoF
-        AIC_degrees_of_freedom = num_states ** 2 + num_states * number_of_parameters - 1
-        AIC_value = [-2 * LL_val + 2 * AIC_degrees_of_freedom for LL_val in LL]
-        return AIC_value, AIC_degrees_of_freedom
+            # This is the case that we use for figure 8 (AIC for synthetic data)
+            number_of_parameters = num_params
+            degrees_of_freedom = num_states * num_params
+            # the whole population has one AIC value.
+            AIC_value = -2 * np.sum(LL) + 2 * degrees_of_freedom
+        
+        return AIC_value, degrees_of_freedom
 
     def log_score(self, X_state_tree_sequence, pi=None, T=None, E=None):
         """
