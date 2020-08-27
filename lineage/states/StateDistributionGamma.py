@@ -1,5 +1,4 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
-import math
 import numpy as np
 import scipy.stats as sp
 
@@ -36,7 +35,7 @@ class StateDistribution:
         # the individual observation likelihoods.
 
         bern_ll = 1
-        if not math.isnan(tuple_of_obs[0]):
+        if not np.isnan(tuple_of_obs[0]):
             # observed
             assert tuple_of_obs[0] == 0 or tuple_of_obs[0] == 1
             bern_ll = bern_pdf(tuple_of_obs[0], self.params[0])
@@ -45,10 +44,14 @@ class StateDistribution:
         if tuple_of_obs[2] == 1:
             # uncensored
             gamma_ll = gamma_pdf(tuple_of_obs[1], self.params[1], self.params[2])
-        else:
+        elif tuple_of_obs[2] == 0:
             # censored
-            assert tuple_of_obs[2] == 0
             gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.params[1], scale=self.params[2])
+        else:
+            # unobserved
+            assert np.isnan(tuple_of_obs[1])
+            assert np.isnan(tuple_of_obs[2])
+            gamma_llG1 = 1
 
         return bern_ll * gamma_ll
 
