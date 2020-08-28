@@ -16,7 +16,6 @@ from .figureCommon import (
     pi,
     T,
     E,
-    lineage_good_to_analyze,
     scatter_kws_list,
     min_num_lineages
 )
@@ -70,12 +69,7 @@ def accuracy():
     for indx, num in enumerate(num_lineages):
         population2 = []
         for _ in range(num):
-
-            good2go = False
-            while not good2go:
-                tmp_lineage2 = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=0.5 * max_deired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
-                good2go = lineage_good_to_analyze(tmp_lineage2)
-
+            tmp_lineage2 = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=0.5 * max_deired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
             population2.append(tmp_lineage2)
 
         # Adding populations into a holder for analysing
@@ -89,12 +83,7 @@ def accuracy():
     for indx, num in enumerate(num_lineages):
         population3 = []
         for _ in range(num):
-
-            good2go = False
-            while not good2go:
-                tmp_lineage3 = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=0.5 * max_deired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
-                good2go = lineage_good_to_analyze(tmp_lineage3)
-
+            tmp_lineage3 = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=0.5 * max_deired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
             population3.append(tmp_lineage3)
 
     # Adding populations into a holder for analysing
@@ -108,11 +97,7 @@ def accuracy():
     for indx, num in enumerate(num_lineages):
         population4 = []
         for _ in range(num):
-            good2go = False
-            while not good2go:
-                tmp_lineage4 = LineageTree.init_from_parameters(pi4, T4, E4, desired_num_cells=0.5 * max_deired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
-                good2go = lineage_good_to_analyze(tmp_lineage4)
-
+            tmp_lineage4 = LineageTree.init_from_parameters(pi4, T4, E4, desired_num_cells=0.5 * max_deired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
             population4.append(tmp_lineage4)
 
     # Adding populations into a holder for analysing

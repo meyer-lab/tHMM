@@ -10,7 +10,6 @@ from .figureCommon import (
     pi,
     T,
     max_desired_num_cells,
-    lineage_good_to_analyze,
     num_data_points,
     scatter_kws_list,
 )
@@ -20,7 +19,7 @@ from ..states.StateDistributionGaPhs import StateDistribution
 
 def makeFigure():
     """
-    Makes fig 5.
+    Makes fig 6.
     """
 
     # Get list of axis objects
