@@ -13,7 +13,6 @@ from .figureCommon import (
     pi,
     T,
     E2,
-    lineage_good_to_analyze,
     num_data_points,
     min_num_lineages,
     max_num_lineages,
