@@ -64,11 +64,16 @@ class StateDistribution:
         # {
         bern_obs = np.array((unzipped_list_of_tuples_of_obs[0]))
         γ_obs = np.array(unzipped_list_of_tuples_of_obs[1])
-        gamma_obs_censor = np.array(unzipped_list_of_tuples_of_obs[2], dtype=int)
+        gamma_obs_censor = np.array(unzipped_list_of_tuples_of_obs[2])
+
+        if const is None:
+            shape = None
+        else:
+            shape = const[0]
 
         b_mask = np.logical_not(np.isnan(bern_obs))
         self.params[0] = bernoulli_estimator(bern_obs[b_mask], gammas[b_mask])
-        self.params[1], self.params[2] = gamma_estimator(γ_obs, gamma_obs_censor, gammas, None)
+        self.params[1], self.params[2] = gamma_estimator(γ_obs, gamma_obs_censor, gammas, shape)
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
