@@ -106,9 +106,9 @@ class TestModel(unittest.TestCase):
         self.assertTrue(0.0 <= abs(estimator_objPhase.params[0] - self.E2[0].params[0]) <= 0.1)
         self.assertTrue(0.0 <= abs(estimator_objPhase.params[1] - self.E2[0].params[1]) <= 0.1)
         self.assertTrue(0.0 <= abs(estimator_objPhase.params[2] - self.E2[0].params[2]) <= 3.0)
-        self.assertTrue(0.0 <= abs(estimator_objPhase.params[3] - self.E2[0].params[3]) <= 2.0)
-        self.assertTrue(0.0 <= abs(estimator_objPhase.params[4] - self.E2[0].params[4]) <= 3.0)
-        self.assertTrue(0.0 <= abs(estimator_objPhase.params[5] - self.E2[0].params[5]) <= 2.0)
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[3] - self.E2[0].params[3]) <= 2.0), f"abs diff: {abs(estimator_objPhase.params[3] - self.E2[0].params[3])}"
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[4] - self.E2[0].params[4]) <= 3.0), f"abs diff: {abs(estimator_objPhase.params[4] - self.E2[0].params[4])}"
+        self.assertTrue(0.0 <= abs(estimator_objPhase.params[5] - self.E2[0].params[5]) <= 2.0), f"abs diff: {abs(estimator_objPhase.params[5] - self.E2[0].params[5])}"
 
         # For Gaussian Distribution
         self.assertTrue(0.0 <= abs(estimator_objGaus.params[0] - self.E3[0].params[0]) <= 0.1)
