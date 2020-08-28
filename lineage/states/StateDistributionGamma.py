@@ -52,6 +52,7 @@ class StateDistribution:
             assert np.isnan(tuple_of_obs[1])
             assert np.isnan(tuple_of_obs[2])
             gamma_ll = 1
+        assert not np.isnan(np.all([bern_ll, gamma_ll])), f"one of the likelihoods is nan"
 
         return bern_ll * gamma_ll
 
@@ -76,8 +77,10 @@ class StateDistribution:
         self.params[0] = bernoulli_estimator(bern_obs[b_mask], gammas[b_mask])
         self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], shape)
 
-        assert not np.isnan(np.all(b_mask)), f"b has nans after mask"
-        assert not np.isnan(np.all(g_mask)), f"g has nans after mask"
+        assert not np.isnan(np.all(bern_obs[b_mask])), f"bern obs has nans after mask"
+        assert not np.isnan(np.all(γ_obs[g_mask])), f"gamma obs has nans after mask"
+        assert not np.isnan(np.all(gammas[b_mask])), f"gammas has nans after mask"
+
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
