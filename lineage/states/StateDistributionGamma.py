@@ -72,8 +72,12 @@ class StateDistribution:
             shape = const[0]
 
         b_mask = np.logical_not(np.isnan(bern_obs))
+        g_mask = np.logical_not(np.isnan(γ_obs))
         self.params[0] = bernoulli_estimator(bern_obs[b_mask], gammas[b_mask])
-        self.params[1], self.params[2] = gamma_estimator(γ_obs, gamma_obs_censor, gammas, shape)
+        self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], shape)
+
+        assert not np.isnan(np.all(b_mask)), f"b has nans after mask"
+        assert not np.isnan(np.all(g_mask)), f"g has nans after mask"
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
