@@ -8,7 +8,6 @@ from .figureCommon import (
     commonAnalyze,
     pi,
     E2,
-    lineage_good_to_analyze,
     max_desired_num_cells,
     num_data_points,
     scatter_kws_list,
@@ -18,7 +17,7 @@ from ..LineageTree import LineageTree
 
 def makeFigure():
     """
-    Makes fig 6.
+    Makes fig 7.
     """
 
     # Get list of axis objects
@@ -48,17 +47,17 @@ def accuracy():
     list_of_fE = []
     for T in list_of_Ts:
         uncensored_pop = []
-        for _ in range(3):
+        for _ in range(4):
             uncensored_lineage = LineageTree.init_from_parameters(pi, T, E2, 0.5 * max_desired_num_cells)
             uncensored_pop.append(uncensored_lineage)
 
         population = []
-        for _ in range(3):
-            good2go = False
-            while not good2go:
-                tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, 0.5 * max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
-                good2go = lineage_good_to_analyze(tmp_lineage)
-            population.append(tmp_lineage)
+        for _ in range(4):
+            tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, 0.5 * max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
+            if len(tmp_lineage.output_lineage) < 3:
+                pass
+            else:
+                population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
         list_of_uncen_populations.append(uncensored_pop)

@@ -12,7 +12,7 @@ from ..LineageTree import LineageTree
 # States to evaluate with the model
 from ..states.StateDistributionGaPhs import StateDistribution
 
-from .figureCommon import getSetup, lineage_good_to_analyze, subplotLabel
+from .figureCommon import getSetup, subplotLabel
 
 
 desired_num_states = np.arange(1, 8)
@@ -77,7 +77,7 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10, censored=Fals
     else:
         lineages = [LineageTree.init_from_parameters(
             pi, T, E, 2**6 - 1) for _ in range(num_lineages_to_evaluate)]
-    lineages = [l for l in lineages if lineage_good_to_analyze(l)]
+
     # Storing AICs into array
     AICs = np.empty((len(desired_num_states), len(lineages)))
     output = run_Analyze_AIC(lineages, desired_num_states)

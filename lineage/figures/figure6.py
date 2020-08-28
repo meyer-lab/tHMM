@@ -10,7 +10,6 @@ from .figureCommon import (
     pi,
     T,
     max_desired_num_cells,
-    lineage_good_to_analyze,
     num_data_points,
     scatter_kws_list,
 )
@@ -20,7 +19,7 @@ from ..states.StateDistributionGaPhs import StateDistribution
 
 def makeFigure():
     """
-    Makes fig 5.
+    Makes fig 6.
     """
 
     # Get list of axis objects
@@ -41,17 +40,10 @@ def accuracy():
     list_of_fT = []
     list_of_fE = []
     for E in list_of_Es:
-        population = []
-
-        good2go = False
-        while not good2go:
-            tmp_lineage = LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)
-            good2go = lineage_good_to_analyze(tmp_lineage)
-
-        population.append(tmp_lineage)
+        population = LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)
 
         # Adding populations into a holder for analysing
-        list_of_populations.append(population)
+        list_of_populations.append([population])
         list_of_fpi.append(pi)
         list_of_fT.append(T)
         list_of_fE.append(E)

@@ -56,17 +56,6 @@ scatter_state_2_kws = {
 scatter_kws_list = [scatter_state_1_kws, scatter_state_2_kws]
 
 
-def lineage_good_to_analyze(tmp_lineage, min_lineage_length=10):
-    """
-    Boolean function that returns True when a lineage is
-    good for analysis.
-    A lineage is good for analysis when it is heterogeneous,
-    that is, contains more than one state in its data, and if
-    it is of sufficient length.
-    """
-    return len(tmp_lineage) >= min_lineage_length
-
-
 def getSetup(figsize, gridd):
     """
     Establish figure set-up with subplots.
