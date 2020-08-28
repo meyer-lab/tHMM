@@ -56,16 +56,11 @@ class StateDistribution:
         gamma_censor_obsG1 = np.array(unzipped_list_of_tuples_of_obs[4])
         gamma_censor_obsG2 = np.array(unzipped_list_of_tuples_of_obs[5])
 
-        b1_mask = np.logical_not(np.isnan(bern_obsG1))
-        b2_mask = np.logical_not(np.isnan(bern_obsG2))
-        ga1_mask = np.logical_not(np.isnan(gamma_obsG1))
-        ga2_mask = np.logical_not(np.isnan(gamma_obsG2))
-
-        list_of_tuples_of_obsG1 = [(a, b, c) for a, b, c in zip(bern_obsG1[b1_mask], gamma_obsG1[ga1_mask], gamma_censor_obsG1)]
-        list_of_tuples_of_obsG2 = [(a, b, c) for a, b, c in zip(bern_obsG2[b2_mask], gamma_obsG2[ga2_mask], gamma_censor_obsG2)]
+        list_of_tuples_of_obsG1 = [(a, b, c) for a, b, c in zip(bern_obsG1, gamma_obsG1, gamma_censor_obsG1)]
+        list_of_tuples_of_obsG2 = [(a, b, c) for a, b, c in zip(bern_obsG2, gamma_obsG2, gamma_censor_obsG2)]
         
-        self.G1.estimator(list_of_tuples_of_obsG1, gammas[ga1_mask], const)
-        self.G2.estimator(list_of_tuples_of_obsG2, gammas[ga2_mask], const)
+        self.G1.estimator(list_of_tuples_of_obsG1, gammas, const)
+        self.G2.estimator(list_of_tuples_of_obsG2, gammas, const)
 
         self.params[0] = self.G1.params[0]
         self.params[1] = self.G2.params[0]
@@ -73,11 +68,6 @@ class StateDistribution:
         self.params[3] = self.G2.params[1]
         self.params[4] = self.G1.params[2]
         self.params[5] = self.G2.params[2]
-
-        assert not np.isnan(np.all(b1_mask)), f"b1 has nans after mask"
-        assert not np.isnan(np.all(b2_mask)), f"b2 has nans after mask"
-        assert not np.isnan(np.all(ga1_mask)), f"g1 has nans after mask"
-        assert not np.isnan(np.all(ga2_mask)), f"g2 has nans after mask"
 
         # const is used when we want to keep the shape parameter of gamma constant. shapeG1=const[0], shapeG2=const[1]
         # } requires the user's attention.
