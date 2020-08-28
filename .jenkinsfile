@@ -1,7 +1,7 @@
 pipeline {
   agent { label 'docker' }
   options {
-    timeout(time: 1, unit: 'HOURS')
+    timeout(time: 4, unit: 'HOURS')
   }
   stages {
     stage('Clean/Setup') {
@@ -12,7 +12,7 @@ pipeline {
     }
     stage('Test/Build/Lint') {
       steps {
-        sh 'make all -j 2'
+        sh 'make all -j 3'
         lock ('manubot') {
           sh 'make output/manuscript.html'
         }
