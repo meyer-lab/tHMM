@@ -64,9 +64,7 @@ def lineage_good_to_analyze(tmp_lineage, min_lineage_length=10):
     that is, contains more than one state in its data, and if
     it is of sufficient length.
     """
-    is_sufficient_length = len(tmp_lineage) >= min_lineage_length
-    is_heterogeneous = tmp_lineage.is_heterogeneous()
-    return is_sufficient_length and is_heterogeneous
+    return len(tmp_lineage) >= min_lineage_length
 
 
 def getSetup(figsize, gridd):

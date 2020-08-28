@@ -26,7 +26,7 @@ class LineageTree:
 
     @classmethod
     def init_from_parameters(cls, pi, T, E, desired_num_cells, censor_condition=0, **kwargs):
-        """
+        r"""
         Constructor method
 
         :param :math:`\pi`: The initial probability matrix; its shape must be the same as the number of states and all of them must sum up to 1.
