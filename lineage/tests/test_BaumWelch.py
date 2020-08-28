@@ -19,17 +19,15 @@ class TestBW(unittest.TestCase):
             [[0.75, 0.20, 0.05], [0.1, 0.85, 0.05], [0.1, 0.1, 0.8]])
 
         # Emissions
-        self.E = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(
-            0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
+        self.E = [StateDistPhase(0.99, 0.95, 20, 5, 10, 3), StateDistPhase(
+            0.95, 0.92, 10, 2, 15, 4), StateDistPhase(0.99, 0.92, 15, 7, 20, 5)]
 
     def commonTest(self, **kwargs):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
-        X = LineageTree.init_from_parameters(
-                pi, T, E, desired_num_cells=(2 ** 11) - 1, **kwargs)
+        X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 8) - 1, **kwargs)
         tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
-        X3s = LineageTree.init_from_parameters(
-                self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, **kwargs)
+        X3s = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 8) - 1, **kwargs)
         tHMMobj3s = tHMM([X3s], num_states=3)
 
         # Test cases below
@@ -44,14 +42,14 @@ class TestBW(unittest.TestCase):
         self.assertTrue(np.isfinite(LL_before3))
 
         # Get the likelihoods after fitting
-        _, _, NF_after, _, _, new_LL_list_after = tHMMobj.fit(const=None, max_iter=4)
+        _, _, NF_after, _, _, new_LL_list_after = tHMMobj.fit(const=None, max_iter=3)
         LL_after = calculate_log_likelihood(NF_after)
         self.assertTrue(np.isfinite(LL_after))
         self.assertTrue(np.isfinite(new_LL_list_after))
         self.assertGreater(LL_after, LL_before)
 
         # for 3 states
-        _, _, NF_after3, _, _, new_LL_list_after3 = tHMMobj3s.fit(const=None, max_iter=4)
+        _, _, NF_after3, _, _, new_LL_list_after3 = tHMMobj3s.fit(const=None, max_iter=3)
         LL_after3 = calculate_log_likelihood(NF_after3)
         self.assertTrue(np.isfinite(LL_after3))
         self.assertTrue(np.isfinite(new_LL_list_after3))

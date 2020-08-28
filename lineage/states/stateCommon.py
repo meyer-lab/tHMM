@@ -24,7 +24,11 @@ def bernoulli_estimator(bern_obs, gammas):
     """
     Add up all the 1s and divide by the total length (finding the average).
     """
-    return sum(gammas * bern_obs) / sum(gammas)
+    # Handle an empty state
+    if np.sum(gammas) == 0.0:
+        return np.average(bern_obs)
+
+    return np.average(bern_obs, weights=gammas)
 
 
 @njit
@@ -42,8 +46,13 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
     """
-    gammaCor = sum(gammas * gamma_obs) / sum(gammas)
-    s = np.log(gammaCor) - sum(gammas * np.log(gamma_obs)) / sum(gammas)
+    # Handle an empty state
+    if np.sum(gammas) == 0.0:
+        gammas = np.copy(gammas)
+        gammas.fill(1.0)
+
+    gammaCor = np.average(gamma_obs, weights=gammas)
+    s = np.log(gammaCor) - np.average(np.log(gamma_obs), weights=gammas)
 
     def f(k):
         return np.log(k) - sc.polygamma(0, k) - s
@@ -56,22 +65,21 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
         else:
             a_hat0 = brentq(f, 0.01, 100.0)
 
-    scale_hat0 = gammaCor / a_hat0
+    x0 = [a_hat0, gammaCor / a_hat0]
+
+    uncens_gammas = gammas[time_censor_obs == 1]
+    uncens_obs = gamma_obs[time_censor_obs == 1]
+    assert uncens_gammas.shape[0] == uncens_obs.shape[0]
+    cens_gammas = gammas[time_censor_obs == 0]
+    cens_obs = gamma_obs[time_censor_obs == 0]
+    assert cens_gammas.shape[0] == cens_obs.shape[0]
 
     def negative_LL(x):
-        uncens_gammas = np.array([gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 1])
-        uncens_obs = np.array([obs for obs, idx in zip(gamma_obs, time_censor_obs) if idx == 1])
-        assert uncens_gammas.shape[0] == uncens_obs.shape[0]
         uncens = uncens_gammas * sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
-        cens_gammas = np.array([gamma for gamma, idx in zip(gammas, time_censor_obs) if idx == 0])
-        cens_obs = np.array([obs for obs, idx in zip(gamma_obs, time_censor_obs) if idx == 0])
         cens = cens_gammas * sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
-
         return -1 * (np.sum(uncens) + np.sum(cens))
 
-    x0 = [a_hat0, scale_hat0]
-
-    if sum(time_censor_obs) == len(time_censor_obs):
+    if np.all(time_censor_obs == 1):
         # if nothing is censored, then there is no need to use the numerical solver
         return x0[0], x0[1]
     else:
