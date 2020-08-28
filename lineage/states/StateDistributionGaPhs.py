@@ -13,7 +13,7 @@ class StateDistribution:
 
     def __init__(self, bern_p1=0.9, bern_p2=0.75, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
-        self.params = [bern_p1, bern_p2, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2]
+        self.params = np.array([bern_p1, bern_p2, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2])
         self.G1 = GammaSD(bern_p=bern_p1, gamma_a=gamma_a1, gamma_scale=gamma_scale1)
         self.G2 = GammaSD(bern_p=bern_p2, gamma_a=gamma_a2, gamma_scale=gamma_scale2)
 
@@ -64,10 +64,8 @@ class StateDistribution:
 
         self.params[0] = self.G1.params[0]
         self.params[1] = self.G2.params[0]
-        self.params[2] = self.G1.params[1]
-        self.params[3] = self.G2.params[1]
-        self.params[4] = self.G1.params[2]
-        self.params[5] = self.G2.params[2]
+        self.params[2:4] = self.G1.params[1:3]
+        self.params[4:6] = self.G2.params[1:3]
 
         # const is used when we want to keep the shape parameter of gamma constant. shapeG1=const[0], shapeG2=const[1]
         # } requires the user's attention.
