@@ -37,9 +37,9 @@ min_experiment_time = 72
 max_experiment_time = 144
 
 min_num_lineages = 3
-max_num_lineages = 50
+max_num_lineages = 40
 
-num_data_points = 150
+num_data_points = 100
 
 scatter_state_1_kws = {
     "alpha": 0.33,
