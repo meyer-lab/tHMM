@@ -57,7 +57,10 @@ def accuracy():
 
         for _ in range(10):
             tmp_lineage = LineageTree.init_from_parameters(pi, T, E, 0.6 * max_desired_num_cells, censor_condition=3, desired_experiment_time=max_experiment_time)
-            population.append(tmp_lineage)
+            if len(tmp_lineage.output_lineage < 3):
+                pass
+            else:
+                population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)

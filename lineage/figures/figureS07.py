@@ -56,9 +56,12 @@ def accuracy():
     for E in list_of_Es:
         population = []
 
-        for _ in range(3):
+        for _ in range(5):
             tmp_lineage = LineageTree.init_from_parameters(pi, T, E, 0.5 * max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
-            population.append(tmp_lineage)
+            if len(tmp_lineage.output_lineage < 3):
+                pass
+            else:
+                population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)

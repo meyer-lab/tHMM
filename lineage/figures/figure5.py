@@ -42,8 +42,8 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    num_lineages = np.linspace(min_num_lineages, int(0.35 * max_num_lineages), num_data_points, dtype=int)
-    experiment_times = np.linspace(1000, int(2.5 * 1000), num_data_points)
+    num_lineages = np.linspace(3, max_num_lineages, num_data_points, dtype=int)
+    experiment_times = np.linspace(1200, int(2.5 * 1000), num_data_points)
     list_of_populations = []
     list_of_fpi = []
     list_of_fT = []
@@ -52,8 +52,10 @@ def accuracy():
         population = []
         for _ in range(num):
             tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
-
-            population.append(tmp_lineage)
+            if len(tmp_lineage.output_lineage) < 3:
+                pass
+            else:
+                population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
