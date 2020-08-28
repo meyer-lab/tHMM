@@ -48,21 +48,6 @@ def accuracy():
 
     # Creating a list of populations to analyze over
     num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
-    list_of_populations = []
-    list_of_fpi = []
-    list_of_fT = []
-    list_of_fE = []
-    for num in num_lineages:
-        population = []
-
-        for _ in range(num):
-            tmp_lineage = LineageTree.init_from_parameters(pi, T, E, min_desired_num_cells)
-            population.append(tmp_lineage)
-
-        # Adding populations into a holder for analysing
-        list_of_populations.append(population)
-        list_of_fpi.append(pi)
-        list_of_fT.append(T)
-        list_of_fE.append(E)
+    list_of_populations = [[LineageTree.init_from_parameters(pi, T, E, min_desired_num_cells) for _ in range(num)] for num in num_lineages]
 
     return commonAnalyze(list_of_populations, 2)
