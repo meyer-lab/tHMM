@@ -1,7 +1,7 @@
 pipeline {
   agent { label 'docker' }
   options {
-    timeout(time: 1, unit: 'HOURS')
+    timeout(time: 4, unit: 'HOURS')
   }
   stages {
     stage('Clean/Setup') {
