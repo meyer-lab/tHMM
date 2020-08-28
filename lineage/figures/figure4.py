@@ -26,6 +26,9 @@ scatter_state_1_kws = {
     "s": 20,
 }
 
+regGen = lambda: LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
+cenGen = lambda: LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=250)
+
 
 def makeFigure():
     """
@@ -33,23 +36,13 @@ def makeFigure():
     """
     x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, _, _ = accuracy()
 
-    lineage_uncensored1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
-    plotLineage(lineage_uncensored1, 'lineage/figures/cartoons/uncen_fig4_1.svg', censore=False)
+    plotLineage(regGen(), 'lineage/figures/cartoons/uncen_fig4_1.svg', censore=False)
+    plotLineage(regGen(), 'lineage/figures/cartoons/uncen_fig4_2.svg', censore=False)
+    plotLineage(regGen(), 'lineage/figures/cartoons/uncen_fig4_3.svg', censore=False)
 
-    lineage_uncensored2 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
-    plotLineage(lineage_uncensored2, 'lineage/figures/cartoons/uncen_fig4_2.svg', censore=False)
-
-    lineage_uncensored3 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
-    plotLineage(lineage_uncensored3, 'lineage/figures/cartoons/uncen_fig4_3.svg', censore=False)
-
-    lineage_censored1 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=250)
-    plotLineage(lineage_censored1, 'lineage/figures/cartoons/cen_fig4_1.svg', censore=True)
-
-    lineage_censored2 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=250)
-    plotLineage(lineage_censored2, 'lineage/figures/cartoons/cen_fig4_2.svg', censore=True)
-
-    lineage_censored3 = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=250)
-    plotLineage(lineage_censored3, 'lineage/figures/cartoons/cen_fig4_3.svg', censore=True)
+    plotLineage(cenGen(), 'lineage/figures/cartoons/cen_fig4_1.svg', censore=True)
+    plotLineage(cenGen(), 'lineage/figures/cartoons/cen_fig4_2.svg', censore=True)
+    plotLineage(cenGen(), 'lineage/figures/cartoons/cen_fig4_3.svg', censore=True)
 
     # Get list of axis objects
     ax, f = getSetup((6.5, 4), (2, 2))
@@ -73,27 +66,11 @@ def accuracy():
 
     # Creating a list of populations to analyze over
     num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
-    list_of_populations = []
-    list_of_populationsSim = []
-    list_of_fpi = []
-    list_of_fT = []
-    list_of_fE2 = []
-    for num in num_lineages:
-        population = []
-        populationSim = []
+    list_of_fpi = [pi] * num_lineages.size
 
-        for _ in range(num):
-            tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, 2**5 - 1)
-            tmp_lineageSim = LineageTree.init_from_parameters(pi, T, E2, 2**5 - 1)
-            population.append(tmp_lineage)
-            populationSim.append(tmp_lineageSim)
-
-        # Adding populations into a holder for analysing
-        list_of_populations.append(population)
-        list_of_populationsSim.append(populationSim)
-        list_of_fpi.append(pi)
-        list_of_fT.append(T)
-        list_of_fE2.append(E2)
+    # Adding populations into a holder for analysing
+    list_of_populations = [[regGen() for _ in range(num)] for num in num_lineages]
+    list_of_populationsSim = [[cenGen() for _ in range(num)] for num in num_lineages]
 
     x_Sim, _, Accuracy_Sim, _, _, _ = commonAnalyze(list_of_populationsSim, 2, list_of_fpi=list_of_fpi)
     x_Cen, _, Accuracy_Cen, _, _, _ = commonAnalyze(list_of_populations, 2, list_of_fpi=list_of_fpi)
