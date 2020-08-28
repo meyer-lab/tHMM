@@ -51,7 +51,7 @@ class StateDistribution:
             # unobserved
             assert np.isnan(tuple_of_obs[1])
             assert np.isnan(tuple_of_obs[2])
-            gamma_llG1 = 1
+            gamma_ll = 1
 
         return bern_ll * gamma_ll
 
