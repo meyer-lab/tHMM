@@ -27,8 +27,11 @@ scatter_state_1_kws = {
     "s": 20,
 }
 
-regGen = lambda: LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
-cenGen = lambda: LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=250)
+
+def regGen(): return LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
+
+
+def cenGen(): return LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=250)
 
 
 def makeFigure():
