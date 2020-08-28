@@ -5,7 +5,7 @@ import numpy as np
 
 
 def get_Marginal_State_Distributions(tHMMobj):
-    """Marginal State Distribution (MSD) matrix and recursion.
+    r"""Marginal State Distribution (MSD) matrix and recursion.
     This is the probability that a hidden state variable :math:`z_n` is of
     state k, that is, each value in the N by K MSD array for each lineage is
     the probability
