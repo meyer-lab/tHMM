@@ -60,10 +60,10 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     if shape is not None:
         a_hat0 = shape
     else:
-        if f(0.001) * f(1000.0) > 0.0:
+        if f(0.01) * f(100.0) > 0.0:
             a_hat0 = 10.0
         else:
-            a_hat0 = brentq(f, 0.001, 1000.0)
+            a_hat0 = brentq(f, 0.01, 100.0)
 
     x0 = [a_hat0, gammaCor / a_hat0]
 
