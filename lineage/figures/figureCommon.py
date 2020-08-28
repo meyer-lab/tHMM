@@ -36,10 +36,10 @@ max_desired_num_cells = (2 ** 9) - 1
 min_experiment_time = 72
 max_experiment_time = 144
 
-min_num_lineages = 1
-max_num_lineages = 50
+min_num_lineages = 3
+max_num_lineages = 40
 
-num_data_points = 200
+num_data_points = 100
 
 scatter_state_1_kws = {
     "alpha": 0.33,
