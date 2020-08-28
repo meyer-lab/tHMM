@@ -56,7 +56,8 @@ def accuracy():
         population = []
 
         for _ in range(num):
-            population = LineageTree.init_from_parameters(pi, T, E, min_desired_num_cells)
+            tmp_lineage = LineageTree.init_from_parameters(pi, T, E, min_desired_num_cells)
+            population.append(tmp_lineage)
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
