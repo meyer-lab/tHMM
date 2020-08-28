@@ -38,7 +38,7 @@ class StateDistribution:
         tuple_of_obsG1 = (tuple_of_obs[0], tuple_of_obs[2], tuple_of_obs[4])
         tuple_of_obsG2 = (tuple_of_obs[1], tuple_of_obs[3], tuple_of_obs[5])
         G1_LL = self.G1.pdf(tuple_of_obsG1)
-        G2_LL = self.G1.pdf(tuple_of_obsG2)
+        G2_LL = self.G2.pdf(tuple_of_obsG2)
 
         return G1_LL * G2_LL
 
@@ -55,13 +55,6 @@ class StateDistribution:
         gamma_obsG2 = np.array(unzipped_list_of_tuples_of_obs[3])
         gamma_censor_obsG1 = np.array(unzipped_list_of_tuples_of_obs[4])
         gamma_censor_obsG2 = np.array(unzipped_list_of_tuples_of_obs[5])
-
-        if const is None:
-            shapeG1 = None
-            shapeG2 = None
-        else:
-            shapeG1 = const[0]
-            shapeG2 = const[1]
 
         b1_mask = np.logical_not(np.isnan(bern_obsG1))
         b2_mask = np.logical_not(np.isnan(bern_obsG2))
@@ -80,19 +73,11 @@ class StateDistribution:
         self.params[3] = self.G2.params[1]
         self.params[4] = self.G1.params[2]
         self.params[5] = self.G2.params[2]
-#         b1_mask = np.logical_not(np.isnan(bern_obsG1))
-#         self.params[0] = bernoulli_estimator(bern_obsG1[b1_mask], gammas[b1_mask])
-#         b2_mask = np.logical_not(np.isnan(bern_obsG2))
-#         self.params[1] = bernoulli_estimator(bern_obsG2[b2_mask], gammas[b2_mask])
-#         ga1_mask = np.logical_not(np.isnan(gamma_obsG1))
-#         self.params[2], self.params[3] = gamma_estimator(gamma_obsG1[ga1_mask], gamma_censor_obsG1[ga1_mask], gammas[ga1_mask], shapeG1)
-#         ga2_mask = np.logical_not(np.isnan(gamma_obsG2))
-#         self.params[4], self.params[5] = gamma_estimator(gamma_obsG2[ga2_mask], gamma_censor_obsG2[ga2_mask], gammas[ga2_mask], shapeG2)
 
-        assert not math.isnan(np.all(b1_mask)), f"b1 has nans after mask"
-        assert not math.isnan(np.all(b2_mask)), f"b2 has nans after mask"
-        assert not math.isnan(np.all(ga1_mask)), f"g1 has nans after mask"
-        assert not math.isnan(np.all(ga2_mask)), f"g2 has nans after mask"
+        assert not np.isnan(np.all(b1_mask)), f"b1 has nans after mask"
+        assert not np.isnan(np.all(b2_mask)), f"b2 has nans after mask"
+        assert not np.isnan(np.all(ga1_mask)), f"g1 has nans after mask"
+        assert not np.isnan(np.all(ga2_mask)), f"g2 has nans after mask"
 
         # const is used when we want to keep the shape parameter of gamma constant. shapeG1=const[0], shapeG2=const[1]
         # } requires the user's attention.
