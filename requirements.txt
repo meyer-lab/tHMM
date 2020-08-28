@@ -11,3 +11,4 @@ pandoc-tablenos==2.2.2
 numba==0.51.1
 xlrd==1.2.0
 Biopython==1.77
+statsmodels
