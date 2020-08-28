@@ -39,42 +39,6 @@ class StateDistribution:
         tuple_of_obsG2 = (tuple_of_obs[1], tuple_of_obs[3], tuple_of_obs[5])
         G1_LL = self.G1.pdf(tuple_of_obsG1)
         G2_LL = self.G1.pdf(tuple_of_obsG2)
-#         bern_llG1 = 1
-#         if not math.isnan(tuple_of_obs[0]):
-#             # observed
-#             assert tuple_of_obs[0] == 0 or tuple_of_obs[0] == 1
-#             bern_llG1 = bern_pdf(tuple_of_obs[0], self.params[0])
-
-#         bern_llG2 = 1
-#         if not math.isnan(tuple_of_obs[1]):
-#             # observed
-#             assert tuple_of_obs[1] == 0 or tuple_of_obs[1] == 1
-#             bern_llG2 = bern_pdf(tuple_of_obs[1], self.params[1])
-
-#         gamma_llG1 = 1
-#         if tuple_of_obs[4] == 1:
-#             # uncensored
-#             gamma_llG1 = gamma_pdf(tuple_of_obs[2], self.params[2], self.params[3])
-#         elif tuple_of_obs[4] == 0:
-#             # censored
-#             gamma_llG1 = sp.gamma.sf(tuple_of_obs[2], a=self.params[2], scale=self.params[3])
-#         else:
-#             assert math.isnan(tuple_of_obs[4])
-#             # G1 lifetime not observed
-#             assert math.isnan(tuple_of_obs[2])
-#             gamma_llG1 = 1
-
-#         gamma_llG2 = 1
-#         if tuple_of_obs[5] == 1:
-#             # uncensored
-#             gamma_llG2 = gamma_pdf(tuple_of_obs[3], self.params[4], self.params[5])
-#         elif tuple_of_obs[5] == 0:
-#             # censored
-#             gamma_llG2 = sp.gamma.sf(tuple_of_obs[3], a=self.params[4], scale=self.params[5])
-#         elif math.isnan(tuple_of_obs[5]):
-#             # unobserved
-#             assert math.isnan(tuple_of_obs[3]) and math.isnan(tuple_of_obs[5]) and math.isnan(tuple_of_obs[1])
-#             gamma_llG2 = 1
 
         return G1_LL * G2_LL
 
@@ -104,8 +68,8 @@ class StateDistribution:
         ga1_mask = np.logical_not(np.isnan(gamma_obsG1))
         ga2_mask = np.logical_not(np.isnan(gamma_obsG2))
 
-        list_of_tuples_of_obsG1 = [(a, b, c) for a, b, c in zip(bern_obsG1, gamma_obsG1, gamma_censor_obsG1)]
-        list_of_tuples_of_obsG2 = [(a, b, c) for a, b, c in zip(bern_obsG2, gamma_obsG2, gamma_censor_obsG2)]
+        list_of_tuples_of_obsG1 = [(a, b, c) for a, b, c in zip(bern_obsG1[b1_mask], gamma_obsG1[ga1_mask], gamma_censor_obsG1)]
+        list_of_tuples_of_obsG2 = [(a, b, c) for a, b, c in zip(bern_obsG2[b2_mask], gamma_obsG2[ga2_mask], gamma_censor_obsG2)]
         
         self.G1.estimator(list_of_tuples_of_obsG1, gammas[ga1_mask], const)
         self.G2.estimator(list_of_tuples_of_obsG2, gammas[ga2_mask], const)
