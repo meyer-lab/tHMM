@@ -55,7 +55,7 @@ def accuracy():
     list_of_fE = []
     for E in list_of_Es:
         population = []
-        for _ in range(10):
+        for _ in range(4):
             tmp_lineage = LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)
             population.append(tmp_lineage)
 

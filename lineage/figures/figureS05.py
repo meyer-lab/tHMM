@@ -55,7 +55,7 @@ def accuracy():
     for T in list_of_Ts:
         population = []
 
-        for _ in range(10):
+        for _ in range(4):
             tmp_lineage = LineageTree.init_from_parameters(pi, T, E, 0.6 * max_desired_num_cells, censor_condition=3, desired_experiment_time=max_experiment_time)
             if len(tmp_lineage.output_lineage) < 3:
                 pass

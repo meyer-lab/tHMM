@@ -47,12 +47,12 @@ def accuracy():
     list_of_fE = []
     for T in list_of_Ts:
         uncensored_pop = []
-        for _ in range(10):
+        for _ in range(4):
             uncensored_lineage = LineageTree.init_from_parameters(pi, T, E2, 0.5 * max_desired_num_cells)
             uncensored_pop.append(uncensored_lineage)
 
         population = []
-        for _ in range(10):
+        for _ in range(4):
             tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, 0.5 * max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
             if len(tmp_lineage.output_lineage) < 3:
                 pass
