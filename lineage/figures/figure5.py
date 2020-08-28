@@ -20,7 +20,7 @@ from ..LineageTree import LineageTree
 
 def makeFigure():
     """
-    Makes fig S4.
+    Makes fig 5.
     """
 
     # Get list of axis objects

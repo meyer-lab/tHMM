@@ -19,7 +19,7 @@ from ..states.StateDistributionGaPhs import StateDistribution
 
 def makeFigure():
     """
-    Makes fig 5.
+    Makes fig 6.
     """
 
     # Get list of axis objects
