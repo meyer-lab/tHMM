@@ -96,7 +96,7 @@ def run_Analyze_AIC(population, state_list, **kwargs):
 
     :param population: A single list of lineages.
     :type: list[LineageTree]
-    :param state_list: An list of integer states to identify (a hyper-parameter of our model)
+    :param state_list: A list of integer states to identify (a hyper-parameter of our model)
     :type state_list: list[int]
     """
     # Initialize starting points for pi, T, E prediction
