@@ -77,38 +77,31 @@ class TestModel(unittest.TestCase):
         A unittest for the estimator function, by generating 3000 observatons for each of the
         distribution functions, we use the estimator and compare. """
         # Gamma dist.
-        tuples_of_obs = self.E[0].rvs(size=3000)
+        tuples_of_obs = self.E[0].rvs(size=5000)
         tuples_of_obs = list(map(list, zip(*tuples_of_obs)))
-        gammas = np.array([1] * len(tuples_of_obs))
+        gammas = np.ones(len(tuples_of_obs))
         estimator_obj = deepcopy(self.E[0])
         estimator_obj.estimator(tuples_of_obs, gammas)
 
         # G1/G2 separated Gamma dist.
-        tuples_of_obsPhase = self.E2[0].rvs(size=3000)
+        tuples_of_obsPhase = self.E2[0].rvs(size=5000)
         tuples_of_obsPhase = list(map(list, zip(*tuples_of_obsPhase)))
-        gammas = np.array([1] * len(tuples_of_obsPhase))
+        gammas = np.ones(len(tuples_of_obsPhase))
         estimator_objPhase = deepcopy(self.E2[0])
         estimator_objPhase.estimator(tuples_of_obsPhase, gammas, const=None)
 
         # Gaussian Dist.
-        tuples_of_obsGaus = self.E3[0].rvs(size=3000)
+        tuples_of_obsGaus = self.E3[0].rvs(size=5000)
         tuples_of_obsGaus = list(map(list, zip(*tuples_of_obsGaus)))
-        gammas = np.array([1] * len(tuples_of_obsGaus))
+        gammas = np.ones(len(tuples_of_obsGaus))
         estimator_objGaus = deepcopy(self.E3[0])
         estimator_objGaus.estimator(tuples_of_obsGaus, gammas)
 
         # here we check the estimated parameters to be close for Gamma distribution
-        self.assertTrue(0.0 <= abs(estimator_obj.params[0] - self.E[0].params[0]) <= 0.1)
-        self.assertTrue(0.0 <= abs(estimator_obj.params[1] - self.E[0].params[1]) <= 3.0)
-        self.assertTrue(0.0 <= abs(estimator_obj.params[2] - self.E[0].params[2]) <= 3.0)
+        np.testing.assert_allclose(estimator_obj.params, self.E[0].params, rtol=0.1)
 
         # For StateDistPhase
-        self.assertTrue(0.0 <= abs(estimator_objPhase.params[0] - self.E2[0].params[0]) <= 0.1)
-        self.assertTrue(0.0 <= abs(estimator_objPhase.params[1] - self.E2[0].params[1]) <= 0.1)
-        self.assertTrue(0.0 <= abs(estimator_objPhase.params[2] - self.E2[0].params[2]) <= 3.0)
-        self.assertTrue(0.0 <= abs(estimator_objPhase.params[3] - self.E2[0].params[3]) <= 2.0)
-        self.assertTrue(0.0 <= abs(estimator_objPhase.params[4] - self.E2[0].params[4]) <= 3.0)
-        self.assertTrue(0.0 <= abs(estimator_objPhase.params[5] - self.E2[0].params[5]) <= 2.0)
+        np.testing.assert_allclose(estimator_objPhase.params, self.E2[0].params, rtol=0.1)
 
         # For Gaussian Distribution
         self.assertTrue(0.0 <= abs(estimator_objGaus.params[0] - self.E3[0].params[0]) <= 0.1)

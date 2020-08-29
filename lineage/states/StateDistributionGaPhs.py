@@ -4,6 +4,7 @@ import numpy as np
 import scipy.stats as sp
 
 from .stateCommon import bern_pdf, bernoulli_estimator, gamma_pdf, gamma_estimator, basic_censor
+from .StateDistributionGamma import StateDistribution as GammaSD
 from ..CellVar import Time
 
 
@@ -12,17 +13,15 @@ class StateDistribution:
 
     def __init__(self, bern_p1=0.9, bern_p2=0.75, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
-        self.params = [bern_p1, bern_p2, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2]
+        self.params = np.array([bern_p1, bern_p2, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2])
+        self.G1 = GammaSD(bern_p=bern_p1, gamma_a=gamma_a1, gamma_scale=gamma_scale1)
+        self.G2 = GammaSD(bern_p=bern_p2, gamma_a=gamma_a2, gamma_scale=gamma_scale2)
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
-        bern_obsG1 = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
-        bern_obsG2 = sp.bernoulli.rvs(p=self.params[1], size=size)
-        gamma_obsG1 = sp.gamma.rvs(a=self.params[2], scale=self.params[3], size=size)  # gamma observations
-        gamma_obsG2 = sp.gamma.rvs(a=self.params[4], scale=self.params[5], size=size)
-        gamma_censor_obsG1 = [1] * size
-        gamma_censor_obsG2 = [1] * size
+        bern_obsG1, gamma_obsG1, gamma_censor_obsG1 = self.G1.rvs(size)
+        bern_obsG2, gamma_obsG2, gamma_censor_obsG2 = self.G2.rvs(size)
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         return bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, gamma_censor_obsG1, gamma_censor_obsG2
@@ -36,44 +35,12 @@ class StateDistribution:
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
 
-        bern_llG1 = 1
-        if not math.isnan(tuple_of_obs[0]):
-            # observed
-            assert tuple_of_obs[0] == 0 or tuple_of_obs[0] == 1
-            bern_llG1 = bern_pdf(tuple_of_obs[0], self.params[0])
+        tuple_of_obsG1 = (tuple_of_obs[0], tuple_of_obs[2], tuple_of_obs[4])
+        tuple_of_obsG2 = (tuple_of_obs[1], tuple_of_obs[3], tuple_of_obs[5])
+        G1_LL = self.G1.pdf(tuple_of_obsG1)
+        G2_LL = self.G2.pdf(tuple_of_obsG2)
 
-        bern_llG2 = 1
-        if not math.isnan(tuple_of_obs[1]):
-            # observed
-            assert tuple_of_obs[1] == 0 or tuple_of_obs[1] == 1
-            bern_llG2 = bern_pdf(tuple_of_obs[1], self.params[1])
-
-        gamma_llG1 = 1
-        if tuple_of_obs[4] == 1:
-            # uncensored
-            gamma_llG1 = gamma_pdf(tuple_of_obs[2], self.params[2], self.params[3])
-        elif tuple_of_obs[4] == 0:
-            # censored
-            gamma_llG1 = sp.gamma.sf(tuple_of_obs[2], a=self.params[2], scale=self.params[3])
-        else:
-            assert math.isnan(tuple_of_obs[4])
-            # G1 lifetime not observed
-            assert math.isnan(tuple_of_obs[2])
-            gamma_llG1 = 1
-
-        gamma_llG2 = 1
-        if tuple_of_obs[5] == 1:
-            # uncensored
-            gamma_llG2 = gamma_pdf(tuple_of_obs[3], self.params[4], self.params[5])
-        elif tuple_of_obs[5] == 0:
-            # censored
-            gamma_llG2 = sp.gamma.sf(tuple_of_obs[3], a=self.params[4], scale=self.params[5])
-        elif math.isnan(tuple_of_obs[5]):
-            # unobserved
-            assert math.isnan(tuple_of_obs[3]) and math.isnan(tuple_of_obs[5]) and math.isnan(tuple_of_obs[1])
-            gamma_llG2 = 1
-
-        return bern_llG1 * bern_llG2 * gamma_llG1 * gamma_llG2
+        return G1_LL * G2_LL
 
     def estimator(self, list_of_tuples_of_obs, gammas, const):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
@@ -89,26 +56,16 @@ class StateDistribution:
         gamma_censor_obsG1 = np.array(unzipped_list_of_tuples_of_obs[4])
         gamma_censor_obsG2 = np.array(unzipped_list_of_tuples_of_obs[5])
 
-        if const is None:
-            shapeG1 = None
-            shapeG2 = None
-        else:
-            shapeG1 = const[0]
-            shapeG2 = const[1]
+        list_of_tuples_of_obsG1 = [(a, b, c) for a, b, c in zip(bern_obsG1, gamma_obsG1, gamma_censor_obsG1)]
+        list_of_tuples_of_obsG2 = [(a, b, c) for a, b, c in zip(bern_obsG2, gamma_obsG2, gamma_censor_obsG2)]
+        
+        self.G1.estimator(list_of_tuples_of_obsG1, gammas, const)
+        self.G2.estimator(list_of_tuples_of_obsG2, gammas, const)
 
-        b1_mask = np.logical_not(np.isnan(bern_obsG1))
-        self.params[0] = bernoulli_estimator(bern_obsG1[b1_mask], gammas[b1_mask])
-        b2_mask = np.logical_not(np.isnan(bern_obsG2))
-        self.params[1] = bernoulli_estimator(bern_obsG2[b2_mask], gammas[b2_mask])
-        ga1_mask = np.logical_not(np.isnan(gamma_obsG1))
-        self.params[2], self.params[3] = gamma_estimator(gamma_obsG1[ga1_mask], gamma_censor_obsG1[ga1_mask], gammas[ga1_mask], shapeG1)
-        ga2_mask = np.logical_not(np.isnan(gamma_obsG2))
-        self.params[4], self.params[5] = gamma_estimator(gamma_obsG2[ga2_mask], gamma_censor_obsG2[ga2_mask], gammas[ga2_mask], shapeG2)
-
-        assert not math.isnan(np.all(b1_mask)), f"b1 has nans after mask"
-        assert not math.isnan(np.all(b2_mask)), f"b2 has nans after mask"
-        assert not math.isnan(np.all(ga1_mask)), f"g1 has nans after mask"
-        assert not math.isnan(np.all(ga2_mask)), f"g2 has nans after mask"
+        self.params[0] = self.G1.params[0]
+        self.params[1] = self.G2.params[0]
+        self.params[2:4] = self.G1.params[1:3]
+        self.params[4:6] = self.G2.params[1:3]
 
         # const is used when we want to keep the shape parameter of gamma constant. shapeG1=const[0], shapeG2=const[1]
         # } requires the user's attention.
