@@ -83,7 +83,7 @@ def getSetup(figsize, gridd):
         )
 
         # Setup plotting space and grid
-        f = plt.figure(figsize=figsize, constrained_layout=True)
+        f = plt.figure(figsize=figsize, dpi=400, constrained_layout=True)
         gs1 = gridspec.GridSpec(*gridd, figure=f)
 
         # Get list of axis objects

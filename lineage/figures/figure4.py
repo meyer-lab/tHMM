@@ -4,6 +4,7 @@ from string import ascii_lowercase
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from scipy import ndimage, misc
 
 from .figureCommon import (
     getSetup,
@@ -27,29 +28,28 @@ scatter_state_1_kws = {
 }
 
 
-def regGen(): return LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
+def regGen():
+    tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
+    while len(tmp.output_lineage) < 5:
+        tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
+    return tmp
 
 
-def cenGen(): return LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=250)
-
+def cenGen():
+    tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=250)
+    while len(tmp.output_lineage) < 5:
+        tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=250)
+    return tmp
 
 def makeFigure():
     """
-    Makes fig 3.
+    Makes fig 4.
     """
-    x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, _, _ = accuracy()
-
-    plotLineage(regGen(), 'lineage/figures/cartoons/uncen_fig4_1.svg', censore=False)
-    plotLineage(regGen(), 'lineage/figures/cartoons/uncen_fig4_2.svg', censore=False)
-    plotLineage(regGen(), 'lineage/figures/cartoons/uncen_fig4_3.svg', censore=False)
-
-    plotLineage(cenGen(), 'lineage/figures/cartoons/cen_fig4_1.svg', censore=True)
-    plotLineage(cenGen(), 'lineage/figures/cartoons/cen_fig4_2.svg', censore=True)
-    plotLineage(cenGen(), 'lineage/figures/cartoons/cen_fig4_3.svg', censore=True)
+    # x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, _, _ = accuracy()
 
     # Get list of axis objects
-    ax, f = getSetup((6.5, 4), (2, 2))
-    figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen)
+    ax, f = getSetup((6.5, 4), (2, 6))
+    figureMaker3(ax)
     ax[0].text(-0.2, 1.22, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
     ax[1].text(-0.2, 1.22, ascii_lowercase[1], transform=ax[1].transAxes, fontsize=16, fontweight="bold", va="top")
 
@@ -80,37 +80,68 @@ def accuracy():
     return x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, list_of_populationsSim, list_of_populations
 
 
-def figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, xlabel="Number of Cells"):
+def figureMaker3(ax, xlabel="Number of Cells"):
     """
     Makes a 2 panel figures displaying state accuracy estimation across lineages
     of different censoring states.
     """
-    accuracy_sim_df = pd.DataFrame(columns=["Cell number", "State Assignment Accuracy"])
-    accuracy_sim_df["Cell number"] = x_Sim
-    accuracy_sim_df["State Assignment Accuracy"] = Accuracy_Sim
+    # accuracy_sim_df = pd.DataFrame(columns=["Cell number", "State Assignment Accuracy"])
+    # accuracy_sim_df["Cell number"] = x_Sim
+    # accuracy_sim_df["State Assignment Accuracy"] = Accuracy_Sim
 
-    accuracy_cen_df = pd.DataFrame(columns=["Cell number", "State Assignment Accuracy"])
-    accuracy_cen_df["Cell number"] = x_Cen
-    accuracy_cen_df["State Assignment Accuracy"] = Accuracy_Cen
+    # accuracy_cen_df = pd.DataFrame(columns=["Cell number", "State Assignment Accuracy"])
+    # accuracy_cen_df["Cell number"] = x_Cen
+    # accuracy_cen_df["State Assignment Accuracy"] = Accuracy_Cen
+
 
     i = 0
+    img = plotLineage(regGen(), axes=ax[i], censore=False)
+    img_90 = ndimage.rotate(img, 90, reshape=False)
+    ax[i].imshow(img_90)
     ax[i].axis('off')
 
     i += 1
+    img = plotLineage(regGen(), axes=ax[i], censore=False)
+    img_90 = ndimage.rotate(img, 90, reshape=False)
+    ax[i].imshow(img_90)
     ax[i].axis('off')
 
     i += 1
-    ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
-    sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_sim_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
-    ax[i].set_xlabel(xlabel)
-    ax[i].set_ylim(bottom=50, top=101)
-    ax[i].set_ylabel(r"State Accuracy [%]")
-    ax[i].set_title("Full lineage data")
+    img = plotLineage(regGen(), axes=ax[i], censore=False)
+    img_90 = ndimage.rotate(img, 90, reshape=False)
+    ax[i].imshow(img_90)
+    ax[i].axis('off')
 
     i += 1
-    ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
-    sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_cen_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
-    ax[i].set_xlabel(xlabel)
-    ax[i].set_ylim(bottom=50, top=101)
-    ax[i].set_ylabel(r"State Accuracy [%]")
-    ax[i].set_title("Censored Data")
+    img = plotLineage(cenGen(), axes=ax[i], censore=True)
+    img_90 = ndimage.rotate(img, 90, reshape=False)
+    ax[i].imshow(img_90)
+    ax[i].axis('off')
+
+    i += 1
+    img = plotLineage(cenGen(), axes=ax[i], censore=True)
+    img_90 = ndimage.rotate(img, 90, reshape=False)
+    ax[i].imshow(img_90)
+    ax[i].axis('off')
+
+    i += 1
+    img = plotLineage(cenGen(), axes=ax[i], censore=True)
+    img_90 = ndimage.rotate(img, 90, reshape=False)
+    ax[i].imshow(img_90)
+    ax[i].axis('off')
+
+    i += 1
+    # ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
+    # sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_sim_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
+    # ax[i].set_xlabel(xlabel)
+    # ax[i].set_ylim(bottom=50, top=101)
+    # ax[i].set_ylabel(r"State Accuracy [%]")
+    # ax[i].set_title("Full lineage data")
+
+    i += 1
+    # ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
+    # sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_cen_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
+    # ax[i].set_xlabel(xlabel)
+    # ax[i].set_ylim(bottom=50, top=101)
+    # ax[i].set_ylabel(r"State Accuracy [%]")
+    # ax[i].set_title("Censored Data")
