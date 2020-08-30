@@ -33,11 +33,13 @@ def regGen():
         tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**5 - 1)
     return tmp
 
+
 def cenGen():
     tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=250)
     while len(tmp.output_lineage) < 5:
         tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2**6 - 1, censor_condition=3, desired_experiment_time=250)
     return tmp
+
 
 def makeFigure():
     """
