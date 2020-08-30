@@ -81,19 +81,12 @@ class StateDistribution:
             _ = kwargs.get("desired_experiment_time", 2e12)
 
         if censor_condition == 0:
-            output_lineage = full_lineage
-            return output_lineage
+            return full_lineage
 
         output_lineage = []
-        for gen_minus_1, level in enumerate(full_list_of_gens[1:]):
+        for level in full_list_of_gens[1:]:
             for cell in level:
                 basic_censor(cell)
                 if cell.observed:
                     output_lineage.append(cell)
         return output_lineage
-
-    def __repl__(self):
-        return f"{self.params}"
-
-    def __str__(self):
-        return self.__repl__()
