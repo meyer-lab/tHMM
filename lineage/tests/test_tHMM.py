@@ -1,5 +1,6 @@
 """ Unit test file. """
 import unittest
+import pytest
 import numpy as np
 from ..UpwardRecursion import (
     get_Marginal_State_Distributions,
@@ -78,31 +79,13 @@ class TestModel(unittest.TestCase):
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         """
-        EL = self.EL
-        EL3 = self.EL3
-        self.assertLessEqual(len(EL), 50)  # there are <=50 lineages in the population
-        self.assertLessEqual(len(EL3), 50)  # there are <=50 lineages in the population
-        for ind, ELlin in enumerate(EL):
+        self.assertLessEqual(len(self.EL), 50)  # there are <=50 lineages in the population
+        self.assertLessEqual(len(self.EL3), 50)  # there are <=50 lineages in the population
+        for ind, ELlin in enumerate(self.EL):
             self.assertGreaterEqual(ELlin.shape[0], 0)  # at least zero cells in each lineage
-            self.assertGreaterEqual(EL3[ind].shape[0], 0)  # at least zero cells in each lineage
+            self.assertGreaterEqual(self.EL3[ind].shape[0], 0)  # at least zero cells in each lineage
             self.assertEqual(ELlin.shape[1], 2)  # there are 2 states for each cell
-            self.assertEqual(EL3[ind].shape[1], 3)  # there are 3 states for each cell
-
-    def test_get_leaf_NF(self):
-        """
-        Calls get_leaf_Normalizing_Factors and
-        ensures the output is of correct data type and
-        structure.
-        """
-        t = self.t
-        t3 = self.t3
-        NF = get_leaf_Normalizing_Factors(t, self.MSD, self.EL)
-        NF3 = get_leaf_Normalizing_Factors(t3, self.MSD3, self.EL3)
-        self.assertLessEqual(len(NF), 50)  # there are <=50 lineages in the population
-        self.assertLessEqual(len(NF3), 50)
-        for ind, NFlin in enumerate(NF):
-            self.assertGreaterEqual(NFlin.shape[0], 0)  # at least zero cells in each lineage
-            self.assertGreaterEqual(NF3[ind].shape[0], 0)
+            self.assertEqual(self.EL3[ind].shape[1], 3)  # there are 3 states for each cell
 
     def test_fit_performance(self):
         """
@@ -114,12 +97,12 @@ class TestModel(unittest.TestCase):
         accuracy = results_dict["balanced_accuracy_score"]
         self.assertGreaterEqual(accuracy, 95)
 
-    def test_small_lineages(self):
-        """ To test lineages with 3 cells in them for simple gamma. """
-        # test with 2 state model
-        lin = [LineageTree.init_from_parameters(pi, T, E, 3) for _ in range(3)]
+@pytest.mark.parametrize("sizze", [1, 3])
+@pytest.mark.parametrize("stateNum", [1, 2, 3])
+def test_small_lineages(sizze, stateNum):
+    """ To test lineages with 3 cells in them for simple gamma. """
+    # test with 2 state model
+    lin = [LineageTree.init_from_parameters(pi, T, E, sizze) for _ in range(3)]
 
-        # test with varying number of states
-        for stateNum in range(2, 5):
-            _, _, LL1 = Analyze(lin, stateNum)
-            self.assertTrue(np.all(np.isfinite(LL1)))
+    _, _, LL1 = Analyze(lin, stateNum)
+    assert np.all(np.isfinite(LL1))
