@@ -50,8 +50,8 @@ def makeFigure():
     figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen)
     ax[0].text(-0.2, 1.22, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
     ax[1].text(-0.2, 1.22, ascii_lowercase[1], transform=ax[1].transAxes, fontsize=16, fontweight="bold", va="top")
-    ax[4].text(-0.2, 1.22, ascii_lowercase[2], transform=ax[4].transAxes, fontsize=16, fontweight="bold", va="top")
-    ax[5].text(-0.2, 1.22, ascii_lowercase[3], transform=ax[5].transAxes, fontsize=16, fontweight="bold", va="top")
+    ax[4].text(-0.2, 1.7, ascii_lowercase[2], transform=ax[4].transAxes, fontsize=16, fontweight="bold", va="top")
+    ax[5].text(-0.2, 1.7, ascii_lowercase[3], transform=ax[5].transAxes, fontsize=16, fontweight="bold", va="top")
 
     return f
 
