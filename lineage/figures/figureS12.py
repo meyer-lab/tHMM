@@ -57,7 +57,7 @@ def accuracy():
 
     pi4 = np.array([0.55, 0.35, 0.06, 0.04])
     T4 = np.array([[0.70, 0.20, 0.05, 0.05], [0.1, 0.80, 0.06, 0.04], [0.1, 0.1, 0.6, 0.2], [0.1, 0.1, 0.5, 0.3]])
-    E4 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5), StateDistPhase(0.66, 0.95, 17, 6, 15, 5)]
+    E4 = [StateDistPhase(0.99, 0.95, 20, 5, 10, 3), StateDistPhase(0.95, 0.85, 10, 2, 15, 4), StateDistPhase(0.85, 0.9, 15, 7, 20, 5), StateDistPhase(0.86, 0.95, 17, 6, 15, 5)]
 
     # common for all three populations
     num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)

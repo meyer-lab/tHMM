@@ -43,25 +43,17 @@ def cenGen():
 
 def makeFigure():
     """
-    Makes fig 3.
+    Makes fig 4.
     """
     x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, _, _ = accuracy()
 
-    plotLineage(regGen(), 'lineage/figures/cartoons/uncen_fig4_1.svg', censore=False)
-    plotLineage(regGen(), 'lineage/figures/cartoons/uncen_fig4_2.svg', censore=False)
-    plotLineage(regGen(), 'lineage/figures/cartoons/uncen_fig4_3.svg', censore=False)
-
-    plotLineage(cenGen(), 'lineage/figures/cartoons/cen_fig4_1.svg', censore=True)
-    plotLineage(cenGen(), 'lineage/figures/cartoons/cen_fig4_2.svg', censore=True)
-    plotLineage(cenGen(), 'lineage/figures/cartoons/cen_fig4_3.svg', censore=True)
-
     # Get list of axis objects
-    ax, f = getSetup((6.5, 4), (2, 2))
+    ax, f = getSetup((6.5, 4), (3, 2))
     figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen)
     ax[0].text(-0.2, 1.22, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
     ax[1].text(-0.2, 1.22, ascii_lowercase[1], transform=ax[1].transAxes, fontsize=16, fontweight="bold", va="top")
-
-    subplotLabel(ax)
+    ax[4].text(-0.2, 1.7, ascii_lowercase[2], transform=ax[4].transAxes, fontsize=16, fontweight="bold", va="top")
+    ax[5].text(-0.2, 1.7, ascii_lowercase[3], transform=ax[5].transAxes, fontsize=16, fontweight="bold", va="top")
 
     return f
 
@@ -101,13 +93,24 @@ def figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, xlabel="Number of
     accuracy_cen_df["Cell number"] = x_Cen
     accuracy_cen_df["State Assignment Accuracy"] = Accuracy_Cen
 
+
     i = 0
+    plotLineage(regGen(), axes=ax[i], censore=False)
     ax[i].axis('off')
 
-    i += 1
+    i = 1
+    plotLineage(cenGen(), axes=ax[i], censore=True)
     ax[i].axis('off')
 
-    i += 1
+    i = 2
+    plotLineage(regGen(), axes=ax[i], censore=False)
+    ax[i].axis('off')
+
+    i = 3
+    plotLineage(cenGen(), axes=ax[i], censore=True)
+    ax[i].axis('off')
+
+    i = 4
     ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
     sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_sim_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
     ax[i].set_xlabel(xlabel)
@@ -115,7 +118,7 @@ def figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, xlabel="Number of
     ax[i].set_ylabel(r"State Accuracy [%]")
     ax[i].set_title("Full lineage data")
 
-    i += 1
+    i = 5
     ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
     sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_cen_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
     ax[i].set_xlabel(xlabel)
