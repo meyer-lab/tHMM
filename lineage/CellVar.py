@@ -1,4 +1,5 @@
 """ This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
+from dataclasses import dataclass
 import scipy.stats as sp
 
 # temporary style guide:
@@ -195,14 +196,12 @@ def find_two_subtrees(cell, lineage):
     return left_sub, right_sub, neither_subtree
 
 
+@dataclass(init=True, repr=True, eq=True, order=True)
 class Time:
     """
     Class that stores all the time related observations in a neater format.
-    This will assist in pruning based on experimental time as well as
-    obtaining attributes of the lineage as a whole, such as the
-    average growth rate.
+    This assists in pruning based on experimental time and obtaining
+    attributes of the lineage as a whole like the average growth rate.
     """
-
-    def __init__(self, startT, endT):
-        self.startT = startT
-        self.endT = endT
+    startT: float
+    endT: float
