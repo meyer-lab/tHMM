@@ -51,10 +51,10 @@ def import_Heiser(path):
             assert lineageNo == data[lPos][0]
 
         # determine if lineage has cells
-        if lPos < len(data) and not math.isnan(data[lPos][1]):
+        if lPos < len(data) and math.isfinite(data[lPos][1]):
             # Check that there is a value
-            assert not math.isnan(
-                data[lPos][2]) or not math.isnan(data[lPos][3]), f"Value missing in first cell of lineage {lineageNo}"
+            assert math.isfinite(
+                data[lPos][2]) or math.isfinite(data[lPos][3]), f"Value missing in first cell of lineage {lineageNo}"
 
             # add list for the lineage
             currentLineage = []
@@ -70,8 +70,7 @@ def import_Heiser(path):
                 lower = len(data)
             else:
                 # checking that spacing is correct
-                assert not math.isnan(
-                    data[nextUp + 8][0]), "File is improperly formatted (lineages spaced differently)"
+                assert math.isfinite(data[nextUp + 8][0]), "File is improperly formatted (lineages spaced differently)"
                 lower = nextUp - 2
 
             # find upper daughter and recurse

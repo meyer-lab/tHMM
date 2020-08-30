@@ -15,8 +15,9 @@ pipeline {
         sh 'make all -j 3'
         lock ('manubot') {
           sh 'make output/manuscript.html'
+          sh 'make output/manuscript.docx'
         }
-        archiveArtifacts artifacts: 'output/*.svg, spell.txt', onlyIfSuccessful: true
+        archiveArtifacts artifacts: 'output/*.svg, spell.txt, output/manuscript.docx', onlyIfSuccessful: true
         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'output', reportFiles: 'manuscript.html', reportName: 'Manuscript'])
       }
     }
