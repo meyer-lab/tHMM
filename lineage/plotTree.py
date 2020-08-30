@@ -21,19 +21,18 @@ def CladeRecursive(cell, a, censore):
 
     if cell.isLeaf() and censore:
         if cell.time.transition_time >= cell.time.endT:  # the cell died in G1
-            return Clade(branch_length=cell.time.endT - cell.time.startT, width=2, color="pink")
+            return Clade(branch_length=cell.time.endT - cell.time.startT, width=1, color="pink")
         else:  # the cell spent some time in G2
-            return Clade(branch_length=cell.time.endT - cell.time.startT, width=2, color="gold")  # dead in G2
+            return Clade(branch_length=cell.time.endT - cell.time.startT, width=1, color="gold")  # dead in G2
     else:
         clades = []
         if cell.left is not None and cell.left.observed:
             clades.append(CladeRecursive(cell.left, a, censore))
         if cell.right is not None and cell.right.observed:
             clades.append(CladeRecursive(cell.right, a, censore))
-        return Clade(branch_length=cell.time.endT - cell.time.startT, width=2, clades=clades, color=colorr)
+        return Clade(branch_length=cell.time.endT - cell.time.startT, width=1, clades=clades, color=colorr)
 
 
-# def plotLineage(lineage, path, axes, censore=True):
 def plotLineage(lineage, axes, censore=True):
     """
     Makes lineage tree.
@@ -45,4 +44,3 @@ def plotLineage(lineage, axes, censore=True):
     c = CladeRecursive(lineage.output_lineage[0], a, censore)
 
     return Phylo.draw(c, axes=axes)
-    # pylab.axis("off")
