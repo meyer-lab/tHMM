@@ -64,8 +64,6 @@ class TestModel(unittest.TestCase):
         """
         MSD = self.MSD
         MSD3 = self.MSD3
-        self.assertLessEqual(len(MSD), 50)  # there are <=50 lineages in the population
-        self.assertLessEqual(len(MSD3), 50)
         for ind, MSDlin in enumerate(MSD):
             self.assertGreaterEqual(MSDlin.shape[0], 0)  # at least zero cells in each lineage
             self.assertGreaterEqual(MSD3[ind].shape[0], 0)  # at least zero cells in each lineage
@@ -79,30 +77,24 @@ class TestModel(unittest.TestCase):
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         """
-        self.assertLessEqual(len(self.EL), 50)  # there are <=50 lineages in the population
-        self.assertLessEqual(len(self.EL3), 50)  # there are <=50 lineages in the population
         for ind, ELlin in enumerate(self.EL):
             self.assertGreaterEqual(ELlin.shape[0], 0)  # at least zero cells in each lineage
             self.assertGreaterEqual(self.EL3[ind].shape[0], 0)  # at least zero cells in each lineage
             self.assertEqual(ELlin.shape[1], 2)  # there are 2 states for each cell
             self.assertEqual(self.EL3[ind].shape[1], 3)  # there are 3 states for each cell
 
-    def test_fit_performance(self):
-        """
-        Really defined states should get an accuracy >95%.
-        Lineages used should be large and distinct.
-        """
-        tree_obj, predicted_states, LL = Analyze(self.X, 2)
-        results_dict = Results(tree_obj, predicted_states, LL)
-        accuracy = results_dict["balanced_accuracy_score"]
-        self.assertGreaterEqual(accuracy, 95)
+def test_fit_performance():
+    """ Really defined states should get an accuracy >95%.
+    Lineages used should be large and distinct. """
+    X = [LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 11) - 1)]
+    assert Results(*Analyze(X, 2, fpi=pi))["balanced_accuracy_score"] > 95.0
 
 @pytest.mark.parametrize("sizze", [1, 3])
 @pytest.mark.parametrize("stateNum", [1, 2, 3])
 def test_small_lineages(sizze, stateNum):
     """ To test lineages with 3 cells in them for simple gamma. """
     # test with 2 state model
-    lin = [LineageTree.init_from_parameters(pi, T, E, sizze) for _ in range(3)]
+    lin = [LineageTree.init_from_parameters(pi, T, E, sizze) for _ in range(2)]
 
     _, _, LL1 = Analyze(lin, stateNum)
     assert np.all(np.isfinite(LL1))
