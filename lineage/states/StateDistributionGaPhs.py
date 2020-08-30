@@ -58,7 +58,7 @@ class StateDistribution:
 
         list_of_tuples_of_obsG1 = [(a, b, c) for a, b, c in zip(bern_obsG1, gamma_obsG1, gamma_censor_obsG1)]
         list_of_tuples_of_obsG2 = [(a, b, c) for a, b, c in zip(bern_obsG2, gamma_obsG2, gamma_censor_obsG2)]
-        
+
         self.G1.estimator(list_of_tuples_of_obsG1, gammas, const)
         self.G2.estimator(list_of_tuples_of_obsG2, gammas, const)
 
@@ -137,12 +137,6 @@ class StateDistribution:
                     if cell.observed:
                         output_lineage.append(cell)
         return output_lineage
-
-    def __repl__(self):
-        return f"{self.params}"
-
-    def __str__(self):
-        return self.__repl__()
 
 
 def fate_censor(cell):

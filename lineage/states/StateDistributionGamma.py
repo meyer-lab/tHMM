@@ -149,12 +149,6 @@ class StateDistribution:
                         output_lineage.append(cell)
         return output_lineage
 
-    def __repl__(self):
-        return f"{self.params}"
-
-    def __str__(self):
-        return self.__repl__()
-
 
 def fate_censor(cell):
     """

@@ -1,7 +1,7 @@
 """ Unit test file. """
 import unittest
 import numpy as np
-from ..CellVar import CellVar as c, get_subtrees, find_two_subtrees, get_mixed_subtrees
+from ..CellVar import CellVar as c, get_subtrees, find_two_subtrees
 from ..LineageTree import LineageTree, max_gen, get_leaves
 from ..states.StateDistributionGamma import StateDistribution
 from ..states.stateCommon import get_experiment_time
@@ -158,12 +158,3 @@ class TestModel(unittest.TestCase):
         self.assertTrue(left_sub == self.subtree1)
         self.assertTrue(right_sub == self.subtree2)
         self.assertTrue(neither_subtree == [self.cell_1])
-
-    def test_get_mixed_subtrees(self):
-        """
-        A unittest for get_mixed_subtrees, using the built-in-7-cell lineage in the setup function.
-        """
-        mixed_sub, not_mixed = get_mixed_subtrees(self.cell_2, self.cell_3, self.test_lineage)
-        mixed = self.subtree2 + self.subtree1
-        self.assertTrue(mixed_sub == mixed)
-        self.assertTrue(not_mixed == [self.cell_1])

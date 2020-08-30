@@ -74,21 +74,9 @@ if __name__ == '__main__':
     if sys.argv[1] == '1':
         # Overlay Figure 1 cartoon
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1a.svg', 60, 30, scalee=0.35, scale_x=0.6, rotate=90)
+                       f'{cartoon_dir}/xaxis-h.svg', 30, 110, scalee=1.1)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1b.svg', 100, 42, scalee=0.35, scale_x=0.6, rotate=90)
-        overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1c.svg', 140, 54, scalee=0.35, scale_x=0.6, rotate=90)
-        overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1d.svg', 205, 66, scalee=0.35, scale_x=0.6, rotate=90)
-        overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1e.svg', 245, 78, scalee=0.35, scale_x=0.6, rotate=90)
-        overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/figure1f.svg', 285, 90, scalee=0.35, scale_x=0.6, rotate=90)
-        overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/xaxis.svg', 0, 20, scalee=0.72)
-        overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/xaxis.svg', 180, 20, scalee=0.72)
+                       f'{cartoon_dir}/xaxis-h.svg', 215, 110, scalee=1.1)
 
     if sys.argv[1] == '2':
         # Overlay Figure 2 cartoon
@@ -99,21 +87,6 @@ if __name__ == '__main__':
         # Overlay Figure 3 cartoon
         overlayCartoon(fdir + 'figure3.svg',
                        f'{cartoon_dir}/figure3.svg', 5, 0, scalee=0.83)
-
-    if sys.argv[1] == '4':
-        # Overlay Figure 4 cartoon
-        overlayCartoon(fdir + 'figure4.svg',
-                       f'{cartoon_dir}/uncen_fig4_1.svg', 70, 30, scalee=0.35, scale_x=0.5, rotate=90)
-        overlayCartoon(fdir + 'figure4.svg',
-                       f'{cartoon_dir}/uncen_fig4_2.svg', 120, 43, scalee=0.35, scale_x=0.5, rotate=90)
-        overlayCartoon(fdir + 'figure4.svg',
-                       f'{cartoon_dir}/uncen_fig4_3.svg', 170, 56, scalee=0.35, scale_x=0.5, rotate=90)
-        overlayCartoon(fdir + 'figure4.svg',
-                       f'{cartoon_dir}/cen_fig4_1.svg', 260, 75, scalee=0.35, scale_x=0.5, rotate=90)
-        overlayCartoon(fdir + 'figure4.svg',
-                       f'{cartoon_dir}/cen_fig4_2.svg', 310, 90, scalee=0.35, scale_x=0.5, rotate=90)
-        overlayCartoon(fdir + 'figure4.svg',
-                       f'{cartoon_dir}/cen_fig4_3.svg', 360, 105, scalee=0.35, scale_x=0.5, rotate=90)
 
     if sys.argv[1] == '5':
         # Overlay Figure 5 cartoon
