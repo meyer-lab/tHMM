@@ -83,11 +83,13 @@ class TestModel(unittest.TestCase):
             self.assertEqual(ELlin.shape[1], 2)  # there are 2 states for each cell
             self.assertEqual(self.EL3[ind].shape[1], 3)  # there are 3 states for each cell
 
+
 def test_fit_performance():
     """ Really defined states should get an accuracy >95%.
     Lineages used should be large and distinct. """
     X = [LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 11) - 1)]
     assert Results(*Analyze(X, 2, fpi=pi))["balanced_accuracy_score"] > 95.0
+
 
 @pytest.mark.parametrize("sizze", [1, 3])
 @pytest.mark.parametrize("stateNum", [1, 2, 3])
