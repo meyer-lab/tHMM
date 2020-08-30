@@ -101,22 +101,22 @@ def test_small_lineages(sizze, stateNum):
     _, _, LL1 = Analyze(lin, stateNum)
     assert np.all(np.isfinite(LL1))
 
-    def test_AIC(self):
-        """
-        To test the AIC function.
-        """
-        # create 1-state lineages
-        pi1 = np.array([1.0, 0.0])
-        T1 = np.array([[1.0, 0.0], [0.0, 1.0]])
-        E1 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.99, 0.9, 20, 5, 10, 3)]
-        lin = [LineageTree.init_from_parameters(pi1, T1, E1, 1) for _ in range(3)]
-        desired_num_states = np.arange(1, 4)
+def test_AIC(self):
+    """
+    To test the AIC function.
+    """
+    # create 1-state lineages
+    pi1 = np.array([1.0, 0.0])
+    T1 = np.array([[1.0, 0.0], [0.0, 1.0]])
+    E1 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.99, 0.9, 20, 5, 10, 3)]
+    lin = [LineageTree.init_from_parameters(pi1, T1, E1, 1) for _ in range(3)]
+    desired_num_states = np.arange(1, 4)
 
-        # run a few times and make sure it gives one state as the answer more than half the time.
-        AIC = np.empty((len(desired_num_states), 20))
-        for j in range(20):
-            output = run_Analyze_AIC(lin, desired_num_states, const=[20, 10])
-            for idx in range(len(desired_num_states)):
-                AIC[idx, j], _ = output[idx][0].get_AIC(output[idx][2], 4)
-            AIC[:, j] = AIC[:, j] - np.min(AIC[:, j])
-        self.assertTrue(np.count_nonzero(AIC[0, :]==0) > 10)
+    # run a few times and make sure it gives one state as the answer more than half the time.
+    AIC = np.empty((len(desired_num_states), 20))
+    for j in range(20):
+        output = run_Analyze_AIC(lin, desired_num_states, const=[20, 10])
+        for idx in range(len(desired_num_states)):
+            AIC[idx, j], _ = output[idx][0].get_AIC(output[idx][2], 4)
+        AIC[:, j] = AIC[:, j] - np.min(AIC[:, j])
+    self.assertTrue(np.count_nonzero(AIC[0, :]==0) > 10)
