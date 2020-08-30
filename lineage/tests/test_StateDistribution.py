@@ -149,6 +149,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(10 <= shape <= 15)
         self.assertTrue(2 <= scale <= 4)
 
+
 def test_bern_pdf():
     """
     Testing the Bernoulli probability density function
@@ -156,6 +157,7 @@ def test_bern_pdf():
     against a known calculated value.
     """
     assert bern_pdf(x=1, p=1) == 1
+
 
 def test_gamma_pdf():
     """
