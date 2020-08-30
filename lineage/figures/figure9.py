@@ -28,26 +28,20 @@ def makeFigure():
     """
     Makes figure 9.
     """
-    ax, f = getSetup((12, 6), (2, 4))
+    ax, f = getSetup((7, 3), (1, 2))
 
     data = [Lapatinib_Control[0:10], Lapt25uM[0:10], Lapt50uM[0:10], Lap250uM[0:10],
             Gemcitabine_Control[0:10], Gem5uM[0:10], Gem10uM[0:10], Gem30uM[0:10]]
 
     # making lineages and finding AICs (assign number of lineages here)
-    AIC = [run_AIC(data[i]) for i in range(len(data))]
+    AICs = [run_AIC(data[i]) for i in range(len(data))]
+    AIC = [np.sum(AICs[0:4], axis=0), np.sum(AICs[4:8], axis=0)]
 
-    # Finding proper ylim range for all 4 censored graphs and rounding up
-    upper_ylim1 = int(1 + max([max(p) for p in AIC[0:4]]) / 25.0) * 25
-    upper_ylim2 = int(1 + max([max(p) for p in AIC[5:8]]) / 25.0) * 25
-
-    upper_ylim = [upper_ylim1, upper_ylim2]
-    titles = ["Lpt cntrl", "Lpt 25uM", "Lpt 50uM", "Lpt 250uM",
-              "Gem cntrl", "Gem 5uM", "Gem 10uM", "Gem 30uM"]
+    legend = ["cntrl", "25uM", "50uM", "250uM",
+              "cntrl", "5uM", "10uM", "30uM"]
 
     # Plotting AICs
-    for idx, a in enumerate(AIC):
-        figure_maker(ax[idx], a, titles[idx],
-                     upper_ylim[int(idx / 4)], True)
+    figure_maker(ax, AIC, True)
     subplotLabel(ax)
 
     return f
@@ -69,25 +63,20 @@ def run_AIC(lineages):
     return AICs
 
 
-def figure_maker(ax, AIC_holder, title, upper_ylim, censored=False):
+def figure_maker(ax, AIC_holder, censored=False):
     """
     Makes figure 9.
     """
 
-    # Creating Histogram and setting ylim
-    ax2 = ax.twinx()
-    ax2.set_ylabel("Lineages Predicted")
-    ax2.hist(np.argmin(AIC_holder) + 1, rwidth=1.0,
-             alpha=.2, bins=desired_num_states, align='left')
-    ax2.set_yticks(np.linspace(0, len(AIC_holder), 5))
-
-    # Creating AIC plot and matching gridlines
-    ax.set_xlabel("Number of States Predicted")
-    ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
-    ax.set_ylabel("Normalized AIC")
-    ax.set_yticks(np.linspace(0, upper_ylim, 5))
-    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-
-    # Adding title
-    title = f"{title} "
-    ax.set_title(title)
+    i = 0
+    ax[i].plot(desired_num_states, AIC_holder[0])
+    ax[i].set_xlabel("Number of States Predicted")
+    ax[i].set_ylabel("Normalized AIC")
+    ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax[i].set_title("Lapatinib")
+    i += 1
+    ax[i].plot(desired_num_states, AIC_holder[1])
+    ax[i].set_xlabel("Number of States Predicted")
+    ax[i].set_ylabel("Normalized AIC")
+    ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax[i].set_title("Gemcitabine")
