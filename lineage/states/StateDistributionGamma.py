@@ -1,5 +1,4 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
-import math
 import numpy as np
 import scipy.stats as sp
 
@@ -36,7 +35,7 @@ class StateDistribution:
         # the individual observation likelihoods.
 
         bern_ll = 1
-        if not math.isnan(tuple_of_obs[0]):
+        if not np.isnan(tuple_of_obs[0]):
             # observed
             assert tuple_of_obs[0] == 0 or tuple_of_obs[0] == 1
             bern_ll = bern_pdf(tuple_of_obs[0], self.params[0])
@@ -45,10 +44,15 @@ class StateDistribution:
         if tuple_of_obs[2] == 1:
             # uncensored
             gamma_ll = gamma_pdf(tuple_of_obs[1], self.params[1], self.params[2])
-        else:
+        elif tuple_of_obs[2] == 0:
             # censored
-            assert tuple_of_obs[2] == 0
             gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.params[1], scale=self.params[2])
+        else:
+            # unobserved
+            assert np.isnan(tuple_of_obs[1])
+            assert np.isnan(tuple_of_obs[2])
+            gamma_ll = 1
+        assert not np.isnan(np.all([bern_ll, gamma_ll])), f"one of the likelihoods is nan"
 
         return bern_ll * gamma_ll
 
@@ -61,11 +65,22 @@ class StateDistribution:
         # {
         bern_obs = np.array((unzipped_list_of_tuples_of_obs[0]))
         γ_obs = np.array(unzipped_list_of_tuples_of_obs[1])
-        gamma_obs_censor = np.array(unzipped_list_of_tuples_of_obs[2], dtype=int)
+        gamma_obs_censor = np.array(unzipped_list_of_tuples_of_obs[2])
+
+        if const is None:
+            shape = None
+        else:
+            shape = const[0]
 
         b_mask = np.logical_not(np.isnan(bern_obs))
+        g_mask = np.logical_not(np.isnan(γ_obs))
         self.params[0] = bernoulli_estimator(bern_obs[b_mask], gammas[b_mask])
-        self.params[1], self.params[2] = gamma_estimator(γ_obs, gamma_obs_censor, gammas, None)
+        self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], shape)
+
+        assert not np.isnan(np.all(bern_obs[b_mask])), f"bern obs has nans after mask"
+        assert not np.isnan(np.all(γ_obs[g_mask])), f"gamma obs has nans after mask"
+        assert not np.isnan(np.all(gammas[b_mask])), f"gammas has nans after mask"
+
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated
