@@ -29,7 +29,7 @@ output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.s
 		--defaults=./common/templates/manubot/pandoc/html.yaml
 
 test: venv
-	. venv/bin/activate; pytest -s
+	. venv/bin/activate; pytest -s -v
 
 spell.txt: manuscript/*.md
 	pandoc --lua-filter common/templates/spell.lua manuscript/*.md | sort | uniq -ic > spell.txt
