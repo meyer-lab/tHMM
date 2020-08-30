@@ -22,11 +22,18 @@ output/manuscript.md: venv manuscript/*.md
 	git remote rm rootstock
 
 output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.svg, $(flist))
-	mkdir output/output
+	mkdir -p output/output
 	cp output/*.svg output/output/
 	. venv/bin/activate && pandoc --verbose \
 		--defaults=./common/templates/manubot/pandoc/common.yaml \
 		--defaults=./common/templates/manubot/pandoc/html.yaml
+
+output/manuscript.docx: venv output/manuscript.md $(patsubst %, output/figure%.svg, $(flist))
+	mkdir -p output/output
+	cp output/*.svg output/output/
+	. venv/bin/activate && pandoc --verbose \
+		--defaults=./common/templates/manubot/pandoc/common.yaml \
+		--defaults=./common/templates/manubot/pandoc/docx.yaml
 
 test: venv
 	. venv/bin/activate; pytest -s -v
