@@ -36,7 +36,8 @@ def makeFigure():
     E = [Eone, Etwo, Ethree, Efour, Eone, Etwo, Ethree, Efour]
 
     # making lineages and finding AICs (assign number of lineages here)
-    AIC = [run_AIC(.1, e, 10, idx > 3) for idx, e in enumerate(E)]
+    Aic = [[run_AIC(.1, e, 10, idx > 3) for idx, e in enumerate(E)] for _ in range(10)]
+    AIC= list(map(list, zip(*Aic)))
 
     # Finding proper ylim range for all 4 uncensored graphs and rounding up
     upper_ylim_uncensored = int(1 + max([np.max(np.ptp(AIC[i], axis=0)) for i in range(4)]) / 25.0) * 25
@@ -79,21 +80,23 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10, censored=Fals
             pi, T, E, 2**6 - 1) for _ in range(num_lineages_to_evaluate)]
 
     # Storing AICs into array
-    AICs = np.empty((len(desired_num_states), len(lineages)))
+    # 
+    AICs = []
     output = run_Analyze_AIC(lineages, desired_num_states)
     for idx in range(len(desired_num_states)):
         AIC, _ = output[idx][0].get_AIC(output[idx][2], None)
-        AICs[idx] = np.array([ind_AIC for ind_AIC in AIC])
+        AICs.append(AIC)
+    # normalize
+    AICs = AICs - np.min(AICs)
 
     return AICs
 
 
-def figure_maker(ax, AIC_holder, true_state_no, upper_ylim, censored=False):
+def figure_maker(ax, AIC_Holder, true_state_no, upper_ylim, censored=False):
     """
     Makes figure 8.
     """
-    # Normalizing AIC
-    AIC_holder = AIC_holder - np.min(AIC_holder, axis=0)[np.newaxis, :]
+    AIC_holder = list(map(list, zip(*AIC_Holder)))
 
     # Creating Histogram and setting ylim
     ax2 = ax.twinx()
