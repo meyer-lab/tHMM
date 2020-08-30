@@ -97,35 +97,11 @@ class LineageTree:
             parent_holder.add(self.output_lineage.index(cell.parent))
         return parent_holder
 
-    def __repr__(self):
-        """This function is used to get string representation of an object, used for debugging and development.
-        Represents the information about the lineage that the user has created,
-        like whether the tree is censord or is a output tree;
-        and for both of the options it prints the number of states,
-        the number of cells in the states, the total number of cells.
-        """
-        s = ""
-        for cell in self.output_lineage:
-            s += cell.__repr__()
-        return s
-
-    def __str__(self):
-        """This function is used to get string representation of an object,
-        used for showing the results to the user.
-        """
-        return self.__repr__()
-
     def __len__(self):
         """Defines the length of a lineage by returning the number of cells
         it contains.
         """
         return len(self.output_lineage)
-
-    def is_heterogeneous(self):
-        """Checks whether a lineage is heterogeneous by ensuring that the true states
-        of the cells contained within it create a set that has more than one state.
-        """
-        return len({cell.state for cell in self.output_lineage}) > 1
 
 
 def generate_lineage_list(pi, T, desired_num_cells):
@@ -208,9 +184,7 @@ def get_leaves(lineage):
     leaves = []
     for index, cell in enumerate(lineage):
         if cell.isLeaf():
-            if not cell.isRootParent:
-                assert cell.parent.observed
-                assert cell.observed
+            assert cell.observed
             leaves.append(cell)  # appending the leaf cells to a list
             leaf_indices.append(index)  # appending the index of the cells
     return leaf_indices, leaves
