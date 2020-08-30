@@ -139,20 +139,6 @@ class CellVar:
                 temp.append(self.right)
         return temp
 
-    def __repr__(self):
-        """
-        Printing function.
-        """
-        str_print = ""
-        if hasattr(self, "obs"):
-            str_print = "\n Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, self.obs)
-        else:
-            str_print = "\n Generation: {}, State: {}, Observation: {}".format(self.gen, self.state, "This cell has no observations to report.")
-        return str_print
-
-    def __str__(self):
-        return self.__repr__()
-
 
 def double(parent_state, T):
     """
@@ -193,10 +179,7 @@ def get_subtrees(node, lineage):
     """
     subtree = [node]
     tree_recursion(node, subtree)
-    not_subtree = []
-    for cell in lineage:
-        if cell not in subtree:
-            not_subtree.append(cell)
+    not_subtree = [cell for cell in lineage if cell not in subtree]
     return subtree, not_subtree
 
 
@@ -208,29 +191,8 @@ def find_two_subtrees(cell, lineage):
         return None, None, lineage
     left_sub, _ = get_subtrees(cell.left, lineage)
     right_sub, _ = get_subtrees(cell.right, lineage)
-    neither_subtree = []
-    for node in lineage:
-        if node not in left_sub and node not in right_sub:
-            neither_subtree.append(node)
+    neither_subtree = [node for node in lineage if node not in left_sub and node not in right_sub]
     return left_sub, right_sub, neither_subtree
-
-
-def get_mixed_subtrees(node_m, node_n, lineage):
-    """
-    Takes in the lineage and the two cells in any part of the lineage tree, finds the subtree to the both given cells,
-    and returns a group of cells that are in both subtrees, and the remaining cells in the lineage that are not in any of those.
-    """
-    m_sub, _ = get_subtrees(node_m, lineage)
-    n_sub, _ = get_subtrees(node_n, lineage)
-    mixed_sub = n_sub
-    for cell in m_sub:
-        if cell not in n_sub:
-            mixed_sub.append(cell)
-    not_mixed = []
-    for cell in lineage:
-        if cell not in mixed_sub:
-            not_mixed.append(cell)
-    return mixed_sub, not_mixed
 
 
 class Time:
@@ -244,10 +206,3 @@ class Time:
     def __init__(self, startT, endT):
         self.startT = startT
         self.endT = endT
-
-    def __repl__(self):
-        "Print method for Time class"
-        return f"Lived from {self.startT} to {self.endT}."
-
-    def __str__(self):
-        return self.__repl__()
