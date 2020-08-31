@@ -24,6 +24,13 @@ class StateDistribution:
         # These tuples of observations will go into the cells in the lineage tree.
         return (norm_obs, )
 
+    def dist(self, other):
+        """ Calculate the Wasserstein distance between this state emissions and the given. """
+        assert type(self) == type(other)
+        dist = np.absolute(self.params[0] - other.params[0])
+        dist += self.params[1] + other.params[1] - 2 * np.sqrt(self.params[1] * other.params[1])
+        return dist
+
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
         # In the case of a univariate observation, the user still has to define how the likelihood is calculated,
