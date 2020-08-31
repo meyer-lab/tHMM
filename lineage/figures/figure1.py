@@ -42,7 +42,6 @@ def figureMaker(ax):
     plotLineage(gem[84], ax[i], censore=False)
     ax[i].axis('off')
 
-    
     for j in index:
         gem[101].output_lineage[j].state = 0
         gem[83].output_lineage[j].state = 0
