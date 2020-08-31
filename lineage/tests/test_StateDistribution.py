@@ -1,5 +1,6 @@
 """ Unit test file. """
 import unittest
+import pytest
 from copy import deepcopy
 import numpy as np
 import scipy.stats as sp
@@ -165,4 +166,11 @@ def test_gamma_pdf():
     by comparing the result of the outputted likelihood
     against a known calculated value.
     """
-    assert gamma_pdf(x=1, a=10, scale=5) <= 0.1
+    assert np.isclose(gamma_pdf(x=1, a=10, scale=5), sp.gamma.pdf(1, 10, scale=5))
+
+
+@pytest.mark.parametrize("dist", [StateDistribution, StateDistPhase, StateDistGaussian])
+def test_self_dist_zero(dist):
+    """ Test that the distance from a distribution to itself is zero. """
+    dd = dist()
+    assert dd.dist(dd) == 0.0
