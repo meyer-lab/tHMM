@@ -160,15 +160,6 @@ def test_bern_pdf():
     assert bern_pdf(x=1, p=1) == 1
 
 
-def test_gamma_pdf():
-    """
-    Testing the gamma probability density function
-    by comparing the result of the outputted likelihood
-    against a known calculated value.
-    """
-    assert np.isclose(gamma_pdf(x=1, a=10, scale=5), sp.gamma.pdf(1, 10, scale=5))
-
-
 @pytest.mark.parametrize("dist", [StateDistribution, StateDistPhase, StateDistGaussian])
 def test_self_dist_zero(dist):
     """ Test that the distance from a distribution to itself is zero. """

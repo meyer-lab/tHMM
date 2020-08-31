@@ -31,16 +31,6 @@ def bernoulli_estimator(bern_obs, gammas):
     return np.average(bern_obs, weights=gammas)
 
 
-@njit
-def gamma_pdf(x, a, scale):
-    """
-    This function takes in 1 observation and gamma shape and scale parameters
-    and returns the likelihood of the observation based on the gamma
-    probability distribution function.
-    """
-    return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / math.gamma(a) / (scale ** a)
-
-
 def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     """
     This is a weighted, closed-form estimator for two parameters

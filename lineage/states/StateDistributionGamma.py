@@ -2,7 +2,7 @@
 import numpy as np
 import scipy.stats as sp
 
-from .stateCommon import bern_pdf, gamma_pdf, bernoulli_estimator, gamma_estimator, basic_censor
+from .stateCommon import bern_pdf, bernoulli_estimator, gamma_estimator, basic_censor
 from ..CellVar import Time
 
 
@@ -50,7 +50,7 @@ class StateDistribution:
         gamma_ll = 1
         if tuple_of_obs[2] == 1:
             # uncensored
-            gamma_ll = gamma_pdf(tuple_of_obs[1], self.params[1], self.params[2])
+            gamma_ll = sp.gamma.pdf(tuple_of_obs[1], a=self.params[1], scale=self.params[2])
         elif tuple_of_obs[2] == 0:
             # censored
             gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.params[1], scale=self.params[2])
