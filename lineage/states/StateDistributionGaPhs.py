@@ -28,7 +28,7 @@ class StateDistribution:
 
     def dist(self, other):
         """ Calculate the Wasserstein distance between this state emissions and the given. """
-        assert type(self) == type(other)
+        assert isinstance(self, type(other))
         return self.G1.dist(other.G1) + self.G2.dist(other.G2)
 
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
