@@ -26,7 +26,7 @@ class StateDistribution:
 
     def dist(self, other):
         """ Calculate the Wasserstein distance between this state emissions and the given. """
-        assert type(self) == type(other)
+        assert isinstance(self, type(other))
         dist = np.absolute(self.params[0] - other.params[0])
         dist += self.params[1] + other.params[1] - 2 * np.sqrt(self.params[1] * other.params[1])
         return dist
