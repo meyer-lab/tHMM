@@ -21,10 +21,6 @@ if __name__ == '__main__':
     print(
         f'Figure {sys.argv[1]} is done after {time.time() - start} seconds.\n')
     
-    if sys.argv[1] == 'S03':
-        # Overlay Figure 3 cartoon
-        overlayCartoon(fdir + 'figureS03.svg',
-                       f'{cartoon_dir}/figureS03.svg', 60, 0, scalee=0.7)
 
     if sys.argv[1] == 'S04':
         # Overlay Figure 4 cartoon
