@@ -103,7 +103,8 @@ def test_small_lineages(sizze, stateNum):
 
 def test_AIC():
     """
-    To test the AIC function.
+    To test the AIC function. One a 1-state population, we run the AIC for 1, 2, and 3 states.
+    We run it 20 times and make sure it got the right answer for more than half the times.
     """
     # create 1-state lineages
     pi1 = np.array([1.0, 0.0])

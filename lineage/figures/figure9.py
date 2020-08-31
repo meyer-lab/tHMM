@@ -3,15 +3,21 @@
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import run_Analyze_AIC
-from ..LineageTree import LineageTree
 import matplotlib.gridspec as gridspec
 from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 
-# States to evaluate with the model
-from ..states.StateDistributionGaPhs import StateDistribution
 from .figureCommon import getSetup, subplotLabel
+from ..tHMM import tHMM
 
 desired_num_states = np.arange(1, 5)
+Ts = []
+PIs = []
+# to find the T and pi matrices to be used as the constant and reduce the number of estimations.
+for i in desired_num_states:
+    tHMM_solver = tHMM(X=Gemcitabine_Control, num_states=i)
+    tHMM_solver.fit(const=None)
+    Ts.append(tHMM_solver.estimate.T)
+    PIs.append(tHMM_solver.estimate.pi)
 
 def makeFigure():
     """
@@ -19,8 +25,8 @@ def makeFigure():
     """
     ax, f = getSetup((7, 3), (1, 2))
 
-    data = [Lapatinib_Control[0:10], Lapt25uM[0:10], Lapt50uM[0:10], Lap250uM[0:10],
-            Gemcitabine_Control[0:10], Gem5uM[0:10], Gem10uM[0:10], Gem30uM[0:10]]
+    data = [Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM,
+            Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
 
     # making lineages and finding AICs (assign number of lineages here)
     AICs = [run_AIC(data[i]) for i in range(len(data))]
@@ -40,7 +46,7 @@ def run_AIC(lineages):
 
     # Storing AICs into array
     AICs = np.empty(len(desired_num_states))
-    output = run_Analyze_AIC(lineages, desired_num_states, const=[10, 6])
+    output = run_Analyze_AIC(lineages, desired_num_states, const=[10, 6], list_of_fpi=PIs, list_of_fT=Ts)
     for idx in range(len(desired_num_states)):
         AICs[idx], _ = output[idx][0].get_AIC(output[idx][2], 4)
 
