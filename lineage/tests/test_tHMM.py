@@ -101,7 +101,7 @@ def test_small_lineages(sizze, stateNum):
     _, _, LL1 = Analyze(lin, stateNum)
     assert np.all(np.isfinite(LL1))
 
-def test_AIC(self):
+def test_AIC():
     """
     To test the AIC function.
     """
@@ -119,4 +119,4 @@ def test_AIC(self):
         for idx in range(len(desired_num_states)):
             AIC[idx, j], _ = output[idx][0].get_AIC(output[idx][2], 4)
         AIC[:, j] = AIC[:, j] - np.min(AIC[:, j])
-    self.assertTrue(np.count_nonzero(AIC[0, :]==0) > 10)
+    assert np.count_nonzero(AIC[0, :]==0) > 10
