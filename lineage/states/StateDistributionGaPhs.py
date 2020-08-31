@@ -26,6 +26,11 @@ class StateDistribution:
         # These tuples of observations will go into the cells in the lineage tree.
         return bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, gamma_censor_obsG1, gamma_censor_obsG2
 
+    def dist(self, other):
+        """ Calculate the Wasserstein distance between this state emissions and the given. """
+        assert isinstance(self, type(other))
+        return self.G1.dist(other.G1) + self.G2.dist(other.G2)
+
     def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
         # In the case of a univariate observation, the user still has to define how the likelihood is calculated,
