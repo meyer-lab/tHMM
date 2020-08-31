@@ -6,10 +6,7 @@ import numpy as np
 import scipy.stats as sp
 from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
-from ..states.StateDistributionGaussian import StateDistribution as StateDistGaussian
 from ..states.stateCommon import (
-    bern_pdf,
-    gamma_pdf,
     bernoulli_estimator,
     gamma_estimator,
     get_experiment_time,
@@ -30,15 +27,12 @@ class TestModel(unittest.TestCase):
         # Emissions
         self.E = [StateDistribution(0.99, 20, 5), StateDistribution(0.80, 10, 1)]
         self.E2 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.8, 0.75, 10, 2, 15, 4)]
-        self.E3 = [StateDistGaussian(10.0, 1.0), StateDistGaussian(15.0, 2.0)]
 
         # creating two lineages, one with False for pruning, one with True.
         self.lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
         self.lineage2 = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 5.5) - 1, censor_condition=2, desired_experiment_time=50)
         self.lineage3 = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800)
         self.population = [LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800) for i in range(50)]
-        self.lineage_E2 = LineageTree.init_from_parameters(self.pi, self.T, self.E2, desired_num_cells=(2 ** 11) - 1)  # 1 lin uncensored for G1/G2 separated obs.
-        self.lineage_E3 = LineageTree.init_from_parameters(self.pi, self.T, self.E3, desired_num_cells=(2 ** 11) - 1)  # 1 lin uncensored for Gaussian observations
 
     def test_rvs(self):
         """
@@ -91,21 +85,11 @@ class TestModel(unittest.TestCase):
         estimator_objPhase = deepcopy(self.E2[0])
         estimator_objPhase.estimator(tuples_of_obsPhase, gammas, const=None)
 
-        # Gaussian Dist.
-        tuples_of_obsGaus = self.E3[0].rvs(size=5000)
-        tuples_of_obsGaus = list(map(list, zip(*tuples_of_obsGaus)))
-        gammas = np.ones(len(tuples_of_obsGaus))
-        estimator_objGaus = deepcopy(self.E3[0])
-        estimator_objGaus.estimator(tuples_of_obsGaus, gammas)
-
         # here we check the estimated parameters to be close for Gamma distribution
         np.testing.assert_allclose(estimator_obj.params, self.E[0].params, rtol=0.1)
 
         # For StateDistPhase
         np.testing.assert_allclose(estimator_objPhase.params, self.E2[0].params, rtol=0.1)
-
-        # For Gaussian Distribution
-        self.assertTrue(0.0 <= abs(estimator_objGaus.params[0] - self.E3[0].params[0]) <= 0.1)
 
     def test_censor(self):
         """
@@ -149,15 +133,6 @@ class TestModel(unittest.TestCase):
         shape, scale = gamma_estimator(gamma_obs, gamma_censor_obs, gammas, None)
         self.assertTrue(10 <= shape <= 15)
         self.assertTrue(2 <= scale <= 4)
-
-
-def test_bern_pdf():
-    """
-    Testing the Bernoulli probability density function
-    by comparing the result of the outputted likelihood
-    against a known calculated value.
-    """
-    assert bern_pdf(x=1, p=1) == 1
 
 
 @pytest.mark.parametrize("dist", [StateDistribution, StateDistPhase, StateDistGaussian])

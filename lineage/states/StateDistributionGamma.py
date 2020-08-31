@@ -2,7 +2,7 @@
 import numpy as np
 import scipy.stats as sp
 
-from .stateCommon import bern_pdf, bernoulli_estimator, gamma_estimator, basic_censor
+from .stateCommon import bernoulli_estimator, gamma_estimator, basic_censor
 from ..CellVar import Time
 
 
@@ -45,7 +45,7 @@ class StateDistribution:
         if not np.isnan(tuple_of_obs[0]):
             # observed
             assert tuple_of_obs[0] == 0 or tuple_of_obs[0] == 1
-            bern_ll = bern_pdf(tuple_of_obs[0], self.params[0])
+            bern_ll = sp.bernoulli.pmf(tuple_of_obs[0], self.params[0])
 
         gamma_ll = 1
         if tuple_of_obs[2] == 1:
