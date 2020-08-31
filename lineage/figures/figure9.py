@@ -2,7 +2,7 @@
 
 import numpy as np
 from matplotlib.ticker import MaxNLocator
-from ..Analyze import run_Analyze_AIC
+from ..Analyze import run_Analyze_over
 from ..LineageTree import LineageTree
 import matplotlib.gridspec as gridspec
 from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
@@ -60,7 +60,7 @@ def run_AIC(lineages):
 
     # Storing AICs into array
     AICs = np.empty(len(desired_num_states))
-    output = run_Analyze_AIC(lineages, desired_num_states, const=[10, 6], list_of_fpi=fpi_list, list_if_fT=fT_list)
+    output = run_Analyze_over(lineages, desired_num_states, const=[10, 6], list_of_fpi=fpi_list, list_if_fT=fT_list)
     for idx in range(len(desired_num_states)):
         AICs[idx], _ = output[idx][0].get_AIC(output[idx][2], 4)
 
