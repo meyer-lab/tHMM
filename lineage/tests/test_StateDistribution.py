@@ -135,7 +135,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(2 <= scale <= 4)
 
 
-@pytest.mark.parametrize("dist", [StateDistribution, StateDistPhase, StateDistGaussian])
+@pytest.mark.parametrize("dist", [StateDistribution, StateDistPhase])
 def test_self_dist_zero(dist):
     """ Test that the distance from a distribution to itself is zero. """
     dd = dist()
