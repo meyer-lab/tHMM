@@ -44,25 +44,12 @@ class StateDistribution:
 
         return G1_LL * G2_LL
 
-    def estimator(self, list_of_tuples_of_obs, gammas, const):
+    def estimator(self, x, gammas, const):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
-        # unzipping the list of tuples
-        unzipped_list_of_tuples_of_obs = list(zip(*list_of_tuples_of_obs))
+        x = np.array(x)
 
-        # getting the observations as individual lists
-        # {
-        bern_obsG1 = np.array(unzipped_list_of_tuples_of_obs[0])
-        bern_obsG2 = np.array(unzipped_list_of_tuples_of_obs[1])
-        gamma_obsG1 = np.array(unzipped_list_of_tuples_of_obs[2])
-        gamma_obsG2 = np.array(unzipped_list_of_tuples_of_obs[3])
-        gamma_censor_obsG1 = np.array(unzipped_list_of_tuples_of_obs[4])
-        gamma_censor_obsG2 = np.array(unzipped_list_of_tuples_of_obs[5])
-
-        list_of_tuples_of_obsG1 = [(a, b, c) for a, b, c in zip(bern_obsG1, gamma_obsG1, gamma_censor_obsG1)]
-        list_of_tuples_of_obsG2 = [(a, b, c) for a, b, c in zip(bern_obsG2, gamma_obsG2, gamma_censor_obsG2)]
-
-        self.G1.estimator(list_of_tuples_of_obsG1, gammas, const)
-        self.G2.estimator(list_of_tuples_of_obsG2, gammas, const)
+        self.G1.estimator(x[:, np.array([0, 2, 4])], gammas, const)
+        self.G2.estimator(x[:, np.array([1, 3, 5])], gammas, const)
 
         self.params[0] = self.G1.params[0]
         self.params[1] = self.G2.params[0]
