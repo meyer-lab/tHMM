@@ -81,7 +81,7 @@ class tHMM:
             do_M_step(self, MSD, betas, gammas, const)
             MSD, NF, betas, gammas = do_E_step(self)
             new_LL = calculate_log_likelihood(NF)
-            diff = np.sum(old_LL - new_LL)
+            diff = np.absolute(np.sum(old_LL - new_LL))
 
             if diff < tolerance:
                 break
