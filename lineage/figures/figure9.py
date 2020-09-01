@@ -33,7 +33,7 @@ def makeFigure():
     AIC = [np.sum(AICs[0:4], axis=0), np.sum(AICs[4:8], axis=0)]
 
     # Plotting AICs
-    figure_maker(ax, AIC, True)
+    figure_maker(ax, AIC)
     subplotLabel(ax)
 
     return f
@@ -45,14 +45,14 @@ def run_AIC(lineages):
     """
 
     # Storing AICs into array
-    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, const=[10, 6], list_of_fpi=fpi_list, list_if_fT=fT_list)
+    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, const=[10, 6], list_of_fpi=PIs, list_if_fT=Ts)
     AICs = [output[idx][0].get_AIC(output[idx][2], 4)[0] for idx in range(len(desired_num_states))]
 
     # Normalizing AIC
     return np.array(AICs) - np.min(AICs)
 
 
-def figure_maker(ax, AIC_holder, censored=False):
+def figure_maker(ax, AIC_holder):
     """
     Makes figure 9.
     """
