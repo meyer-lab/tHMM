@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 .PHONY: clean test testprofile testcover docs
 
-flist = 1 2 3 4 5 6 7 8 9 S01 S02 S03 S04 S05 S06 S07 S08 S09 S10
+flist = 1 4 5 6 7 8 9 S01 S02 S03 S04 S05 S06 S07 S08 S09 S10
 
 all: spell.txt $(patsubst %, output/figure%.svg, $(flist))
 
@@ -24,6 +24,7 @@ output/manuscript.md: venv manuscript/*.md
 output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.svg, $(flist))
 	mkdir -p output/output
 	cp output/*.svg output/output/
+	cp lineage/figures/cartoons/figure*.svg output/output/
 	. venv/bin/activate && pandoc --verbose \
 		--defaults=./common/templates/manubot/pandoc/common.yaml \
 		--defaults=./common/templates/manubot/pandoc/html.yaml
@@ -31,6 +32,7 @@ output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.s
 output/manuscript.docx: venv output/manuscript.md $(patsubst %, output/figure%.svg, $(flist))
 	mkdir -p output/output
 	cp output/*.svg output/output/
+	cp lineage/figures/cartoons/figure*.svg output/output/
 	. venv/bin/activate && pandoc --verbose \
 		--defaults=./common/templates/manubot/pandoc/common.yaml \
 		--defaults=./common/templates/manubot/pandoc/docx.yaml
