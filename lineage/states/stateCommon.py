@@ -2,22 +2,9 @@
 
 import math
 import numpy as np
-from numba import njit
 import scipy.stats as sp
 import scipy.special as sc
 from scipy.optimize import brentq, minimize
-
-
-@njit
-def bern_pdf(x, p):
-    """
-    This function takes in 1 observation and a Bernoulli rate parameter
-    and returns the likelihood of the observation based on the Bernoulli
-    probability distribution function.
-    """
-    # bern_ll = self.bern_p**(tuple_of_obs[0]) * (1.0-self.bern_p)**(1-tuple_of_obs[0])
-
-    return (p ** x) * ((1.0 - p) ** (1 - x))
 
 
 def bernoulli_estimator(bern_obs, gammas):
@@ -29,16 +16,6 @@ def bernoulli_estimator(bern_obs, gammas):
         return np.average(bern_obs)
 
     return np.average(bern_obs, weights=gammas)
-
-
-@njit
-def gamma_pdf(x, a, scale):
-    """
-    This function takes in 1 observation and gamma shape and scale parameters
-    and returns the likelihood of the observation based on the gamma
-    probability distribution function.
-    """
-    return x ** (a - 1.0) * np.exp(-1.0 * x / scale) / math.gamma(a) / (scale ** a)
 
 
 def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):

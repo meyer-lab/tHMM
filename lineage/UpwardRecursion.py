@@ -68,10 +68,11 @@ def get_Emission_Likelihoods(tHMMobj, E=None):
         lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
         EL_array = np.zeros((len(lineage), tHMMobj.num_states))  # instantiating N by K array for each lineage
 
-        for current_cell_idx, cell in enumerate(lineage):  # for each cell in the lineage
-            for state_k in range(tHMMobj.num_states):  # for each state
-                EL_array[current_cell_idx, state_k] = E[state_k].pdf(cell.obs)
-                assert not math.isnan(EL_array[current_cell_idx, state_k]), f"EL has nans. this is obs:{cell.obs}"
+        all_cells = np.array([cell.obs for cell in lineage])
+
+        for state_k in range(tHMMobj.num_states):  # for each state
+            EL_array[:, state_k] = E[state_k].pdf(all_cells)
+            assert np.all(np.isfinite(EL_array[:, state_k]))
 
         EL.append(EL_array)  # append the EL_array for each lineage
     return EL
