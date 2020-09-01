@@ -24,25 +24,8 @@ def Analyze(X, num_states, const=None, fpi=None, fT=None, fE=None):
     :return: Log-likelihood of the normalizing factor for the lineage.
     :rtype: float
     """
-    error_holder = []
-    for num_tries in range(1, 4):
-        try:
-            tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            _, _, _, _, _, LL = tHMMobj.fit(const)
-            break
-        except (AssertionError, ZeroDivisionError, RuntimeError) as error:
-            error_holder.append(error)
-            if num_tries == 3:
-                print(
-                    f"Caught the following errors: \
-                    \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. \
-                    Fitting is breaking after trying {num_tries} times. \
-                    If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue \
-                    is the estimates of your parameters are returning nonsensible parameters. \
-                    Consider changing your parameter estimator. "
-                )
-                raise
-
+    tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
+    _, _, _, _, _, LL = tHMMobj.fit(const)
     pred_states_by_lineage = tHMMobj.predict()
 
     return tHMMobj, pred_states_by_lineage, LL

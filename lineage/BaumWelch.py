@@ -99,6 +99,9 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
         denom_estimate += sum_nonleaf_gammas(lineageObj, gammas[num])
 
     T_estimate = numer_estimate / denom_estimate[:, np.newaxis]
+
+    # Add a small amount of identity in case a state is completely unobserved
+    T_estimate += np.identity(num_states) * np.finfo(np.float).eps
     T_estimate /= T_estimate.sum(axis=1)[:, np.newaxis]
     assert np.all(np.isfinite(T_estimate))
 
