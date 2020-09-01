@@ -14,7 +14,7 @@ Ts = []
 PIs = []
 # to find the T and pi matrices to be used as the constant and reduce the number of estimations.
 for i in desired_num_states:
-    tHMM_solver = tHMM(X=Gemcitabine_Control, num_states=i)
+    tHMM_solver = tHMM(X=Gemcitabine_Control + Lapatinib_Control, num_states=i)
     tHMM_solver.fit(const=None)
     Ts.append(tHMM_solver.estimate.T)
     PIs.append(tHMM_solver.estimate.pi)
