@@ -27,9 +27,9 @@ def get_nonroot_gammas(tHMMobj, MSD, gammas, betas):
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lineageObj.output_lineage
+        assert np.all(np.isfinite(gammas[num]))
 
-        with np.errstate(divide="ignore", invalid="ignore"):
-            coeffs = betas[num] / MSD[num]
+        coeffs = betas[num] / MSD[num]
 
         for level in lineageObj.output_list_of_gens[1:]:
             for cell in level:
@@ -40,11 +40,9 @@ def get_nonroot_gammas(tHMMobj, MSD, gammas, betas):
 
                     beta_parent = beta_parent_child_func(beta_array=betas[num], T=T, MSD_array=MSD[num], node_child_n_idx=child_idx)
 
-                    with np.errstate(divide="ignore", invalid="ignore"):
-                        sum_holder = np.matmul(gammas[num][parent_idx, :] / beta_parent, T)
+                    sum_holder = np.matmul(gammas[num][parent_idx, :] / beta_parent, T)
 
                     gammas[num][child_idx, :] = coeffs[child_idx, :] * sum_holder
-                    assert not np.isnan(np.all(gammas[num][child_idx, :])), f"gamma nan. lin_num:{num}, child_index={child_idx}"
 
         assert np.all(gammas[num][0, :] == betas[num][0, :])
 
