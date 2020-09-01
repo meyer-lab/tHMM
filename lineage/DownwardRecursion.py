@@ -28,8 +28,10 @@ def get_nonroot_gammas(tHMMobj, MSD, gammas, betas):
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lineageObj.output_lineage
         assert np.all(np.isfinite(gammas[num]))
+        assert np.all(np.isfinite(MSD[num]))
+        assert np.all(np.isfinite(betas[num]))
 
-        coeffs = betas[num] / MSD[num]
+        coeffs = betas[num] / (MSD[num] + np.finfo(np.float).eps)
 
         for level in lineageObj.output_list_of_gens[1:]:
             for cell in level:
