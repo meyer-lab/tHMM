@@ -3,51 +3,37 @@
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import run_Analyze_over
-from ..LineageTree import LineageTree
 import matplotlib.gridspec as gridspec
 from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 
-# States to evaluate with the model
-from ..states.StateDistributionGaPhs import StateDistribution
 from .figureCommon import getSetup, subplotLabel
+from ..tHMM import tHMM
 
 desired_num_states = np.arange(1, 5)
-# Lapatinib control pi and T for 2, 3, and 4 states:
-fpi_list = [[1.0], [0.66150779, 0.33849221], [6.94307126e-09, 6.99518861e-01, 3.00481132e-01], [6.67672155e-01, 3.32327845e-01, 2.86425040e-16, 4.61223911e-22]]
-
-fT_list = [[1.0], [[0.99277139, 0.00722861],
-                   [0.07170348, 0.92829652]], [[9.42386563e-01, 5.76134371e-02, 6.90068935e-28],
-                                               [4.77431313e-26, 7.85762403e-01, 2.14237597e-01],
-                                               [3.76423244e-01, 1.26698093e-02, 6.10906947e-01]], [[8.13843165e-01, 1.86156835e-01, 2.05422147e-13, 1.54246580e-15],
-                                                                                                   [4.65858601e-16, 1.45876129e-01, 1.13605784e-25, 8.54123871e-01],
-                                                                                                   [2.88389336e-01, 7.08946381e-01, 2.66398469e-03, 2.98246671e-07],
-                                                                                                   [1.19831901e-10, 2.22561316e-06, 9.72941919e-01, 2.70558550e-02]]]
-
+Ts = []
+PIs = []
+# to find the T and pi matrices to be used as the constant and reduce the number of estimations.
+for i in desired_num_states:
+    tHMM_solver = tHMM(X=Gemcitabine_Control, num_states=i)
+    tHMM_solver.fit(const=None)
+    Ts.append(tHMM_solver.estimate.T)
+    PIs.append(tHMM_solver.estimate.pi)
 
 def makeFigure():
     """
     Makes figure 9.
     """
-    ax, f = getSetup((12, 6), (2, 4))
+    ax, f = getSetup((7, 3), (1, 2))
 
-    data = [Lapatinib_Control[0:10], Lapt25uM[0:10], Lapt50uM[0:10], Lap250uM[0:10],
-            Gemcitabine_Control[0:10], Gem5uM[0:10], Gem10uM[0:10], Gem30uM[0:10]]
+    data = [Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM,
+            Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
 
     # making lineages and finding AICs (assign number of lineages here)
-    AIC = [run_AIC(data[i]) for i in range(len(data))]
-
-    # Finding proper ylim range for all 4 censored graphs and rounding up
-    upper_ylim1 = int(1 + max([max(p) for p in AIC[0:4]]) / 25.0) * 25
-    upper_ylim2 = int(1 + max([max(p) for p in AIC[5:8]]) / 25.0) * 25
-
-    upper_ylim = [upper_ylim1, upper_ylim2]
-    titles = ["Lpt cntrl", "Lpt 25uM", "Lpt 50uM", "Lpt 250uM",
-              "Gem cntrl", "Gem 5uM", "Gem 10uM", "Gem 30uM"]
+    AICs = [run_AIC(data[i]) for i in range(len(data))]
+    AIC = [np.sum(AICs[0:4], axis=0), np.sum(AICs[4:8], axis=0)]
 
     # Plotting AICs
-    for idx, a in enumerate(AIC):
-        figure_maker(ax[idx], a, titles[idx],
-                     upper_ylim[int(idx / 4)], True)
+    figure_maker(ax, AIC)
     subplotLabel(ax)
 
     return f
@@ -59,32 +45,27 @@ def run_AIC(lineages):
     """
 
     # Storing AICs into array
-    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, const=[10, 6], list_of_fpi=fpi_list, list_if_fT=fT_list)
+    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, const=[10, 6], list_of_fpi=PIs, list_if_fT=Ts)
     AICs = [output[idx][0].get_AIC(output[idx][2], 4)[0] for idx in range(len(desired_num_states))]
 
     # Normalizing AIC
     return np.array(AICs) - np.min(AICs)
 
 
-def figure_maker(ax, AIC_holder, title, upper_ylim, censored=False):
+def figure_maker(ax, AIC_holder):
     """
     Makes figure 9.
     """
 
-    # Creating Histogram and setting ylim
-    ax2 = ax.twinx()
-    ax2.set_ylabel("Lineages Predicted")
-    ax2.hist(np.argmin(AIC_holder) + 1, rwidth=1.0,
-             alpha=.2, bins=desired_num_states, align='left')
-    ax2.set_yticks(np.linspace(0, len(AIC_holder), 5))
-
-    # Creating AIC plot and matching gridlines
-    ax.set_xlabel("Number of States Predicted")
-    ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
-    ax.set_ylabel("Normalized AIC")
-    ax.set_yticks(np.linspace(0, upper_ylim, 5))
-    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-
-    # Adding title
-    title = f"{title} "
-    ax.set_title(title)
+    i = 0
+    ax[i].plot(desired_num_states, AIC_holder[0])
+    ax[i].set_xlabel("Number of States Predicted")
+    ax[i].set_ylabel("Normalized AIC")
+    ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax[i].set_title("Lapatinib")
+    i += 1
+    ax[i].plot(desired_num_states, AIC_holder[1])
+    ax[i].set_xlabel("Number of States Predicted")
+    ax[i].set_ylabel("Normalized AIC")
+    ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax[i].set_title("Gemcitabine")
