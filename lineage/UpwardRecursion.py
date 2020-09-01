@@ -22,29 +22,26 @@ def get_Marginal_State_Distributions(tHMMobj):
 
     :math:`P(z_u = k) = \sum_j(Transition(j -> k) * P(parent_{cell_u}) = j)`
     """
-    MSD = []
+    MSD = [np.zeros((len(lO.output_lineage), tHMMobj.num_states)) for lO in tHMMobj.X]
+    np.testing.assert_almost_equal(np.sum(tHMMobj.estimate.pi), 1.0)
+    assert np.all(np.isfinite(tHMMobj.estimate.T))
 
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
+    for m in MSD:  # for each lineage in our Population
+        m[0, :] = tHMMobj.estimate.pi
 
-        MSD_array = np.zeros((len(lineage), tHMMobj.num_states))  # instantiating N by K array
-        MSD_array[0, :] = tHMMobj.estimate.pi
+    for num, lO in enumerate(tHMMobj.X):  # for each lineage in our Population
+        lineage = lO.output_lineage  # getting the lineage in the Population by lineage index
 
-        assert np.isclose(np.sum(MSD_array[0]), 1.0)
-        MSD.append(MSD_array)
-
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
-
-        for level in lineageObj.output_list_of_gens[2:]:
+        for level in lO.output_list_of_gens[2:]:
             for cell in level:
-                parent_cell_idx = lineage.index(cell.parent)  # get the index of the parent cell
-                current_cell_idx = lineage.index(cell)
+                pCellIDX = lineage.index(cell.parent)  # get the index of the parent cell
+                cCellIDX = lineage.index(cell)
 
                 # recursion based on parent cell
-                MSD[num][current_cell_idx, :] = np.matmul(MSD[num][parent_cell_idx, :], tHMMobj.estimate.T)
+                MSD[num][cCellIDX, :] = MSD[num][pCellIDX, :] @ tHMMobj.estimate.T
 
-        assert np.allclose(np.sum(MSD[num], axis=1), 1.0), f"sum msd: {np.sum(MSD[num], axis=1)}, num={num}"
+    for m in MSD:  # for each lineage in our Population
+        np.testing.assert_allclose(np.sum(m, axis=1), 1.0)
 
     return MSD
 
