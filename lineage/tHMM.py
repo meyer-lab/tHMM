@@ -121,14 +121,13 @@ class tHMM:
             # dof = k * (k - 1) + k * num_params + k - 1
             # first term: transition matrix, second term: number of parameters, third term: initial prob. matrix
             degrees_of_freedom = num_states * (num_states - 1) + num_states * number_of_parameters + (num_states - 1)
-            # each lineage has an AIC value.
-            AIC_value = [-2 * LL_val + 2 * degrees_of_freedom for LL_val in LL]
         else:
-            # This is the case that we use for figure 8 (AIC for synthetic data)
+            # This is the case that we use for figure 8 (AIC for real data)
             number_of_parameters = num_params
             degrees_of_freedom = num_states * num_params
-            # the whole population has one AIC value.
-            AIC_value = -2 * np.sum(LL) + 2 * degrees_of_freedom
+
+        # the whole population has one AIC value.
+        AIC_value = -2 * np.sum(LL) + 2 * degrees_of_freedom
 
         return AIC_value, degrees_of_freedom
 
