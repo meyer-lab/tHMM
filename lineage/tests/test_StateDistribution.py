@@ -49,24 +49,6 @@ class TestModel(unittest.TestCase):
         bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, _, _ = self.E2[0].rvs(size=50)
         self.assertTrue(len(bern_obsG1) == len(bern_obsG2) == len(gamma_obsG1) == len(gamma_obsG2) == 50)
 
-    def test_pdf(self):
-        """
-        A unittest for the likelihood function.
-        Here we generate one set of observation
-        (the size == 1 which mean we just have one bernoulli, and one gamma).
-        """
-        # for stateDist0
-        bobs = self.E[0].rvs(size=1)
-        bobs = (bobs[0][0], bobs[1][0], bobs[2][0])
-        likelihood = self.E[0].pdf(bobs)
-        self.assertTrue(0.0 <= likelihood <= 1.0)
-
-        # for stateDist1
-        bobs = self.E[1].rvs(size=1)
-        bobs = (bobs[0][0], bobs[1][0], bobs[2][0])
-        likelihood1 = self.E[1].pdf(bobs)
-        self.assertTrue(0.0 <= likelihood1 <= 1.0)
-
     def test_estimator(self):
         """
         A unittest for the estimator function, by generating 3000 observatons for each of the

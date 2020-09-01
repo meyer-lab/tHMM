@@ -31,7 +31,7 @@ class StateDistribution:
         assert isinstance(self, type(other))
         return self.G1.dist(other.G1) + self.G2.dist(other.G2)
 
-    def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
+    def pdf(self, x):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
         # In the case of a univariate observation, the user still has to define how the likelihood is calculated,
         # but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
@@ -39,11 +39,8 @@ class StateDistribution:
         # In our example, we assume the observation's are uncorrelated across the dimensions (across the different
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
-
-        tuple_of_obsG1 = (tuple_of_obs[0], tuple_of_obs[2], tuple_of_obs[4])
-        tuple_of_obsG2 = (tuple_of_obs[1], tuple_of_obs[3], tuple_of_obs[5])
-        G1_LL = self.G1.pdf(tuple_of_obsG1)
-        G2_LL = self.G2.pdf(tuple_of_obsG2)
+        G1_LL = self.G1.pdf(x[:, np.array([0, 2, 4])])
+        G2_LL = self.G2.pdf(x[:, np.array([1, 3, 5])])
 
         return G1_LL * G2_LL
 

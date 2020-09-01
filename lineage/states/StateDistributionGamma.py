@@ -32,7 +32,7 @@ class StateDistribution:
         # FIXME: This does not take the Bernoulli into account.
         return dist
 
-    def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
+    def pdf(self, x):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
         # In the case of a univariate observation, the user still has to define how the likelihood is calculated,
         # but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
@@ -40,28 +40,18 @@ class StateDistribution:
         # In our example, we assume the observation's are uncorrelated across the dimensions (across the different
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
+        ll = np.zeros(x.shape[0])
 
-        bern_ll = 1
-        if not np.isnan(tuple_of_obs[0]):
-            # observed
-            assert tuple_of_obs[0] == 0 or tuple_of_obs[0] == 1
-            bern_ll = sp.bernoulli.pmf(tuple_of_obs[0], self.params[0])
+        # Update for observed Bernoulli
+        ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
 
-        gamma_ll = 1
-        if tuple_of_obs[2] == 1:
-            # uncensored
-            gamma_ll = sp.gamma.pdf(tuple_of_obs[1], a=self.params[1], scale=self.params[2])
-        elif tuple_of_obs[2] == 0:
-            # censored
-            gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.params[1], scale=self.params[2])
-        else:
-            # unobserved
-            assert np.isnan(tuple_of_obs[1])
-            assert np.isnan(tuple_of_obs[2])
-            gamma_ll = 1
-        assert not np.isnan(np.all([bern_ll, gamma_ll])), f"one of the likelihoods is nan"
+        # Update uncensored Gamma
+        ll[x[:, 2] == 1] += sp.gamma.logpdf(x[x[:, 2] == 1, 1], a=self.params[1], scale=self.params[2])
 
-        return bern_ll * gamma_ll
+        # Update censored Gamma
+        ll[x[:, 2] == 0] += sp.gamma.logsf(x[x[:, 2] == 0, 1], a=self.params[1], scale=self.params[2])
+
+        return np.exp(ll)
 
     def estimator(self, list_of_tuples_of_obs, gammas, const=None):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
