@@ -232,4 +232,4 @@ def beta_parent_child_func(beta_array, T, MSD_array, node_child_n_idx):
     beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
     :math:`P( z_n = k | z_m = j)`; "math:`P(z_n = k)`
     """
-    return np.matmul(T, beta_array[node_child_n_idx, :] / MSD_array[node_child_n_idx, :])
+    return np.matmul(T, beta_array[node_child_n_idx, :] / (MSD_array[node_child_n_idx, :] + np.finfo(np.float).eps))
