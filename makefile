@@ -24,6 +24,7 @@ output/manuscript.md: venv manuscript/*.md
 output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.svg, $(flist))
 	mkdir -p output/output
 	cp output/*.svg output/output/
+	cp lineage/figures/cartoons/figure*.svg output/output/
 	. venv/bin/activate && pandoc --verbose \
 		--defaults=./common/templates/manubot/pandoc/common.yaml \
 		--defaults=./common/templates/manubot/pandoc/html.yaml
@@ -31,6 +32,7 @@ output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.s
 output/manuscript.docx: venv output/manuscript.md $(patsubst %, output/figure%.svg, $(flist))
 	mkdir -p output/output
 	cp output/*.svg output/output/
+	cp lineage/figures/cartoons/figure*.svg output/output/
 	. venv/bin/activate && pandoc --verbose \
 		--defaults=./common/templates/manubot/pandoc/common.yaml \
 		--defaults=./common/templates/manubot/pandoc/docx.yaml
