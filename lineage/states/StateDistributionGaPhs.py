@@ -3,7 +3,7 @@ import math
 import numpy as np
 import scipy.stats as sp
 
-from .stateCommon import bern_pdf, bernoulli_estimator, gamma_pdf, gamma_estimator, basic_censor
+from .stateCommon import basic_censor
 from .StateDistributionGamma import StateDistribution as GammaSD
 from ..CellVar import Time
 
@@ -31,7 +31,7 @@ class StateDistribution:
         assert isinstance(self, type(other))
         return self.G1.dist(other.G1) + self.G2.dist(other.G2)
 
-    def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
+    def pdf(self, x):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
         # In the case of a univariate observation, the user still has to define how the likelihood is calculated,
         # but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
@@ -39,33 +39,17 @@ class StateDistribution:
         # In our example, we assume the observation's are uncorrelated across the dimensions (across the different
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
-
-        tuple_of_obsG1 = (tuple_of_obs[0], tuple_of_obs[2], tuple_of_obs[4])
-        tuple_of_obsG2 = (tuple_of_obs[1], tuple_of_obs[3], tuple_of_obs[5])
-        G1_LL = self.G1.pdf(tuple_of_obsG1)
-        G2_LL = self.G2.pdf(tuple_of_obsG2)
+        G1_LL = self.G1.pdf(x[:, np.array([0, 2, 4])])
+        G2_LL = self.G2.pdf(x[:, np.array([1, 3, 5])])
 
         return G1_LL * G2_LL
 
-    def estimator(self, list_of_tuples_of_obs, gammas, const):
+    def estimator(self, x, gammas, const):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
-        # unzipping the list of tuples
-        unzipped_list_of_tuples_of_obs = list(zip(*list_of_tuples_of_obs))
+        x = np.array(x)
 
-        # getting the observations as individual lists
-        # {
-        bern_obsG1 = np.array(unzipped_list_of_tuples_of_obs[0])
-        bern_obsG2 = np.array(unzipped_list_of_tuples_of_obs[1])
-        gamma_obsG1 = np.array(unzipped_list_of_tuples_of_obs[2])
-        gamma_obsG2 = np.array(unzipped_list_of_tuples_of_obs[3])
-        gamma_censor_obsG1 = np.array(unzipped_list_of_tuples_of_obs[4])
-        gamma_censor_obsG2 = np.array(unzipped_list_of_tuples_of_obs[5])
-
-        list_of_tuples_of_obsG1 = [(a, b, c) for a, b, c in zip(bern_obsG1, gamma_obsG1, gamma_censor_obsG1)]
-        list_of_tuples_of_obsG2 = [(a, b, c) for a, b, c in zip(bern_obsG2, gamma_obsG2, gamma_censor_obsG2)]
-
-        self.G1.estimator(list_of_tuples_of_obsG1, gammas, const)
-        self.G2.estimator(list_of_tuples_of_obsG2, gammas, const)
+        self.G1.estimator(x[:, np.array([0, 2, 4])], gammas, const)
+        self.G2.estimator(x[:, np.array([1, 3, 5])], gammas, const)
 
         self.params[0] = self.G1.params[0]
         self.params[1] = self.G2.params[0]

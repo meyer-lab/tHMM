@@ -2,7 +2,7 @@
 import numpy as np
 import scipy.stats as sp
 
-from .stateCommon import bern_pdf, gamma_pdf, bernoulli_estimator, gamma_estimator, basic_censor
+from .stateCommon import bernoulli_estimator, gamma_estimator, basic_censor
 from ..CellVar import Time
 
 
@@ -32,7 +32,7 @@ class StateDistribution:
         # FIXME: This does not take the Bernoulli into account.
         return dist
 
-    def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
+    def pdf(self, x):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
         # In the case of a univariate observation, the user still has to define how the likelihood is calculated,
         # but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
@@ -40,53 +40,39 @@ class StateDistribution:
         # In our example, we assume the observation's are uncorrelated across the dimensions (across the different
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
+        ll = np.zeros(x.shape[0])
 
-        bern_ll = 1
-        if not np.isnan(tuple_of_obs[0]):
-            # observed
-            assert tuple_of_obs[0] == 0 or tuple_of_obs[0] == 1
-            bern_ll = bern_pdf(tuple_of_obs[0], self.params[0])
+        # Update for observed Bernoulli
+        ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
 
-        gamma_ll = 1
-        if tuple_of_obs[2] == 1:
-            # uncensored
-            gamma_ll = gamma_pdf(tuple_of_obs[1], self.params[1], self.params[2])
-        elif tuple_of_obs[2] == 0:
-            # censored
-            gamma_ll = sp.gamma.sf(tuple_of_obs[1], a=self.params[1], scale=self.params[2])
-        else:
-            # unobserved
-            assert np.isnan(tuple_of_obs[1])
-            assert np.isnan(tuple_of_obs[2])
-            gamma_ll = 1
-        assert not np.isnan(np.all([bern_ll, gamma_ll])), f"one of the likelihoods is nan"
+        # Update uncensored Gamma
+        ll[x[:, 2] == 1] += sp.gamma.logpdf(x[x[:, 2] == 1, 1], a=self.params[1], scale=self.params[2])
 
-        return bern_ll * gamma_ll
+        # Update censored Gamma
+        ll[x[:, 2] == 0] += sp.gamma.logsf(x[x[:, 2] == 0, 1], a=self.params[1], scale=self.params[2])
 
-    def estimator(self, list_of_tuples_of_obs, gammas, const=None):
+        return np.exp(ll)
+
+    def estimator(self, x, gammas, const=None):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
         # unzipping the list of tuples
-        unzipped_list_of_tuples_of_obs = list(zip(*list_of_tuples_of_obs))
+        x = np.array(x)
 
         # getting the observations as individual lists
         # {
-        bern_obs = np.array((unzipped_list_of_tuples_of_obs[0]))
-        γ_obs = np.array(unzipped_list_of_tuples_of_obs[1])
-        gamma_obs_censor = np.array(unzipped_list_of_tuples_of_obs[2])
+        bern_obs = x[:, 0]
+        γ_obs = x[:, 1]
+        gamma_obs_censor = x[:, 2]
 
         if const is None:
             shape = None
         else:
             shape = const[0]
 
-        b_mask = np.logical_not(np.isnan(bern_obs))
-        g_mask = np.logical_not(np.isnan(γ_obs))
+        b_mask = np.isfinite(bern_obs)
+        g_mask = np.isfinite(γ_obs)
         self.params[0] = bernoulli_estimator(bern_obs[b_mask], gammas[b_mask])
         self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], shape)
-
-        assert not np.isnan(np.all(bern_obs[b_mask])), f"bern obs has nans after mask"
-        assert not np.isnan(np.all(γ_obs[g_mask])), f"gamma obs has nans after mask"
-        assert not np.isnan(np.all(gammas[b_mask])), f"gammas has nans after mask"
 
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters

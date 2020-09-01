@@ -63,56 +63,30 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
     :param list_of_populations: A list of populations that contain lineages.
     :type: list
     :param num_states: An integer number of states to identify (a hyper-parameter of our model)
-    :type num_states: Int
+    :type num_states: Int or list
     """
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
     list_of_fE = kwargs.get("list_of_fE", [None] * len(list_of_populations))
     const = kwargs.get("const", None)
+
+    if isinstance(num_states, (np.ndarray, list)):
+        assert len(num_states) == len(list_of_populations)
+    else:
+        num_states = np.full(len(list_of_populations), num_states)
+
     output = []
     if parallel:
         exe = ProcessPoolExecutor()
 
         prom_holder = []
         for idx, population in enumerate(list_of_populations):
-            prom_holder.append(exe.submit(Analyze, population, num_states, const=const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
+            prom_holder.append(exe.submit(Analyze, population, num_states[idx], const=const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
-        for _, prom in enumerate(prom_holder):
-            output.append(prom.result())
+        output = [prom.result() for prom in prom_holder]
     else:
         for idx, population in enumerate(list_of_populations):
-            output.append(Analyze(population, num_states, const=const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
-
-    return output
-
-
-def run_Analyze_AIC(population, state_list, **kwargs):
-    """
-    A function that can be parallelized to speed up figure creation.
-
-    Instead of iterating over different population (like run_Analyze_over)
-    this function iterates over a list of states it will predict. Used for
-    figure S10.
-
-    :param population: A single list of lineages.
-    :type: list[LineageTree]
-    :param state_list: A list of integer states to identify (a hyper-parameter of our model)
-    :type state_list: list[int]
-    """
-    # Initialize starting points for pi, T, E prediction
-    list_of_fpi = kwargs.get("list_of_fpi", [None] * len(state_list))
-    list_of_fT = kwargs.get("list_of_fT", [None] * len(state_list))
-    list_of_fE = kwargs.get("list_of_fE", [None] * len(state_list))
-    const = kwargs.get("const", None)
-    output = []
-    exe = ProcessPoolExecutor()
-
-    prom_holder = []
-    for idx, num_states in enumerate(state_list):
-        prom_holder.append(exe.submit(Analyze, population, num_states, const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
-
-    for _, prom in enumerate(prom_holder):
-        output.append(prom.result())
+            output.append(Analyze(population, num_states[idx], const=const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
     return output
 
@@ -137,9 +111,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     new_pred_states_by_lineage_holder = []
     switcher_LL_holder = []
     for _, switcher in enumerate(switcher_map_holder):
-        temp_pred_states_by_lineage = []
-        for state_assignment in pred_states_by_lineage:
-            temp_pred_states_by_lineage.append([switcher[state] for state in state_assignment])
+        temp_pred_states_by_lineage = [[switcher[st] for st in st_ass] for st_ass in pred_states_by_lineage]
         new_pred_states_by_lineage_holder.append(temp_pred_states_by_lineage)
 
         pi_arg = tHMMobj.X[0].pi
@@ -217,15 +189,18 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     return results_dict
 
 
-def run_Results_over(output):
+def run_Results_over(output, parallel=True):
     """
     A function that can be parallelized to speed up figure creation
 
     :param output: a list of tuples from the results of running :func:`run_Analyze_over`
     :type output: list
     """
-    results_holder = []
-    for _, (tHMMobj, pred_states_by_lineage, LL) in enumerate(output):
-        results_holder.append(Results(tHMMobj, pred_states_by_lineage, LL))
+    if parallel:
+        exe = ProcessPoolExecutor()
+        prom_holder = [exe.submit(Results, *x) for x in output]
+        results_holder = [prom.result() for prom in prom_holder]
+    else:
+        results_holder = [Results(*x) for x in output]
 
     return results_holder
