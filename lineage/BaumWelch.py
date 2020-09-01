@@ -161,7 +161,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_ar
     MSD_child_state_k = MSD_array[node_child_n_idx, :]  # x by k
     beta_parent_child = beta_parent_child_func(beta_array=beta_array, T=T, MSD_array=MSD_array, node_child_n_idx=node_child_n_idx)
 
-    js = gamma_parent / beta_parent_child
+    js = gamma_parent / (beta_parent_child + np.finfo(np.float).eps)
     ks = beta_child_state_k / MSD_child_state_k
 
     return np.outer(js, ks) * T
