@@ -33,7 +33,7 @@ def Analyze(X, num_states, const=None, fpi=None, fT=None, fE=None):
             tHMMobj2 = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
             _, _, _, _, _, LL2 = tHMMobj2.fit(const)
 
-            if LL2 > LL:
+            if np.sum(LL2) > np.sum(LL):
                 tHMMobj = tHMMobj2
                 LL = LL2
             break
