@@ -100,20 +100,20 @@ def figure_maker(ax, AIC_Holder, true_state_no, upper_ylim, censored=False):
 
     # Creating Histogram and setting ylim
     ax2 = ax.twinx()
-    ax2.set_ylabel("Lineages Predicted")
     ax2.hist(np.argmin(AIC_holder, axis=0) + 1, rwidth=1,
              alpha=.2, bins=desired_num_states, align='left')
-    ax2.set_yticks(np.linspace(0, len(AIC_holder[0]), 5))
+    ax2.set_yticklabels([])
+    ax2.set_yticks([])
 
     # Creating AIC plot and matching gridlines
     ax.set_xlabel("Number of States Predicted")
     ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
     ax.set_ylabel("Normalized AIC")
-    ax.set_yticks(np.linspace(0, upper_ylim, len(ax2.get_yticks())))
+    ax.set_yticks(np.linspace(0, upper_ylim, 5))
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
     # Adding title
     title = "Censored " if censored else ""
-    title += f"AIC Under {true_state_no} True "
+    title += f"{true_state_no} True "
     title += "States" if true_state_no != 1 else "State"
     ax.set_title(title)
