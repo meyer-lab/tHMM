@@ -104,37 +104,29 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     true_states_by_lineage = [[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X]
     ravel_true_states = np.array([state for sublist in true_states_by_lineage for state in sublist])
 
-    ravel_pred_states = np.array([state for sublist in pred_states_by_lineage for state in sublist])
-
     # 1. Decide how to switch states based on the state assignment that yields the maximum likelihood
     switcher_map_holder = list(itertools.permutations(list(range(tHMMobj.num_states))))
-    new_pred_states_by_lineage_holder = []
-    switcher_LL_holder = []
-    for _, switcher in enumerate(switcher_map_holder):
+    switcher_LL_holder = np.empty(len(switcher_map_holder))
+
+    pi_arg = tHMMobj.X[0].pi
+    T_arg = tHMMobj.X[0].T
+    E_arg = tHMMobj.X[0].E
+    if tHMMobj.fpi is not None:
+        pi_arg = tHMMobj.fpi
+    if tHMMobj.fT is not None:
+        T_arg = tHMMobj.fT
+    if tHMMobj.fE is not None:
+        E_arg = tHMMobj.fE
+
+    for ii, switcher in enumerate(switcher_map_holder):
         temp_pred_states_by_lineage = [[switcher[st] for st in st_ass] for st_ass in pred_states_by_lineage]
-        new_pred_states_by_lineage_holder.append(temp_pred_states_by_lineage)
-
-        pi_arg = tHMMobj.X[0].pi
-        T_arg = tHMMobj.X[0].T
-        E_arg = tHMMobj.X[0].E
-        if tHMMobj.fpi is not None:
-            pi_arg = tHMMobj.fpi
-        if tHMMobj.fT is not None:
-            T_arg = tHMMobj.fT
-        if tHMMobj.fE is not None:
-            E_arg = tHMMobj.fE
-
-        switcher_LL_holder.append(np.sum(tHMMobj.log_score(temp_pred_states_by_lineage, pi=pi_arg, T=T_arg, E=E_arg)))
-    max_idx = switcher_LL_holder.index(max(switcher_LL_holder))
+        switcher_LL_holder[ii] = np.sum(tHMMobj.log_score(temp_pred_states_by_lineage, pi=pi_arg, T=T_arg, E=E_arg))
 
     # Create switcher map based on the minimal likelihood of different permutations of state
     # assignments
-    switcher_map = switcher_map_holder[max_idx]
-    switched_pred_states_by_lineage = new_pred_states_by_lineage_holder[max_idx]
-    ravel_switched_pred_states = np.array([state for sublist in switched_pred_states_by_lineage for state in sublist])
+    switcher_map = switcher_map_holder[np.argmax(switcher_LL_holder)]
     results_dict["switcher_map"] = switcher_map
-    results_dict["switched_pred_states_by_lineage"] = switched_pred_states_by_lineage
-    results_dict["ravel_switched_pred_states"] = ravel_switched_pred_states
+    ravel_switched_pred_states = np.array([switcher[st] for sublist in pred_states_by_lineage for st in sublist])
 
     # Rearrange the values in the transition matrix
     temp_T = np.zeros(tHMMobj.estimate.T.shape)
@@ -146,41 +138,23 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
 
     # Rearrange the values in the pi vector
-    temp_pi = np.zeros(tHMMobj.estimate.pi.shape)
-    for val_idx in range(tHMMobj.num_states):
-        temp_pi[val_idx] = tHMMobj.estimate.pi[switcher_map[val_idx]]
-
-    results_dict["switched_pi_vector"] = temp_pi
-    results_dict["pi_vector_norm"] = np.linalg.norm(temp_pi - tHMMobj.X[0].pi)
+    results_dict["switched_pi_vector"] = tHMMobj.estimate.pi[np.array(switcher_map)]
+    results_dict["pi_vector_norm"] = np.linalg.norm(results_dict["switched_pi_vector"] - tHMMobj.X[0].pi)
 
     # Rearrange the emissions list
-    temp_emissions = [None] * tHMMobj.num_states
-    for val_idx in range(tHMMobj.num_states):
-        temp_emissions[val_idx] = tHMMobj.estimate.E[switcher_map[val_idx]]
-
-    results_dict["switched_emissions"] = temp_emissions
+    results_dict["switched_emissions"] = [tHMMobj.estimate.E[switcher_map[x]] for x in range(tHMMobj.num_states)]
 
     # Get the estimated parameter values
-    results_dict["param_estimates"] = []
-    for val_idx in range(tHMMobj.num_states):
-        results_dict["param_estimates"].append(results_dict["switched_emissions"][val_idx].params)
+    results_dict["param_estimates"] = [results_dict["switched_emissions"][x].params for x in range(tHMMobj.num_states)]
 
     # Get the true parameter values
-    results_dict["param_trues"] = []
-    for val_idx in range(tHMMobj.num_states):
-        results_dict["param_trues"].append(tHMMobj.X[0].E[val_idx].params)
+    results_dict["param_trues"] = [tHMMobj.X[0].E[x].params for x in range(tHMMobj.num_states)]
 
     # 2. Calculate accuracy after switching states
     results_dict["state_counter"] = np.bincount(ravel_switched_pred_states)
     results_dict["state_proportions"] = [100 * i / len(ravel_switched_pred_states) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
-    results_dict["accuracy_before_switching"] = 100 * np.mean(ravel_true_states == ravel_pred_states)
     results_dict["accuracy_after_switching"] = 100 * np.mean(ravel_true_states == ravel_switched_pred_states)
-    results_dict["accuracy_before_switching_by_lineage"] = np.mean([100 * np.mean(np.array(true_states) == np.array(pred_states))
-                                                                    for true_states, pred_states in zip(true_states_by_lineage, pred_states_by_lineage)])
-    results_dict["accuracy_after_switching_by_lineage"] = np.mean([100 * np.mean(np.array(true_states) == np.array(pred_states))
-                                                                   for true_states, pred_states in zip(true_states_by_lineage, switched_pred_states_by_lineage)])
-
     results_dict["balanced_accuracy_score"] = 100 * balanced_accuracy_score(ravel_true_states, ravel_switched_pred_states)
 
     # 4. Calculate the Wasserstein distance
