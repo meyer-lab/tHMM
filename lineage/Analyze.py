@@ -119,26 +119,20 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
         E_arg = tHMMobj.fE
 
     for ii, switcher in enumerate(switcher_map_holder):
-        temp_pred_states_by_lineage = [[switcher[st] for st in st_ass] for st_ass in pred_states_by_lineage]
-        switcher_LL_holder[ii] = np.sum(tHMMobj.log_score(temp_pred_states_by_lineage, pi=pi_arg, T=T_arg, E=E_arg))
+        sw_states = [[switcher[st] for st in st_ass] for st_ass in pred_states_by_lineage]
+        switcher_LL_holder[ii] = np.sum(tHMMobj.log_score(sw_states, pi=pi_arg, T=T_arg, E=E_arg))
 
-    # Create switcher map based on the minimal likelihood of different permutations of state
-    # assignments
-    switcher_map = switcher_map_holder[np.argmax(switcher_LL_holder)]
+    # Create switcher map based on the max likelihood of different permutations of state assignments
+    switcher_map = np.array(switcher_map_holder[np.argmax(switcher_LL_holder)])
     results_dict["switcher_map"] = switcher_map
-    ravel_switched_pred_states = np.array([switcher[st] for sublist in pred_states_by_lineage for st in sublist])
+    ravel_switched_pred_states = np.array([switcher_map[st] for sublist in pred_states_by_lineage for st in sublist])
 
     # Rearrange the values in the transition matrix
-    temp_T = np.zeros(tHMMobj.estimate.T.shape)
-    for row in range(tHMMobj.num_states):
-        for col in range(tHMMobj.num_states):
-            temp_T[row, col] = tHMMobj.estimate.T[switcher_map[row], switcher_map[col]]
-
-    results_dict["switched_transition_matrix"] = temp_T
-    results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
+    results_dict["switched_transition_matrix"] = tHMMobj.estimate.T[switcher_map, switcher_map]
+    results_dict["transition_matrix_norm"] = np.linalg.norm(results_dict["switched_transition_matrix"] - tHMMobj.X[0].T)
 
     # Rearrange the values in the pi vector
-    results_dict["switched_pi_vector"] = tHMMobj.estimate.pi[np.array(switcher_map)]
+    results_dict["switched_pi_vector"] = tHMMobj.estimate.pi[switcher_map]
     results_dict["pi_vector_norm"] = np.linalg.norm(results_dict["switched_pi_vector"] - tHMMobj.X[0].pi)
 
     # Rearrange the emissions list
