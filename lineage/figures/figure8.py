@@ -40,7 +40,7 @@ def makeFigure():
     exe = ProcessPoolExecutor()
     AICprom = [[exe.submit(run_AIC, .1, e, 10, idx > 3) for idx, e in enumerate(E)] for _ in range(10)]
     Aic = [[aaa.result() for aaa in ee] for ee in AICprom]
-    AIC= list(map(list, zip(*Aic)))
+    AIC = list(map(list, zip(*Aic)))
 
     # Finding proper ylim range for all 4 uncensored graphs and rounding up
     upper_ylim_uncensored = int(1 + max([np.max(np.ptp(AIC[i], axis=0)) for i in range(4)]) / 25.0) * 25
@@ -111,7 +111,7 @@ def figure_maker(ax, AIC_Holder, true_state_no, upper_ylim, censored=False):
     ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
     ax.set_ylabel("Normalized AIC")
     ax.set_yticks(np.linspace(0, upper_ylim, 5))
-    ax.set_ylim([0, 1.1*upper_ylim])
+    ax.set_ylim([0, 1.1 * upper_ylim])
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
     # Adding title
