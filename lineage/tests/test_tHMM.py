@@ -119,6 +119,6 @@ def test_AIC():
         output = run_Analyze_over(lin, desired_num_states, const=[20, 10])
 
         for idx in range(len(desired_num_states)):
-            AIC[idx, j], _ = output[idx][0].get_AIC(output[idx][2], 4)
+            AIC[idx, j], _ = output[idx][0].get_AIC(output[idx][2])
         AIC[:, j] = AIC[:, j] - np.min(AIC[:, j])
     assert np.count_nonzero(AIC[0, :]==0) > 10

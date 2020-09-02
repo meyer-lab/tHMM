@@ -18,7 +18,7 @@ def bernoulli_estimator(bern_obs, gammas):
     return np.average(bern_obs, weights=gammas)
 
 
-def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
+def gamma_estimator(gamma_obs, time_censor_obs, gammas, constant_shape):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
@@ -34,34 +34,34 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     def f(k):
         return np.log(k) - sc.polygamma(0, k) - s
 
-    if shape is not None:
-        a_hat0 = shape
+    if constant_shape:
+        return [constant_shape, gammaCor /constant_shape]
     else:
         if f(0.01) * f(100.0) > 0.0:
             a_hat0 = 10.0
         else:
             a_hat0 = brentq(f, 0.01, 100.0)
 
-    x0 = [a_hat0, gammaCor / a_hat0]
+        x0 = [a_hat0, gammaCor / a_hat0]
 
-    uncens_gammas = gammas[time_censor_obs == 1]
-    uncens_obs = gamma_obs[time_censor_obs == 1]
-    assert uncens_gammas.shape[0] == uncens_obs.shape[0]
-    cens_gammas = gammas[time_censor_obs == 0]
-    cens_obs = gamma_obs[time_censor_obs == 0]
-    assert cens_gammas.shape[0] == cens_obs.shape[0]
+        uncens_gammas = gammas[time_censor_obs == 1]
+        uncens_obs = gamma_obs[time_censor_obs == 1]
+        assert uncens_gammas.shape[0] == uncens_obs.shape[0]
+        cens_gammas = gammas[time_censor_obs == 0]
+        cens_obs = gamma_obs[time_censor_obs == 0]
+        assert cens_gammas.shape[0] == cens_obs.shape[0]
 
-    def negative_LL(x):
-        uncens = uncens_gammas * sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
-        cens = cens_gammas * sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
-        return -1 * (np.sum(uncens) + np.sum(cens))
+        def negative_LL(x):
+            uncens = uncens_gammas * sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
+            cens = cens_gammas * sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
+            return -1 * (np.sum(uncens) + np.sum(cens))
 
-    if np.all(time_censor_obs == 1):
-        # if nothing is censored, then there is no need to use the numerical solver
-        return x0[0], x0[1]
-    else:
-        res = minimize(fun=negative_LL, x0=x0, bounds=((1., 20.), (1., 20.),), options={'maxiter': 5})
-        return res.x[0], res.x[1]
+        if np.all(time_censor_obs == 1):
+            # if nothing is censored, then there is no need to use the numerical solver
+            return x0[0], x0[1]
+        else:
+            res = minimize(fun=negative_LL, x0=x0, bounds=((1., 20.), (1., 20.),), options={'maxiter': 5})
+            return res.x[0], res.x[1]
 
 
 def get_experiment_time(lineageObj):

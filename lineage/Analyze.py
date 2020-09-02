@@ -27,8 +27,8 @@ def Analyze(X, num_states, const=None, fpi=None, fT=None, fE=None):
     error_holder = []
     for num_tries in range(1, 15):
         try:
-            tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            _, _, _, _, _, LL = tHMMobj.fit(const)
+            tHMMobj = tHMM(X, num_states=num_states, constant_params=const, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
+            _, _, _, _, _, LL = tHMMobj.fit()
             break
         except (AssertionError, ZeroDivisionError, RuntimeError) as error:
             error_holder.append(error)

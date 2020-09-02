@@ -39,7 +39,7 @@ class tHMM:
     """Main tHMM class.
     """
 
-    def __init__(self, X, num_states: int, fpi=None, fT=None, fE=None):
+    def __init__(self, X, num_states: int, constant_params=None, fpi=None, fT=None, fE=None):
         """Instantiates a tHMM.
 
         This function uses the following functions and assings them to the cells
@@ -59,8 +59,9 @@ class tHMM:
         self.estimate = estimate(
             self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
         self.EL = get_Emission_Likelihoods(self)
+        self.constant_params = constant_params if constant_params is not None else None
 
-    def fit(self, const, tolerance=np.spacing(1), max_iter=100):
+    def fit(self, tolerance=np.spacing(1), max_iter=100):
         """Runs the tHMM function through Baum Welch fitting"""
 
         # Step 0: initialize with KMeans and do an M step
@@ -68,7 +69,7 @@ class tHMM:
             init_gammas = [sp.multinomial.rvs(n=1, p=[1. / self.num_states] * self.num_states, size=len(lineage))
                            for lineage in self.X]
 
-            do_M_E_step(self, init_gammas, const)
+            do_M_E_step(self, init_gammas, self.constant_params)
 
         # Step 1: first E step
         MSD, NF, betas, gammas = do_E_step(self)
@@ -78,7 +79,7 @@ class tHMM:
         for _ in range(max_iter):
             old_LL = new_LL
 
-            do_M_step(self, MSD, betas, gammas, const)
+            do_M_step(self, MSD, betas, gammas, self.constant_params)
             MSD, NF, betas, gammas = do_E_step(self)
             new_LL = calculate_log_likelihood(NF)
             diff = np.linalg.norm(old_LL - new_LL)
@@ -98,7 +99,7 @@ class tHMM:
         pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
         return pred_states_by_lineage
 
-    def get_AIC(self, LL, num_params=None):
+    def get_AIC(self, LL):
         """
         Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.
@@ -116,15 +117,15 @@ class tHMM:
 
         # This is for the case when we want to keep some parameters fixed.
         # It is the same case that we want to have the sum of likelihoods for all lineages
-        if num_params is None:
+        if self.constant_params is None:
             number_of_parameters = len(self.estimate.E[0].params)
             # dof = k * (k - 1) + k * num_params + k - 1
             # first term: transition matrix, second term: number of parameters, third term: initial prob. matrix
             degrees_of_freedom = num_states * (num_states - 1) + num_states * number_of_parameters + (num_states - 1)
         else:
             # This is the case that we use for figure 8 (AIC for real data)
-            number_of_parameters = num_params
-            degrees_of_freedom = num_states * num_params
+            number_of_parameters = len(self.constant_params)
+            degrees_of_freedom = num_states * number_of_parameters
 
         # the whole population has one AIC value.
         AIC_value = -2 * np.sum(LL) + 2 * degrees_of_freedom

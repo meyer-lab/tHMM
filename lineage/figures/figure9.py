@@ -9,13 +9,16 @@ from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem
 from .figureCommon import getSetup, subplotLabel
 from ..tHMM import tHMM
 
-desired_num_states = np.arange(1, 5)
+desired_num_states = np.arange(1, 8)
 Ts = []
 PIs = []
 # to find the T and pi matrices to be used as the constant and reduce the number of estimations.
 for i in desired_num_states:
-    tHMM_solver = tHMM(X=Gemcitabine_Control, num_states=i)
-    tHMM_solver.fit(const=None)
+    tHMM_solver = tHMM(X=Gemcitabine_Control, constant_params=None, num_states=i)
+    tHMM_solver.fit()
+    # choose the estimated shape parameters for 1-state model to be kept constant
+    if i == 1:
+        constant_shape = [tHMM_solver.estimate.E[0].params[2], tHMM_solver.estimate.E[0].params[4]]
     Ts.append(tHMM_solver.estimate.T)
     PIs.append(tHMM_solver.estimate.pi)
 
@@ -45,8 +48,8 @@ def run_AIC(lineages):
     """
 
     # Storing AICs into array
-    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, const=[10, 6], list_of_fpi=PIs, list_if_fT=Ts)
-    AICs = [output[idx][0].get_AIC(output[idx][2], 4)[0] for idx in range(len(desired_num_states))]
+    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, const=constant_shape, list_of_fpi=PIs, list_if_fT=Ts)
+    AICs = [output[idx][0].get_AIC(output[idx][2])[0] for idx in range(len(desired_num_states))]
 
     # Normalizing AIC
     return np.array(AICs) - np.min(AICs)
