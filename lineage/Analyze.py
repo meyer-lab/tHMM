@@ -151,6 +151,10 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     # Get the true parameter values
     results_dict["param_trues"] = [tHMMobj.X[0].E[x].params for x in range(tHMMobj.num_states)]
 
+    # Get the distance between distributions of two states
+    results_dict["distribution distance 0"] = results_dict["switched_emissions"][0].dist(tHMMobj.X[0].E[0])
+    results_dict["distribution distance 1"] = results_dict["switched_emissions"][1].dist(tHMMobj.X[0].E[1])
+
     # 2. Calculate accuracy after switching states
     results_dict["state_counter"] = np.bincount(ravel_switched_pred_states)
     results_dict["state_proportions"] = [100 * i / len(ravel_switched_pred_states) for i in results_dict["state_counter"]]

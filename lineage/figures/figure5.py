@@ -14,7 +14,7 @@ from .figureCommon import (
     num_data_points,
     scatter_kws_list,
 )
-from ..Analyze import run_Analyze_over
+from ..Analyze import run_Analyze_over, run_Results_over
 from ..LineageTree import LineageTree
 
 
@@ -24,7 +24,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((10, 10), (3, 3))
+    ax, f = getSetup((13,6.66), (2, 4))
     figureMaker4(ax, *accuracy())
 
     subplotLabel(ax)
@@ -71,24 +71,26 @@ def accuracy():
         for key, val in results_dict.items():
             dictOut[key].append(val)
 
-    paramEst = dictOut['param_estimates']
-    paramTrues = dictOut['param_trues']
+    paramEst = np.array(dictOut["param_estimates"])
+    paramTrues = np.array(dictOut["param_trues"])
     accuracy_df = pd.DataFrame(columns=["Cell Number", 'State Assignment Accuracy'])
     accuracy_df['Cell Number'] = dictOut['total_number_of_cells']
     accuracy_df['State Assignment Accuracy'] = dictOut['balanced_accuracy_score']
 
-    param_df = pd.DataFrame(columns=["Cell Number", "T", "pi"])
+    param_df = pd.DataFrame(columns=["Cell Number", "Lineage Number", "T", "pi"])
     param_df["Cell Number"] = accuracy_df["Cell Number"].to_list()
+    param_df["Lineage Number"] = num_lineages
     param_df['T Error'] = dictOut['transition_matrix_norm']
     param_df['pi Error'] = dictOut['pi_vector_norm']
 
-    data_df = pd.DataFrame(columns=["Cell Number", "State", 'Bern. G1 p', 'Bern. G2 p', 'shape G1', 'scale G1', 'shape G2', 'scale G2'])
+    data_df = pd.DataFrame(columns=["Cell Number"])
     data_df["Cell Number"] = accuracy_df["Cell Number"].to_list()
     data_df['Bern. G1 0'] = paramEst[:, 0, 0]
     data_df['Bern. G1 1'] = paramEst[:, 1, 0]
     data_df['Bern. G2 0'] = paramEst[:, 0, 1]
     data_df['Bern. G2 1'] = paramEst[:, 1, 1]
-    data_df['wasserstein distance'] = 
+    data_df['wasserstein distance 0'] = dictOut["distribution distance 0"]
+    data_df['wasserstein distance 1'] = dictOut["distribution distance 1"]
 
 
     return accuracy_df, param_df, data_df, paramTrues
@@ -110,8 +112,13 @@ def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     # T and pi matrix distance to their true value
     i += 1
     sns.regplot(x="Cell Number", y="T Error", data=param_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    sns.regplot(x="Cell Number", y="pi Error", data=param_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
-    ax[i].set_title(r"Error in estimating $T$ & $\pi$")
+    ax[i].set_title(r"Error in estimating $T$")
+    ax[i].set_ylabel(r"Error [$||x-\hat{x}||$]")
+    ax[i].set_ylim(bottom=0.01, top=1.02)
+
+    i += 1
+    sns.regplot(x="Lineage Number", y="pi Error", data=param_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+    ax[i].set_title(r"Error in estimating $\pi$")
     ax[i].set_ylabel(r"Error [$||x-\hat{x}||$]")
     ax[i].set_ylim(bottom=0.01, top=1.02)
 
@@ -126,24 +133,6 @@ def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     ax[i].set_ylim(paramTrues[:, 1, 0][0] - 0.025, 1.001)
 
     i += 1
-    ax[i].axhline(y=paramTrues[:, 0, 2][0], ls='--', c='b', alpha=0.75)
-    ax[i].axhline(y=paramTrues[:, 1, 2][0], ls='--', c='orange', alpha=0.75)
-    sns.regplot(x="Cell Number", y='shape G1 0', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    sns.regplot(x="Cell Number", y='shape G1 1', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
-    ax[i].set_title(r"G1 lifetime parameter estimation ($k$, $\theta$)")
-    ax[i].set_ylabel("Gamma shape estimate ($k$)")
-    ax[i].set_ylim(1, 15)
-
-    i += 1
-    ax[i].axhline(y=paramTrues[:, 0, 3][0], ls='--', c='b', alpha=0.75)
-    ax[i].axhline(y=paramTrues[:, 1, 3][0], ls='--', c='orange', alpha=0.75)
-    sns.regplot(x="Cell Number", y='scale G1 0', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    sns.regplot(x="Cell Number", y='scale G1 1', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
-    ax[i].set_title(r"G1 lifetime parameter estimation ($k$, $\theta$)")
-    ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
-    ax[i].set_ylim(1, 15)
-
-    i += 1
     ax[i].axhline(y=paramTrues[:, 0, 1][0], ls='--', c='b', alpha=0.75)
     ax[i].axhline(y=paramTrues[:, 1, 1][0], ls='--', c='orange', alpha=0.75)
     sns.regplot(x="Cell Number", y='Bern. G2 0', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
@@ -153,19 +142,11 @@ def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     ax[i].set_ylim(paramTrues[:, 1, 1][0] - 0.025, 1.001)
 
     i += 1
-    ax[i].axhline(y=paramTrues[:, 0, 4][0], ls='--', c='b', alpha=0.75)
-    ax[i].axhline(y=paramTrues[:, 1, 4][0], ls='--', c='orange', alpha=0.75)
-    sns.regplot(x="Cell Number", y='shape G2 0', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    sns.regplot(x="Cell Number", y='shape G2 1', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
-    ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
-    ax[i].set_ylabel(r"Gamma shape estimate ($k$)")
-    ax[i].set_ylim(0, 10)
+    sns.regplot(x="Cell Number", y='wasserstein distance 0', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+    sns.regplot(x="Cell Number", y='wasserstein distance 1', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
+    ax[i].set_title(r"distance bw true and estm. gamma dists")
+    ax[i].set_ylabel(r"wasserstein distance")
+    ax[i].set_ylim(0.0, 30.0)
 
     i += 1
-    ax[i].axhline(y=paramTrues[:, 0, 5][0], ls='--', c='b', alpha=0.75)
-    ax[i].axhline(y=paramTrues[:, 1, 5][0], ls='--', c='orange', alpha=0.75)
-    sns.regplot(x="Cell Number", y='scale G2 0', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    sns.regplot(x="Cell Number", y='scale G2 1', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
-    ax[i].set_title(r"G2 lifetime parameter estimation ($k$, $\theta$)")
-    ax[i].set_ylabel(r"Gamma scale estimate ($\theta$)")
-    ax[i].set_ylim(0, 10)
+    ax[i].axis('off')
