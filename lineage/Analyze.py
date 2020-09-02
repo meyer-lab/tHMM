@@ -29,13 +29,6 @@ def Analyze(X, num_states, const=None, fpi=None, fT=None, fE=None):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
             _, _, _, _, _, LL = tHMMobj.fit(const)
-
-            tHMMobj2 = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            _, _, _, _, _, LL2 = tHMMobj2.fit(const)
-
-            if LL2 > LL:
-                tHMMobj = tHMMobj2
-                LL = LL2
             break
         except (AssertionError, ZeroDivisionError, RuntimeError) as error:
             error_holder.append(error)
@@ -50,9 +43,7 @@ def Analyze(X, num_states, const=None, fpi=None, fT=None, fE=None):
                 )
                 raise
 
-    pred_states_by_lineage = tHMMobj.predict()
-
-    return tHMMobj, pred_states_by_lineage, LL
+    return tHMMobj, tHMMobj.predict(), LL
 
 
 def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
