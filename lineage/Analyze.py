@@ -9,7 +9,7 @@ from scipy.stats import wasserstein_distance
 from .tHMM import tHMM
 
 
-def Analyze(X, num_states, const=None, fpi=None, fT=None, fE=None):
+def Analyze(X, num_states, constant_params=None, fpi=None, fT=None, fE=None):
     """
     Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
 
@@ -27,11 +27,11 @@ def Analyze(X, num_states, const=None, fpi=None, fT=None, fE=None):
     error_holder = []
     for num_tries in range(1, 10):
         try:
-            tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            _, _, _, _, _, LL = tHMMobj.fit(const)
+            tHMMobj = tHMM(X, num_states=num_states, constant_params=constant_params, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
+            _, _, _, _, _, LL = tHMMobj.fit()
 
-            tHMMobj2 = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            _, _, _, _, _, LL2 = tHMMobj2.fit(const)
+            tHMMobj2 = tHMM(X, num_states=num_states, constant_params=constant_params, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
+            _, _, _, _, _, LL2 = tHMMobj2.fit()
 
             if LL2 > LL:
                 tHMMobj = tHMMobj2
@@ -76,7 +76,7 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
     list_of_fE = kwargs.get("list_of_fE", [None] * len(list_of_populations))
-    const = kwargs.get("const", None)
+    const = kwargs.get("constant_params", None)
 
     if isinstance(num_states, (np.ndarray, list)):
         assert len(num_states) == len(list_of_populations), f"len list population = {len(list_of_populations)}"

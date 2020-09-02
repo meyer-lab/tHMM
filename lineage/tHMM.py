@@ -61,7 +61,7 @@ class tHMM:
         self.EL = get_Emission_Likelihoods(self)
         self.constant_params = constant_params if constant_params is not None else None
 
-    def fit(self, const, tolerance=1e-8, max_iter=250):
+    def fit(self, tolerance=1e-8, max_iter=250):
         """Runs the tHMM function through Baum Welch fitting"""
 
         # Step 0: initialize with KMeans and do an M step
