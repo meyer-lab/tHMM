@@ -25,21 +25,13 @@ def Analyze(X, num_states, const=None, fpi=None, fT=None, fE=None):
     :rtype: float
     """
     error_holder = []
-    for num_tries in range(1, 10):
+    for num_tries in range(1, 3):
         try:
             tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
             _, _, _, _, _, LL = tHMMobj.fit(const)
-
-            tHMMobj2 = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            _, _, _, _, _, LL2 = tHMMobj2.fit(const)
-
-            if np.sum(LL2) > np.sum(LL):
-                tHMMobj = tHMMobj2
-                LL = LL2
-            break
         except (AssertionError, ZeroDivisionError, RuntimeError) as error:
             error_holder.append(error)
-            if num_tries == 9:
+            if num_tries == 2:
                 print(
                     f"Caught the following errors: \
                     \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. \

@@ -75,7 +75,7 @@ class tHMM:
         new_LL = np.sum(calculate_log_likelihood(NF))
 
         # first stopping condition check
-        for ii in range(max_iter):
+        for _ in range(max_iter):
             old_LL = new_LL
 
             do_M_step(self, MSD, betas, gammas, const)
