@@ -5,10 +5,13 @@ import jax.numpy as jnp
 from jax import value_and_grad, jit
 import jax.scipy.stats as jsp
 import jax.scipy.special as jsc
+from jax.config import config
 import numpy as np
 import scipy.stats as sp
 import scipy.special as sc
 from scipy.optimize import brentq, minimize
+
+config.update("jax_enable_x64", True)
 
 
 def bernoulli_estimator(bern_obs, gammas):
@@ -23,6 +26,7 @@ def bernoulli_estimator(bern_obs, gammas):
 
 
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
+    x = jnp.exp(x)
     uncens = jnp.dot(uncens_gammas, jsp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1]))
     cens = jnp.dot(cens_gammas, jsc.gammaincc(x[0], cens_obs / x[1]))
     return -1 * (uncens + cens)
@@ -40,23 +44,32 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
         gammas = np.copy(gammas)
         gammas.fill(1.0)
 
+    # First assume nothing is censored
+    gammaCor = np.average(gamma_obs, weights=gammas)
+    s = np.log(gammaCor) - np.average(np.log(gamma_obs), weights=gammas)
+
+    def f(k):
+        return np.log(k) - sc.polygamma(0, k) - s
+
+    if shape is not None:
+        a_hat0 = shape
+    else:
+        flow = f(0.1)
+        fhigh = f(100.0)
+        if flow * fhigh > 0.0:
+            if np.absolute(flow) < np.absolute(fhigh):
+                a_hat0 = 0.1
+            elif np.absolute(flow) > np.absolute(fhigh):
+                a_hat0 = 100.0
+            else:
+                a_hat0 = 10.0
+        else:
+            a_hat0 = brentq(f, 0.1, 100.0)
+
+    x0 = [a_hat0, gammaCor / a_hat0]
+
     # If nothing is censored
     if np.all(time_censor_obs == 1):
-        gammaCor = np.average(gamma_obs, weights=gammas)
-        s = np.log(gammaCor) - np.average(np.log(gamma_obs), weights=gammas)
-
-        def f(k):
-            return np.log(k) - sc.polygamma(0, k) - s
-
-        if shape is not None:
-            a_hat0 = shape
-        else:
-            if f(0.01) * f(100.0) > 0.0:
-                a_hat0 = 10.0
-            else:
-                a_hat0 = brentq(f, 0.01, 100.0)
-
-        x0 = [a_hat0, gammaCor / a_hat0]
         return x0
 
     uncens_gammas = gammas[time_censor_obs == 1]
@@ -67,8 +80,8 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     assert cens_gammas.shape[0] == cens_obs.shape[0]
 
     arrgs = (uncens_obs, uncens_gammas, cens_obs, cens_gammas)
-    res = minimize(fun=negative_LL_jit, jac=True, x0=[4.0, 10.0], method="TNC", bounds=((1., 20.), (1., 20.),), args=arrgs)
-    return res.x
+    res = minimize(fun=negative_LL_jit, jac=True, x0=np.log(x0), method="BFGS", args=arrgs)
+    return np.exp(res.x)
 
 
 def get_experiment_time(lineageObj):
