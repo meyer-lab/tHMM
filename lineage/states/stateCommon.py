@@ -80,7 +80,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     assert cens_gammas.shape[0] == cens_obs.shape[0]
 
     arrgs = (uncens_obs, uncens_gammas, cens_obs, cens_gammas)
-    res = minimize(fun=negative_LL_jit, jac=True, x0=np.log(x0), method="BFGS", args=arrgs)
+    res = minimize(fun=negative_LL_jit, jac=True, x0=np.log(x0), method="TNC", bounds=((None, 5.0), (None, 5.0)), args=arrgs)
     return np.exp(res.x)
 
 
