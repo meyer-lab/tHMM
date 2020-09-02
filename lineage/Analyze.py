@@ -135,8 +135,13 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     ravel_switched_pred_states = np.array([switcher_map[st] for sublist in pred_states_by_lineage for st in sublist])
 
     # Rearrange the values in the transition matrix
-    results_dict["switched_transition_matrix"] = tHMMobj.estimate.T[switcher_map, switcher_map]
-    results_dict["transition_matrix_norm"] = np.linalg.norm(results_dict["switched_transition_matrix"] - tHMMobj.X[0].T)
+    temp_T = np.zeros(tHMMobj.estimate.T.shape)
+    for row in range(tHMMobj.num_states):
+        for col in range(tHMMobj.num_states):
+            temp_T[row, col] = tHMMobj.estimate.T[switcher_map[row], switcher_map[col]]
+
+    results_dict["switched_transition_matrix"] = temp_T
+    results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
 
     # Rearrange the values in the pi vector
     results_dict["switched_pi_vector"] = tHMMobj.estimate.pi[switcher_map]
