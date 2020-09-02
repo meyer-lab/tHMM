@@ -37,7 +37,7 @@ def makeFigure():
 
     # Run fitting
     output = run_Analyze_over(dataFull, np.repeat(desired_num_states, len(data)), constant_params=constant_shape)
-    AICs = np.array([oo[0].get_AIC(oo[2], 4)[0] for oo in output])
+    AICs = np.array([oo[0].get_AIC(oo[2])[0] for oo in output])
     AICs = np.reshape(AICs, (desired_num_states.size, len(data)))
     AICs -= np.min(AICs, axis=0)
 
