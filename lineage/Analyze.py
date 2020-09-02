@@ -90,7 +90,6 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
         for idx, population in enumerate(list_of_populations):
             prom_holder.append(exe.submit(Analyze, population, num_states[idx], const=const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
-        exe.shutdown()
         output = [prom.result() for prom in prom_holder]
     else:
         for idx, population in enumerate(list_of_populations):
@@ -175,7 +174,6 @@ def run_Results_over(output, parallel=True):
     if parallel:
         exe = ProcessPoolExecutor()
         prom_holder = [exe.submit(Results, *x) for x in output]
-        exe.shutdown()
         results_holder = [prom.result() for prom in prom_holder]
     else:
         results_holder = [Results(*x) for x in output]

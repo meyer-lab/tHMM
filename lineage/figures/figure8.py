@@ -3,6 +3,7 @@ File: figure8.py
 Purpose: Generates figure 8.
 AIC for synthetic data.
 """
+from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 
@@ -36,7 +37,9 @@ def makeFigure():
     E = [Eone, Etwo, Ethree, Efour, Eone, Etwo, Ethree, Efour]
 
     # making lineages and finding AICs (assign number of lineages here)
-    Aic = [[run_AIC(.1, e, 10, idx > 3) for idx, e in enumerate(E)] for _ in range(10)]
+    exe = ProcessPoolExecutor()
+    AICprom = [[exe.submit(run_AIC, .1, e, 10, idx > 3) for idx, e in enumerate(E)] for _ in range(10)]
+    Aic = [[aaa.result() for aaa in ee] for ee in AICprom]
     AIC= list(map(list, zip(*Aic)))
 
     # Finding proper ylim range for all 4 uncensored graphs and rounding up
@@ -81,7 +84,7 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10, censored=Fals
 
     # Storing AICs into array
     AICs = np.empty((len(desired_num_states)))
-    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states)
+    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, parallel=False)
 
     for idx in range(len(desired_num_states)):
         AIC, _ = output[idx][0].get_AIC(output[idx][2], None)
