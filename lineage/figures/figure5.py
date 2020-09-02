@@ -5,7 +5,6 @@ import seaborn as sns
 from .figureCommon import (
     getSetup,
     subplotLabel,
-    commonAnalyze,
     pi,
     E2,
     T,
@@ -15,6 +14,7 @@ from .figureCommon import (
     num_data_points,
     scatter_kws_list,
 )
+from ..Analyze import run_Analyze_over
 from ..LineageTree import LineageTree
 
 
@@ -45,9 +45,6 @@ def accuracy():
     num_lineages = np.linspace(3, max_num_lineages, num_data_points, dtype=int)
     experiment_times = np.linspace(1200, int(2.5 * 1000), num_data_points)
     list_of_populations = []
-    list_of_fpi = []
-    list_of_fT = []
-    list_of_fE = []
     for indx, num in enumerate(num_lineages):
         population = []
         for _ in range(num):
@@ -59,20 +56,31 @@ def accuracy():
 
         # Adding populations into a holder for analysing
         list_of_populations.append(population)
-        list_of_fpi.append(pi)
-        list_of_fT.append(T)
-        list_of_fE.append(E2)
 
-    cell_number_x, paramEst, accuracy_after_switching, transition_matrix_norm, pi_vector_norm, paramTrues = commonAnalyze(list_of_populations, 2)
+    output = run_Analyze_over(list_of_populations, 2)
 
+    # Collecting the results of analyzing the lineages
+    results_holder = run_Results_over(output)
+
+    dictOut = {}
+
+    for key in results_holder[0].keys():
+        dictOut[key] = []
+
+    for results_dict in results_holder:
+        for key, val in results_dict.items():
+            dictOut[key].append(val)
+
+    paramEst = dictOut['param_estimates']
+    paramTrues = dictOut['param_trues']
     accuracy_df = pd.DataFrame(columns=["Cell Number", 'State Assignment Accuracy'])
-    accuracy_df['Cell Number'] = cell_number_x
-    accuracy_df['State Assignment Accuracy'] = accuracy_after_switching
+    accuracy_df['Cell Number'] = dictOut['total_number_of_cells']
+    accuracy_df['State Assignment Accuracy'] = dictOut['balanced_accuracy_score']
 
     param_df = pd.DataFrame(columns=["Cell Number", "T", "pi"])
     param_df["Cell Number"] = accuracy_df["Cell Number"].to_list()
-    param_df['T Error'] = transition_matrix_norm
-    param_df['pi Error'] = pi_vector_norm
+    param_df['T Error'] = dictOut['transition_matrix_norm']
+    param_df['pi Error'] = dictOut['pi_vector_norm']
 
     data_df = pd.DataFrame(columns=["Cell Number", "State", 'Bern. G1 p', 'Bern. G2 p', 'shape G1', 'scale G1', 'shape G2', 'scale G2'])
     data_df["Cell Number"] = accuracy_df["Cell Number"].to_list()
@@ -80,14 +88,8 @@ def accuracy():
     data_df['Bern. G1 1'] = paramEst[:, 1, 0]
     data_df['Bern. G2 0'] = paramEst[:, 0, 1]
     data_df['Bern. G2 1'] = paramEst[:, 1, 1]
-    data_df['shape G1 0'] = paramEst[:, 0, 2]
-    data_df['shape G1 1'] = paramEst[:, 1, 2]
-    data_df['scale G1 0'] = paramEst[:, 0, 3]
-    data_df['scale G1 1'] = paramEst[:, 1, 3]
-    data_df['shape G2 0'] = paramEst[:, 0, 4]
-    data_df['shape G2 1'] = paramEst[:, 1, 4]
-    data_df['scale G2 0'] = paramEst[:, 0, 5]
-    data_df['scale G2 1'] = paramEst[:, 1, 5]
+    data_df['wasserstein distance'] = 
+
 
     return accuracy_df, param_df, data_df, paramTrues
 
