@@ -44,7 +44,7 @@ spell.txt: manuscript/*.md
 	pandoc --lua-filter common/templates/spell.lua manuscript/*.md | sort | uniq -ic > spell.txt
 
 testprofile: venv
-	. venv/bin/activate && python3 -m cProfile -o profile /usr/local/bin/pytest
+	python3 -m cProfile -o profile /usr/local/bin/pytest
 	gprof2dot -f pstats --node-thres=5.0 profile | dot -Tsvg -o profile.svg
 
 clean:
