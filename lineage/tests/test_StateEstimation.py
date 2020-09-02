@@ -22,30 +22,16 @@ class TestModel(unittest.TestCase):
         # Setting the bern_p to 1. ensures that all cells live and censoring is only
         # due to living past the experiment time
 
-        self.lineage_gamma = LineageTree.init_from_parameters(self.pi, self.T, self.E_gamma, 2**9)
-        self.solver_gamma = tHMM([self.lineage_gamma], 1)  # evaluating for one state
-        self.solver_gamma.fit(const=None)
-        self.gamma_state_estimate = self.solver_gamma.estimate.E[0]
-
-        lineage_gamma_censored = LineageTree.init_from_parameters(self.pi, self.T, self.E_gamma, 2**9, censor_condition=3, desired_experiment_time=50)
-        good2go = len(lineage_gamma_censored) >= 10
-        while not good2go:
-            lineage_gamma_censored = LineageTree.init_from_parameters(self.pi, self.T, self.E_gamma, 2**9, censor_condition=3, desired_experiment_time=50)
-            good2go = len(lineage_gamma_censored) >= 10
-        self.lineage_gamma_censored = lineage_gamma_censored
-        assert not all([cell.obs[2] == 1 for cell in self.lineage_gamma_censored.output_lineage])  # ensures that at least some cells are censored
-        self.solver_gamma_censored = tHMM([self.lineage_gamma_censored], 1)  # evaluating for one state
-        self.solver_gamma_censored.fit(const=None)
-        self.gamma_state_censored_estimate = self.solver_gamma_censored.estimate.E[0]
-
     def test_estimationEvaluationGamma(self):
         """
         Evaluates the performance of fitting and the underlying estimator
         by comparing the parameter estimates to their true values.
         Gamma uncensored.
         """
-        self.assertGreater(5., abs(self.gamma_state_estimate.params[1] - self.E_gamma[0].params[1]))
-        self.assertGreater(5., abs(self.gamma_state_estimate.params[2] - self.E_gamma[0].params[2]))
+        lineage_gamma = LineageTree.init_from_parameters(self.pi, self.T, self.E_gamma, 2**9)
+        solver_gamma = tHMM([lineage_gamma], 1)  # evaluating for one state
+        solver_gamma.fit(const=None)
+        self.assertGreater(2., np.linalg.norm(solver_gamma.estimate.E[0].params - self.E_gamma[0].params))
 
     def test_estimationEvaluationGammaCensored(self):
         """
@@ -53,5 +39,8 @@ class TestModel(unittest.TestCase):
         by comparing the parameter estimates to their true values.
         Gamma censored.
         """
-        self.assertGreater(20., abs(self.gamma_state_censored_estimate.params[1] - self.E_gamma[0].params[1]))
-        self.assertGreater(20., abs(self.gamma_state_censored_estimate.params[2] - self.E_gamma[0].params[2]))
+        gen = lambda: LineageTree.init_from_parameters(self.pi, self.T, self.E_gamma, 2**9, censor_condition=3, desired_experiment_time=50)
+        lineage_gamma_censored = [gen() for _ in range(20)]
+        solver_gamma_censored = tHMM(lineage_gamma_censored, 1)  # evaluating for one state
+        solver_gamma_censored.fit(const=None)
+        self.assertGreater(5., np.linalg.norm(solver_gamma_censored.estimate.E[0].params - self.E_gamma[0].params))
