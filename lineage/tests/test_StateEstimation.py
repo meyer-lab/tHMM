@@ -24,7 +24,7 @@ class TestModel(unittest.TestCase):
 
         self.lineage_gamma = LineageTree.init_from_parameters(self.pi, self.T, self.E_gamma, 2**9)
         self.solver_gamma = tHMM([self.lineage_gamma], 1)  # evaluating for one state
-        self.solver_gamma.fit(const=None)
+        self.solver_gamma.fit()
         self.gamma_state_estimate = self.solver_gamma.estimate.E[0]
 
         lineage_gamma_censored = LineageTree.init_from_parameters(self.pi, self.T, self.E_gamma, 2**9, censor_condition=3, desired_experiment_time=50)
@@ -35,7 +35,7 @@ class TestModel(unittest.TestCase):
         self.lineage_gamma_censored = lineage_gamma_censored
         assert not all([cell.obs[2] == 1 for cell in self.lineage_gamma_censored.output_lineage])  # ensures that at least some cells are censored
         self.solver_gamma_censored = tHMM([self.lineage_gamma_censored], 1)  # evaluating for one state
-        self.solver_gamma_censored.fit(const=None)
+        self.solver_gamma_censored.fit()
         self.gamma_state_censored_estimate = self.solver_gamma_censored.estimate.E[0]
 
     def test_estimationEvaluationGamma(self):
