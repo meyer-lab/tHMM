@@ -11,3 +11,5 @@ pandoc-tablenos==2.2.2
 xlrd==1.2.0
 Biopython==1.77
 statsmodels
+jaxlib==0.1.52
+jax==0.1.75

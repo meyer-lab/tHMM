@@ -39,7 +39,8 @@ class TestModel(unittest.TestCase):
         by comparing the parameter estimates to their true values.
         Gamma censored.
         """
-        gen = lambda: LineageTree.init_from_parameters(self.pi, self.T, self.E_gamma, 2**9, censor_condition=3, desired_experiment_time=350)
+
+        def gen(): return LineageTree.init_from_parameters(self.pi, self.T, self.E_gamma, 2**9, censor_condition=3, desired_experiment_time=50)
         lineage_gamma_censored = [gen() for _ in range(20)]
         solver_gamma_censored = tHMM(lineage_gamma_censored, 1, constant_params=None)  # evaluating for one state
         solver_gamma_censored.fit()

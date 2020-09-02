@@ -15,7 +15,7 @@ venv/bin/activate: requirements.txt
 
 output/figure%.svg: venv genFigures.py lineage/figures/figure%.py
 	@ mkdir -p ./output
-	. venv/bin/activate && ./genFigures.py $*
+	. venv/bin/activate && JAX_PLATFORM_NAME=cpu ./genFigures.py $*
 
 output/manuscript.md: venv manuscript/*.md
 	. venv/bin/activate && manubot process --content-directory=manuscript --output-directory=output --cache-directory=cache --skip-citations --log-level=INFO
@@ -38,7 +38,7 @@ output/manuscript.docx: venv output/manuscript.md $(patsubst %, output/figure%.s
 		--defaults=./common/templates/manubot/pandoc/docx.yaml
 
 test: venv
-	. venv/bin/activate; pytest -s -v
+	. venv/bin/activate; JAX_PLATFORM_NAME=cpu pytest -s -v
 
 spell.txt: manuscript/*.md
 	pandoc --lua-filter common/templates/spell.lua manuscript/*.md | sort | uniq -ic > spell.txt

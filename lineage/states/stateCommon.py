@@ -1,10 +1,17 @@
 """ Common utilities used between states regardless of distribution. """
 
 import math
+import jax.numpy as jnp
+from jax import value_and_grad, jit
+import jax.scipy.stats as jsp
+import jax.scipy.special as jsc
+from jax.config import config
 import numpy as np
 import scipy.stats as sp
 import scipy.special as sc
 from scipy.optimize import brentq, minimize
+
+config.update("jax_enable_x64", True)
 
 
 def bernoulli_estimator(bern_obs, gammas):
@@ -18,7 +25,17 @@ def bernoulli_estimator(bern_obs, gammas):
     return np.average(bern_obs, weights=gammas)
 
 
-def gamma_estimator(gamma_obs, time_censor_obs, gammas, constant_shape):
+def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
+    x = jnp.exp(x)
+    uncens = jnp.dot(uncens_gammas, jsp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1]))
+    cens = jnp.dot(cens_gammas, jsc.gammaincc(x[0], cens_obs / x[1]))
+    return -1 * (uncens + cens)
+
+
+negative_LL_jit = jit(value_and_grad(negative_LL, 0))
+
+
+def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
@@ -28,6 +45,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, constant_shape):
         gammas = np.copy(gammas)
         gammas.fill(1.0)
 
+    # First assume nothing is censored
     gammaCor = np.average(gamma_obs, weights=gammas)
     s = np.log(gammaCor) - np.average(np.log(gamma_obs), weights=gammas)
 
@@ -37,31 +55,34 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, constant_shape):
     if constant_shape:
         return [constant_shape, gammaCor /constant_shape]
     else:
-        if f(0.01) * f(100.0) > 0.0:
-            a_hat0 = 10.0
+        flow = f(0.1)
+        fhigh = f(100.0)
+        if flow * fhigh > 0.0:
+            if np.absolute(flow) < np.absolute(fhigh):
+                a_hat0 = 0.1
+            elif np.absolute(flow) > np.absolute(fhigh):
+                a_hat0 = 100.0
+            else:
+                a_hat0 = 10.0
         else:
-            a_hat0 = brentq(f, 0.01, 100.0)
+            a_hat0 = brentq(f, 0.1, 100.0)
 
         x0 = [a_hat0, gammaCor / a_hat0]
 
-        uncens_gammas = gammas[time_censor_obs == 1]
-        uncens_obs = gamma_obs[time_censor_obs == 1]
-        assert uncens_gammas.shape[0] == uncens_obs.shape[0]
-        cens_gammas = gammas[time_censor_obs == 0]
-        cens_obs = gamma_obs[time_censor_obs == 0]
-        assert cens_gammas.shape[0] == cens_obs.shape[0]
+    # If nothing is censored
+    if np.all(time_censor_obs == 1):
+        return x0
 
-        def negative_LL(x):
-            uncens = uncens_gammas * sp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1])
-            cens = cens_gammas * sp.gamma.logsf(cens_obs, a=x[0], scale=x[1])
-            return -1 * (np.sum(uncens) + np.sum(cens))
+    uncens_gammas = gammas[time_censor_obs == 1]
+    uncens_obs = gamma_obs[time_censor_obs == 1]
+    assert uncens_gammas.shape[0] == uncens_obs.shape[0]
+    cens_gammas = gammas[time_censor_obs == 0]
+    cens_obs = gamma_obs[time_censor_obs == 0]
+    assert cens_gammas.shape[0] == cens_obs.shape[0]
 
-        if np.all(time_censor_obs == 1):
-            # if nothing is censored, then there is no need to use the numerical solver
-            return x0[0], x0[1]
-        else:
-            res = minimize(fun=negative_LL, x0=x0, bounds=((1., 20.), (1., 20.),), options={'maxiter': 5})
-            return res.x[0], res.x[1]
+    arrgs = (uncens_obs, uncens_gammas, cens_obs, cens_gammas)
+    res = minimize(fun=negative_LL_jit, jac=True, x0=np.log(x0), method="TNC", bounds=((None, 5.0), (None, 5.0)), args=arrgs)
+    return np.exp(res.x)
 
 
 def get_experiment_time(lineageObj):
