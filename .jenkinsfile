@@ -12,7 +12,7 @@ pipeline {
     }
     stage('Test/Build/Lint') {
       steps {
-        sh 'make all -j 5'
+        sh 'make all -j 3'
         lock ('manubot') {
           sh 'make output/manuscript.html'
           sh 'make output/manuscript.docx'
