@@ -31,6 +31,7 @@ def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     cens = jnp.dot(cens_gammas, jsc.gammaincc(x[0], cens_obs / x[1]))
     return -1 * (uncens + cens)
 
+
 negative_LL_jit = jit(value_and_grad(negative_LL, 0))
 
 

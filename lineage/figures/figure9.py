@@ -11,6 +11,7 @@ from ..tHMM import tHMM
 
 desired_num_states = np.arange(1, 5)
 
+
 def makeFigure():
     """
     Makes figure 9.
