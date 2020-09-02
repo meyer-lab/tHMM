@@ -91,18 +91,19 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
     """
     num_states = tHMMobj.num_states
 
-    numer_estimate = np.zeros((num_states, num_states), dtype=float)
-    denom_estimate = np.zeros((num_states,), dtype=float)
+    numer_estimate = np.zeros((num_states, num_states))
+    denom_estimate = np.zeros((num_states,)) + np.finfo(np.float).eps
     for num, lineageObj in enumerate(tHMMobj.X):
-        gamma_array = gammas[num]
-
         # local T estimate
-        numer_estimate += get_all_zetas(lineageObj, betas[num], MSD[num], gamma_array, tHMMobj.estimate.T)
-        denom_estimate += sum_nonleaf_gammas(lineageObj, gamma_array)
+        numer_estimate += get_all_zetas(lineageObj, betas[num], MSD[num], gammas[num], tHMMobj.estimate.T)
+        denom_estimate += sum_nonleaf_gammas(lineageObj, gammas[num])
 
-    T_estimate_prenorm = numer_estimate / denom_estimate[:, np.newaxis]
-    T_estimate = T_estimate_prenorm / T_estimate_prenorm.sum(axis=1)[:, np.newaxis]
-    assert not np.isnan(np.all(T_estimate)), f"T has nans"
+    T_estimate = numer_estimate / denom_estimate[:, np.newaxis]
+
+    # Add a small amount of identity in case a state is completely unobserved
+    T_estimate += np.identity(num_states) * np.finfo(np.float).eps
+    T_estimate /= T_estimate.sum(axis=1)[:, np.newaxis]
+    assert np.all(np.isfinite(T_estimate))
 
     return T_estimate
 
@@ -160,7 +161,7 @@ def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_ar
     MSD_child_state_k = MSD_array[node_child_n_idx, :]  # x by k
     beta_parent_child = beta_parent_child_func(beta_array=beta_array, T=T, MSD_array=MSD_array, node_child_n_idx=node_child_n_idx)
 
-    js = gamma_parent / beta_parent_child
-    ks = beta_child_state_k / MSD_child_state_k
+    js = gamma_parent / (beta_parent_child + np.finfo(np.float).eps)
+    ks = beta_child_state_k / (MSD_child_state_k + np.finfo(np.float).eps)
 
     return np.outer(js, ks) * T

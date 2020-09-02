@@ -61,7 +61,7 @@ class tHMM:
         self.EL = get_Emission_Likelihoods(self)
         self.constant_params = constant_params if constant_params is not None else None
 
-    def fit(self, tolerance=np.spacing(1), max_iter=100):
+    def fit(self, const, tolerance=1e-8, max_iter=250):
         """Runs the tHMM function through Baum Welch fitting"""
 
         # Step 0: initialize with KMeans and do an M step
@@ -73,7 +73,7 @@ class tHMM:
 
         # Step 1: first E step
         MSD, NF, betas, gammas = do_E_step(self)
-        new_LL = calculate_log_likelihood(NF)
+        new_LL = np.sum(calculate_log_likelihood(NF))
 
         # first stopping condition check
         for _ in range(max_iter):
@@ -81,10 +81,10 @@ class tHMM:
 
             do_M_step(self, MSD, betas, gammas, self.constant_params)
             MSD, NF, betas, gammas = do_E_step(self)
-            new_LL = calculate_log_likelihood(NF)
-            diff = np.linalg.norm(old_LL - new_LL)
+            new_LL = np.sum(calculate_log_likelihood(NF))
+            diff = new_LL - old_LL
 
-            if diff < tolerance:
+            if np.absolute(diff) < tolerance:
                 break
 
         return self, MSD, NF, betas, gammas, new_LL
