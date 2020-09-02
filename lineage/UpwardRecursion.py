@@ -59,19 +59,20 @@ def get_Emission_Likelihoods(tHMMobj, E=None):
     if E is None:
         E = tHMMobj.estimate.E
 
+    all_cells = np.array([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
+    ELstack = np.zeros((len(all_cells), tHMMobj.num_states))
+
+    for k in range(tHMMobj.num_states):  # for each state
+        ELstack[:, k] = E[k].pdf(all_cells)
+    assert np.all(np.isfinite(ELstack))
+
     EL = []
-
+    ii = 0
     for lineageObj in tHMMobj.X:  # for each lineage in our Population
-        lineage = lineageObj.output_lineage  # getting the lineage in the Population by lineage index
-        EL_array = np.zeros((len(lineage), tHMMobj.num_states))  # instantiating N by K array for each lineage
+        nl = len(lineageObj.output_lineage)  # getting the lineage length
+        EL.append(ELstack[ii:(ii + nl), :])  # append the EL_array for each lineage
+        ii += nl
 
-        all_cells = np.array([cell.obs for cell in lineage])
-
-        for state_k in range(tHMMobj.num_states):  # for each state
-            EL_array[:, state_k] = E[state_k].pdf(all_cells)
-            assert np.all(np.isfinite(EL_array[:, state_k]))
-
-        EL.append(EL_array)  # append the EL_array for each lineage
     return EL
 
 
