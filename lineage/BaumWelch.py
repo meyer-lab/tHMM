@@ -41,7 +41,7 @@ def calculate_log_likelihood(NF):
     return np.array([sum(np.log(arr)) for arr in NF])
 
 
-def do_M_step(tHMMobj, MSD, betas, gammas, const):
+def do_M_step(tHMMobj, MSD, betas, gammas, constant_params):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -58,7 +58,7 @@ def do_M_step(tHMMobj, MSD, betas, gammas, const):
 
     if tHMMobj.estimate.fE is None:
         assert tHMMobj.fE is None
-        do_M_E_step(tHMMobj, gammas, const)
+        do_M_E_step(tHMMobj, gammas, constant_params)
 
 
 def do_M_pi_step(tHMMobj, gammas):
@@ -108,7 +108,7 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
     return T_estimate
 
 
-def do_M_E_step(tHMMobj, gammas, const):
+def do_M_E_step(tHMMobj, gammas, constant_params):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -118,7 +118,7 @@ def do_M_E_step(tHMMobj, gammas, const):
     all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
     all_gammas = np.vstack(gammas)
     for state_j in range(tHMMobj.num_states):
-        tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j], const=None)
+        tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j], constant_params=None)
 
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):

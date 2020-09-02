@@ -89,12 +89,12 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
 
         prom_holder = []
         for idx, population in enumerate(list_of_populations):
-            prom_holder.append(exe.submit(Analyze, population, num_states[idx], const=const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
+            prom_holder.append(exe.submit(Analyze, population, num_states[idx], constant_params=const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
         output = [prom.result() for prom in prom_holder]
     else:
         for idx, population in enumerate(list_of_populations):
-            output.append(Analyze(population, num_states[idx], const=const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
+            output.append(Analyze(population, num_states[idx], constant_params=const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
     return output
 

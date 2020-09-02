@@ -53,7 +53,7 @@ class StateDistribution:
 
         return np.exp(ll)
 
-    def estimator(self, x, gammas, const=None):
+    def estimator(self, x, gammas, constant_params=None):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
         # unzipping the list of tuples
         x = np.array(x)
@@ -64,10 +64,10 @@ class StateDistribution:
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
 
-        if const is None:
+        if constant_params is None:
             shape = None
         else:
-            shape = const[0]
+            shape = constant_params[0]
 
         b_mask = np.isfinite(bern_obs)
         g_mask = np.isfinite(γ_obs)

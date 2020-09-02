@@ -48,7 +48,7 @@ def run_AIC(lineages):
     """
 
     # Storing AICs into array
-    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, const=constant_shape, list_of_fpi=PIs, list_if_fT=Ts)
+    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, constant_params=constant_shape, list_of_fpi=PIs, list_if_fT=Ts)
     AICs = [output[idx][0].get_AIC(output[idx][2])[0] for idx in range(len(desired_num_states))]
 
     # Normalizing AIC
