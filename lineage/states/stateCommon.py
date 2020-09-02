@@ -35,7 +35,7 @@ def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
 negative_LL_jit = jit(value_and_grad(negative_LL, 0))
 
 
-def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
+def gamma_estimator(gamma_obs, time_censor_obs, gammas, constant_shape):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
