@@ -15,7 +15,7 @@ def get_root_gammas(tHMMobj, betas):
         gammas.append(gamma_array)
 
     for _, gamma in enumerate(gammas):  # for each lineage in our Population
-        assert np.isclose(np.sum(gamma[0]), 1.0)
+        np.testing.assert_allclose(np.sum(gamma[0]), 1.0)
 
     return gammas
 
@@ -45,8 +45,9 @@ def get_nonroot_gammas(tHMMobj, MSD, gammas, betas):
                     sum_holder = np.matmul(gammas[num][parent_idx, :] / (beta_parent + np.finfo(np.float).eps), T)
 
                     gammas[num][child_idx, :] = coeffs[child_idx, :] * sum_holder
+                    np.all(np.isfinite(gammas[num][child_idx, :]))
 
-        assert np.all(gammas[num][0, :] == betas[num][0, :])
+        np.testing.assert_almost_equal(gammas[num][0, :], betas[num][0, :])
 
     for gg in gammas:
         np.testing.assert_allclose(np.sum(gg, axis=1), 1.0)

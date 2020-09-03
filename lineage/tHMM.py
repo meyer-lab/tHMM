@@ -155,7 +155,7 @@ class tHMM:
             log_score += log_T_score(T, X_state_tree_sequence[idx], lineageObj)
             log_score += log_E_score(get_Emission_Likelihoods(self, E)
                                      [idx], X_state_tree_sequence[idx])
-            assert not np.isnan(log_score), f"log score is nan"
+            assert np.all(np.isfinite(log_score))
             log_scores.append(log_score)
         return log_scores
 
