@@ -142,11 +142,12 @@ def figureMaker4(ax, accuracy_df, param_df, data_df, paramTrues):
     ax[i].set_ylim(paramTrues[:, 1, 1][0] - 0.025, 1.001)
 
     i += 1
-    sns.regplot(x="Cell Number", y='wasserstein distance 0', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    sns.regplot(x="Cell Number", y='wasserstein distance 1', data=data_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
+    sns.regplot(x="Cell Number", y='wasserstein distance 0', data=data_df, ax=ax[i], lowess=True, label="state 1", marker='+', scatter_kws=scatter_kws_list[0])
+    sns.regplot(x="Cell Number", y='wasserstein distance 1', data=data_df, ax=ax[i], lowess=True, label="state 2", marker='+', scatter_kws=scatter_kws_list[1])
     ax[i].set_title(r"distance bw true and estm. gamma dists")
     ax[i].set_ylabel(r"wasserstein distance")
     ax[i].set_ylim(0.0, 30.0)
+    ax[i].legend()
 
     i += 1
     ax[i].axis('off')
