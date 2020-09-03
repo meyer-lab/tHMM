@@ -39,7 +39,7 @@ def makeFigure():
 def accuracy():
     """ A Helper function to create more random copies of a population. """
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 0.9, 12, a, 4, 5), StateDistribution(0.99, 0.8, 12, 1.5, 8, 5)] for a in np.linspace(1.5, 4, num_data_points)]
+    list_of_Es = [[StateDistribution(0.99, 0.9, 12, a, 8, 5), StateDistribution(0.99, 0.8, 12, 1.5, 8, 5)] for a in np.linspace(1.5, 4, num_data_points)]
     list_of_fpi = [pi] * len(list_of_Es)
     list_of_populations = [[LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)] for E in list_of_Es]
 
@@ -68,7 +68,7 @@ def accuracy():
     len_lineages = [len(lineage) for lineage in lineages]
     distribution_df["G1 lifetime"] = [(cell.obs[1] + cell.obs[2]) for lineage in lineages for cell in lineage.output_lineage]
     distribution_df["State"] = ["State 1" if cell.state == 0 else "State 2" for lineage in lineages for cell in lineage.output_lineage]
-    distribution_df["Distribution type"] = len_lineages[0] * ["Same\n"+str(wass[0])+"-"+str(wass[-1]/4)] +\
+    distribution_df["Distribution type"] = len_lineages[0] * ["Same\n"+str(0)+"-"+str(wass[-1]/4)] +\
         len_lineages[1] * ["Similar\n"+str(wass[-1]/4)+"-"+str(wass[-1]/2)] +\
         len_lineages[2] * ["Different\n"+str(wass[-1]/2)+"-"+str(wass[-1]*0.75)] +\
         len_lineages[3] * ["Distinct\n>"+str(wass[-1]*0.75)]
