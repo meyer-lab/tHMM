@@ -24,7 +24,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((13,6.66), (2, 4))
+    ax, f = getSetup((13, 6.66), (2, 4))
     figureMaker4(ax, *accuracy())
 
     subplotLabel(ax)
@@ -91,7 +91,6 @@ def accuracy():
     data_df['Bern. G2 1'] = paramEst[:, 1, 1]
     data_df['wasserstein distance 0'] = dictOut["distribution distance 0"]
     data_df['wasserstein distance 1'] = dictOut["distribution distance 1"]
-
 
     return accuracy_df, param_df, data_df, paramTrues
 
