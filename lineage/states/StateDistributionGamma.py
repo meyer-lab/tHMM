@@ -67,7 +67,7 @@ class StateDistribution:
         if constant_params is None:
             shape = None
         else:
-            shape = constant_params[0]
+            shape = constant_params
 
         b_mask = np.isfinite(bern_obs)
         g_mask = np.isfinite(γ_obs)

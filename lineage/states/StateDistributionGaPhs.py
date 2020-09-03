@@ -48,8 +48,8 @@ class StateDistribution:
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
         x = np.array(x)
 
-        self.G1.estimator(x[:, np.array([0, 2, 4])], gammas, constant_params)
-        self.G2.estimator(x[:, np.array([1, 3, 5])], gammas, constant_params)
+        self.G1.estimator(x[:, np.array([0, 2, 4])], gammas, constant_params[0])
+        self.G2.estimator(x[:, np.array([1, 3, 5])], gammas, constant_params[1])
 
         self.params[0] = self.G1.params[0]
         self.params[1] = self.G2.params[0]
