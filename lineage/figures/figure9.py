@@ -9,7 +9,7 @@ from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem
 from .figureCommon import getSetup, subplotLabel
 from ..tHMM import tHMM
 
-desired_num_states = np.arange(1, 7)
+desired_num_states = np.arange(1, 8)
 Ts = []
 PIs = []
 # to find the T and pi matrices to be used as the constant and reduce the number of estimations.
@@ -18,7 +18,7 @@ for i in desired_num_states:
     tHMM_solver.fit()
     # choose the estimated shape parameters for 1-state model to be kept constant
     if i == 1:
-        constant_shape = [tHMM_solver.estimate.E[0].params[2], tHMM_solver.estimate.E[0].params[4]]
+        constant_shape = [int(tHMM_solver.estimate.E[0].params[2]), int(tHMM_solver.estimate.E[0].params[4])]
     Ts.append(tHMM_solver.estimate.T)
     PIs.append(tHMM_solver.estimate.pi)
 

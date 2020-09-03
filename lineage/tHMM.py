@@ -124,7 +124,7 @@ class tHMM:
             degrees_of_freedom = num_states * (num_states - 1) + num_states * number_of_parameters + (num_states - 1)
         else:
             # This is the case that we use for figure 8 (AIC for real data)
-            number_of_parameters = len(self.constant_params)
+            number_of_parameters = len(self.estimate.E[0].params) - len(self.constant_params)
             degrees_of_freedom = num_states * number_of_parameters
 
         # the whole population has one AIC value.
