@@ -59,7 +59,8 @@ def accuracy():
         all_cells.append(tmp)
         kmeans = KMeans(n_clusters=2, random_state=0).fit(np.array(list(itertools.chain.from_iterable(all_cells)))).labels_
         balanced_score.append(100 * balanced_accuracy_score(ravel_true_states, kmeans))
-
+    # replace x with 1-x if the accuracy is less than 50%
+    balanced_score = [score if score > 50 else 1 - score for score in balanced_score]
 
     wass, _, accuracy, _, _, _ = commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=list_of_fpi, parallel=True)
 
