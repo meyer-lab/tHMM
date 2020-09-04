@@ -14,7 +14,7 @@ Ts = []
 PIs = []
 # to find the T and pi matrices to be used as the constant and reduce the number of estimations.
 for i in desired_num_states:
-    tHMM_solver = tHMM(X=Gemcitabine_Control, constant_params=None, num_states=i)
+    tHMM_solver = tHMM(X=Gemcitabine_Control, num_states=i)
     tHMM_solver.fit()
     # choose the estimated shape parameters for 1-state model to be kept constant
     if i == 1:
@@ -36,7 +36,7 @@ def makeFigure():
         dataFull = dataFull + data
 
     # Run fitting
-    output = run_Analyze_over(dataFull, np.repeat(desired_num_states, len(data)), constant_params=constant_shape)
+    output = run_Analyze_over(dataFull, np.repeat(desired_num_states, len(data)))
     AICs = np.array([oo[0].get_AIC(oo[2])[0] for oo in output])
     AICs = np.reshape(AICs, (desired_num_states.size, len(data)))
     AICs -= np.min(AICs, axis=0)
