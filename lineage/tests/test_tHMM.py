@@ -119,7 +119,7 @@ def test_AIC():
     # run a few times and make sure it gives one state as the answer more than half the time.
     AIC = np.empty((len(desired_num_states), 20))
     for j in range(20):
-        output = run_Analyze_over(lin, desired_num_states, constant_params=[20, 10])
+        output = run_Analyze_over(lin, desired_num_states)
 
         for idx in range(len(desired_num_states)):
             AIC[idx, j], _ = output[idx][0].get_AIC(output[idx][2])
