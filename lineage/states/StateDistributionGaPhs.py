@@ -30,6 +30,10 @@ class StateDistribution:
         assert isinstance(self, type(other))
         return self.G1.dist(other.G1) + self.G2.dist(other.G2)
 
+    def dof(self):
+        """ Return the degrees of freedom. """
+        return self.G1.dof() + self.G2.dof()
+
     def pdf(self, x):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
         # In the case of a univariate observation, the user still has to define how the likelihood is calculated,

@@ -117,7 +117,7 @@ class tHMM:
         # This is for the case when we want to keep some parameters fixed.
         # It is the same case that we want to have the sum of likelihoods for all lineages
         if num_params is None:
-            number_of_parameters = len(self.estimate.E[0].params)
+            number_of_parameters = len(self.estimate.E[0].dof())
             # dof = k * (k - 1) + k * num_params + k - 1
             # first term: transition matrix, second term: number of parameters, third term: initial prob. matrix
             degrees_of_freedom = num_states * (num_states - 1) + num_states * number_of_parameters + (num_states - 1)
