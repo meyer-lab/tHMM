@@ -71,7 +71,8 @@ class TestModel(unittest.TestCase):
         np.testing.assert_allclose(estimator_obj.params, self.E[0].params, rtol=0.1)
 
         # For StateDistPhase
-        np.testing.assert_allclose(estimator_objPhase.params, self.E2[0].params, rtol=0.1)
+        np.testing.assert_allclose(estimator_objPhase.G1.params, self.E2[0].G1.params, rtol=0.1)
+        np.testing.assert_allclose(estimator_objPhase.G2.params, self.E2[0].G2.params, rtol=0.1)
 
     def test_censor(self):
         """

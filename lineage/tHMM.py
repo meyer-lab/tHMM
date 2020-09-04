@@ -112,15 +112,17 @@ class tHMM:
         :type AIC_value: float
         :param AIC_degrees_of_freedom: the degrees of freedom in AIC calculation :math:`(num_{states}^2 + num_{states} * numberOfParameters - 1)` - same for each lineage
         """
-        num_states = self.num_states
-
-        # dof = k * (k - 1) + k * num_params + k - 1
-        # transition matrix
-        degrees_of_freedom = num_states * (num_states - 1)
-        # number of parameters
-        degrees_of_freedom += num_states * len(self.estimate.E[0].params) 
+        degrees_of_freedom = 0
         # initial prob. matrix
-        degrees_of_freedom += num_states - 1
+        if self.fpi is None:
+            degrees_of_freedom += self.num_states - 1
+
+        # transition matrix
+        if self.fT is None:
+            degrees_of_freedom += self.num_states * (self.num_states - 1)
+
+        for ii in range(self.num_states):
+            degrees_of_freedom += self.estimate.E[ii].dof()
 
         # the whole population has one AIC value.
         AIC_value = -2 * np.sum(LL) + 2 * degrees_of_freedom
