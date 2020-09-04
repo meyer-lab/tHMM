@@ -112,19 +112,11 @@ class tHMM:
         :type AIC_value: float
         :param AIC_degrees_of_freedom: the degrees of freedom in AIC calculation :math:`(num_{states}^2 + num_{states} * numberOfParameters - 1)` - same for each lineage
         """
-        num_states = self.num_states
+        # first term: transition matrix, initial prob. matrix
+        degrees_of_freedom = (self.num_states + 1) * (self.num_states - 1)
 
-        # This is for the case when we want to keep some parameters fixed.
-        # It is the same case that we want to have the sum of likelihoods for all lineages
-        if num_params is None:
-            number_of_parameters = len(self.estimate.E[0].params)
-            # dof = k * (k - 1) + k * num_params + k - 1
-            # first term: transition matrix, second term: number of parameters, third term: initial prob. matrix
-            degrees_of_freedom = num_states * (num_states - 1) + num_states * number_of_parameters + (num_states - 1)
-        else:
-            # This is the case that we use for figure 8 (AIC for real data)
-            number_of_parameters = num_params
-            degrees_of_freedom = num_states * num_params
+        for ii in range(self.num_states):
+            degrees_of_freedom += self.estimate.E[ii].dof()
 
         # the whole population has one AIC value.
         AIC_value = -2 * np.sum(LL) + 2 * degrees_of_freedom
