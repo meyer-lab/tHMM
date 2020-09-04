@@ -39,7 +39,7 @@ def makeFigure():
 def accuracy():
     """ A Helper function to create more random copies of a population. """
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 0.9, 12, a, 8, 5), StateDistribution(0.99, 0.8, 12, 1.5, 8, 5)] for a in np.linspace(1.5, 4, num_data_points)]
+    list_of_Es = [[StateDistribution(0.99, 0.9, 12, a, 4, 5), StateDistribution(0.99, 0.8, 12, 1.5, 8, 5)] for a in np.linspace(1.5, 4, num_data_points)]
     list_of_fpi = [pi] * len(list_of_Es)
     list_of_populations = [[LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)] for E in list_of_Es]
 
