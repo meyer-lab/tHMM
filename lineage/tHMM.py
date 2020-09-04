@@ -39,7 +39,7 @@ class tHMM:
     """Main tHMM class.
     """
 
-    def __init__(self, X, num_states: int, constant_params=None, fpi=None, fT=None, fE=None):
+    def __init__(self, X, num_states: int, fpi=None, fT=None, fE=None):
         """Instantiates a tHMM.
 
         This function uses the following functions and assings them to the cells
@@ -59,7 +59,6 @@ class tHMM:
         self.estimate = estimate(
             self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
         self.EL = get_Emission_Likelihoods(self)
-        self.constant_params = constant_params if constant_params is not None else None
 
     def fit(self, tolerance=1e-8, max_iter=250):
         """Runs the tHMM function through Baum Welch fitting"""
@@ -69,7 +68,7 @@ class tHMM:
             init_gammas = [sp.multinomial.rvs(n=1, p=[1. / self.num_states] * self.num_states, size=len(lineage))
                            for lineage in self.X]
 
-            do_M_E_step(self, init_gammas, self.constant_params)
+            do_M_E_step(self, init_gammas)
 
         # Step 1: first E step
         MSD, NF, betas, gammas = do_E_step(self)
@@ -79,7 +78,7 @@ class tHMM:
         for _ in range(max_iter):
             old_LL = new_LL
 
-            do_M_step(self, MSD, betas, gammas, self.constant_params)
+            do_M_step(self, MSD, betas, gammas)
             MSD, NF, betas, gammas = do_E_step(self)
             new_LL = np.sum(calculate_log_likelihood(NF))
             diff = new_LL - old_LL
@@ -115,17 +114,13 @@ class tHMM:
         """
         num_states = self.num_states
 
-        # This is for the case when we want to keep some parameters fixed.
-        # It is the same case that we want to have the sum of likelihoods for all lineages
-        if self.constant_params is None:
-            number_of_parameters = len(self.estimate.E[0].params)
-            # dof = k * (k - 1) + k * num_params + k - 1
-            # first term: transition matrix, second term: number of parameters, third term: initial prob. matrix
-            degrees_of_freedom = num_states * (num_states - 1) + num_states * number_of_parameters + (num_states - 1)
-        else:
-            # This is the case that we use for figure 8 (AIC for real data)
-            number_of_parameters = len(self.estimate.E[0].params) - len(self.constant_params)
-            degrees_of_freedom = num_states * number_of_parameters
+        # dof = k * (k - 1) + k * num_params + k - 1
+        # transition matrix
+        degrees_of_freedom = num_states * (num_states - 1)
+        # number of parameters
+        degrees_of_freedom += num_states * len(self.estimate.E[0].params) 
+        # initial prob. matrix
+        degrees_of_freedom += num_states - 1
 
         # the whole population has one AIC value.
         AIC_value = -2 * np.sum(LL) + 2 * degrees_of_freedom
