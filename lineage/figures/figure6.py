@@ -43,10 +43,10 @@ def accuracy():
     list_of_fpi = [pi] * len(list_of_Es)
     list_of_populations = [[LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)] for E in list_of_Es]
 
-    allpops=[]
+    allpops = []
     balanced_score = []
     true = []
-    all_cells=[]
+    all_cells = []
 
     for pop in list_of_populations:
         thmmobj = tHMM(pop, num_states=2)
@@ -69,16 +69,16 @@ def accuracy():
     len_lineages = [len(lineage) for lineage in lineages]
     distribution_df["G1 lifetime"] = [(cell.obs[1] + cell.obs[2]) for lineage in lineages for cell in lineage.output_lineage]
     distribution_df["State"] = ["State 1" if cell.state == 0 else "State 2" for lineage in lineages for cell in lineage.output_lineage]
-    distribution_df["Distribution type"] = len_lineages[0] * ["Same\n"+str(0)+"-"+str(wass[-1]/4)] +\
-        len_lineages[1] * ["Similar\n"+str(wass[-1]/4)+"-"+str(wass[-1]/2)] +\
-        len_lineages[2] * ["Different\n"+str(wass[-1]/2)+"-"+str(wass[-1]*0.75)] +\
-        len_lineages[3] * ["Distinct\n>"+str(wass[-1]*0.75)]
+    distribution_df["Distribution type"] = len_lineages[0] * ["Same\n" + str(0) + "-" + str(wass[-1] / 4)] +\
+        len_lineages[1] * ["Similar\n" + str(wass[-1] / 4) + "-" + str(wass[-1] / 2)] +\
+        len_lineages[2] * ["Different\n" + str(wass[-1] / 2) + "-" + str(wass[-1] * 0.75)] +\
+        len_lineages[3] * ["Distinct\n>" + str(wass[-1] * 0.75)]
 
     # for the violin plot (distributions)
     wasser_df = pd.DataFrame(columns=["Wasserstein distance", "State Assignment Accuracy"])
     wasser_df["Wasserstein distance"] = wass
     wasser_df["State Assignment Accuracy"] = accuracy
-    wasser_df["KMeans accuracy"] = balanced_score 
+    wasser_df["KMeans accuracy"] = balanced_score
     return distribution_df, wasser_df
 
 
