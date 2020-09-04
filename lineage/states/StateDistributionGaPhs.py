@@ -11,11 +11,11 @@ from ..CellVar import Time
 class StateDistribution:
     """ For G1 and G2 separated as observations. """
 
-    def __init__(self, bern_p1=0.9, bern_p2=0.75, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6):  # user has to identify what parameters to use for each state
+    def __init__(self, bern_p1=0.9, bern_p2=0.75, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6, shape1=None, shape2=None):  # user has to identify what parameters to use for each state
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.params = np.array([bern_p1, bern_p2, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2])
-        self.G1 = GammaSD(bern_p=bern_p1, gamma_a=gamma_a1, gamma_scale=gamma_scale1)
-        self.G2 = GammaSD(bern_p=bern_p2, gamma_a=gamma_a2, gamma_scale=gamma_scale2)
+        self.G1 = GammaSD(bern_p=bern_p1, gamma_a=gamma_a1, gamma_scale=gamma_scale1, shape=shape1)
+        self.G2 = GammaSD(bern_p=bern_p2, gamma_a=gamma_a2, gamma_scale=gamma_scale2, shape=shape2)
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
@@ -44,24 +44,18 @@ class StateDistribution:
 
         return G1_LL * G2_LL
 
-    def estimator(self, x, gammas, constant_params):
+    def estimator(self, x, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
         x = np.array(x)
 
-        if constant_params is None:
-            shapeG1 = shapeG2 = None
-        else:
-            shapeG1 = constant_params[0]
-            shapeG2 = constant_params[1]
-        self.G1.estimator(x[:, np.array([0, 2, 4])], gammas, shapeG1)
-        self.G2.estimator(x[:, np.array([1, 3, 5])], gammas, shapeG2)
+        self.G1.estimator(x[:, np.array([0, 2, 4])], gammas)
+        self.G2.estimator(x[:, np.array([1, 3, 5])], gammas)
 
         self.params[0] = self.G1.params[0]
         self.params[1] = self.G2.params[0]
         self.params[2:4] = self.G1.params[1:3]
         self.params[4:6] = self.G2.params[1:3]
 
-        # const is used when we want to keep the shape parameter of gamma constant. shapeG1=const[0], shapeG2=const[1]
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
         # from estimation. This is then stored in the original state distribution object which then gets updated

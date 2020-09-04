@@ -11,9 +11,10 @@ class StateDistribution:
     StateDistribution for cells with gamma distributed times.
     """
 
-    def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=4.5):
+    def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=4.5, shape=None):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.params = np.array([bern_p, gamma_a, gamma_scale])
+        self.const_shape = shape
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
@@ -53,7 +54,7 @@ class StateDistribution:
 
         return np.exp(ll)
 
-    def estimator(self, x, gammas, constant_params=None):
+    def estimator(self, x, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
         # unzipping the list of tuples
         x = np.array(x)
@@ -64,15 +65,10 @@ class StateDistribution:
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
 
-        if constant_params is None:
-            shape = None
-        else:
-            shape = constant_params
-
         b_mask = np.isfinite(bern_obs)
         g_mask = np.isfinite(γ_obs)
         self.params[0] = bernoulli_estimator(bern_obs[b_mask], gammas[b_mask])
-        self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], shape)
+        self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], self.const_shape)
 
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
