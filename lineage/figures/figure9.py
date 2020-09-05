@@ -36,7 +36,7 @@ def makeFigure():
         dataFull = dataFull + data
 
     # Run fitting
-    output = run_Analyze_over(dataFull, np.repeat(desired_num_states, len(data)))
+    output = run_Analyze_over(dataFull, np.repeat(desired_num_states, len(data)), list_of_fpi=PIs, list_of_fT=Ts)
     AICs = np.array([oo[0].get_AIC(oo[2])[0] for oo in output])
     AICs = np.reshape(AICs, (desired_num_states.size, len(data)))
     AICs -= np.min(AICs, axis=0)
