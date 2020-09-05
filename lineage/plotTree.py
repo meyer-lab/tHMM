@@ -24,18 +24,25 @@ def CladeRecursive(cell, a, censore):
     else:
         colorr = "black"
 
+    # check for non or inf in cell's G1 or G2
+    if not np.isfinite(cell.obs[2]):
+        cell.obs[2] = 0
+    if not np.isfinite(cell.obs[3]):
+        cell.obs[3] = 0
     if cell.isLeaf() and censore:
+        if not np.isfinite(cell.time.endT):
+            cell.time.edT = 0
+        if not np.isfinite(cell.time.startT):
+            cell.time.startT = 0
         if cell.time.transition_time >= cell.time.endT:  # the cell died in G1
-            if not np.isfinite(cell.time.endT):
-                cell.time.endT = cell.time.startT
-
             return Clade(branch_length=cell.time.endT - cell.time.startT, width=1, color="pink")
         else:  # the cell spent some time in G2
             return Clade(branch_length=cell.time.endT - cell.time.startT, width=1, color="gold")  # dead in G2
     else:
-        # if cell's start time is not known (left-censored)
         if not np.isfinite(cell.time.startT):
-            cell.time.startT = 0.0
+            cell.time.startT = 0
+        if not np.isfinite(cell.time.endT):
+            cell.time.endT = 0
         clades = []
         if cell.left is not None and cell.left.observed:
             clades.append(CladeRecursive(cell.left, a, censore))
