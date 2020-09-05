@@ -35,7 +35,10 @@ class StateDistribution:
 
     def dof(self):
         """ Return the degrees of freedom. """
-        return 3
+        if self.const_shape is None:
+            return 3
+
+        return 2
 
     def pdf(self, x):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
