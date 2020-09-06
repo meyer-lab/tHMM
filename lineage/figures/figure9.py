@@ -67,28 +67,16 @@ def figure_maker(ax, f, AIC_holder, LAPlins, GEMlins):
     ax[0].set_title("Lapatinib")
     ax[1].set_title("Gemcitabine")
 
-    # lap
-    i += 1
-    # ax[i] = f.add_subplot(spec5[1, 0])
-    plotLineage(LAPlins[0], ax[i], censore=True)
+    # lapatinib
+    plotLineage(LAPlins[0], ax[2], censore=True)
 
-    i += 1
-    # ax[i] = f.add_subplot(spec5[2, 0])
-    plotLineage(LAPlins[1], ax[i], censore=True)
+    plotLineage(LAPlins[1], ax[4], censore=True)
 
-    i += 1
-    # ax[i] = f.add_subplot(spec5[3, 0])
-    plotLineage(LAPlins[2], ax[i], censore=True)
+    plotLineage(LAPlins[2], ax[6], censore=True)
 
-    # gem
-    i += 1
-    # ax[i] = f.add_subplot(spec5[1, 1])
-    plotLineage(GEMlins[0], ax[i], censore=True)
+    # gemcitabine
+    plotLineage(GEMlins[0], ax[3], censore=True)
 
-    i += 1
-    # ax[i] = f.add_subplot(spec5[2, 1])
-    plotLineage(GEMlins[1], ax[i], censore=True)
+    plotLineage(GEMlins[1], ax[5], censore=True)
 
-    i += 1
-    # ax[i] = f.add_subplot(spec5[3, 1])
-    plotLineage(GEMlins[2], ax[i], censore=True)
+    plotLineage(GEMlins[2], ax[7], censore=True)
