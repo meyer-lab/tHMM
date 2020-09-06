@@ -9,7 +9,7 @@ from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem
 from .figureCommon import getSetup, subplotLabel
 from ..tHMM import tHMM
 
-desired_num_states = np.arange(1, 8)
+desired_num_states = np.arange(1, 3)
 Ts = []
 PIs = []
 # to find the T and pi matrices to be used as the constant and reduce the number of estimations.
