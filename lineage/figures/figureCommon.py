@@ -56,7 +56,7 @@ scatter_state_2_kws = {
 scatter_kws_list = [scatter_state_1_kws, scatter_state_2_kws]
 
 
-def getSetup(figsize, gridd):
+def getSetup(figsize, gridd, heightRatio=None):
     """
     Establish figure set-up with subplots.
     """
@@ -84,7 +84,11 @@ def getSetup(figsize, gridd):
 
         # Setup plotting space and grid
         f = plt.figure(figsize=figsize, dpi=400, constrained_layout=True)
-        gs1 = gridspec.GridSpec(*gridd, figure=f)
+
+        if heightRatio:
+            gs1 = gridspec.GridSpec(*gridd, figure=f, height_ratios=heightRatio)
+        else:
+            gs1 = gridspec.GridSpec(*gridd, figure=f)
 
         # Get list of axis objects
         ax = list()

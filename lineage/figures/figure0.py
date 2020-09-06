@@ -9,7 +9,7 @@ from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem
 from .figureCommon import getSetup, subplotLabel
 from ..tHMM import tHMM
 
-desired_num_states = np.arange(1, 8)
+desired_num_states = np.arange(1, 3)
 Ts = []
 PIs = []
 # to find the T and pi matrices to be used as the constant and reduce the number of estimations.
@@ -40,7 +40,7 @@ def makeFigure():
     AICs = np.array([oo[0].get_AIC(oo[2], 4)[0] for oo in output])
     AICs = np.reshape(AICs, (desired_num_states.size, len(data)))
     AICs -= np.min(AICs, axis=0)
-    LAPlins = np.array([oo[0].X[0] for oo in output])[np.array([6, 7, 17])]
+    LAPlins = np.array([oo[0].X[0] for oo in output])[np.array([6, 7, 8])]
     GEMlins = np.array([oo[0].X[0] for oo in output])[np.ayyay([-2, -3, -6])]
 
     lapAIC = np.sum(AICs[:, 0:4], axis=1)
@@ -69,26 +69,20 @@ def figure_maker(ax, f, AIC_holder, LAPlins, GEMlins):
 
     # lap
     i += 1
-    # ax[i] = f.add_subplot(spec5[1, 0])
     plotLineage(LAPlins[0], ax[i], censore=True)
 
     i += 1
-    # ax[i] = f.add_subplot(spec5[2, 0])
     plotLineage(LAPlins[1], ax[i], censore=True)
 
     i += 1
-    # ax[i] = f.add_subplot(spec5[3, 0])
     plotLineage(LAPlins[2], ax[i], censore=True)
 
     # gem
     i += 1
-    # ax[i] = f.add_subplot(spec5[1, 1])
     plotLineage(GEMlins[0], ax[i], censore=True)
 
     i += 1
-    # ax[i] = f.add_subplot(spec5[2, 1])
     plotLineage(GEMlins[1], ax[i], censore=True)
 
     i += 1
-    # ax[i] = f.add_subplot(spec5[3, 1])
     plotLineage(GEMlins[2], ax[i], censore=True)
