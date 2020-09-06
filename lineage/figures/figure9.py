@@ -47,13 +47,13 @@ def makeFigure():
     gemAIC = np.sum(AICs[:, np.array([0, 4, 5, 6])], axis=1)
 
     # Plotting AICs
-    figure_maker(ax, [lapAIC, gemAIC])
+    figure_maker(ax, [lapAIC, gemAIC], LAPlins, GEMlins)
     subplotLabel(ax)
 
     return f
 
 
-def figure_maker(ax, f, AIC_holder, LAPlins, GEMlins):
+def figure_maker(ax, AIC_holder, LAPlins, GEMlins):
     """
     Makes figure 9.
     """
