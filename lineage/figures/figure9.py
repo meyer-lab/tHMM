@@ -9,7 +9,7 @@ from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem
 from .figureCommon import getSetup, subplotLabel
 from ..tHMM import tHMM
 
-desired_num_states = np.arange(1, 8)
+desired_num_states = np.arange(1, 2)
 Ts = []
 PIs = []
 # to find the T and pi matrices to be used as the constant and reduce the number of estimations.
@@ -37,35 +37,35 @@ def makeFigure():
 
     # Run fitting
     output = run_Analyze_over(dataFull, np.repeat(desired_num_states, len(data)), const=[10, 6])
-    AICs = np.array([oo[0].get_AIC(oo[2], 4)[0] for oo in output])
-    AICs = np.reshape(AICs, (desired_num_states.size, len(data)))
-    AICs -= np.min(AICs, axis=0)
+    # AICs = np.array([oo[0].get_AIC(oo[2], 4)[0] for oo in output])
+    # AICs = np.reshape(AICs, (desired_num_states.size, len(data)))
+    # AICs -= np.min(AICs, axis=0)
     LAPlins = np.array([oo[0].X[0] for oo in output])[np.array([6, 7, 17])]
-    GEMlins = np.array([oo[0].X[0] for oo in output])[np.ayyay([-2, -3, -6])]
+    GEMlins = np.array([oo[0].X[0] for oo in output])[np.array([-2, -3, -6])]
 
-    lapAIC = np.sum(AICs[:, 0:4], axis=1)
-    gemAIC = np.sum(AICs[:, np.array([0, 4, 5, 6])], axis=1)
+    # lapAIC = np.sum(AICs[:, 0:4], axis=1)
+    # gemAIC = np.sum(AICs[:, np.array([0, 4, 5, 6])], axis=1)
 
     # Plotting AICs
-    figure_maker(ax, [lapAIC, gemAIC], LAPlins, GEMlins)
+    figure_maker(ax, LAPlins, GEMlins)
     subplotLabel(ax)
 
     return f
 
 
-def figure_maker(ax, AIC_holder, LAPlins, GEMlins):
+def figure_maker(ax, LAPlins, GEMlins):
     """
     Makes figure 9.
     """
 
-    for i in range(2):
-        ax[i].plot(desired_num_states, AIC_holder[i])
-        ax[i].set_xlabel("Number of States Predicted")
-        ax[i].set_ylabel("Normalized AIC")
-        ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
+    # for i in range(2):
+    #     ax[i].plot(desired_num_states, AIC_holder[i])
+    #     ax[i].set_xlabel("Number of States Predicted")
+    #     ax[i].set_ylabel("Normalized AIC")
+    #     ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
 
-    ax[0].set_title("Lapatinib")
-    ax[1].set_title("Gemcitabine")
+    # ax[0].set_title("Lapatinib")
+    # ax[1].set_title("Gemcitabine")
 
     # lapatinib
     plotLineage(LAPlins[0], ax[2], censore=True)

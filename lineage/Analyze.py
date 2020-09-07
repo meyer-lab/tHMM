@@ -49,7 +49,6 @@ def Analyze(X, num_states, const=None, fpi=None, fT=None, fE=None):
                     Consider changing your parameter estimator. "
                 )
                 raise
-
     pred_states_by_lineage = tHMMobj.predict()
 
     return tHMMobj, pred_states_by_lineage, LL
