@@ -1,5 +1,6 @@
 """ In this file we plot! """
 
+import numpy as np
 from Bio.Phylo.BaseTree import Clade
 from Bio import Phylo
 from matplotlib import pylab
@@ -16,15 +17,32 @@ def CladeRecursive(cell, a, censore):
     """
     if cell.state == 0:
         colorr = "olive"
-    else:
+    elif cell.state == 1:
         colorr = "salmon"
+    elif cell.state == 2:
+        colorr = "red"
+    else:
+        colorr = "black"
 
+    # check for non or inf in cell's G1 or G2
+    if not np.isfinite(cell.obs[2]):
+        cell.obs[2] = 1
+    if not np.isfinite(cell.obs[3]):
+        cell.obs[3] = 1
     if cell.isLeaf() and censore:
+        if not np.isfinite(cell.time.endT):
+            cell.time.edT = 1
+        if not np.isfinite(cell.time.startT):
+            cell.time.startT = 1
         if cell.time.transition_time >= cell.time.endT:  # the cell died in G1
             return Clade(branch_length=cell.time.endT - cell.time.startT, width=1, color="pink")
         else:  # the cell spent some time in G2
             return Clade(branch_length=cell.time.endT - cell.time.startT, width=1, color="gold")  # dead in G2
     else:
+        if not np.isfinite(cell.time.startT):
+            cell.time.startT = 1
+        if not np.isfinite(cell.time.endT):
+            cell.time.endT = 1
         clades = []
         if cell.left is not None and cell.left.observed:
             clades.append(CladeRecursive(cell.left, a, censore))
