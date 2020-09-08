@@ -26,7 +26,6 @@ def bernoulli_estimator(bern_obs, gammas):
 
 
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
-    x = jnp.exp(x)
     uncens = jnp.dot(uncens_gammas, jsp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1]))
     cens = jnp.dot(cens_gammas, jsc.gammaincc(x[0], cens_obs / x[1]))
     return -1 * (uncens + cens)
@@ -82,12 +81,15 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, constant_shape):
 
     arrgs = (uncens_obs, uncens_gammas, cens_obs, cens_gammas)
     if constant_shape is None:
-        bnds = ((None, 5.0), (None, 5.0))
+        bnds = ((0.1, 50000.0), (0.1, 50000.0))
+        res = minimize(fun=negative_LL_jit, jac=True, x0=x0, method="TNC", bounds=bnds, args=arrgs)
+        xOut = res.x
     else:
-        bnds = ((np.log(constant_shape) - 0.01, np.log(constant_shape) + 0.01), (None, 5.0))
+        func = lambda x: negative_LL([constant_shape, x[0]], *arrgs)
+        res = minimize(fun=func, x0=x0[1], bounds = ((0.1, 50000.0), ))
+        xOut = [constant_shape, res.x]
 
-    res = minimize(fun=negative_LL_jit, jac=True, x0=np.log(x0), method="TNC", bounds=bnds, args=arrgs)
-    return np.exp(res.x)
+    return xOut
 
 
 def get_experiment_time(lineageObj):
