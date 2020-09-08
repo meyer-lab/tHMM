@@ -35,7 +35,7 @@ def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
 negative_LL_jit = jit(value_and_grad(negative_LL, 0))
 
 
-def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
+def gamma_estimator(gamma_obs, time_censor_obs, gammas, constant_shape):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
@@ -52,8 +52,8 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     def f(k):
         return np.log(k) - sc.polygamma(0, k) - s
 
-    if shape is not None:
-        a_hat0 = shape
+    if constant_shape:
+        a_hat0 = constant_shape
     else:
         flow = f(0.1)
         fhigh = f(100.0)
@@ -81,10 +81,10 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     assert cens_gammas.shape[0] == cens_obs.shape[0]
 
     arrgs = (uncens_obs, uncens_gammas, cens_obs, cens_gammas)
-    if shape is None:
+    if constant_shape is None:
         bnds = ((None, 5.0), (None, 5.0))
     else:
-        bnds = ((np.log(shape) - 0.01, np.log(shape) + 0.01), (None, 5.0))
+        bnds = ((np.log(constant_shape) - 0.01, np.log(constant_shape) + 0.01), (None, 5.0))
 
     res = minimize(fun=negative_LL_jit, jac=True, x0=np.log(x0), method="TNC", bounds=bnds, args=arrgs)
     return np.exp(res.x)
@@ -98,11 +98,7 @@ def get_experiment_time(lineageObj):
     longest end time. This is effectively
     the same as the experiment time for synthetic lineages.
     """
-    longest = 0.0
-    for cell in lineageObj.output_leaves:
-        if cell.time.endT > longest:
-            longest = cell.time.endT
-    return longest
+    return max(cell.time.endT for cell in lineageObj.output_leaves)
 
 
 def basic_censor(cell):
