@@ -2,10 +2,10 @@
 
 import numpy as np
 from matplotlib.ticker import MaxNLocator
-from ..Analyze import Analyze
-import matplotlib.gridspec as gridspec
-from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
+import itertools
 
+from ..Analyze import Analyze
+from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .figureCommon import getSetup, subplotLabel
 from ..tHMM import tHMM
 from ..plotTree import plotLineage
@@ -23,11 +23,13 @@ def makeFigure():
     gemcitabine = []
     # Run fitting
     for indx, data in enumerate(Gem):
-        gemcitabine.append(Analyze(data, 4)[0].X[np.array([6, 8])]) # 4 states predicted by AIC
-        lapatinib.append(Analyze(Lap[indx], 3)[0].X[np.array([10, 13])]) # 3 states predicted by AIC
-    print(gemcitabine)
+        gemc_tHMMobj = Analyze(data, 2)[0] # 4 states predicted by AIC
+        gemcitabine.append([gemc_tHMMobj.X[3], gemc_tHMMobj.X[6]])
+        lapt_tHMMobj = Analyze(Lap[indx], 2)[0] # 3 states predicted by AIC
+        lapatinib.append([lapt_tHMMobj.X[4], lapt_tHMMobj.X[7]])
+
     # Plotting the lineages
-    figure_maker(ax, lapatinib, gemcitabine)
+    figure_maker(ax, list(itertools.chain(*lapatinib)), list(itertools.chain(*gemcitabine)))
 
     return f
 
@@ -87,4 +89,3 @@ def figure_maker(ax, lapatinib, gemcitabine):
     i += 1
     ax[i].axis('off')
     plotLineage(gemcitabine[7], ax[i], censore=True)
-

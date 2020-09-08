@@ -23,26 +23,21 @@ def CladeRecursive(cell, a, censore):
         colorr = "red"
     else:
         colorr = "black"
+    # pink lines mean the cell was in G1 when died or experiment ended
+    # gold lines mean the cell was in G2 when died or experiment ended
 
-    # check for non or inf in cell's G1 or G2
-    if not np.isfinite(cell.obs[2]):
-        cell.obs[2] = 1
-    if not np.isfinite(cell.obs[3]):
-        cell.obs[3] = 1
     if cell.isLeaf() and censore:
-        if not np.isfinite(cell.time.endT):
-            cell.time.edT = 1
-        if not np.isfinite(cell.time.startT):
-            cell.time.startT = 1
-        if cell.time.transition_time >= cell.time.endT:  # the cell died in G1
-            return Clade(branch_length=cell.time.endT - cell.time.startT, width=1, color="pink")
-        else:  # the cell spent some time in G2
-            return Clade(branch_length=cell.time.endT - cell.time.startT, width=1, color="gold")  # dead in G2
+        if cell.obs[0] == 0:  # the cell died in G1
+            assert np.isfinite(cell.obs[2])
+            return Clade(branch_length=cell.obs[2], width=1, color="pink")
+        elif cell.obs[0] == 1 and cell.obs[1] == 0: # if cell dies in G2
+            assert np.isfinite(cell.obs[2]+cell.obs[3])
+            return Clade(branch_length=cell.obs[2]+cell.obs[3], width=1, color="gold")
+        elif cell.obs[0] == 1 and np.isnan(cell.obs[1]): # cell stays in G1 until the end
+            assert np.isfinite(cell.obs[2])
+            return Clade(branch_length=cell.obs[2], width=1, color="pink")
+
     else:
-        if not np.isfinite(cell.time.startT):
-            cell.time.startT = 1
-        if not np.isfinite(cell.time.endT):
-            cell.time.endT = 1
         clades = []
         if cell.left is not None and cell.left.observed:
             clades.append(CladeRecursive(cell.left, a, censore))
