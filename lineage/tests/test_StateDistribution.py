@@ -65,7 +65,7 @@ class TestModel(unittest.TestCase):
         tuples_of_obsPhase = list(map(list, zip(*tuples_of_obsPhase)))
         gammas = np.ones(len(tuples_of_obsPhase))
         estimator_objPhase = deepcopy(self.E2[0])
-        estimator_objPhase.estimator(tuples_of_obsPhase, gammas, const=None)
+        estimator_objPhase.estimator(tuples_of_obsPhase, gammas)
 
         # here we check the estimated parameters to be close for Gamma distribution
         np.testing.assert_allclose(estimator_obj.params, self.E[0].params, rtol=0.1)

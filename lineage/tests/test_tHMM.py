@@ -119,9 +119,9 @@ def test_AIC():
     # run a few times and make sure it gives one state as the answer more than half the time.
     AIC = np.empty((len(desired_num_states), 20))
     for j in range(20):
-        output = run_Analyze_over(lin, desired_num_states, const=[20, 10])
+        output = run_Analyze_over(lin, desired_num_states)
 
         for idx in range(len(desired_num_states)):
-            AIC[idx, j], _ = output[idx][0].get_AIC(output[idx][2], 4)
+            AIC[idx, j], _ = output[idx][0].get_AIC(output[idx][2])
         AIC[:, j] = AIC[:, j] - np.min(AIC[:, j])
     assert np.count_nonzero(AIC[0, :] == 0) > 10
