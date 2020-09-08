@@ -1,4 +1,6 @@
 """ Calls the tHMM functions and outputs the parameters needed to generate the Figures. """
+import multiprocessing
+multiprocessing.set_start_method('spawn', True)
 from concurrent.futures import ProcessPoolExecutor
 import random
 import itertools
