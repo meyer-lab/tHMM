@@ -53,8 +53,7 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, constant_shape):
         return np.log(k) - sc.polygamma(0, k) - s
 
     if constant_shape:
-        # FIXME: This doesn't properly handle censorship with constant shape
-        return [constant_shape, gammaCor / constant_shape]
+        a_hat0 = constant_shape
     else:
         flow = f(0.1)
         fhigh = f(100.0)

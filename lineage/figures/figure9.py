@@ -1,5 +1,6 @@
 """ This file plots the AIC for the experimental data. """
 
+from copy import deepcopy
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import run_Analyze_over
@@ -10,33 +11,7 @@ from .figureCommon import getSetup, subplotLabel
 from ..tHMM import tHMM
 
 desired_num_states = np.arange(1, 8)
-Ts = []
-PIs = []
 
-data = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM, Gem5uM, Gem10uM, Gem30uM]
-
-# to find the T and pi matrices to be used as the constant and reduce the number of estimations.
-for i in desired_num_states:
-    tHMM_solver = tHMM(X=Gemcitabine_Control, num_states=i)
-    tHMM_solver.fit()
-    # choose the estimated shape parameters for 1-state model to be kept constant
-    if i == 1:
-        constant_shape = [int(tHMM_solver.estimate.E[0].params[2]), int(tHMM_solver.estimate.E[0].params[4])]
-    for _ in range(len(data)):
-        Ts.append(tHMM_solver.estimate.T)
-        PIs.append(tHMM_solver.estimate.pi)
-
-for population in data:
-    for st in desired_num_states:
-        thmm_sol = tHMM(X=population, num_states=st)
-        for lin_number in range(len(thmm_sol.X)):
-            for j in range(st):
-                thmm_sol.X[lin_number].E[j].G1.const_shape = constant_shape[0]
-                thmm_sol.X[lin_number].E[j].G2.const_shape = constant_shape[1]
-dataFull = []
-for _ in desired_num_states:
-    dataFull = dataFull + data
-assert len(dataFull) == len(PIs) == len(Ts)
 
 def makeFigure():
     """
@@ -44,8 +19,28 @@ def makeFigure():
     """
     ax, f = getSetup((7, 3), (1, 2))
 
+    data = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM, Gem5uM, Gem10uM, Gem30uM]
+    dataFull = []
+
+    # Find the cell cycle shape parameters to be set as constant from the one state model
+    tHMM_solver = tHMM(X=data[0], num_states=1)
+    tHMM_solver.fit()
+
+    constant_shape = [int(tHMM_solver.estimate.E[0].params[2]), int(tHMM_solver.estimate.E[0].params[4])]
+
+    # Set shape
+    for population in data:
+        for lin in population:
+            for E in lin.E:
+                E.G1.const_shape = constant_shape[0]
+                E.G2.const_shape = constant_shape[1]
+
+    # Copy out data to full set
+    for _ in desired_num_states:
+        dataFull = dataFull + deepcopy(data)
+
     # Run fitting
-    output = run_Analyze_over(dataFull, np.repeat(desired_num_states, len(data)), list_of_fpi=PIs, list_of_fT=Ts)
+    output = run_Analyze_over(dataFull, np.repeat(desired_num_states, len(data)))
     AICs = np.array([oo[0].get_AIC(oo[2])[0] for oo in output])
     AICs = np.reshape(AICs, (desired_num_states.size, len(data)))
     AICs -= np.min(AICs, axis=0)
