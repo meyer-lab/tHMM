@@ -38,6 +38,11 @@ def figure_maker(ax, lapatinib, gemcitabine):
     """
     Makes figure 10.
     """
+    for indx, cells in enumerate(lapatinib):
+        print("lapatib end time", cells.output_lineage[0].time.endT)
+        print("gemcitabine end time", gemcitabine[indx].output_lineage[0].time.endT)
+        print("lapatib start time", cells.output_lineage[0].time.startT)
+        print("gemcitabine start time", gemcitabine[indx].output_lineage[0].time.startT)
     ax[0].set_title("Lapatinib")
     ax[1].set_title("Gemcitabine")
 

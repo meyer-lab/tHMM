@@ -43,7 +43,7 @@ def CladeRecursive(cell, a, censore):
             clades.append(CladeRecursive(cell.left, a, censore))
         if cell.right is not None and cell.right.observed:
             clades.append(CladeRecursive(cell.right, a, censore))
-        return Clade(branch_length=cell.time.endT - cell.time.startT, width=1, clades=clades, color=colorr)
+        return Clade(branch_length=cell.obs[2]+cell.obs[3], width=1, clades=clades, color=colorr)
 
 
 def plotLineage(lineage, axes, censore=True):
@@ -51,7 +51,7 @@ def plotLineage(lineage, axes, censore=True):
     Makes lineage tree.
     """
 
-    a = [Clade(lineage.output_lineage[0].time.endT)]
+    a = [Clade(lineage.output_lineage[0].time)]
 
     # input the root cells in the lineage
     c = CladeRecursive(lineage.output_lineage[0], a, censore)
