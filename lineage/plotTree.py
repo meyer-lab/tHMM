@@ -15,7 +15,6 @@ def CladeRecursive(cell, a, censore):
     If you are interested, you can take a look at the source code for creating Clades manually:
     https://github.com/biopython/biopython/blob/fce4b11b4b8e414f1bf093a76e04a3260d782905/Bio/Phylo/BaseTree.py#L801
     """
-    if cell.obs[2]
     if cell.state == 0:
         colorr = "olive"
     elif cell.state == 1:
@@ -24,19 +23,15 @@ def CladeRecursive(cell, a, censore):
         colorr = "red"
     else:
         colorr = "black"
-    # pink lines mean the cell was in G1 when died or experiment ended
-    # gold lines mean the cell was in G2 when died or experiment ended
 
     if cell.isLeaf() and censore:
-        if cell.obs[0] == 0:  # the cell died in G1
-            assert np.isfinite(cell.obs[2])
-            return Clade(branch_length=cell.obs[2], width=1, color="pink")
-        elif cell.obs[0] == 1 and cell.obs[1] == 0: # if cell dies in G2
-            assert np.isfinite(cell.obs[2]+cell.obs[3])
-            return Clade(branch_length=cell.obs[2]+cell.obs[3], width=1, color="gold")
-        elif cell.obs[0] == 1 and np.isnan(cell.obs[1]): # cell stays in G1 until the end
-            assert np.isfinite(cell.obs[2])
-            return Clade(branch_length=cell.obs[2], width=1, color="pink")
+        if np.isfinite(cell.obs[2]) and np.isfinite(cell.obs[3]):
+            length = cell.obs[2] + cell.obs[3]
+        elif np.isnan(cell.obs[2]):
+            length = cell.obs[3]
+        elif np.isnan(cell.obs[3]):
+            length = cell.obs[2]
+        return Clade(branch_length=length, width=1, color=colorr)
 
     else:
         clades = []
@@ -44,7 +39,13 @@ def CladeRecursive(cell, a, censore):
             clades.append(CladeRecursive(cell.left, a, censore))
         if cell.right is not None and cell.right.observed:
             clades.append(CladeRecursive(cell.right, a, censore))
-        return Clade(branch_length=cell.obs[2]+cell.obs[3], width=1, clades=clades, color=colorr)
+        if np.isnan(cell.obs[3]): # if the cell got stuck in G1
+            lengths = cell.obs[2]
+        elif np.isnan(cell.obs[2]): # is a root parent and G1 is not observed
+            lengths = cell.obs[3]
+        else:
+            lengths = cell.obs[2] + cell.obs[3] # both are observed
+        return Clade(branch_length=lengths, width=1, clades=clades, color=colorr)
 
 
 def plotLineage(lineage, axes, censore=True):
@@ -52,7 +53,14 @@ def plotLineage(lineage, axes, censore=True):
     Makes lineage tree.
     """
 
-    a = [Clade(lineage.output_lineage[0].time)]
+    root = lineage.output_lineage[0]
+    if np.isfinite(root.obs[4]): # starts from G1
+        length = root.obs[2] + root.obs[3]
+        assert np.isfinite(length)
+    else: # starts from G2
+        length = root.obs[3]
+        assert np.isfinite(length)
+    a = [Clade(length)]
 
     # input the root cells in the lineage
     c = CladeRecursive(lineage.output_lineage[0], a, censore)
