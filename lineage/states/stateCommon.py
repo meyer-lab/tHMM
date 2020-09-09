@@ -85,8 +85,8 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, constant_shape):
         res = minimize(fun=negative_LL_jit, jac=True, x0=x0, method="TNC", bounds=bnds, args=arrgs)
         xOut = res.x
     else:
-        func = lambda x: negative_LL([constant_shape, x[0]], *arrgs)
-        res = minimize(fun=func, x0=x0[1], bounds = ((0.1, 50000.0), ))
+        def func(x): return negative_LL([constant_shape, x[0]], *arrgs)
+        res = minimize(fun=func, x0=x0[1], bounds=((0.1, 50000.0), ))
         xOut = [constant_shape, res.x]
 
     return xOut
