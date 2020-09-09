@@ -1,14 +1,13 @@
 """ Calls the tHMM functions and outputs the parameters needed to generate the Figures. """
+from .tHMM import tHMM
+from scipy.stats import wasserstein_distance
+from sklearn.metrics import balanced_accuracy_score
+import numpy as np
+import itertools
+import random
+from concurrent.futures import ProcessPoolExecutor
 import multiprocessing
 multiprocessing.set_start_method('spawn', True)
-from concurrent.futures import ProcessPoolExecutor
-import random
-import itertools
-import numpy as np
-from sklearn.metrics import balanced_accuracy_score
-from scipy.stats import wasserstein_distance
-
-from .tHMM import tHMM
 
 
 def Analyze(X, num_states, **kwargs):
