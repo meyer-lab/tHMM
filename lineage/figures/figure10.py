@@ -23,18 +23,18 @@ def makeFigure():
     gemcitabine = []
     # Run fitting
     for indx, data in enumerate(Gem):
-        gemc_tHMMobj, gemc_states, _ = Analyze(data, 4) # 4 states predicted by AIC
-        lapt_tHMMobj, lapt_states, _ = Analyze(Lap[indx], 3) # 3 states predicted by AIC
+        gemc_tHMMobj, gemc_states, _ = Analyze(data, 2) # 4 states predicted by AIC
+        lapt_tHMMobj, lapt_states, _ = Analyze(Lap[indx], 2) # 3 states predicted by AIC
 
         for lin_indx, lin in enumerate(lapt_tHMMobj.X):
             for cell_indx, cell in enumerate(lin.output_lineage):
-                cell.state = gemc_states[lin_indx][cell_indx]
+                cell.state = lapt_states[lin_indx][cell_indx]
 
         for lin_indx, lin in enumerate(gemc_tHMMobj.X):
             for cell_indx, cell in enumerate(lin.output_lineage):
                 cell.state = gemc_states[lin_indx][cell_indx]
         lapatinib.append([lapt_tHMMobj.X[4], lapt_tHMMobj.X[7]])
-        gemcitabine.append([gemc_tHMMobj.X[3], gemc_tHMMobj.X[6]])
+        gemcitabine.append([gemc_tHMMobj.X[0], gemc_tHMMobj.X[3]])
 
     # Plotting the lineages
     figure_maker(ax, list(itertools.chain(*lapatinib)), list(itertools.chain(*gemcitabine)))
