@@ -15,6 +15,7 @@ def CladeRecursive(cell, a, censore):
     If you are interested, you can take a look at the source code for creating Clades manually:
     https://github.com/biopython/biopython/blob/fce4b11b4b8e414f1bf093a76e04a3260d782905/Bio/Phylo/BaseTree.py#L801
     """
+    if cell.obs[2]
     if cell.state == 0:
         colorr = "olive"
     elif cell.state == 1:
