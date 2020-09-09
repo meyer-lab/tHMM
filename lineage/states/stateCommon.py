@@ -26,7 +26,6 @@ def bernoulli_estimator(bern_obs, gammas):
 
 
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
-    x = jnp.exp(x)
     uncens = jnp.dot(uncens_gammas, jsp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1]))
     cens = jnp.dot(cens_gammas, jsc.gammaincc(x[0], cens_obs / x[1]))
     return -1 * (uncens + cens)
@@ -35,7 +34,7 @@ def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
 negative_LL_jit = jit(value_and_grad(negative_LL, 0))
 
 
-def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
+def gamma_estimator(gamma_obs, time_censor_obs, gammas, constant_shape):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
@@ -52,8 +51,8 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     def f(k):
         return np.log(k) - sc.polygamma(0, k) - s
 
-    if shape is not None:
-        a_hat0 = shape
+    if constant_shape:
+        a_hat0 = constant_shape
     else:
         flow = f(0.1)
         fhigh = f(100.0)
@@ -81,13 +80,16 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, shape):
     assert cens_gammas.shape[0] == cens_obs.shape[0]
 
     arrgs = (uncens_obs, uncens_gammas, cens_obs, cens_gammas)
-    if shape is None:
-        bnds = ((None, 5.0), (None, 5.0))
+    if constant_shape is None:
+        bnds = ((0.1, 50000.0), (0.1, 50000.0))
+        res = minimize(fun=negative_LL_jit, jac=True, x0=x0, method="TNC", bounds=bnds, args=arrgs)
+        xOut = res.x
     else:
-        bnds = ((np.log(shape) - 0.01, np.log(shape) + 0.01), (None, 5.0))
+        func = lambda x: negative_LL([constant_shape, x[0]], *arrgs)
+        res = minimize(fun=func, x0=x0[1], bounds = ((0.1, 50000.0), ))
+        xOut = [constant_shape, res.x]
 
-    res = minimize(fun=negative_LL_jit, jac=True, x0=np.log(x0), method="TNC", bounds=bnds, args=arrgs)
-    return np.exp(res.x)
+    return xOut
 
 
 def get_experiment_time(lineageObj):

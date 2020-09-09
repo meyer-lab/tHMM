@@ -6,7 +6,7 @@ from ..LineageTree import LineageTree
 
 #----------------------- Control conditions from both old and new versions -----------------------#
 desired_num_states = 2
-E = [StateDistribution() for i in range(desired_num_states)]
+E = [StateDistribution() for _ in range(desired_num_states)]
 
 
 def popout_single_lineages(lineages):

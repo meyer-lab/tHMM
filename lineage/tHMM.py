@@ -1,5 +1,6 @@
 """ This file holds the parameters of our tHMM in the tHMM class. """
 
+from copy import deepcopy
 import numpy as np
 import scipy.stats as sp
 
@@ -30,7 +31,7 @@ class estimate:
             self.T = self.fT
 
         if self.fE is None:
-            self.E = [X[0].E[0].__class__() for _ in range(self.num_states)]
+            self.E = [deepcopy(X[0].E[0]) for _ in range(self.num_states)]
         else:
             self.E = self.fE
 
@@ -60,7 +61,7 @@ class tHMM:
             self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
         self.EL = get_Emission_Likelihoods(self)
 
-    def fit(self, const, tolerance=1e-8, max_iter=250):
+    def fit(self, tolerance=1e-8, max_iter=250):
         """Runs the tHMM function through Baum Welch fitting"""
 
         # Step 0: initialize with KMeans and do an M step
@@ -68,7 +69,7 @@ class tHMM:
             init_gammas = [sp.multinomial.rvs(n=1, p=[1. / self.num_states] * self.num_states, size=len(lineage))
                            for lineage in self.X]
 
-            do_M_E_step(self, init_gammas, const)
+            do_M_E_step(self, init_gammas)
 
         # Step 1: first E step
         MSD, NF, betas, gammas = do_E_step(self)
@@ -78,7 +79,7 @@ class tHMM:
         for _ in range(max_iter):
             old_LL = new_LL
 
-            do_M_step(self, MSD, betas, gammas, const)
+            do_M_step(self, MSD, betas, gammas)
             MSD, NF, betas, gammas = do_E_step(self)
             new_LL = np.sum(calculate_log_likelihood(NF))
             diff = new_LL - old_LL
@@ -98,7 +99,7 @@ class tHMM:
         pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
         return pred_states_by_lineage
 
-    def get_AIC(self, LL, num_params=None):
+    def get_AIC(self, LL):
         """
         Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.

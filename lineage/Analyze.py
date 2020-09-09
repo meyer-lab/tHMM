@@ -1,4 +1,6 @@
 """ Calls the tHMM functions and outputs the parameters needed to generate the Figures. """
+import multiprocessing
+multiprocessing.set_start_method('spawn', True)
 from concurrent.futures import ProcessPoolExecutor
 import random
 import itertools
@@ -9,7 +11,7 @@ from scipy.stats import wasserstein_distance
 from .tHMM import tHMM
 
 
-def Analyze(X, num_states, const=None, fpi=None, fT=None, fE=None):
+def Analyze(X, num_states, **kwargs):
     """
     Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
 
@@ -27,15 +29,16 @@ def Analyze(X, num_states, const=None, fpi=None, fT=None, fE=None):
     error_holder = []
     for num_tries in range(1, 10):
         try:
-            tHMMobj = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            _, _, _, _, _, LL = tHMMobj.fit(const)
+            tHMMobj = tHMM(X, num_states=num_states, **kwargs)  # build the tHMM class with X
+            _, _, _, _, _, LL = tHMMobj.fit()
 
-            tHMMobj2 = tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE)  # build the tHMM class with X
-            _, _, _, _, _, LL2 = tHMMobj2.fit(const)
+            tHMMobj2 = tHMM(X, num_states=num_states, **kwargs)  # build the tHMM class with X
+            _, _, _, _, _, LL2 = tHMMobj2.fit()
 
             if LL2 > LL:
                 tHMMobj = tHMMobj2
                 LL = LL2
+
             break
         except (AssertionError, ZeroDivisionError, RuntimeError) as error:
             error_holder.append(error)
@@ -75,7 +78,6 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
     list_of_fE = kwargs.get("list_of_fE", [None] * len(list_of_populations))
-    const = kwargs.get("const", None)
 
     if isinstance(num_states, (np.ndarray, list)):
         assert len(num_states) == len(list_of_populations), f"len list population = {len(list_of_populations)}"
@@ -88,12 +90,12 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
 
         prom_holder = []
         for idx, population in enumerate(list_of_populations):
-            prom_holder.append(exe.submit(Analyze, population, num_states[idx], const=const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
+            prom_holder.append(exe.submit(Analyze, population, num_states[idx], fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
         output = [prom.result() for prom in prom_holder]
     else:
         for idx, population in enumerate(list_of_populations):
-            output.append(Analyze(population, num_states[idx], const=const, fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
+            output.append(Analyze(population, num_states[idx], fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
     return output
 
