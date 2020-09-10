@@ -23,8 +23,8 @@ def makeFigure():
     gemcitabine = []
     # Run fitting
     for indx, data in enumerate(Gem):
-        gemc_tHMMobj, gemc_states, _ = Analyze(data, 2) # 4 states predicted by AIC
-        lapt_tHMMobj, lapt_states, _ = Analyze(Lap[indx], 2) # 3 states predicted by AIC
+        gemc_tHMMobj, gemc_states, _ = Analyze(data, 4) # 4 states predicted by AIC
+        lapt_tHMMobj, lapt_states, _ = Analyze(Lap[indx], 3) # 3 states predicted by AIC
 
         for lin_indx, lin in enumerate(lapt_tHMMobj.X):
             for cell_indx, cell in enumerate(lin.output_lineage):
