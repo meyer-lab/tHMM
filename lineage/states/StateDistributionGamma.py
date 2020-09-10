@@ -72,13 +72,15 @@ class StateDistribution:
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
 
-        # Handle an empty state
-        if np.sum(gammas) == 0.0:
-            gammas = np.ones_like(gammas)
-
         b_mask = np.isfinite(bern_obs)
         g_mask = np.isfinite(γ_obs)
-        self.params[0] = np.average(bern_obs[b_mask], weights=gammas[b_mask])
+
+        # Handle an empty state
+        if np.sum(gammas[b_mask]) == 0.0:
+            self.params[0] = np.average(bern_obs[b_mask])
+        else:
+            self.params[0] = np.average(bern_obs[b_mask], weights=gammas[b_mask])
+
         self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], self.const_shape, self.params[1:3])
 
         # } requires the user's attention.
