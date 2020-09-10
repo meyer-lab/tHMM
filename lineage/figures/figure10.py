@@ -35,8 +35,8 @@ def makeFigure():
         for lin_indx, lin in enumerate(gemc_tHMMobj.X):
             for cell_indx, cell in enumerate(lin.output_lineage):
                 cell.state = gemc_states[lin_indx][cell_indx]
-    lapatinib.append([lapt_tHMMobj.X[4], lapt_tHMMobj.X[7]])
-    gemcitabine.append([gemc_tHMMobj.X[0], gemc_tHMMobj.X[3]])
+        lapatinib.append([lapt_tHMMobj.X[4], lapt_tHMMobj.X[7]])
+        gemcitabine.append([gemc_tHMMobj.X[0], gemc_tHMMobj.X[3]])
 
     # Plotting the lineages
     figure_maker(ax, list(itertools.chain(*lapatinib)), list(itertools.chain(*gemcitabine)))
