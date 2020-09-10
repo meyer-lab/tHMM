@@ -22,18 +22,19 @@ def makeFigure():
     gemcitabine = []
     # Run fitting
     output = run_Analyze_over(data, np.repeat([3, 4], 4))
-    gemc_tHMMobj = [output[i][0] for i in range(5)]
-    gemc_states = [output[i][1] for i in range(5)]
-    lapt_tHMMobj = [output[i][0] for i in range(4, 8)]
-    lapt_states = [output[i][1] for i in range(4, 8)]
+    gemc_tHMMobj_list = [output[i][0] for i in range(5)]
+    gemc_states_list = [output[i][1] for i in range(5)]
+    lapt_tHMMobj_list = [output[i][0] for i in range(4, 8)]
+    lapt_states_list = [output[i][1] for i in range(4, 8)]
 
-    for lin_indx, lin in enumerate(lapt_tHMMobj.X):
-        for cell_indx, cell in enumerate(lin.output_lineage):
-            cell.state = lapt_states[lin_indx][cell_indx]
-
-    for lin_indx, lin in enumerate(gemc_tHMMobj.X):
-        for cell_indx, cell in enumerate(lin.output_lineage):
-            cell.state = gemc_states[lin_indx][cell_indx]
+    for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
+        for lin_indx, lin in enumerate(lapt_tHMMobj.X):
+            for cell_indx, cell in enumerate(lin.output_lineage):
+                cell.state = lapt_states_list[idx][lin_indx][cell_indx]
+    for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
+        for lin_indx, lin in enumerate(gemc_tHMMobj.X):
+            for cell_indx, cell in enumerate(lin.output_lineage):
+                cell.state = gemc_states[lin_indx][cell_indx]
     lapatinib.append([lapt_tHMMobj.X[4], lapt_tHMMobj.X[7]])
     gemcitabine.append([gemc_tHMMobj.X[0], gemc_tHMMobj.X[3]])
 
