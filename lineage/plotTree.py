@@ -39,12 +39,12 @@ def CladeRecursive(cell, a, censore):
             clades.append(CladeRecursive(cell.left, a, censore))
         if cell.right is not None and cell.right.observed:
             clades.append(CladeRecursive(cell.right, a, censore))
-        if np.isnan(cell.obs[3]): # if the cell got stuck in G1
+        if np.isnan(cell.obs[3]):  # if the cell got stuck in G1
             lengths = cell.obs[2]
-        elif np.isnan(cell.obs[2]): # is a root parent and G1 is not observed
+        elif np.isnan(cell.obs[2]):  # is a root parent and G1 is not observed
             lengths = cell.obs[3]
         else:
-            lengths = cell.obs[2] + cell.obs[3] # both are observed
+            lengths = cell.obs[2] + cell.obs[3]  # both are observed
         return Clade(branch_length=lengths, width=1, clades=clades, color=colorr)
 
 
@@ -54,10 +54,10 @@ def plotLineage(lineage, axes, censore=True):
     """
 
     root = lineage.output_lineage[0]
-    if np.isfinite(root.obs[4]): # starts from G1
+    if np.isfinite(root.obs[4]):  # starts from G1
         length = root.obs[2] + root.obs[3]
         assert np.isfinite(length)
-    else: # starts from G2
+    else:  # starts from G2
         length = root.obs[3]
         assert np.isfinite(length)
     a = [Clade(length)]
