@@ -51,50 +51,12 @@ def figure_maker(ax, lapatinib, gemcitabine):
     ax[1].set_title("Gemcitabine")
 
     i = 0
-    ax[i].axis('off')
-    plotLineage(lapatinib[0], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(gemcitabine[0], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(lapatinib[1], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(gemcitabine[1], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(lapatinib[2], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(gemcitabine[2], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(lapatinib[3], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(gemcitabine[3], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(lapatinib[4], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(gemcitabine[4], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(lapatinib[5], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(gemcitabine[5], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(lapatinib[6], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(gemcitabine[6], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(lapatinib[7], ax[i], censore=True)
-    i += 1
-    ax[i].axis('off')
-    plotLineage(gemcitabine[7], ax[i], censore=True)
+    for j in np.arange(0, 15, 2):
+        ax[j].axis('off')
+        plotLineage(lapatinib[i], ax[j], censore=True)
+        i += 1
+    i = 0
+    for j in np.arange(1, 16, 2):
+        ax[j].axis('off')
+        plotLineage(gemcitabine[i], ax[j], censore=True)
+        i += 1
