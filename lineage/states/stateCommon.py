@@ -58,6 +58,10 @@ def gamma_estimator(gamma_obs, time_cen, gammas, constant_shape, x0):
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
     """
+    # Handle no observations
+    if np.sum(gammas) == 0.0:
+        gammas = np.ones_like(gammas)
+
     # If nothing is censored
     if np.all(time_cen == 1):
         return gamma_uncensored(gamma_obs, gammas, constant_shape)
