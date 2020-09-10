@@ -9,42 +9,26 @@ from jax.config import config
 import numpy as np
 import scipy.stats as sp
 import scipy.special as sc
-from scipy.optimize import brentq, minimize
+from scipy.optimize import toms748, minimize
 
 config.update("jax_enable_x64", True)
 
 
-def bernoulli_estimator(bern_obs, gammas):
-    """
-    Add up all the 1s and divide by the total length (finding the average).
-    """
-    # Handle an empty state
-    if np.sum(gammas) == 0.0:
-        return np.average(bern_obs)
-
-    return np.average(bern_obs, weights=gammas)
-
-
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
-    uncens = jnp.dot(uncens_gammas, jsp.gamma.logpdf(uncens_obs, a=x[0], scale=x[1]))
-    cens = jnp.dot(cens_gammas, jsc.gammaincc(x[0], cens_obs / x[1]))
+    return negative_LL_sep(x[1], x[0], uncens_obs, uncens_gammas, cens_obs, cens_gammas)
+
+def negative_LL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
+    uncens = jnp.dot(uncens_gammas, jsp.gamma.logpdf(uncens_obs, a=a, scale=scale))
+    cens = jnp.dot(cens_gammas, jsc.gammaincc(a, cens_obs / scale))
     return -1 * (uncens + cens)
 
 
 negative_LL_jit = jit(value_and_grad(negative_LL, 0))
+negative_LL_sep_jit = jit(value_and_grad(negative_LL_sep, 0))
 
 
-def gamma_estimator(gamma_obs, time_censor_obs, gammas, constant_shape):
-    """
-    This is a weighted, closed-form estimator for two parameters
-    of the Gamma distribution.
-    """
-    # Handle an empty state
-    if np.sum(gammas) == 0.0:
-        gammas = np.copy(gammas)
-        gammas.fill(1.0)
-
-    # First assume nothing is censored
+def gamma_uncensored(gamma_obs, gammas, constant_shape):
+    """ An uncensored gamma estimator. """
     gammaCor = np.average(gamma_obs, weights=gammas)
     s = np.log(gammaCor) - np.average(np.log(gamma_obs), weights=gammas)
 
@@ -64,29 +48,30 @@ def gamma_estimator(gamma_obs, time_censor_obs, gammas, constant_shape):
             else:
                 a_hat0 = 10.0
         else:
-            a_hat0 = brentq(f, 0.1, 100.0)
+            a_hat0 = toms748(f, 0.1, 100.0)
 
-    x0 = [a_hat0, gammaCor / a_hat0]
+    return [a_hat0, gammaCor / a_hat0]
 
+
+def gamma_estimator(gamma_obs, time_cen, gammas, constant_shape, x0):
+    """
+    This is a weighted, closed-form estimator for two parameters
+    of the Gamma distribution.
+    """
     # If nothing is censored
-    if np.all(time_censor_obs == 1):
-        return x0
+    if np.all(time_cen == 1):
+        return gamma_uncensored(gamma_obs, gammas, constant_shape)
 
-    uncens_gammas = gammas[time_censor_obs == 1]
-    uncens_obs = gamma_obs[time_censor_obs == 1]
-    assert uncens_gammas.shape[0] == uncens_obs.shape[0]
-    cens_gammas = gammas[time_censor_obs == 0]
-    cens_obs = gamma_obs[time_censor_obs == 0]
-    assert cens_gammas.shape[0] == cens_obs.shape[0]
+    assert gammas.shape[0] == gamma_obs.shape[0]
+    arrgs = (gamma_obs[time_cen == 1], gammas[time_cen == 1], gamma_obs[time_cen == 0], gammas[time_cen == 0])
+    bnd = (0.1, 50000.0)
 
-    arrgs = (uncens_obs, uncens_gammas, cens_obs, cens_gammas)
     if constant_shape is None:
-        bnds = ((0.1, 50000.0), (0.1, 50000.0))
-        res = minimize(fun=negative_LL_jit, jac=True, x0=x0, method="TNC", bounds=bnds, args=arrgs)
+        res = minimize(fun=negative_LL_jit, jac=True, x0=x0, method="TNC", bounds=(bnd, bnd), args=arrgs)
         xOut = res.x
     else:
-        def func(x): return negative_LL([constant_shape, x[0]], *arrgs)
-        res = minimize(fun=func, x0=x0[1], bounds=((0.1, 50000.0), ))
+        arrgs = (constant_shape, *arrgs)
+        res = minimize(fun=negative_LL_sep_jit, jac=True, x0=x0[1], method="TNC", bounds=(bnd, ), args=arrgs)
         xOut = [constant_shape, res.x]
 
     return xOut
@@ -100,11 +85,7 @@ def get_experiment_time(lineageObj):
     longest end time. This is effectively
     the same as the experiment time for synthetic lineages.
     """
-    longest = 0.0
-    for cell in lineageObj.output_leaves:
-        if cell.time.endT > longest:
-            longest = cell.time.endT
-    return longest
+    return max(cell.time.endT for cell in lineageObj.output_leaves)
 
 
 def basic_censor(cell):

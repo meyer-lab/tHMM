@@ -2,7 +2,7 @@
 import numpy as np
 import scipy.stats as sp
 
-from .stateCommon import bernoulli_estimator, gamma_estimator, basic_censor
+from .stateCommon import gamma_estimator, basic_censor
 from ..CellVar import Time
 
 
@@ -72,10 +72,14 @@ class StateDistribution:
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
 
+        # Handle an empty state
+        if np.sum(gammas) == 0.0:
+            gammas = np.ones_like(gammas)
+
         b_mask = np.isfinite(bern_obs)
         g_mask = np.isfinite(γ_obs)
-        self.params[0] = bernoulli_estimator(bern_obs[b_mask], gammas[b_mask])
-        self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], self.const_shape)
+        self.params[0] = np.average(bern_obs[b_mask], weights=gammas[b_mask])
+        self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], self.const_shape, self.params[1:3])
 
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
