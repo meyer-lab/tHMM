@@ -142,12 +142,14 @@ def fate_censor(cell):
         if not cell.isLeafBecauseTerminal():
             cell.left.observed = False
             cell.right.observed = False
-        if cell.obs[0] == 0:
+        if cell.obs[0] == 0: # dies in G1
             cell.obs[1] = float('nan')  # unobserved
             cell.obs[3] = float('nan')  # unobserved
             cell.obs[5] = float('nan')  # unobserved
             cell.time.endT = cell.time.startT + cell.obs[2]
             cell.time.transition_time = cell.time.endT
+        if cell.obs[1] == 0: # dies in G2
+            cell.time.endT = cell.time.startT + cell.obs[2] + cell.obs[3]
 
 
 def time_censor(cell, desired_experiment_time):
