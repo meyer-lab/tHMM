@@ -61,7 +61,7 @@ class tHMM:
             self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
         self.EL = get_Emission_Likelihoods(self)
 
-    def fit(self, tolerance=1e-8, max_iter=250):
+    def fit(self, tolerance=1e-9, max_iter=1000):
         """Runs the tHMM function through Baum Welch fitting"""
 
         # Step 0: initialize with KMeans and do an M step

@@ -13,6 +13,7 @@ from .figureCommon import (
     commonAnalyze,
     pi,
     T,
+    E2,
     max_desired_num_cells,
     num_data_points,
     scatter_kws_list,
@@ -39,30 +40,22 @@ def makeFigure():
 def accuracy():
     """ A Helper function to create more random copies of a population. """
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 0.9, 12, a, 4, 5), StateDistribution(0.99, 0.8, 12, 1.5, 8, 5)] for a in np.linspace(1.5, 4, num_data_points)]
-    list_of_fpi = [pi] * len(list_of_Es)
+    list_of_Es = [[StateDistribution(E2[1].params[0], E2[1].params[1], E2[1].params[2], a, E2[1].params[4], E2[1].params[5]), E2[1]] for a in np.linspace(4.0, 12.0, num_data_points)]
     list_of_populations = [[LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)] for E in list_of_Es]
 
-    allpops = []
-    balanced_score = []
-    true = []
-    all_cells = []
+    balanced_score = np.empty(len(list_of_populations))
 
-    for pop in list_of_populations:
-        thmmobj = tHMM(pop, num_states=2)
-        true_states_by_lineage = [[cell.state for cell in lineage.output_lineage] for lineage in thmmobj.X]
-        tmp = [state for sublist in true_states_by_lineage for state in sublist]
-        true.append(tmp)
-        ravel_true_states = np.array(list(itertools.chain.from_iterable(true)))
+    for ii, pop in enumerate(list_of_populations):
+        ravel_true_states = np.array([cell.state for lineage in pop for cell in lineage.output_lineage])
+        all_cells = np.array([cell.obs for lineage in pop for cell in lineage.output_lineage])
 
-        tmp = [cell.obs for lineage in thmmobj.X for cell in lineage.output_lineage]
-        all_cells.append(tmp)
-        kmeans = KMeans(n_clusters=2, random_state=0).fit(np.array(list(itertools.chain.from_iterable(all_cells)))).labels_
-        balanced_score.append(100 * balanced_accuracy_score(ravel_true_states, kmeans))
+        kmeans = KMeans(n_clusters=2).fit(all_cells).labels_
+        balanced_score[ii] = 100 * balanced_accuracy_score(ravel_true_states, kmeans)
+
     # replace x with 1-x if the accuracy is less than 50%
-    balanced_score = [score if score > 50 else 1 - score for score in balanced_score]
+    balanced_score[balanced_score < 50.0] = 100.0 - balanced_score[balanced_score < 50.0]
 
-    wass, _, accuracy, _, _, _ = commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=list_of_fpi, parallel=True)
+    wass, _, accuracy, _, _, _ = commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=[pi] * num_data_points, list_of_fT=[T] * num_data_points, parallel=True)
 
     distribution_df = pd.DataFrame(columns=["Distribution type", "G1 lifetime", "State"])
     lineages = [list_of_populations[int(num_data_points * i / 4.)][0] for i in range(4)]
