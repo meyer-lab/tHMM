@@ -6,11 +6,7 @@ import numpy as np
 import scipy.stats as sp
 from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
-from ..states.stateCommon import (
-    bernoulli_estimator,
-    gamma_estimator,
-    get_experiment_time,
-)
+from ..states.stateCommon import get_experiment_time
 from ..LineageTree import LineageTree
 
 
@@ -92,30 +88,6 @@ class TestModel(unittest.TestCase):
         experiment_time2 = get_experiment_time(self.lineage2)
         experiment_time = get_experiment_time(self.lineage)
         self.assertLess(experiment_time2, experiment_time)
-
-    def test_bernoulli_estimator(self):
-        """
-        Testing the bernoulli estimator,
-        by comparing the result of the estimator
-        to the result of scipy random variable generator.
-        """
-        bern_obs = sp.bernoulli.rvs(p=0.90, size=1000)  # bernoulli observations
-        gammas = np.array([1] * len(bern_obs))
-        self.assertTrue(0.87 <= bernoulli_estimator(bern_obs, gammas) <= 0.93)
-
-    def test_gamma_estimator(self):
-        """
-        Testing the gamma estimator,
-        by comparing the result of the estimator
-        to the result of scipy random variable generator.
-        """
-        gamma_obs = sp.gamma.rvs(a=12.5, scale=3, size=1000)  # gamma observations
-        gamma_censor_obs = np.ones_like(gamma_obs)
-        gammas = np.ones_like(gamma_obs)
-
-        shape, scale = gamma_estimator(gamma_obs, gamma_censor_obs, gammas, None)
-        self.assertTrue(10 <= shape <= 15)
-        self.assertTrue(2 <= scale <= 4)
 
 
 @pytest.mark.parametrize("dist", [StateDistribution, StateDistPhase])
