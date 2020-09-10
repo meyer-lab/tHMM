@@ -23,8 +23,6 @@ def CladeRecursive(cell, a, censore):
         colorr = "red"
     else:
         colorr = "black"
-    print("state", cell.state)
-
 
     if cell.isLeaf() and censore:
         if np.isfinite(cell.obs[2]) and np.isfinite(cell.obs[3]):
