@@ -26,8 +26,8 @@ state0 = StateDistribution(0.99, 8, 6)
 state1 = StateDistribution(0.75, 8, 1)
 E = [state0, state1]
 
-state20 = phaseStateDist(1., 0.97, 3.6, 12., 7.5, 9.5)
-state21 = phaseStateDist(0.9, 1., 1.9, 8.7, 37., 2.4)
+state20 = phaseStateDist(1.0, 1.0, 6, 10, 29, 1.6)        1.68513436)
+state21 = phaseStateDist(0.96, 0.98, 10, 3.4, 46, 1.0)
 E2 = [state20, state21]
 
 min_desired_num_cells = (2 ** 4) - 1
