@@ -17,6 +17,7 @@ config.update("jax_enable_x64", True)
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     return negative_LL_sep(x[1], x[0], uncens_obs, uncens_gammas, cens_obs, cens_gammas)
 
+
 def negative_LL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     uncens = jnp.dot(uncens_gammas, jsp.gamma.logpdf(uncens_obs, a=a, scale=scale))
     cens = jnp.dot(cens_gammas, jsc.gammaincc(a, cens_obs / scale))
