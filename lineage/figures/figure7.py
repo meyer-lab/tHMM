@@ -29,7 +29,6 @@ def makeFigure():
     subplotLabel(ax)
 
     return f
-Em2 = [StateDistribution(E2[1].params[0], E2[1].params[1], E2[1].params[2], 12, E2[1].params[4], E2[1].params[5]), E2[1]]
 
 def accuracy():
     """
@@ -44,8 +43,8 @@ def accuracy():
     list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.1, 0.9, num_data_points)]
     list_of_fpi = [pi] * len(list_of_Ts)
 
-    def genF(x): return LineageTree.init_from_parameters(pi, x, Em2, max_desired_num_cells)
-    def genC(x): return LineageTree.init_from_parameters(pi, x, Em2, max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
+    def genF(x): return LineageTree.init_from_parameters(pi, x, E2, 0.5*max_desired_num_cells)
+    def genC(x): return LineageTree.init_from_parameters(pi, x, E2, 0.5*max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
 
     # Generate populations
     list_of_uncen_populations = [[genF(T) for _ in range(3)] for T in list_of_Ts]
