@@ -15,7 +15,6 @@ from .figureCommon import (
 from ..LineageTree import LineageTree
 
 
-
 def makeFigure():
     """
     Makes fig 7.
@@ -28,6 +27,7 @@ def makeFigure():
     subplotLabel(ax)
 
     return f
+
 
 def accuracy():
     """
