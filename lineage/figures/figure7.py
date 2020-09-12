@@ -13,7 +13,6 @@ from .figureCommon import (
     scatter_kws_list,
 )
 from ..LineageTree import LineageTree
-from ..states.StateDistributionGaPhs import StateDistribution
 
 
 
@@ -43,8 +42,8 @@ def accuracy():
     list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.1, 0.9, num_data_points)]
     list_of_fpi = [pi] * len(list_of_Ts)
 
-    def genF(x): return LineageTree.init_from_parameters(pi, x, E2, 0.5*max_desired_num_cells)
-    def genC(x): return LineageTree.init_from_parameters(pi, x, E2, 0.5*max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
+    def genF(x): return LineageTree.init_from_parameters(pi, x, E2, 0.5 * max_desired_num_cells)
+    def genC(x): return LineageTree.init_from_parameters(pi, x, E2, 0.5 * max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
 
     # Generate populations
     list_of_uncen_populations = [[genF(T) for _ in range(3)] for T in list_of_Ts]
