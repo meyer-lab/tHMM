@@ -15,6 +15,7 @@ from .figureCommon import (
 from ..LineageTree import LineageTree
 
 
+
 def makeFigure():
     """
     Makes fig 7.
@@ -27,7 +28,6 @@ def makeFigure():
     subplotLabel(ax)
 
     return f
-
 
 def accuracy():
     """
@@ -65,7 +65,7 @@ def accuracy():
 
 def figureMaker6(ax, un_accuracy_df, accuracy_df):
     """
-    This makes figure 6.
+    This makes figure 7.
     """
     # cartoon to show different shapes --> similar shapes
     i = 0
