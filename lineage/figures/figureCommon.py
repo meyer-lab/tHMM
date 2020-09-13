@@ -175,9 +175,11 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
     """
     # Checks whether we are plotting exponential results, or gamma results
     number_of_params = paramEst.shape[-1]
+    num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
 
     accuracy_df = pd.DataFrame(columns=["x", 'accuracy'])
     accuracy_df['x'] = x
+    accuracy_df['num lineages'] = num_lineages
     accuracy_df['accuracy'] = accuracies
     accuracy_df['tr'] = tr
     accuracy_df['pii'] = pii
@@ -302,7 +304,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].set_ylim(bottom=0, top=np.mean(tr) + 0.2)
         sns.regplot(x="x", y="tr", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
-        ax[i].set_title("Transition Matrix Estimation")
+        ax[i].set_title(r"Error in estimating $T$")
     ax[i].set_xlabel(xlabel)
 
     i += 1
@@ -313,15 +315,17 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].scatter(x, paramTrues[:, 1, 5], marker="_", s=20, c="#feba4f", alpha=0.5)
         ax[i].set_ylabel(r"G2 Gamma $\theta$")
         ax[i].set_title(r"G2 Gamma $\theta$")
+        ax[i].set_xlabel(xlabel)
     else:
         if len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1]):
             ax[i].axis('off')
         else:
             ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
-            sns.regplot(x="x", y="pii", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+            sns.regplot(x="num lineages", y="pii", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
             ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
-            ax[i].set_title("Initial Probability Matrix Estimation")
-    ax[i].set_xlabel(xlabel)
+            ax[i].set_title(r"Error in estimating $\pi$")
+            ax[i].set_xlabel("Number of Lineages")
+    
 
     if number_of_params == 6:
         i += 1
@@ -335,7 +339,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
         ax[i].set_ylim(bottom=0, top=np.mean(tr) + 0.2)
         sns.regplot(x="x", y="tr", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
-        ax[i].set_title("Transition Matrix Estimation")
+        ax[i].set_title(r"Error in estimating $T$")
         ax[i].set_xlabel(xlabel)
 
         i += 1
@@ -343,7 +347,7 @@ def figureMaker(ax, x, paramEst, accuracies, tr, pii, paramTrues, xlabel="Number
             ax[i].axis('off')
         else:
             ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
-            sns.regplot(x="x", y="pii", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+            sns.regplot(x="num lineages", y="pii", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
             ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
-            ax[i].set_title("Initial Probability Vector Estimation")
-            ax[i].set_xlabel(xlabel)
+            ax[i].set_title(r"Error in estimating $\pi$")
+            ax[i].set_xlabel("Number of Lineages")
