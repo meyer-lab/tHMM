@@ -12,7 +12,6 @@ from .figureCommon import (
     min_num_lineages,
     max_num_lineages,
     num_data_points,
-    scatter_kws_list,
     figureMaker,
     commonAnalyze
 )
@@ -27,8 +26,8 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((13, 6.66), (2, 4))
-    x, paramEst, dictOut, paramTrues = accuracy()
-    figureMaker(ax, x, paramEst, dictOut, paramTrues, dist_dist=True)
+    # dist_dist is 
+    figureMaker(ax, *accuracy(), dist_dist=True)
 
     subplotLabel(ax)
 
