@@ -53,7 +53,7 @@ def accuracy():
     for indx, num in enumerate(num_lineages):
         population = []
         for _ in range(num):
-            tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=2*min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
+            tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
             if len(tmp_lineage.output_lineage) < 3:
                 pass
             else:
