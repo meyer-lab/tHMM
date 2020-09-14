@@ -25,7 +25,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((13, 6.66), (2, 4))
+    ax, f = getSetup((13, 6.66), (3, 3))
     # dist_dist is 
     figureMaker(ax, *accuracy(), dist_dist=True)
 
