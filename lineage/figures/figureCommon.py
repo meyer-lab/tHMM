@@ -199,13 +199,13 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         accuracy_df['gamma 1 5'] = paramEst[:, 1, 5]
         accuracy_df['wasserstein distance 0'] = dictOut["distribution distance 0"]
         accuracy_df['wasserstein distance 1'] = dictOut["distribution distance 1"]
-        if num_lineages is not None:
-            accuracy_df['num lineages'] = num_lineages
     else:
         accuracy_df['0 1'] = paramEst[:, 0, 1] # gamma shape
         accuracy_df['1 1'] = paramEst[:, 1, 1]
         accuracy_df['gamma 0 2'] = paramEst[:, 0, 2] # gamma scale
         accuracy_df['gamma 1 2'] = paramEst[:, 1, 2]
+    if num_lineages is not None:
+            accuracy_df['num lineages'] = num_lineages
 
     i = 0
     ax[i].axis('off')
