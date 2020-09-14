@@ -21,6 +21,9 @@ from .figureCommon import (
 )
 from ..LineageTree import LineageTree
 
+# Creating a list of populations to analyze over
+num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
+list_of_populations = [[LineageTree.init_from_parameters(pi, T, E, min_desired_num_cells) for _ in range(num)] for num in num_lineages]
 
 def makeFigure():
     """
@@ -30,7 +33,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((10, 10), (3, 3))
 
-    figureMaker(ax, *accuracy())
+    figureMaker(ax, *accuracy(), num_lineages=num_lineages)
 
     subplotLabel(ax)
 
@@ -45,9 +48,4 @@ def accuracy():
     We increase the desired number of cells in a lineage by
     the experiment time.
     """
-
-    # Creating a list of populations to analyze over
-    num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
-    list_of_populations = [[LineageTree.init_from_parameters(pi, T, E, min_desired_num_cells) for _ in range(num)] for num in num_lineages]
-
     return commonAnalyze(list_of_populations, 2)
