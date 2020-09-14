@@ -43,19 +43,8 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((13, 6.66), (3, 3))
     # dist_dist is 
-    figureMaker(ax, *accuracy(), num_lineages=num_lineages, dist_dist=True)
+    figureMaker(ax, *commonAnalyze(list_of_populations, 2), num_lineages=num_lineages, dist_dist=True)
 
     subplotLabel(ax)
 
     return f
-
-def accuracy():
-    """
-    Calculates accuracy and parameter estimation
-    over an increasing number of lineages in a population for
-    a uncensored two-state model.
-    We increase the desired number of cells in a lineage by
-    the experiment time.
-    """
-
-    return commonAnalyze(list_of_populations, 2)
