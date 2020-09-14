@@ -75,7 +75,7 @@ def accuracy():
         # Adding populations into a holder for analysing
         list_of_populations2.append(population2)
 
-    cell_number_x2, _, accuracy2_after_switching, _, _, _ = commonAnalyze(list_of_populations2, 2)
+    cell_number_x2, _, accuracy2_after_switching, _ = commonAnalyze(list_of_populations2, 2)
 
     # 3 state population
     list_of_populations3 = []
@@ -108,11 +108,11 @@ def accuracy():
     # Create the dataframe for the data.
     accuracy_df = pd.DataFrame(columns=["x2", "x3", "x4", "accuracy2", "accuracy3", "accuracy4"])
     accuracy_df["x2"] = cell_number_x2
-    accuracy_df["accuracy2"] = accuracy2_after_switching
+    accuracy_df["accuracy2"] = accuracy2_after_switching["balanced_accuracy_score"]
     accuracy_df["x3"] = cell_number_x3
-    accuracy_df["accuracy3"] = accuracy3_after_switching
+    accuracy_df["accuracy3"] = accuracy3_after_switching["balanced_accuracy_score"]
     accuracy_df["x4"] = cell_number_x4
-    accuracy_df["accuracy4"] = accuracy4_after_switching
+    accuracy_df["accuracy4"] = accuracy4_after_switching["balanced_accuracy_score"]
     print("after accuracy df")
 
     return accuracy_df

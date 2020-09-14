@@ -27,7 +27,8 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((13, 6.66), (2, 4))
-    figureMaker(ax, *accuracy(), dist_dist=True)
+    x, paramEst, dictOut, paramTrues = accuracy()
+    figureMaker(ax, x, paramEst, dictOut, paramTrues, dist_dist=True)
 
     subplotLabel(ax)
 

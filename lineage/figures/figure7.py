@@ -54,11 +54,11 @@ def accuracy():
 
     un_accuracy_df = pd.DataFrame(columns=["Proportions", "State Assignment Accuracy"])
     un_accuracy_df["Proportions"] = percentageS1un
-    un_accuracy_df["State Assignment Accuracy"] = acc_un
+    un_accuracy_df["State Assignment Accuracy"] = acc_un["balanced_accuracy_score"]
 
     accuracy_df = pd.DataFrame(columns=["Proportions", "State Assignment Accuracy"])
     accuracy_df["Proportions"] = percentageS1
-    accuracy_df["State Assignment Accuracy"] = acc
+    accuracy_df["State Assignment Accuracy"] = acc["balanced_accuracy_score"]
 
     return un_accuracy_df, accuracy_df
 
