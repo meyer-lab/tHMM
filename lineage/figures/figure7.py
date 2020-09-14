@@ -65,7 +65,7 @@ def accuracy():
 
 def figureMaker6(ax, un_accuracy_df, accuracy_df):
     """
-    This makes figure 6.
+    This makes figure 7.
     """
     # cartoon to show different shapes --> similar shapes
     i = 0
