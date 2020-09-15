@@ -35,6 +35,7 @@ for num in num_lineages:
     # Adding populations into a holder for analysing
     list_of_populations.append(population)
 
+
 def makeFigure():
     """
     Makes figure 4.
