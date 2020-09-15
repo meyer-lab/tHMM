@@ -25,6 +25,7 @@ from ..LineageTree import LineageTree
 num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
 list_of_populations = [[LineageTree.init_from_parameters(pi, T, E, min_desired_num_cells) for _ in range(num)] for num in num_lineages]
 
+
 def makeFigure():
     """
     Makes figure 4.

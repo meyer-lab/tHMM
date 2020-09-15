@@ -27,6 +27,7 @@ list_of_fpi = [pi] * cells.size
 # Generate populations
 list_of_populations = [[LineageTree.init_from_parameters(pi, T, E, cell_num)] for cell_num in cells]
 
+
 def makeFigure():
     """
     Makes figure 2.
