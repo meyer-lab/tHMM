@@ -1,11 +1,7 @@
 """ This file depicts the distribution of phase lengths versus the states. """
-import numpy as np
 from matplotlib.ticker import MaxNLocator
-import itertools
 
-from ..Analyze import run_Analyze_over
-from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
-from .figureCommon import getSetup, subplotLabel
+from .figureCommon import getSetup
 from .figure11 import lapatinib12, gemcitabine12
 
 
@@ -14,6 +10,7 @@ def makeFigure():
     Makes figure 12.
     """
     ax, f = getSetup((7, 6), (2, 4))
+    # titles
     concs = ["cntrl", "Lapt 25uM", "Lapt 50 uM", "Lapt 250 uM", "cntrl", "Gem 5uM", "Gem 10uM", "Gem 30uM"]
 
     # plot
