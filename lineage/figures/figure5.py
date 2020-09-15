@@ -35,6 +35,7 @@ for indx, num in enumerate(num_lineages):
     # Adding populations into a holder for analysing
     list_of_populations.append(population)
 
+
 def makeFigure():
     """
     Makes fig 5.
@@ -42,7 +43,7 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((13, 6.66), (3, 3))
-    # dist_dist is 
+    # dist_dist is
     figureMaker(ax, *commonAnalyze(list_of_populations, 2), num_lineages=num_lineages, dist_dist=True)
 
     subplotLabel(ax)
