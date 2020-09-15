@@ -1,5 +1,4 @@
-""" This file plots the trees with their predicted states. """
-
+""" This file depicts the distribution of phase lengths versus the states. """
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 import itertools
@@ -7,7 +6,6 @@ import itertools
 from ..Analyze import run_Analyze_over
 from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .figureCommon import getSetup, subplotLabel
-from ..plotTree import plotLineage
 
 
 def makeFigure():
@@ -31,34 +29,9 @@ def makeFigure():
             for cell_indx, cell in enumerate(lin.output_lineage):
                 cell.state = lapt_states_list[idx][lin_indx][cell_indx]
         lapatinib.append([lapt_tHMMobj.X[4], lapt_tHMMobj.X[7]])
-
     for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
         for lin_indx, lin in enumerate(gemc_tHMMobj.X):
             for cell_indx, cell in enumerate(lin.output_lineage):
                 cell.state = gemc_states_list[idx][lin_indx][cell_indx]
+        
         gemcitabine.append([gemc_tHMMobj.X[0], gemc_tHMMobj.X[3]])
-
-    # Plotting the lineages
-    figure_maker(ax, list(itertools.chain(*lapatinib)), list(itertools.chain(*gemcitabine)))
-
-    return f
-
-
-def figure_maker(ax, lapatinib, gemcitabine):
-    """
-    Makes figure 10.
-    """
-
-    ax[0].set_title("Lapatinib")
-    ax[1].set_title("Gemcitabine")
-
-    i = 0
-    for j in np.arange(0, 15, 2):
-        ax[j].axis('off')
-        plotLineage(lapatinib[i], ax[j], censore=True)
-        i += 1
-    i = 0
-    for j in np.arange(1, 16, 2):
-        ax[j].axis('off')
-        plotLineage(gemcitabine[i], ax[j], censore=True)
-        i += 1
