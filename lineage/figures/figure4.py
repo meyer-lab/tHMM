@@ -75,16 +75,18 @@ def accuracy():
     list_of_populations = [[regGen() for _ in range(num)] for num in num_lineages]
     list_of_populationsSim = [[cenGen() for _ in range(num)] for num in num_lineages]
 
-    x_Sim, _, Accuracy_Sim, _, _, _ = commonAnalyze(list_of_populationsSim, 2, list_of_fpi=list_of_fpi)
-    x_Cen, _, Accuracy_Cen, _, _, _ = commonAnalyze(list_of_populations, 2, list_of_fpi=list_of_fpi)
-    return x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, list_of_populationsSim, list_of_populations
+    x_Sim, _, output_Sim, _ = commonAnalyze(list_of_populationsSim, 2, list_of_fpi=list_of_fpi)
+    x_Cen, _, output_Cen, _ = commonAnalyze(list_of_populations, 2, list_of_fpi=list_of_fpi)
+    return x_Sim, output_Sim, x_Cen, output_Cen, list_of_populationsSim, list_of_populations
 
 
-def figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, xlabel="Number of Cells"):
+def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cells"):
     """
     Makes a 2 panel figures displaying state accuracy estimation across lineages
     of different censoring states.
     """
+    Accuracy_Sim = output_Sim["balanced_accuracy_score"]
+    Accuracy_Cen = output_Cen["balanced_accuracy_score"]
     accuracy_sim_df = pd.DataFrame(columns=["Cell number", "State Assignment Accuracy"])
     accuracy_sim_df["Cell number"] = x_Sim
     accuracy_sim_df["State Assignment Accuracy"] = Accuracy_Sim

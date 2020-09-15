@@ -22,7 +22,7 @@ def makeFigure():
 
     # Get list of axis objects
     ax, f = getSetup((6.9, 5.5), (2, 2))  # each figure will take twice its normal size horizontally
-    figureMaker6(ax, *accuracy())
+    figureMaker7(ax, *accuracy())
 
     subplotLabel(ax)
 
@@ -49,21 +49,21 @@ def accuracy():
     list_of_uncen_populations = [[genF(T) for _ in range(3)] for T in list_of_Ts]
     list_of_populations = [[genC(T) for _ in range(3)] for T in list_of_Ts]
 
-    percentageS1un, _, acc_un, _, _, _ = commonAnalyze(list_of_uncen_populations, 2, xtype="prop", list_of_fpi=list_of_fpi)
-    percentageS1, _, acc, _, _, _ = commonAnalyze(list_of_populations, 2, xtype="prop", list_of_fpi=list_of_fpi)
+    percentageS1un, _, output_un, _ = commonAnalyze(list_of_uncen_populations, 2, xtype="prop", list_of_fpi=list_of_fpi)
+    percentageS1, _, output_cen, _ = commonAnalyze(list_of_populations, 2, xtype="prop", list_of_fpi=list_of_fpi)
 
     un_accuracy_df = pd.DataFrame(columns=["Proportions", "State Assignment Accuracy"])
     un_accuracy_df["Proportions"] = percentageS1un
-    un_accuracy_df["State Assignment Accuracy"] = acc_un
+    un_accuracy_df["State Assignment Accuracy"] = output_un["balanced_accuracy_score"]
 
     accuracy_df = pd.DataFrame(columns=["Proportions", "State Assignment Accuracy"])
     accuracy_df["Proportions"] = percentageS1
-    accuracy_df["State Assignment Accuracy"] = acc
+    accuracy_df["State Assignment Accuracy"] = output_cen["balanced_accuracy_score"]
 
     return un_accuracy_df, accuracy_df
 
 
-def figureMaker6(ax, un_accuracy_df, accuracy_df):
+def figureMaker7(ax, un_accuracy_df, accuracy_df):
     """
     This makes figure 7.
     """
