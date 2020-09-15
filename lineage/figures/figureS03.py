@@ -44,7 +44,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((10, 10), (3, 3))
 
-    figureMaker(ax, *commonAnalyze(list_of_populations, 2))
+    figureMaker(ax, *commonAnalyze(list_of_populations, 2), num_lineages=num_lineages)
 
     subplotLabel(ax)
 
