@@ -13,7 +13,7 @@ def popout_single_lineages(lineages):
     """ To remove lineages with cell numbers <= 5. """
     trimed_lineages = []
     for cells in lineages:
-        if len(cells) < 3:
+        if len(cells) < 5:
             pass
         else:
             trimed_lineages.append(cells)
