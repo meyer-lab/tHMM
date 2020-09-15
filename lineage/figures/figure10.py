@@ -20,9 +20,9 @@ def makeFigure():
     lapatinib = []
     gemcitabine = []
     # Run fitting
-    output = run_Analyze_over(data, np.repeat([3, 4], 4))
-    gemc_tHMMobj_list = [output[i][0] for i in range(5)]
-    gemc_states_list = [output[i][1] for i in range(5)]
+    output = run_Analyze_over(data, np.repeat([4, 3], 4))
+    gemc_tHMMobj_list = [output[i][0] for i in range(4)]
+    gemc_states_list = [output[i][1] for i in range(4)]
     lapt_tHMMobj_list = [output[i][0] for i in range(4, 8)]
     lapt_states_list = [output[i][1] for i in range(4, 8)]
 

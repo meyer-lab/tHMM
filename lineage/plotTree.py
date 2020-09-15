@@ -16,9 +16,9 @@ def CladeRecursive(cell, a, censore):
     https://github.com/biopython/biopython/blob/fce4b11b4b8e414f1bf093a76e04a3260d782905/Bio/Phylo/BaseTree.py#L801
     """
     if cell.state == 0:
-        colorr = "olive"
+        colorr = "blue"
     elif cell.state == 1:
-        colorr = "salmon"
+        colorr = "yellow"
     elif cell.state == 2:
         colorr = "red"
     else:
