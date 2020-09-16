@@ -41,7 +41,7 @@ def makeFigure():
     for i in range(8, 12):
         sns.stripplot(x="state", y=str(concs[i-4]+" G1"), data=Gem, ax=ax[i], linewidth=1, jitter=0.1)
         sns.stripplot(x="state", y=str(concs[i-4]+" G2"), data=Gem, ax=ax[i+4], linewidth=1, jitter=0.1)
-        ax[i].set_title(concs[i])
+        ax[i].set_title(concs[i-4])
         ax[i].set_ylabel("G1 phase lengths")
         ax[i+4].set_ylabel("G2 phase lengths")
 
