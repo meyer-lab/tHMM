@@ -1,4 +1,5 @@
 """ This file depicts the distribution of phase lengths versus the states. """
+
 import numpy as np
 import seaborn as sns
 
