@@ -1,6 +1,7 @@
 """ This file depicts the distribution of phase lengths versus the states. """
 
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
