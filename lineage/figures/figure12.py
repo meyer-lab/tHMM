@@ -23,16 +23,16 @@ def makeFigure():
     GEM = pd.DataFrame(columns=["state", "phase"])
     for i in range(4):
         # lapatinib
-        LAP["state "+str(concs[i])] = [a[0] for a in lpt12_g1] + [a[0] for a in lpt12_g2]
-        LAP["phase lengths "+str(concs[i])] = [a[1] for a in lpt12_g1] + [a[1] for a in lpt12_g2]
-        LAP["phase "+str(concs[i])] = len(lpt12_g1) * ["G1"] + len(lpt12_g2) * ["G2"]
+        LAP["state "+str(concs[i])] = [a[0] for a in lpt12_g1[i]] + [a[0] for a in lpt12_g2[i]]
+        LAP["phase lengths "+str(concs[i])] = [a[1] for a in lpt12_g1[i]] + [a[1] for a in lpt12_g2[i]]
+        LAP["phase "+str(concs[i])] = len(lpt12_g1[i]) * ["G1"] + len(lpt12_g2[i]) * ["G2"]
     
         sns.stripplot(x="state "+str(concs[i]), y="phase lengths "+str(concs[i]), hue="phase "+str(concs[i]), data=LAP, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[i])
 
         # gemcitabine
-        GEM["state "+str(concs[i+4])] = [a[0] for a in gmc12_g1] + [a[0] for a in gmc12_g2]
-        GEM["phase lengths "+str(concs[i+4])] = [a[1] for a in gmc12_g1] + [a[1] for a in gmc12_g2]
-        GEM["phase "+str(concs[i+4])] = len(gmc12_g1) * ["G1"] + len(gmc12_g2) * ["G2"]
+        GEM["state "+str(concs[i+4])] = [a[0] for a in gmc12_g1[i]] + [a[0] for a in gmc12_g2[i]]
+        GEM["phase lengths "+str(concs[i+4])] = [a[1] for a in gmc12_g1[i]] + [a[1] for a in gmc12_g2[i]]
+        GEM["phase "+str(concs[i+4])] = len(gmc12_g1[i]) * ["G1"] + len(gmc12_g2[i]) * ["G2"]
     
         sns.stripplot(x="state "+str(concs[i+4]), y="phase lengths "+str(concs[i+4]), hue="phase "+str(concs[i+4]), data=GEM, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[i+4])
         ax[i].set_title(concs[i])
