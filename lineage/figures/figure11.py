@@ -22,10 +22,10 @@ gmc12_g2 = [] # for fig. 12
 
 # Run fitting
 output = run_Analyze_over(data, np.repeat([4, 3], 4))
-gemc_tHMMobj_list = [output[i][0] for i in range(4)]
-gemc_states_list = [output[i][1] for i in range(4)]
-lapt_tHMMobj_list = [output[i][0] for i in range(4, 8)]
-lapt_states_list = [output[i][1] for i in range(4, 8)]
+gemc_tHMMobj_list = [oo[0] for oo in output[0: 4]]
+gemc_states_list = [oo[1] for oo in output[0: 4]]
+lapt_tHMMobj_list = [oo[0] for oo in output[4: 8]]
+lapt_states_list = [oo[1] for oo in output[4: 8]]
 
 for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
     for lin_indx, lin in enumerate(lapt_tHMMobj.X):

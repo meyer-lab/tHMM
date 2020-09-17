@@ -79,7 +79,7 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
     list_of_fE = kwargs.get("list_of_fE", [None] * len(list_of_populations))
 
     if isinstance(num_states, (np.ndarray, list)):
-        assert len(num_states) == len(list_of_populations), f"len list population = {len(list_of_populations)}"
+        assert len(num_states) == len(list_of_populations)
     else:
         num_states = np.full(len(list_of_populations), num_states)
 

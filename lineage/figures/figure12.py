@@ -37,5 +37,13 @@ def makeFigure():
         sns.stripplot(x="state "+str(concs[i+4]), y="phase lengths "+str(concs[i+4]), hue="phase "+str(concs[i+4]), data=GEM, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[i+4])
         ax[i].set_title(concs[i])
         ax[i+4].set_title(concs[i+4])
+        ax[i].set_ylabel("phase lengths")
+        ax[i+4].set_ylabel("phase lengths")
+
+        # this removes title of legends
+        handles, labels = ax[i].get_legend_handles_labels()
+        ax[i].legend(handles=handles[1:], labels=labels[1:])
+        handles, labels = ax[i+4].get_legend_handles_labels()
+        ax[i+4].legend(handles=handles[1:], labels=labels[1:])
 
     return f
