@@ -3,46 +3,39 @@
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import itertools
 
 from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .figureCommon import getSetup, subplotLabel
-from .figure11 import lapatinib12, gemcitabine12
+from .figure11 import lpt12_g1, lpt12_g2, gmc12_g1, gmc12_g2
 
 
 def makeFigure():
     """
     Makes figure 12.
     """
-    ax, f = getSetup((10, 10), (4, 4))
+    ax, f = getSetup((13.2, 6.66), (2, 4))
     subplotLabel(ax)
 
     concs = ["cntrl", "Lapt 25uM", "Lapt 50uM", "Lapt 250uM", "cntrl", "Gem 5uM", "Gem 10uM", "Gem 30uM"]
-    Lap = pd.DataFrame(columns=["state","cntrl G1", "Lapt 25uM G1", "Lapt 50uM G1", "Lapt 250uM G1", "cntrl G2", "Lapt 25uM G2", "Lapt 50uM G2", "Lapt 250uM G2"])
-    Gem = pd.DataFrame(columns=["state", "cntrl G1", "Gem 5uM G1", "Gem 10uM G1", "Gem 30uM G1", "cntrl G2", "Gem 5uM G2", "Gem 10uM G2", "Gem 30uM G2"])
 
-    # create the dataframe
+    LAP = pd.DataFrame(columns=["state", "phase"])
+    GEM = pd.DataFrame(columns=["state", "phase"])
     for i in range(4):
-        Lap["state"] = [a[0] for a in lapatinib12[i]]
-        Lap[str(concs[i])+" G1"] = [a[1] for a in lapatinib12[i]]
-        Lap[str(concs[i])+" G2"] = [a[2] for a in lapatinib12[i]]
-        Gem["state"] = [a[0] for a in gemcitabine12[i]]
-        Gem[str(concs[i+4])+" G1"] = [a[1] for a in gemcitabine12[i]]
-        Gem[str(concs[i+4])+" G2"] = [a[2] for a in gemcitabine12[i]]
+        # lapatinib
+        LAP["state "+str(concs[i])] = [a[0] for a in lpt12_g1] + [a[0] for a in lpt12_g2]
+        LAP["phase lengths "+str(concs[i])] = [a[1] for a in lpt12_g1] + [a[1] for a in lpt12_g2]
+        LAP["phase "+str(concs[i])] = len(lpt12_g1) * ["G1"] + len(lpt12_g2) * ["G2"]
+    
+        sns.stripplot(x="state "+str(concs[i]), y="phase lengths "+str(concs[i]), hue="phase "+str(concs[i]), data=LAP, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[i])
 
-    # plot lapatinib
-    for i in range(4): # G1 lapatinib (first row), lapatinib G2 (second row)
-        sns.stripplot(x="state", y=str(concs[i]+" G1"), data=Lap, ax=ax[i], linewidth=1, jitter=0.1)
-        sns.stripplot(x="state", y=str(concs[i]+" G2"), data=Lap, ax=ax[i+4], linewidth=1, jitter=0.1)
+        # gemcitabine
+        GEM["state "+str(concs[i+4])] = [a[0] for a in gmc12_g1] + [a[0] for a in gmc12_g2]
+        GEM["phase lengths "+str(concs[i+4])] = [a[1] for a in gmc12_g1] + [a[1] for a in gmc12_g2]
+        GEM["phase "+str(concs[i+4])] = len(gmc12_g1) * ["G1"] + len(gmc12_g2) * ["G2"]
+    
+        sns.stripplot(x="state "+str(concs[i+4]), y="phase lengths "+str(concs[i+4]), hue="phase "+str(concs[i+4]), data=GEM, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[i+4])
         ax[i].set_title(concs[i])
-        ax[i].set_ylabel("G1 phase lengths")
-        ax[i+4].set_ylabel("G2 phase lengths")
-
-    # plot gemcitabine
-    for i in range(8, 12):
-        sns.stripplot(x="state", y=str(concs[i-4]+" G1"), data=Gem, ax=ax[i], linewidth=1, jitter=0.1)
-        sns.stripplot(x="state", y=str(concs[i-4]+" G2"), data=Gem, ax=ax[i+4], linewidth=1, jitter=0.1)
-        ax[i].set_title(concs[i-4])
-        ax[i].set_ylabel("G1 phase lengths")
-        ax[i+4].set_ylabel("G2 phase lengths")
+        ax[i+4].set_title(concs[i+4])
 
     return f
