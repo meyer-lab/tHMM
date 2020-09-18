@@ -1,8 +1,6 @@
 """ This file depicts the distribution of phase lengths versus the states for each concentration. """
 import numpy as np
-import pandas as pd
 import itertools
-from matplotlib.ticker import MaxNLocator
 import seaborn as sns
 
 from ..Analyze import run_Analyze_over
@@ -37,7 +35,7 @@ def makeFigure():
         LAP_state = list(itertools.chain(*lapt_states_list[idx])) + list(itertools.chain(*lapt_states_list[idx]))
         LAP_phaseLength = lpt_g1 + lpt_g2
         Lpt_phase = len(lpt_g1) * ["G1"] + len(lpt_g2) * ["G2"]
-        print(len(LAP_state), len(LAP_phaseLength), len(Lpt_phase))
+
         # plot lapatinib
         sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[idx])
 
@@ -47,12 +45,6 @@ def makeFigure():
         ax[idx+4].set_ylabel("phase lengths")
         ax[idx].set_xlabel("state")
         ax[idx+4].set_xlabel("state")
-
-        # this removes title of legends
-        handles, labels = ax[idx].get_legend_handles_labels()
-        ax[idx].legend(handles=handles[1:], labels=labels[1:])
-        handles, labels = ax[idx+4].get_legend_handles_labels()
-        ax[idx+4].legend(handles=handles[1:], labels=labels[1:])
 
     # gemcitabine
     for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
