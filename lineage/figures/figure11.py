@@ -4,11 +4,24 @@ import itertools
 import seaborn as sns
 
 from ..Analyze import run_Analyze_over
+from ..tHMM import tHMM
 from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .figureCommon import getSetup, subplotLabel
 
 concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM", "cntrl", "Gem 5nM", "Gem 10nM", "Gem 30nM"]
 data = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM, Gemcitabine_Control + Lapatinib_Control, Gem5uM, Gem10uM, Gem30uM]
+
+tHMM_solver = tHMM(X=data[0], num_states=1)
+tHMM_solver.fit()
+
+constant_shape = [int(tHMM_solver.estimate.E[0].params[2]), int(tHMM_solver.estimate.E[0].params[4])]
+
+# Set shape
+for population in data:
+    for lin in population:
+        for E in lin.E:
+            E.G1.const_shape = constant_shape[0]
+            E.G2.const_shape = constant_shape[1]
 
 # Run fitting
 output = run_Analyze_over(data, np.repeat([3, 4], 4))
