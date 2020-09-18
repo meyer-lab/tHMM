@@ -8,7 +8,7 @@ from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem
 from .figureCommon import getSetup, subplotLabel
 
 concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM", "cntrl", "Gem 5nM", "Gem 10nM", "Gem 30nM"]
-data = [Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM, Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
+data = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM, Gemcitabine_Control + Lapatinib_Control, Gem5uM, Gem10uM, Gem30uM]
 
 # Run fitting
 output = run_Analyze_over(data, np.repeat([3, 4], 4))
