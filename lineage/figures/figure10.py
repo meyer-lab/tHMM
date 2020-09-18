@@ -7,7 +7,6 @@ import itertools
 from ..Analyze import run_Analyze_over
 from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .figureCommon import getSetup, subplotLabel
-from ..tHMM import tHMM
 from ..plotTree import plotLineage
 
 
@@ -21,9 +20,9 @@ def makeFigure():
     lapatinib = []
     gemcitabine = []
     # Run fitting
-    output = run_Analyze_over(data, np.repeat([3, 4], 4))
-    gemc_tHMMobj_list = [output[i][0] for i in range(5)]
-    gemc_states_list = [output[i][1] for i in range(5)]
+    output = run_Analyze_over(data, np.repeat([4, 3], 4))
+    gemc_tHMMobj_list = [output[i][0] for i in range(4)]
+    gemc_states_list = [output[i][1] for i in range(4)]
     lapt_tHMMobj_list = [output[i][0] for i in range(4, 8)]
     lapt_states_list = [output[i][1] for i in range(4, 8)]
 
@@ -31,11 +30,12 @@ def makeFigure():
         for lin_indx, lin in enumerate(lapt_tHMMobj.X):
             for cell_indx, cell in enumerate(lin.output_lineage):
                 cell.state = lapt_states_list[idx][lin_indx][cell_indx]
+        lapatinib.append([lapt_tHMMobj.X[4], lapt_tHMMobj.X[7]])
+
     for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
         for lin_indx, lin in enumerate(gemc_tHMMobj.X):
             for cell_indx, cell in enumerate(lin.output_lineage):
                 cell.state = gemc_states_list[idx][lin_indx][cell_indx]
-        lapatinib.append([lapt_tHMMobj.X[4], lapt_tHMMobj.X[7]])
         gemcitabine.append([gemc_tHMMobj.X[0], gemc_tHMMobj.X[3]])
 
     # Plotting the lineages
