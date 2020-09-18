@@ -25,7 +25,7 @@ def twice(tHMMobj, state):
             g1.append(cell.obs[2])
             g2.append(cell.obs[3])
 
-    state = list(itertools.chain(*states)) + list(itertools.chain(*states))
+    state = list(itertools.chain(*state)) + list(itertools.chain(*state))
     phaseLength = g1 + g2
     phase = len(g1) * ["G1"] + len(g2) * ["G2"]
     return state, phaseLength, phase
