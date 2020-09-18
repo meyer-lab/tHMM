@@ -38,9 +38,10 @@ def makeFigure():
     subplotLabel(ax)
 
     # lapatinib
+    print("lapatinib, 3 states: \n")
     for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list): # for each concentration data
         # print parameters and estimated values
-        print("Lapatinib treated data has 3 states: \n for concentration ", concs[idx], " the \u03C0: ", lapt_tHMMobj.estimate.pi, " the transition matrix: ", lapt_tHMMobj.estimate.T)
+        print("for concentration ", concs[idx], "\n the \u03C0: ", lapt_tHMMobj.estimate.pi, "\n the transition matrix: ", lapt_tHMMobj.estimate.T)
         for i in range(3):
             print("\n parameters for state ", i, " are: ", lapt_tHMMobj.estimate.E[i].params)
         LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj, lapt_states_list[idx])
@@ -58,9 +59,10 @@ def makeFigure():
         ax[idx+4].set_ylims([0, 160])
 
     # gemcitabine
+    print("Gemcitabine, 4 states: \n")
     for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
         # print parameters and estimated values
-        print("Gemcitabine treated data has 4 states: \n for concentration ", concs[idx], " the \u03C0: ", gemc_tHMMobj.estimate.pi, " the transition matrix: ", gemc_tHMMobj.estimate.T)
+        print("for concentration ", concs[idx], "\n the \u03C0: ", gemc_tHMMobj.estimate.pi, " \n the transition matrix: ", gemc_tHMMobj.estimate.T)
         for i in range(4):
             print("\n parameters for state ", i, " are: ", gemc_tHMMobj.estimate.E[i].params)
         GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
