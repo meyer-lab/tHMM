@@ -55,8 +55,8 @@ def makeFigure():
         ax[idx+4].set_ylabel("phase lengths")
         ax[idx].set_xlabel("state")
         ax[idx+4].set_xlabel("state")
-        ax[idx].set_ylims([0, 160])
-        ax[idx+4].set_ylims([0, 160])
+        ax[idx].set_ylim([0, 160])
+        ax[idx+4].set_ylim([0, 160])
 
     # gemcitabine
     print("Gemcitabine, 4 states: \n")
