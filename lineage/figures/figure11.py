@@ -39,7 +39,11 @@ def makeFigure():
 
     # lapatinib
     for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list): # for each concentration data
-        LAP_state, LAP_phaseLength, Lpt_phase = twicw(lapt_tHMMobj, lapt_states_list[idx])
+        # print parameters and estimated values
+        print("Lapatinib treated data has 3 states: \n for concentration ", concs[idx], " the \u03C0: ", lapt_tHMMobj.estimate.pi, " the transition matrix: ", lapt_tHMMobj.estimate.T)
+        for i in range(3):
+            print("\n parameters for state ", i, " are: ", lapt_tHMMobj.estimate.E[i].params)
+        LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj, lapt_states_list[idx])
 
         # plot lapatinib
         sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[idx])
@@ -55,7 +59,11 @@ def makeFigure():
 
     # gemcitabine
     for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
-        GEM_state, GEM_phaseLength, GEM_phase = twicw(gemc_tHMMobj, gemc_states_list[idx])
+        # print parameters and estimated values
+        print("Gemcitabine treated data has 4 states: \n for concentration ", concs[idx], " the \u03C0: ", gemc_tHMMobj.estimate.pi, " the transition matrix: ", gemc_tHMMobj.estimate.T)
+        for i in range(4):
+            print("\n parameters for state ", i, " are: ", gemc_tHMMobj.estimate.E[i].params)
+        GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
         sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[idx+4])
 
     return f
