@@ -62,7 +62,7 @@ def makeFigure():
     print("Gemcitabine, 4 states: \n")
     for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
         # print parameters and estimated values
-        print("for concentration ", concs[idx], "\n the \u03C0: ", gemc_tHMMobj.estimate.pi, " \n the transition matrix: ", gemc_tHMMobj.estimate.T)
+        print("for concentration ", concs[idx+4], "\n the \u03C0: ", gemc_tHMMobj.estimate.pi, " \n the transition matrix: ", gemc_tHMMobj.estimate.T)
         for i in range(4):
             print("\n parameters for state ", i, " are: ", gemc_tHMMobj.estimate.E[i].params)
         GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
