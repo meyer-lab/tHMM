@@ -45,6 +45,8 @@ def makeFigure():
         ax[idx+4].set_title(concs[idx+4])
         ax[idx].set_ylabel("phase lengths")
         ax[idx+4].set_ylabel("phase lengths")
+        ax[idx].set_xlabel("state")
+        ax[idx+4].set_xlabel("state")
 
         # this removes title of legends
         handles, labels = ax[idx].get_legend_handles_labels()
