@@ -41,24 +41,31 @@ def calculate_log_likelihood(NF):
     return np.array([sum(np.log(arr)) for arr in NF])
 
 
-def do_M_step(tHMMobj, MSD, betas, gammas):
+def do_M_step(tHMMobj_list, MSD_list, betas_list, gammas_list):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
     The individual parameter estimations are performed in
     separate functions.
     """
-    if tHMMobj.estimate.fpi is None:
-        assert tHMMobj.fpi is None
-        tHMMobj.estimate.pi = do_M_pi_step(tHMMobj, gammas)
+     # the first object is representative of the whole population.
+     # If thmmObj[0] satisfies this "if", then all the objects in this population do.
+    if tHMMobj_list[0].estimate.fpi is None:
+        assert tHMMobj_list[0].fpi is None
+        for tHMMobj in tHMMobj_list:
+            # all the objects in the population have the same pi
+            tHMMobj.estimate.pi = do_M_pi_step(tHMMobj_list, gammas_list)
 
-    if tHMMobj.estimate.fT is None:
-        assert tHMMobj.fT is None
-        tHMMobj.estimate.T = do_M_T_step(tHMMobj, MSD, betas, gammas)
+    if tHMMobj_list[0].estimate.fT is None:
+        assert tHMMobj_list[0].fT is None
+        for tHMMobj in tHMMobj_list:
+            # all the objects in the population have the same T
+            tHMMobj.estimate.T = do_M_T_step(tHMMobj_list, MSD_list, betas_list, gammas_list)
 
-    if tHMMobj.estimate.fE is None:
-        assert tHMMobj.fE is None
-        do_M_E_step(tHMMobj, gammas)
+    if tHMMobj_list[0].estimate.fE is None:
+        assert tHMMobj_list[0].fE is None
+        for idx, tHMMobj in enumerate(tHMMobj_list):
+            do_M_E_step(tHMMobj, gammas_list[idx])
 
 
 def do_M_pi_step(tHMMobj_list, gammas_list):
@@ -72,7 +79,7 @@ def do_M_pi_step(tHMMobj_list, gammas_list):
 
     pi_estimate = np.zeros((num_states), dtype=float)
     for i, tHMMobj in enumerate(tHMMobj_list):
-        for num in range(tHMMobj.X):
+        for num in range(len(tHMMobj.X)):
             gamma_array = gammas_list[i][num]
 
             # local pi estimate
