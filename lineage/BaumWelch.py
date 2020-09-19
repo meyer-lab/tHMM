@@ -83,21 +83,22 @@ def do_M_pi_step(tHMMobj_list, gammas_list):
     return pi_estimate
 
 
-def do_M_T_step(tHMMobj, MSD, betas, gammas):
+def do_M_T_step(tHMMobj_list, MSD_list, betas_list, gammas_list):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
     Does the parameter estimation for the T
     Markov stochastic transition matrix.
     """
-    num_states = tHMMobj.num_states
+    num_states = tHMMobj_list[0].num_states
 
     numer_estimate = np.zeros((num_states, num_states))
     denom_estimate = np.zeros((num_states,)) + np.finfo(np.float).eps
-    for num, lineageObj in enumerate(tHMMobj.X):
-        # local T estimate
-        numer_estimate += get_all_zetas(lineageObj, betas[num], MSD[num], gammas[num], tHMMobj.estimate.T)
-        denom_estimate += sum_nonleaf_gammas(lineageObj, gammas[num])
+    for i, tHMMobj in enumerate(tHMMobj_list):
+        for num, lineageObj in enumerate(tHMMobj.X):
+            # local T estimate
+            numer_estimate += get_all_zetas(lineageObj, betas_list[i][num], MSD_list[i][num], gammas_list[i][num], tHMMobj.estimate.T)
+            denom_estimate += sum_nonleaf_gammas(lineageObj, gammas_list[i][num])
 
     T_estimate = numer_estimate / denom_estimate[:, np.newaxis]
 
