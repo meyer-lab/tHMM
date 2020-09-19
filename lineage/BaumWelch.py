@@ -61,21 +61,22 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
         do_M_E_step(tHMMobj, gammas)
 
 
-def do_M_pi_step(tHMMobj, gammas):
+def do_M_pi_step(tHMMobj_list, gammas_list):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
     Does the parameter estimation for the pi
     initial probability vector.
     """
-    num_states = tHMMobj.num_states
+    num_states = tHMMobj_list[0].num_states
 
     pi_estimate = np.zeros((num_states), dtype=float)
-    for num, _ in enumerate(tHMMobj.X):
-        gamma_array = gammas[num]
+    for i, tHMMobj in enumerate(tHMMobj_list):
+        for num in range(tHMMobj.X):
+            gamma_array = gammas_list[i][num]
 
-        # local pi estimate
-        pi_estimate += gamma_array[0, :]
+            # local pi estimate
+            pi_estimate += gamma_array[0, :]
 
     pi_estimate = pi_estimate / sum(pi_estimate)
 
