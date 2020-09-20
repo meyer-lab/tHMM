@@ -29,7 +29,7 @@ def figureMaker(ax):
     Makes figure 1.
     """
     i = 0
-    plotLineage(Gem5uM[6], ax[i], censore=False)
+    plotLineage(Gem5uM[13], ax[i], censore=False)
     ax[i].axis('off')
     ax[i].set_title("Homogeneous")
 
