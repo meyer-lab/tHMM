@@ -7,7 +7,7 @@ from string import ascii_lowercase
 
 from .figureCommon import getSetup
 from ..plotTree import plotLineage
-from lineage.data.Lineage_collections import Gemcitabine_Control as gem
+from lineage.data.Lineage_collections import Gem5uM, gemControl as gem
 
 
 def makeFigure():
@@ -28,36 +28,36 @@ def figureMaker(ax):
     """
     Makes figure 1.
     """
-    index = [1, 3, 4, 6]
     i = 0
-    plotLineage(gem[101], ax[i], censore=False)
+    plotLineage(Gem5uM[6], ax[i], censore=False)
     ax[i].axis('off')
     ax[i].set_title("Homogeneous")
 
     i = 2
-    plotLineage(gem[83], ax[i], censore=False)
+    plotLineage(Gem5uM[4], ax[i], censore=False)
     ax[i].axis('off')
 
     i = 4
-    plotLineage(gem[84], ax[i], censore=False)
+    plotLineage(Gem5uM[10], ax[i], censore=False)
     ax[i].axis('off')
 
-    for j in index:
-        gem[101].output_lineage[j].state = 0
-        gem[83].output_lineage[j].state = 0
-        gem[84].output_lineage[j].state = 0
+    for cell in gem[3].output_lineage:
+        cell.state = 0
+    for cell in gem[9].output_lineage:
+        cell.state = 1
+    gem[2].output_lineage[0].state = 1
 
     i = 1
-    plotLineage(gem[101], ax[i], censore=False)
+    plotLineage(gem[3], ax[i], censore=False)
     ax[i].set_title("Heterogeneous")
     ax[i].axis('off')
 
     i = 3
-    plotLineage(gem[83], ax[i], censore=False)
+    plotLineage(gem[9], ax[i], censore=False)
     ax[i].axis('off')
 
     i = 5
-    plotLineage(gem[84], ax[i], censore=False)
+    plotLineage(gem[2], ax[i], censore=False)
     ax[i].axis('off')
 
     i += 1
