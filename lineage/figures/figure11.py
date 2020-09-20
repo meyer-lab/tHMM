@@ -11,11 +11,16 @@ from .figureCommon import getSetup, subplotLabel
 concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM", "cntrl", "Gem 5nM", "Gem 10nM", "Gem 30nM"]
 data = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM, Gemcitabine_Control + Lapatinib_Control, Gem5uM, Gem10uM, Gem30uM]
 
+full_lp = Lapatinib_Control + Gemcitabine_Control + Lapt25uM + Lapt50uM + Lap250uM
+full_gm = Lapatinib_Control + Gemcitabine_Control + Gem5uM + Gem10uM + Gem30uM
+
+fullObj_lp = tHMM(X=full_lp, num_states=3)
+fullObj_gm = tHMM(X=full_gm, num_states=4)
+
 tHMM_solver = tHMM(X=data[0], num_states=1)
 tHMM_solver.fit()
 
 constant_shape = [int(tHMM_solver.estimate.E[0].params[2]), int(tHMM_solver.estimate.E[0].params[4])]
-
 # Set shape
 for population in data:
     for lin in population:
@@ -24,7 +29,7 @@ for population in data:
             E.G2.const_shape = constant_shape[1]
 
 # Run fitting
-output = run_Analyze_over(data, np.repeat([3, 4], 4))
+output = run_Analyze_over(data, np.repeat([3, 4], 4), list_of_fpi=[fullObj_lp.estimate.pi for _ in range(4)] + [fullObj_gm.estimate.pi for _ in range(4)], list_of_fT=[fullObj_lp.estimate.T for _ in range(4)] + [fullObj_gm.estimate.T for _ in range(4)])
 lapt_tHMMobj_list = [oo[0] for oo in output[0: 4]]
 lapt_states_list = [oo[1] for oo in output[0: 4]]
 gemc_tHMMobj_list = [oo[0] for oo in output[4: 8]]
@@ -33,8 +38,8 @@ gemc_states_list = [oo[1] for oo in output[4: 8]]
 def twice(tHMMobj, state):
     g1 = []
     g2 = []
-    for lin_indx, lin in enumerate(tHMMobj.X): # for each lineage list
-        for cell_indx, cell in enumerate(lin.output_lineage): # for each cell in the lineage
+    for _, lin in enumerate(tHMMobj.X): # for each lineage list
+        for _, cell in enumerate(lin.output_lineage): # for each cell in the lineage
             g1.append(cell.obs[2])
             g2.append(cell.obs[3])
 
@@ -47,18 +52,22 @@ def twice(tHMMobj, state):
 def makeFigure():
     """ Makes figure 11. """
 
-    ax, f = getSetup((13.2, 6.66), (2, 4))
+    ax, f = getSetup((13.2, 13.2), (4, 4))
     subplotLabel(ax)
 
     # lapatinib
-    print("lapatinib, 3 states: \n")
+    lpParam = np.zeros((3, 4, 2)) # num_states x num_concs x num_phases
+    gmParam = np.zeros((4, 4, 2))
     for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list): # for each concentration data
-        # print parameters and estimated values
         print("for concentration ", concs[idx], "\n the \u03C0: ", lapt_tHMMobj.estimate.pi, "\n the transition matrix: ", lapt_tHMMobj.estimate.T)
         for i in range(3):
-            print("\n parameters for state ", i, " are: ", lapt_tHMMobj.estimate.E[i].params)
+            lpParam[i, idx, 0] = lapt_tHMMobj.estimate.E[i].params[3] # scale G1
+            lpParam[i, idx, 1] = lapt_tHMMobj.estimate.E[i].params[3] # scale G2
+        for j in range(4):
+            gmParam[j, idx, 0] = gemc_tHMMobj_list[idx].estimate.E[j].params[3] # scale G1
+            gmParam[j, idx, 1] = gemc_tHMMobj_list[idx].estimate.E[j].params[5] # scale G2
         LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj, lapt_states_list[idx])
-
+        
         # plot lapatinib
         sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[idx])
 
@@ -76,9 +85,23 @@ def makeFigure():
     for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
         # print parameters and estimated values
         print("for concentration ", concs[idx+4], "\n the \u03C0: ", gemc_tHMMobj.estimate.pi, " \n the transition matrix: ", gemc_tHMMobj.estimate.T)
-        for i in range(4):
-            print("\n parameters for state ", i, " are: ", gemc_tHMMobj.estimate.E[i].params)
         GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
         sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[idx+4])
 
+    # plot parameters:
+    for k in range(8,11):
+        ax[k].scatter(concs[0:4], lpParam[k-9, :, 0], label="scale G1")
+        ax[k].scatter(concs[0:4], lpParam[k-9, :, 1], label="scale G2")
+        ax[k].set_title("Lapatinib")
+        ax[k].legend()
+        ax[k].set_ylim([-2, 25])
+        ax[k].set_xticklabels(concs[0:4], Rotation=35)
+
+    for k in range(12, 16):
+        ax[k].scatter(concs[4:8], gmParam[k-12, :, 0], label="scale G1")
+        ax[k].scatter(concs[4:8], gmParam[k-12, :, 1], label="scale G2")
+        ax[k].set_title("Gemcitabine")
+        ax[k].legend()
+        ax[k].set_ylim([-2, 25])
+        ax[k].set_xticklabels(concs[4:8], Rotation=35)
     return f
