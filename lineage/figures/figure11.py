@@ -35,6 +35,7 @@ lapt_states_list = [oo[1] for oo in output[0: 4]]
 gemc_tHMMobj_list = [oo[0] for oo in output[4: 8]]
 gemc_states_list = [oo[1] for oo in output[4: 8]]
 
+
 def twice(tHMMobj, state):
     g1 = []
     g2 = []
@@ -72,13 +73,13 @@ def makeFigure():
         sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[idx])
 
         ax[idx].set_title(concs[idx])
-        ax[idx+4].set_title(concs[idx+4])
+        ax[idx + 4].set_title(concs[idx + 4])
         ax[idx].set_ylabel("phase lengths")
-        ax[idx+4].set_ylabel("phase lengths")
+        ax[idx + 4].set_ylabel("phase lengths")
         ax[idx].set_xlabel("state")
-        ax[idx+4].set_xlabel("state")
+        ax[idx + 4].set_xlabel("state")
         ax[idx].set_ylim([0, 160])
-        ax[idx+4].set_ylim([0, 160])
+        ax[idx + 4].set_ylim([0, 160])
 
     # gemcitabine
     print("Gemcitabine, 4 states: \n")
@@ -86,7 +87,7 @@ def makeFigure():
         # print parameters and estimated values
         print("for concentration ", concs[idx+4], "\n the \u03C0: ", gemc_tHMMobj.estimate.pi, " \n the transition matrix: ", gemc_tHMMobj.estimate.T)
         GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
-        sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[idx+4])
+        sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[idx + 4])
 
     # plot parameters:
     for k in range(8,11):
