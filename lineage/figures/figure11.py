@@ -94,7 +94,6 @@ def makeFigure():
         ax[k].scatter(concs[0:4], lpParam[k-9, :, 1], label="scale G2")
         ax[k].set_title("Lapatinib")
         ax[k].legend()
-        ax[k].set_ylim([-2, 25])
         ax[k].set_xticklabels(concs[0:4], Rotation=35)
 
     for k in range(12, 16):
@@ -102,6 +101,5 @@ def makeFigure():
         ax[k].scatter(concs[4:8], gmParam[k-12, :, 1], label="scale G2")
         ax[k].set_title("Gemcitabine")
         ax[k].legend()
-        ax[k].set_ylim([-2, 25])
         ax[k].set_xticklabels(concs[4:8], Rotation=35)
     return f
