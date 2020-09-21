@@ -196,7 +196,7 @@ def log_E_score(EL_array, state_tree_sequence):
 
 
 def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
-    """Runs the tHMM function through Baum Welch fitting"""
+    """Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations"""
 
     # Step 0: initialize with KMeans and do an M step
     # when there are no fixed emissions, we need to randomize the start
@@ -209,11 +209,11 @@ def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
     NF_list = []
     new_LL = []
 
-    for i, tHMM in enumerate(tHMMobj_list):
+    for _, tHMM in enumerate(tHMMobj_list):
         init_gammas = [sp.multinomial.rvs(n=1, p=[1. / tHMM.num_states] * tHMM.num_states, size=len(lineage))
                     for lineage in tHMM.X]
 
-        do_M_E_step(tHMM, init_gammas[i])
+        do_M_E_step(tHMM, init_gammas)
 
         # Step 1: first E step
         MSD, NF, betas, gammas = do_E_step(tHMM)
@@ -234,9 +234,9 @@ def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
         do_M_step_list(tHMMobj_list, MSD_list, betas_list, gammas_list)
         for tHMM in tHMMobj_list:
             MSD, NF, betas, gammas = do_E_step(tHMM)
-            new_LL = np.sum(calculate_log_likelihood(NF))
+            new_LL.append(np.sum(calculate_log_likelihood(NF)))
 
-        diff = np.sum(total_new_LL) - old_LL
+        diff = np.sum(new_LL) - old_LL
 
         if np.absolute(diff) < tolerance:
             break

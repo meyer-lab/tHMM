@@ -134,13 +134,13 @@ def do_M_step_list(tHMMobj_list, MSD_list, betas_list, gammas_list):
         assert tHMMobj_list[0].fpi is None
         for tHMMobj in tHMMobj_list:
             # all the objects in the population have the same pi
-            tHMMobj.estimate.pi = do_M_pi_step(tHMMobj_list, gammas_list)
+            tHMMobj.estimate.pi = do_M_pi_step_list(tHMMobj_list, gammas_list)
 
     if tHMMobj_list[0].estimate.fT is None:
         assert tHMMobj_list[0].fT is None
         for tHMMobj in tHMMobj_list:
             # all the objects in the population have the same T
-            tHMMobj.estimate.T = do_M_T_step(tHMMobj_list, MSD_list, betas_list, gammas_list)
+            tHMMobj.estimate.T = do_M_T_step_list(tHMMobj_list, MSD_list, betas_list, gammas_list)
 
     if tHMMobj_list[0].estimate.fE is None:
         assert tHMMobj_list[0].fE is None

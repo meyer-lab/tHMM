@@ -1,5 +1,5 @@
 """ Calls the tHMM functions and outputs the parameters needed to generate the Figures. """
-from .tHMM import tHMM
+from .tHMM import tHMM, fit_list
 from scipy.stats import wasserstein_distance
 from sklearn.metrics import balanced_accuracy_score
 import numpy as np
@@ -55,6 +55,41 @@ def Analyze(X, num_states, **kwargs):
     pred_states_by_lineage = tHMMobj.predict()
 
     return tHMMobj, pred_states_by_lineage, LL
+
+
+def Analyze_list(Population_list, num_states, **kwargs):
+    """ This function runs the analyze for the case when we want to fit the experimental data. (fig 11)"""
+
+    error_holder = []
+    for num_tries in range(1, 10):
+        try:
+            tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
+            _, _, _, _, LL = fit_list(tHMMobj_list)
+
+            tHMMobj_list2 = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
+            _, _, _, _, LL2 = fit_list(tHMMobj_list2)
+
+            if LL2 > LL:
+                tHMMobj_list = tHMMobj_list2
+                LL = LL2
+
+            break
+        except (AssertionError, ZeroDivisionError, RuntimeError) as error:
+            error_holder.append(error)
+            if len(error_holder) == 3:
+                print(
+                    f"Caught the following errors: \
+                    \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. \
+                    Fitting is breaking after trying {num_tries} times. \
+                    If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue \
+                    is the estimates of your parameters are returning nonsensible parameters. \
+                    Consider changing your parameter estimator. "
+                )
+                raise
+
+    pred_states_by_lineage_by_conc = [tHMMobj.predict() for tHMMobj in tHMMobj_list]
+
+    return tHMMobj_list, pred_states_by_lineage_by_conc, LL
 
 
 def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
