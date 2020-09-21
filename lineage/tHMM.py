@@ -193,3 +193,33 @@ def log_E_score(EL_array, state_tree_sequence):
     for idx, row in enumerate(log_EL_array):
         log_E_score_holder += row[state_tree_sequence[idx]]
     return log_E_score_holder
+
+
+def fit(tHMMobj_list, tolerance=1e-9, max_iter=1000):
+    """Runs the tHMM function through Baum Welch fitting"""
+
+    # Step 0: initialize with KMeans and do an M step
+    # when there are no fixed emissions, we need to randomize the start
+    init_gammas = [[sp.multinomial.rvs(n=1, p=[1. / tHMMobj_list[0].num_states] * tHMMobj_list[0].num_states, size=len(lineage))
+                    for lineage in tHMMobj.X] for tHMMobj in tHMMobj_list]
+
+    for i, tHMM in enumerate(tHMMobj_list):
+        do_M_E_step(tHMM, init_gammas[i])
+
+    # Step 1: first E step
+    MSD, NF, betas, gammas = do_E_step(self)
+    new_LL = np.sum(calculate_log_likelihood(NF))
+
+    # first stopping condition check
+    for _ in range(max_iter):
+        old_LL = new_LL
+
+        do_M_step_list(tHMMobj_list, MSD_list, betas_list, gammas_list)
+        MSD, NF, betas, gammas = do_E_step(self)
+        new_LL = np.sum(calculate_log_likelihood(NF))
+        diff = new_LL - old_LL
+
+        if np.absolute(diff) < tolerance:
+            break
+
+    return self, MSD, NF, betas, gammas, new_LL
