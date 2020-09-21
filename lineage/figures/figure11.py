@@ -61,7 +61,7 @@ def makeFigure():
         LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj, lapt_states_list[idx])
 
         # plot lapatinib
-        sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[idx])
+        sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1, palette="Set2", dodge=True, ax=ax[idx])
 
         ax[idx].set_title(concs[idx])
         ax[idx + 4].set_title(concs[idx + 4])
@@ -80,6 +80,6 @@ def makeFigure():
         for i in range(4):
             print("\n parameters for state ", i, " are: ", gemc_tHMMobj.estimate.E[i].params)
         GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
-        sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[idx + 4])
+        sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1, palette="Set2", dodge=True, ax=ax[idx + 4])
 
     return f
