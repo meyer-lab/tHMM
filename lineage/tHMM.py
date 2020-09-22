@@ -227,7 +227,7 @@ def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
     # first stopping condition check
     for _ in range(max_iter):
         old_LL = total_new_LL
-
+        new_LL = []
         do_M_step_list(tHMMobj_list, MSD_list, betas_list, gammas_list)
         for idx, tHMM in enumerate(tHMMobj_list):
             MSD, NF, betas, gammas = do_E_step(tHMM)
