@@ -45,20 +45,23 @@ def twice(tHMMobj, state):
 def makeFigure():
     """ Makes figure 11. """
 
-    ax, f = getSetup((13.2, 6.66), (2, 4))
+    ax, f = getSetup((13.2, 10.0), (3, 4))
     subplotLabel(ax)
 
     # lapatinib
-    print("lapatinib, 3 states: \n")
+    lpt_avg = np.zeros((4, 3, 2)) # the avg lifetime: num_conc x num_states x num_phases
+
+    # print parameters and estimated values
+    print("for Lapatinib: \n the \u03C0: ", lapt_tHMMobj_list[0].estimate.pi, "\n the transition matrix: ", lapt_tHMMobj_list[0].estimate.T)
+
     for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):  # for each concentration data
-        # print parameters and estimated values
-        print("for concentration ", concs[idx], "\n the \u03C0: ", lapt_tHMMobj.estimate.pi, "\n the transition matrix: ", lapt_tHMMobj.estimate.T)
         for i in range(3):
-            print("\n parameters for state ", i, " are: ", lapt_tHMMobj.estimate.E[i].params)
+            lpt_avg[idx, i, 0] = lapt_tHMMobj.estimate.E[i].params[2] * lapt_tHMMobj.estimate.E[i].params[3] # G1
+            lpt_avg[idx, i, 1] = lapt_tHMMobj.estimate.E[i].params[4] * lapt_tHMMobj.estimate.E[i].params[5] # G2
         LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj, lapt_states_list[idx])
 
         # plot lapatinib
-        sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1, palette="Set2", dodge=True, ax=ax[idx])
+        sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx])
 
         ax[idx].set_title(concs[idx])
         ax[idx + 4].set_title(concs[idx + 4])
@@ -70,13 +73,35 @@ def makeFigure():
         ax[idx + 4].set_ylim([0, 160])
 
     # gemcitabine
-    print("Gemcitabine, 4 states: \n")
+    gmc_avg = np.zeros((4, 4, 2)) # avg lifetime gmc: num_conc x num_states x num_phases
+
+    # print parameters and estimated values
+    print("for Gemcitabine: \n the \u03C0: ", gemc_tHMMobj_list[0].estimate.pi, " \n the transition matrix: ", gemc_tHMMobj_list[0].estimate.T)
+
     for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
-        # print parameters and estimated values
-        print("for concentration ", concs[idx + 4], "\n the \u03C0: ", gemc_tHMMobj.estimate.pi, " \n the transition matrix: ", gemc_tHMMobj.estimate.T)
         for i in range(4):
-            print("\n parameters for state ", i, " are: ", gemc_tHMMobj.estimate.E[i].params)
+            gmc_avg[idx, i, 0] = gemc_tHMMobj.estimate.E[i].params[2] * gemc_tHMMobj.estimate.E[i].params[3]
+            gmc_avg[idx, i, 1] = gemc_tHMMobj.estimate.E[i].params[4] * gemc_tHMMobj.estimate.E[i].params[5]
         GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
-        sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1, palette="Set2", dodge=True, ax=ax[idx + 4])
+        sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx + 4])
+
+    # lapatinib state G1
+    for i in range(3):
+        ax[8].plot(concs[0:4], lpt_avg[:, i, 0], label="st "+str(i))
+        ax[8].set_title("average G1 time")
+        ax[8].set_xticks(concs[0:4], rotation=30)
+        ax[9].plot(concs[0:4], lpt_avg[:, i, 1], label="st "+str(i))
+        ax[9].set_title("average G2 time")
+        ax[9].set_xticks(concs[0:4], rotation=30)
+        ax[10].plot(concs[4:8], gmc_avg[:, i, 0], label="st "+str(i))
+        ax[10].set_title("average G1 time")
+        ax[10].set_xticks(concs[4:8], rotation=30)
+        ax[11].plot(concs[4:8], gmc_avg[:, i, 1], label="st "+str(i))
+        ax[11].set_title("average G2 time")
+        ax[11].set_xticks(concs[4:8], rotation=30)
+
+    for i in range(8,12):
+        ax[i].legend()
+        ax[8].set_ylim([0.0, 110.0])
 
     return f
