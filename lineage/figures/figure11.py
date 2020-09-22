@@ -102,6 +102,7 @@ def makeFigure():
 
     for i in range(8,12):
         ax[i].legend()
-        ax[8].set_ylim([0.0, 110.0])
+        ax[i].set_ylim([0.0, 110.0])
+        ax[i].set_ylabel("average length")
 
     return f
