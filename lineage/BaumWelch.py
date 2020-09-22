@@ -107,6 +107,7 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
 
     return T_estimate
 
+
 def do_M_E_step(tHMMobj, gammas):
     """
     Calculates the M-step of the Baum Welch algorithm
@@ -128,8 +129,8 @@ def do_M_step_list(tHMMobj_list, MSD_list, betas_list, gammas_list):
     The individual parameter estimations are performed in
     separate functions.
     """
-     # the first object is representative of the whole population.
-     # If thmmObj[0] satisfies this "if", then all the objects in this population do.
+    # the first object is representative of the whole population.
+    # If thmmObj[0] satisfies this "if", then all the objects in this population do.
     if tHMMobj_list[0].estimate.fpi is None:
         assert tHMMobj_list[0].fpi is None
         for tHMMobj in tHMMobj_list:
@@ -146,6 +147,7 @@ def do_M_step_list(tHMMobj_list, MSD_list, betas_list, gammas_list):
         assert tHMMobj_list[0].fE is None
         for idx, tHMMobj in enumerate(tHMMobj_list):
             do_M_E_step(tHMMobj, gammas_list[idx])
+
 
 def do_M_pi_step_list(tHMMobj_list, gammas_list):
     """
@@ -196,6 +198,7 @@ def do_M_T_step_list(tHMMobj_list, MSD_list, betas_list, gammas_list):
     return T_estimate
 
 ###-------- end of functions for list of tHMM  -----------------##
+
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     """

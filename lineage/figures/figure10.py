@@ -15,7 +15,7 @@ def makeFigure():
     Makes figure 10.
     """
     ax, f = getSetup((7, 12), (8, 2))
-    data = [Gemcitabine_Control+Lapatinib_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control+Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
+    data = [Gemcitabine_Control + Lapatinib_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
 
     lapatinib = []
     gemcitabine = []
@@ -39,6 +39,7 @@ def makeFigure():
     figure_maker(ax, list(itertools.chain(*lapatinib)), list(itertools.chain(*gemcitabine)))
 
     return f
+
 
 def figure_maker(ax, lapatinib, gemcitabine):
     """
