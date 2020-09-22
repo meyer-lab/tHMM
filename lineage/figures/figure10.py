@@ -4,7 +4,7 @@ import numpy as np
 from matplotlib.ticker import MaxNLocator
 import itertools
 
-from ..Analyze import run_Analyze_over
+from ..Analyze import Analyze_list
 from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .figureCommon import getSetup, subplotLabel
 from ..plotTree import plotLineage
@@ -15,16 +15,13 @@ def makeFigure():
     Makes figure 10.
     """
     ax, f = getSetup((7, 12), (8, 2))
-    data = [Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM]
+    data = [Gemcitabine_Control+Lapatinib_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control+Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
 
     lapatinib = []
     gemcitabine = []
     # Run fitting
-    output = run_Analyze_over(data, np.repeat([4, 3], 4))
-    gemc_tHMMobj_list = [output[i][0] for i in range(4)]
-    gemc_states_list = [output[i][1] for i in range(4)]
-    lapt_tHMMobj_list = [output[i][0] for i in range(4, 8)]
-    lapt_states_list = [output[i][1] for i in range(4, 8)]
+    lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data[4:], 3)
+    gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(data[0:4], 4)
 
     for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
         for lin_indx, lin in enumerate(lapt_tHMMobj.X):
@@ -42,7 +39,6 @@ def makeFigure():
     figure_maker(ax, list(itertools.chain(*lapatinib)), list(itertools.chain(*gemcitabine)))
 
     return f
-
 
 def figure_maker(ax, lapatinib, gemcitabine):
     """

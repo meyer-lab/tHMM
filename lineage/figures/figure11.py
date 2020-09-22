@@ -3,7 +3,7 @@ import numpy as np
 import itertools
 import seaborn as sns
 
-from ..Analyze import run_Analyze_over
+from ..Analyze import Analyze_list
 from ..tHMM import tHMM
 from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .figureCommon import getSetup, subplotLabel
@@ -24,18 +24,15 @@ for population in data:
             E.G2.const_shape = constant_shape[1]
 
 # Run fitting
-output = run_Analyze_over(data, np.repeat([3, 4], 4))
-lapt_tHMMobj_list = [oo[0] for oo in output[0: 4]]
-lapt_states_list = [oo[1] for oo in output[0: 4]]
-gemc_tHMMobj_list = [oo[0] for oo in output[4: 8]]
-gemc_states_list = [oo[1] for oo in output[4: 8]]
+lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data[0:4], 3)
+gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(data[4:], 4)
 
 
 def twice(tHMMobj, state):
     g1 = []
     g2 = []
-    for lin_indx, lin in enumerate(tHMMobj.X):  # for each lineage list
-        for cell_indx, cell in enumerate(lin.output_lineage):  # for each cell in the lineage
+    for lin in tHMMobj.X:  # for each lineage list
+        for cell in lin.output_lineage:  # for each cell in the lineage
             g1.append(cell.obs[2])
             g2.append(cell.obs[3])
 
@@ -61,7 +58,7 @@ def makeFigure():
         LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj, lapt_states_list[idx])
 
         # plot lapatinib
-        sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[idx])
+        sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1, palette="Set2", dodge=True, ax=ax[idx])
 
         ax[idx].set_title(concs[idx])
         ax[idx + 4].set_title(concs[idx + 4])
@@ -80,6 +77,6 @@ def makeFigure():
         for i in range(4):
             print("\n parameters for state ", i, " are: ", gemc_tHMMobj.estimate.E[i].params)
         GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
-        sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1, palette="Set2", linewidth=0.05, dodge=True, ax=ax[idx + 4])
+        sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1, palette="Set2", dodge=True, ax=ax[idx + 4])
 
     return f

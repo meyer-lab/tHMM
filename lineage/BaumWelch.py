@@ -107,7 +107,6 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
 
     return T_estimate
 
-
 def do_M_E_step(tHMMobj, gammas):
     """
     Calculates the M-step of the Baum Welch algorithm
@@ -120,6 +119,83 @@ def do_M_E_step(tHMMobj, gammas):
     for state_j in range(tHMMobj.num_states):
         tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
 
+
+##----------- beginning of functions for tHMM list -----------------##
+def do_M_step_list(tHMMobj_list, MSD_list, betas_list, gammas_list):
+    """
+    Calculates the M-step of the Baum Welch algorithm
+    given output of the E step.
+    The individual parameter estimations are performed in
+    separate functions.
+    """
+     # the first object is representative of the whole population.
+     # If thmmObj[0] satisfies this "if", then all the objects in this population do.
+    if tHMMobj_list[0].estimate.fpi is None:
+        assert tHMMobj_list[0].fpi is None
+        for tHMMobj in tHMMobj_list:
+            # all the objects in the population have the same pi
+            tHMMobj.estimate.pi = do_M_pi_step_list(tHMMobj_list, gammas_list)
+
+    if tHMMobj_list[0].estimate.fT is None:
+        assert tHMMobj_list[0].fT is None
+        for tHMMobj in tHMMobj_list:
+            # all the objects in the population have the same T
+            tHMMobj.estimate.T = do_M_T_step_list(tHMMobj_list, MSD_list, betas_list, gammas_list)
+
+    if tHMMobj_list[0].estimate.fE is None:
+        assert tHMMobj_list[0].fE is None
+        for idx, tHMMobj in enumerate(tHMMobj_list):
+            do_M_E_step(tHMMobj, gammas_list[idx])
+
+def do_M_pi_step_list(tHMMobj_list, gammas_list):
+    """
+    Calculates the M-step of the Baum Welch algorithm
+    given output of the E step.
+    Does the parameter estimation for the pi
+    initial probability vector.
+    """
+    num_states = tHMMobj_list[0].num_states
+
+    pi_estimate = np.zeros((num_states), dtype=float)
+    for i, tHMMobj in enumerate(tHMMobj_list):
+        for num in range(len(tHMMobj.X)):
+            gamma_array = gammas_list[i][num]
+
+            # local pi estimate
+            pi_estimate += gamma_array[0, :]
+
+    pi_estimate = pi_estimate / sum(pi_estimate)
+
+    return pi_estimate
+
+
+def do_M_T_step_list(tHMMobj_list, MSD_list, betas_list, gammas_list):
+    """
+    Calculates the M-step of the Baum Welch algorithm
+    given output of the E step.
+    Does the parameter estimation for the T
+    Markov stochastic transition matrix.
+    """
+    num_states = tHMMobj_list[0].num_states
+
+    numer_estimate = np.zeros((num_states, num_states))
+    denom_estimate = np.zeros((num_states,)) + np.finfo(np.float).eps
+    for i, tHMMobj in enumerate(tHMMobj_list):
+        for num, lineageObj in enumerate(tHMMobj.X):
+            # local T estimate
+            numer_estimate += get_all_zetas(lineageObj, betas_list[i][num], MSD_list[i][num], gammas_list[i][num], tHMMobj.estimate.T)
+            denom_estimate += sum_nonleaf_gammas(lineageObj, gammas_list[i][num])
+
+    T_estimate = numer_estimate / denom_estimate[:, np.newaxis]
+
+    # Add a small amount of identity in case a state is completely unobserved
+    T_estimate += np.identity(num_states) * np.finfo(np.float).eps
+    T_estimate /= T_estimate.sum(axis=1)[:, np.newaxis]
+    assert np.all(np.isfinite(T_estimate))
+
+    return T_estimate
+
+###-------- end of functions for list of tHMM  -----------------##
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     """
