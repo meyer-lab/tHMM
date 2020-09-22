@@ -208,7 +208,7 @@ def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
 
     for _, tHMM in enumerate(tHMMobj_list):
         init_gammas = [sp.multinomial.rvs(n=1, p=[1. / tHMM.num_states] * tHMM.num_states, size=len(lineage))
-                    for lineage in tHMM.X]
+                       for lineage in tHMM.X]
 
         do_M_E_step(tHMM, init_gammas)
 
@@ -235,7 +235,7 @@ def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
             MSD_list[idx] = MSD
             NF_list[idx] = NF
             betas_list[idx] = betas
-            gammas_list[idx] = gammas 
+            gammas_list[idx] = gammas
 
         diff = np.sum(new_LL) - old_LL
 
