@@ -23,15 +23,32 @@ def Analyze(X, num_states, **kwargs):
     :return: Log-likelihood of the normalizing factor for the lineage.
     :rtype: float
     """
-    tHMMobj = tHMM(X, num_states=num_states, **kwargs)  # build the tHMM class with X
-    _, _, _, _, _, LL = tHMMobj.fit()
+    error_holder = []
+    for num_tries in range(1, 10):
+        try:
+            tHMMobj = tHMM(X, num_states=num_states, **kwargs)  # build the tHMM class with X
+            _, _, _, _, _, LL = tHMMobj.fit()
 
-    tHMMobj2 = tHMM(X, num_states=num_states, **kwargs)  # build the tHMM class with X
-    _, _, _, _, _, LL2 = tHMMobj2.fit()
+            tHMMobj2 = tHMM(X, num_states=num_states, **kwargs)  # build the tHMM class with X
+            _, _, _, _, _, LL2 = tHMMobj2.fit()
 
-    if LL2 > LL:
-        tHMMobj = tHMMobj2
-        LL = LL2
+            if LL2 > LL:
+                tHMMobj = tHMMobj2
+                LL = LL2
+
+            break
+        except (AssertionError, ZeroDivisionError, RuntimeError) as error:
+            error_holder.append(error)
+            if len(error_holder) == 3:
+                print(
+                    f"Caught the following errors: \
+                    \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. \
+                    Fitting is breaking after trying {num_tries} times. \
+                    If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue \
+                    is the estimates of your parameters are returning nonsensible parameters. \
+                    Consider changing your parameter estimator. "
+                )
+                raise
 
     pred_states_by_lineage = tHMMobj.predict()
 
@@ -40,15 +57,33 @@ def Analyze(X, num_states, **kwargs):
 
 def Analyze_list(Population_list, num_states, **kwargs):
     """ This function runs the analyze for the case when we want to fit the experimental data. (fig 11)"""
-    tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
-    _, _, _, _, LL = fit_list(tHMMobj_list)
 
-    tHMMobj_list2 = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
-    _, _, _, _, LL2 = fit_list(tHMMobj_list2)
+    error_holder = []
+    for num_tries in range(1, 10):
+        try:
+            tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
+            _, _, _, _, LL = fit_list(tHMMobj_list)
 
-    if LL2 > LL:
-        tHMMobj_list = tHMMobj_list2
-        LL = LL2
+            tHMMobj_list2 = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
+            _, _, _, _, LL2 = fit_list(tHMMobj_list2)
+
+            if LL2 > LL:
+                tHMMobj_list = tHMMobj_list2
+                LL = LL2
+
+            break
+        except (AssertionError, ZeroDivisionError, RuntimeError) as error:
+            error_holder.append(error)
+            if len(error_holder) == 3:
+                print(
+                    f"Caught the following errors: \
+                    \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. \
+                    Fitting is breaking after trying {num_tries} times. \
+                    If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue \
+                    is the estimates of your parameters are returning nonsensible parameters. \
+                    Consider changing your parameter estimator. "
+                )
+                raise
 
     pred_states_by_lineage_by_conc = [tHMMobj.predict() for tHMMobj in tHMMobj_list]
 
