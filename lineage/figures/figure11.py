@@ -60,11 +60,17 @@ def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
         ax[k+3].set_title(title+str(" G2"))
         ax[k+3].set_xticklabels(concs[4:8], Rotation=30)
 
+    # legend and ylabel
     for i in range(k, k+4):
         ax[i].legend()
-        if k == 8:
-            ax[i].set_ylim([0.0, 110.0])
         ax[i].set_ylabel(title)
+
+    # ylim for lapatinib
+    for i in range(k, k+2):
+        ax[i].set_ylim([0.8*np.min(lpt_avg), 1.2*np.max(lpt_avg)])
+    # ylim for gemcitabine
+    for i in range(k+2, k+4):
+        ax[i].set_ylim([0.8*np.min(gmc_avg), 1.2*np.max(gmc_avg)])
 
 
 def makeFigure():
@@ -118,5 +124,5 @@ def makeFigure():
         sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx + 4])
 
     plotting(ax, 8, lpt_avg, gmc_avg, concs, "avg length")
-    plotting(ax, 12, bern_lpt, bern_gmc, concs, "Bernoulli p ")
+    plotting(ax, 12, bern_lpt, bern_gmc, concs, "Bernoulli p")
     return f
