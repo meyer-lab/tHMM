@@ -65,11 +65,11 @@ def gamma_estimator(gamma_obs, time_cen, gammas, constant_shape, x0):
     bnd = (0.1, 50000.0)
 
     if constant_shape is None:
-        res = minimize(fun=negative_LL, x0=x0, bounds=(bnd, bnd), args=arrgs)
+        res = minimize(fun=negative_LL, jac="3-point", x0=x0, bounds=(bnd, bnd), args=arrgs)
         xOut = res.x
     else:
         arrgs = (constant_shape, *arrgs)
-        res = minimize(fun=negative_LL_sep, x0=x0[1], bounds=(bnd, ), args=arrgs)
+        res = minimize(fun=negative_LL_sep, jac="3-point", x0=x0[1], bounds=(bnd, ), args=arrgs)
         xOut = [constant_shape, res.x]
 
     return xOut
