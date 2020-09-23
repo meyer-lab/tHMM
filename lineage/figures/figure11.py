@@ -64,8 +64,6 @@ def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
         ax[i].legend()
         if k == 8:
             ax[i].set_ylim([0.0, 110.0])
-        else:
-            ax[i].set_ylim([0.0, 1.1])
         ax[i].set_ylabel(title)
 
 
