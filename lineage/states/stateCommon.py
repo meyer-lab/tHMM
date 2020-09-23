@@ -30,6 +30,10 @@ negative_LL_sep_jit = jit(value_and_grad(negative_LL_sep, 0))
 
 def gamma_uncensored(gamma_obs, gammas, constant_shape):
     """ An uncensored gamma estimator. """
+    # Handle no observations
+    if np.sum(gammas) == 0.0:
+        gammas = np.ones_like(gammas)
+
     gammaCor = np.average(gamma_obs, weights=gammas)
     s = np.log(gammaCor) - np.average(np.log(gamma_obs), weights=gammas)
 

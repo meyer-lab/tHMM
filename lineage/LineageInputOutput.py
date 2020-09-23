@@ -19,7 +19,7 @@ def import_Heiser(path):
     5. G1 time censorship,
     6. G2 time censorship
     """
-    excel_file = pd.read_excel(path, header=None)
+    excel_file = pd.read_excel(path, header=None, engine="openpyxl")
     data = excel_file.to_numpy()
 
     # Checking if exp_time was added to the file. The function will work even if exp_time isn't set, but may need proofreading
