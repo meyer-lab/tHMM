@@ -6,8 +6,6 @@ import numpy as np
 import itertools
 import random
 from concurrent.futures import ProcessPoolExecutor
-import multiprocessing
-multiprocessing.set_start_method('spawn', True)
 
 
 def Analyze(X, num_states, **kwargs):
