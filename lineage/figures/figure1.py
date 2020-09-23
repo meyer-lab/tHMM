@@ -31,7 +31,6 @@ def figureMaker(ax):
     i = 0
     plotLineage(Gem5uM[13], ax[i], censore=False)
     ax[i].axis('off')
-    ax[i].set_title("Homogeneous")
 
     i = 2
     plotLineage(Gem5uM[4], ax[i], censore=False)
@@ -49,7 +48,6 @@ def figureMaker(ax):
 
     i = 1
     plotLineage(gem[3], ax[i], censore=False)
-    ax[i].set_title("Heterogeneous")
     ax[i].axis('off')
 
     i = 3
