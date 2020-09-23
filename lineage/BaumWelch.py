@@ -11,8 +11,7 @@ from .UpwardRecursion import (
 )
 
 from .DownwardRecursion import (
-    get_root_gammas,
-    get_nonroot_gammas,
+    get_gammas,
     sum_nonleaf_gammas,
 )
 
@@ -27,8 +26,7 @@ def do_E_step(tHMMobj):
     NF = get_leaf_Normalizing_Factors(tHMMobj, MSD, EL)
     betas = get_leaf_betas(tHMMobj, MSD, EL, NF)
     get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas)
-    gammas = get_root_gammas(tHMMobj, betas)
-    get_nonroot_gammas(tHMMobj, MSD, gammas, betas)
+    gammas = get_gammas(tHMMobj, MSD, betas)
 
     return MSD, NF, betas, gammas
 
