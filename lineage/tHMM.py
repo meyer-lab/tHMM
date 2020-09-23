@@ -5,7 +5,7 @@ import numpy as np
 import scipy.stats as sp
 
 from .UpwardRecursion import get_Emission_Likelihoods
-from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step, do_M_step_list, do_M_pi_step_list, do_M_T_step_list
+from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 
 
@@ -63,31 +63,9 @@ class tHMM:
 
     def fit(self, tolerance=1e-9, max_iter=1000):
         """Runs the tHMM function through Baum Welch fitting"""
+        MSD_list, NF_list, betas_list, gammas_list, new_LL = fit_list([self], tolerance=tolerance, max_iter=max_iter)
 
-        # Step 0: initialize with KMeans and do an M step
-        if self.fE is None:  # when there are no fixed emissions, we need to randomize the start
-            init_gammas = [sp.multinomial.rvs(n=1, p=[1. / self.num_states] * self.num_states, size=len(lineage))
-                           for lineage in self.X]
-
-            do_M_E_step(self, init_gammas)
-
-        # Step 1: first E step
-        MSD, NF, betas, gammas = do_E_step(self)
-        new_LL = np.sum(calculate_log_likelihood(NF))
-
-        # first stopping condition check
-        for _ in range(max_iter):
-            old_LL = new_LL
-
-            do_M_step(self, MSD, betas, gammas)
-            MSD, NF, betas, gammas = do_E_step(self)
-            new_LL = np.sum(calculate_log_likelihood(NF))
-            diff = new_LL - old_LL
-
-            if np.absolute(diff) < tolerance:
-                break
-
-        return self, MSD, NF, betas, gammas, new_LL
+        return self, MSD_list[0], NF_list[0], betas_list[0], gammas_list[0], new_LL
 
     def predict(self):
         """
@@ -198,48 +176,28 @@ def log_E_score(EL_array, state_tree_sequence):
 def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
     """Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations"""
 
-    # Step 0: initialize with KMeans and do an M step
+    # Step 0: initialize with random assignments and do an M step
     # when there are no fixed emissions, we need to randomize the start
-    MSD_list = []
-    betas_list = []
-    gammas_list = []
-    NF_list = []
-    new_LL = []
-
     for _, tHMM in enumerate(tHMMobj_list):
         init_gammas = [sp.multinomial.rvs(n=1, p=[1. / tHMM.num_states] * tHMM.num_states, size=len(lineage))
                        for lineage in tHMM.X]
 
         do_M_E_step(tHMM, init_gammas)
 
-        # Step 1: first E step
-        MSD, NF, betas, gammas = do_E_step(tHMM)
-        MSD_list.append(MSD)
-        NF_list.append(NF)
-        betas_list.append(betas)
-        gammas_list.append(gammas)
-
-        new_LL.append(np.sum(calculate_log_likelihood(NF)))
-
-    # sum over all populations in the list
-    total_new_LL = np.sum(new_LL)
+    # Step 1: first E step
+    MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
+    old_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
 
     # first stopping condition check
     for _ in range(max_iter):
-        old_LL = total_new_LL
-        new_LL = []
-        do_M_step_list(tHMMobj_list, MSD_list, betas_list, gammas_list)
-        for idx, tHMM in enumerate(tHMMobj_list):
-            MSD, NF, betas, gammas = do_E_step(tHMM)
-            new_LL.append(np.sum(calculate_log_likelihood(NF)))
-            MSD_list[idx] = MSD
-            NF_list[idx] = NF
-            betas_list[idx] = betas
-            gammas_list[idx] = gammas
+        do_M_step(tHMMobj_list, MSD_list, betas_list, gammas_list)
 
-        diff = np.sum(new_LL) - old_LL
+        MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
+        new_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
 
-        if np.absolute(diff) < tolerance:
+        if np.absolute(new_LL - old_LL) < tolerance:
             break
 
-    return MSD_list, NF_list, betas_list, gammas_list, total_new_LL
+        old_LL = new_LL
+
+    return MSD_list, NF_list, betas_list, gammas_list, new_LL

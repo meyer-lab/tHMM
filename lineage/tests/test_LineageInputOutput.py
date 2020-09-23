@@ -89,7 +89,7 @@ class TestModel(unittest.TestCase):
         in Heiser lab data.
         """
         path2use = self.path_to_synthetic_data
-        excel_file = pd.read_excel(path2use, header=None)
+        excel_file = pd.read_excel(path2use, header=None, engine="openpyxl")
         data = excel_file.to_numpy()
         cLin = []
         _ = tryRecursion(1, 45, 37, self.parent3, cLin, data, 30, 145, [145])
