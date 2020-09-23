@@ -101,18 +101,17 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
     """
     n = tHMMobj[0].num_states
 
-    numer_estimate = np.zeros((n, n))
-    denom_estimate = np.zeros(n) + np.finfo(np.float).eps
+    # One pseudocount spread across states
+    numer_e = np.full((n, n), 1.0 / n)
+    denom_e = np.ones(n) + 1.0
+
     for i, tt in enumerate(tHMMobj):
-        for num, lineageObj in enumerate(tt.X):
+        for num, lO in enumerate(tt.X):
             # local T estimate
-            numer_estimate += get_all_zetas(lineageObj, betas[i][num], MSD[i][num], gammas[i][num], tt.estimate.T)
-            denom_estimate += sum_nonleaf_gammas(lineageObj, gammas[i][num])
+            numer_e += get_all_zetas(lO, betas[i][num], MSD[i][num], gammas[i][num], tt.estimate.T)
+            denom_e += sum_nonleaf_gammas(lO, gammas[i][num])
 
-    T_estimate = numer_estimate / denom_estimate[:, np.newaxis]
-
-    # Add a small amount of identity in case a state is completely unobserved
-    T_estimate += np.identity(n) * np.finfo(np.float).eps
+    T_estimate = numer_e / denom_e[:, np.newaxis]
     T_estimate /= T_estimate.sum(axis=1)[:, np.newaxis]
     assert np.all(np.isfinite(T_estimate))
 

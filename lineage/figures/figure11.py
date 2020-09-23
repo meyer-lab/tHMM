@@ -47,18 +47,18 @@ def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
     for i in range(3): # lapatinib that has 3 states
         ax[k].plot(concs[0:4], lpt_avg[:, i, 0], label="st "+str(i), alpha=0.7)
         ax[k].set_title(title+str(" G1"))
-        ax[k].set_xticklabels(concs[0:4], Rotation=30)
+        ax[k].set_xticklabels(concs[0:4], rotation=30)
         ax[k+1].plot(concs[0:4], lpt_avg[:, i, 1], label="st "+str(i), alpha=0.7)
         ax[k+1].set_title(title+str(" G2"))
-        ax[k+1].set_xticklabels(concs[0:4], Rotation=30)
+        ax[k+1].set_xticklabels(concs[0:4], rotation=30)
 
     for i in range(4): # gemcitabine that has 4 states
         ax[k+2].plot(concs[4:8], gmc_avg[:, i, 0], label="st "+str(i), alpha=0.7)
         ax[k+2].set_title(title+str(" G1"))
-        ax[k+2].set_xticklabels(concs[4:8], Rotation=30)
+        ax[k+2].set_xticklabels(concs[4:8], rotation=30)
         ax[k+3].plot(concs[4:8], gmc_avg[:, i, 1], label="st "+str(i), alpha=0.7)
         ax[k+3].set_title(title+str(" G2"))
-        ax[k+3].set_xticklabels(concs[4:8], Rotation=30)
+        ax[k+3].set_xticklabels(concs[4:8], rotation=30)
 
     # legend and ylabel
     for i in range(k, k+4):
