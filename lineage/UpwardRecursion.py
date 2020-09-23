@@ -109,16 +109,15 @@ def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
 
         for ii, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
             assert cell.isLeaf()
-            leaf_cell_idx = lineageObj.output_leaves_idx[ii]
+            leaf_idx = lineageObj.output_leaves_idx[ii]
 
             # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
             # this product is the joint probability
             # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
             # the sum of the joint probabilities is the marginal probability
-            NF_array[leaf_cell_idx] = np.sum(MSD_array[leaf_cell_idx, :] * EL_array[leaf_cell_idx, :])  # def of conditional prob
-            assert NF_array[leaf_cell_idx] > 0.0, "{} and {} and {} and {}".format(
-                NF_array, NF_array[leaf_cell_idx], MSD_array[leaf_cell_idx, :], EL_array[leaf_cell_idx, :]
-            )
+            NF_array[leaf_idx] = np.dot(MSD_array[leaf_idx, :], EL_array[leaf_idx, :])  # def of conditional prob
+            assert NF_array[leaf_idx] > 0.0, f"MSD: {MSD_array[leaf_idx, :]}, EL: {EL_array[leaf_idx, :]}"
+
         NF.append(NF_array)
     return NF
 
