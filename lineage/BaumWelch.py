@@ -11,8 +11,7 @@ from .UpwardRecursion import (
 )
 
 from .DownwardRecursion import (
-    get_root_gammas,
-    get_nonroot_gammas,
+    get_gammas,
     sum_nonleaf_gammas,
 )
 
@@ -27,8 +26,7 @@ def do_E_step(tHMMobj):
     NF = get_leaf_Normalizing_Factors(tHMMobj, MSD, EL)
     betas = get_leaf_betas(tHMMobj, MSD, EL, NF)
     get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas)
-    gammas = get_root_gammas(tHMMobj, betas)
-    get_nonroot_gammas(tHMMobj, MSD, gammas, betas)
+    gammas = get_gammas(tHMMobj, MSD, betas)
 
     return MSD, NF, betas, gammas
 
@@ -85,19 +83,13 @@ def do_M_pi_step(tHMMobj, gammas):
     Does the parameter estimation for the pi
     initial probability vector.
     """
-    num_states = tHMMobj[0].num_states
-
-    pi_estimate = np.zeros((num_states), dtype=float)
+    pi_e = np.zeros(tHMMobj[0].num_states, dtype=float)
     for i, tt in enumerate(tHMMobj):
         for num in range(len(tt.X)):
-            gamma_array = gammas[i][num]
-
             # local pi estimate
-            pi_estimate += gamma_array[0, :]
+            pi_e += gammas[i][num][0, :]
 
-    pi_estimate = pi_estimate / sum(pi_estimate)
-
-    return pi_estimate
+    return pi_e / np.sum(pi_e)
 
 
 def do_M_T_step(tHMMobj, MSD, betas, gammas):
@@ -140,9 +132,6 @@ def do_M_E_step(tHMMobj, gammas):
         tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
 
 
-###-------- end of functions for list of tHMM  -----------------##
-
-
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     """
     Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
@@ -153,37 +142,22 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     for level in lineageObj.output_list_of_gens[1:]:
         for cell in level:  # get lineage for the gen
             node_parent_m_idx = lineage.index(cell)
+            gamma_parent = gamma_array[node_parent_m_idx, :]  # x by j
+
             if not cell.isLeaf():
                 for daughter_idx in cell.get_daughters():
-                    holder += zeta_parent_child_func(
-                        node_parent_m_idx=node_parent_m_idx,
-                        node_child_n_idx=lineage.index(daughter_idx),
-                        lineage=lineage,
-                        beta_array=beta_array,
-                        MSD_array=MSD_array,
-                        gamma_array=gamma_array,
-                        T=T,
-                    )
+                    node_child_n_idx = lineage.index(daughter_idx)
+
+                    # check the child-parent relationship
+                    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]
+                    # if the child-parent relationship is correct, then the child must
+                    assert lineage[node_child_n_idx].isChild()
+                    # either be the left daughter or the right daughter
+
+                    beta_parent_child = beta_parent_child_func(beta_array=beta_array, T=T, MSD_array=MSD_array, node_child_n_idx=node_child_n_idx)
+
+                    js = gamma_parent / (beta_parent_child + np.finfo(np.float).eps)
+                    ks = beta_array[node_child_n_idx, :] / (MSD_array[node_child_n_idx, :] + np.finfo(np.float).eps)
+
+                    holder += np.outer(js, ks) * T
     return holder
-
-
-def zeta_parent_child_func(node_parent_m_idx, node_child_n_idx, lineage, beta_array, MSD_array, gamma_array, T):
-    """
-    Calculates the zeta value that will be used to fill the transition matrix in baum welch.
-    """
-
-    # check the child-parent relationship
-    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]
-    # if the child-parent relationship is correct, then the child must
-    assert lineage[node_child_n_idx].isChild()
-    # either be the left daughter or the right daughter
-
-    beta_child_state_k = beta_array[node_child_n_idx, :]  # x by k
-    gamma_parent = gamma_array[node_parent_m_idx, :]  # x by j
-    MSD_child_state_k = MSD_array[node_child_n_idx, :]  # x by k
-    beta_parent_child = beta_parent_child_func(beta_array=beta_array, T=T, MSD_array=MSD_array, node_child_n_idx=node_child_n_idx)
-
-    js = gamma_parent / (beta_parent_child + np.finfo(np.float).eps)
-    ks = beta_child_state_k / (MSD_child_state_k + np.finfo(np.float).eps)
-
-    return np.outer(js, ks) * T
