@@ -89,16 +89,16 @@ def makeFigure():
     for i in range(3):
         ax[8].plot(concs[0:4], lpt_avg[:, i, 0], label="st "+str(i))
         ax[8].set_title("average G1 time")
-        ax[8].set_xticks(concs[0:4], rotation=30)
+        ax[8].set_xticklabels(concs[0:4], Rotation=30)
         ax[9].plot(concs[0:4], lpt_avg[:, i, 1], label="st "+str(i))
         ax[9].set_title("average G2 time")
-        ax[9].set_xticks(concs[0:4], rotation=30)
+        ax[9].set_xticklabels(concs[0:4], Rotation=30)
         ax[10].plot(concs[4:8], gmc_avg[:, i, 0], label="st "+str(i))
         ax[10].set_title("average G1 time")
-        ax[10].set_xticks(concs[4:8], rotation=30)
+        ax[10].set_xticklabels(concs[4:8], Rotation=30)
         ax[11].plot(concs[4:8], gmc_avg[:, i, 1], label="st "+str(i))
         ax[11].set_title("average G2 time")
-        ax[11].set_xticks(concs[4:8], rotation=30)
+        ax[11].set_xticklabels(concs[4:8], Rotation=30)
 
     for i in range(8,12):
         ax[i].legend()
