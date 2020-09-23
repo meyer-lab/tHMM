@@ -195,7 +195,7 @@ def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
         MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
         new_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
 
-        if np.absolute(new_LL - old_LL) < tolerance:
+        if new_LL - old_LL < tolerance:
             break
 
         old_LL = new_LL
