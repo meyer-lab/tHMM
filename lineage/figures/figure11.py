@@ -42,23 +42,61 @@ def twice(tHMMobj, state):
     return state, phaseLength, phase
 
 
+def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
+    """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
+    for i in range(3): # lapatinib that has 3 states
+        ax[k].plot(concs[0:4], lpt_avg[:, i, 0], label="st "+str(i), alpha=0.7)
+        ax[k].set_title(title+str(" G1"))
+        ax[k].set_xticklabels(concs[0:4], Rotation=30)
+        ax[k+1].plot(concs[0:4], lpt_avg[:, i, 1], label="st "+str(i), alpha=0.7)
+        ax[k+1].set_title(title+str(" G2"))
+        ax[k+1].set_xticklabels(concs[0:4], Rotation=30)
+
+    for i in range(4): # gemcitabine that has 4 states
+        ax[k+2].plot(concs[4:8], gmc_avg[:, i, 0], label="st "+str(i), alpha=0.7)
+        ax[k+2].set_title(title+str(" G1"))
+        ax[k+2].set_xticklabels(concs[4:8], Rotation=30)
+        ax[k+3].plot(concs[4:8], gmc_avg[:, i, 1], label="st "+str(i), alpha=0.7)
+        ax[k+3].set_title(title+str(" G2"))
+        ax[k+3].set_xticklabels(concs[4:8], Rotation=30)
+
+    # legend and ylabel
+    for i in range(k, k+4):
+        ax[i].legend()
+        ax[i].set_ylabel(title)
+
+    # ylim for lapatinib
+    for i in range(k, k+2):
+        ax[i].set_ylim([0.8*np.min(lpt_avg), 1.2*np.max(lpt_avg)])
+    # ylim for gemcitabine
+    for i in range(k+2, k+4):
+        ax[i].set_ylim([0.8*np.min(gmc_avg), 1.2*np.max(gmc_avg)])
+
+
 def makeFigure():
     """ Makes figure 11. """
 
-    ax, f = getSetup((13.2, 6.66), (2, 4))
+    ax, f = getSetup((13.2, 10.0), (4, 4))
     subplotLabel(ax)
 
     # lapatinib
-    print("lapatinib, 3 states: \n")
+    lpt_avg = np.zeros((4, 3, 2)) # the avg lifetime: num_conc x num_states x num_phases
+    bern_lpt = np.zeros((4, 3, 2)) # bernoulli
+    # print parameters and estimated values
+    print("for Lapatinib: \n the \u03C0: ", lapt_tHMMobj_list[0].estimate.pi, "\n the transition matrix: ", lapt_tHMMobj_list[0].estimate.T)
+
     for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):  # for each concentration data
-        # print parameters and estimated values
-        print("for concentration ", concs[idx], "\n the \u03C0: ", lapt_tHMMobj.estimate.pi, "\n the transition matrix: ", lapt_tHMMobj.estimate.T)
         for i in range(3):
-            print("\n parameters for state ", i, " are: ", lapt_tHMMobj.estimate.E[i].params)
+            lpt_avg[idx, i, 0] = lapt_tHMMobj.estimate.E[i].params[2] * lapt_tHMMobj.estimate.E[i].params[3] # G1
+            lpt_avg[idx, i, 1] = lapt_tHMMobj.estimate.E[i].params[4] * lapt_tHMMobj.estimate.E[i].params[5] # G2
+            # bernoullis
+            for j in range(2):
+                bern_lpt[idx, i, j] = lapt_tHMMobj.estimate.E[i].params[j]
+
         LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj, lapt_states_list[idx])
 
         # plot lapatinib
-        sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1, palette="Set2", dodge=True, ax=ax[idx])
+        sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx])
 
         ax[idx].set_title(concs[idx])
         ax[idx + 4].set_title(concs[idx + 4])
@@ -70,13 +108,21 @@ def makeFigure():
         ax[idx + 4].set_ylim([0, 160])
 
     # gemcitabine
-    print("Gemcitabine, 4 states: \n")
-    for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
-        # print parameters and estimated values
-        print("for concentration ", concs[idx + 4], "\n the \u03C0: ", gemc_tHMMobj.estimate.pi, " \n the transition matrix: ", gemc_tHMMobj.estimate.T)
-        for i in range(4):
-            print("\n parameters for state ", i, " are: ", gemc_tHMMobj.estimate.E[i].params)
-        GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
-        sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1, palette="Set2", dodge=True, ax=ax[idx + 4])
+    gmc_avg = np.zeros((4, 4, 2)) # avg lifetime gmc: num_conc x num_states x num_phases
+    bern_gmc = np.zeros((4, 4, 2)) # bernoulli
+    # print parameters and estimated values
+    print("for Gemcitabine: \n the \u03C0: ", gemc_tHMMobj_list[0].estimate.pi, " \n the transition matrix: ", gemc_tHMMobj_list[0].estimate.T)
 
+    for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
+        for i in range(4):
+            gmc_avg[idx, i, 0] = gemc_tHMMobj.estimate.E[i].params[2] * gemc_tHMMobj.estimate.E[i].params[3]
+            gmc_avg[idx, i, 1] = gemc_tHMMobj.estimate.E[i].params[4] * gemc_tHMMobj.estimate.E[i].params[5]
+            # bernoulli
+            for j in range(2):
+                bern_gmc[idx, i, j] = gemc_tHMMobj.estimate.E[i].params[j]
+        GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
+        sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx + 4])
+
+    plotting(ax, 8, lpt_avg, gmc_avg, concs, "avg length")
+    plotting(ax, 12, bern_lpt, bern_gmc, concs, "Bernoulli p")
     return f
