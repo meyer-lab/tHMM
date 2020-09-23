@@ -1,17 +1,10 @@
 """ Common utilities used between states regardless of distribution. """
 
 import math
-import jax.numpy as jnp
-from jax import value_and_grad, jit
-import jax.scipy.stats as jsp
-import jax.scipy.special as jsc
-from jax.config import config
 import numpy as np
 import scipy.stats as sp
 import scipy.special as sc
 from scipy.optimize import toms748, minimize
-
-config.update("jax_enable_x64", True)
 
 
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
@@ -19,13 +12,9 @@ def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
 
 
 def negative_LL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
-    uncens = jnp.dot(uncens_gammas, jsp.gamma.logpdf(uncens_obs, a=a, scale=scale))
-    cens = jnp.dot(cens_gammas, jsc.gammaincc(a, cens_obs / scale))
+    uncens = np.dot(uncens_gammas, sp.gamma.logpdf(uncens_obs, a=a, scale=scale))
+    cens = np.dot(cens_gammas, sc.gammaincc(a, cens_obs / scale))
     return -1 * (uncens + cens)
-
-
-negative_LL_jit = jit(value_and_grad(negative_LL, 0))
-negative_LL_sep_jit = jit(value_and_grad(negative_LL_sep, 0))
 
 
 def gamma_uncensored(gamma_obs, gammas, constant_shape):
@@ -76,11 +65,11 @@ def gamma_estimator(gamma_obs, time_cen, gammas, constant_shape, x0):
     bnd = (0.1, 50000.0)
 
     if constant_shape is None:
-        res = minimize(fun=negative_LL_jit, jac=True, x0=x0, method="TNC", bounds=(bnd, bnd), args=arrgs)
+        res = minimize(fun=negative_LL, x0=x0, bounds=(bnd, bnd), args=arrgs)
         xOut = res.x
     else:
         arrgs = (constant_shape, *arrgs)
-        res = minimize(fun=negative_LL_sep_jit, jac=True, x0=x0[1], method="TNC", bounds=(bnd, ), args=arrgs)
+        res = minimize(fun=negative_LL_sep, x0=x0[1], bounds=(bnd, ), args=arrgs)
         xOut = [constant_shape, res.x]
 
     return xOut
