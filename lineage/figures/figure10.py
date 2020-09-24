@@ -15,6 +15,7 @@ def makeFigure():
     Makes figure 10.
     """
     ax, f = getSetup((7, 12), (8, 2))
+    subplotLabel(ax)
     data = [Gemcitabine_Control + Lapatinib_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
 
     lapatinib = []
