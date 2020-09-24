@@ -264,6 +264,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             sns.regplot(x="x", y='wasserstein distance 1', data=accuracy_df, ax=ax[i], lowess=True, label="state 2", marker='+', scatter_kws=scatter_kws_list[1])
             ax[i].set_title(r"distance bw true and estm. gamma dists")
             ax[i].set_ylabel(r"Wasserstein distance")
+            ax[i].set_xlabel(xlabel)
             ax[i].set_ylim(0.0, 30.0)
             ax[i].legend()
         else:  # plot gamma params scale

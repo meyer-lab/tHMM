@@ -42,7 +42,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((13, 6.66), (3, 3))
+    ax, f = getSetup((11, 8), (3, 3))
     # dist_dist is
     figureMaker(ax, *commonAnalyze(list_of_populations, 2), num_lineages=num_lineages, dist_dist=True)
 
