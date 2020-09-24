@@ -1,8 +1,9 @@
 # Developing methods to quantify drug response heterogeneity
 
-[![Build Status](https://transduc.seas.ucla.edu/buildStatus/icon?job=meyer-lab/tHMM/master)](https://transduc.seas.ucla.edu/job/meyer-lab/job/tHMM/job/master/)
 [![codecov](https://codecov.io/gh/meyer-lab/tHMM/branch/master/graph/badge.svg)](https://codecov.io/gh/meyer-lab/tHMM)
 [![Documentation Status](https://readthedocs.org/projects/tHMM/badge/?version=latest)](https://lineage-growth.readthedocs.io/en/latest/?badge=latest)
+
+[Manuscript Build](https://meyer-lab.github.io/tHMM/manuscript.html)
 
 Quantifying the degree of cell response to a drug is foundational to new drug development and clinical application. Even in the earliest stages of drug development, screening a drug’s effect on cells is often used to select compounds for further investigation. After drug approval, a compound’s response across cell lines is used to identify molecular subtypes of cancer that predict therapeutic response, study therapeutic resistance, and identify more effective drug combinations. In nearly every case, and especially in cancer, drug response can be heterogeneous due to variation in the state of individual cells. Despite this, methods currently do not exist to quantify heterogeneity in drug response directly.
 
