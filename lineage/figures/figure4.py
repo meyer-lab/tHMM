@@ -48,7 +48,7 @@ def makeFigure():
     x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, _, _ = accuracy()
 
     # Get list of axis objects
-    ax, f = getSetup((6, 4), (2, 3))
+    ax, f = getSetup((13, 6), (2, 3))
     figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen)
     ax[0].text(-0.2, 1.22, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
     ax[2].text(-0.2, 1.22, ascii_lowercase[1], transform=ax[2].transAxes, fontsize=16, fontweight="bold", va="top")
