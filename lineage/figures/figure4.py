@@ -35,9 +35,9 @@ def regGen(num):
 
 
 def cenGen(num):
-    tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=num, censor_condition=3, desired_experiment_time=200)
+    tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=num, censor_condition=3, desired_experiment_time=250)
     while len(tmp.output_lineage) < 5:
-        tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=num, censor_condition=3, desired_experiment_time=200)
+        tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=num, censor_condition=3, desired_experiment_time=250)
     return tmp
 
 
@@ -94,7 +94,7 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
     accuracy_cen_df["State Assignment Accuracy"] = Accuracy_Cen
 
     i = 0
-    plotLineage(regGen(31), axes=ax[i], censore=False)
+    plotLineage(regGen(45), axes=ax[i], censore=False)
     ax[i].axis('off')
 
     i += 1
@@ -106,7 +106,7 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
     ax[i].set_title("Full lineage data")
 
     i += 1
-    plotLineage(cenGen(31), axes=ax[i], censore=True)
+    plotLineage(cenGen(45), axes=ax[i], censore=True)
     ax[i].axis('off')
 
     i += 1
