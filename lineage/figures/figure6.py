@@ -29,7 +29,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((7, 5), (2, 2))
+    ax, f = getSetup((9, 6), (2, 2))
     figureMaker5(ax, *accuracy())
 
     subplotLabel(ax)
