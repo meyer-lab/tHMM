@@ -88,7 +88,7 @@ def figureMaker5(ax, distribution_df, wasser_df):
 
     i += 1
 
-    sns.violinplot(x="Distribution type", y="G1 lifetime", hue="State", palette={"State 2":"g", "State 1":"b"}, split=True, data=distribution_df, ax=ax[i])
+    sns.violinplot(x="Distribution type", y="G1 lifetime", hue="State", palette={"State 2": "g", "State 1": "b"}, split=True, data=distribution_df, ax=ax[i])
 
     i += 1
     # state accuracy
