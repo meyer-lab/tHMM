@@ -51,6 +51,7 @@ scatter_state_2_kws = {
     "alpha": 0.33,
     "marker": "x",
     "s": 20,
+    "color": "green"
 }
 
 scatter_kws_list = [scatter_state_1_kws, scatter_state_2_kws]
