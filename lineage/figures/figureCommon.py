@@ -221,7 +221,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
     sns.regplot(x="x", y="bern 0 0", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
     sns.regplot(x="x", y="bern 1 0", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
     ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", s=20, c="#00ffff", alpha=0.5)
-    ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", s=20, c="#b2e4ac", alpha=0.5)
+    ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", s=20, c="#00cc00", alpha=0.5)
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=0.66, top=1.02)
     if number_of_params == 6:
@@ -237,7 +237,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             sns.regplot(x="x", y="bern 0 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
             sns.regplot(x="x", y="bern 1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
             ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5)
-            ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#b2e4ac", alpha=0.5)
+            ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5)
             ax[i].set_ylim(bottom=0.66, top=1.02)
             ax[i].set_ylabel("G2 Bernoulli $p$")
             ax[i].set_title(r"G2 Bernoulli $p$")
@@ -245,7 +245,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             sns.regplot(x="x", y="gamma 0 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
             sns.regplot(x="x", y="gamma 1 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
             ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", s=20, c="#00ffff", alpha=0.5)
-            ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", s=20, c="#b2e4ac", alpha=0.5)
+            ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", s=20, c="#00cc00", alpha=0.5)
             ax[i].set_ylabel(r"G1 Gamma $k$")
             ax[i].set_title(r"G1 Gamma $k$")
 
@@ -253,7 +253,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         sns.regplot(x="x", y="0 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         sns.regplot(x="x", y="1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
         ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5)
-        ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#b2e4ac", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5)
         ax[i].set_ylabel(r"Gamma $k$")
         ax[i].set_title(r"Gamma $k$")
     ax[i].set_xlabel(xlabel)
@@ -274,7 +274,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].scatter(x, paramTrues[:, 0, 3], marker="_", s=20,
                           c="#00ffff", alpha=0.5, label="State 1")
             ax[i].scatter(x, paramTrues[:, 1, 3], marker="_", s=20,
-                          c="#b2e4ac", alpha=0.5, label="State 2")
+                          c="#00cc00", alpha=0.5, label="State 2")
             ax[i].set_xlabel(xlabel)
             ax[i].set_ylabel(r"G1 Gamma $\theta$")
             ax[i].set_title(r"G1 Gamma $\theta$")
@@ -284,7 +284,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", s=20,
                       c="#00ffff", alpha=0.5, label="State 1")
         ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", s=20,
-                      c="#b2e4ac", alpha=0.5, label="State 2")
+                      c="#00cc00", alpha=0.5, label="State 2")
         ax[i].set_xlabel(xlabel)
         ax[i].set_ylabel(r"Gamma $\theta$")
         ax[i].set_title(r"Gamma $\theta$")
@@ -295,7 +295,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         sns.regplot(x="x", y="bern 0 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         sns.regplot(x="x", y="bern 1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
         ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5)
-        ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#b2e4ac", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5)
         ax[i].set_ylim(bottom=0.66, top=1.02)
         ax[i].set_ylabel("G2 Bernoulli $p$")
         ax[i].set_title(r"G2 Bernoulli $p$")
@@ -311,7 +311,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         sns.regplot(x="x", y="gamma 0 4", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         sns.regplot(x="x", y="gamma 1 4", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
         ax[i].scatter(x, paramTrues[:, 0, 4], marker="_", s=20, c="#00ffff", alpha=0.5)
-        ax[i].scatter(x, paramTrues[:, 1, 4], marker="_", s=20, c="#b2e4ac", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 1, 4], marker="_", s=20, c="#00cc00", alpha=0.5)
         ax[i].set_ylabel(r"G2 Gamma $k$")
         ax[i].set_title(r"G2 Gamma $k$")
     else:
@@ -326,7 +326,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         sns.regplot(x="x", y="gamma 0 5", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         sns.regplot(x="x", y="gamma 1 5", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
         ax[i].scatter(x, paramTrues[:, 0, 5], marker="_", s=20, c="#00ffff", alpha=0.5)
-        ax[i].scatter(x, paramTrues[:, 1, 5], marker="_", s=20, c="#b2e4ac", alpha=0.5)
+        ax[i].scatter(x, paramTrues[:, 1, 5], marker="_", s=20, c="#00cc00", alpha=0.5)
         ax[i].set_ylabel(r"G2 Gamma $\theta$")
         ax[i].set_title(r"G2 Gamma $\theta$")
         ax[i].set_xlabel(xlabel)
