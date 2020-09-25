@@ -88,12 +88,12 @@ def figureMaker5(ax, distribution_df, wasser_df):
 
     i += 1
 
-    sns.violinplot(x="Distribution type", y="G1 lifetime", hue="State", split=True, data=distribution_df, ax=ax[i])
+    sns.violinplot(x="Distribution type", y="G1 lifetime", hue="State", palette={"State 2":"g", "State 1":"b"}, split=True, data=distribution_df, ax=ax[i])
 
     i += 1
     # state accuracy
     sns.regplot(x="Wasserstein distance", y="State Assignment Accuracy", data=wasser_df, label="tHMM", ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    sns.regplot(x="Wasserstein distance", y="KMeans accuracy", data=wasser_df, ax=ax[i], label="K-means", lowess=True, marker='+', scatter_kws=scatter_kws_list[1])
+    sns.regplot(x="Wasserstein distance", y="KMeans accuracy", data=wasser_df, ax=ax[i], label="K-means", lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
     ax[i].set_title("State Assignment Accuracy")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_ylim(bottom=10.0, top=101)
