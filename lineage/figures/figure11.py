@@ -2,6 +2,7 @@
 import numpy as np
 import itertools
 import seaborn as sns
+import networkx as nx
 
 from ..Analyze import Analyze_list
 from ..tHMM import tHMM
@@ -76,7 +77,7 @@ def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
 def makeFigure():
     """ Makes figure 11. """
 
-    ax, f = getSetup((13.2, 10.0), (4, 4))
+    ax, f = getSetup((13.2, 13.0), (5, 4))
     subplotLabel(ax)
 
     # lapatinib
@@ -125,4 +126,44 @@ def makeFigure():
 
     plotting(ax, 8, lpt_avg, gmc_avg, concs, "avg length")
     plotting(ax, 12, bern_lpt, bern_gmc, concs, "Bernoulli p")
+
+    # get the transition matrix
+    T_lap = lapt_tHMMobj_list[0].estimate.T
+    T_gem = gemc_tHMMobj_list[0].estimate.T
+
+    # transition matrix lapatinib
+    plot_networkx(T_lap.shape[0], 8*T_lap, ax[16])
+
+    ax[17].axis("off")
+    # transition matrix
+    plot_networkx(T_gem.shape[0], 8*T_gem, ax[18])
+
+    ax[19].axis("off")
+
+
     return f
+
+def plot_networkx(num_states, T, axes):
+    """ This plots the Transition matrix for each condition. """
+    G=nx.DiGraph()
+
+    # add nodes
+    for i in range(num_states):
+        G.add_node(i, pos=(i,i))
+
+    # add edges
+    for i in range(num_states):
+        for j in range(num_states):
+            G.add_edge(i, j, weight=T[i,j])
+
+    # set circular position
+    pos=nx.circular_layout(G)
+
+    # node labels
+    labels={}
+    for i in range(num_states):
+        labels[i] = "state "+str(i+1)
+
+    # set line thickness as the transition values
+    weights = nx.get_edge_attributes(G,'weight').values()
+    nx.draw(G, pos, arrowsize=20, font_size=9, font_color="w", labels=labels, node_size=600, alpha=0.9,width=list(weights), with_labels=True,connectionstyle='arc3, rad = 0.2', ax=axes)
