@@ -24,8 +24,8 @@ for population in data:
             E.G2.const_shape = constant_shape[1]
 
 # Run fitting
-lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data[0:4], 3)
-gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(data[4:], 4)
+lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data[0:4], 3, fpi=True)
+gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(data[4:], 4, fpi=True)
 
 
 def twice(tHMMobj, state):

@@ -21,8 +21,8 @@ def makeFigure():
     lapatinib = []
     gemcitabine = []
     # Run fitting
-    lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data[4:], 3)
-    gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(data[0:4], 4)
+    lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data[4:], 3, fpi=True)
+    gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(data[0:4], 4, fpi=True)
 
     for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
         for lin_indx, lin in enumerate(lapt_tHMMobj.X):
