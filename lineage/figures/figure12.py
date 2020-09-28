@@ -19,7 +19,7 @@ def makeFigure():
         lp = []
         for lin in gemc.X:
             for cell in lin.output_lineage:
-                if cell.obs[0] == 0 or cell.obs[1] == 0:
+                if cell.hasDied():
                     if np.isfinite(cell.obs[2]) and np.isfinite(cell.obs[3]):
                         length = cell.obs[2] + cell.obs[3]
                     elif np.isnan(cell.obs[2]):
@@ -30,7 +30,7 @@ def makeFigure():
 
         for lin in lapt.X:
             for cell in lin.output_lineage:
-                if cell.obs[0] == 0 or cell.obs[1] == 0:
+                if cell.hasDied():
                     if np.isfinite(cell.obs[2]) and np.isfinite(cell.obs[3]):
                         length = cell.obs[2] + cell.obs[3]
                     elif np.isnan(cell.obs[2]):

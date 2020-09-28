@@ -2,6 +2,7 @@
 Contains utilities, functions, and variables that are commonly used or shared amongst
 the figure creation files.
 """
+import random
 from string import ascii_lowercase
 from cycler import cycler
 import math
@@ -10,8 +11,8 @@ import pandas as pd
 from matplotlib import gridspec, pyplot as plt
 import seaborn as sns
 import svgutils.transform as st
-from ..Analyze import run_Results_over, run_Analyze_over
 
+from ..Analyze import run_Results_over, run_Analyze_over
 from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 

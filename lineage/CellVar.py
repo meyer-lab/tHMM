@@ -58,6 +58,12 @@ class CellVar:
         # otherwise, it has no left and right daughters
         return True
 
+    def hasDied(self):
+        """ Returns true if the cell has died. 
+        Mostly used for removing them while estimating Gamma distributions. """
+        if self.obs[0] == 0 or self.obs[1] == 0:
+            return True
+
     def isLeafBecauseDaughtersAreNotObserved(self):
         """
         Boolean.
