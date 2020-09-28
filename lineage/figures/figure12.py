@@ -6,6 +6,7 @@ import networkx as nx
 from .figure11 import gemc_tHMMobj_list, lapt_tHMMobj_list, concs
 from .figureCommon import getSetup, subplotLabel
 
+
 def makeFigure():
     """ Makes figure 11. """
 
@@ -40,13 +41,13 @@ def makeFigure():
                     lp.append(length)
 
         ax[i].hist(lp, bins=30)
-        ax[i+4].hist(gm, bins=30)
+        ax[i + 4].hist(gm, bins=30)
         ax[i].set_ylabel("freq.")
         ax[i].set_xlabel("lived before death")
-        ax[i+4].set_ylabel("freq.")
-        ax[i+4].set_xlabel("lived before death")
+        ax[i + 4].set_ylabel("freq.")
+        ax[i + 4].set_xlabel("lived before death")
 
-        ax[i].set_title("lapatinib "+str(concs[i]))
-        ax[i+4].set_title("gemcitabine"+str(concs[i+4]))
+        ax[i].set_title("lapatinib " + str(concs[i]))
+        ax[i + 4].set_title("gemcitabine" + str(concs[i + 4]))
 
     return f
