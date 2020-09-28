@@ -11,4 +11,4 @@ pandoc-tablenos==2.2.2
 openpyxl==3.0.5
 Biopython==1.78
 statsmodels
-networks
+networkx
