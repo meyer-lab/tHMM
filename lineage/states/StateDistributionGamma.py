@@ -72,8 +72,20 @@ class StateDistribution:
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
 
+        # removing those who died from the gamma list
+        gamma_death_mask = []
+        for b in bern_obs:
+            if b == 1:
+                gamma_death_mask.append(True)
+            else:
+                gamma_death_mask.append(False)
+
+        gamma_filtered = γ_obs[gamma_death_mask]
+        gamma_obs_censor_filtered = gamma_obs_censor[gamma_death_mask]
+        gammas_filtered = gammas[gamma_death_mask]
+
         b_mask = np.isfinite(bern_obs)
-        g_mask = np.isfinite(γ_obs)
+        g_mask = np.isfinite(gamma_filtered)
 
         # Handle an empty state
         if np.sum(gammas[b_mask]) == 0.0:
@@ -81,7 +93,7 @@ class StateDistribution:
         else:
             self.params[0] = np.average(bern_obs[b_mask], weights=gammas[b_mask])
 
-        self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], self.const_shape, self.params[1:3])
+        self.params[1], self.params[2] = gamma_estimator(gamma_filtered[g_mask], gamma_obs_censor_filtered[g_mask], gammas_filtered[g_mask], self.const_shape, self.params[1:3])
 
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
