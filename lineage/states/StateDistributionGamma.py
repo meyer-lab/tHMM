@@ -50,19 +50,19 @@ class StateDistribution:
         # the individual observation likelihoods.
         ll = np.zeros(x.shape[0])
 
-        # remove dead cells from pdf
-        x_gamma = x[:, 2]
-        gamma_death_mask = x[:, 0] == 1
-        gamma_obs = x_gamma[gamma_death_mask]
-
         # Update for observed Bernoulli
         ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
 
         # Update uncensored Gamma
-        ll[gamma_obs == 1] += sp.gamma.logpdf(gamma_obs[gamma_obs == 1, 1], a=self.params[1], scale=self.params[2])
+        ll[x[:, 2] == 1] += sp.gamma.logpdf(x[x[:, 2] == 1, 1], a=self.params[1], scale=self.params[2])
 
         # Update censored Gamma
-        ll[gamma_obs == 0] += sp.gamma.logsf(gamma_obs[gamma_obs == 0, 1], a=self.params[1], scale=self.params[2])
+        ll[x[:, 2] == 0] += sp.gamma.logsf(x[x[:, 2] == 0, 1], a=self.params[1], scale=self.params[2])
+
+        # to fill those cells that died with only the pdf of bernoulli
+        finite = x[np.isfinite(x[:, 0]), 0]
+        mask = finite == 0
+        ll[mask] = sp.bernoulli.logpmf(finite[mask], self.params[0])
 
         return np.exp(ll)
 

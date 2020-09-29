@@ -5,6 +5,7 @@ import time
 import matplotlib
 import numpy as np
 matplotlib.use('AGG')
+np.random.seed()
 
 fdir = './output/'
 cartoon_dir = r"./lineage/figures/cartoons"
