@@ -48,22 +48,19 @@ class StateDistribution:
         # In our example, we assume the observation's are uncorrelated across the dimensions (across the different
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
-        ll_b = np.zeros(x.shape[0])
-        ll_g = np.zeros(x.shape[0])
-
-        # Update for observed Bernoulli
-        ll_b[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
+        ll = np.zeros(x.shape[0])
 
         # Update uncensored Gamma
-        ll_g[x[:, 2] == 1] += sp.gamma.logpdf(x[x[:, 2] == 1, 1], a=self.params[1], scale=self.params[2])
+        ll[x[:, 2] == 1] = sp.gamma.logpdf(x[x[:, 2] == 1, 1], a=self.params[1], scale=self.params[2])
 
         # Update censored Gamma
-        ll_g[x[:, 2] == 0] += sp.gamma.logsf(x[x[:, 2] == 0, 1], a=self.params[1], scale=self.params[2])
+        ll[x[:, 2] == 0] = sp.gamma.logsf(x[x[:, 2] == 0, 1], a=self.params[1], scale=self.params[2])
 
-        # remove dead cells
-        ll_g[x[:, 0] == 0] = 0
+        # Remove dead cells
+        ll[x[:, 0] == 0] = 0
 
-        ll= ll_b + ll_g
+        # Update for observed Bernoulli
+        ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
 
         return np.exp(ll)
 
