@@ -59,10 +59,10 @@ class StateDistribution:
         ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
 
         # Update uncensored Gamma
-        ll[gamma_obs[:, 2] == 1] += sp.gamma.logpdf(gamma_obs[gamma_obs[:, 2] == 1, 1], a=self.params[1], scale=self.params[2])
+        ll[gamma_obs == 1] += sp.gamma.logpdf(gamma_obs[gamma_obs == 1, 1], a=self.params[1], scale=self.params[2])
 
         # Update censored Gamma
-        ll[gamma_obs[:, 2] == 0] += sp.gamma.logsf(gamma_obs[gamma_obs[:, 2] == 0, 1], a=self.params[1], scale=self.params[2])
+        ll[gamma_obs == 0] += sp.gamma.logsf(gamma_obs[gamma_obs == 0, 1], a=self.params[1], scale=self.params[2])
 
         return np.exp(ll)
 
