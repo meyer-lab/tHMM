@@ -39,6 +39,15 @@ def calculate_log_likelihood(NF):
     return np.array([sum(np.log(arr)) for arr in NF])
 
 
+def calculate_stationary(T):
+    """ Calculate the stationary distribution of states from T. 
+    Note that this does not take into account potential influences of the emissions. """
+    eigenvalues, eigenvectors = np.linalg.eig(T.T)
+    idx = np.argmin(np.abs(eigenvalues - 1))
+    w = np.real(eigenvectors[:, idx]).T
+    return w / np.sum(w)
+
+
 def do_M_step(tHMMobj, MSD, betas, gammas):
     """
     Calculates the M-step of the Baum Welch algorithm
@@ -54,14 +63,6 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
 
     # the first object is representative of the whole population.
     # If thmmObj[0] satisfies this "if", then all the objects in this population do.
-    if tHMMobj[0].estimate.fpi is None:
-        assert tHMMobj[0].fpi is None
-        pi = do_M_pi_step(tHMMobj, gammas)
-
-        # all the objects in the population have the same pi
-        for t in tHMMobj:
-            t.estimate.pi = pi
-
     if tHMMobj[0].estimate.fT is None:
         assert tHMMobj[0].fT is None
         T = do_M_T_step(tHMMobj, MSD, betas, gammas)
@@ -69,6 +70,20 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
         # all the objects in the population have the same T
         for t in tHMMobj:
             t.estimate.T = T
+
+    if tHMMobj[0].estimate.fpi is None:
+        assert tHMMobj[0].fpi is None
+        pi = do_M_pi_step(tHMMobj, gammas)
+    elif tHMMobj[0].estimate.fpi is True:
+        # True indicates that pi should be set based on the stationary distribution of T
+        assert tHMMobj[0].fpi is True
+        pi = calculate_stationary(tHMMobj[0].estimate.T)
+    else:
+        pi = tHMMobj[0].fpi
+
+    # all the objects in the population have the same pi
+    for t in tHMMobj:
+        t.estimate.pi = pi
 
     if tHMMobj[0].estimate.fE is None:
         assert tHMMobj[0].fE is None
