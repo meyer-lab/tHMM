@@ -73,13 +73,7 @@ class StateDistribution:
         gamma_obs_censor = x[:, 2]
 
         # removing those who died from the gamma list
-        gamma_death_mask = []
-        for b in bern_obs:
-            if b == 1:
-                gamma_death_mask.append(True)
-            else:
-                gamma_death_mask.append(False)
-
+        gamma_death_mask = bern_obs == 1
         gamma_filtered = γ_obs[gamma_death_mask]
         gamma_obs_censor_filtered = gamma_obs_censor[gamma_death_mask]
         gammas_filtered = gammas[gamma_death_mask]
