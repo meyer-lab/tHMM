@@ -58,7 +58,6 @@ class CellVar:
         # otherwise, it has no left and right daughters
         return True
 
-
     def isLeafBecauseDaughtersAreNotObserved(self):
         """
         Boolean.
