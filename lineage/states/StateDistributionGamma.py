@@ -77,7 +77,7 @@ class StateDistribution:
 
         b_mask = np.isfinite(bern_obs)
         # Both unoberved and dead cells should be removed from gamma
-        g_mask = np.isfinite(γ_obs) and (bern_obs == 1)
+        g_mask = np.logical_and(np.isfinite(γ_obs), bern_obs == 1)
 
         # Handle an empty state
         if np.sum(gammas[b_mask]) == 0.0:
