@@ -39,7 +39,7 @@ def Analyze(X, num_states, **kwargs):
             break
         except (AssertionError, ZeroDivisionError, RuntimeError) as error:
             error_holder.append(error)
-            if len(error_holder) == 3:
+            if len(error_holder) == 4:
                 print(
                     f"Caught the following errors: \
                     \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. \

@@ -112,8 +112,8 @@ def test_AIC():
     # create 1-state lineages
     pi1 = np.array([1.0, 0.0])
     T1 = np.array([[1.0, 0.0], [0.0, 1.0]])
-    E1 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 6), StateDistPhase(0.99, 0.9, 20, 5, 10, 6)]
-    lin = [[LineageTree.init_from_parameters(pi1, T1, E1, 1)] for _ in range(3)]
+    E1 = [StateDistPhase(1., 0.9, 20, 5, 10, 6), StateDistPhase(1., 0.9, 20, 5, 10, 6)]
+    lin = [[LineageTree.init_from_parameters(pi1, T1, E1, 3)] for _ in range(3)]
     desired_num_states = np.arange(1, 4)
 
     # run a few times and make sure it gives one state as the answer more than half the time.
