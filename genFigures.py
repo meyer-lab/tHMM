@@ -5,7 +5,7 @@ import time
 import matplotlib
 import numpy as np
 matplotlib.use('AGG')
-# np.random.seed(1)
+np.random.seed(1)
 
 fdir = './output/'
 cartoon_dir = r"./lineage/figures/cartoons"
@@ -93,3 +93,10 @@ if __name__ == '__main__':
         # Overlay Figure 7 cartoon
         overlayCartoon(fdir + 'figure7.svg',
                        f'{cartoon_dir}/figure7.svg', 50, 10, scalee=0.95)
+
+    if sys.argv[1] == '13':
+        # Overlay Figure 13 cartoon
+        overlayCartoon(fdir + 'figure7.svg',
+                       f'{cartoon_dir}/lpt.svg', 10, 10, scalee=1)
+        overlayCartoon(fdir + 'figure7.svg',
+                       f'{cartoon_dir}/gmc.svg', 150, 10, scalee=1)
