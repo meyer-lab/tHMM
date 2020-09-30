@@ -28,56 +28,10 @@ lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data[0:4], 3, fpi=True)
 gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(data[4:], 4, fpi=True)
 
 
-def twice(tHMMobj, state):
-    g1 = []
-    g2 = []
-    for lin in tHMMobj.X:  # for each lineage list
-        for cell in lin.output_lineage:  # for each cell in the lineage
-            g1.append(cell.obs[2])
-            g2.append(cell.obs[3])
-
-    state = list(itertools.chain(*state)) + list(itertools.chain(*state))
-    phaseLength = g1 + g2
-    phase = len(g1) * ["G1"] + len(g2) * ["G2"]
-    return state, phaseLength, phase
-
-
-def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
-    """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
-    for i in range(3):  # lapatinib that has 3 states
-        ax[k].plot(concs[0:4], lpt_avg[:, i, 0], label="st " + str(i), alpha=0.7)
-        ax[k].set_title(title + str(" G1"))
-        ax[k].set_xticklabels(concs[0:4], rotation=30)
-        ax[k + 1].plot(concs[0:4], lpt_avg[:, i, 1], label="st " + str(i), alpha=0.7)
-        ax[k + 1].set_title(title + str(" G2"))
-        ax[k + 1].set_xticklabels(concs[0:4], rotation=30)
-
-    for i in range(4):  # gemcitabine that has 4 states
-        ax[k + 2].plot(concs[4:8], gmc_avg[:, i, 0], label="st " + str(i), alpha=0.7)
-        ax[k + 2].set_title(title + str(" G1"))
-        ax[k + 2].set_xticklabels(concs[4:8], rotation=30)
-        ax[k + 3].plot(concs[4:8], gmc_avg[:, i, 1], label="st " + str(i), alpha=0.7)
-        ax[k + 3].set_title(title + str(" G2"))
-        ax[k + 3].set_xticklabels(concs[4:8], rotation=30)
-
-    # legend and ylabel
-    for i in range(k, k + 4):
-        ax[i].legend()
-        ax[i].set_ylabel(title)
-
-    # ylim for lapatinib
-    for i in range(k, k + 2):
-        ax[i].set_ylim([0.8 * np.min(lpt_avg), 1.2 * np.max(lpt_avg)])
-    # ylim for gemcitabine
-    for i in range(k + 2, k + 4):
-        ax[i].set_ylim([0.8 * np.min(gmc_avg), 1.2 * np.max(gmc_avg)])
-
-
 def makeFigure():
     """ Makes figure 11. """
 
     ax, f = getSetup((13.2, 10.0), (4, 4))
-    subplotLabel(ax)
 
     # lapatinib
     lpt_avg = np.zeros((4, 3, 2))  # the avg lifetime: num_conc x num_states x num_phases
@@ -126,3 +80,50 @@ def makeFigure():
     plotting(ax, 8, lpt_avg, gmc_avg, concs, "avg length")
     plotting(ax, 12, bern_lpt, bern_gmc, concs, "Bernoulli p")
     return f
+
+
+def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
+    """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
+    for i in range(3):  # lapatinib that has 3 states
+        ax[k].plot(concs[0:4], lpt_avg[:, i, 0], label="st " + str(i), alpha=0.7)
+        ax[k].set_title(title + str(" G1"))
+        ax[k].set_xticklabels(concs[0:4], rotation=30)
+        ax[k + 1].plot(concs[0:4], lpt_avg[:, i, 1], label="st " + str(i), alpha=0.7)
+        ax[k + 1].set_title(title + str(" G2"))
+        ax[k + 1].set_xticklabels(concs[0:4], rotation=30)
+
+    for i in range(4):  # gemcitabine that has 4 states
+        ax[k + 2].plot(concs[4:8], gmc_avg[:, i, 0], label="st " + str(i), alpha=0.7)
+        ax[k + 2].set_title(title + str(" G1"))
+        ax[k + 2].set_xticklabels(concs[4:8], rotation=30)
+        ax[k + 3].plot(concs[4:8], gmc_avg[:, i, 1], label="st " + str(i), alpha=0.7)
+        ax[k + 3].set_title(title + str(" G2"))
+        ax[k + 3].set_xticklabels(concs[4:8], rotation=30)
+
+    # legend and ylabel
+    for i in range(k, k + 4):
+        ax[i].legend()
+        ax[i].set_ylabel(title)
+
+    # ylim for lapatinib
+    for i in range(k, k + 2):
+        ax[i].set_ylim([0.8 * np.min(lpt_avg), 1.2 * np.max(lpt_avg)])
+    # ylim for gemcitabine
+    for i in range(k + 2, k + 4):
+        ax[i].set_ylim([0.8 * np.min(gmc_avg), 1.2 * np.max(gmc_avg)])
+
+    subplotLabel(ax)
+
+def twice(tHMMobj, state):
+    """ For each tHMM object, connects the state and the emissions. """
+    g1 = []
+    g2 = []
+    for lin in tHMMobj.X:  # for each lineage list
+        for cell in lin.output_lineage:  # for each cell in the lineage
+            g1.append(cell.obs[2])
+            g2.append(cell.obs[3])
+
+    state = list(itertools.chain(*state)) + list(itertools.chain(*state))
+    phaseLength = g1 + g2
+    phase = len(g1) * ["G1"] + len(g2) * ["G2"]
+    return state, phaseLength, phase
