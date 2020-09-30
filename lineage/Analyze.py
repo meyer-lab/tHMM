@@ -9,34 +9,9 @@ from concurrent.futures import ProcessPoolExecutor
 
 
 def Analyze(X, num_states, **kwargs):
-    """
-    Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
-
-    :param X: A list containing LineageTree objects as lineages.
-    :type X: list
-    :param num_states: The number of states we want our model to estimate for the given population.
-    :type num_states: Int
-    :return: The tHMM object
-    :rtype: object
-    :return: A list containing the lineage-wise predicted states by Viterbi.
-    :rtype: list
-    :return: Log-likelihood of the normalizing factor for the lineage.
-    :rtype: float
-    """
-    tHMMobj = tHMM(X, num_states=num_states, **kwargs)  # build the tHMM class with X
-    _, _, _, _, _, LL = tHMMobj.fit()
-
-    for _ in range(2):
-        tHMMobj2 = tHMM(X, num_states=num_states, **kwargs)  # build the tHMM class with X
-        _, _, _, _, _, LL2 = tHMMobj2.fit()
-
-        if LL2 > LL:
-            tHMMobj = tHMMobj2
-            LL = LL2
-
-    pred_states_by_lineage = tHMMobj.predict()
-
-    return tHMMobj, pred_states_by_lineage, LL
+    """ Runs a tHMM and outputs the tHMM object, state assignments, and likelihood. """
+    tHMMobj_list, st, LL = Analyze_list([X], num_states, **kwargs)
+    return tHMMobj_list[0], st[0], LL
 
 
 def Analyze_list(Population_list, num_states, **kwargs):
@@ -44,12 +19,13 @@ def Analyze_list(Population_list, num_states, **kwargs):
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
     _, _, _, _, LL = fit_list(tHMMobj_list)
 
-    tHMMobj_list2 = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
-    _, _, _, _, LL2 = fit_list(tHMMobj_list2)
+    for _ in range(2):
+        tHMMobj_list2 = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
+        _, _, _, _, LL2 = fit_list(tHMMobj_list2)
 
-    if LL2 > LL:
-        tHMMobj_list = tHMMobj_list2
-        LL = LL2
+        if LL2 > LL:
+            tHMMobj_list = tHMMobj_list2
+            LL = LL2
 
     pred_states_by_lineage_by_conc = [tHMMobj.predict() for tHMMobj in tHMMobj_list]
 
