@@ -26,4 +26,4 @@ def test_estimationEvaluationGamma(censored, constant_shape):
     solver_gamma = tHMM(lineage_gamma, 1)  # evaluating for one state
     solver_gamma.fit()
 
-    assert E_gamma[0].dist(solver_gamma.estimate.E[0]) < 4.0
+    assert solver_gamma.estimate.E[0].dist(E_gamma[0]) < 4.0
