@@ -7,7 +7,7 @@ from ..tHMM import tHMM
 from ..figures.figureCommon import pi, T, E
 
 
-@pytest.mark.parametrize("cens", [0, 1, 2, 3])
+@pytest.mark.parametrize("cens", [0, 2])
 @pytest.mark.parametrize("nStates", [1, 2, 3])
 def test_BW(cens, nStates):
     """ This tests that one step of Baum-Welch increases the likelihood of the fit. """

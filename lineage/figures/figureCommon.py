@@ -11,15 +11,16 @@ from matplotlib import gridspec, pyplot as plt
 import seaborn as sns
 import svgutils.transform as st
 from ..Analyze import run_Results_over, run_Analyze_over
+from ..BaumWelch import calculate_stationary
 
 from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 
-# pi: the initial probability vector
-pi = np.array([0.75, 0.25], dtype="float")
-
 # T: transition probability matrix
 T = np.array([[0.9, 0.1], [0.05, 0.95]], dtype="float")
+
+# pi: the initial probability vector
+pi = calculate_stationary(T)
 
 # bern, gamma_a, gamma_scale
 state0 = StateDistribution(0.99, 8, 6)
