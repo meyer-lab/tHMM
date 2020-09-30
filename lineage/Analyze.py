@@ -1,11 +1,10 @@
 """ Calls the tHMM functions and outputs the parameters needed to generate the Figures. """
-from .tHMM import tHMM, fit_list
+import itertools
+import numpy as np
+from concurrent.futures import ProcessPoolExecutor
 from scipy.stats import wasserstein_distance
 from sklearn.metrics import balanced_accuracy_score
-import numpy as np
-import itertools
-import random
-from concurrent.futures import ProcessPoolExecutor
+from .tHMM import tHMM, fit_list
 
 
 def Analyze(X, num_states, **kwargs):
