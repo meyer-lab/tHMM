@@ -19,8 +19,8 @@ class TestBW(unittest.TestCase):
             [[0.75, 0.20, 0.05], [0.1, 0.85, 0.05], [0.1, 0.1, 0.8]])
 
         # Emissions
-        self.E = [StateDistPhase(0.99, 0.95, 20, 5, 10, 3), StateDistPhase(
-            0.95, 0.92, 10, 2, 15, 4), StateDistPhase(0.99, 0.92, 15, 7, 20, 5)]
+        self.E = [StateDistPhase(1., 0.95, 20, 5, 10, 3), StateDistPhase(
+            1., 0.92, 10, 2, 15, 4), StateDistPhase(1., 0.92, 15, 7, 20, 5)]
 
     def commonTest(self, **kwargs):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
@@ -65,7 +65,7 @@ class TestBW(unittest.TestCase):
 
     def test_step2(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
-        self.commonTest(censor_condition=2, desired_experimental_time=500)
+        self.commonTest(censor_condition=2, desired_experimental_time=700)
 
     def test_step3(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
