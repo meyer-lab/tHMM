@@ -78,7 +78,8 @@ class StateDistribution:
         b_mask = np.isfinite(bern_obs)
         # Both unoberved and dead cells should be removed from gamma
         g_mask = np.logical_and(np.isfinite(γ_obs), bern_obs == 1)
-
+        # at least have 10 cells after masking
+        assert np.count_nonzero(g_mask) >= 10
         # Handle an empty state
         if np.sum(gammas[b_mask]) == 0.0:
             self.params[0] = np.average(bern_obs[b_mask])
