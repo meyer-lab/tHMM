@@ -24,7 +24,7 @@ def CladeRecursive(cell, a, censore):
     elif cell.state == 3:
         colorr = "black"
     else:
-        print("cell state out of range")
+        print("cell state ", cell.state)
         colorr = "yellow"
 
     if cell.isLeaf() and censore:
