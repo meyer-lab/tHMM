@@ -199,5 +199,6 @@ def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
             break
 
         old_LL = new_LL
+        print(new_LL)
 
     return MSD_list, NF_list, betas_list, gammas_list, new_LL

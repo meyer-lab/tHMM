@@ -57,7 +57,7 @@ class StateDistribution:
         ll[x[:, 2] == 0] = sp.gamma.logsf(x[x[:, 2] == 0, 1], a=self.params[1], scale=self.params[2])
 
         # Remove dead cells
-        ll[x[:, 0] == 0] = 0
+        ll[x[:, 0] == 0] = 0.001
 
         # Update for observed Bernoulli
         ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
