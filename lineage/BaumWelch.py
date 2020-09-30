@@ -40,7 +40,7 @@ def calculate_log_likelihood(NF):
 
 
 def calculate_stationary(T):
-    """ Calculate the stationary distribution of states from T. 
+    """ Calculate the stationary distribution of states from T.
     Note that this does not take into account potential influences of the emissions. """
     eigenvalues, eigenvectors = np.linalg.eig(T.T)
     idx = np.argmin(np.abs(eigenvalues - 1))

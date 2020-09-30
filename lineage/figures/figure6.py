@@ -16,7 +16,6 @@ from .figureCommon import (
     E2,
     max_desired_num_cells,
     num_data_points,
-    scatter_kws_list,
 )
 from ..tHMM import tHMM
 from ..LineageTree import LineageTree
@@ -92,8 +91,8 @@ def figureMaker5(ax, distribution_df, wasser_df):
 
     i += 1
     # state accuracy
-    sns.regplot(x="Wasserstein distance", y="State Assignment Accuracy", data=wasser_df, label="tHMM", ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    sns.regplot(x="Wasserstein distance", y="KMeans accuracy", data=wasser_df, ax=ax[i], label="K-means", lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
+    sns.regplot(x="Wasserstein distance", y="State Assignment Accuracy", data=wasser_df, label="tHMM", ax=ax[i], lowess=True, marker='+')
+    sns.regplot(x="Wasserstein distance", y="KMeans accuracy", data=wasser_df, ax=ax[i], label="K-means", lowess=True, marker='+')
     ax[i].set_title("State Assignment Accuracy")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_ylim(bottom=10.0, top=101)

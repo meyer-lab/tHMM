@@ -114,6 +114,7 @@ def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
 
     subplotLabel(ax)
 
+
 def twice(tHMMobj, state):
     """ For each tHMM object, connects the state and the emissions. """
     g1 = []
