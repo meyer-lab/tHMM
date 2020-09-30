@@ -57,7 +57,7 @@ class StateDistribution:
         ll[x[:, 2] == 0] += sp.gamma.logsf(x[x[:, 2] == 0, 1], a=self.params[1], scale=self.params[2])
 
         # Remove dead cells
-        ll[x[:, 0] == 0] = 0.001
+        ll[x[:, 0] == 0] = 0.0
 
         # Update for observed Bernoulli
         ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
@@ -85,6 +85,9 @@ class StateDistribution:
             self.params[0] = np.average(bern_obs[b_mask])
         else:
             self.params[0] = np.average(bern_obs[b_mask], weights=gammas[b_mask])
+
+        # Don't allow Bernoulli to hit extremes
+        self.params[0] = np.clip(self.params[0], 0.0001, 0.9999)
 
         self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], self.const_shape, self.params[1:3])
 

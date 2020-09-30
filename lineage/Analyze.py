@@ -1,5 +1,4 @@
 """ Calls the tHMM functions and outputs the parameters needed to generate the Figures. """
-from copy import deepcopy
 from .tHMM import tHMM, fit_list
 from scipy.stats import wasserstein_distance
 from sklearn.metrics import balanced_accuracy_score
