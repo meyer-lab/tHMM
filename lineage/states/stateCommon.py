@@ -32,17 +32,17 @@ def gamma_uncensored(gamma_obs, gammas, constant_shape):
     if constant_shape:
         a_hat0 = constant_shape
     else:
-        flow = f(0.1)
+        flow = f(1.0)
         fhigh = f(100.0)
         if flow * fhigh > 0.0:
             if np.absolute(flow) < np.absolute(fhigh):
-                a_hat0 = 0.1
+                a_hat0 = 1.0
             elif np.absolute(flow) > np.absolute(fhigh):
                 a_hat0 = 100.0
             else:
                 a_hat0 = 10.0
         else:
-            a_hat0 = toms748(f, 0.1, 100.0)
+            a_hat0 = toms748(f, 1.0, 100.0)
 
     return [a_hat0, gammaCor / a_hat0]
 
@@ -62,14 +62,15 @@ def gamma_estimator(gamma_obs, time_cen, gammas, constant_shape, x0):
 
     assert gammas.shape[0] == gamma_obs.shape[0]
     arrgs = (gamma_obs[time_cen == 1], gammas[time_cen == 1], gamma_obs[time_cen == 0], gammas[time_cen == 0])
+    opt = {'gtol': 1e-09, 'ftol': 1e-10}
     bnd = (0.1, 50000.0)
 
     if constant_shape is None:
-        res = minimize(fun=negative_LL, jac="3-point", x0=x0, bounds=(bnd, bnd), args=arrgs)
+        res = minimize(fun=negative_LL, jac="3-point", x0=x0, bounds=(bnd, bnd), args=arrgs, options=opt)
         xOut = res.x
     else:
         arrgs = (constant_shape, *arrgs)
-        res = minimize(fun=negative_LL_sep, jac="3-point", x0=x0[1], bounds=(bnd, ), args=arrgs)
+        res = minimize(fun=negative_LL_sep, jac="3-point", x0=x0[1], bounds=(bnd, ), args=arrgs, options=opt)
         xOut = [constant_shape, res.x]
 
     return xOut
