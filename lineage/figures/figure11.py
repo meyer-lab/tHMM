@@ -107,10 +107,10 @@ def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
 
     # ylim for lapatinib
     for i in range(k, k + 2):
-        ax[i].set_ylim([0.0, 1.2 * np.max(lpt_avg)])
+        ax[i].set_ylim([0, 200])
     # ylim for gemcitabine
     for i in range(k + 2, k + 4):
-        ax[i].set_ylim([0.0, 1.2 * np.max(gmc_avg)])
+        ax[i].set_ylim([0, 200])
 
     subplotLabel(ax)
 
