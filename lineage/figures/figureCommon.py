@@ -301,7 +301,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_ylabel("G2 Bernoulli $p$")
         ax[i].set_title(r"G2 Bernoulli $p$")
     else:
-        ax[i].set_ylim(bottom=np.mean(accuracies) - 10, top=101)
+        ax[i].set_ylim(bottom=0, top=101)
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_ylabel(r"Accuracy [%]")
         ax[i].set_title("State Assignment Accuracy")
@@ -343,7 +343,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
 
     if number_of_params == 6 and (not dist_dist):
         i += 1
-        ax[i].set_ylim(bottom=np.mean(accuracies) - 10, top=101)
+        ax[i].set_ylim(bottom=0, top=101)
         ax[i].set_ylabel(r"Accuracy [%]")
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_title("State Assignment Accuracy")
