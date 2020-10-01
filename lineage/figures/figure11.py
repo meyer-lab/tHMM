@@ -8,6 +8,7 @@ from ..tHMM import tHMM
 from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .figureCommon import getSetup, subplotLabel
 np.random.seed(1)
+
 concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM", "cntrl", "Gem 5nM", "Gem 10nM", "Gem 30nM"]
 data = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM, Gemcitabine_Control + Lapatinib_Control, Gem5uM, Gem10uM, Gem30uM]
 
@@ -106,11 +107,12 @@ def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
         ax[i].set_ylabel(title)
 
     # ylim for lapatinib
-    for i in range(k, k + 2):
-        ax[i].set_ylim([0, 200])
-    # ylim for gemcitabine
-    for i in range(k + 2, k + 4):
-        ax[i].set_ylim([0, 200])
+    if k == 8:
+        for i in range(k, k+4):
+            ax[i].set_ylim([0, 160])
+    elif k == 12:
+        for i in range(k, k+4):
+            ax[i].set_ylim([0, 1.05])
 
     subplotLabel(ax)
 
