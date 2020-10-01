@@ -80,7 +80,7 @@ def figureMaker7(ax, un_accuracy_df, accuracy_df):
     ax[i].set_title("Uncensored Data")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_xlabel("Approximate percentage of cells in state 1 [%]")
-    ax[i].set_ylim(bottom=50.0, top=105.0)
+    ax[i].set_ylim(bottom=0, top=101.0)
 
     i += 1
     # state assignment accuracy
@@ -88,4 +88,4 @@ def figureMaker7(ax, un_accuracy_df, accuracy_df):
     ax[i].set_title("Censored Data")
     ax[i].set_ylabel("Accuracy [%]")
     ax[i].set_xlabel("Approximate percentage of cells in state 1 [%]")
-    ax[i].set_ylim(bottom=50.0, top=105.0)
+    ax[i].set_ylim(bottom=0, top=101.0)
