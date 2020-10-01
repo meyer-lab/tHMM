@@ -1,89 +1,30 @@
 """ Calls the tHMM functions and outputs the parameters needed to generate the Figures. """
-from .tHMM import tHMM, fit_list
+import itertools
+import numpy as np
+from concurrent.futures import ProcessPoolExecutor
 from scipy.stats import wasserstein_distance
 from sklearn.metrics import balanced_accuracy_score
-import numpy as np
-import itertools
-import random
-from concurrent.futures import ProcessPoolExecutor
+from .tHMM import tHMM, fit_list
 
 
 def Analyze(X, num_states, **kwargs):
-    """
-    Runs a tHMM and outputs state classification from viterbi, thmm object, normalizing factor, log likelihood, and deltas.
-
-    :param X: A list containing LineageTree objects as lineages.
-    :type X: list
-    :param num_states: The number of states we want our model to estimate for the given population.
-    :type num_states: Int
-    :return: The tHMM object
-    :rtype: object
-    :return: A list containing the lineage-wise predicted states by Viterbi.
-    :rtype: list
-    :return: Log-likelihood of the normalizing factor for the lineage.
-    :rtype: float
-    """
-    error_holder = []
-    for num_tries in range(1, 10):
-        try:
-            tHMMobj = tHMM(X, num_states=num_states, **kwargs)  # build the tHMM class with X
-            _, _, _, _, _, LL = tHMMobj.fit()
-
-            tHMMobj2 = tHMM(X, num_states=num_states, **kwargs)  # build the tHMM class with X
-            _, _, _, _, _, LL2 = tHMMobj2.fit()
-
-            if LL2 > LL:
-                tHMMobj = tHMMobj2
-                LL = LL2
-
-            break
-        except (AssertionError, ZeroDivisionError, RuntimeError) as error:
-            error_holder.append(error)
-            if len(error_holder) == 3:
-                print(
-                    f"Caught the following errors: \
-                    \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. \
-                    Fitting is breaking after trying {num_tries} times. \
-                    If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue \
-                    is the estimates of your parameters are returning nonsensible parameters. \
-                    Consider changing your parameter estimator. "
-                )
-                raise
-
-    pred_states_by_lineage = tHMMobj.predict()
-
-    return tHMMobj, pred_states_by_lineage, LL
+    """ Runs a tHMM and outputs the tHMM object, state assignments, and likelihood. """
+    tHMMobj_list, st, LL = Analyze_list([X], num_states, **kwargs)
+    return tHMMobj_list[0], st[0], LL
 
 
 def Analyze_list(Population_list, num_states, **kwargs):
     """ This function runs the analyze for the case when we want to fit the experimental data. (fig 11)"""
+    tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
+    _, _, _, _, LL = fit_list(tHMMobj_list)
 
-    error_holder = []
-    for num_tries in range(1, 10):
-        try:
-            tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
-            _, _, _, _, LL = fit_list(tHMMobj_list)
+    for _ in range(2):
+        tHMMobj_list2 = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
+        _, _, _, _, LL2 = fit_list(tHMMobj_list2)
 
-            tHMMobj_list2 = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
-            _, _, _, _, LL2 = fit_list(tHMMobj_list2)
-
-            if LL2 > LL:
-                tHMMobj_list = tHMMobj_list2
-                LL = LL2
-
-            break
-        except (AssertionError, ZeroDivisionError, RuntimeError) as error:
-            error_holder.append(error)
-            if len(error_holder) == 3:
-                print(
-                    f"Caught the following errors: \
-                    \n \n {error_holder} \n \n in fitting after multiple {num_tries} runs. \
-                    Fitting is breaking after trying {num_tries} times. \
-                    If you're facing a ZeroDivisionError or a RuntimeError then the most likely issue \
-                    is the estimates of your parameters are returning nonsensible parameters. \
-                    Consider changing your parameter estimator. "
-                )
-                raise
+        if LL2 > LL:
+            tHMMobj_list = tHMMobj_list2
+            LL = LL2
 
     pred_states_by_lineage_by_conc = [tHMMobj.predict() for tHMMobj in tHMMobj_list]
 
