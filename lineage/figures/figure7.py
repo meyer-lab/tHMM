@@ -43,7 +43,7 @@ def accuracy():
     list_of_fpi = [pi] * len(list_of_Ts)
 
     def genF(x): return LineageTree.init_from_parameters(pi, x, E2, 0.5 * max_desired_num_cells)
-    def genC(x): return LineageTree.init_from_parameters(pi, x, E2, 0.5 * max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
+    def genC(x): return LineageTree.init_from_parameters(pi, x, E2, 0.5 * max_desired_num_cells, censor_condition=3, desired_experiment_time=600)
 
     # Generate populations
     list_of_uncen_populations = [[genF(T) for _ in range(3)] for T in list_of_Ts]
