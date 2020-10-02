@@ -27,8 +27,7 @@ lap01 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r
 lap02 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00701_A5_1_V4.xlsx")]
 lap03 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_A5_1_V4.xlsx")]
 
-lapControl = lap01 + lap02 + lap03
-Lapatinib_Control = popout_single_lineages(lapControl)
+Lapatinib_Control = lap01 + lap02 + lap03
 
 # -- LAPATINIB 25 uMolars
 
@@ -40,8 +39,7 @@ lapb632 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path
 lapb642 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00701_B6_2_V4.xlsx")]
 lapb652 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_B6_2_V4.xlsx")]
 
-lap25uM = lapb63 + lapb64 + lapb65 + lapb632 + lapb642 + lapb652
-Lapt25uM = popout_single_lineages(lap25uM)
+Lapt25uM = lapb63 + lapb64 + lapb65 + lapb632 + lapb642 + lapb652
 
 # -- LAPATINIB 50 uMolars
 
@@ -62,9 +60,8 @@ lapC512 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path
 lapC513 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_C5_3_1.xlsx")]
 lapC514 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_C5_3_2.xlsx")]
 
-lap50uM = lapC501 + lapC502 + lapC503 + lapC504 + lapC505 + lapC506 + lapC507 + \
+Lapt50uM = lapC501 + lapC502 + lapC503 + lapC504 + lapC505 + lapC506 + lapC507 + \
     lapC508 + lapC509 + lapC510 + lapC511 + lapC512 + lapC513 + lapC514
-Lapt50uM = popout_single_lineages(lap50uM)
 
 # -- LAPATINIB 250 uMolars
 lapD51 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00601_D5_1_V4.xlsx")]
@@ -77,8 +74,7 @@ lapD56 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=
 lapD57 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00601_D5_3_V4.xlsx")]
 lapD58 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_D5_3_V4.xlsx")]
 
-lap250uM = lapD51 + lapD52 + lapD53 + lapD54 + lapD55 + lapD56 + lapD57 + lapD58
-Lap250uM = popout_single_lineages(lap250uM)
+Lap250uM = lapD51 + lapD52 + lapD53 + lapD54 + lapD55 + lapD56 + lapD57 + lapD58
 
 # -- Gemcitabine control
 
@@ -125,9 +121,8 @@ gemc413 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path
 gemc414 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_C4_4_1.xlsx")]
 gemc415 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_C4_4_2.xlsx")]
 
-gem10uM = gemc401 + gemc402 + gemc403 + gemc404 + gemc405 + gemc406 + gemc407 + \
+Gem10uM = gemc401 + gemc402 + gemc403 + gemc404 + gemc405 + gemc406 + gemc407 + \
     gemc408 + gemc409 + gemc410 + gemc411 + gemc412 + gemc413 + gemc414 + gemc415
-Gem10uM = popout_single_lineages(gem10uM)
 
 # -- GEMCITABINE 30 uMolars
 
@@ -142,8 +137,7 @@ gemD36 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=
 gemD37 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00601_D3_3_V4.xlsx")]
 gemD38 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_D3_2_V4.xlsx")]
 
-gem30uM = gemD31 + gemD32 + gemD33 + gemD34 + gemD35 + gemD36 + gemD37 + gemD38
-Gem30uM = popout_single_lineages(gem30uM)
+Gem30uM = gemD31 + gemD32 + gemD33 + gemD34 + gemD35 + gemD36 + gemD37 + gemD38
 
 # -- PACLITAXEL 2 uMolars
 
