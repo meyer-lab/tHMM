@@ -108,10 +108,10 @@ def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
 
     # ylim for lapatinib
     if k == 8:
-        for i in range(k, k+4):
+        for i in range(k, k + 4):
             ax[i].set_ylim([0, 200])
     elif k == 12:
-        for i in range(k, k+4):
+        for i in range(k, k + 4):
             ax[i].set_ylim([0, 1.05])
 
     subplotLabel(ax)
