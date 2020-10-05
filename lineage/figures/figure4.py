@@ -101,7 +101,7 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
     ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
     sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_sim_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
     ax[i].set_xlabel(xlabel)
-    ax[i].set_ylim(bottom=50, top=101)
+    ax[i].set_ylim(bottom=0, top=101)
     ax[i].set_ylabel(r"State Accuracy [%]")
     ax[i].set_title("Full lineage data")
 
@@ -113,6 +113,6 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
     ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
     sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_cen_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
     ax[i].set_xlabel(xlabel)
-    ax[i].set_ylim(bottom=50, top=101)
+    ax[i].set_ylim(bottom=0, top=101)
     ax[i].set_ylabel(r"State Accuracy [%]")
     ax[i].set_title("Censored Data")
