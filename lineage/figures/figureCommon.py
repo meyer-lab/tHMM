@@ -320,7 +320,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         sns.regplot(x="x", y="tr", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
         ax[i].set_title(r"Error in estimating $T$")
-        ax[i].set_ylims([0.0, 1.0])
+        ax[i].set_ylim([0.0, 1.0])
     ax[i].set_xlabel(xlabel)
 
     i += 1  # i = 8 (last)
@@ -341,7 +341,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
             ax[i].set_title(r"Error in estimating $\pi$")
             ax[i].set_xlabel("Number of Lineages")
-            ax[i].set_ylims([0.0, 1.0])
+            ax[i].set_ylim([0.0, 1.0])
 
     if number_of_params == 6 and (not dist_dist):
         i += 1
@@ -356,7 +356,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         sns.regplot(x="x", y="tr", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
         ax[i].set_title(r"Error in estimating $T$")
-        ax[i].set_ylims([0.0, 1.0])
+        ax[i].set_ylim([0.0, 1.0])
         ax[i].set_xlabel(xlabel)
 
         i += 1
@@ -368,4 +368,4 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
             ax[i].set_title(r"Error in estimating $\pi$")
             ax[i].set_xlabel("Number of Lineages")
-            ax[i].set_ylims([0.0, 1.0])
+            ax[i].set_ylim([0.0, 1.0])
