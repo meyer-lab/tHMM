@@ -167,8 +167,7 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
                     assert lineage[node_child_n_idx].isChild()
                     # either be the left daughter or the right daughter
                     MSD = np.clip(MSD_array[node_child_n_idx, :], np.finfo(np.float).eps, np.inf)
-                    beta_parent_child = np.matmul(T, beta_array[node_child_n_idx, :] / MSD)
-                    js = gamma_parent / (beta_parent_child + np.finfo(np.float).eps)
                     ks = beta_array[node_child_n_idx, :] / MSD
-                    holder += np.outer(js, ks) * T
-    return holder
+                    js = gamma_parent / (T @ ks + np.finfo(np.float).eps)
+                    holder += np.outer(js, ks)
+    return holder * T
