@@ -208,28 +208,10 @@ def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, node_parent_m_
     """Calculates the product of beta-links for every parent-child
     relationship of a given parent cell in a given state.
     """
-    beta_m_n_holder = np.ones(T.shape[0])  # list to hold the factors in the product
     node_parent_m = lineage[node_parent_m_idx]  # get the index of the parent
     children_list = node_parent_m.get_daughters()
     children_idx_list = [lineage.index(daughter) for daughter in children_list]
 
-    for node_child_n_idx in children_idx_list:
-        assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
-        assert lineage[node_child_n_idx].isChild()  # if the child-parent relationship is correct, then the child must have a parent
-        beta_m_n_holder *= beta_parent_child_func(beta_array=beta_array, T=T, MSD_array=MSD_array, node_child_n_idx=node_child_n_idx)
-
-    return beta_m_n_holder
-
-
-def beta_parent_child_func(beta_array, T, MSD_array, node_child_n_idx):
-    """This "helper" function calculates the probability
-    described as a 'beta-link' between parent and child
-    nodes in our tree for some state j. This beta-link
-    value is what lets you calculate the values of
-    higher (in the direction from the leave
-    to the root node) node beta and Normalizing Factor
-    values.
-    beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
-    :math:`P( z_n = k | z_m = j)`; "math:`P(z_n = k)`
-    """
-    return np.matmul(T, beta_array[node_child_n_idx, :] / (MSD_array[node_child_n_idx, :] + np.finfo(np.float).eps))
+    beta = beta_array[children_idx_list, :]
+    MSD = np.clip(MSD_array[children_idx_list, :], np.finfo(np.float).eps, np.inf)
+    return T @ np.prod(beta / MSD, axis=0)

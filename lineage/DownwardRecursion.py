@@ -1,7 +1,6 @@
 """ File holds the code for the downward recursion. """
 
 import numpy as np
-from .UpwardRecursion import beta_parent_child_func
 
 
 def get_gammas(tHMMobj, MSD, betas):
@@ -21,12 +20,13 @@ def get_gammas(tHMMobj, MSD, betas):
         for level in lineageObj.output_list_of_gens[1:]:
             for cell in level:
                 parent_idx = lineage.index(cell)
+                gam = gammas[num][parent_idx, :]
 
                 for daughter in cell.get_daughters():
                     child_idx = lineage.index(daughter)
 
-                    beta_parent = beta_parent_child_func(beta_array=betas[num], T=T, MSD_array=MSD[num], node_child_n_idx=child_idx)
-                    gammas[num][child_idx, :] = coeffs[child_idx, :] * np.matmul(gammas[num][parent_idx, :] / (beta_parent + np.finfo(np.float).eps), T)
+                    beta_parent = np.clip(T @ coeffs[child_idx, :], np.finfo(np.float).eps, np.inf)
+                    gammas[num][child_idx, :] = coeffs[child_idx, :] * np.matmul(gam / beta_parent, T)
 
     for _, gamma in enumerate(gammas):  # for each lineage in our Population
         assert np.all(np.isfinite(gamma))

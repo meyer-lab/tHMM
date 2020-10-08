@@ -7,7 +7,6 @@ from .UpwardRecursion import (
     get_leaf_Normalizing_Factors,
     get_leaf_betas,
     get_nonleaf_NF_and_betas,
-    beta_parent_child_func,
 )
 
 from .DownwardRecursion import (
@@ -167,11 +166,9 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
                     # if the child-parent relationship is correct, then the child must
                     assert lineage[node_child_n_idx].isChild()
                     # either be the left daughter or the right daughter
-
-                    beta_parent_child = beta_parent_child_func(beta_array=beta_array, T=T, MSD_array=MSD_array, node_child_n_idx=node_child_n_idx)
-
+                    MSD = np.clip(MSD_array[node_child_n_idx, :], np.finfo(np.float).eps, np.inf)
+                    beta_parent_child = np.matmul(T, beta_array[node_child_n_idx, :] / MSD)
                     js = gamma_parent / (beta_parent_child + np.finfo(np.float).eps)
-                    ks = beta_array[node_child_n_idx, :] / (MSD_array[node_child_n_idx, :] + np.finfo(np.float).eps)
-
+                    ks = beta_array[node_child_n_idx, :] / MSD
                     holder += np.outer(js, ks) * T
     return holder
