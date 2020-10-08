@@ -22,10 +22,10 @@ def CladeRecursive(cell, a, censore):
     elif cell.state == 2:
         colorr = "red"
     elif cell.state == 3:
-        colorr = "black"
+        colorr = "yellow"
     else:
         print("cell state ", cell.state)
-        colorr = "yellow"
+        colorr = "black"
 
     if cell.isLeaf() and censore:
         if np.isfinite(cell.obs[2]) and np.isfinite(cell.obs[3]):

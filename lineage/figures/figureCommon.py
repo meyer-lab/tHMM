@@ -267,7 +267,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].set_title(r"distance bw true and estm. gamma dists")
             ax[i].set_ylabel(r"Wasserstein distance")
             ax[i].set_xlabel(xlabel)
-            ax[i].set_ylim(0.0, 30.0)
+            ax[i].set_ylim(0.0, 10.0)
             ax[i].legend()
         else:  # plot gamma params scale
             sns.regplot(x="x", y="gamma 0 3", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
@@ -301,7 +301,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_ylabel("G2 Bernoulli $p$")
         ax[i].set_title(r"G2 Bernoulli $p$")
     else:
-        ax[i].set_ylim(bottom=np.mean(accuracies) - 10, top=101)
+        ax[i].set_ylim(bottom=0, top=101)
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_ylabel(r"Accuracy [%]")
         ax[i].set_title("State Assignment Accuracy")
@@ -320,6 +320,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         sns.regplot(x="x", y="tr", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
         ax[i].set_title(r"Error in estimating $T$")
+        ax[i].set_ylim([0.0, 1.0])
     ax[i].set_xlabel(xlabel)
 
     i += 1  # i = 8 (last)
@@ -340,10 +341,11 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
             ax[i].set_title(r"Error in estimating $\pi$")
             ax[i].set_xlabel("Number of Lineages")
+            ax[i].set_ylim([0.0, 1.0])
 
     if number_of_params == 6 and (not dist_dist):
         i += 1
-        ax[i].set_ylim(bottom=np.mean(accuracies) - 10, top=101)
+        ax[i].set_ylim(bottom=0, top=101)
         ax[i].set_ylabel(r"Accuracy [%]")
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_title("State Assignment Accuracy")
@@ -354,6 +356,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         sns.regplot(x="x", y="tr", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
         ax[i].set_title(r"Error in estimating $T$")
+        ax[i].set_ylim([0.0, 1.0])
         ax[i].set_xlabel(xlabel)
 
         i += 1
@@ -365,3 +368,4 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
             ax[i].set_title(r"Error in estimating $\pi$")
             ax[i].set_xlabel("Number of Lineages")
+            ax[i].set_ylim([0.0, 1.0])

@@ -29,7 +29,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((10, 10), (3, 3))
 
-    figureMaker(ax, *accuracy(), xlabel=r"Cells in State 0 [$\%$]")
+    figureMaker(ax, *accuracy(), xlabel=r"Cells in State 1 [$\%$]")
 
     subplotLabel(ax)
 
