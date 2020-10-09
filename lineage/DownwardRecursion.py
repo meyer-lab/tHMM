@@ -15,7 +15,6 @@ def get_gammas(tHMMobj, MSD, betas):
 
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lineageObj.output_lineage
-        coeffs = betas[num] / (MSD[num] + np.finfo(np.float).eps)
 
         for level in lineageObj.output_list_of_gens[1:]:
             for cell in level:
@@ -25,6 +24,7 @@ def get_gammas(tHMMobj, MSD, betas):
                 for daughter in cell.get_daughters():
                     child_idx = lineage.index(daughter)
 
+                    coeffs = betas[num] / (MSD[num] + np.finfo(np.float).eps)
                     beta_parent = np.clip(T @ coeffs[child_idx, :], np.finfo(np.float).eps, np.inf)
                     gammas[num][child_idx, :] = coeffs[child_idx, :] * np.matmul(gam / beta_parent, T)
 
