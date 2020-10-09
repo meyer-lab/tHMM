@@ -181,50 +181,19 @@ def get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas):
     of the betas. The recursion is upwards from the leaves to
     the roots.
     """
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
-        MSD_array = MSD[num]  # getting the MSD of the respective lineage
-        EL_array = EL[num]  # geting the EL of the respective lineage
+    for num, lO in enumerate(tHMMobj.X):  # for each lineage in our Population
+        lineage = lO.output_lineage  # getting the lineage in the Population by index
+        MSD_array = np.clip(MSD[num], np.finfo(np.float).eps, np.inf)  # getting the MSD of the respective lineage
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
+        ELMSD = EL[num] * MSD[num]
 
-        for level in lineageObj.output_list_of_gens[2:][::-1]:  # a reversed list of generations
-            for node_parent_m_idx in lineageObj.get_parents_for_level(level):
-                fac1 = get_beta_parent_child_prod(
-                    lineage=lineage, MSD_array=MSD_array, T=T, beta_array=betas[num], node_parent_m_idx=node_parent_m_idx
-                )
-                fac1 *= EL_array[node_parent_m_idx, :] * MSD_array[node_parent_m_idx, :]
+        for level in lO.output_list_of_gens[2:][::-1]:  # a reversed list of generations
+            for pii in lO.get_parents_for_level(level):
+                ch_ii = [lineage.index(d) for d in lineage[pii].get_daughters()]
+                ratt = betas[num][ch_ii, :] / MSD_array[ch_ii, :]
+                fac1 = np.prod(ratt @ T.T, axis=0) * ELMSD[pii, :]
 
-                NF[num][node_parent_m_idx] = sum(fac1)
-                assert NF[num][node_parent_m_idx] > 0.0
+                NF[num][pii] = sum(fac1)
+                betas[num][pii, :] = fac1 / NF[num][pii]
 
-                betas[num][node_parent_m_idx, :] = fac1 / NF[num][node_parent_m_idx]
-
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        betas_row_sum = np.sum(betas[num], axis=1)
-        assert np.allclose(betas_row_sum, 1.0)
-
-
-def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, node_parent_m_idx):
-    """Calculates the product of beta-links for every parent-child
-    relationship of a given parent cell in a given state.
-    """
-    children_list = lineage[node_parent_m_idx].get_daughters()
-    children_idx_list = [lineage.index(daughter) for daughter in children_list]
-
-    mm = MSD_array[children_idx_list, :] + np.finfo(np.float).eps
-    ratt = beta_array[children_idx_list, :] / mm
-    return np.prod(ratt @ T.T, axis=0)
-
-
-def beta_parent_child_func(beta_array, T, MSD_array, node_child_n_idx):
-    """This "helper" function calculates the probability
-    described as a 'beta-link' between parent and child
-    nodes in our tree for some state j. This beta-link
-    value is what lets you calculate the values of
-    higher (in the direction from the leave
-    to the root node) node beta and Normalizing Factor
-    values.
-    beta at node n for state k; transition rate for going from state j to state k; MSD for node n at state k
-    :math:`P( z_n = k | z_m = j)`; "math:`P(z_n = k)`
-    """
-    return np.matmul(T, beta_array[node_child_n_idx, :] / (MSD_array[node_child_n_idx, :] + np.finfo(np.float).eps))
+        np.testing.assert_allclose(np.sum(betas[num], axis=1), 1.0)
