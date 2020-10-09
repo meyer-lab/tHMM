@@ -150,24 +150,18 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
     """
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
+    betaMSD = beta_array / np.clip(MSD_array, np.finfo(np.float).eps, np.inf)
+    TbetaMSD = np.clip(betaMSD @ T.T, np.finfo(np.float).eps, np.inf)
     lineage = lineageObj.output_lineage
     holder = np.zeros(T.shape)
+
     for level in lineageObj.output_list_of_gens[1:]:
         for cell in level:  # get lineage for the gen
-            node_parent_m_idx = lineage.index(cell)
-            gamma_parent = gamma_array[node_parent_m_idx, :]  # x by j
+            gamma_parent = gamma_array[lineage.index(cell), :]  # x by j
 
             if not cell.isLeaf():
                 for daughter_idx in cell.get_daughters():
-                    node_child_n_idx = lineage.index(daughter_idx)
-
-                    # check the child-parent relationship
-                    assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]
-                    # if the child-parent relationship is correct, then the child must
-                    assert lineage[node_child_n_idx].isChild()
-                    # either be the left daughter or the right daughter
-                    MSD = np.clip(MSD_array[node_child_n_idx, :], np.finfo(np.float).eps, np.inf)
-                    ks = beta_array[node_child_n_idx, :] / MSD
-                    js = gamma_parent / (T @ ks + np.finfo(np.float).eps)
-                    holder += np.outer(js, ks)
+                    d_idx = lineage.index(daughter_idx)
+                    js = gamma_parent / TbetaMSD[d_idx, :]
+                    holder += np.outer(js, betaMSD[d_idx, :])
     return holder * T
