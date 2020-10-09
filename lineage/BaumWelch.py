@@ -151,6 +151,7 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     """
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
     betaMSD = beta_array / np.clip(MSD_array, np.finfo(np.float).eps, np.inf)
+    TbetaMSD = np.clip(betaMSD @ T.T, np.finfo(np.float).eps, np.inf)
     lineage = lineageObj.output_lineage
     holder = np.zeros(T.shape)
 
@@ -160,7 +161,7 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
 
             if not cell.isLeaf():
                 for daughter_idx in cell.get_daughters():
-                    ks = betaMSD[lineage.index(daughter_idx), :]
-                    js = gamma_parent / (T @ ks + np.finfo(np.float).eps)
-                    holder += np.outer(js, ks)
+                    d_idx = lineage.index(daughter_idx)
+                    js = gamma_parent / TbetaMSD[d_idx, :]
+                    holder += np.outer(js, betaMSD[d_idx, :])
     return holder * T
