@@ -183,35 +183,19 @@ def get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas):
     """
     for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
-        MSD_array = MSD[num]  # getting the MSD of the respective lineage
-        EL_array = EL[num]  # geting the EL of the respective lineage
+        MSD_array = np.clip(MSD[num], np.finfo(np.float).eps, np.inf)  # getting the MSD of the respective lineage
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
+        factor = EL[num] * MSD_array
 
         for level in lineageObj.output_list_of_gens[2:][::-1]:  # a reversed list of generations
-            for node_parent_m_idx in lineageObj.get_parents_for_level(level):
-                fac1 = get_beta_parent_child_prod(
-                    lineage=lineage, MSD_array=MSD_array, T=T, beta_array=betas[num], node_parent_m_idx=node_parent_m_idx
-                )
-                fac1 *= EL_array[node_parent_m_idx, :] * MSD_array[node_parent_m_idx, :]
+            for ii in lineageObj.get_parents_for_level(level):
+                children_list = lineage[ii].get_daughters()
+                child_idx = [lineage.index(daughter) for daughter in children_list]
 
-                NF[num][node_parent_m_idx] = sum(fac1)
-                assert NF[num][node_parent_m_idx] > 0.0
+                fac1 = T @ np.prod(betas[num][child_idx, :] / MSD_array[child_idx, :], axis=0)
+                fac1 *= factor[ii, :]
 
-                betas[num][node_parent_m_idx, :] = fac1 / NF[num][node_parent_m_idx]
+                NF[num][ii] = sum(fac1)
+                betas[num][ii, :] = fac1 / NF[num][ii]
 
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        betas_row_sum = np.sum(betas[num], axis=1)
-        assert np.allclose(betas_row_sum, 1.0)
-
-
-def get_beta_parent_child_prod(lineage, beta_array, T, MSD_array, node_parent_m_idx):
-    """Calculates the product of beta-links for every parent-child
-    relationship of a given parent cell in a given state.
-    """
-    node_parent_m = lineage[node_parent_m_idx]  # get the index of the parent
-    children_list = node_parent_m.get_daughters()
-    children_idx_list = [lineage.index(daughter) for daughter in children_list]
-
-    beta = beta_array[children_idx_list, :]
-    MSD = np.clip(MSD_array[children_idx_list, :], np.finfo(np.float).eps, np.inf)
-    return T @ np.prod(beta / MSD, axis=0)
+        np.testing.assert_allclose(np.sum(betas[num], axis=1), 1.0)
