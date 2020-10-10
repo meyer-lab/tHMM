@@ -97,11 +97,6 @@ def get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx):
         children_idx_list.append(lineage.index(node_parent_m.right))
 
     for node_child_n_idx in children_idx_list:
-        assert lineage[node_child_n_idx].parent is lineage[node_parent_m_idx]  # check the child-parent relationship
-        # if the child-parent relationship is correct, then the child must be
-        # either the left daughter or the right daughter
-        assert lineage[node_child_n_idx].isChild()
-
         # get the already calculated delta at node n for state k
         # get the transition rate for going from state j to state k
         # P( z_n = k | z_m = j)
