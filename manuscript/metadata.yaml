@@ -22,6 +22,12 @@ authors:
     affiliations:
       - Department of Bioengineering, University of California, Los Angeles
   -
+    name: Sean M. Gross
+    initials: SMG
+    orcid: 0000-0002-9621-8551
+    affiliations:
+      - Department of Biomedical Engineering, Oregon Health and Science University, Portland
+  -
     github: lkargi
     name: Luka Karginov
     initials: LK
@@ -35,6 +41,11 @@ authors:
     orcid: 0000-0002-3738-3119
     affiliations:
       - Department of Bioengineering, University of California, Los Angeles
+  -
+    name: Laura M. Heiser
+    initials: LMH
+    affiliations:
+      - Department of Biomedical Engineering, Oregon Health and Science University, Portland
   -
     github: aarmey
     name: Aaron S. Meyer
