@@ -49,9 +49,6 @@ def makeFigure():
                 bern_lpt[idx, i, j] = lapt_tHMMobj.estimate.E[i].params[j]
 
         LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj, lapt_states_list[idx])
-        print(LAP_state)
-        print(LAP_phaseLength)
-        print(Lpt_phase)
 
         # plot lapatinib
         sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx])
