@@ -49,6 +49,9 @@ def makeFigure():
                 bern_lpt[idx, i, j] = lapt_tHMMobj.estimate.E[i].params[j]
 
         LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj, lapt_states_list[idx])
+        print(LAP_state)
+        print(LAP_phaseLength)
+        print(Lpt_phase)
 
         # plot lapatinib
         sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx])
@@ -123,8 +126,10 @@ def twice(tHMMobj, state):
     g2 = []
     for lin in tHMMobj.X:  # for each lineage list
         for cell in lin.output_lineage:  # for each cell in the lineage
-            g1.append(cell.obs[2])
-            g2.append(cell.obs[3])
+            if cell.obs[4] == 1:
+                g1.append(cell.obs[2])
+            if cell.obs[5] == 1:
+                g2.append(cell.obs[3])
 
     state = list(itertools.chain(*state)) + list(itertools.chain(*state))
     phaseLength = g1 + g2
