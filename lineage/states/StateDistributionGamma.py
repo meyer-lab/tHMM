@@ -87,7 +87,7 @@ class StateDistribution:
             self.params[0] = np.average(bern_obs[b_mask], weights=gammas[b_mask])
 
         # Don't allow Bernoulli to hit extremes
-        self.params[0] = np.clip(self.params[0], 0.0001, 0.9999)
+        self.params[0] = np.clip(self.params[0], 0.00001, 0.99999)
 
         self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], self.const_shape, self.params[1:3])
 

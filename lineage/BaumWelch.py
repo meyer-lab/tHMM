@@ -116,8 +116,8 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
     n = tHMMobj[0].num_states
 
     # One pseudocount spread across states
-    numer_e = np.full((n, n), 1.0 / n)
-    denom_e = np.ones(n) + 1.0
+    numer_e = np.full((n, n), 0.1 / n)
+    denom_e = np.ones(n) + 0.1
 
     for i, tt in enumerate(tHMMobj):
         for num, lO in enumerate(tt.X):
