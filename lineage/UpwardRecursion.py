@@ -64,7 +64,6 @@ def get_Emission_Likelihoods(tHMMobj, E=None):
 
     for k in range(tHMMobj.num_states):  # for each state
         ELstack[:, k] = E[k].pdf(all_cells)
-    assert np.all(np.isfinite(ELstack))
 
     EL = []
     ii = 0
@@ -108,7 +107,6 @@ def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
         NF_array = np.zeros(len(lineage), dtype=float)  # instantiating N by 1 array
 
         for ii, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
-            assert cell.isLeaf()
             leaf_idx = lineageObj.output_leaves_idx[ii]
 
             # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
@@ -116,7 +114,6 @@ def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
             # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
             # the sum of the joint probabilities is the marginal probability
             NF_array[leaf_idx] = np.dot(MSD_array[leaf_idx, :], EL_array[leaf_idx, :])  # def of conditional prob
-            assert NF_array[leaf_idx] > 0.0, f"MSD: {MSD_array[leaf_idx, :]}, EL: {EL_array[leaf_idx, :]}"
 
         NF.append(NF_array)
     return NF
@@ -153,16 +150,12 @@ def get_leaf_betas(tHMMobj, MSD, EL, NF):
         EL_arr = EL[num]  # geting the EL of the respective lineage
         NF_arr = NF[num]  # getting the NF of the respective lineage
 
-        for _, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
-            assert cell.isLeaf()
-
         # Emission Likelihood, Marginal State Distribution, Normalizing Factor (same regardless of state)
         # P(x_n = x | z_n = k), P(z_n = k), P(x_n = x)
         beta_array = np.zeros((len(lineage), tHMMobj.num_states))  # instantiating N by K array
         ii = lineageObj.output_leaves_idx
 
-        with np.errstate(divide="ignore", invalid="ignore"):
-            beta_array[ii, :] = EL_arr[ii, :] * MSD_arr[ii, :] / NF_arr[ii, np.newaxis]
+        beta_array[ii, :] = EL_arr[ii, :] * MSD_arr[ii, :] / NF_arr[ii, np.newaxis]
 
         betas.append(beta_array)
 
@@ -195,5 +188,3 @@ def get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas):
 
                 NF[num][pii] = sum(fac1)
                 betas[num][pii, :] = fac1 / NF[num][pii]
-
-        np.testing.assert_allclose(np.sum(betas[num], axis=1), 1.0)

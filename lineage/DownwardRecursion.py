@@ -8,29 +8,26 @@ def get_gammas(tHMMobj, MSD, betas):
     T = tHMMobj.estimate.T
     gammas = []
 
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        gamma_array = np.zeros((len(lineageObj.output_lineage), tHMMobj.num_states))
+    for num, lO in enumerate(tHMMobj.X):  # for each lineage in our Population
+        gamma_array = np.zeros((len(lO.output_lineage), tHMMobj.num_states))
         gamma_array[0, :] = betas[num][0, :]
         gammas.append(gamma_array)
 
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        lineage = lineageObj.output_lineage
+    for num, lO in enumerate(tHMMobj.X):  # for each lineage in our Population
+        lineage = lO.output_lineage
+        MSDn = np.clip(MSD[num], np.finfo(np.float).eps, np.inf)
 
-        for level in lineageObj.output_list_of_gens[1:]:
+        for level in lO.output_list_of_gens[1:]:
             for cell in level:
                 parent_idx = lineage.index(cell)
                 gam = gammas[num][parent_idx, :]
 
-                for daughter in cell.get_daughters():
-                    child_idx = lineage.index(daughter)
+                for d in cell.get_daughters():
+                    ci = lineage.index(d)
 
-                    coeffs = betas[num] / (MSD[num] + np.finfo(np.float).eps)
-                    beta_parent = np.clip(T @ coeffs[child_idx, :], np.finfo(np.float).eps, np.inf)
-                    gammas[num][child_idx, :] = coeffs[child_idx, :] * np.matmul(gam / beta_parent, T)
-
-    for _, gamma in enumerate(gammas):  # for each lineage in our Population
-        assert np.all(np.isfinite(gamma))
-        np.testing.assert_allclose(np.sum(gamma[0]), 1.0)
+                    coeffs = betas[num] / MSDn
+                    beta_parent = np.clip(T @ coeffs[ci, :], np.finfo(np.float).eps, np.inf)
+                    gammas[num][ci, :] = coeffs[ci, :] * np.matmul(gam / beta_parent, T)
 
     return gammas
 
