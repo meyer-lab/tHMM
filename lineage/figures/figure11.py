@@ -78,7 +78,7 @@ def makeFigure():
         GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
         sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx + 4])
 
-    plotting(ax, 8, lpt_avg, gmc_avg, concs, "avg length")
+    plotting(ax, 8, lpt_avg, gmc_avg, concs, "avg lengths")
     plotting(ax, 12, bern_lpt, bern_gmc, concs, "Bernoulli p")
     return f
 
@@ -104,7 +104,7 @@ def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
     # legend and ylabel
     for i in range(k, k + 4):
         ax[i].legend()
-        ax[i].set_ylabel(title)
+        ax[i].set_ylabel("phase duration")
 
     # ylim for lapatinib
     if k == 8:
