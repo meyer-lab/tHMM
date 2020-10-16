@@ -43,8 +43,8 @@ def makeFigure():
 
     for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):  # for each concentration data
         for i in range(3):
-            lpt_avg[idx, i, 0] = lapt_tHMMobj.estimate.E[i].params[2] * lapt_tHMMobj.estimate.E[i].params[3]  # G1
-            lpt_avg[idx, i, 1] = lapt_tHMMobj.estimate.E[i].params[4] * lapt_tHMMobj.estimate.E[i].params[5]  # G2
+            lpt_avg[idx, i, 0] = 1/(lapt_tHMMobj.estimate.E[i].params[2] * lapt_tHMMobj.estimate.E[i].params[3])  # G1
+            lpt_avg[idx, i, 1] = 1/(lapt_tHMMobj.estimate.E[i].params[4] * lapt_tHMMobj.estimate.E[i].params[5])  # G2
             # bernoullis
             for j in range(2):
                 bern_lpt[idx, i, j] = lapt_tHMMobj.estimate.E[i].params[j]
@@ -60,8 +60,8 @@ def makeFigure():
         ax[idx + 4].set_ylabel("phase lengths")
         ax[idx].set_xlabel("state")
         ax[idx + 4].set_xlabel("state")
-        ax[idx].set_ylim([0, 200])
-        ax[idx + 4].set_ylim([0, 200])
+        # ax[idx].set_ylim([0, 2])
+        # ax[idx + 4].set_ylim([0, 2])
 
     # gemcitabine
     gmc_avg = np.zeros((4, 4, 2))  # avg lifetime gmc: num_conc x num_states x num_phases
@@ -71,15 +71,15 @@ def makeFigure():
 
     for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
         for i in range(4):
-            gmc_avg[idx, i, 0] = gemc_tHMMobj.estimate.E[i].params[2] * gemc_tHMMobj.estimate.E[i].params[3]
-            gmc_avg[idx, i, 1] = gemc_tHMMobj.estimate.E[i].params[4] * gemc_tHMMobj.estimate.E[i].params[5]
+            gmc_avg[idx, i, 0] = 1/(gemc_tHMMobj.estimate.E[i].params[2] * gemc_tHMMobj.estimate.E[i].params[3])
+            gmc_avg[idx, i, 1] = 1/(gemc_tHMMobj.estimate.E[i].params[4] * gemc_tHMMobj.estimate.E[i].params[5])
             # bernoulli
             for j in range(2):
                 bern_gmc[idx, i, j] = gemc_tHMMobj.estimate.E[i].params[j]
         GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
         sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx + 4])
 
-    plotting(ax, 8, lpt_avg, gmc_avg, concs, "avg lengths")
+    plotting(ax, 8, lpt_avg, gmc_avg, concs, "")
     plotting(ax, 12, bern_lpt, bern_gmc, concs, "Bernoulli p")
     return f
 
@@ -88,24 +88,24 @@ def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(3):  # lapatinib that has 3 states
         ax[k].plot(concs[0:4], lpt_avg[:, i, 0], label="st " + str(i), alpha=0.7)
-        ax[k].set_title(title + str(" G1"))
+        ax[k].set_title(title + str(" G1 phase"))
         ax[k].set_xticklabels(concsValues[0:4], rotation=30)
         ax[k + 1].plot(concs[0:4], lpt_avg[:, i, 1], label="st " + str(i), alpha=0.7)
-        ax[k + 1].set_title(title + str(" G2"))
+        ax[k + 1].set_title(title + str(" G2 phase"))
         ax[k + 1].set_xticklabels(concsValues[0:4], rotation=30)
 
     for i in range(4):  # gemcitabine that has 4 states
         ax[k + 2].plot(concs[4:8], gmc_avg[:, i, 0], label="st " + str(i), alpha=0.7)
-        ax[k + 2].set_title(title + str(" G1"))
+        ax[k + 2].set_title(title + str(" G1 phase"))
         ax[k + 2].set_xticklabels(concsValues[4:8], rotation=30)
         ax[k + 3].plot(concs[4:8], gmc_avg[:, i, 1], label="st " + str(i), alpha=0.7)
-        ax[k + 3].set_title(title + str(" G2"))
+        ax[k + 3].set_title(title + str(" G2 phase"))
         ax[k + 3].set_xticklabels(concsValues[4:8], rotation=30)
 
     # legend and ylabel
     for i in range(k, k + 4):
         ax[i].legend()
-        ax[i].set_ylabel("phase duration")
+        ax[i].set_ylabel("phase prog. rate")
 
     #lapatinib xlabel
     for i in range(k, k + 2):
@@ -118,8 +118,8 @@ def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
     # ylim for lapatinib
     if k == 8:
         for i in range(k, k + 4):
-            ax[i].set_ylim([0, 200])
-    elif k == 12:
+            ax[i].set_ylim([0, 0.06])
+    if k == 12:
         for i in range(k, k + 4):
             ax[i].set_ylim([0, 1.05])
 
