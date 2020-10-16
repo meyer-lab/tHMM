@@ -10,6 +10,7 @@ from .figureCommon import getSetup, subplotLabel
 # np.random.seed(1)
 
 concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM", "cntrl", "Gem 5nM", "Gem 10nM", "Gem 30nM"]
+concsValues = ["cntrl", "25nM", "50nM", "250nM", "cntrl", "5nM", "10nM", "30nM"]
 data = [Lapatinib_Control + gemControl, Lapt25uM, Lapt50uM, Lap250uM, gemControl + Lapatinib_Control, gem5uM, Gem10uM, Gem30uM]
 
 tHMM_solver = tHMM(X=data[0], num_states=1)
@@ -78,7 +79,7 @@ def makeFigure():
         GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
         sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx + 4])
 
-    plotting(ax, 8, lpt_avg, gmc_avg, concs, "avg length")
+    plotting(ax, 8, lpt_avg, gmc_avg, concs, "avg lengths")
     plotting(ax, 12, bern_lpt, bern_gmc, concs, "Bernoulli p")
     return f
 
@@ -88,23 +89,31 @@ def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
     for i in range(3):  # lapatinib that has 3 states
         ax[k].plot(concs[0:4], lpt_avg[:, i, 0], label="st " + str(i), alpha=0.7)
         ax[k].set_title(title + str(" G1"))
-        ax[k].set_xticklabels(concs[0:4], rotation=30)
+        ax[k].set_xticklabels(concsValues[0:4], rotation=30)
         ax[k + 1].plot(concs[0:4], lpt_avg[:, i, 1], label="st " + str(i), alpha=0.7)
         ax[k + 1].set_title(title + str(" G2"))
-        ax[k + 1].set_xticklabels(concs[0:4], rotation=30)
+        ax[k + 1].set_xticklabels(concsValues[0:4], rotation=30)
 
     for i in range(4):  # gemcitabine that has 4 states
         ax[k + 2].plot(concs[4:8], gmc_avg[:, i, 0], label="st " + str(i), alpha=0.7)
         ax[k + 2].set_title(title + str(" G1"))
-        ax[k + 2].set_xticklabels(concs[4:8], rotation=30)
+        ax[k + 2].set_xticklabels(concsValues[4:8], rotation=30)
         ax[k + 3].plot(concs[4:8], gmc_avg[:, i, 1], label="st " + str(i), alpha=0.7)
         ax[k + 3].set_title(title + str(" G2"))
-        ax[k + 3].set_xticklabels(concs[4:8], rotation=30)
+        ax[k + 3].set_xticklabels(concsValues[4:8], rotation=30)
 
     # legend and ylabel
     for i in range(k, k + 4):
         ax[i].legend()
-        ax[i].set_ylabel(title)
+        ax[i].set_ylabel("phase duration")
+
+    #lapatinib xlabel
+    for i in range(k, k + 2):
+        ax[i].set_xlabel("lapatinib")
+
+    #gemcitibine xlabel
+    for i in range(k + 2, k + 4):
+        ax[i].set_xlabel("gemcitabine")
 
     # ylim for lapatinib
     if k == 8:
