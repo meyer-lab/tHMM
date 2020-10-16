@@ -43,8 +43,8 @@ def makeFigure():
 
     for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):  # for each concentration data
         for i in range(3):
-            lpt_avg[idx, i, 0] = 1/(lapt_tHMMobj.estimate.E[i].params[2] * lapt_tHMMobj.estimate.E[i].params[3])  # G1
-            lpt_avg[idx, i, 1] = 1/(lapt_tHMMobj.estimate.E[i].params[4] * lapt_tHMMobj.estimate.E[i].params[5])  # G2
+            lpt_avg[idx, i, 0] = 1 / (lapt_tHMMobj.estimate.E[i].params[2] * lapt_tHMMobj.estimate.E[i].params[3])  # G1
+            lpt_avg[idx, i, 1] = 1 / (lapt_tHMMobj.estimate.E[i].params[4] * lapt_tHMMobj.estimate.E[i].params[5])  # G2
             # bernoullis
             for j in range(2):
                 bern_lpt[idx, i, j] = lapt_tHMMobj.estimate.E[i].params[j]
@@ -71,8 +71,8 @@ def makeFigure():
 
     for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
         for i in range(4):
-            gmc_avg[idx, i, 0] = 1/(gemc_tHMMobj.estimate.E[i].params[2] * gemc_tHMMobj.estimate.E[i].params[3])
-            gmc_avg[idx, i, 1] = 1/(gemc_tHMMobj.estimate.E[i].params[4] * gemc_tHMMobj.estimate.E[i].params[5])
+            gmc_avg[idx, i, 0] = 1 / (gemc_tHMMobj.estimate.E[i].params[2] * gemc_tHMMobj.estimate.E[i].params[3])
+            gmc_avg[idx, i, 1] = 1 / (gemc_tHMMobj.estimate.E[i].params[4] * gemc_tHMMobj.estimate.E[i].params[5])
             # bernoulli
             for j in range(2):
                 bern_gmc[idx, i, j] = gemc_tHMMobj.estimate.E[i].params[j]
@@ -107,11 +107,11 @@ def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
         ax[i].legend()
         ax[i].set_ylabel("phase prog. rate")
 
-    #lapatinib xlabel
+    # lapatinib xlabel
     for i in range(k, k + 2):
         ax[i].set_xlabel("lapatinib")
 
-    #gemcitibine xlabel
+    # gemcitibine xlabel
     for i in range(k + 2, k + 4):
         ax[i].set_xlabel("gemcitabine")
 
