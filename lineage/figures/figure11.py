@@ -132,8 +132,14 @@ def twice(tHMMobj, state):
     g2 = []
     for lin in tHMMobj.X:  # for each lineage list
         for cell in lin.output_lineage:  # for each cell in the lineage
-            g1.append(cell.obs[2])
-            g2.append(cell.obs[3])
+            if cell.obs[4] == 1:
+                g1.append(cell.obs[2])
+            else:
+                g1.append(np.nan)
+            if cell.obs[5] == 1:
+                g2.append(cell.obs[3])
+            else:
+                g2.append(np.nan)
 
     state = list(itertools.chain(*state)) + list(itertools.chain(*state))
     phaseLength = g1 + g2
