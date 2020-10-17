@@ -41,7 +41,6 @@ min_num_lineages = 3
 max_num_lineages = 40
 
 num_data_points = 100
-num_data_points2 = 300
 
 scatter_state_1_kws = {
     "alpha": 0.33,
