@@ -39,8 +39,11 @@ def makeFigure():
 def accuracy():
     """ A Helper function to create more random copies of a population. """
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(E2[1].params[0], E2[1].params[1], E2[1].params[2], a, E2[1].params[4], E2[1].params[5]), E2[1]] for a in np.linspace(4.0, 24.0, num_data_points)]
+    list_of_Es = [[StateDistribution(E2[1].params[0], E2[1].params[1], E2[1].params[2], a, E2[1].params[4], E2[1].params[5]), E2[1]] for a in np.linspace(4.0, 12.0, num_data_points)]
     list_of_populations = [[LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)] for E in list_of_Es]
+    # for the violin plots
+    list_of_Es2 = [[StateDistribution(E2[1].params[0], E2[1].params[1], E2[1].params[2], a, E2[1].params[4], E2[1].params[5]), E2[1]] for a in np.linspace(4.0, 12.0, num_data_points)]
+    list_of_populations2 = [[LineageTree.init_from_parameters(pi, T, E, 3*max_desired_num_cells)] for E in list_of_Es2]
 
     balanced_score = np.empty(len(list_of_populations))
 
@@ -57,7 +60,7 @@ def accuracy():
     wass, _, dict_out, _ = commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=[pi] * num_data_points, list_of_fT=[T] * num_data_points, parallel=True)
     accuracy = dict_out["balanced_accuracy_score"]
     distribution_df = pd.DataFrame(columns=["Distribution type", "G1 lifetime", "State"])
-    lineages = [list_of_populations[int(num_data_points * i / 4.)][0] for i in range(4)]
+    lineages = [list_of_populations2[int(num_data_points * i / 4.)][0] for i in range(4)]
     len_lineages = [len(lineage) for lineage in lineages]
     distribution_df["G1 lifetime"] = [(cell.obs[1] + cell.obs[2]) for lineage in lineages for cell in lineage.output_lineage]
     distribution_df["State"] = ["State 1" if cell.state == 0 else "State 2" for lineage in lineages for cell in lineage.output_lineage]
