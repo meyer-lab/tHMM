@@ -19,8 +19,8 @@ from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
 
 E3 = [StateDistribution(0.99, 8, 6)]
-pi2 = np.ones(len(E3)) / len(E3) 
-T2 = np.eye(len(E3))
+pi = np.ones(len(E3)) / len(E3)
+T = np.eye(len(E3)
 
 
 # Creating a list of populations to analyze over
