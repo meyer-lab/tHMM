@@ -46,8 +46,9 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.1, 0.9, num_data_points)]
-    list_of_fpi = [fpi=True] * len(list_of_Ts)
+    #list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.1, 0.9, num_data_points)]
+    list_of_Ts = [np.array([[1.0 - i, i], [i, 1.0 - i]]) for i in np.linspace(0, 1, num_data_points)]
+    list_of_fpi = [pi] * len(list_of_Ts)
 
     # generate lineages
     def genF(x): return LineageTree.init_from_parameters(pi, x, E, max_desired_num_cells)
