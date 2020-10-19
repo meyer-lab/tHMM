@@ -18,11 +18,6 @@ from .figureCommon import (
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
 
-E3 = [StateDistribution(0.99, 8, 6), StateDistribution(0.99, 8, 6)]
-pi2 = np.ones(len(E3)) / len(E3)
-T2 = np.eye(len(E3))
-
-
 # Creating a list of populations to analyze over
 num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
 experiment_times = np.linspace(1200, int(2.5 * 1000), num_data_points)
@@ -49,7 +44,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((11, 8), (3, 3))
     # dist_dist is distribution distance
-    figureMaker(ax, *commonAnalyze(list_of_populations, 1), num_lineages=num_lineages, dist_dist=True)
+    figureMaker(ax, *commonAnalyze(list_of_populations, 2), num_lineages=num_lineages, dist_dist=True)
 
     subplotLabel(ax)
 
