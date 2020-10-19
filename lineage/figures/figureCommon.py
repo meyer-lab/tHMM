@@ -131,7 +131,9 @@ def commonAnalyze(list_of_populations, num_states, xtype="length", **kwargs):
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
     list_of_fE = kwargs.get("list_of_fE", [None] * len(list_of_populations))
-    if num_states == 2:
+    if num_states == 1:
+        predicted_num_states = kwargs.get("predicted_num_states", 1)
+    elif num_states == 2:
         predicted_num_states = kwargs.get("predicted_num_states", 2)
     elif num_states == 3:
         predicted_num_states = kwargs.get("predicted_num_states", 3)
