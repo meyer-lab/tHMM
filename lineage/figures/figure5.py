@@ -18,7 +18,7 @@ from .figureCommon import (
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
 
-E3 = [StateDistribution(0.99, 8, 6)]
+E3 = [StateDistribution(0.99, 8, 6), StateDistribution(0.99, 8, 6)]
 pi2 = np.ones(len(E3)) / len(E3)
 T2 = np.eye(len(E3))
 
