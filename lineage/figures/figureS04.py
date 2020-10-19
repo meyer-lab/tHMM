@@ -19,7 +19,7 @@ from .figureCommon import (
     num_data_points,
 )
 from ..LineageTree import LineageTree
-from ..Analyze import Analyze_list
+
 
 
 def makeFigure():
@@ -50,7 +50,7 @@ def accuracy():
     
     list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.1, 0.9, num_data_points)]
     list_of_fpi = [pi] * len(list_of_Ts)
-    print (list_of_Ts)
+
     # generate lineages
     def genF(x): return LineageTree.init_from_parameters(pi, x, E, max_desired_num_cells)
     list_of_populations = [[genF(T) for _ in range(10)] for T in list_of_Ts]
