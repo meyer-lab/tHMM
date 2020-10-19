@@ -46,10 +46,10 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.1, 0.9, int(0.25*num_data_points))]
+    list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.6, 0.99, num_data_points)]
 
     # generate lineages
     def genF(x): return LineageTree.init_from_parameters(pi, x, E, max_desired_num_cells)
     list_of_populations = [[genF(T) for _ in range(10)] for T in list_of_Ts]
 
-    return commonAnalyze(list_of_populations, 2, xtype="prop", list_of_Ts=list_of_Ts)
+    return commonAnalyze(list_of_populations, 2, xtype="prop", list_of_fT=list_of_Ts)

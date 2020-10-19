@@ -24,7 +24,7 @@ pi = calculate_stationary(T)
 
 # bern, gamma_a, gamma_scale
 state0 = StateDistribution(0.99, 8, 6)
-state1 = StateDistribution(0.75, 8, 1)
+state1 = StateDistribution(0.9, 8, 1)
 E = [state0, state1]
 
 state20 = phaseStateDist(0.99, 0.95, 8, 7, 4, 2)
@@ -333,7 +333,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_title(r"G2 Gamma $\theta$")
         ax[i].set_xlabel(xlabel)
     else:
-        if len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1]):
+        if (len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1])) or (num_lineages is None):
             ax[i].axis('off')
         else:
             ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
@@ -360,7 +360,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_xlabel(xlabel)
 
         i += 1
-        if len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1]):
+        if (len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1])) or (num_lineages is None):
             ax[i].axis('off')
         else:
             ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
