@@ -51,7 +51,6 @@ def accuracy():
     list_of_Ts = [a + 5 * np.eye(2) for a in list_of_Ts]
     list_of_Ts = [a / np.sum(a, axis=1)[:, np.newaxis] for a in list_of_Ts]
     list_of_fpi = [calculate_stationary(a) for a in list_of_Ts]
-    print(list_of_Ts)
 
     # generate lineages
     def genF(x): return LineageTree.init_from_parameters(calculate_stationary(x), x, E, max_desired_num_cells)
