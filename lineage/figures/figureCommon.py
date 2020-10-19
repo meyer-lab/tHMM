@@ -24,7 +24,7 @@ pi = calculate_stationary(T)
 
 # bern, gamma_a, gamma_scale
 state0 = StateDistribution(0.99, 8, 6)
-state1 = StateDistribution(0.9, 8, 1)
+state1 = StateDistribution(0.85, 8, 1)
 E = [state0, state1]
 
 state20 = phaseStateDist(0.99, 0.95, 8, 7, 4, 2)
