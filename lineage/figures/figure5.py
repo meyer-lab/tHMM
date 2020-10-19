@@ -18,9 +18,10 @@ from .figureCommon import (
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
 
-pi2 = [1]
-T2 = np.array([1])
 E3 = [StateDistribution(0.99, 8, 6)]
+pi2 = np.ones(len(E3)) / len(E3) 
+T2 = np.eye(len(E3))
+
 
 # Creating a list of populations to analyze over
 num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
