@@ -16,6 +16,11 @@ from .figureCommon import (
     commonAnalyze
 )
 from ..LineageTree import LineageTree
+from ..states.StateDistributionGamma import StateDistribution
+
+pi2 = [1]
+T2 = np.array([1])
+E3 = [StateDistribution(0.99, 8, 6)]
 
 # Creating a list of populations to analyze over
 num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
@@ -25,7 +30,7 @@ list_of_populations = []
 for indx, num in enumerate(num_lineages):
     population = []
     for _ in range(num):
-        tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
+        tmp_lineage = LineageTree.init_from_parameters(pi2, T2, E3, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
         if len(tmp_lineage.output_lineage) < 3:
             pass
         else:
