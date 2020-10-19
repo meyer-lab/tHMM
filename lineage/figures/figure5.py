@@ -48,7 +48,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((11, 8), (3, 3))
     # dist_dist is distribution distance
-    figureMaker(ax, *commonAnalyze(list_of_populations, 2), num_lineages=num_lineages, dist_dist=True)
+    figureMaker(ax, *commonAnalyze(list_of_populations, 1), num_lineages=num_lineages, dist_dist=True)
 
     subplotLabel(ax)
 
