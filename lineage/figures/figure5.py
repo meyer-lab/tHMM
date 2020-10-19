@@ -16,7 +16,11 @@ from .figureCommon import (
     commonAnalyze
 )
 from ..LineageTree import LineageTree
-from ..states.StateDistributionGamma import StateDistribution
+from ..states.StateDistributionGamma import StateDistribution as gamma_state
+
+pi2 = np.array([1])
+T2 = np.array([[1]])
+E3 = [gamma_state(bern_p=1., gamma_a=7, gamma_scale=4.5)]
 
 # Creating a list of populations to analyze over
 num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
