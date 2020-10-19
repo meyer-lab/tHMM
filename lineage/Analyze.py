@@ -133,7 +133,10 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
 
     # Get the distance between distributions of two states
     results_dict["distribution distance 0"] = results_dict["switched_emissions"][0].dist(tHMMobj.X[0].E[0])
-    results_dict["distribution distance 1"] = results_dict["switched_emissions"][1].dist(tHMMobj.X[0].E[1])
+    if len(tHMMobj.X[0].E) == 2:
+        results_dict["distribution distance 1"] = results_dict["switched_emissions"][1].dist(tHMMobj.X[0].E[1])
+    else:
+        pass
 
     # 2. Calculate accuracy after switching states
     results_dict["state_counter"] = np.bincount(ravel_switched_pred_states)
