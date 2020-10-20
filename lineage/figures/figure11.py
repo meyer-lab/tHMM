@@ -9,7 +9,7 @@ from ..data.Lineage_collections import gemControl, gem5uM, Gem10uM, Gem30uM, Lap
 from .figureCommon import getSetup, subplotLabel
 np.random.seed(1)
 
-concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM"]
+concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM", "cntrl", "5nM", "10nM", "30nM"]
 concsValues = ["cntrl", "25nM", "50nM", "250nM"]
 data = [Lapatinib_Control + gemControl, Lapt25uM, Lapt50uM, Lap250uM]
 
