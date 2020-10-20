@@ -20,6 +20,7 @@ from .figureCommon import (
     num_data_points,
 )
 from ..LineageTree import LineageTree
+from ..BaumWelch import calculate_stationary
 
 
 def makeFigure():
@@ -47,11 +48,13 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.1, 0.9, num_data_points)]
-    list_of_fpi = [pi] * len(list_of_Ts)
+    list_of_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.01, 0.99, num_data_points)]
+    list_of_Ts = [a + 5 * np.eye(2) for a in list_of_Ts]
+    list_of_Ts = [a / np.sum(a, axis=1)[:, np.newaxis] for a in list_of_Ts]
+    list_of_fpi = [calculate_stationary(a) for a in list_of_Ts]
 
     # generate lineages
-    def genC(x): return LineageTree.init_from_parameters(pi, x, E, max_desired_num_cells, censor_condition=3, desired_experiment_time=700)
+    def genC(x): return LineageTree.init_from_parameters(calculate_stationary(x), x, E, max_desired_num_cells, censor_condition=3, desired_experiment_time=700)
     list_of_populations = [[genC(T) for _ in range(10)] for T in list_of_Ts]
 
-    return commonAnalyze(list_of_populations, 2, xtype="prop", list_of_fpi=list_of_fpi, list_of_Ts=list_of_Ts)
+    return commonAnalyze(list_of_populations, 2, xtype="prop", list_of_fpi=list_of_fpi, list_of_fT=list_of_Ts)
