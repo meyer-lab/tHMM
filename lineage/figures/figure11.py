@@ -56,7 +56,7 @@ def makeFigure():
         sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx])
 
         ax[idx].set_title(concs[idx])
-        ax[idx].set_ylabel("phase lengths")
+        ax[idx].set_ylabel("phase lengths [hr]")
         ax[idx].set_xlabel("state")
         ax[idx].set_ylim([0.0, 150.0])
 
@@ -68,25 +68,31 @@ def plotting(ax, lpt_avg, bern_lpt, concs):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(3):  # lapatinib that has 3 states
         ax[5].plot(concs, lpt_avg[:, i, 0], label="st " + str(i), alpha=0.7)
+        ax[5].set_title("G1 phase")
         ax[6].plot(concs, lpt_avg[:, i, 1], label="st " + str(i), alpha=0.7)
+        ax[6].set_title("G2 phase")
         ax[7].plot(concs, bern_lpt[:, i, 0], label="st " + str(i), alpha=0.7)
+        ax[7].set_title("G1 phase")
         ax[8].plot(concs, bern_lpt[:, i, 1], label="st " + str(i), alpha=0.7)
+        ax[8].set_title("G2 phase")
 
-    # legend and ylabel
+    # ylim and ylabel
     for i in range(5, 7):
-        ax[i].legend()
-        ax[i].set_xticklabels(concsValues, rotation=30)
-        ax[i].set_title("G1 phase")
-        ax[i].set_ylabel("prog. rate")
+        ax[i].set_ylabel("prog. rate 1/[hr]")
         ax[i].set_ylim([0, 0.1])
 
-    # xlabel
+    # ylim and ylabel
     for i in range(7, 9):
-        ax[i].legend()
-        ax[i].set_xticklabels(concsValues, rotation=30)
-        ax[i].set_title(" G2 phase")
         ax[i].set_ylabel("div. rate")
         ax[i].set_ylim([0, 1.05])
+
+    # legend and xlabel
+    for i in range(5, 9):
+        ax[i].legend()
+        ax[i].set_xlabel("conc. [nM]")
+        ax[i].set_xticklabels(concsValues, rotation=30)
+
+
 
     subplotLabel(ax)
 
