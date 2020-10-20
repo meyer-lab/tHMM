@@ -7,7 +7,7 @@ from ..Analyze import Analyze_list
 from ..tHMM import tHMM
 from ..data.Lineage_collections import gemControl, gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .figureCommon import getSetup, subplotLabel
-# np.random.seed(1)
+np.random.seed(1)
 
 concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM", "cntrl", "Gem 5nM", "Gem 10nM", "Gem 30nM"]
 concsValues = ["cntrl", "25nM", "50nM", "250nM", "cntrl", "5nM", "10nM", "30nM"]
@@ -118,7 +118,7 @@ def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
     # ylim for lapatinib
     if k == 8:
         for i in range(k, k + 4):
-            ax[i].set_ylim([0, 0.06])
+            ax[i].set_ylim([0, 0.1])
     if k == 12:
         for i in range(k, k + 4):
             ax[i].set_ylim([0, 1.05])
