@@ -1,65 +1,53 @@
-""" To draw transition matrix """
+""" This file is only to plot the distribution of death lengths. """
 import numpy as np
 import seaborn as sns
 import networkx as nx
-from networkx.drawing.nx_agraph import to_agraph
 
-from .figure11 import gemc_tHMMobj_list, lapt_tHMMobj_list
+from .figure11 import gemc_tHMMobj_list, lapt_tHMMobj_list, concs
 from .figureCommon import getSetup, subplotLabel
-
-gemc = gemc_tHMMobj_list[0]
-lapt = lapt_tHMMobj_list[0]
-T_lap = lapt_tHMMobj_list[0].estimate.T
-T_gem = gemc_tHMMobj_list[0].estimate.T
 
 
 def makeFigure():
-    """ makes figure 13 for transition matrices. """
+    """ Makes figure 11. """
 
-    ax, f = getSetup((13, 8), (1, 2))
+    ax, f = getSetup((13.2, 6.5), (2, 4))
     subplotLabel(ax)
 
-    # transition matrix lapatinib
-    plot_networkx(T_lap.shape[0], T_lap, "lpt")
-    ax[0].axis("off")
-    ax[0].set_title("lapatinib")
+    for i in range(4):
+        gemc = gemc_tHMMobj_list[i]
+        lapt = lapt_tHMMobj_list[i]
+        gm = []
+        lp = []
+        for lin in gemc.X:
+            for cell in lin.output_lineage:
+                if cell.obs[0] == 0 or cell.obs[1] == 0:
+                    if np.isfinite(cell.obs[2]) and np.isfinite(cell.obs[3]):
+                        length = cell.obs[2] + cell.obs[3]
+                    elif np.isnan(cell.obs[2]):
+                        length = cell.obs[3]
+                    elif np.isnan(cell.obs[3]):
+                        length = cell.obs[2]
+                    gm.append(length)
 
-    # transition matrix
-    plot_networkx(T_gem.shape[0], T_gem, "gmc")
-    ax[1].axis("off")
-    ax[1].set_title("gemcitabine")
+        for lin in lapt.X:
+            for cell in lin.output_lineage:
+                if cell.obs[0] == 0 or cell.obs[1] == 0:
+                    if np.isfinite(cell.obs[2]) and np.isfinite(cell.obs[3]):
+                        length = cell.obs[2] + cell.obs[3]
+                    elif np.isnan(cell.obs[2]):
+                        length = cell.obs[3]
+                    elif np.isnan(cell.obs[3]):
+                        length = cell.obs[2]
+                    lp.append(length)
+
+        ax[i].hist(lp, bins=30)
+        ax[i + 4].hist(gm, bins=30)
+        ax[i].set_ylabel("freq.")
+        ax[i].set_xlabel("lived before death")
+        ax[i + 4].set_ylabel("freq.")
+        ax[i + 4].set_xlabel("lived before death")
+
+        ax[i].set_title("lapatinib " + str(concs[i]))
+        ax[i + 4].set_title("gemcitabine" + str(concs[i + 4]))
 
     return f
-
-
-def plot_networkx(num_states, T, drug_name):
-    """ This plots the Transition matrix for each condition. """
-    G = nx.MultiDiGraph()
-    num_states = T.shape[0]
-
-    # node labels
-    labels = {}
-    for i in range(num_states):
-        labels[i] = "state " + str(i + 1)
-
-    # add nodes
-    for i in range(num_states):
-        G.add_node(i, pos=(-2, -2), label=labels[i], style='filled', fillcolor='lightblue')
-
-    # add edges
-    for i in range(num_states):
-        for j in range(num_states):
-            G.add_edge(i, j, penwidth=2 * [i, j], minlen=1)
-
-    # add graphviz layout options (see https://stackoverflow.com/a/39662097)
-    G.graph['edge'] = {'arrowsize': '0.6', 'splines': 'curved'}
-    G.graph['graph'] = {'scale': '1'}
-
-    # adding attributes to edges in multigraphs is more complicated but see
-    # https://stackoverflow.com/a/26694158
-    for i in range(num_states):
-        G[i][i][0]['color'] = 'black'
-
-    A = to_agraph(G)
-    A.layout('dot')
-    A.draw('output/' + str(drug_name) + '.svg')
