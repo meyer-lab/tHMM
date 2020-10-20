@@ -3,7 +3,8 @@ import numpy as np
 import seaborn as sns
 import networkx as nx
 
-from .figure11 import gemc_tHMMobj_list, lapt_tHMMobj_list, concs
+from .figure11 import lapt_tHMMobj_list, concs
+from .figure11 import gemc_tHMMobj_list
 from .figureCommon import getSetup, subplotLabel
 
 
