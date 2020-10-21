@@ -92,8 +92,6 @@ def plotting(ax, lpt_avg, bern_lpt, concs):
         ax[i].set_xlabel("conc. [nM]")
         ax[i].set_xticklabels(concsValues, rotation=30)
 
-
-
     subplotLabel(ax)
 
 
