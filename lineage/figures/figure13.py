@@ -28,6 +28,7 @@ def make_pdf(dist, params, size=10000):
 
     return pdf
 
+
 lp_pdf = []
 gm_pdf = []
 lp_params = [(11.0, 49.59), (14.0, 21.66), (3.0, 42.66), (8.0, 60.02)]
@@ -36,6 +37,7 @@ for i in range(4):
     best_dist = getattr(st, 'expon')
     lp_pdf.append(make_pdf(best_dist, lp_params[i]))
     gm_pdf.append(make_pdf(best_dist, gm_params[i]))
+
 
 def makeFigure():
     """ Makes figure 11. """
