@@ -63,7 +63,7 @@ def gamma_estimator(gamma_obs, time_cen, gammas, constant_shape, x0):
     assert gammas.shape[0] == gamma_obs.shape[0]
     arrgs = (gamma_obs[time_cen == 1], gammas[time_cen == 1], gamma_obs[time_cen == 0], gammas[time_cen == 0])
     opt = {'gtol': 1e-12, 'ftol': 1e-12}
-    bnd = (1.0, 200.0)
+    bnd = (1.0, 800.0)
 
     if constant_shape is None:
         res = minimize(fun=negative_LL, jac="3-point", x0=x0, bounds=(bnd, bnd), args=arrgs, options=opt)
