@@ -130,7 +130,7 @@ gemc415 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path
 
 Gem10uM = gemc401 + gemc402 + gemc403 + gemc404 + gemc405 + gemc406 + gemc407 + \
     gemc408 + gemc409 + gemc410 + gemc411 + gemc412 + gemc413 + gemc414 + gemc415
-len_gm_10 = [len(gemc401) len(gemc402), len(gemc403), len(gemc404), len(gemc405), len(gemc406), len(gemc407), len(gemc408), len(gemc409), len(gemc410), len(gemc411), len(gemc412), len(gemc413), len(gemc414), len(gemc415)]
+len_gm_10 = [len(gemc401), len(gemc402), len(gemc403), len(gemc404), len(gemc405), len(gemc406), len(gemc407), len(gemc408), len(gemc409), len(gemc410), len(gemc411), len(gemc412), len(gemc413), len(gemc414), len(gemc415)]
 
 # -- GEMCITABINE 30 uMolars
 
