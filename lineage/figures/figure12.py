@@ -63,6 +63,7 @@ def makeFigure():
     plot_gemc(ax, gmc_avg, bern_gmc, concs)
     return f
 
+
 def plot_gemc(ax, gmc_avg, bern_gmc, concs):
 
     for i in range(4):  # gemcitabine that has 4 states
@@ -74,7 +75,6 @@ def plot_gemc(ax, gmc_avg, bern_gmc, concs):
         ax[7].set_title("G1 phase")
         ax[8].plot(concs, bern_gmc[:, i, 1], label="st " + str(i), alpha=0.7)
         ax[8].set_title("G2 phase")
-
 
     # ylim and ylabel
     for i in range(5, 7):
