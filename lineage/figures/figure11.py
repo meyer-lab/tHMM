@@ -1,4 +1,4 @@
-""" This file depicts the distribution of phase lengths versus the states for each concentration. """
+""" This file depicts the distribution of phase lengths versus the states for each concentration of lapatinib. """
 import numpy as np
 import itertools
 import seaborn as sns
@@ -9,9 +9,9 @@ from ..data.Lineage_collections import gemControl, gem5uM, Gem10uM, Gem30uM, Lap
 from .figureCommon import getSetup, subplotLabel
 np.random.seed(1)
 
-concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM", "cntrl", "Gem 5nM", "Gem 10nM", "Gem 30nM"]
-concsValues = ["cntrl", "25nM", "50nM", "250nM", "cntrl", "5nM", "10nM", "30nM"]
-data = [Lapatinib_Control + gemControl, Lapt25uM, Lapt50uM, Lap250uM, gemControl + Lapatinib_Control, gem5uM, Gem10uM, Gem30uM]
+concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM", "cntrl", "5nM", "10nM", "30nM"]
+concsValues = ["cntrl", "25nM", "50nM", "250nM"]
+data = [Lapatinib_Control + gemControl, Lapt25uM, Lapt50uM, Lap250uM]
 
 tHMM_solver = tHMM(X=data[0], num_states=1)
 tHMM_solver.fit()
@@ -26,14 +26,15 @@ for population in data:
             E.G2.const_shape = constant_shape[1]
 
 # Run fitting
-lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data[0:4], 3, fpi=True)
-gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(data[4:], 4, fpi=True)
+lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data, 3, fpi=True)
 
 
 def makeFigure():
     """ Makes figure 11. """
 
-    ax, f = getSetup((13.2, 10.0), (4, 4))
+    ax, f = getSetup((13.2, 6.0), (2, 5))
+    ax[4].axis("off")
+    ax[9].axis("off")
 
     # lapatinib
     lpt_avg = np.zeros((4, 3, 2))  # the avg lifetime: num_conc x num_states x num_phases
@@ -55,73 +56,43 @@ def makeFigure():
         sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx])
 
         ax[idx].set_title(concs[idx])
-        ax[idx + 4].set_title(concs[idx + 4])
-        ax[idx].set_ylabel("phase lengths")
-        ax[idx + 4].set_ylabel("phase lengths")
+        ax[idx].set_ylabel("phase lengths [hr]")
         ax[idx].set_xlabel("state")
-        ax[idx + 4].set_xlabel("state")
-        # ax[idx].set_ylim([0, 2])
-        # ax[idx + 4].set_ylim([0, 2])
+        ax[idx].set_ylim([0.0, 150.0])
 
-    # gemcitabine
-    gmc_avg = np.zeros((4, 4, 2))  # avg lifetime gmc: num_conc x num_states x num_phases
-    bern_gmc = np.zeros((4, 4, 2))  # bernoulli
-    # print parameters and estimated values
-    print("for Gemcitabine: \n the \u03C0: ", gemc_tHMMobj_list[0].estimate.pi, " \n the transition matrix: ", gemc_tHMMobj_list[0].estimate.T)
-
-    for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
-        for i in range(4):
-            gmc_avg[idx, i, 0] = 1 / (gemc_tHMMobj.estimate.E[i].params[2] * gemc_tHMMobj.estimate.E[i].params[3])
-            gmc_avg[idx, i, 1] = 1 / (gemc_tHMMobj.estimate.E[i].params[4] * gemc_tHMMobj.estimate.E[i].params[5])
-            # bernoulli
-            for j in range(2):
-                bern_gmc[idx, i, j] = gemc_tHMMobj.estimate.E[i].params[j]
-        GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
-        sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx + 4])
-
-    plotting(ax, 8, lpt_avg, gmc_avg, concs, "")
-    plotting(ax, 12, bern_lpt, bern_gmc, concs, "Bernoulli p")
+    plotting(ax, lpt_avg, bern_lpt, concs)
     return f
 
 
-def plotting(ax, k, lpt_avg, gmc_avg, concs, title):
+def plotting(ax, lpt_avg, bern_lpt, concs):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(3):  # lapatinib that has 3 states
-        ax[k].plot(concs[0:4], lpt_avg[:, i, 0], label="st " + str(i), alpha=0.7)
-        ax[k].set_title(title + str(" G1 phase"))
-        ax[k].set_xticklabels(concsValues[0:4], rotation=30)
-        ax[k + 1].plot(concs[0:4], lpt_avg[:, i, 1], label="st " + str(i), alpha=0.7)
-        ax[k + 1].set_title(title + str(" G2 phase"))
-        ax[k + 1].set_xticklabels(concsValues[0:4], rotation=30)
+        ax[5].plot(concs[0: 4], lpt_avg[:, i, 0], label="st " + str(i), alpha=0.7)
+        ax[5].set_title("G1 phase")
+        ax[6].plot(concs[0: 4], lpt_avg[:, i, 1], label="st " + str(i), alpha=0.7)
+        ax[6].set_title("G2 phase")
+        ax[7].plot(concs[0: 4], bern_lpt[:, i, 0], label="st " + str(i), alpha=0.7)
+        ax[7].set_title("G1 phase")
+        ax[8].plot(concs[0: 4], bern_lpt[:, i, 1], label="st " + str(i), alpha=0.7)
+        ax[8].set_title("G2 phase")
 
-    for i in range(4):  # gemcitabine that has 4 states
-        ax[k + 2].plot(concs[4:8], gmc_avg[:, i, 0], label="st " + str(i), alpha=0.7)
-        ax[k + 2].set_title(title + str(" G1 phase"))
-        ax[k + 2].set_xticklabels(concsValues[4:8], rotation=30)
-        ax[k + 3].plot(concs[4:8], gmc_avg[:, i, 1], label="st " + str(i), alpha=0.7)
-        ax[k + 3].set_title(title + str(" G2 phase"))
-        ax[k + 3].set_xticklabels(concsValues[4:8], rotation=30)
+    # ylim and ylabel
+    for i in range(5, 7):
+        ax[i].set_ylabel("prog. rate 1/[hr]")
+        ax[i].set_ylim([0, 0.1])
 
-    # legend and ylabel
-    for i in range(k, k + 4):
+    # ylim and ylabel
+    for i in range(7, 9):
+        ax[i].set_ylabel("div. rate")
+        ax[i].set_ylim([0, 1.05])
+
+    # legend and xlabel
+    for i in range(5, 9):
         ax[i].legend()
-        ax[i].set_ylabel("phase prog. rate")
+        ax[i].set_xlabel("conc. [nM]")
+        ax[i].set_xticklabels(concsValues, rotation=30)
 
-    # lapatinib xlabel
-    for i in range(k, k + 2):
-        ax[i].set_xlabel("lapatinib")
 
-    # gemcitibine xlabel
-    for i in range(k + 2, k + 4):
-        ax[i].set_xlabel("gemcitabine")
-
-    # ylim for lapatinib
-    if k == 8:
-        for i in range(k, k + 4):
-            ax[i].set_ylim([0, 0.1])
-    if k == 12:
-        for i in range(k, k + 4):
-            ax[i].set_ylim([0, 1.05])
 
     subplotLabel(ax)
 
