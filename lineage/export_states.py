@@ -2,7 +2,6 @@
 
 import numpy as np
 import pandas as pd
-import xlsxwriter
 
 from .Analyze import Analyze_list
 from .tHMM import tHMM
@@ -90,52 +89,3 @@ lpt_250 = [assign_states(i) for i in lp250]
 gmc_5 = [assign_states(i) for i in gm5]
 gmc_10 = [assign_states(i) for i in gm10]
 gmc_30 = [assign_states(i) for i in gm30]
-
-##------------- writing into an excel sheet ------------------##
-
-# lapatinib
-for ind, sheet in enumerate(lpt_25):
-    j = 1
-    for idx, arrays in enumerate(sheet):
-        df = pd.DataFrame(arrays)
-        df.to_excel(excel_writer = "lpt_25_"+str(ind)+".xlsx", startrow=j)
-        j += 19
-
-for ind, sheet in enumerate(lpt_50):
-    j = 1
-    for idx, arrays in enumerate(sheet):
-        df = pd.DataFrame(arrays)
-        df.to_excel(excel_writer = "lpt_50_"+str(ind)+".xlsx", startrow=j)
-        j += 19
-
-for ind, sheet in enumerate(lpt_250):
-    j = 1
-    for idx, arrays in enumerate(sheet):
-        df = pd.DataFrame(arrays)
-        df.to_excel(excel_writer = "lpt_25_"+str(ind)+".xlsx", startrow=j)
-        j += 19
-
-# gemcitabine
-for ind, sheet in enumerate(gmc_5):
-    j = 1
-    for idx, arrays in enumerate(sheet):
-        df = pd.DataFrame(arrays)
-        df.to_excel(excel_writer = "gmc_5_"+str(ind)+".xlsx", startrow=j)
-        j += 19
-
-
-for ind, sheet in enumerate(gmc_10):
-    j = 1
-    for idx, arrays in enumerate(sheet):
-        df = pd.DataFrame(arrays)
-        df.to_excel(excel_writer = "lpt_25_"+str(ind)+".xlsx", startrow=j)
-        j += 19
-
-
-for ind, sheet in enumerate(gmc_30):
-    j = 1
-    for idx, arrays in enumerate(sheet):
-        df = pd.DataFrame(arrays)
-        df.to_excel(excel_writer = "lpt_25_"+str(ind)+".xlsx", startrow=j)
-        j += 19
-
