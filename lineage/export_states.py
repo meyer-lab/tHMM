@@ -14,7 +14,7 @@ gemm = [Lapatinib_Control + gemControl, gem5uM, Gem10uM, Gem30uM]
 lptt = [Lapatinib_Control + gemControl, Lapt25uM, Lapt50uM, Lap250uM]
 
 lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(lptt, 3, fpi=True)
-gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(lptt, 4, fpi=True)
+gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(gemm, 4, fpi=True)
 
 # assigning the estimated states to the cells
 for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
