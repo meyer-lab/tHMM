@@ -2,11 +2,12 @@
 
 import numpy as np
 import pandas as pd
+import xlsxwriter
 
-from lineage.Analyze import Analyze_list
-from lineage.tHMM import tHMM
-from lineage.data.Lineage_collections import gemControl, gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
-from lineage.data.Lineage_collections import len_lp_cntr, len_lp_25, len_lp_50, len_lp_250, len_gm_cntr, len_gm_5, len_gm_10, len_gm_30
+from .Analyze import Analyze_list
+from .tHMM import tHMM
+from .data.Lineage_collections import gemControl, gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
+from .data.Lineage_collections import len_lp_cntr, len_lp_25, len_lp_50, len_lp_250, len_gm_cntr, len_gm_5, len_gm_10, len_gm_30
 
 # fitting gemc and lapat
 gemm = [Lapatinib_Control + gemControl, gem5uM, Gem10uM, Gem30uM]
@@ -92,10 +93,49 @@ gmc_30 = [assign_states(i) for i in gm30]
 
 ##------------- writing into an excel sheet ------------------##
 
-
-for sheet in lpt_25:
+# lapatinib
+for ind, sheet in enumerate(lpt_25):
     j = 1
     for idx, arrays in enumerate(sheet):
         df = pd.DataFrame(arrays)
-        df.to_excel(excel_writer = "test.xlsx", startrow=j)
+        df.to_excel(excel_writer = "lpt_25_"+str(ind)+".xlsx", startrow=j)
         j += 19
+
+for ind, sheet in enumerate(lpt_50):
+    j = 1
+    for idx, arrays in enumerate(sheet):
+        df = pd.DataFrame(arrays)
+        df.to_excel(excel_writer = "lpt_50_"+str(ind)+".xlsx", startrow=j)
+        j += 19
+
+for ind, sheet in enumerate(lpt_250):
+    j = 1
+    for idx, arrays in enumerate(sheet):
+        df = pd.DataFrame(arrays)
+        df.to_excel(excel_writer = "lpt_25_"+str(ind)+".xlsx", startrow=j)
+        j += 19
+
+# gemcitabine
+for ind, sheet in enumerate(gmc_5):
+    j = 1
+    for idx, arrays in enumerate(sheet):
+        df = pd.DataFrame(arrays)
+        df.to_excel(excel_writer = "gmc_5_"+str(ind)+".xlsx", startrow=j)
+        j += 19
+
+
+for ind, sheet in enumerate(gmc_10):
+    j = 1
+    for idx, arrays in enumerate(sheet):
+        df = pd.DataFrame(arrays)
+        df.to_excel(excel_writer = "lpt_25_"+str(ind)+".xlsx", startrow=j)
+        j += 19
+
+
+for ind, sheet in enumerate(gmc_30):
+    j = 1
+    for idx, arrays in enumerate(sheet):
+        df = pd.DataFrame(arrays)
+        df.to_excel(excel_writer = "lpt_25_"+str(ind)+".xlsx", startrow=j)
+        j += 19
+
