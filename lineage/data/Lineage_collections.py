@@ -8,15 +8,16 @@ from ..LineageTree import LineageTree
 desired_num_states = 2
 E = [StateDistribution() for _ in range(desired_num_states)]
 
-def popout_single_lineages(lineages):	
-    """ To remove lineages with cell numbers <= 5. """	
-    trimed_lineages = []	
-    for cells in lineages:	
-        if len(cells) < 5:	
-            pass	
-        else:	
-            trimed_lineages.append(cells)	
-    assert len(trimed_lineages) > 0	
+
+def popout_single_lineages(lineages):
+    """ To remove lineages with cell numbers <= 5. """
+    trimed_lineages = []
+    for cells in lineages:
+        if len(cells) < 5:
+            pass
+        else:
+            trimed_lineages.append(cells)
+    assert len(trimed_lineages) > 0
     return trimed_lineages
 
 
@@ -42,7 +43,7 @@ lapb652 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path
 lapb653 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_B6_3_V4.xlsx")]
 
 
-Lapt25uM = lapb63 + lapb632 + lapb64 + lapb642 + lapb65 +  lapb652 + lapb653
+Lapt25uM = lapb63 + lapb632 + lapb64 + lapb642 + lapb65 + lapb652 + lapb653
 len_lp_25 = [len(lapb63), len(lapb632), len(lapb64), len(lapb642), len(lapb65), len(lapb652), len(lapb653)]
 
 # -- LAPATINIB 50 uMolars
@@ -66,7 +67,21 @@ lapC514 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path
 
 Lapt50uM = lapC501 + lapC502 + lapC503 + lapC504 + lapC505 + lapC506 + lapC507 + \
     lapC508 + lapC509 + lapC510 + lapC511 + lapC512 + lapC513 + lapC514
-len_lp_50 = [len(lapC501), len(lapC502), len(lapC503), len(lapC504), len(lapC505), len(lapC506), len(lapC507), len(lapC508), len(lapC509), len(lapC510), len(lapC511), len(lapC512), len(lapC513), len(lapC514)]
+len_lp_50 = [
+    len(lapC501),
+    len(lapC502),
+    len(lapC503),
+    len(lapC504),
+    len(lapC505),
+    len(lapC506),
+    len(lapC507),
+    len(lapC508),
+    len(lapC509),
+    len(lapC510),
+    len(lapC511),
+    len(lapC512),
+    len(lapC513),
+    len(lapC514)]
 
 # -- LAPATINIB 250 uMolars
 lapD51 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00601_D5_1_V4.xlsx")]
@@ -78,7 +93,7 @@ lapD53 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=
 lapD56 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_D5_2_V4.xlsx")]
 lapD58 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_D5_3_V4.xlsx")]
 
-Lap250uM = lapD51 + lapD54 + lapD57 + lapD52  + lapD55 + lapD53 + lapD56 + lapD58
+Lap250uM = lapD51 + lapD54 + lapD57 + lapD52 + lapD55 + lapD53 + lapD56 + lapD58
 len_lp_250 = [len(lapD51), len(lapD54), len(lapD57), len(lapD52), len(lapD55), len(lapD53), len(lapD56), len(lapD58)]
 
 # -- Gemcitabine control
@@ -93,7 +108,7 @@ gem062 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=
 
 gemControl = gem04 + gem05 + gem06 + gem042 + gem052 + gem062 + gem043
 Gemcitabine_Control = popout_single_lineages(gemControl)
-len_gm_cntr =[len(gem04), len(gem05), len(gem06), len(gem042), len(gem052), len(gem062), len(gem043)] 
+len_gm_cntr = [len(gem04), len(gem05), len(gem06), len(gem042), len(gem052), len(gem062), len(gem043)]
 
 # -- GEMCITABINE 5 uMolars
 
@@ -130,7 +145,22 @@ gemc415 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path
 
 Gem10uM = gemc401 + gemc402 + gemc403 + gemc404 + gemc405 + gemc406 + gemc407 + \
     gemc408 + gemc409 + gemc410 + gemc411 + gemc412 + gemc413 + gemc414 + gemc415
-len_gm_10 = [len(gemc401), len(gemc402), len(gemc403), len(gemc404), len(gemc405), len(gemc406), len(gemc407), len(gemc408), len(gemc409), len(gemc410), len(gemc411), len(gemc412), len(gemc413), len(gemc414), len(gemc415)]
+len_gm_10 = [
+    len(gemc401),
+    len(gemc402),
+    len(gemc403),
+    len(gemc404),
+    len(gemc405),
+    len(gemc406),
+    len(gemc407),
+    len(gemc408),
+    len(gemc409),
+    len(gemc410),
+    len(gemc411),
+    len(gemc412),
+    len(gemc413),
+    len(gemc414),
+    len(gemc415)]
 
 # -- GEMCITABINE 30 uMolars
 
