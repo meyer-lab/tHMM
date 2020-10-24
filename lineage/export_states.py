@@ -26,12 +26,13 @@ for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
     for lin_indx, lin in enumerate(gemc_tHMMobj.X):
         for cell_indx, cell in enumerate(lin.output_lineage):
             cell.state = gemc_states_list[idx][lin_indx][cell_indx]
-    
+
+
 def assign_states(input_X):
     """ Given a list of lineages, it returns a 2D array of cell states in the form of a tree that will then be written into excel sheets. """
     X = []
     for i, lin in enumerate(input_X):
-        # we will fill this 17 x 12 array in the form of a lineage with the state of cells and this array forms each lineage block in excel 
+        # we will fill this 17 x 12 array in the form of a lineage with the state of cells and this array forms each lineage block in excel
         arr = np.empty((17, 12))
         arr[:] = np.nan
         arr[9, 2] = lin.output_lineage[0].state
@@ -62,14 +63,16 @@ def assign_states(input_X):
         X.append(arr)
     return X
 
+
 def deintegrate(population, len_condition):
     """ Given the tHMMob.X and the array that holds lengths of excel sheets for a condition, it returns a list including lineages corresponding to each excel sheet."""
     condition = []
     j = 0
     for lens in len_condition:
-        condition.append(population[j: j+lens])
+        condition.append(population[j: j + lens])
         j += lens
     return condition
+
 
 # each of these is a list holding those populations that belong to each sheet we imported.
 # lapatinib
@@ -93,7 +96,7 @@ gmc_30 = [assign_states(i) for i in gm30]
 
 for ind, sheet in enumerate(lpt_25):
     j = 1
-    writer = pd.ExcelWriter("lpt_25_"+str(ind)+".xlsx", engine='xlsxwriter')
+    writer = pd.ExcelWriter("lpt_25_" + str(ind) + ".xlsx", engine='xlsxwriter')
     for idx, arrays in enumerate(sheet):
         df = pd.DataFrame(arrays)
         df.to_excel(writer, sheet_name='sheet1', startrow=j)
@@ -102,7 +105,7 @@ for ind, sheet in enumerate(lpt_25):
 
 for ind, sheet in enumerate(lpt_50):
     j = 1
-    writer = pd.ExcelWriter("lpt_50_"+str(ind)+".xlsx", engine='xlsxwriter')
+    writer = pd.ExcelWriter("lpt_50_" + str(ind) + ".xlsx", engine='xlsxwriter')
     for idx, arrays in enumerate(sheet):
         df = pd.DataFrame(arrays)
         df.to_excel(writer, sheet_name='sheet1', startrow=j)
@@ -111,7 +114,7 @@ for ind, sheet in enumerate(lpt_50):
 
 for ind, sheet in enumerate(lpt_250):
     j = 1
-    writer = pd.ExcelWriter("lpt_250_"+str(ind)+".xlsx", engine='xlsxwriter')
+    writer = pd.ExcelWriter("lpt_250_" + str(ind) + ".xlsx", engine='xlsxwriter')
     for idx, arrays in enumerate(sheet):
         df = pd.DataFrame(arrays)
         df.to_excel(writer, sheet_name='sheet1', startrow=j)
@@ -120,7 +123,7 @@ for ind, sheet in enumerate(lpt_250):
 
 for ind, sheet in enumerate(gmc_5):
     j = 1
-    writer = pd.ExcelWriter("gmc_5_"+str(ind)+".xlsx", engine='xlsxwriter')
+    writer = pd.ExcelWriter("gmc_5_" + str(ind) + ".xlsx", engine='xlsxwriter')
     for idx, arrays in enumerate(sheet):
         df = pd.DataFrame(arrays)
         df.to_excel(writer, sheet_name='sheet1', startrow=j)
@@ -129,7 +132,7 @@ for ind, sheet in enumerate(gmc_5):
 
 for ind, sheet in enumerate(gmc_10):
     j = 1
-    writer = pd.ExcelWriter("gmc_10_"+str(ind)+".xlsx", engine='xlsxwriter')
+    writer = pd.ExcelWriter("gmc_10_" + str(ind) + ".xlsx", engine='xlsxwriter')
     for idx, arrays in enumerate(sheet):
         df = pd.DataFrame(arrays)
         df.to_excel(writer, sheet_name='sheet1', startrow=j)
@@ -138,7 +141,7 @@ for ind, sheet in enumerate(gmc_10):
 
 for ind, sheet in enumerate(gmc_30):
     j = 1
-    writer = pd.ExcelWriter("gmc_30_"+str(ind)+".xlsx", engine='xlsxwriter')
+    writer = pd.ExcelWriter("gmc_30_" + str(ind) + ".xlsx", engine='xlsxwriter')
     for idx, arrays in enumerate(sheet):
         df = pd.DataFrame(arrays)
         df.to_excel(writer, sheet_name='sheet1', startrow=j)
