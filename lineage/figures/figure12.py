@@ -8,7 +8,6 @@ from ..tHMM import tHMM
 from ..data.Lineage_collections import gemControl, gem5uM, Gem10uM, Gem30uM, Lapatinib_Control
 from .figureCommon import getSetup, subplotLabel
 from .figure11 import twice
-np.random.seed(1)
 
 
 data = [gemControl + Lapatinib_Control, gem5uM, Gem10uM, Gem30uM]
