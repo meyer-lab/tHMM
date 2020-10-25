@@ -29,7 +29,6 @@ def figureMaker(ax):
     Makes figure 1.
     """
     plotLineage(Gem5uM[13], ax[0], censore=False)
-    ax[0].set_title("gemcitabine 5nM")
     ax[0].axis('off')
 
     plotLineage(Gem5uM[4], ax[2], censore=False)
@@ -45,7 +44,6 @@ def figureMaker(ax):
     gem[2].output_lineage[0].state = 1
 
     plotLineage(gem[3], ax[1], censore=False)
-    ax[1].set_title("control")
     ax[1].axis('off')
 
     plotLineage(gem[9], ax[3], censore=False)
