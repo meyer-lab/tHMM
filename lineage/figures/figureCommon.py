@@ -333,7 +333,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_title(r"G2 Gamma $\theta$")
         ax[i].set_xlabel(xlabel)
     else:
-        if len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1]):
+        if (len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1])) or (num_lineages is None):
             ax[i].axis('off')
         else:
             ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
@@ -360,7 +360,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_xlabel(xlabel)
 
         i += 1
-        if len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1]):
+        if (len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1])) or (num_lineages is None):
             ax[i].axis('off')
         else:
             ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)

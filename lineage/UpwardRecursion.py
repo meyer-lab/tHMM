@@ -142,25 +142,14 @@ def get_leaf_betas(tHMMobj, MSD, EL, NF):
     the Marginal State Distributions. The value in the
     denominator is the Normalizing Factor.
     """
-    betas = []  # full betas holder
+    betas = [np.zeros((len(lO.output_lineage), tHMMobj.num_states)) for lO in tHMMobj.X]  # full betas holder
 
-    for num, lineageObj in enumerate(tHMMobj.X):  # for each lineage in our Population
-        lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
-        MSD_arr = MSD[num]  # getting the MSD of the respective lineage
-        EL_arr = EL[num]  # geting the EL of the respective lineage
-        NF_arr = NF[num]  # getting the NF of the respective lineage
-
+    for num, beta_array in enumerate(betas):  # for each lineage in our Population
         # Emission Likelihood, Marginal State Distribution, Normalizing Factor (same regardless of state)
         # P(x_n = x | z_n = k), P(z_n = k), P(x_n = x)
-        beta_array = np.zeros((len(lineage), tHMMobj.num_states))  # instantiating N by K array
-        ii = lineageObj.output_leaves_idx
-
-        beta_array[ii, :] = EL_arr[ii, :] * MSD_arr[ii, :] / NF_arr[ii, np.newaxis]
-
-        betas.append(beta_array)
-
-    for num, _ in enumerate(tHMMobj.X):
-        assert np.isclose(np.sum(betas[num][-1]), 1.0)
+        ii = tHMMobj.X[num].output_leaves_idx
+        beta_array[ii, :] = EL[num][ii, :] * MSD[num][ii, :] / NF[num][ii, np.newaxis]
+        assert np.isclose(np.sum(beta_array[-1]), 1.0)
 
     return betas
 
