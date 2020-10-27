@@ -2,6 +2,7 @@
 import numpy as np
 import itertools
 import seaborn as sns
+import networkx as nx
 
 from ..Analyze import Analyze_list
 from ..tHMM import tHMM
@@ -26,7 +27,88 @@ for population in data:
 
 # Run fitting
 lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data, 3, fpi=True)
+T_lap = lapt_tHMMobj_list[0].estimate.T
 
+
+## ----------  Functions for creating the transition figure  ------------ ##
+def plot_T(T, ax):
+    G = nx.MultiDiGraph()
+    num_states = T.shape[0]
+
+    add_nodes(G, num_states)
+    add_edges(G, T, num_states)
+
+    pos = nx.nx_pydot.graphviz_layout(G)
+
+    set_nodes(G, num_states, pos, ax)
+    set_edges(G, T, pos, ax)
+    set_labels(G, num_states, pos, ax)
+
+
+def add_nodes(G, num_states):
+    """ Adds the nodes. """
+
+    labels = {}
+    # add nodes
+    for i in range(num_states):
+        labels[i] = "state " + str(i + 1)
+        G.add_node(i, label=labels[i], style='filled')
+
+    return G
+
+
+def set_nodes(G, num_states, pos, ax):
+    """
+    Given a directed graph and pos, then draw the corresponding node.
+    """
+
+    nodes = G.nodes()
+    if num_states == 3:
+        nodecolor = ['blue', 'orange', 'green']
+    else:
+        nodecolor = ['blue', 'orange', 'green', 'red']
+    # nodesize = [1000 for _ in nodes]
+    #draw the nodes
+    nx.draw_networkx_nodes(G, pos, node_color=nodecolor, ax=ax)
+
+    return G
+
+
+def set_labels(G, num_states, pos, ax):
+    """
+    Given a directed graph and pos, then draw the corresponding label based on index.
+    """
+    labels = nx.get_node_attributes(G, "state")
+    labels = {}
+    # add nodes
+    for i in range(num_states):
+        labels[i] = "state " + str(i + 1)
+    #draw the labels
+    nx.draw_networkx_labels(G, pos, labels=labels, font_size=12, ax=ax)
+    return G
+
+
+def add_edges(G, T, num_states):
+    """ Adds edges. """
+    # add edges
+    for i in range(num_states):
+        for j in range(num_states):
+            G.add_edge(i, j, w=20*T[i, j])
+
+    return G
+
+
+def set_edges(G, T, pos, ax):
+    """
+    Given a directed graph and pos, then draw the corresponding edge.
+    """
+    edges = G.edges()
+    thickness = [5 * T[i, j] for i, j in edges]
+    nx.draw_networkx_edges(G, pos, edgelist=edges, width=thickness, arrowsize=25, connectionstyle='arc3, rad = 0.15', ax=ax)
+
+    return G
+
+## -----------  End of functions for transition plot  ------------ ##
 
 def makeFigure():
     """ Makes figure 11. """
@@ -34,6 +116,10 @@ def makeFigure():
     ax, f = getSetup((13.2, 6.0), (2, 5))
     ax[4].axis("off")
     ax[9].axis("off")
+    # transition matrix for lapatinib
+    plot_T(T_lap, ax[4])
+    ax[4].axis("off")
+    ax[4].set_title("lapatinib")
 
     # lapatinib
     lpt_avg = np.zeros((4, 3, 2))  # the avg lifetime: num_conc x num_states x num_phases

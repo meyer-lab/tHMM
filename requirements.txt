@@ -12,3 +12,5 @@ openpyxl==3.0.5
 Biopython==1.78
 statsmodels
 networkx
+pydot==1.4.1
+graphviz==0.14.2

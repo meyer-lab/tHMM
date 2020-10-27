@@ -2,13 +2,13 @@
 import numpy as np
 import itertools
 import seaborn as sns
+import networkx as nx
 
 from ..Analyze import Analyze_list
 from ..tHMM import tHMM
 from ..data.Lineage_collections import gemControl, gem5uM, Gem10uM, Gem30uM, Lapatinib_Control
 from .figureCommon import getSetup, subplotLabel
-from .figure11 import twice
-np.random.seed(1)
+from .figure11 import twice, plot_T
 
 
 data = [gemControl + Lapatinib_Control, gem5uM, Gem10uM, Gem30uM]
@@ -29,12 +29,14 @@ for population in data:
             E.G2.const_shape = constant_shape[1]
 
 gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(data, 4, fpi=True)
+T_gem = gemc_tHMMobj_list[0].estimate.T
 
 
 def makeFigure():
     """ Makes figure 12. """
 
     ax, f = getSetup((13.2, 6.0), (2, 5))
+    plot_T(T_gem, ax[4])
     ax[4].axis("off")
     ax[9].axis("off")
 
