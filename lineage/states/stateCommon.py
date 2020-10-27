@@ -46,12 +46,6 @@ def gamma_uncensored(gamma_obs, gammas, constant_shape):
 
     return [a_hat0, gammaCor / a_hat0]
 
-
-def expon_estimator():
-    """
-    This is to estimate the parameter of exponential distribution.
-    """
-    # Handle no observations
     
 def gamma_estimator(gamma_obs, time_cen, gammas, constant_shape, x0):
     """
