@@ -13,3 +13,4 @@ Biopython==1.78
 statsmodels
 networkx
 XlsxWriter
+pygraphviz

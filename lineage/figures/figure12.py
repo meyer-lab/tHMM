@@ -7,7 +7,7 @@ from ..Analyze import Analyze_list
 from ..tHMM import tHMM
 from ..data.Lineage_collections import gemControl, gem5uM, Gem10uM, Gem30uM, Lapatinib_Control
 from .figureCommon import getSetup, subplotLabel
-from .figure11 import twice
+from .figure11 import twice, plot_networkx
 
 
 data = [gemControl + Lapatinib_Control, gem5uM, Gem10uM, Gem30uM]
@@ -28,7 +28,7 @@ for population in data:
             E.G2.const_shape = constant_shape[1]
 
 gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(data, 4, fpi=True)
-
+T_gem = gemc_tHMMobj_list[0].estimate.T
 
 def makeFigure():
     """ Makes figure 12. """
@@ -92,3 +92,4 @@ def plot_gemc(ax, gmc_avg, bern_gmc, concs):
         ax[i].set_xticklabels(concsValues, rotation=30)
 
     subplotLabel(ax)
+plot_networkx(T_gem.shape[0], T_gem, 'gemcitabine')

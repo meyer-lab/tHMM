@@ -4,7 +4,8 @@ import seaborn as sns
 import networkx as nx
 from networkx.drawing.nx_agraph import to_agraph
 
-from .figure11 import gemc_tHMMobj_list, lapt_tHMMobj_list
+from .figure11 import lapt_tHMMobj_list
+from .figure12 import gemc_tHMMobj_list
 from .figureCommon import getSetup, subplotLabel
 
 gemc = gemc_tHMMobj_list[0]

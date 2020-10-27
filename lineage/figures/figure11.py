@@ -2,6 +2,8 @@
 import numpy as np
 import itertools
 import seaborn as sns
+import networkx as nx
+import pygraphviz
 
 from ..Analyze import Analyze_list
 from ..tHMM import tHMM
@@ -26,6 +28,7 @@ for population in data:
 
 # Run fitting
 lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data, 3, fpi=True)
+T_lap = lapt_tHMMobj_list[0].estimate.T
 
 
 def makeFigure():
@@ -113,3 +116,40 @@ def twice(tHMMobj, state):
     phaseLength = g1 + g2
     phase = len(g1) * ["G1"] + len(g2) * ["G2"]
     return state, phaseLength, phase
+
+
+def plot_networkx(num_states, T, drug_name):
+    """ This plots the Transition matrix for each condition. """
+    G = nx.MultiDiGraph()
+    num_states = T.shape[0]
+
+    # node labels
+    labels = {}
+    for i in range(num_states):
+        labels[i] = "state " + str(i + 1)
+    
+    cs = ['lighblue', 'orange', 'lightgreen', 'lightred']
+
+    # add nodes
+    for i in range(num_states):
+        G.add_node(i, pos=(-2, -2), label=labels[i], style='filled', fillcolor=cs[i])
+
+    # add edges
+    for i in range(num_states):
+        for j in range(num_states):
+            G.add_edge(i, j, penwidth=2 * [i, j], minlen=1)
+
+    # add graphviz layout options (see https://stackoverflow.com/a/39662097)
+    G.graph['edge'] = {'arrowsize': '0.6', 'splines': 'curved'}
+    G.graph['graph'] = {'scale': '1'}
+
+    # adding attributes to edges in multigraphs is more complicated but see
+    # https://stackoverflow.com/a/26694158
+    for i in range(num_states):
+        G[i][i][0]['color'] = 'black'
+
+    A =  nx.drawing.nx_agraph.to_agraph(G)
+    A.layout('dot')
+    A.draw('lineage/figures/cartoons/' + str(drug_name) + '.svg')
+
+plot_networkx(T_lap.shape[0], T_lap, 'lapatinib')
