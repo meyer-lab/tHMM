@@ -52,7 +52,8 @@ def makeFigure():
             for j in range(2):
                 bern_lpt[idx, i, j] = lapt_tHMMobj.estimate.E[i].params[j]
 
-        LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj, lapt_states_list[idx])
+        lapt_states_list_plusone = [i+1 for i in lapt_states_list[idx]]
+        LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj, lapt_states_list_plusone)
 
         # plot lapatinib
         sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx])
@@ -69,13 +70,13 @@ def makeFigure():
 def plotting(ax, lpt_avg, bern_lpt, concs):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(3):  # lapatinib that has 3 states
-        ax[5].plot(concs[0: 4], lpt_avg[:, i, 0], label="st " + str(i), alpha=0.7)
+        ax[5].plot(concs[0: 4], lpt_avg[:, i, 0], label="st " + str(i+1), alpha=0.7)
         ax[5].set_title("G1 phase")
-        ax[6].plot(concs[0: 4], lpt_avg[:, i, 1], label="st " + str(i), alpha=0.7)
+        ax[6].plot(concs[0: 4], lpt_avg[:, i, 1], label="st " + str(i+1), alpha=0.7)
         ax[6].set_title("G2 phase")
-        ax[7].plot(concs[0: 4], bern_lpt[:, i, 0], label="st " + str(i), alpha=0.7)
+        ax[7].plot(concs[0: 4], bern_lpt[:, i, 0], label="st " + str(i+1), alpha=0.7)
         ax[7].set_title("G1 phase")
-        ax[8].plot(concs[0: 4], bern_lpt[:, i, 1], label="st " + str(i), alpha=0.7)
+        ax[8].plot(concs[0: 4], bern_lpt[:, i, 1], label="st " + str(i+1), alpha=0.7)
         ax[8].set_title("G2 phase")
 
     # ylim and ylabel
