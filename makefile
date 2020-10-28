@@ -10,6 +10,7 @@ venv: venv/bin/activate
 
 venv/bin/activate: requirements.txt
 	test -d venv || virtualenv venv
+	. venv/bin/activate && pip install -Uq wheel
 	. venv/bin/activate && pip install -Uqr requirements.txt
 	touch venv/bin/activate
 
