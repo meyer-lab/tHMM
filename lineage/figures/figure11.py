@@ -2,6 +2,8 @@
 import numpy as np
 import itertools
 import seaborn as sns
+import networkx as nx
+import pygraphviz
 
 from ..Analyze import Analyze_list
 from ..tHMM import tHMM
@@ -26,12 +28,13 @@ for population in data:
 
 # Run fitting
 lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data, 3, fpi=True)
+T_lap = lapt_tHMMobj_list[0].estimate.T
 
 
 def makeFigure():
     """ Makes figure 11. """
 
-    ax, f = getSetup((13.2, 6.0), (2, 5))
+    ax, f = getSetup((16, 6.0), (2, 5))
     ax[4].axis("off")
     ax[9].axis("off")
 
@@ -49,7 +52,8 @@ def makeFigure():
             for j in range(2):
                 bern_lpt[idx, i, j] = lapt_tHMMobj.estimate.E[i].params[j]
 
-        LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj, lapt_states_list[idx])
+        lapt_states_list_plusone = [i+1 for i in lapt_states_list[idx]]
+        LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj, lapt_states_list_plusone)
 
         # plot lapatinib
         sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx])
@@ -66,13 +70,13 @@ def makeFigure():
 def plotting(ax, lpt_avg, bern_lpt, concs):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(3):  # lapatinib that has 3 states
-        ax[5].plot(concs[0: 4], lpt_avg[:, i, 0], label="st " + str(i), alpha=0.7)
+        ax[5].plot(concs[0: 4], lpt_avg[:, i, 0], label="st " + str(i+1), alpha=0.7)
         ax[5].set_title("G1 phase")
-        ax[6].plot(concs[0: 4], lpt_avg[:, i, 1], label="st " + str(i), alpha=0.7)
+        ax[6].plot(concs[0: 4], lpt_avg[:, i, 1], label="st " + str(i+1), alpha=0.7)
         ax[6].set_title("G2 phase")
-        ax[7].plot(concs[0: 4], bern_lpt[:, i, 0], label="st " + str(i), alpha=0.7)
+        ax[7].plot(concs[0: 4], bern_lpt[:, i, 0], label="st " + str(i+1), alpha=0.7)
         ax[7].set_title("G1 phase")
-        ax[8].plot(concs[0: 4], bern_lpt[:, i, 1], label="st " + str(i), alpha=0.7)
+        ax[8].plot(concs[0: 4], bern_lpt[:, i, 1], label="st " + str(i+1), alpha=0.7)
         ax[8].set_title("G2 phase")
 
     # ylim and ylabel
@@ -113,3 +117,40 @@ def twice(tHMMobj, state):
     phaseLength = g1 + g2
     phase = len(g1) * ["G1"] + len(g2) * ["G2"]
     return state, phaseLength, phase
+
+
+def plot_networkx(num_states, T, drug_name):
+    """ This plots the Transition matrix for each condition. """
+    G = nx.MultiDiGraph()
+    num_states = T.shape[0]
+
+    # node labels
+    labels = {}
+    for i in range(num_states):
+        labels[i] = "state " + str(i + 1)
+    
+    cs = ['lightblue', 'orange', 'lightgreen', 'red']
+
+    # add nodes
+    for i in range(num_states):
+        G.add_node(i, pos=(-2, -2), label=labels[i], style='filled', fillcolor=cs[i])
+
+    # add edges
+    for i in range(num_states):
+        for j in range(num_states):
+            G.add_edge(i, j, penwidth=2 * T[i, j], minlen=1)
+
+    # add graphviz layout options (see https://stackoverflow.com/a/39662097)
+    G.graph['edge'] = {'arrowsize': '0.6', 'splines': 'curved'}
+    G.graph['graph'] = {'scale': '1'}
+
+    # adding attributes to edges in multigraphs is more complicated but see
+    # https://stackoverflow.com/a/26694158
+    for i in range(num_states):
+        G[i][i][0]['color'] = 'black'
+
+    A =  nx.drawing.nx_agraph.to_agraph(G)
+    A.layout('dot')
+    A.draw('lineage/figures/cartoons/' + str(drug_name) + '.svg')
+
+plot_networkx(T_lap.shape[0], T_lap, 'lapatinib')

@@ -48,4 +48,4 @@ testprofile: venv
 	gprof2dot -f pstats --node-thres=5.0 profile | dot -Tsvg -o profile.svg
 
 clean:
-	rm -rf prof output coverage.xml .coverage .coverage* junit.xml coverage.xml profile profile.svg
+	rm -rf prof output coverage.xml .coverage .coverage* junit.xml coverage.xml profile profile.svg lapatinib.svg gemcitabine.svg
