@@ -51,7 +51,8 @@ def makeFigure():
             for j in range(2):
                 bern_gmc[idx, i, j] = gemc_tHMMobj.estimate.E[i].params[j]
 
-        GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_list[idx])
+        gemc_states_plusone = [i+1 for i in gemc_states_list[idx]]
+        GEM_state, GEM_phaseLength, GEM_phase = twice(gemc_tHMMobj, gemc_states_plusone)
         sns.stripplot(x=GEM_state, y=GEM_phaseLength, hue=GEM_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx])
 
         ax[idx].set_title(concs[idx])
@@ -66,13 +67,13 @@ def makeFigure():
 def plot_gemc(ax, gmc_avg, bern_gmc, concs):
 
     for i in range(4):  # gemcitabine that has 4 states
-        ax[5].plot(concs, gmc_avg[:, i, 0], label="st " + str(i), alpha=0.7)
+        ax[5].plot(concs, gmc_avg[:, i, 0], label="st " + str(i+1), alpha=0.7)
         ax[5].set_title("G1 phase")
-        ax[6].plot(concs, gmc_avg[:, i, 1], label="st " + str(i), alpha=0.7)
+        ax[6].plot(concs, gmc_avg[:, i, 1], label="st " + str(i+1), alpha=0.7)
         ax[6].set_title("G2 phase")
-        ax[7].plot(concs, bern_gmc[:, i, 0], label="st " + str(i), alpha=0.7)
+        ax[7].plot(concs, bern_gmc[:, i, 0], label="st " + str(i+1), alpha=0.7)
         ax[7].set_title("G1 phase")
-        ax[8].plot(concs, bern_gmc[:, i, 1], label="st " + str(i), alpha=0.7)
+        ax[8].plot(concs, bern_gmc[:, i, 1], label="st " + str(i+1), alpha=0.7)
         ax[8].set_title("G2 phase")
 
     # ylim and ylabel
