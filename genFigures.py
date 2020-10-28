@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from lineage.figures.figureCommon import overlayCartoon
 import sys
+import os
 import time
 import matplotlib
 import numpy as np
@@ -97,3 +98,6 @@ if __name__ == '__main__':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure12.svg',
                        f'{cartoon_dir}/gemcitabine.svg', 950, 10, scalee=1)
+
+os.remove(f'{cartoon_dir}/lapatinib.svg')
+os.remove(f'{cartoon_dir}/gemcitabine.svg')
