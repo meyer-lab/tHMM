@@ -33,7 +33,7 @@ T_gem = gemc_tHMMobj_list[0].estimate.T
 def makeFigure():
     """ Makes figure 12. """
 
-    ax, f = getSetup((13.2, 6.0), (2, 5))
+    ax, f = getSetup((16, 6.0), (2, 5))
     ax[4].axis("off")
     ax[9].axis("off")
 

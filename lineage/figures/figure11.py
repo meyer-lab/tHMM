@@ -34,7 +34,7 @@ T_lap = lapt_tHMMobj_list[0].estimate.T
 def makeFigure():
     """ Makes figure 11. """
 
-    ax, f = getSetup((13.2, 6.0), (2, 5))
+    ax, f = getSetup((16, 6.0), (2, 5))
     ax[4].axis("off")
     ax[9].axis("off")
 
@@ -128,7 +128,7 @@ def plot_networkx(num_states, T, drug_name):
     for i in range(num_states):
         labels[i] = "state " + str(i + 1)
     
-    cs = ['lighblue', 'orange', 'lightgreen', 'lightred']
+    cs = ['lightblue', 'orange', 'lightgreen', 'red']
 
     # add nodes
     for i in range(num_states):
@@ -137,7 +137,7 @@ def plot_networkx(num_states, T, drug_name):
     # add edges
     for i in range(num_states):
         for j in range(num_states):
-            G.add_edge(i, j, penwidth=2 * [i, j], minlen=1)
+            G.add_edge(i, j, penwidth=2 * T[i, j], minlen=1)
 
     # add graphviz layout options (see https://stackoverflow.com/a/39662097)
     G.graph['edge'] = {'arrowsize': '0.6', 'splines': 'curved'}
