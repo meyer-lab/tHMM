@@ -13,7 +13,7 @@ jobs:
     - name: Setup submodule
       run: git submodule update --init --recursive
     - name: Install dependencies
-      run: make venv
+      run: make venv && . venv/bin/activate; pip install pytest pytest-cov
     - name: Test with pytest
       run: |
         . venv/bin/activate; pytest --cov=lineage --cov-report=xml --cov-config=.github/workflows/coveragerc
