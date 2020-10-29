@@ -4,6 +4,8 @@ import itertools
 import seaborn as sns
 import networkx as nx
 import pygraphviz
+from string import ascii_lowercase
+
 
 from ..Analyze import Analyze_list
 from ..tHMM import tHMM
@@ -30,22 +32,24 @@ for population in data:
 lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data, 3, fpi=True)
 T_lap = lapt_tHMMobj_list[0].estimate.T
 
-
+num_states = 3
 def makeFigure():
     """ Makes figure 11. """
 
     ax, f = getSetup((16, 6.0), (2, 5))
     ax[4].axis("off")
     ax[9].axis("off")
+    ax[4].text(-0.2, 1.25, ascii_lowercase[8], transform=ax[4].transAxes, fontsize=16, fontweight="bold", va="top")
+
 
     # lapatinib
-    lpt_avg = np.zeros((4, 3, 2))  # the avg lifetime: num_conc x num_states x num_phases
-    bern_lpt = np.zeros((4, 3, 2))  # bernoulli
+    lpt_avg = np.zeros((4, num_states, 2))  # the avg lifetime: num_conc x num_states x num_phases
+    bern_lpt = np.zeros((4, num_states, 2))  # bernoulli
     # print parameters and estimated values
     print("for Lapatinib: \n the \u03C0: ", lapt_tHMMobj_list[0].estimate.pi, "\n the transition matrix: ", lapt_tHMMobj_list[0].estimate.T)
 
     for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):  # for each concentration data
-        for i in range(3):
+        for i in range(num_states):
             lpt_avg[idx, i, 0] = 1 / (lapt_tHMMobj.estimate.E[i].params[2] * lapt_tHMMobj.estimate.E[i].params[3])  # G1
             lpt_avg[idx, i, 1] = 1 / (lapt_tHMMobj.estimate.E[i].params[4] * lapt_tHMMobj.estimate.E[i].params[5])  # G2
             # bernoullis
@@ -129,7 +133,7 @@ def plot_networkx(num_states, T, drug_name):
     for i in range(num_states):
         labels[i] = "state " + str(i + 1)
     
-    cs = ['lightblue', 'orange', 'lightgreen', 'red']
+    cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple']
 
     # add nodes
     for i in range(num_states):
