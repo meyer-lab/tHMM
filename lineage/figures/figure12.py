@@ -2,6 +2,8 @@
 import numpy as np
 import itertools
 import seaborn as sns
+from string import ascii_lowercase
+
 
 from ..Analyze import Analyze_list
 from ..tHMM import tHMM
@@ -38,6 +40,7 @@ def makeFigure():
     ax, f = getSetup((16, 6.0), (2, 5))
     ax[4].axis("off")
     ax[9].axis("off")
+    ax[4].text(-0.2, 1.25, ascii_lowercase[8], transform=ax[4].transAxes, fontsize=16, fontweight="bold", va="top")
 
     # gemcitabine
     gmc_avg = np.zeros((4, num_states, 2))  # avg lifetime gmc: num_conc x num_states x num_phases
