@@ -27,7 +27,8 @@ for population in data:
             E.G1.const_shape = constant_shape[0]
             E.G2.const_shape = constant_shape[1]
 
-gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(data, 4, fpi=True)
+num_states = 3
+gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(data, num_states, fpi=True)
 T_gem = gemc_tHMMobj_list[0].estimate.T
 
 def makeFigure():
@@ -38,13 +39,13 @@ def makeFigure():
     ax[9].axis("off")
 
     # gemcitabine
-    gmc_avg = np.zeros((4, 4, 2))  # avg lifetime gmc: num_conc x num_states x num_phases
-    bern_gmc = np.zeros((4, 4, 2))  # bernoulli
+    gmc_avg = np.zeros((4, num_states, 2))  # avg lifetime gmc: num_conc x num_states x num_phases
+    bern_gmc = np.zeros((4, num_states, 2))  # bernoulli
     # print parameters and estimated values
     print("for Gemcitabine: \n the \u03C0: ", gemc_tHMMobj_list[0].estimate.pi, " \n the transition matrix: ", gemc_tHMMobj_list[0].estimate.T)
 
     for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
-        for i in range(4):
+        for i in range(num_states):
             gmc_avg[idx, i, 0] = 1 / (gemc_tHMMobj.estimate.E[i].params[2] * gemc_tHMMobj.estimate.E[i].params[3])
             gmc_avg[idx, i, 1] = 1 / (gemc_tHMMobj.estimate.E[i].params[4] * gemc_tHMMobj.estimate.E[i].params[5])
             # bernoulli
@@ -66,7 +67,7 @@ def makeFigure():
 
 def plot_gemc(ax, gmc_avg, bern_gmc, concs):
 
-    for i in range(4):  # gemcitabine that has 4 states
+    for i in range(num_states):  # gemcitabine that has 3 states
         ax[5].plot(concs, gmc_avg[:, i, 0], label="st " + str(i+1), alpha=0.7)
         ax[5].set_title("G1 phase")
         ax[6].plot(concs, gmc_avg[:, i, 1], label="st " + str(i+1), alpha=0.7)
