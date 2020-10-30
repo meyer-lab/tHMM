@@ -10,7 +10,7 @@ jobs:
     - name: Cache references
       uses: actions/cache@v2
       with:
-        path: ~/cache
+        path: cache
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Install dependencies
       run: |
