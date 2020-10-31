@@ -33,6 +33,8 @@ lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data, 3, fpi=True)
 T_lap = lapt_tHMMobj_list[0].estimate.T
 
 num_states = 3
+
+
 def makeFigure():
     """ Makes figure 11. """
 
@@ -40,7 +42,6 @@ def makeFigure():
     ax[4].axis("off")
     ax[9].axis("off")
     ax[4].text(-0.2, 1.25, ascii_lowercase[8], transform=ax[4].transAxes, fontsize=16, fontweight="bold", va="top")
-
 
     # lapatinib
     lpt_avg = np.zeros((4, num_states, 2))  # the avg lifetime: num_conc x num_states x num_phases
@@ -132,7 +133,7 @@ def plot_networkx(num_states, T, drug_name):
     labels = {}
     for i in range(num_states):
         labels[i] = "state " + str(i + 1)
-    
+
     cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple']
 
     # add nodes
