@@ -91,7 +91,7 @@ def plotting(ax, lpt_avg, bern_lpt, concs):
 
     # ylim and ylabel
     for i in range(7, 9):
-        ax[i].set_ylabel("death. rate")
+        ax[i].set_ylabel("death rate")
         ax[i].set_ylim([0, 1.05])
 
     # legend and xlabel
