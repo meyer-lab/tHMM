@@ -115,8 +115,8 @@ def negative_LL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
 
 
 def negative_LL_sep_atonce(scales, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
-    uncens = np.sum([np.dot(uncens_gammas[i], sp.gamma.logpdf(uncens_obs[i], a=a, scale=scale)) for scale in scales])
-    cens = np.sum([np.dot(cens_gammas[i], sc.gammaincc(a, cens_obs[i] / scale)) for scale in scales])
+    uncens = np.sum([np.dot(uncens_gammas[i], sp.gamma.logpdf(uncens_obs[i], a=a, scale=scale)) for i, scale in enumerate(scales)])
+    cens = np.sum([np.dot(cens_gammas[i], sc.gammaincc(a, cens_obs[i] / scale)) for i, scale in enumerate(scales)])
     return -1 * (uncens + cens)
 
 
