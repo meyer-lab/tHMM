@@ -2,10 +2,10 @@
 
 import math
 import numpy as np
+import itertools as it
 import scipy.stats as sp
 import scipy.special as sc
 from scipy.optimize import toms748, minimize
-import itertools.chain as it
 
 
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
@@ -168,7 +168,7 @@ def gamma_estimator_atonce(gamma_obs_list, time_cen_list, list_gammas, constant_
         gammas_list.append(gammas)
 
     # If nothing is censored
-    if np.all(list(it(*time_cen_list)) == 1):
+    if np.all(list(it.chain(*time_cen_list)) == 1):
         return gamma_uncensored_atonce(gamma_obs_list, gammas_list, constant_shape)
 
     for i, gammas in enumerate(gammas_list):
