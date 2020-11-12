@@ -192,6 +192,7 @@ def time_censor(cell, desired_experiment_time):
 
 def atonce_estimator(x_list, gammas_list, x0):
     """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
+
     # unzipping the list of tuples
     x_data = []
     for x in x_list:
