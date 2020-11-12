@@ -159,7 +159,6 @@ class StateDistribution:
                         output_lineage.append(cell)
         return output_lineage
 
-
 def fate_censor(cell):
     """
     User-defined function that checks whether a cell's subtree should be removed.
@@ -191,54 +190,44 @@ def time_censor(cell, desired_experiment_time):
             cell.left.observed = False
             cell.right.observed = False
 
-class StateDistAll:
-    """ The class of state distribution objects. """
-    def __init__(self, dists, shape=None):
-        """ Init function. """
-        self.bern_params = [dist.params[0] for dist in dists]
-        self.gamma_shape_params = [dist.params[1] for dist in dists]
-        self.gamma_scale_params = [dist.params[2] for dist in dists]
-        self.const_shape = shape
+def atonce_estimator(x_list, gammas_list, x0):
+    """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
+    # unzipping the list of tuples
+    x_data = []
+    for x in x_list:
+        x_data.append(np.array(x))
 
-    def estimator(self, x_list, gammas_list):
-        """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
-        # unzipping the list of tuples
-        x_data = []
-        for x in x_list:
-            x_data.append(np.array(x))
+    # getting the observations as individual lists
+    # {
+    bern_obs = [x[:, 0].astype('bool') for x in x_data]
+    γ_obs = [x[:, 1] for x in x_data]
+    gamma_obs_censor = [x[:, 2] for x in x_data]
 
-        # getting the observations as individual lists
-        # {
-        bern_obs = [x[:, 0].astype('bool') for x in x_data]
-        γ_obs = [x[:, 1] for x in x_data]
-        gamma_obs_censor = [x[:, 2] for x in x_data]
+    b_mask_list = [np.isfinite(berns) for berns in bern_obs]
+    # Both unoberved and dead cells should be removed from gamma
+    g_masks = [np.logical_and(np.isfinite(γ_o), berns) for γ_o, berns in zip(γ_obs, bern_obs)]
+    for g_mask in g_masks:
+        assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
-        b_mask_list = [np.isfinite(berns) for berns in bern_obs]
-        # Both unoberved and dead cells should be removed from gamma
-        g_masks = [np.logical_and(np.isfinite(γ_o), berns) for γ_o, berns in zip(γ_obs, bern_obs)]
-        for g_mask in g_masks:
-            assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
+    # Handle an empty state
+    bern_params = np.zeros(len(gammas_list))
+    for i, gammas in enumerate(gammas_list):
+        if np.sum(gammas[b_mask_list[i]]) == 0.0:
+            bern_params[i] = np.average(bern_obs[i][b_mask_list[i]])
+        else:
+            bern_params[i] = np.average(bern_obs[i][b_mask_list[i]], weights=gammas[b_mask_list[i]])
 
-        # Handle an empty state
-        for i, gammas in enumerate(gammas_list):
-            if np.sum(gammas[b_mask_list[i]]) == 0.0:
-                self.bern_params[i] = np.average(bern_obs[i][b_mask_list[i]])
-            else:
-                self.bern_params[i] = np.average(bern_obs[i][b_mask_list[i]], weights=gammas[b_mask_list[i]])
+    # Don't allow Bernoulli to hit extremes
+    for i in range(bern_params.shape[0]):
+        bern_params[i] = np.clip(bern_params[i], 0.00001, 0.99999)
 
-        # Don't allow Bernoulli to hit extremes
-        for i in range(len(self.bern_params)):
-            self.bern_params[i] = np.clip(self.bern_params[i], 0.00001, 0.99999)
+    γ_obs_total = []
+    γ_obs_total_censored = []
+    gammas_total = []
+    for i, g_mask in enumerate(g_masks):
+        γ_obs_total.append(γ_obs[i][g_mask])
+        γ_obs_total_censored.append(gamma_obs_censor[i][g_mask])
+        gammas_total.append(gammas_list[i][g_mask])
 
-        γ_obs_total = []
-        γ_obs_total_censored = []
-        gammas_total = []
-        for i, g_mask in enumerate(g_masks):
-            γ_obs_total.append(γ_obs[i][g_mask])
-            γ_obs_total_censored.append(gamma_obs_censor[i][g_mask])
-            gammas_total.append(gammas_list[i][g_mask])
+    output = gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total, self.const_shape, [self.const_shape, self.gamma_scale_params])
 
-        output = gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total, self.const_shape, [self.const_shape, self.gamma_scale_params])
-        for i in range(len(γ_obs)):
-            self.gamma_shape_params[i] = output[0]
-            self.gamma_scale_params[i] = output[i+1]

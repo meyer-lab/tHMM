@@ -137,17 +137,6 @@ class tHMM:
             log_scores.append(log_score)
         return log_scores
 
-class AllObjs:
-    """ A class for accumulating all tHMM objects. """
-    def __init__(self, object_lists):
-        """ The initialization. """
-        self.pi = object_lists[0].estimate.pi
-        self.T = object_lists[0].estimate.T
-        self.num_states = object_lists[0].num_states
-        self.EL = [get_Emission_Likelihoods(thmmObj) for thmmObj in object_lists] # a list of emission likelihoods
-
-        self.E = [StateDistAll([distObj.E[0] for distObj in object_lists]) for _ in range(self.num_states)]
-
 
 def log_T_score(T, state_tree_sequence, lineageObj):
     """
@@ -182,6 +171,17 @@ def log_E_score(EL_array, state_tree_sequence):
     for idx, row in enumerate(log_EL_array):
         log_E_score_holder += row[state_tree_sequence[idx]]
     return log_E_score_holder
+
+def accm_objs(tHMMobj_list):
+    """ accumulates all the cells from different concentrations. """
+    # gather all the cells
+    all_cells = []
+    for objects in tHMMobj_list:
+        all_cells.append(objects.X)
+
+    # gather all the gammas
+    MSD_list, NF_list, betas_list, gammas_list, new_LL = fit_list(tHMMobj_list)
+    return gammas_list, all_cells
 
 
 def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):

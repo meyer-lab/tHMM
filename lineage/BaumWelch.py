@@ -14,8 +14,6 @@ from .DownwardRecursion import (
     sum_nonleaf_gammas,
 )
 
-from .states.StateDistributionGamma import StateDistAll
-from .tHMM import AllObjs
 
 def do_E_step(tHMMobj):
     """
@@ -134,37 +132,17 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
     return T_estimate
 
 
-def do_M_E_step(tHMMobjs, gammas):
+def do_M_E_step(tHMMobj, gammas):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
     Does the parameter estimation for the E
     Emissions matrix (state probabilistic distributions).
     """
-    if not isinstance(tHMMobjs, list):
-        all_cells = [cell.obs for lineage in tHMMobjs.X for cell in lineage.output_lineage]
-        all_gammas = np.vstack(gammas)
-        for state_j in range(tHMMobjs.num_states):
-            tHMMobjs.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
-    else:
-        cells = []
-        gamas = []
-        # gather all observations and gammas from different concentrations and append.
-        for i, tHMMobj in enumerate(tHMMobjs):
-            all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
-            all_gammas = np.vstack(gammas[i])
-            cells.append(all_cells)
-            gamas.append(all_gammas)
-
-        tHMMobj_total = AllObjs(tHMMobjs)
-        
-        for state_j in range(tHMMobj_total.num_states):
-            tHMMobj_total.E[state_j].estimator(cells, np.asarray(gamas)[:, state_j, :])
-
-        for i, tHMMobj in enumerate(tHMMobjs):
-            for state_j in range(tHMMobj.num_states):
-                tHMMobj.estimate.E[state_j].params = [tHMMobj_total.E[state_j].bern_params[i], tHMMobj_total.E[state_j].gamma_shape_params[i], tHMMobj_total.E[state_j].gamma_scale_params[i]]
-
+    all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+    all_gammas = np.vstack(gammas)
+    for state_j in range(tHMMobj.num_states):
+        tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     """
