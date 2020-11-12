@@ -142,26 +142,28 @@ def do_M_E_step(tHMMobjs, gammas):
     Emissions matrix (state probabilistic distributions).
     """
     if not isinstance(tHMMobjs, list):
-        tHMMobjs = [tHMMobjs]
-        gammas = [gammas]
-    cells = []
-    gamas = []
-    for i, tHMMobj in enumerate(tHMMobjs):
         all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
-        all_gammas = np.vstack(gammas[i])
-        cells.append(all_cells)
-        gamas.append(all_gammas)
+        all_gammas = np.vstack(gammas)
+        for state_j in range(tHMMobj.num_states):
+            tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
+    else:
+        cells = []
+        gamas = []
+        # gather all observations and gammas from different concentrations and append.
+        for i, tHMMobj in enumerate(tHMMobjs):
+            all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+            all_gammas = np.vstack(gammas[i])
+            cells.append(all_cells)
+            gamas.append(all_gammas)
 
-    tHMMobj_total = AllObjs(tHMMobjs)
-    new_gammas = []
-    tmp = []
-    for g in gamas:
-        for state_j in tHMMobj_total.num_states:
-            tmp.append(g[:, state_j])
-        new_gammas.append(tmp)
-    
-    for state_j in range(tHMMobj_total.num_states):
-        tHMMobj_total.E[state_j].estimator(cells, np.asarray(new_gammas)[:, state_j, :])
+        tHMMobj_total = AllObjs(tHMMobjs)
+        
+        for state_j in range(tHMMobj_total.num_states):
+            tHMMobj_total.E[state_j].estimator(cells, np.asarray(gamas)[:, state_j, :])
+
+        for i, tHMMobj in enumerate(tHMMobjs):
+            for state_j in range(tHMMobj.num_states):
+                tHMMobj.estimate.E[state_j].params = [tHMMobj_total.E[state_j].bern_params[i], tHMMobj_total.E[state_j].gamma_shape_params[i], tHMMobj_total.E[state_j].gamma_scale_params[i]]
 
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
