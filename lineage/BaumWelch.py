@@ -142,10 +142,10 @@ def do_M_E_step(tHMMobjs, gammas):
     Emissions matrix (state probabilistic distributions).
     """
     if not isinstance(tHMMobjs, list):
-        all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+        all_cells = [cell.obs for lineage in tHMMobjs.X for cell in lineage.output_lineage]
         all_gammas = np.vstack(gammas)
-        for state_j in range(tHMMobj.num_states):
-            tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
+        for state_j in range(tHMMobjs.num_states):
+            tHMMobjs.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
     else:
         cells = []
         gamas = []
