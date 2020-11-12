@@ -180,7 +180,7 @@ def accm_objs(tHMMobj_list):
 
     # gather all the gammas
     MSD_list, NF_list, betas_list, gammas_list, new_LL = fit_list(tHMMobj_list)
-    return gammas_list, all_cells
+    return MSD_list, NF_list, betas_list, gammas_list, new_LL, all_cells
 
 
 def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):

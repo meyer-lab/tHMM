@@ -5,16 +5,24 @@ import numpy as np
 import itertools as it
 import scipy.stats as sp
 import scipy.special as sc
-from scipy.optimize import toms748, minimize
+from scipy.optimize import toms748, minimize, LinearConstraint
 
 
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     return negative_LL_sep(x[1], x[0], uncens_obs, uncens_gammas, cens_obs, cens_gammas)
 
+def negative_LL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
+    return negative_LL_sep(x[1:4], x[0], uncens_obs, uncens_gammas, cens_obs, cens_gammas)
+
 
 def negative_LL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     uncens = np.dot(uncens_gammas, sp.gamma.logpdf(uncens_obs, a=a, scale=scale))
     cens = np.dot(cens_gammas, sc.gammaincc(a, cens_obs / scale))
+    return -1 * (uncens + cens)
+
+def negative_LL_sep_atonce(scales, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
+    uncens = np.sum([np.dot(uncens_gammas[i], sp.gamma.logpdf(uncens_obs[i], a=a, scale=scale)) for i, scale in enumerate(scales)])
+    cens = np.sum([np.dot(cens_gammas[i], sc.gammaincc(a, cens_obs[i] / scale)) for i, scale in enumerate(scales)])
     return -1 * (uncens + cens)
 
 
@@ -76,6 +84,51 @@ def gamma_estimator(gamma_obs, time_cen, gammas, constant_shape, x0):
 
     return xOut
 
+def gamma_estimator_atonce(gamma_obs, time_cen, gamas, constant_shape):
+    """
+    This is a weighted, closed-form estimator for two parameters
+    of the Gamma distribution.
+    """
+    gammas = []
+    # Handle no observations
+    for gamma in gamas:
+        if np.sum(gamma) == 0.0:
+            gammas.append(np.ones_like(gamma))
+        else:
+            gammas.append(gamma)
+
+    for i, gamma in enumerate(gammas):
+        assert gamma.shape[0] == gamma_obs[i].shape[0]
+    arg1 = []
+    arg2 = []
+    arg3 = []
+    arg4 = []
+    for i in range(len(gamma_obs)):
+        arg1.append(gamma_obs[i][time_cen[i] == 1])
+        arg2.append(gammas[i][time_cen[i] == 1])
+        arg3.append(gamma_obs[i][time_cen[i] == 0])
+        arg4.append(gammas[i][time_cen[i] == 0])
+    arrgs = (arg1, arg2, arg3, arg4)
+    opt = {'gtol': 1e-12, 'ftol': 1e-12}
+
+    if constant_shape is None:
+        A = np.array([[0, 1, -1, 0], [0, 0, 1, -1], [0, 1, 0, -1]])
+        b = np.array([0, 0, 0])
+        bnds = [(1.0, 800.0) for _ in range(A.shape[1])] 
+        cons = [{"type": "ineq", "fun": lambda x: A @ x - b}]
+        res = minimize(fun=negative_LL, jac="3-point", x0=[1.0, 0.0, 0.0, 0.0], bounds=bnds, constraints=cons, args=arrgs, options=opt)
+        xOut = res.x
+    else:
+        A = np.array([[1, -1, 0], [0, 1, -1], [1, 0, -1]])
+        b = np.array([0, 0, 0])
+        bnds = [(0.0, 24.0) for _ in range(A.shape[1])]
+        cons = [{"type": "ineq", "fun": lambda x: A @ x - b}]
+        arrgs = (constant_shape, *arrgs)
+        res = minimize(fun=negative_LL_sep, jac="3-point", x0=[0.0, 0.0, 0.0], bounds=bnds, args=arrgs, options=opt)
+        xOut = [constant_shape, res.x]
+
+    return xOut
+
 
 def get_experiment_time(lineageObj):
     """
@@ -106,3 +159,4 @@ def basic_censor(cell):
             if not cell.get_sister().isLeafBecauseTerminal():
                 cell.get_sister().left.observed = False
                 cell.get_sister().right.observed = False
+
