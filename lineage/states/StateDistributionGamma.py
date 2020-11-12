@@ -2,7 +2,7 @@
 import numpy as np
 import scipy.stats as sp
 
-from .stateCommon import gamma_estimator, gamma_estimator_atonce, basic_censor
+from .stateCommon import gamma_estimator, basic_censor
 from ..CellVar import Time
 
 
@@ -228,6 +228,4 @@ def atonce_estimator(x_list, gammas_list, x0):
         γ_obs_total.append(γ_obs[i][g_mask])
         γ_obs_total_censored.append(gamma_obs_censor[i][g_mask])
         gammas_total.append(gammas_list[i][g_mask])
-
-    output = gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total, self.const_shape, [self.const_shape, self.gamma_scale_params])
 
