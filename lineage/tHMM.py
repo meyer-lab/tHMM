@@ -176,11 +176,11 @@ def accm_objs(tHMMobj_list):
     # gather all the cells
     all_cells = []
     for objects in tHMMobj_list:
-        all_cells.append(objects.X)
+        all_cells.append([cell.obs for cell in objects.X.output_lineage])
 
     # gather all the gammas
-    MSD_list, NF_list, betas_list, gammas_list, new_LL = fit_list(tHMMobj_list)
-    return MSD_list, NF_list, betas_list, gammas_list, new_LL, all_cells
+    _, _, _, gammas_list, _ = fit_list(tHMMobj_list)
+    return all_cells, gammas_list
 
 
 def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
