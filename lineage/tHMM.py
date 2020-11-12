@@ -7,6 +7,7 @@ import scipy.stats as sp
 from .UpwardRecursion import get_Emission_Likelihoods
 from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
+from .states.StateDistributionGamma import StateDistAll
 
 
 class estimate:
@@ -157,6 +158,17 @@ def log_T_score(T, state_tree_sequence, lineageObj):
                     daughter_state = state_tree_sequence[child_idx]
                     log_T_score_holder += log_T[cell_state, daughter_state]
     return log_T_score_holder
+
+class AllObjs:
+    """ A class for accumulating all tHMM objects. """
+    def __init__(self, object_lists):
+        """ The initialization. """
+        self.pi = object_lists[0].estimate.pi
+        self.T = object_lists[0].estimate.T
+        self.num_states = object_lists[0].num_states
+        self.EL = [get_Emission_Likelihoods(thmmObj) for thmmObj in object_lists] # a list of emission likelihoods
+
+        self.E = [StateDistAll([distObj.E[0] for distObj in object_lists]) for _ in range(self.num_states)]
 
 
 def log_E_score(EL_array, state_tree_sequence):

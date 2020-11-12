@@ -14,6 +14,8 @@ from .DownwardRecursion import (
     sum_nonleaf_gammas,
 )
 
+from .states.StateDistributionGamma import StateDistAll
+from .tHMM import AllObjs
 
 def do_E_step(tHMMobj):
     """
@@ -132,17 +134,34 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
     return T_estimate
 
 
-def do_M_E_step(tHMMobj, gammas):
+def do_M_E_step(tHMMobjs, gammas):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
     Does the parameter estimation for the E
     Emissions matrix (state probabilistic distributions).
     """
-    all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
-    all_gammas = np.vstack(gammas)
-    for state_j in range(tHMMobj.num_states):
-        tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
+    if not isinstance(tHMMobjs, list):
+        tHMMobjs = [tHMMobjs]
+        gammas = [gammas]
+    cells = []
+    gamas = []
+    for i, tHMMobj in enumerate(tHMMobjs):
+        all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+        all_gammas = np.vstack(gammas[i])
+        cells.append(all_cells)
+        gamas.append(all_gammas)
+
+    tHMMobj_total = AllObjs(tHMMobjs)
+    new_gammas = []
+    tmp = []
+    for g in gamas:
+        for state_j in tHMMobj_total.num_states:
+            tmp.append(g[:, state_j])
+        new_gammas.append(tmp)
+    
+    for state_j in range(tHMMobj_total.num_states):
+        tHMMobj_total.E[state_j].estimator(cells, np.asarray(new_gammas)[:, state_j, :])
 
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):

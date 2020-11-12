@@ -190,5 +190,5 @@ def gamma_estimator_atonce(gamma_obs_list, time_cen_list, list_gammas, constant_
         arg3.append(gamma_obs_list[i][time_cen_list[i] == 0])
         arg4.append(gammas_list[i][time_cen_list[i] == 0])
     arrgs = (arg1, arg2, arg3, arg4)
-    res = minimize(fun=negative_LL_atonce, jac="3-point", x0=x0, bounds=((bnd, ) * 7), args=arrgs, options=opt)
+    res = minimize(fun=negative_LL_atonce, jac="3-point", x0=x0, bounds=((bnd, ) * 4), args=arrgs, options=opt)
     return res.x
