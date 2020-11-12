@@ -11,7 +11,7 @@ class StateDistribution:
     StateDistribution for cells with gamma distributed times.
     """
 
-    def __init__(self, bern_p=0., gamma_a=7, gamma_scale=4.5, shape=None):
+    def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=4.5, shape=None):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.params = np.array([bern_p, gamma_a, gamma_scale])
         self.const_shape = shape
