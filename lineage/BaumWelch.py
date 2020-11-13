@@ -14,6 +14,7 @@ from .DownwardRecursion import (
     sum_nonleaf_gammas,
 )
 
+from .states.StateDistributionGamma import atonce_estimator
 
 def do_E_step(tHMMobj):
     """
@@ -143,6 +144,11 @@ def do_M_E_step(tHMMobj, gammas):
     all_gammas = np.vstack(gammas)
     for state_j in range(tHMMobj.num_states):
         tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
+
+def do_M_E_step_atonce(all_tHMMobj, all_cells, all_gammas):
+    """ perform the M_E step when all the concentrations are given at once. """
+    output = atonce_estimator(all_cells, all_gammas, all_tHMMobj[0].E[0].const_shape)
+
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     """

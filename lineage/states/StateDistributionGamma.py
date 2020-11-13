@@ -2,7 +2,7 @@
 import numpy as np
 import scipy.stats as sp
 
-from .stateCommon import gamma_estimator, basic_censor
+from .stateCommon import gamma_estimator, gamma_estimator_atonce, basic_censor
 from ..CellVar import Time
 
 
@@ -190,7 +190,7 @@ def time_censor(cell, desired_experiment_time):
             cell.left.observed = False
             cell.right.observed = False
 
-def atonce_estimator(x_list, gammas_list, x0):
+def atonce_estimator(x_list, gammas_list, constant_shape):
     """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
 
     # unzipping the list of tuples
@@ -229,4 +229,6 @@ def atonce_estimator(x_list, gammas_list, x0):
         γ_obs_total.append(γ_obs[i][g_mask])
         γ_obs_total_censored.append(gamma_obs_censor[i][g_mask])
         gammas_total.append(gammas_list[i][g_mask])
+
+    return gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total, constant_shape)
 

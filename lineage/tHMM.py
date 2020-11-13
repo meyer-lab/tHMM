@@ -173,7 +173,7 @@ def log_E_score(EL_array, state_tree_sequence):
 
 def accm_objs(tHMMobj_list):
     """ accumulates all the cells from different concentrations. """
-    # gather all the cells
+    # gather all the cells' observations
     all_cells = []
     for objects in tHMMobj_list:
         all_cells.append([cell.obs for cell in objects.X.output_lineage])
