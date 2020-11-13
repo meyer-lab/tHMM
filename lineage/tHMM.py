@@ -183,19 +183,21 @@ def accm_objs(tHMMobj_list):
     return all_cells, gammas_list
 
 
-def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
+def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000, yn=False):
     """Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations"""
 
     # Step 0: initialize with random assignments and do an M step
     # when there are no fixed emissions, we need to randomize the start
-    for _, tHMM in enumerate(tHMMobj_list):
-        init_gammas = [sp.multinomial.rvs(n=1, p=[1. / tHMM.num_states] * tHMM.num_states, size=len(lineage))
-                       for lineage in tHMM.X]
+    if yn is True:
+        all_cells, all_gammas = accm_objs(tHMMobj_list)
+        do_M_E_step_atonce(tHMMobj_list, all_cells, all_gammas)
+    else:
+        for _, tHMM in enumerate(tHMMobj_list):
+            init_gammas = [sp.multinomial.rvs(n=1, p=[1. / tHMM.num_states] * tHMM.num_states, size=len(lineage))
+                        for lineage in tHMM.X]
 
-        do_M_E_step(tHMM, init_gammas)
+            do_M_E_step(tHMM, init_gammas)
 
-    all_cells, all_gammas = accm_objs(tHMMobj_list)
-    do_M_E_step_atonce(tHMMobj_list, all_cells, all_gammas)
     # Step 1: first E step
     MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
     old_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
