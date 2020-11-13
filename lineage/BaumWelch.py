@@ -56,6 +56,7 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
     The individual parameter estimations are performed in
     separate functions.
     """
+    single=True
     if not isinstance(tHMMobj, list):
         single = True
         tHMMobj = [tHMMobj]
@@ -152,13 +153,17 @@ def do_M_E_step(tHMMobj, gammas):
 
 def do_M_E_step_atonce(all_tHMMobj, all_gammas):
     """ perform the M_E step when all the concentrations are given at once. """
-    gms = [[gamma[:, st_j] for gamma in all_gammas] for st_j in all_tHMMobj[0].num_states]
-    # gather all the cells' observations
+    gms = []
     all_cells = []
-    for objects in all_tHMMobj:
-        all_cells.append([cell.obs for cell in objects.X.output_lineage])
+    # gather all gammas from different concentrations and append.
+    for i, tHMMobj in enumerate(all_tHMMobj):
+        all_gms = np.vstack(all_gammas[i])
+        gms.append(all_gms)
+        all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+    temp = np.asarray(gms)
+    gama = temp.reshape(temp.shape[0], temp.shape[2], temp.shape[1])
     for state_j in range(all_tHMMobj[0].num_states):
-        output = atonce_estimator(all_cells, gms[state_j], all_tHMMobj[0].E[0].const_shape)
+        output = atonce_estimator(all_cells, gama[state_j], all_tHMMobj[0].estimate.E[0].const_shape)
         for i, tHMMobj in enumerate(all_tHMMobj):
             tHMMobj.estimate.E[state_j].params[1] = output[0]
             tHMMobj.estimate.E[state_j].params[2] = output[i+1]
