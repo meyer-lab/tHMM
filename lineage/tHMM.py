@@ -5,7 +5,7 @@ import numpy as np
 import scipy.stats as sp
 
 from .UpwardRecursion import get_Emission_Likelihoods
-from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step
+from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step, do_M_E_step_atonce
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 
 
@@ -194,6 +194,8 @@ def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
 
         do_M_E_step(tHMM, init_gammas)
 
+    all_cells, all_gammas = accm_objs(tHMMobj_list)
+    do_M_E_step_atonce(tHMMobj_list, all_cells, all_gammas)
     # Step 1: first E step
     MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
     old_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
