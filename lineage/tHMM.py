@@ -171,32 +171,22 @@ def log_E_score(EL_array, state_tree_sequence):
         log_E_score_holder += row[state_tree_sequence[idx]]
     return log_E_score_holder
 
-def accm_objs(tHMMobj_list):
-    """ accumulates all the cells from different concentrations. """
-    # gather all the cells' observations
-    all_cells = []
-    for objects in tHMMobj_list:
-        all_cells.append([cell.obs for cell in objects.X.output_lineage])
-
-    # gather all the gammas
-    _, _, _, gammas_list, _ = fit_list(tHMMobj_list)
-    return all_cells, gammas_list
-
 
 def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000, yn=False):
     """Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations"""
 
     # Step 0: initialize with random assignments and do an M step
     # when there are no fixed emissions, we need to randomize the start
-    if yn is True:
-        all_cells, all_gammas = accm_objs(tHMMobj_list)
-        do_M_E_step_atonce(tHMMobj_list, all_cells, all_gammas)
-    else:
-        for _, tHMM in enumerate(tHMMobj_list):
-            init_gammas = [sp.multinomial.rvs(n=1, p=[1. / tHMM.num_states] * tHMM.num_states, size=len(lineage))
+    init_all_gammas = []
+    for _, tHMM in enumerate(tHMMobj_list):
+        init_gammas = [sp.multinomial.rvs(n=1, p=[1. / tHMM.num_states] * tHMM.num_states, size=len(lineage))
                         for lineage in tHMM.X]
-
-            do_M_E_step(tHMM, init_gammas)
+        init_all_gammas.append(init_gammas)
+    if yn is True:
+        do_M_E_step_atonce(tHMMobj_list, init_all_gammas)
+    else:
+        for i, tHMM in enumerate(tHMMobj_list):
+            do_M_E_step(tHMM, init_all_gammas[i])
 
     # Step 1: first E step
     MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
