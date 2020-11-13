@@ -157,7 +157,7 @@ def do_M_E_step_atonce(all_tHMMobj, all_gammas):
     for i, tHMMobj in enumerate(all_tHMMobj):
         all_gms = np.vstack(all_gammas[i])
         gms.append(all_gms)
-        all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+        all_cells.append([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
 
     final_gm = []
     for j in range(all_tHMMobj[0].num_states):
@@ -167,7 +167,7 @@ def do_M_E_step_atonce(all_tHMMobj, all_gammas):
         final_gm.append(tmp1)
 
     for state_j in range(all_tHMMobj[0].num_states):
-        output = atonce_estimator(all_cells, final_gm[state_j], all_tHMMobj[0].estimate.E[0].const_shape)
+        output = atonce_estimator(all_cells, final_gm[state_j])
         for i, tHMMobj in enumerate(all_tHMMobj):
             tHMMobj.estimate.E[state_j].params[1] = output[0]
             tHMMobj.estimate.E[state_j].params[2] = output[i+1]

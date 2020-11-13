@@ -12,7 +12,7 @@ def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     return negative_LL_sep(x[1], x[0], uncens_obs, uncens_gammas, cens_obs, cens_gammas)
 
 def negative_LL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
-    return negative_LL_sep(x[1:4], x[0], uncens_obs, uncens_gammas, cens_obs, cens_gammas)
+    return negative_LL_sep_atonce(x[1:4], x[0], uncens_obs, uncens_gammas, cens_obs, cens_gammas)
 
 
 def negative_LL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
@@ -84,7 +84,7 @@ def gamma_estimator(gamma_obs, time_cen, gammas, constant_shape, x0):
 
     return xOut
 
-def gamma_estimator_atonce(gamma_obs, time_cen, gamas, constant_shape):
+def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution.
@@ -111,21 +111,12 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, constant_shape):
     arrgs = (arg1, arg2, arg3, arg4)
     opt = {'gtol': 1e-12, 'ftol': 1e-12}
 
-    if constant_shape is None:
-        A = np.array([[0, 1, -1, 0], [0, 0, 1, -1], [0, 1, 0, -1]])
-        b = np.array([0, 0, 0])
-        bnds = [(1.0, 800.0) for _ in range(A.shape[1])] 
-        cons = [{"type": "ineq", "fun": lambda x: A @ x - b}]
-        res = minimize(fun=negative_LL, jac="3-point", x0=[1.0, 0.0, 0.0, 0.0], bounds=bnds, constraints=cons, args=arrgs, options=opt)
-        xOut = res.x
-    else:
-        A = np.array([[1, -1, 0], [0, 1, -1], [1, 0, -1]])
-        b = np.array([0, 0, 0])
-        bnds = [(0.0, 24.0) for _ in range(A.shape[1])]
-        cons = [{"type": "ineq", "fun": lambda x: A @ x - b}]
-        arrgs = (constant_shape, *arrgs)
-        res = minimize(fun=negative_LL_sep, jac="3-point", x0=[0.0, 0.0, 0.0], bounds=bnds, args=arrgs, options=opt)
-        xOut = [constant_shape, res.x]
+    A = np.array([[0, 1, -1, 0, 0], [0, 1, 0, -1, 0], [0, 1, 0, 0, -1], [0, 0, 1, -1, 0], [0, 0, 0, 1, -1], [0, 0, 1, 0, -1]])
+    b = np.array([0, 0, 0, 0, 0, 0])
+    bnds = [(1.0, 800.0) for _ in range(A.shape[1])] 
+    cons = [{"type": "ineq", "fun": lambda x: A @ x - b}]
+    res = minimize(fun=negative_LL_atonce, jac="3-point", x0=[1.0, 0.0, 0.0, 0.0, 0.0], bounds=bnds, constraints=cons, args=arrgs, options=opt)
+    xOut = res.x
 
     return xOut
 
