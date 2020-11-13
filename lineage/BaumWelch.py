@@ -147,7 +147,12 @@ def do_M_E_step(tHMMobj, gammas):
 
 def do_M_E_step_atonce(all_tHMMobj, all_cells, all_gammas):
     """ perform the M_E step when all the concentrations are given at once. """
-    output = atonce_estimator(all_cells, all_gammas, all_tHMMobj[0].E[0].const_shape)
+    gms = [[gamma[:, st_j] for gamma in all_gammas] for st_j in all_tHMMobj[0].num_states]
+    for state_j in range(all_tHMMobj[0].num_states):
+        output = atonce_estimator(all_cells, gms[state_j], all_tHMMobj[0].E[0].const_shape)
+        for i, tHMMobj in enumerate(all_tHMMobj):
+            tHMMobj.estimate.E[state_j].params[1] = output[0]
+            tHMMobj.estimate.E[state_j].params[2] = output[i+1]
 
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
