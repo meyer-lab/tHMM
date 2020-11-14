@@ -149,6 +149,7 @@ def do_M_E_step(tHMMobj, gammas):
     for state_j in range(tHMMobj.num_states):
         tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
 
+
 def do_M_E_step_atonce(all_tHMMobj, all_gammas):
     """ perform the M_E step when all the concentrations are given at once. """
     all_cells = []
@@ -158,7 +159,7 @@ def do_M_E_step_atonce(all_tHMMobj, all_gammas):
         all_gms = np.vstack(all_gammas[i])
         gms.append(all_gms)
         all_cells.append([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
-
+    # reshape the gammas so that each list in this list of lists is for each state.
     final_gm = []
     for j in range(all_tHMMobj[0].num_states):
         tmp1 = []
@@ -166,6 +167,7 @@ def do_M_E_step_atonce(all_tHMMobj, all_gammas):
             tmp1.append(aray[:, j])
         final_gm.append(tmp1)
 
+    # for each state, estimate the parameters and assign them to the tHMMobj
     for state_j in range(all_tHMMobj[0].num_states):
         output = atonce_estimator(all_cells, final_gm[state_j])
         for i, tHMMobj in enumerate(all_tHMMobj):
