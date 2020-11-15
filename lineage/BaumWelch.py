@@ -15,8 +15,6 @@ from .DownwardRecursion import (
 )
 
 
-from .states.StateDistributionGamma import atonce_estimator
-
 def do_E_step(tHMMobj):
     """
     Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
