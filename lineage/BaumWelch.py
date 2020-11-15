@@ -148,28 +148,35 @@ def do_M_E_step(tHMMobj, gammas):
         tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
 
 
-def do_M_E_step_atonce(all_tHMMobj, all_gammas):
-    """ perform the M_E step when all the concentrations are given at once for one state. """
+def do_M_E_step_1state(all_tHMMobj, gammas_1st, state_j):
+    """ perform the M_E step when all the concentrations are given at once for one state.
+    all_cells is a list (for different concentrations) containing lists of tuples of observations. 
+    gammas_1st is a list of lists, each cell's gamma value for one state. """
     all_cells = []
-    gms = []
-    # gather all gammas from different concentrations and append.
-    for i, tHMMobj in enumerate(all_tHMMobj):
-        all_gms = np.vstack(all_gammas[i])
-        gms.append(all_gms)
+    for tHMMobj in all_tHMMobj:
         all_cells.append([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
-    # reshape the gammas so that each list in this list of lists is for each state.
-    final_gm = []
-    for j in range(all_tHMMobj[0].num_states):
-        tmp1 = []
-        for aray in gms:
-            tmp1.append(aray[:, j])
-        final_gm.append(tmp1)
+        if state_j == 0:
+            out = [0.95, 7, 1.0]
+        else:
+            out = [0.8, 10, 0.5]
+        for i in range(len(tHMMobj.estimate.E[state_j].params)):
+            tHMMobj.estimate.E[state_j].params[i] = out[i]
 
-    # for each state, estimate the parameters and assign them to the tHMMobj
-    for state_j in range(all_tHMMobj[0].num_states):
-        for i, tHMMobj in enumerate(all_tHMMobj):
-            tHMMobj.estimate.E[state_j].params[1] = tHMMobj.estimate.E[state_j].params[1]
-            tHMMobj.estimate.E[state_j].params[2] = tHMMobj.estimate.E[state_j].params[2]
+def do_M_E_step_atonce(all_tHMMobj, all_gammas):
+    """ perform the M_E step when all the concentrations are given at once for all the states.
+    gms is a list of arrays with size = N x K.
+    After reshaping, we will have a list of lists for each state. 
+     """
+    gms = []
+    for gm in all_gammas:
+        gms.append(np.vstack(gm))
+    # reshape the gammas so that each list in this list of lists is for each state.
+    for j in range(all_tHMMobj[0].num_states):
+        gammas_1st = []
+        for array in gms:
+            gammas_1st.append(array[:, j])
+        do_M_E_step_1state(all_tHMMobj, gammas_1st, j)
+    
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     """
