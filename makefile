@@ -27,7 +27,7 @@ output/manuscript.html: venv output/manuscript.md $(patsubst %, output/figure%.s
 	cp -n lineage/figures/cartoons/figure*.svg output/output/
 	. venv/bin/activate && pandoc --verbose \
 		--defaults=./common/templates/manubot/pandoc/common.yaml \
-		--defaults=./common/templates/manubot/pandoc/html.yaml
+		--defaults=./common/templates/manubot/pandoc/html.yaml output/manuscript.md
 
 output/manuscript.docx: venv output/manuscript.md $(patsubst %, output/figure%.svg, $(flist))
 	mkdir -p output/output
@@ -35,7 +35,7 @@ output/manuscript.docx: venv output/manuscript.md $(patsubst %, output/figure%.s
 	cp -n lineage/figures/cartoons/figure*.svg output/output/
 	. venv/bin/activate && pandoc --verbose \
 		--defaults=./common/templates/manubot/pandoc/common.yaml \
-		--defaults=./common/templates/manubot/pandoc/docx.yaml
+		--defaults=./common/templates/manubot/pandoc/docx.yaml output/manuscript.md
 
 test: venv
 	. venv/bin/activate; pytest -s -v -x
