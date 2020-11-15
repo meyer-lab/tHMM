@@ -151,7 +151,7 @@ def do_M_E_step(tHMMobj, gammas):
 
 
 def do_M_E_step_atonce(all_tHMMobj, all_gammas):
-    """ perform the M_E step when all the concentrations are given at once. """
+    """ perform the M_E step when all the concentrations are given at once for one state. """
     all_cells = []
     gms = []
     # gather all gammas from different concentrations and append.
