@@ -2,7 +2,6 @@
 
 import math
 import numpy as np
-import itertools as it
 import scipy.stats as sp
 import scipy.special as sc
 from scipy.optimize import toms748, minimize
