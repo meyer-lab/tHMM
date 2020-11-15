@@ -2,7 +2,7 @@
 import numpy as np
 import scipy.stats as sp
 
-from .stateCommon import gamma_estimator, gamma_estimator_atonce, basic_censor
+from .stateCommon import gamma_estimator, basic_censor
 from ..CellVar import Time
 
 

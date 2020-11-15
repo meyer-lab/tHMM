@@ -5,7 +5,7 @@ import numpy as np
 import itertools as it
 import scipy.stats as sp
 import scipy.special as sc
-from scipy.optimize import toms748, minimize, LinearConstraint
+from scipy.optimize import toms748, minimize
 
 
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
