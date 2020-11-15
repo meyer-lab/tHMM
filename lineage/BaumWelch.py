@@ -167,11 +167,9 @@ def do_M_E_step_atonce(all_tHMMobj, all_gammas):
 
     # for each state, estimate the parameters and assign them to the tHMMobj
     for state_j in range(all_tHMMobj[0].num_states):
-        output = atonce_estimator(all_cells, final_gm[state_j])
         for i, tHMMobj in enumerate(all_tHMMobj):
-            tHMMobj.estimate.E[state_j].params[1] = output[0]
-            tHMMobj.estimate.E[state_j].params[2] = output[i+1]
-
+            tHMMobj.estimate.E[state_j].params[1] = tHMMobj.estimate.E[state_j].params[1]
+            tHMMobj.estimate.E[state_j].params[2] = tHMMobj.estimate.E[state_j].params[2]
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     """
