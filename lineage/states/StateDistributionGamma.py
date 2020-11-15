@@ -159,7 +159,6 @@ class StateDistribution:
                         output_lineage.append(cell)
         return output_lineage
 
-
 def fate_censor(cell):
     """
     User-defined function that checks whether a cell's subtree should be removed.
