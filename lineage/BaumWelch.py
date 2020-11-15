@@ -155,12 +155,9 @@ def do_M_E_step_1state(all_tHMMobj, gammas_1st, state_j):
     all_cells = []
     for tHMMobj in all_tHMMobj:
         all_cells.append([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
-        if state_j == 0:
-            out = [0.95, 7, 1.0]
-        else:
-            out = [0.8, 10, 0.5]
+        # TODO: the line where we pass the cells and gammas to the atonce_estimator
         for i in range(len(tHMMobj.estimate.E[state_j].params)):
-            tHMMobj.estimate.E[state_j].params[i] = out[i]
+            tHMMobj.estimate.E[state_j].params[i] = 0.5
 
 def do_M_E_step_atonce(all_tHMMobj, all_gammas):
     """ perform the M_E step when all the concentrations are given at once for all the states.
