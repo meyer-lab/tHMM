@@ -84,11 +84,14 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
     for t in tHMMobj:
         t.estimate.pi = pi
 
+
     if tHMMobj[0].estimate.fE is None:
         assert tHMMobj[0].fE is None
         if len(tHMMobj) == 1:
-            for idx, tt in enumerate(tHMMobj):
-                do_M_E_step(tt, gammas[idx])
+            all_cells = [cell.obs for lineage in tHMMobj[0].X for cell in lineage.output_lineage]
+            all_gammas = np.vstack(gammas[0])
+            for state_j in range(tHMMobj[0].num_states):
+                tHMMobj[0].estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
         else:
             do_M_E_step_atonce(tHMMobj, gammas)
    
@@ -133,20 +136,6 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
     assert np.all(np.isfinite(T_estimate))
 
     return T_estimate
-
-
-def do_M_E_step(tHMMobj, gammas):
-    """
-    Calculates the M-step of the Baum Welch algorithm
-    given output of the E step.
-    Does the parameter estimation for the E
-    Emissions matrix (state probabilistic distributions).
-    """
-    all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
-    all_gammas = np.vstack(gammas)
-    for state_j in range(tHMMobj.num_states):
-        tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
-
 
 def do_M_E_step_1state(all_tHMMobj, gammas_1st, state_j):
     """ perform the M_E step when all the concentrations are given at once for one state.
