@@ -103,11 +103,14 @@ def basic_censor(cell):
                 cell.get_sister().left.observed = False
                 cell.get_sister().right.observed = False
 
-<<<<<<< HEAD
 def negative_LL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
-    return negative_LL_sep_atonce(x[1:4], x[0], uncens_obs, uncens_gammas, cens_obs, cens_gammas)
+    """ uses the negative_LL_atonce and passes the vector of scales and the shared shape parameter. """
+    return negative_LL_sep_atonce(x[1:5], x[0], uncens_obs, uncens_gammas, cens_obs, cens_gammas)
 
 def negative_LL_sep_atonce(scales, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
+    """ Calculates the negative likelihood for a list of different concentrations of data. 
+    We consider only one shape parameter for all the concentrations, and each concentration will have its own scale parameter.
+    For gamma distributio, for the data of 4 concentrations we will have 5 parameters; [shape, scale1, scale2, scale3, scale4]. """
     uncens = np.sum([np.dot(uncens_gammas[i], sp.gamma.logpdf(uncens_obs[i], a=a, scale=scale)) for i, scale in enumerate(scales)])
     cens = np.sum([np.dot(cens_gammas[i], sc.gammaincc(a, cens_obs[i] / scale)) for i, scale in enumerate(scales)])
     return -1 * (uncens + cens)
@@ -115,7 +118,7 @@ def negative_LL_sep_atonce(scales, a, uncens_obs, uncens_gammas, cens_obs, cens_
 def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
     """
     This is a weighted, closed-form estimator for two parameters
-    of the Gamma distribution.
+    of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
     """
     gammas = []
     # Handle no observations
@@ -139,6 +142,9 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
     arrgs = (arg1, arg2, arg3, arg4)
     opt = {'gtol': 1e-12, 'ftol': 1e-12}
 
+    # A is a matrix of coefficients of the constraints. 
+    # For example if we have x_1 - 2x_2 >= 0 then it forms a row in the A matrix as: [1, -2], and one indice in the b array [0].
+    # the row array of independent variables are assumed to be [shape, scale1, scale2, scale3, scal4]
     A = np.array([[0, 1, -1, 0, 0], [0, 1, 0, -1, 0], [0, 1, 0, 0, -1], [0, 0, 1, -1, 0], [0, 0, 0, 1, -1], [0, 0, 1, 0, -1]])
     b = np.array([0, 0, 0, 0, 0, 0])
     bnds = [(1.0, 800.0) for _ in range(A.shape[1])] 
@@ -147,5 +153,3 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
     xOut = res.x
 
     return xOut
-=======
->>>>>>> fittAll
