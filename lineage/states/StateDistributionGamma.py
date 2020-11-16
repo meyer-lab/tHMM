@@ -212,9 +212,11 @@ def atonce_estimator(x_list, gammas_list):
     γ_obs_total = []
     γ_obs_total_censored = []
     gammas_total = []
-    for i, g_mask in enumerate(g_masks):
-        γ_obs_total.append(γ_obs[i][g_mask])
-        γ_obs_total_censored.append(gamma_obs_censor[i][g_mask])
-        gammas_total.append(gammas_list[i][g_mask])
+    for i, g_obs in enumerate(γ_obs):
+        γ_obs_total.append(g_obs[g_masks[i]])
+    for i, g_obs_cen in enumerate(gamma_obs_censor):
+        γ_obs_total_censored.append(g_obs_cen[g_masks[i]])
+    for i, gamma_tot in enumerate(gammas_list):
+        gammas_total.append(gamma_tot[g_masks[i]])
 
     return gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total)
