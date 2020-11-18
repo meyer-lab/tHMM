@@ -14,6 +14,7 @@ from .DownwardRecursion import (
     sum_nonleaf_gammas,
 )
 
+from .states.StateDistributionGamma import atonce_estimator
 
 def do_E_step(tHMMobj):
     """
@@ -155,9 +156,11 @@ def do_M_E_step_1state(all_tHMMobj, gammas_1st, state_j):
     all_cells = []
     for tHMMobj in all_tHMMobj:
         all_cells.append([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
-        # TODO: the line where we pass the cells and gammas to the atonce_estimator
-        for i in range(len(tHMMobj.estimate.E[state_j].params)):
-            tHMMobj.estimate.E[state_j].params[i] = 0.5
+    output = atonce_estimator(all_cells, gammas_1st)
+    for i, tHMMobj in enumerate(all_tHMMobj):
+        tHMMobj.estimate.E[state_j].params[1] = output[0]
+        tHMMobj.estimate.E[state_j].params[2] = output[i+1]
+
 
 def do_M_E_step_atonce(all_tHMMobj, all_gammas):
     """ perform the M_E step when all the concentrations are given at once for all the states.

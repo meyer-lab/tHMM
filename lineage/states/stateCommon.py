@@ -4,7 +4,7 @@ import math
 import numpy as np
 import scipy.stats as sp
 import scipy.special as sc
-from scipy.optimize import toms748, LinearConstraint, minimize
+from scipy.optimize import toms748, LinearConstraint, minimize, Bounds
 
 
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
@@ -145,10 +145,10 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
     # A is a matrix of coefficients of the constraints.
     # For example if we have x_1 - 2x_2 >= 0 then it forms a row in the A matrix as: [1, -2], and one indice in the b array [0].
     # the row array of independent variables are assumed to be [shape, scale1, scale2, scale3, scal4]
-    A = np.array([[0, 1, -1, 0, 0], [0, 1, 0, -1, 0], [0, 1, 0, 0, -1], [0, 0, 1, -1, 0], [0, 0, 0, 1, -1], [0, 0, 1, 0, -1]])
-    bnds = [(1.0, 800.0) for _ in range(A.shape[1])] 
-    cons = LinearConstraint(A, lb=[1., 1., 1., 1., 1.], ub=[100.0, 50.0, 50.0, 50.0, 50.0])
-    res = minimize(fun=negative_LL_atonce, jac="3-point", x0=[1.0, 0.0, 0.0, 0.0, 0.0], bounds=bnds, constraints=cons, args=arrgs, options=opt)
+    A = np.array([[0, 1, -1, 0, 0], [0, 0, 1, -1, 0], [0, 0, 0, 1, -1]])
+    bnds = Bounds([1, 0.001, 0.001, 0.001, 0.001], [200, 50.0, 50.0, 50.0, 50.0]) # list [min], [max]
+    cons = LinearConstraint(A, lb=[-np.inf]*A.shape[0], ub=[0.0]*A.shape[0])
+    res = minimize(fun=negative_LL_atonce, jac="3-point", x0=[10.0, 0.05, 0.05, 0.05, 0.05], bounds=bnds, constraints=cons, args=arrgs, options=opt)
     xOut = res.x
 
     return xOut

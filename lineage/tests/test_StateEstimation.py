@@ -41,12 +41,7 @@ def test_atonce_estimator():
     def gen(): return LineageTree.init_from_parameters(pi, T, E_gamma, 2**8, censor_condition=3, desired_experiment_time=100)
     lineage_gamma_list = [[gen() for _ in range(50)] for _ in range(4)]
     solver_gamma_list = [tHMM(lineage_gamma, 1) for lineage_gamma in lineage_gamma_list]
-    list_gammas=[]
-    for solver_gamma in solver_gamma_list:
-        temp = []
-        for lineage in solver_gamma.X:
-            temp.append([1]*len(lineage))
-        list_gammas.append(temp)
+
     x_list = []
     for hmm in solver_gamma_list:
         tmp = []
