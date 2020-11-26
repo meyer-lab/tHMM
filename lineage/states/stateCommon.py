@@ -111,8 +111,8 @@ def negative_LL_sep_atonce(scales, a, uncens_obs, uncens_gammas, cens_obs, cens_
     """ Calculates the negative likelihood for a list of different concentrations of data. 
     We consider only one shape parameter for all the concentrations, and each concentration will have its own scale parameter.
     For gamma distributio, for the data of 4 concentrations we will have 5 parameters; [shape, scale1, scale2, scale3, scale4]. """
-    uncens = np.sum([np.dot(uncens_gammas[i], sp.gamma.logpdf(uncens_obs[i], a=a, scale=scale)) for i, scale in enumerate(scales)])
-    cens = np.sum([np.dot(cens_gammas[i], sc.gammaincc(a, cens_obs[i] / scale)) for i, scale in enumerate(scales)])
+    uncens = np.sum([np.dot(np.asarray(uncens_gammas[i]).reshape(1,len(uncens_gammas[i])), sp.gamma.logpdf(uncens_obs[i], a=a, scale=scale)) for i, scale in enumerate(scales)])
+    cens = np.sum([np.dot(np.asarray(cens_gammas[i]).reshape(1, len(cens_gammas[i])), sc.gammaincc(a, cens_obs[i] / scale)) for i, scale in enumerate(scales)])
     return -1 * (uncens + cens)
 
 def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
@@ -146,7 +146,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
     # For example if we have x_1 - 2x_2 >= 0 then it forms a row in the A matrix as: [1, -2], and one indice in the b array [0].
     # the row array of independent variables are assumed to be [shape, scale1, scale2, scale3, scal4]
     A = np.array([[0, 1, -1, 0, 0], [0, 0, 1, -1, 0], [0, 0, 0, 1, -1]])
-    bnds = Bounds([1, 0.001, 0.001, 0.001, 0.001], [200, 50.0, 50.0, 50.0, 50.0]) # list [min], [max]
+    bnds = Bounds([1, 0.001, 0.001, 0.001, 0.001], [100, 50.0, 50.0, 50.0, 50.0]) # list [min], [max]
     cons = LinearConstraint(A, lb=[-np.inf]*A.shape[0], ub=[0.0]*A.shape[0])
     res = minimize(fun=negative_LL_atonce, jac="3-point", x0=[10.0, 0.05, 0.05, 0.05, 0.05], bounds=bnds, constraints=cons, args=arrgs, options=opt)
     xOut = res.x

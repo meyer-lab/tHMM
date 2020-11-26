@@ -3,6 +3,7 @@ import pytest
 import numpy as np
 import scipy.stats as sp
 
+from ..BaumWelch import do_E_step
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 from ..states.stateCommon import gamma_estimator_atonce 
@@ -36,12 +37,12 @@ def test_atonce_estimator():
     """
     pi = np.array([1])
     T = np.array([[1]])
-    E_gamma = [gamma_state(bern_p=1., gamma_a=7, gamma_scale=4.5)]
+    E_gamma = [gamma_state(bern_p=1., gamma_a=7., gamma_scale=4.5)]
 
-    def gen(): return LineageTree.init_from_parameters(pi, T, E_gamma, 2**8, censor_condition=3, desired_experiment_time=100)
+    def gen(): return LineageTree.init_from_parameters(pi, T, E_gamma, 2**9, censor_condition=3, desired_experiment_time=200)
     lineage_gamma_list = [[gen() for _ in range(50)] for _ in range(4)]
     solver_gamma_list = [tHMM(lineage_gamma, 1) for lineage_gamma in lineage_gamma_list]
-
+    list_gammas = [do_E_step(tHMMoj)[3] for tHMMoj in solver_gamma_list]
     x_list = []
     for hmm in solver_gamma_list:
         tmp = []
@@ -50,4 +51,5 @@ def test_atonce_estimator():
                 tmp.append(cell.obs)
         x_list.append(tmp)
     xout = atonce_estimator(x_list, list_gammas)
-    assert np.abs(xout[1] - 7.0) <= 5.0
+    print(xout)
+    assert np.abs(xout[0] - 7.0) <= 2.0
