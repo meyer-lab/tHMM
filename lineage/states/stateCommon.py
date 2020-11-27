@@ -140,7 +140,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
         arg3.append(gamma_obs[i][time_cen[i] == 0])
         arg4.append(gammas[i][time_cen[i] == 0])
     arrgs = (arg1, arg2, arg3, arg4)
-    opt = {'gtol': 1e-12, 'ftol': 1e-12}
+    opt = {'tol': 1e-12}
 
     # A is a matrix of coefficients of the constraints.
     # For example if we have x_1 - 2x_2 >= 0 then it forms a row in the A matrix as: [1, -2], and one indice in the b array [0].
@@ -148,7 +148,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
     A = np.array([[0, 1, -1, 0, 0], [0, 0, 1, -1, 0], [0, 0, 0, 1, -1]])
     bnds = Bounds([1, 0.001, 0.001, 0.001, 0.001], [100, 50.0, 50.0, 50.0, 50.0]) # list [min], [max]
     cons = LinearConstraint(A, lb=[-np.inf]*A.shape[0], ub=[0.0]*A.shape[0])
-    res = minimize(fun=negative_LL_atonce, jac="3-point", x0=[10.0, 0.05, 0.05, 0.05, 0.05], method='COBYLA', bounds=bnds, constraints=cons, args=arrgs, options=opt)
+    res = minimize(fun=negative_LL_atonce, x0=[10.0, 0.05, 0.05, 0.05, 0.05], method='COBYLA', bounds=bnds, constraints=cons, args=arrgs, options=opt)
     xOut = res.x
 
     return xOut

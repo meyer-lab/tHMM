@@ -37,10 +37,11 @@ def test_atonce_estimator():
     """
     pi = np.array([1])
     T = np.array([[1]])
-    E_gamma = [gamma_state(bern_p=1., gamma_a=7., gamma_scale=4.5)]
+    scales = [4.0, 5.0, 6.0, 7.0]
+    E_gamma = [[gamma_state(bern_p=1., gamma_a=7., gamma_scale=sc)] for sc in scales]
 
-    def gen(): return LineageTree.init_from_parameters(pi, T, E_gamma, 2**9, censor_condition=3, desired_experiment_time=200)
-    lineage_gamma_list = [[gen() for _ in range(50)] for _ in range(4)]
+    def gen(i): return LineageTree.init_from_parameters(pi, T, E_gamma[i], 2**8, censor_condition=3, desired_experiment_time=250)
+    lineage_gamma_list = [[gen(i) for _ in range(50)] for i in range(4)]
     solver_gamma_list = [tHMM(lineage_gamma, 1) for lineage_gamma in lineage_gamma_list]
     list_gammas = [do_E_step(tHMMoj)[3] for tHMMoj in solver_gamma_list]
     x_list = []
@@ -51,5 +52,4 @@ def test_atonce_estimator():
                 tmp.append(cell.obs)
         x_list.append(tmp)
     xout = atonce_estimator(x_list, list_gammas)
-    print(xout)
-    assert np.abs(xout[0] - 7.0) <= 2.0
+    assert np.all(np.abs(xout - ([7.] + scales)) <= 1.5)
