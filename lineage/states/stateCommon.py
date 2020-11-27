@@ -148,7 +148,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
     A = np.array([[0, 1, -1, 0, 0], [0, 0, 1, -1, 0], [0, 0, 0, 1, -1]])
     bnds = Bounds([1, 0.001, 0.001, 0.001, 0.001], [100, 50.0, 50.0, 50.0, 50.0]) # list [min], [max]
     cons = LinearConstraint(A, lb=[-np.inf]*A.shape[0], ub=[0.0]*A.shape[0])
-    res = minimize(fun=negative_LL_atonce, jac="3-point", x0=[10.0, 0.05, 0.05, 0.05, 0.05], bounds=bnds, constraints=cons, args=arrgs, options=opt)
+    res = minimize(fun=negative_LL_atonce, jac="3-point", x0=[10.0, 0.05, 0.05, 0.05, 0.05], method='COBYLA', bounds=bnds, constraints=cons, args=arrgs, options=opt)
     xOut = res.x
 
     return xOut
