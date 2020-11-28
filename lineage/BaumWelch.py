@@ -14,6 +14,7 @@ from .DownwardRecursion import (
     sum_nonleaf_gammas,
 )
 
+from .states.StateDistributionGamma import atonce_estimator
 
 def do_E_step(tHMMobj):
     """
@@ -86,8 +87,11 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
 
     if tHMMobj[0].estimate.fE is None:
         assert tHMMobj[0].fE is None
-        for idx, tt in enumerate(tHMMobj):
-            do_M_E_step(tt, gammas[idx])
+        if len(tHMMobj) == 1:
+            for idx, tt in enumerate(tHMMobj):
+                do_M_E_step(tt, gammas[idx])
+        else:
+            do_M_E_step_atonce(tHMMobj, gammas)
 
 
 def do_M_pi_step(tHMMobj, gammas):

@@ -5,7 +5,7 @@ import numpy as np
 import scipy.stats as sp
 
 from .UpwardRecursion import get_Emission_Likelihoods
-from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step
+from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step, do_M_E_step_atonce
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 
 
@@ -42,10 +42,8 @@ class tHMM:
 
     def __init__(self, X, num_states: int, fpi=None, fT=None, fE=None):
         """Instantiates a tHMM.
-
         This function uses the following functions and assings them to the cells
         (objects) in the lineage.
-
         :param X: A list of objects (cells) in a lineage in which
         the NaNs have been removed.
         :type X: list of objects
@@ -83,7 +81,6 @@ class tHMM:
         between over-fitting and under-fitting.
         :math:`AIC = 2*k - 2 * log(LL)` in which k is the number of free parameters and LL is the maximum of likelihood function.
         Minimum of AIC detremines the relatively better model.
-
         :param tHMMobj: the tHMM class which has been built.
         :type tHMMobj: object
         :param LL: the likelihood value
@@ -158,7 +155,6 @@ def log_T_score(T, state_tree_sequence, lineageObj):
                     log_T_score_holder += log_T[cell_state, daughter_state]
     return log_T_score_holder
 
-
 def log_E_score(EL_array, state_tree_sequence):
     """
     To calculate the joint probability of state and observations.
@@ -178,11 +174,16 @@ def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
 
     # Step 0: initialize with random assignments and do an M step
     # when there are no fixed emissions, we need to randomize the start
+    init_all_gammas = []
     for _, tHMM in enumerate(tHMMobj_list):
         init_gammas = [sp.multinomial.rvs(n=1, p=[1. / tHMM.num_states] * tHMM.num_states, size=len(lineage))
-                       for lineage in tHMM.X]
-
-        do_M_E_step(tHMM, init_gammas)
+                        for lineage in tHMM.X]
+        init_all_gammas.append(init_gammas)
+    if len(tHMMobj_list) > 1:
+        do_M_E_step_atonce(tHMMobj_list, init_all_gammas)
+    else:
+        for i, tHMM in enumerate(tHMMobj_list):
+            do_M_E_step(tHMM, init_all_gammas[i])
 
     # Step 1: first E step
     MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
