@@ -123,15 +123,11 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
 
     for i, gamma in enumerate(gammas):
         assert gamma.shape[0] == gamma_obs[i].shape[0]
-    arg1 = []
-    arg2 = []
-    arg3 = []
-    arg4 = []
-    for i in range(len(gamma_obs)):
-        arg1.append(gamma_obs[i][time_cen[i] == 1])
-        arg2.append(gammas[i][time_cen[i] == 1])
-        arg3.append(gamma_obs[i][time_cen[i] == 0])
-        arg4.append(gammas[i][time_cen[i] == 0])
+    arg1 = [gamma_obs[i][time_cen[i] == 1] for i in range(len(gamma_obs))]
+    arg2 = [gammas[i][time_cen[i] == 1] for i in range(len(gamma_obs))]
+    arg3 = [gamma_obs[i][time_cen[i] == 0] for i in range(len(gamma_obs))]
+    arg4 = [gammas[i][time_cen[i] == 0] for i in range(len(gamma_obs))]
+
     arrgs = (arg1, arg2, arg3, arg4)
     opt = {'tol': 1e-12}
 
