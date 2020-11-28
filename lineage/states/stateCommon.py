@@ -4,7 +4,7 @@ import math
 import numpy as np
 import scipy.stats as sp
 import scipy.special as sc
-from scipy.optimize import toms748, minimize
+from scipy.optimize import toms748, LinearConstraint, minimize, Bounds
 
 
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
@@ -103,3 +103,48 @@ def basic_censor(cell):
                 cell.get_sister().left.observed = False
                 cell.get_sister().right.observed = False
 
+def negative_LL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
+    """ uses the negative_LL_atonce and passes the vector of scales and the shared shape parameter. """
+    return negative_LL_sep_atonce(x[1:5], x[0], uncens_obs, uncens_gammas, cens_obs, cens_gammas)
+
+def negative_LL_sep_atonce(scales, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
+    """ Calculates the negative likelihood for a list of different concentrations of data. 
+    We consider only one shape parameter for all the concentrations, and each concentration will have its own scale parameter.
+    For gamma distributio, for the data of 4 concentrations we will have 5 parameters; [shape, scale1, scale2, scale3, scale4]. """
+    uncens = np.sum([np.dot(np.asarray(uncens_gammas[i]).reshape(1,len(uncens_gammas[i])), sp.gamma.logpdf(uncens_obs[i], a=a, scale=scale)) for i, scale in enumerate(scales)])
+    cens = np.sum([np.dot(np.asarray(cens_gammas[i]).reshape(1, len(cens_gammas[i])), sc.gammaincc(a, cens_obs[i] / scale)) for i, scale in enumerate(scales)])
+    return -1 * (uncens + cens)
+
+def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
+    """
+    This is a weighted, closed-form estimator for two parameters
+    of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
+    """
+    gammas = []
+    # Handle no observations
+    for gamma in gamas:
+        if np.sum(gamma) == 0.0:
+            gammas.append(np.ones_like(gamma))
+        else:
+            gammas.append(gamma)
+
+    for i, gamma in enumerate(gammas):
+        assert gamma.shape[0] == gamma_obs[i].shape[0]
+    arg1 = [gamma_obs[i][time_cen[i] == 1] for i in range(len(gamma_obs))]
+    arg2 = [gammas[i][time_cen[i] == 1] for i in range(len(gamma_obs))]
+    arg3 = [gamma_obs[i][time_cen[i] == 0] for i in range(len(gamma_obs))]
+    arg4 = [gammas[i][time_cen[i] == 0] for i in range(len(gamma_obs))]
+
+    arrgs = (arg1, arg2, arg3, arg4)
+    opt = {'tol': 1e-12}
+
+    # A is a matrix of coefficients of the constraints.
+    # For example if we have x_1 - 2x_2 >= 0 then it forms a row in the A matrix as: [1, -2], and one indice in the b array [0].
+    # the row array of independent variables are assumed to be [shape, scale1, scale2, scale3, scal4]
+    A = np.array([[0, 1, -1, 0, 0], [0, 0, 1, -1, 0], [0, 0, 0, 1, -1]])
+    bnds = Bounds([1, 0.001, 0.001, 0.001, 0.001], [100, 50.0, 50.0, 50.0, 50.0]) # list [min], [max]
+    cons = LinearConstraint(A, lb=[-np.inf]*A.shape[0], ub=[0.0]*A.shape[0])
+    res = minimize(fun=negative_LL_atonce, x0=[10.0, 0.05, 0.05, 0.05, 0.05], method='COBYLA', bounds=bnds, constraints=cons, args=arrgs, options=opt)
+    xOut = res.x
+
+    return xOut
