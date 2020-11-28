@@ -16,17 +16,17 @@ concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM", "cntrl", "5nM", "10nM"
 concsValues = ["cntrl", "25nM", "50nM", "250nM"]
 data = [Lapatinib_Control + gemControl, Lapt25uM, Lapt50uM, Lap250uM]
 
-# tHMM_solver = tHMM(X=data[0], num_states=1)
-# tHMM_solver.fit()
+tHMM_solver = tHMM(X=data[0], num_states=1)
+tHMM_solver.fit()
 
-# constant_shape = [int(tHMM_solver.estimate.E[0].params[2]), int(tHMM_solver.estimate.E[0].params[4])]
+constant_shape = [int(tHMM_solver.estimate.E[0].params[2]), int(tHMM_solver.estimate.E[0].params[4])]
 
 # Set shape
-# for population in data:
-#     for lin in population:
-#         for E in lin.E:
-#             E.G1.const_shape = constant_shape[0]
-#             E.G2.const_shape = constant_shape[1]
+for population in data:
+    for lin in population:
+        for E in lin.E:
+            E.G1.const_shape = constant_shape[0]
+            E.G2.const_shape = constant_shape[1]
 
 # Run fitting
 lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data, 3, fpi=True)
