@@ -179,9 +179,9 @@ def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
         init_gammas = [sp.multinomial.rvs(n=1, p=[1. / tHMM.num_states] * tHMM.num_states, size=len(lineage))
                         for lineage in tHMM.X]
         init_all_gammas.append(init_gammas)
-    if len(tHMMobj_list) > 1:
+    if len(tHMMobj_list) > 1: # it means we are fitting several concentrations at once.
         do_M_E_step_atonce(tHMMobj_list, init_all_gammas)
-    else:
+    else: # means we are fitting one condition at a time.
         for i, tHMM in enumerate(tHMMobj_list):
             do_M_E_step(tHMM, init_all_gammas[i])
 

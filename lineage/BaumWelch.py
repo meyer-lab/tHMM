@@ -93,7 +93,6 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
         else:
             do_M_E_step_atonce(tHMMobj, gammas)
 
-
 def do_M_pi_step(tHMMobj, gammas):
     """
     Calculates the M-step of the Baum Welch algorithm
@@ -176,6 +175,33 @@ def do_M_E_step_atonce(all_tHMMobj, all_gammas):
             gammas_1st.append(array[:, j])
         do_M_E_step_1state(all_tHMMobj, gammas_1st, j)
 
+
+def do_M_E_step_1state(all_tHMMobj, gammas_1st, state_j):
+    """ perform the M_E step when all the concentrations are given at once for one state.
+    all_cells is a list (for different concentrations) containing lists of tuples of observations. 
+    gammas_1st is a list of lists, each cell's gamma value for one state. """
+    all_cells = []
+    for tHMMobj in all_tHMMobj:
+        all_cells.append([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
+        # TODO: the line where we pass the cells and gammas to the atonce_estimator
+        for i in range(len(tHMMobj.estimate.E[state_j].params)):
+            tHMMobj.estimate.E[state_j].params[i] = 0.5
+
+def do_M_E_step_atonce(all_tHMMobj, all_gammas):
+    """ perform the M_E step when all the concentrations are given at once for all the states.
+    gms is a list of arrays with size = N x K.
+    After reshaping, we will have a list of lists for each state. 
+     """
+    gms = []
+    for gm in all_gammas:
+        gms.append(np.vstack(gm))
+    # reshape the gammas so that each list in this list of lists is for each state.
+    for j in range(all_tHMMobj[0].num_states):
+        gammas_1st = []
+        for array in gms:
+            gammas_1st.append(array[:, j])
+        do_M_E_step_1state(all_tHMMobj, gammas_1st, j)
+    
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     """
