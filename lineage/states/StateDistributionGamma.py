@@ -193,13 +193,9 @@ def time_censor(cell, desired_experiment_time):
 def atonce_estimator(x_list, gammas_list):
     """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
     # unzipping the list of tuples
-    x_data = []
-    for x in x_list:
-        x_data.append(np.array(x))
+    x_data = [np.array(x) for x in x_list]
 
-    assert len(x_data) == len(x_list)
     # getting the observations as individual lists
-    # {
     bern_obs = [x[:, 0] for x in x_data]
     γ_obs = [x[:, 1] for x in x_data]
     gamma_obs_censor = [x[:, 2] for x in x_data]
@@ -209,15 +205,8 @@ def atonce_estimator(x_list, gammas_list):
     for g_mask in g_masks:
         assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
-    γ_obs_total = []
-    γ_obs_total_censored = []
-    gammas_total = []
-    for i, g_obs in enumerate(γ_obs):
-        γ_obs_total.append(g_obs[g_masks[i]])
-    for i, g_obs_cen in enumerate(gamma_obs_censor):
-        γ_obs_total_censored.append(g_obs_cen[g_masks[i]])
-    for i, gamma_tot in enumerate(gammas_list):
-        g = np.vstack(gamma_tot)
-        gammas_total.append(g[g_masks[i]])
+    γ_obs_total = [g_obs[g_masks[i]] for i, g_obs in enumerate(γ_obs)]
+    γ_obs_total_censored = [g_obs_cen[g_masks[i]] for i, g_obs_cen in enumerate(gamma_obs_censor)]
+    gammas_total = [np.vstack(gamma_tot)[g_masks[i]] for i, gamma_tot in enumerate(gammas_list)]
 
     return gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total)
