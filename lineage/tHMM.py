@@ -42,10 +42,8 @@ class tHMM:
 
     def __init__(self, X, num_states: int, fpi=None, fT=None, fE=None):
         """Instantiates a tHMM.
-
         This function uses the following functions and assings them to the cells
         (objects) in the lineage.
-
         :param X: A list of objects (cells) in a lineage in which
         the NaNs have been removed.
         :type X: list of objects
@@ -83,7 +81,6 @@ class tHMM:
         between over-fitting and under-fitting.
         :math:`AIC = 2*k - 2 * log(LL)` in which k is the number of free parameters and LL is the maximum of likelihood function.
         Minimum of AIC detremines the relatively better model.
-
         :param tHMMobj: the tHMM class which has been built.
         :type tHMMobj: object
         :param LL: the likelihood value
