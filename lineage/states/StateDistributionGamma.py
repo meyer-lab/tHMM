@@ -191,7 +191,8 @@ def time_censor(cell, desired_experiment_time):
             cell.right.observed = False
 
 def atonce_estimator(x_list, gammas_list):
-    """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
+    """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. 
+        gammas_list is only for one state. """
     # unzipping the list of tuples
     x_data = [np.array(x) for x in x_list]
 
@@ -207,6 +208,5 @@ def atonce_estimator(x_list, gammas_list):
 
     γ_obs_total = [g_obs[g_masks[i]] for i, g_obs in enumerate(γ_obs)]
     γ_obs_total_censored = [g_obs_cen[g_masks[i]] for i, g_obs_cen in enumerate(gamma_obs_censor)]
-    gammas_total = [np.vstack(gamma_tot)[g_masks[i]] for i, gamma_tot in enumerate(gammas_list)]
-
+    gammas_total = [gamma_tot[g_masks[i]] for i, gamma_tot in enumerate(gammas_list)]
     return gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total)

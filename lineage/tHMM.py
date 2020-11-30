@@ -174,16 +174,13 @@ def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
 
     # Step 0: initialize with random assignments and do an M step
     # when there are no fixed emissions, we need to randomize the start
-    init_all_gammas = []
-    for _, tHMM in enumerate(tHMMobj_list):
-        init_gammas = [sp.multinomial.rvs(n=1, p=[1. / tHMM.num_states] * tHMM.num_states, size=len(lineage))
-                        for lineage in tHMM.X]
-        init_all_gammas.append(init_gammas)
+    init_all_gammas = [[sp.multinomial.rvs(n=1, p=[1. / tHMMobj.num_states] * tHMMobj.num_states, size=len(lineage))
+                        for lineage in tHMMobj.X] for tHMMobj in tHMMobj_list]
+
     if len(tHMMobj_list) > 1: # it means we are fitting several concentrations at once.
         do_M_E_step_atonce(tHMMobj_list, init_all_gammas)
     else: # means we are fitting one condition at a time.
-        for i, tHMM in enumerate(tHMMobj_list):
-            do_M_E_step(tHMM, init_all_gammas[i])
+        do_M_E_step(tHMMobj_list[0], init_all_gammas[0])
 
     # Step 1: first E step
     MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
