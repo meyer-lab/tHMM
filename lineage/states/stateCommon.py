@@ -103,17 +103,15 @@ def basic_censor(cell):
                 cell.get_sister().left.observed = False
                 cell.get_sister().right.observed = False
 
+
 def negative_LL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     """ uses the negative_LL_atonce and passes the vector of scales and the shared shape parameter. """
-    return negative_LL_sep_atonce(x[1:5], x[0], uncens_obs, uncens_gammas, cens_obs, cens_gammas)
+    outt = 0.0
+    for i in range(4):
+        outt += negative_LL_sep(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
 
-def negative_LL_sep_atonce(scales, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
-    """ Calculates the negative likelihood for a list of different concentrations of data. 
-    We consider only one shape parameter for all the concentrations, and each concentration will have its own scale parameter.
-    For gamma distributio, for the data of 4 concentrations we will have 5 parameters; [shape, scale1, scale2, scale3, scale4]. """
-    uncens = np.sum([np.dot(np.asarray(uncens_gammas[i]).reshape(1,len(uncens_gammas[i])), sp.gamma.logpdf(uncens_obs[i], a=a, scale=scale)) for i, scale in enumerate(scales)])
-    cens = np.sum([np.dot(np.asarray(cens_gammas[i]).reshape(1, len(cens_gammas[i])), sc.gammaincc(a, cens_obs[i] / scale)) for i, scale in enumerate(scales)])
-    return -1 * (uncens + cens)
+    return outt
+
 
 def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
     """
@@ -130,10 +128,10 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
 
     for i, gamma in enumerate(gammas):
         assert gamma.shape[0] == gamma_obs[i].shape[0]
-    arg1 = [gamma_obs[i][time_cen[i] == 1] for i in range(len(gamma_obs))]
-    arg2 = [gammas[i][time_cen[i] == 1] for i in range(len(gamma_obs))]
-    arg3 = [gamma_obs[i][time_cen[i] == 0] for i in range(len(gamma_obs))]
-    arg4 = [gammas[i][time_cen[i] == 0] for i in range(len(gamma_obs))]
+    arg1 = [np.squeeze(gamma_obs[i][time_cen[i] == 1]) for i in range(len(gamma_obs))]
+    arg2 = [np.squeeze(gammas[i][time_cen[i] == 1]) for i in range(len(gamma_obs))]
+    arg3 = [np.squeeze(gamma_obs[i][time_cen[i] == 0]) for i in range(len(gamma_obs))]
+    arg4 = [np.squeeze(gammas[i][time_cen[i] == 0]) for i in range(len(gamma_obs))]
 
     arrgs = (arg1, arg2, arg3, arg4)
 
