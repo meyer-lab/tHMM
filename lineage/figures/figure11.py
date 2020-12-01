@@ -15,7 +15,7 @@ concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM", "cntrl", "5nM", "10nM"
 concsValues = ["cntrl", "25nM", "50nM", "250nM"]
 data = [Lapatinib_Control + gemControl, Lapt25uM, Lapt50uM, Lap250uM]
 
-num_states = 3
+num_states = 2
 # Run fitting
 lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data, num_states, fpi=True)
 T_lap = lapt_tHMMobj_list[0].estimate.T
@@ -52,7 +52,7 @@ def makeFigure():
         ax[idx].set_title(concs[idx])
         ax[idx].set_ylabel("phase lengths [hr]")
         ax[idx].set_xlabel("state")
-        ax[idx].set_ylim([0.0, 150.0])
+        # ax[idx].set_ylim([0.0, 150.0])
 
     plotting(ax, lpt_avg, bern_lpt, concs)
     return f
@@ -60,7 +60,7 @@ def makeFigure():
 
 def plotting(ax, lpt_avg, bern_lpt, concs):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
-    for i in range(3):  # lapatinib that has 3 states
+    for i in range(2):  # lapatinib that has 3 states
         ax[5].plot(concs[0: 4], lpt_avg[:, i, 0], label="st " + str(i + 1), alpha=0.7)
         ax[5].set_title("G1 phase")
         ax[6].plot(concs[0: 4], lpt_avg[:, i, 1], label="st " + str(i + 1), alpha=0.7)
@@ -70,15 +70,16 @@ def plotting(ax, lpt_avg, bern_lpt, concs):
         ax[8].plot(concs[0: 4], bern_lpt[:, i, 1], label="st " + str(i + 1), alpha=0.7)
         ax[8].set_title("G2 phase")
 
+
     # ylim and ylabel
     for i in range(5, 7):
         ax[i].set_ylabel("prog. rate 1/[hr]")
-        ax[i].set_ylim([0, 0.1])
+        # ax[i].set_ylim([0, 0.1])
 
     # ylim and ylabel
     for i in range(7, 9):
         ax[i].set_ylabel("death rate")
-        ax[i].set_ylim([0, 1.05])
+        # ax[i].set_ylim([0, 1.05])
 
     # legend and xlabel
     for i in range(5, 9):

@@ -179,23 +179,24 @@ def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
 
     if len(tHMMobj_list) > 1: # it means we are fitting several concentrations at once.
         do_M_E_step_atonce(tHMMobj_list, init_all_gammas)
+        print("params 1:", [tHMMobj_list[i].estimate.E[0].params for i in range(4)])
     else: # means we are fitting one condition at a time.
         do_M_E_step(tHMMobj_list[0], init_all_gammas[0])
 
     # Step 1: first E step
-    MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
+    MSD_list, NF_list, betas_list, gamma_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
     old_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
 
     # first stopping condition check
-    for _ in range(max_iter):
-        do_M_step(tHMMobj_list, MSD_list, betas_list, gammas_list)
-
+    for i in range(max_iter):
+        do_M_step(tHMMobj_list, MSD_list, betas_list, gamma_list)
+        print("params 2:", [tHMMobj_list[i].estimate.E[0].params for i in range(4)])
         MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
         new_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
-
         if new_LL - old_LL < tolerance:
             break
 
         old_LL = new_LL
+    assert i > 2
 
     return MSD_list, NF_list, betas_list, gammas_list, new_LL
