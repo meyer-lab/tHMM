@@ -46,10 +46,8 @@ def test_atonce_estimator():
     list_gammas = [do_E_step(tHMMoj)[3] for tHMMoj in solver_gamma_list]
     x_list = []
     for hmm in solver_gamma_list:
-        tmp = []
-        for lineage in hmm.X:
-            for cell in lineage.output_lineage:
-                tmp.append(cell.obs)
+        tmp = [cell.obs for lineage in hmm.X for cell in lineage.output_lineage]
         x_list.append(tmp)
     xout = atonce_estimator(x_list, list_gammas)
+    # TODO: Add test that answer satisfies constraints
     assert np.all(np.abs(xout - ([7.] + scales)) <= 1.5)

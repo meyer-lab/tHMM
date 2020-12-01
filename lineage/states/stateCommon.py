@@ -136,15 +136,16 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
     arg4 = [gammas[i][time_cen[i] == 0] for i in range(len(gamma_obs))]
 
     arrgs = (arg1, arg2, arg3, arg4)
-    opt = {'tol': 1e-12}
 
     # A is a matrix of coefficients of the constraints.
     # For example if we have x_1 - 2x_2 >= 0 then it forms a row in the A matrix as: [1, -2], and one indice in the b array [0].
     # the row array of independent variables are assumed to be [shape, scale1, scale2, scale3, scal4]
+    x0 = np.array([10.0, 0.05, 0.06, 0.07, 0.08])
     A = np.array([[0, 1, -1, 0, 0], [0, 0, 1, -1, 0], [0, 0, 0, 1, -1]])
     bnds = Bounds([1, 0.001, 0.001, 0.001, 0.001], [100, 50.0, 50.0, 50.0, 50.0]) # list [min], [max]
-    cons = LinearConstraint(A, lb=[-np.inf]*A.shape[0], ub=[0.0]*A.shape[0])
-    res = minimize(fun=negative_LL_atonce, x0=[10.0, 0.05, 0.05, 0.05, 0.05], method='COBYLA', bounds=bnds, constraints=cons, args=arrgs, options=opt)
-    xOut = res.x
-
-    return xOut
+    cons = LinearConstraint(A, lb=-np.inf*np.ones(x0.size - 2), ub=np.zeros(x0.size - 2))
+    res = minimize(fun=negative_LL_atonce, x0=x0, method='trust-constr', jac="3-point", bounds=bnds, constraints=cons, args=arrgs)
+    print(res)
+    assert res.success
+    assert res.niter > 2
+    return res.x
