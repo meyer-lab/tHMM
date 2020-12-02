@@ -69,6 +69,7 @@ class StateDistribution:
 
         # getting the observations as individual lists
         # {
+        x = np.array(x)
         bern_obs = x[:, 0].astype('bool')
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]

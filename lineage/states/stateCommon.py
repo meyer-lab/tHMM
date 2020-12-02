@@ -109,7 +109,6 @@ def negative_LL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     outt = 0.0
     for i in range(4):
         outt += negative_LL_sep(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
-
     return outt
 
 
@@ -138,9 +137,9 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
     # A is a matrix of coefficients of the constraints.
     # For example if we have x_1 - 2x_2 >= 0 then it forms a row in the A matrix as: [1, -2], and one indice in the b array [0].
     # the row array of independent variables are assumed to be [shape, scale1, scale2, scale3, scal4]
-    x0 = np.array([10.0, 0.05, 0.06, 0.07, 0.08])
+    x0 = np.array([10.0, 1.0, 2.0, 3.0, 4.0])
     A = np.array([[0, 1, -1, 0, 0], [0, 0, 1, -1, 0], [0, 0, 0, 1, -1]])
-    bnds = Bounds([1, 0.001, 0.001, 0.001, 0.001], [100, 50.0, 50.0, 50.0, 50.0]) # list [min], [max]
+    bnds = Bounds([1, 0.001, 0.001, 0.001, 0.001], [1000, 500.0, 500.0, 500.0, 500.0]) # list [min], [max]
     cons = LinearConstraint(A, lb=-10000.0*np.ones(x0.size - 2), ub=np.zeros(x0.size - 2))
     res = minimize(fun=negative_LL_atonce, x0=x0, method='trust-constr', jac="3-point", bounds=bnds, constraints=cons, args=arrgs)
     assert res.success
