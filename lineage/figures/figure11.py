@@ -15,7 +15,7 @@ concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM", "cntrl", "5nM", "10nM"
 concsValues = ["cntrl", "25nM", "50nM", "250nM"]
 data = [Lapatinib_Control + gemControl, Lapt25uM, Lapt50uM, Lap250uM]
 
-num_states = 2
+num_states = 3
 # Run fitting
 lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data, num_states, fpi=True)
 T_lap = lapt_tHMMobj_list[0].estimate.T
@@ -60,7 +60,7 @@ def makeFigure():
 
 def plotting(ax, lpt_avg, bern_lpt, concs):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
-    for i in range(2):  # lapatinib that has 3 states
+    for i in range(num_states):  # lapatinib that has 3 states
         ax[5].plot(concs[0: 4], lpt_avg[:, i, 0], label="st " + str(i + 1), alpha=0.7)
         ax[5].set_title("G1 phase")
         ax[6].plot(concs[0: 4], lpt_avg[:, i, 1], label="st " + str(i + 1), alpha=0.7)
