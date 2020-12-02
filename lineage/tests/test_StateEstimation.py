@@ -49,14 +49,15 @@ def test_atonce_estimator():
     gms = []
     for gm in list_gammas:
         gms.append(np.vstack(gm))
-    # reshape the gammas so that each list in this list of lists is for each state.
+    # reshape the gammas so that the list contains for the only state
     gammas_1st = [array[:, 0] for array in gms]
 
+    # check only for one phase
     g1phase_cells = []
     for hmm in solver_gamma_list:
         tmp = np.array([cell.obs for lineage in hmm.X for cell in lineage.output_lineage])
         g1phase_cells.append(tmp[:, np.array([0, 2, 4])])
     
     xout, _ = atonce_estimator(g1phase_cells, gammas_1st)
-    # TODO: Add test that answer satisfies constraints
-    assert np.all(np.abs(xout - ([7.] + scales1)) <= 1.5)
+    assert [xout[i + 1] <= xout[i] for i in range(1, 4)] # check the constraint's condition
+    assert np.all(np.abs(xout - ([7.] + scales1)) <= 1.5) # check optimization is good
