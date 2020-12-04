@@ -164,9 +164,8 @@ def do_M_E_step_atonce(all_tHMMobj, all_gammas):
     gms is a list of arrays with size = N x K.
     After reshaping, we will have a list of lists for each state. 
     """
-    gms = []
-    for gm in all_gammas:
-        gms.append(np.vstack(gm))
+    gms = [np.vstack(gm) for gm in all_gammas]
+
     # reshape the gammas so that each list in this list of lists is for each state.
     for j in range(all_tHMMobj[0].num_states):
         gammas_1st = [array[:, j] for array in gms]
