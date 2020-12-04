@@ -64,7 +64,6 @@ def get_Emission_Likelihoods(tHMMobj, E=None):
 
     for k in range(tHMMobj.num_states):  # for each state
         ELstack[:, k] = E[k].pdf(all_cells)
-
     EL = []
     ii = 0
     for lineageObj in tHMMobj.X:  # for each lineage in our Population

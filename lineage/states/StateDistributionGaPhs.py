@@ -4,7 +4,7 @@ import numpy as np
 import scipy.stats as sp
 
 from .stateCommon import basic_censor
-from .StateDistributionGamma import StateDistribution as GammaSD
+from .StateDistributionGamma import StateDistribution as GammaSD, atonce_estimator
 from ..CellVar import Time
 
 
@@ -46,7 +46,19 @@ class StateDistribution:
         G1_LL = self.G1.pdf(x[:, np.array([0, 2, 4])])
         G2_LL = self.G2.pdf(x[:, np.array([1, 3, 5])])
 
+        print(self.G1.params)
         return G1_LL * G2_LL
+
+    def _atonce_estimator(self, all_cells, gamma_1st, i):
+        """ Assign the estiamted parameters within the class so they get updated! """
+        gammaG1, bernG1 = atonce_estimator(all_cells[0], gamma_1st) # G1
+        gammaG2, bernG2 = atonce_estimator(all_cells[1], gamma_1st) # G2
+        self.params[0] = bernG1[i]
+        self.params[1] = bernG2[i]
+        self.params[2] = gammaG1[0]
+        self.params[4] = gammaG2[0]
+        self.params[3] = gammaG1[i+1]
+        self.params[5] = gammaG2[i+1]
 
     def estimator(self, x, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
