@@ -49,17 +49,6 @@ class StateDistribution:
         print(self.G1.params)
         return G1_LL * G2_LL
 
-    def _atonce_estimator(self, all_cells, gamma_1st, i):
-        """ Assign the estiamted parameters within the class so they get updated! """
-        gammaG1, bernG1 = atonce_estimator(all_cells[0], gamma_1st) # G1
-        gammaG2, bernG2 = atonce_estimator(all_cells[1], gamma_1st) # G2
-        self.params[0] = bernG1[i]
-        self.params[1] = bernG2[i]
-        self.params[2] = gammaG1[0]
-        self.params[4] = gammaG2[0]
-        self.params[3] = gammaG1[i+1]
-        self.params[5] = gammaG2[i+1]
-
     def estimator(self, x, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
         x = np.array(x)
