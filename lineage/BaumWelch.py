@@ -162,11 +162,17 @@ def do_M_E_step_1state(all_tHMMobj, gammas_1st, state_j):
     # this whole thing should happen for 1 phase at a time
     for i, tHMMobj in enumerate(all_tHMMobj):
         tHMMobj.estimate.E[state_j].params[0] = bernG1[i]
+        tHMMobj.estimate.E[state_j].G1.params[0] = bernG1[i]
         tHMMobj.estimate.E[state_j].params[1] = bernG2[i]
+        tHMMobj.estimate.E[state_j].G2.params[0] = bernG2[i]
         tHMMobj.estimate.E[state_j].params[2] = outputG1[0]
+        tHMMobj.estimate.E[state_j].G1.params[1] = outputG1[0]
         tHMMobj.estimate.E[state_j].params[4] = outputG2[0]
+        tHMMobj.estimate.E[state_j].G2.params[1] = outputG2[0]
         tHMMobj.estimate.E[state_j].params[3] = outputG1[i+1]
+        tHMMobj.estimate.E[state_j].G1.params[2] = outputG1[i+1]
         tHMMobj.estimate.E[state_j].params[5] = outputG2[i+1]
+        tHMMobj.estimate.E[state_j].G2.params[2] = outputG2[i+1]
 
 def do_M_E_step_atonce(all_tHMMobj, all_gammas):
     """ perform the M_E step when all the concentrations are given at once for all the states.

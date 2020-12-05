@@ -46,7 +46,6 @@ class StateDistribution:
         G1_LL = self.G1.pdf(x[:, np.array([0, 2, 4])])
         G2_LL = self.G2.pdf(x[:, np.array([1, 3, 5])])
 
-        print(self.G1.params)
         return G1_LL * G2_LL
 
     def estimator(self, x, gammas):
