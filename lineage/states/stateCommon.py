@@ -4,7 +4,7 @@ import math
 import numpy as np
 import scipy.stats as sp
 import scipy.special as sc
-from scipy.optimize import toms748, LinearConstraint, minimize, Bounds, fmin_cobyla
+from scipy.optimize import toms748, minimize, fmin_cobyla
 
 
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
@@ -13,12 +13,7 @@ def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
 def negative_LL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     uncens = np.dot(uncens_gammas, sp.gamma.logpdf(uncens_obs, a=a, scale=scale))
     cens = np.dot(cens_gammas, sc.gammaincc(a, cens_obs / scale))
-    out = -1 * (uncens + cens)
-    if np.isnan(out):
-        print("out is nan", out)
-        print(scale, a)
-        print(uncens_obs, cens_obs)
-    return out
+    return -1 * (uncens + cens)
 
 def gamma_uncensored(gamma_obs, gammas, constant_shape):
     """ An uncensored gamma estimator. """
@@ -117,18 +112,13 @@ def negative_LL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     return outt
 
 
-def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
+def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
     """
-    gammas = []
     # Handle no observations
-    for gamma in gamas:
-        if np.sum(gamma) == 0.0:
-            gammas.append(np.ones_like(gamma))
-        else:
-            gammas.append(gamma)
+    gammas = [np.ones_like(g) if np.sum(g) == 0.0 else g for g in gamas]
 
     for i, gamma in enumerate(gammas):
         assert gamma.shape[0] == gamma_obs[i].shape[0]
@@ -139,15 +129,14 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
 
     arrgs = (arg1, arg2, arg3, arg4)
 
-    # A is a matrix of coefficients of the constraints.
-    # For example if we have x_1 - 2x_2 >= 0 then it forms a row in the A matrix as: [1, -2], and one indice in the b array [0].
-    # the row array of independent variables are assumed to be [shape, scale1, scale2, scale3, scal4]
-    x0 = np.array([10.0, 1.3, 1.5, 1.7, 1.9])
-    def const1(x):
-        return x[2] - x[1]
-    def const2(x):
-        return x[3] - x[2]
-    def const3(x):
-        return x[4] - x[3]
-    res = fmin_cobyla(func=negative_LL_atonce, x0=x0, cons=[const1, const2, const3], args=arrgs, consargs=(), rhoend=1e-3, maxfun=50000, disp=True)
+    if x0 is None:
+        x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
+
+    def constr(x):
+        return x[2:5] - x[1:4]
+
+    def constr2(x):
+        return 800.0 - x
+
+    res = fmin_cobyla(func=negative_LL_atonce, x0=x0, cons=[constr, constr2], args=arrgs, consargs=(), maxfun=500000, disp=3)
     return res
