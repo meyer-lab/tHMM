@@ -70,7 +70,6 @@ def plotting(ax, lpt_avg, bern_lpt, concs):
         ax[8].plot(concs[0: 4], bern_lpt[:, i, 1], label="st " + str(i + 1), alpha=0.7)
         ax[8].set_title("G2 phase")
 
-
     # ylim and ylabel
     for i in range(5, 7):
         ax[i].set_ylabel("prog. rate 1/[hr]")

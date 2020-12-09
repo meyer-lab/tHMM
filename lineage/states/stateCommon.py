@@ -10,10 +10,12 @@ from scipy.optimize import toms748, minimize, fmin_cobyla
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     return negative_LL_sep(x[1], x[0], uncens_obs, uncens_gammas, cens_obs, cens_gammas)
 
+
 def negative_LL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     uncens = np.dot(uncens_gammas, sp.gamma.logpdf(uncens_obs, a=a, scale=scale))
     cens = np.dot(cens_gammas, sc.gammaincc(a, cens_obs / scale))
     return -1 * (uncens + cens)
+
 
 def gamma_uncensored(gamma_obs, gammas, constant_shape):
     """ An uncensored gamma estimator. """
@@ -72,6 +74,7 @@ def gamma_estimator(gamma_obs, time_cen, gammas, constant_shape, x0):
         xOut = [constant_shape, res.x]
 
     return xOut
+
 
 def get_experiment_time(lineageObj):
     """

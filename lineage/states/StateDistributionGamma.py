@@ -158,6 +158,7 @@ class StateDistribution:
                         output_lineage.append(cell)
         return output_lineage
 
+
 def fate_censor(cell):
     """
     User-defined function that checks whether a cell's subtree should be removed.
@@ -189,8 +190,9 @@ def time_censor(cell, desired_experiment_time):
             cell.left.observed = False
             cell.right.observed = False
 
+
 def atonce_estimator(x_list, gammas_list):
-    """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. 
+    """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells.
         gammas_list is only for one state. """
     # unzipping the list of tuples
     x_data = [np.array(x) for x in x_list]

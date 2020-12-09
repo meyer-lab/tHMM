@@ -6,7 +6,7 @@ import scipy.stats as sp
 from ..BaumWelch import do_E_step
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
-from ..states.stateCommon import gamma_estimator_atonce 
+from ..states.stateCommon import gamma_estimator_atonce
 from ..states.StateDistributionGamma import atonce_estimator, StateDistribution as gamma_state
 from ..states.StateDistributionGaPhs import StateDistribution as gamma_statePh
 
@@ -32,8 +32,9 @@ def test_estimationEvaluationGamma(censored, constant_shape):
 
     assert solver_gamma.estimate.E[0].dist(E_gamma[0]) < 4.0
 
+
 def test_atonce_estimator():
-    """ 
+    """
     Evaluates the gamma estimator written for fitting all the concentrations at once.
     """
     pi = np.array([1])
@@ -57,7 +58,7 @@ def test_atonce_estimator():
     for hmm in solver_gamma_list:
         tmp = np.array([cell.obs for lineage in hmm.X for cell in lineage.output_lineage])
         g1phase_cells.append(tmp[:, np.array([0, 2, 4])])
-    
+
     xout, _ = atonce_estimator(g1phase_cells, gammas_1st)
-    assert [xout[i + 1] <= xout[i] for i in range(1, 4)] # check the constraint's condition
-    assert np.all(np.abs(xout - ([7.] + scales1)) <= 1.5) # check optimization is good
+    assert [xout[i + 1] <= xout[i] for i in range(1, 4)]  # check the constraint's condition
+    assert np.all(np.abs(xout - ([7.] + scales1)) <= 1.5)  # check optimization is good
