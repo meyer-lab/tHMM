@@ -169,7 +169,7 @@ def log_E_score(EL_array, state_tree_sequence):
     return log_E_score_holder
 
 
-def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
+def fit_list(tHMMobj_list, tolerance=1e-4, max_iter=1000):
     """Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations"""
 
     # Step 0: initialize with random assignments and do an M step

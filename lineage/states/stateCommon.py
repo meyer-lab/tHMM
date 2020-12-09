@@ -4,7 +4,7 @@ import math
 import numpy as np
 import scipy.stats as sp
 import scipy.special as sc
-from scipy.optimize import toms748, LinearConstraint, minimize, Bounds
+from scipy.optimize import toms748, LinearConstraint, minimize, Bounds, fmin_cobyla
 
 
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
@@ -13,7 +13,12 @@ def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
 def negative_LL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     uncens = np.dot(uncens_gammas, sp.gamma.logpdf(uncens_obs, a=a, scale=scale))
     cens = np.dot(cens_gammas, sc.gammaincc(a, cens_obs / scale))
-    return -1 * (uncens + cens)
+    out = -1 * (uncens + cens)
+    if np.isnan(out):
+        print("out is nan", out)
+        print(scale, a)
+        print(uncens_obs, cens_obs)
+    return out
 
 def gamma_uncensored(gamma_obs, gammas, constant_shape):
     """ An uncensored gamma estimator. """
@@ -137,11 +142,12 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
     # A is a matrix of coefficients of the constraints.
     # For example if we have x_1 - 2x_2 >= 0 then it forms a row in the A matrix as: [1, -2], and one indice in the b array [0].
     # the row array of independent variables are assumed to be [shape, scale1, scale2, scale3, scal4]
-    x0 = np.array([10.0, 1.0, 2.0, 3.0, 4.0])
-    A = np.array([[0, 1, -1, 0, 0], [0, 0, 1, -1, 0], [0, 0, 0, 1, -1]])
-    bnds = Bounds([1, 0.001, 0.001, 0.001, 0.001], [1000, 500.0, 500.0, 500.0, 500.0]) # list [min], [max]
-    cons = LinearConstraint(A, lb=-10000.0*np.ones(x0.size - 2), ub=np.zeros(x0.size - 2))
-    res = minimize(fun=negative_LL_atonce, x0=x0, method='trust-constr', jac="3-point", bounds=bnds, constraints=cons, args=arrgs)
-    assert res.success
-    assert res.niter > 2
-    return res.x
+    x0 = np.array([10.0, 1.3, 1.5, 1.7, 1.9])
+    def const1(x):
+        return x[2] - x[1]
+    def const2(x):
+        return x[3] - x[2]
+    def const3(x):
+        return x[4] - x[3]
+    res = fmin_cobyla(func=negative_LL_atonce, x0=x0, cons=[const1, const2, const3], args=arrgs, consargs=(), rhoend=1e-3, maxfun=50000, disp=True)
+    return res

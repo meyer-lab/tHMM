@@ -52,7 +52,7 @@ def makeFigure():
         ax[idx].set_title(concs[idx])
         ax[idx].set_ylabel("phase lengths [hr]")
         ax[idx].set_xlabel("state")
-        # ax[idx].set_ylim([0.0, 150.0])
+        ax[idx].set_ylim([0.0, 150.0])
 
     plotting(ax, lpt_avg, bern_lpt, concs)
     return f
@@ -74,12 +74,12 @@ def plotting(ax, lpt_avg, bern_lpt, concs):
     # ylim and ylabel
     for i in range(5, 7):
         ax[i].set_ylabel("prog. rate 1/[hr]")
-        # ax[i].set_ylim([0, 0.1])
+        ax[i].set_ylim([0, 0.04])
 
     # ylim and ylabel
     for i in range(7, 9):
         ax[i].set_ylabel("div. prob.")
-        # ax[i].set_ylim([0, 1.05])
+        ax[i].set_ylim([0, 1.05])
 
     # legend and xlabel
     for i in range(5, 9):

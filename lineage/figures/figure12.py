@@ -84,12 +84,12 @@ def plot_gemc(ax, gmc_avg, bern_gmc, concs):
     # ylim and ylabel
     for i in range(5, 7):
         ax[i].set_ylabel("prog. rate 1/[hr]")
-        # ax[i].set_ylim([0, 0.1])
+        ax[i].set_ylim([0, 0.05])
 
     # ylim and ylabel
     for i in range(7, 9):
         ax[i].set_ylabel("death rate")
-        # ax[i].set_ylim([0, 1.05])
+        ax[i].set_ylim([0, 1.05])
 
     # legend and xlabel
     for i in range(5, 9):
