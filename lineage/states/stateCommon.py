@@ -4,7 +4,7 @@ import math
 import numpy as np
 import scipy.stats as sp
 import scipy.special as sc
-from scipy.optimize import toms748, LinearConstraint, minimize, Bounds
+from scipy.optimize import toms748, LinearConstraint, minimize, Bounds, fmin_cobyla
 
 
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
@@ -13,7 +13,12 @@ def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
 def negative_LL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     uncens = np.dot(uncens_gammas, sp.gamma.logpdf(uncens_obs, a=a, scale=scale))
     cens = np.dot(cens_gammas, sc.gammaincc(a, cens_obs / scale))
-    return -1 * (uncens + cens)
+    out = -1 * (uncens + cens)
+    if np.isnan(out):
+        print("out is nan", out)
+        print(scale, a)
+        print(uncens_obs, cens_obs)
+    return out
 
 def gamma_uncensored(gamma_obs, gammas, constant_shape):
     """ An uncensored gamma estimator. """
@@ -103,17 +108,14 @@ def basic_censor(cell):
                 cell.get_sister().left.observed = False
                 cell.get_sister().right.observed = False
 
+
 def negative_LL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     """ uses the negative_LL_atonce and passes the vector of scales and the shared shape parameter. """
-    return negative_LL_sep_atonce(x[1:5], x[0], uncens_obs, uncens_gammas, cens_obs, cens_gammas)
+    outt = 0.0
+    for i in range(4):
+        outt += negative_LL_sep(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
+    return outt
 
-def negative_LL_sep_atonce(scales, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
-    """ Calculates the negative likelihood for a list of different concentrations of data. 
-    We consider only one shape parameter for all the concentrations, and each concentration will have its own scale parameter.
-    For gamma distributio, for the data of 4 concentrations we will have 5 parameters; [shape, scale1, scale2, scale3, scale4]. """
-    uncens = np.sum([np.dot(np.asarray(uncens_gammas[i]).reshape(1,len(uncens_gammas[i])), sp.gamma.logpdf(uncens_obs[i], a=a, scale=scale)) for i, scale in enumerate(scales)])
-    cens = np.sum([np.dot(np.asarray(cens_gammas[i]).reshape(1, len(cens_gammas[i])), sc.gammaincc(a, cens_obs[i] / scale)) for i, scale in enumerate(scales)])
-    return -1 * (uncens + cens)
 
 def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
     """
@@ -130,21 +132,22 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas):
 
     for i, gamma in enumerate(gammas):
         assert gamma.shape[0] == gamma_obs[i].shape[0]
-    arg1 = [gamma_obs[i][time_cen[i] == 1] for i in range(len(gamma_obs))]
-    arg2 = [gammas[i][time_cen[i] == 1] for i in range(len(gamma_obs))]
-    arg3 = [gamma_obs[i][time_cen[i] == 0] for i in range(len(gamma_obs))]
-    arg4 = [gammas[i][time_cen[i] == 0] for i in range(len(gamma_obs))]
+    arg1 = [np.squeeze(gamma_obs[i][time_cen[i] == 1]) for i in range(len(gamma_obs))]
+    arg2 = [np.squeeze(gammas[i][time_cen[i] == 1]) for i in range(len(gamma_obs))]
+    arg3 = [np.squeeze(gamma_obs[i][time_cen[i] == 0]) for i in range(len(gamma_obs))]
+    arg4 = [np.squeeze(gammas[i][time_cen[i] == 0]) for i in range(len(gamma_obs))]
 
     arrgs = (arg1, arg2, arg3, arg4)
-    opt = {'tol': 1e-12}
 
     # A is a matrix of coefficients of the constraints.
     # For example if we have x_1 - 2x_2 >= 0 then it forms a row in the A matrix as: [1, -2], and one indice in the b array [0].
     # the row array of independent variables are assumed to be [shape, scale1, scale2, scale3, scal4]
-    A = np.array([[0, 1, -1, 0, 0], [0, 0, 1, -1, 0], [0, 0, 0, 1, -1]])
-    bnds = Bounds([1, 0.001, 0.001, 0.001, 0.001], [100, 50.0, 50.0, 50.0, 50.0]) # list [min], [max]
-    cons = LinearConstraint(A, lb=[-np.inf]*A.shape[0], ub=[0.0]*A.shape[0])
-    res = minimize(fun=negative_LL_atonce, x0=[10.0, 0.05, 0.05, 0.05, 0.05], method='COBYLA', bounds=bnds, constraints=cons, args=arrgs, options=opt)
-    xOut = res.x
-
-    return xOut
+    x0 = np.array([10.0, 1.3, 1.5, 1.7, 1.9])
+    def const1(x):
+        return x[2] - x[1]
+    def const2(x):
+        return x[3] - x[2]
+    def const3(x):
+        return x[4] - x[3]
+    res = fmin_cobyla(func=negative_LL_atonce, x0=x0, cons=[const1, const2, const3], args=arrgs, consargs=(), rhoend=1e-3, maxfun=50000, disp=True)
+    return res

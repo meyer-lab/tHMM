@@ -4,7 +4,7 @@ import numpy as np
 import scipy.stats as sp
 
 from .stateCommon import basic_censor
-from .StateDistributionGamma import StateDistribution as GammaSD
+from .StateDistributionGamma import StateDistribution as GammaSD, atonce_estimator
 from ..CellVar import Time
 
 

@@ -6,7 +6,6 @@ import networkx as nx
 import pygraphviz
 from string import ascii_lowercase
 
-
 from ..Analyze import Analyze_list
 from ..tHMM import tHMM
 from ..data.Lineage_collections import gemControl, gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
@@ -16,23 +15,10 @@ concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM", "cntrl", "5nM", "10nM"
 concsValues = ["cntrl", "25nM", "50nM", "250nM"]
 data = [Lapatinib_Control + gemControl, Lapt25uM, Lapt50uM, Lap250uM]
 
-tHMM_solver = tHMM(X=data[0], num_states=1)
-tHMM_solver.fit()
-
-constant_shape = [int(tHMM_solver.estimate.E[0].params[2]), int(tHMM_solver.estimate.E[0].params[4])]
-
-# Set shape
-for population in data:
-    for lin in population:
-        for E in lin.E:
-            E.G1.const_shape = constant_shape[0]
-            E.G2.const_shape = constant_shape[1]
-
-# Run fitting
-lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data, 3, fpi=True)
-T_lap = lapt_tHMMobj_list[0].estimate.T
-
 num_states = 3
+# Run fitting
+lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data, num_states, fpi=True)
+T_lap = lapt_tHMMobj_list[0].estimate.T
 
 
 def makeFigure():
@@ -74,7 +60,7 @@ def makeFigure():
 
 def plotting(ax, lpt_avg, bern_lpt, concs):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
-    for i in range(3):  # lapatinib that has 3 states
+    for i in range(num_states):  # lapatinib that has 3 states
         ax[5].plot(concs[0: 4], lpt_avg[:, i, 0], label="st " + str(i + 1), alpha=0.7)
         ax[5].set_title("G1 phase")
         ax[6].plot(concs[0: 4], lpt_avg[:, i, 1], label="st " + str(i + 1), alpha=0.7)
@@ -84,14 +70,15 @@ def plotting(ax, lpt_avg, bern_lpt, concs):
         ax[8].plot(concs[0: 4], bern_lpt[:, i, 1], label="st " + str(i + 1), alpha=0.7)
         ax[8].set_title("G2 phase")
 
+
     # ylim and ylabel
     for i in range(5, 7):
         ax[i].set_ylabel("prog. rate 1/[hr]")
-        ax[i].set_ylim([0, 0.1])
+        ax[i].set_ylim([0, 0.04])
 
     # ylim and ylabel
     for i in range(7, 9):
-        ax[i].set_ylabel("death rate")
+        ax[i].set_ylabel("div. prob.")
         ax[i].set_ylim([0, 1.05])
 
     # legend and xlabel
