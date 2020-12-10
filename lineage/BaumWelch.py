@@ -146,18 +146,6 @@ def do_M_E_step(tHMMobj, gammas):
     for state_j in range(tHMMobj.num_states):
         tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
 
-def do_M_E_step_1state(all_tHMMobj, gammas_1st, state_j):
-    """ perform the M_E step when all the concentrations are given at once for one state.
-    all_cells is a list (for different concentrations) containing lists of tuples of observations. 
-    gammas_1st is a list of lists, each cell's gamma value for one state. """
-    G1cells = []
-    G2cells = []
-    for tHMMobj in all_tHMMobj:
-        all_cells = np.array([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
-        G1cells.append(all_cells[:, np.array([0, 2, 4])])
-        G2cells.append(all_cells[:, np.array([1, 3, 5])])
-    atonce_estimator(all_tHMMobj, G1cells, gammas_1st, "G1", state_j) # [shape, sc1, sc2, sc3, sc4] for G1
-    atonce_estimator(all_tHMMobj, G2cells, gammas_1st, "G2", state_j) # [shape, sc1, sc2, sc3, sc4] for G2
 
 def do_M_E_step_atonce(all_tHMMobj, all_gammas):
     """ perform the M_E step when all the concentrations are given at once for all the states.
@@ -167,10 +155,18 @@ def do_M_E_step_atonce(all_tHMMobj, all_gammas):
     gms = []
     for gm in all_gammas:
         gms.append(np.vstack(gm))
+    G1cells = []
+    G2cells = []
+    for tHMMobj in all_tHMMobj:
+        all_cells = np.array([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
+        G1cells.append(all_cells[:, np.array([0, 2, 4])])
+        G2cells.append(all_cells[:, np.array([1, 3, 5])])
+
     # reshape the gammas so that each list in this list of lists is for each state.
     for j in range(all_tHMMobj[0].num_states):
         gammas_1st = [array[:, j] for array in gms]
-        do_M_E_step_1state(all_tHMMobj, gammas_1st, j)
+        atonce_estimator(all_tHMMobj, G1cells, gammas_1st, "G1", j) # [shape, sc1, sc2, sc3, sc4] for G1
+        atonce_estimator(all_tHMMobj, G2cells, gammas_1st, "G2", j) # [shape, sc1, sc2, sc3, sc4] for G2
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     """
