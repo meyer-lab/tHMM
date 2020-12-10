@@ -59,6 +59,7 @@ def test_atonce_estimator():
         tmp = np.array([cell.obs for lineage in hmm.X for cell in lineage.output_lineage])
         g1phase_cells.append(tmp[:, np.array([0, 2, 4])])
 
-    xout, _ = atonce_estimator(g1phase_cells, gammas_1st)
+    atonce_estimator(solver_gamma_list, g1phase_cells, gammas_1st, "G1", 0)
+    xout = np.array([solver_gamma_list[0].estimate.E[0].params[2]] + [tHMMobj.estimate.E[0].params[3] for tHMMobj in solver_gamma_list])
     assert [xout[i + 1] <= xout[i] for i in range(1, 4)]  # check the constraint's condition
     assert np.all(np.abs(xout - ([7.] + scales1)) <= 1.5)  # check optimization is good
