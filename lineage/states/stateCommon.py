@@ -139,7 +139,10 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
         return x[2:5] - x[1:4]
 
     def constr2(x):
-        return 800.0 - x
+        return 100.0 - x[0]
 
-    res = fmin_cobyla(func=negative_LL_atonce, x0=x0, cons=[constr, constr2], args=arrgs, consargs=(), maxfun=500000, disp=3)
-    return fmin_cobyla(func=negative_LL_atonce, x0=res, cons=[constr, constr2], args=arrgs, consargs=(), maxfun=500000, disp=3)
+    def constr3(x):
+        return 20.0 - x[1:5]
+
+    res = fmin_cobyla(func=negative_LL_atonce, x0=x0, cons=[constr, constr2, constr3], args=arrgs, consargs=(), maxfun=500000, disp=3)
+    return res

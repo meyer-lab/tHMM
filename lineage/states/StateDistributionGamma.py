@@ -191,7 +191,7 @@ def time_censor(cell, desired_experiment_time):
             cell.right.observed = False
 
 
-def atonce_estimator(x_list, gammas_list):
+def atonce_estimator(all_tHMMobj, x_list, gammas_list, phase, state_j):
     """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells.
         gammas_list is only for one state. """
     # unzipping the list of tuples
@@ -219,5 +219,25 @@ def atonce_estimator(x_list, gammas_list):
     γ_obs_total = [g_obs[g_masks[i]] for i, g_obs in enumerate(γ_obs)]
     γ_obs_total_censored = [g_obs_cen[g_masks[i]] for i, g_obs_cen in enumerate(gamma_obs_censor)]
     gammas_total = [np.vstack(gamma_tot)[g_masks[i]] for i, gamma_tot in enumerate(gammas_list)]
-    output = gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total)
-    return gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total, x0=output), bern_params
+
+    if phase == "G1":
+        x0 = np.array([all_tHMMobj[0].estimate.E[state_j].params[2]] + [tHMMobj.estimate.E[state_j].params[3] for tHMMobj in all_tHMMobj])
+        output = gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total, x0)
+        for i, tHMMobj in enumerate(all_tHMMobj):
+            tHMMobj.estimate.E[state_j].params[0] = bern_params[i]
+            tHMMobj.estimate.E[state_j].G1.params[0] = bern_params[i]
+            tHMMobj.estimate.E[state_j].params[2] = output[0]
+            tHMMobj.estimate.E[state_j].G1.params[1] = output[0]
+            tHMMobj.estimate.E[state_j].params[3] = output[i+1]
+            tHMMobj.estimate.E[state_j].G1.params[2] = output[i+1]
+
+    elif phase == "G2":
+        x0 = np.array([all_tHMMobj[0].estimate.E[state_j].params[4]] + [tHMMobj.estimate.E[state_j].params[5] for tHMMobj in all_tHMMobj])
+        output = gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total, x0)
+        for i, tHMMobj in enumerate(all_tHMMobj):
+            tHMMobj.estimate.E[state_j].params[1] = bern_params[i]
+            tHMMobj.estimate.E[state_j].G2.params[0] = bern_params[i]
+            tHMMobj.estimate.E[state_j].params[4] = output[0]
+            tHMMobj.estimate.E[state_j].G2.params[1] = output[0]
+            tHMMobj.estimate.E[state_j].params[5] = output[i+1]
+            tHMMobj.estimate.E[state_j].G2.params[2] = output[i+1]
