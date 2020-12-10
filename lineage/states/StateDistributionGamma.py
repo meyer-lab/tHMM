@@ -2,7 +2,7 @@
 import numpy as np
 import scipy.stats as sp
 
-from .stateCommon import gamma_estimator, basic_censor
+from .stateCommon import gamma_estimator, gamma_estimator_atonce, basic_censor
 from ..CellVar import Time
 
 
@@ -66,11 +66,10 @@ class StateDistribution:
 
     def estimator(self, x, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
-        # unzipping the list of tuples
-        x = np.array(x)
 
         # getting the observations as individual lists
         # {
+        x = np.array(x)
         bern_obs = x[:, 0].astype('bool')
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
@@ -190,3 +189,55 @@ def time_censor(cell, desired_experiment_time):
             # the daughters are no longer observed
             cell.left.observed = False
             cell.right.observed = False
+
+
+def atonce_estimator(all_tHMMobj, x_list, gammas_list, phase, state_j):
+    """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells.
+        gammas_list is only for one state. """
+    # unzipping the list of tuples
+    x_data = [np.array(x) for x in x_list]
+
+    # getting the observations as individual lists
+    bern_obs = [x[:, 0].astype('bool') for x in x_data]
+    γ_obs = [x[:, 1] for x in x_data]
+    gamma_obs_censor = [x[:, 2] for x in x_data]
+
+    b_masks = [np.isfinite(bern_) for bern_ in bern_obs]
+    bern_params = np.zeros(4)
+    for i, b_mask in enumerate(b_masks):
+        # Handle an empty state
+        if np.sum(gammas_list[i][b_mask]) == 0.0:
+            bern_params[i] = np.average(bern_obs[i][b_mask])
+        else:
+            bern_params[i] = np.average(bern_obs[i][b_mask], weights=gammas_list[i][b_mask])
+
+    # Both unoberved and dead cells should be removed from gamma
+    g_masks = [np.logical_and(np.isfinite(γ_o), berns) for γ_o, berns in zip(γ_obs, bern_obs)]
+    for g_mask in g_masks:
+        assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
+
+    γ_obs_total = [g_obs[g_masks[i]] for i, g_obs in enumerate(γ_obs)]
+    γ_obs_total_censored = [g_obs_cen[g_masks[i]] for i, g_obs_cen in enumerate(gamma_obs_censor)]
+    gammas_total = [np.vstack(gamma_tot)[g_masks[i]] for i, gamma_tot in enumerate(gammas_list)]
+
+    if phase == "G1":
+        x0 = np.array([all_tHMMobj[0].estimate.E[state_j].params[2]] + [tHMMobj.estimate.E[state_j].params[3] for tHMMobj in all_tHMMobj])
+        output = gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total, x0)
+        for i, tHMMobj in enumerate(all_tHMMobj):
+            tHMMobj.estimate.E[state_j].params[0] = bern_params[i]
+            tHMMobj.estimate.E[state_j].G1.params[0] = bern_params[i]
+            tHMMobj.estimate.E[state_j].params[2] = output[0]
+            tHMMobj.estimate.E[state_j].G1.params[1] = output[0]
+            tHMMobj.estimate.E[state_j].params[3] = output[i+1]
+            tHMMobj.estimate.E[state_j].G1.params[2] = output[i+1]
+
+    elif phase == "G2":
+        x0 = np.array([all_tHMMobj[0].estimate.E[state_j].params[4]] + [tHMMobj.estimate.E[state_j].params[5] for tHMMobj in all_tHMMobj])
+        output = gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total, x0)
+        for i, tHMMobj in enumerate(all_tHMMobj):
+            tHMMobj.estimate.E[state_j].params[1] = bern_params[i]
+            tHMMobj.estimate.E[state_j].G2.params[0] = bern_params[i]
+            tHMMobj.estimate.E[state_j].params[4] = output[0]
+            tHMMobj.estimate.E[state_j].G2.params[1] = output[0]
+            tHMMobj.estimate.E[state_j].params[5] = output[i+1]
+            tHMMobj.estimate.E[state_j].G2.params[2] = output[i+1]

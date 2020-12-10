@@ -14,6 +14,7 @@ from .DownwardRecursion import (
     sum_nonleaf_gammas,
 )
 
+from .states.StateDistributionGamma import atonce_estimator
 
 def do_E_step(tHMMobj):
     """
@@ -86,9 +87,10 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
 
     if tHMMobj[0].estimate.fE is None:
         assert tHMMobj[0].fE is None
-        for idx, tt in enumerate(tHMMobj):
-            do_M_E_step(tt, gammas[idx])
-
+        if len(tHMMobj) == 1: # means it only performs calculation on one condition at a time.
+            do_M_E_step(tHMMobj[0], gammas[0])
+        else: # means it performs the calculations on several concentrations at once.
+            do_M_E_step_atonce(tHMMobj, gammas)
 
 def do_M_pi_step(tHMMobj, gammas):
     """
@@ -144,6 +146,27 @@ def do_M_E_step(tHMMobj, gammas):
     for state_j in range(tHMMobj.num_states):
         tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
 
+
+def do_M_E_step_atonce(all_tHMMobj, all_gammas):
+    """ perform the M_E step when all the concentrations are given at once for all the states.
+    gms is a list of arrays with size = N x K.
+    After reshaping, we will have a list of lists for each state. 
+    """
+    gms = []
+    for gm in all_gammas:
+        gms.append(np.vstack(gm))
+    G1cells = []
+    G2cells = []
+    for tHMMobj in all_tHMMobj:
+        all_cells = np.array([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
+        G1cells.append(all_cells[:, np.array([0, 2, 4])])
+        G2cells.append(all_cells[:, np.array([1, 3, 5])])
+
+    # reshape the gammas so that each list in this list of lists is for each state.
+    for j in range(all_tHMMobj[0].num_states):
+        gammas_1st = [array[:, j] for array in gms]
+        atonce_estimator(all_tHMMobj, G1cells, gammas_1st, "G1", j) # [shape, sc1, sc2, sc3, sc4] for G1
+        atonce_estimator(all_tHMMobj, G2cells, gammas_1st, "G2", j) # [shape, sc1, sc2, sc3, sc4] for G2
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     """

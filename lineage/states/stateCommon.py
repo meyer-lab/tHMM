@@ -4,7 +4,7 @@ import math
 import numpy as np
 import scipy.stats as sp
 import scipy.special as sc
-from scipy.optimize import toms748, minimize
+from scipy.optimize import toms748, minimize, fmin_cobyla
 
 
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
@@ -105,3 +105,41 @@ def basic_censor(cell):
             if not cell.get_sister().isLeafBecauseTerminal():
                 cell.get_sister().left.observed = False
                 cell.get_sister().right.observed = False
+
+
+def negative_LL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
+    """ uses the negative_LL_atonce and passes the vector of scales and the shared shape parameter. """
+    outt = 0.0
+    for i in range(4):
+        outt += negative_LL_sep(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
+    return outt
+
+
+def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
+    """
+    This is a weighted, closed-form estimator for two parameters
+    of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
+    """
+    # Handle no observations
+    gammas = [np.ones_like(g) if np.sum(g) == 0.0 else g for g in gamas]
+
+    for i, gamma in enumerate(gammas):
+        assert gamma.shape[0] == gamma_obs[i].shape[0]
+    arg1 = [np.squeeze(gamma_obs[i][time_cen[i] == 1]) for i in range(len(gamma_obs))]
+    arg2 = [np.squeeze(gammas[i][time_cen[i] == 1]) for i in range(len(gamma_obs))]
+    arg3 = [np.squeeze(gamma_obs[i][time_cen[i] == 0]) for i in range(len(gamma_obs))]
+    arg4 = [np.squeeze(gammas[i][time_cen[i] == 0]) for i in range(len(gamma_obs))]
+
+    arrgs = (arg1, arg2, arg3, arg4)
+
+    if x0 is None:
+        x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
+
+    def constr(x):
+        return x[2:5] - x[1:4]
+
+    def constr2(x):
+        return 100.0 - x
+
+    res = fmin_cobyla(func=negative_LL_atonce, x0=x0, cons=[constr, constr2], args=arrgs, consargs=(), maxfun=500000, rhoend=1e-6, rhobeg=2.0)
+    return res

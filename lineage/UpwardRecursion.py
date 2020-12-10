@@ -64,7 +64,6 @@ def get_Emission_Likelihoods(tHMMobj, E=None):
 
     for k in range(tHMMobj.num_states):  # for each state
         ELstack[:, k] = E[k].pdf(all_cells)
-
     EL = []
     ii = 0
     for lineageObj in tHMMobj.X:  # for each lineage in our Population
@@ -106,7 +105,7 @@ def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
         EL_array = EL[num]  # geting the EL of the respective lineage
         NF_array = np.zeros(len(lineage), dtype=float)  # instantiating N by 1 array
 
-        for ii, cell in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
+        for ii, _ in enumerate(lineageObj.output_leaves):  # for each cell in the lineage's leaves
             leaf_idx = lineageObj.output_leaves_idx[ii]
 
             # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
