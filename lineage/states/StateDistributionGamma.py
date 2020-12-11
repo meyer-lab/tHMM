@@ -15,6 +15,7 @@ class StateDistribution:
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.params = np.array([bern_p, gamma_a, gamma_scale])
         self.const_shape = shape
+        self.dof = 0
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
@@ -241,3 +242,6 @@ def atonce_estimator(all_tHMMobj, x_list, gammas_list, phase, state_j):
             tHMMobj.estimate.E[state_j].G2.params[1] = output[0]
             tHMMobj.estimate.E[state_j].params[5] = output[i+1]
             tHMMobj.estimate.E[state_j].G2.params[2] = output[i+1]
+            tHMMobj.estimate.E[state_j].G1.dof = 2.25
+            tHMMobj.estimate.E[state_j].G2.dof = 2.25
+

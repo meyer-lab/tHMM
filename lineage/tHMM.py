@@ -75,7 +75,7 @@ class tHMM:
         pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
         return pred_states_by_lineage
 
-    def get_AIC(self, LL):
+    def get_AIC(self, LL, atonce=False):
         """
         Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.
@@ -97,8 +97,12 @@ class tHMM:
         if self.fT is None:
             degrees_of_freedom += self.num_states * (self.num_states - 1)
 
-        for ii in range(self.num_states):
-            degrees_of_freedom += self.estimate.E[ii].dof()
+        if atonce:
+            for ii in range(self.num_states):
+                degrees_of_freedom += self.estimate.E[ii].dof
+        else:
+            for ii in range(self.num_states):
+                degrees_of_freedom += self.estimate.E[ii].dof()
 
         # the whole population has one AIC value.
         AIC_value = -2 * np.sum(LL) + 2 * degrees_of_freedom

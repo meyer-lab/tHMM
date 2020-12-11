@@ -3,7 +3,7 @@
 from copy import deepcopy
 import numpy as np
 from matplotlib.ticker import MaxNLocator
-from ..Analyze import run_Analyze_over
+from ..Analyze import Analyze_list
 import matplotlib.gridspec as gridspec
 from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 
@@ -19,34 +19,24 @@ def makeFigure():
     """
     ax, f = getSetup((7, 3), (1, 2))
 
-    data = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM, Gem5uM, Gem10uM, Gem30uM]
-    dataFull = []
+    lapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
+    gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
 
-    # Find the cell cycle shape parameters to be set as constant from the one state model
-    tHMM_solver = tHMM(X=data[0], num_states=1)
-    tHMM_solver.fit()
+    def find_AIC(lapatinib, desired_num_states):
 
-    constant_shape = [int(tHMM_solver.estimate.E[0].params[2]), int(tHMM_solver.estimate.E[0].params[4])]
+        lpAICs = []
+        for j in desired_num_states:
+            tHMMobj_lp, _, LL_lp = Analyze_list(lapatinib, j)
+            lpAICs.append(np.array([oo.get_AIC(LL_lp)[0] for i, oo in enumerate(tHMMobj_lp)]))
 
-    # Set shape
-    for population in data:
-        for lin in population:
-            for E in lin.E:
-                E.G1.const_shape = constant_shape[0]
-                E.G2.const_shape = constant_shape[1]
+        lpAICs = np.array(lpAICs)
+        lpAICs = np.reshape(lpAICs, np.repeat(desired_num_states, len(lapatinib)))
+        lpAICs -= np.min(lpAICs, axis=0)
 
-    # Copy out data to full set
-    for _ in desired_num_states:
-        dataFull = dataFull + deepcopy(data)
+        return lpAICs
 
-    # Run fitting
-    output = run_Analyze_over(dataFull, np.repeat(desired_num_states, len(data)))
-    AICs = np.array([oo[0].get_AIC(oo[2])[0] for oo in output])
-    AICs = np.reshape(AICs, (desired_num_states.size, len(data)))
-    AICs -= np.min(AICs, axis=0)
-
-    lapAIC = np.sum(AICs[:, 0:4], axis=1)
-    gemAIC = np.sum(AICs[:, np.array([0, 4, 5, 6])], axis=1)
+    lapAIC = find_AIC(lapatinib, desired_num_states)
+    gemAIC = find_AIC(gemcitabine, desired_num_states)
 
     # Plotting AICs
     figure_maker(ax, [lapAIC, gemAIC])
