@@ -155,6 +155,7 @@ def log_T_score(T, state_tree_sequence, lineageObj):
                     log_T_score_holder += log_T[cell_state, daughter_state]
     return log_T_score_holder
 
+
 def log_E_score(EL_array, state_tree_sequence):
     """
     To calculate the joint probability of state and observations.
@@ -177,9 +178,9 @@ def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
     init_all_gammas = [[sp.multinomial.rvs(n=1, p=[1. / tHMMobj.num_states] * tHMMobj.num_states, size=len(lineage))
                         for lineage in tHMMobj.X] for tHMMobj in tHMMobj_list]
 
-    if len(tHMMobj_list) > 1: # it means we are fitting several concentrations at once.
+    if len(tHMMobj_list) > 1:  # it means we are fitting several concentrations at once.
         do_M_E_step_atonce(tHMMobj_list, init_all_gammas)
-    else: # means we are fitting one condition at a time.
+    else:  # means we are fitting one condition at a time.
         do_M_E_step(tHMMobj_list[0], init_all_gammas[0])
 
     # Step 1: first E step

@@ -16,6 +16,7 @@ from .DownwardRecursion import (
 
 from .states.StateDistributionGamma import atonce_estimator
 
+
 def do_E_step(tHMMobj):
     """
     Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
@@ -87,10 +88,11 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
 
     if tHMMobj[0].estimate.fE is None:
         assert tHMMobj[0].fE is None
-        if len(tHMMobj) == 1: # means it only performs calculation on one condition at a time.
+        if len(tHMMobj) == 1:  # means it only performs calculation on one condition at a time.
             do_M_E_step(tHMMobj[0], gammas[0])
-        else: # means it performs the calculations on several concentrations at once.
+        else:  # means it performs the calculations on several concentrations at once.
             do_M_E_step_atonce(tHMMobj, gammas)
+
 
 def do_M_pi_step(tHMMobj, gammas):
     """
@@ -150,7 +152,7 @@ def do_M_E_step(tHMMobj, gammas):
 def do_M_E_step_atonce(all_tHMMobj, all_gammas):
     """ perform the M_E step when all the concentrations are given at once for all the states.
     gms is a list of arrays with size = N x K.
-    After reshaping, we will have a list of lists for each state. 
+    After reshaping, we will have a list of lists for each state.
     """
     gms = []
     for gm in all_gammas:
@@ -165,8 +167,9 @@ def do_M_E_step_atonce(all_tHMMobj, all_gammas):
     # reshape the gammas so that each list in this list of lists is for each state.
     for j in range(all_tHMMobj[0].num_states):
         gammas_1st = [array[:, j] for array in gms]
-        atonce_estimator(all_tHMMobj, G1cells, gammas_1st, "G1", j) # [shape, sc1, sc2, sc3, sc4] for G1
-        atonce_estimator(all_tHMMobj, G2cells, gammas_1st, "G2", j) # [shape, sc1, sc2, sc3, sc4] for G2
+        atonce_estimator(all_tHMMobj, G1cells, gammas_1st, "G1", j)  # [shape, sc1, sc2, sc3, sc4] for G1
+        atonce_estimator(all_tHMMobj, G2cells, gammas_1st, "G2", j)  # [shape, sc1, sc2, sc3, sc4] for G2
+
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     """
