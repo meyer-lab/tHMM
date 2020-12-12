@@ -229,8 +229,8 @@ def atonce_estimator(all_tHMMobj, x_list, gammas_list, phase, state_j):
             tHMMobj.estimate.E[state_j].G1.params[0] = bern_params[i]
             tHMMobj.estimate.E[state_j].params[2] = output[0]
             tHMMobj.estimate.E[state_j].G1.params[1] = output[0]
-            tHMMobj.estimate.E[state_j].params[3] = output[i+1]
-            tHMMobj.estimate.E[state_j].G1.params[2] = output[i+1]
+            tHMMobj.estimate.E[state_j].params[3] = output[i + 1]
+            tHMMobj.estimate.E[state_j].G1.params[2] = output[i + 1]
 
     elif phase == "G2":
         x0 = np.array([all_tHMMobj[0].estimate.E[state_j].params[4]] + [tHMMobj.estimate.E[state_j].params[5] for tHMMobj in all_tHMMobj])
@@ -240,5 +240,5 @@ def atonce_estimator(all_tHMMobj, x_list, gammas_list, phase, state_j):
             tHMMobj.estimate.E[state_j].G2.params[0] = bern_params[i]
             tHMMobj.estimate.E[state_j].params[4] = output[0]
             tHMMobj.estimate.E[state_j].G2.params[1] = output[0]
-            tHMMobj.estimate.E[state_j].params[5] = output[i+1]
-            tHMMobj.estimate.E[state_j].G2.params[2] = output[i+1]
+            tHMMobj.estimate.E[state_j].params[5] = output[i + 1]
+            tHMMobj.estimate.E[state_j].G2.params[2] = output[i + 1]
