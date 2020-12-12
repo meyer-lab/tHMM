@@ -99,7 +99,7 @@ class tHMM:
 
         if atonce:
             for ii in range(self.num_states):
-                degrees_of_freedom += self.estimate.E[ii].dof
+                degrees_of_freedom += 4.5
         else:
             for ii in range(self.num_states):
                 degrees_of_freedom += self.estimate.E[ii].dof()
