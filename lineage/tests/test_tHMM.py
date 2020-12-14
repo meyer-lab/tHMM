@@ -125,3 +125,4 @@ def test_AIC():
             AIC[idx, j], _ = output[idx][0].get_AIC(output[idx][2])
         AIC[:, j] = AIC[:, j] - np.min(AIC[:, j])
     assert np.count_nonzero(AIC[0, :] == 0) > 10
+
