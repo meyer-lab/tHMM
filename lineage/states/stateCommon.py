@@ -145,6 +145,6 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
 
     linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3)*100.0, keep_feasible=True)
     bnds = Bounds(lb=np.zeros_like(x0), ub=np.ones_like(x0)*100.0, keep_feasible=True)
-    res = minimize(negative_LL_atonce, x0=x0, args=arrgs, method="trust-constr", hess="3-point", bounds=bnds, constraints=[linc])
+    res = minimize(negative_LL_atonce, x0=x0, args=arrgs, method="trust-constr", hess="HessianUpdateStrategy", bounds=bnds, constraints=[linc])
 
     return res.x
