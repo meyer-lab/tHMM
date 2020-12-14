@@ -4,7 +4,7 @@ import math
 import numpy as np
 import scipy.stats as sp
 import scipy.special as sc
-from scipy.optimize import toms748, minimize, fmin_cobyla
+from scipy.optimize import toms748, minimize, Bounds, LinearConstraint
 
 
 def negative_LL(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
@@ -135,11 +135,16 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
     if x0 is None:
         x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
 
-    def constr(x):
-        return x[2:5] - x[1:4]
+    A = np.zeros((3, 5))
+    np.fill_diagonal(A[:, 1:], -1.0)
+    np.fill_diagonal(A[:, 2:], 1.0)
 
-    def constr2(x):
-        return 100.0 - x
+    # Override x0 if we were given a bad starting point
+    if np.allclose(np.dot(A, x0), 0.0):
+        x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
 
-    res = fmin_cobyla(func=negative_LL_atonce, x0=x0, cons=[constr, constr2], args=arrgs, consargs=(), maxfun=500000, rhoend=1e-6, rhobeg=2.0)
-    return res
+    linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3)*100.0, keep_feasible=True)
+    bnds = Bounds(lb=np.zeros_like(x0), ub=np.ones_like(x0)*100.0, keep_feasible=True)
+    res = minimize(negative_LL_atonce, x0=x0, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
+
+    return res.x
