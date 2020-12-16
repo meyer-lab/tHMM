@@ -29,8 +29,7 @@ def makeFigure():
             tHMMobj_lp, _, LL_lp = Analyze_list(lapatinib, j)
             lpAICs.append(np.array([oo.get_AIC(LL_lp, atonce=True)[0] for i, oo in enumerate(tHMMobj_lp)]))
 
-        lpAICs = np.array(lpAICs)
-        lpAICs = np.reshape(lpAICs, np.repeat(desired_num_states, len(lapatinib)))
+        lpAICs = np.array(lpAICs) # 8 x 4
         lpAICs -= np.min(lpAICs, axis=0)
 
         return lpAICs
