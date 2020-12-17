@@ -30,7 +30,7 @@ def makeFigure():
 
         # Run fitting
         output = run_Analyze_over(dataFull, desired_num_states)
-        AICs = np.array([oo[0][0].get_AIC(oo[2])[0] for oo in output])
+        AICs = np.array([oo[0][0].get_AIC(oo[2], atonce=True)[0] for oo in output])
         AICs -= np.min(AICs, axis=0)
 
         return AICs
