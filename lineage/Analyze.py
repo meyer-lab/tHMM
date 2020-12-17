@@ -66,7 +66,7 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
             if isinstance(population, list):
                 prom_holder.append(exe.submit(Analyze_list, population, num_states[idx], fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
             else:
-                prom_holder.append(exe.submit(Analyze, population, num_states[idx], fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
+                prom_holder.append(exe.submit(Analyze, [population], num_states[idx], fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
         output = [prom.result() for prom in prom_holder]
     else:
