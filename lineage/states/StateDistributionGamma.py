@@ -15,7 +15,6 @@ class StateDistribution:
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.params = np.array([bern_p, gamma_a, gamma_scale])
         self.const_shape = shape
-        self.degFreedom = 0
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """

@@ -32,7 +32,7 @@ def Analyze_list(Population_list, num_states, **kwargs):
     return tHMMobj_list, pred_states_by_lineage_by_conc, LL
 
 
-def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=False, **kwargs):
+def run_Analyze_over(list_of_populations, num_states, parallel=True, **kwargs):
     """
     A function that can be parallelized to speed up figure creation.
 
@@ -64,7 +64,7 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=Fals
 
         prom_holder = []
         for idx, population in enumerate(list_of_populations):
-            if atonce:
+            if isinstance(population, list):
                 prom_holder.append(exe.submit(Analyze_list, population, num_states[idx], fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
             else:
                 prom_holder.append(exe.submit(Analyze, population, num_states[idx], fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))

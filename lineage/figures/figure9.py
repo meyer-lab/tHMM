@@ -29,7 +29,7 @@ def makeFigure():
             dataFull.append(data)
 
         # Run fitting
-        output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
+        output = run_Analyze_over(dataFull, desired_num_states)
         AICs = np.array([oo[0][0].get_AIC(oo[2])[0] for oo in output])
         AICs -= np.min(AICs, axis=0)
 
