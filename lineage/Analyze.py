@@ -27,6 +27,7 @@ def Analyze_list(Population_list, num_states, **kwargs):
             LL = LL2
 
     pred_states_by_lineage_by_conc = [tHMMobj.predict() for tHMMobj in tHMMobj_list]
+    print(LL)
 
     return tHMMobj_list, pred_states_by_lineage_by_conc, LL
 
