@@ -1,14 +1,11 @@
 """ This file plots the AIC for the experimental data. """
 
-from copy import deepcopy
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import run_Analyze_over
-import matplotlib.gridspec as gridspec
 from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 
 from .figureCommon import getSetup, subplotLabel
-from ..tHMM import tHMM
 
 desired_num_states = np.arange(1, 8)
 
@@ -31,27 +28,17 @@ def makeFigure():
         # Run fitting
         output = run_Analyze_over(dataFull, desired_num_states)
         AICs = np.array([oo[0][0].get_AIC(oo[2], atonce=True)[0] for oo in output])
-        AICs -= np.min(AICs, axis=0)
 
-        return AICs
+        return AICs - np.min(AICs, axis=0)
 
     lapAIC = find_AIC(lapatinib, desired_num_states)
     gemAIC = find_AIC(gemcitabine, desired_num_states)
 
     # Plotting AICs
-    figure_maker(ax, [lapAIC, gemAIC])
-    subplotLabel(ax)
-
-    return f
-
-
-def figure_maker(ax, AIC_holder):
-    """
-    Makes figure 9.
-    """
+    ax[0].plot(desired_num_states, lapAIC)
+    ax[1].plot(desired_num_states, gemAIC)
 
     for i in range(2):
-        ax[i].plot(desired_num_states, AIC_holder[i])
         ax[i].set_xlabel("Number of States Predicted")
         ax[i].set_ylabel("Normalized AIC")
         ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
