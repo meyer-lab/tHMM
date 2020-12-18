@@ -20,15 +20,6 @@ concsValues = ["cntrl", "5nM", "10nM", "30nM"]
 tHMM_solver = tHMM(X=data[0], num_states=1)
 tHMM_solver.fit()
 
-constant_shape = [int(tHMM_solver.estimate.E[0].params[2]), int(tHMM_solver.estimate.E[0].params[4])]
-
-# Set shape
-for population in data:
-    for lin in population:
-        for E in lin.E:
-            E.G1.const_shape = constant_shape[0]
-            E.G2.const_shape = constant_shape[1]
-
 num_states = 3
 gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(data, num_states, fpi=True)
 T_gem = gemc_tHMMobj_list[0].estimate.T

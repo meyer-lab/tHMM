@@ -11,10 +11,9 @@ class StateDistribution:
     StateDistribution for cells with gamma distributed times.
     """
 
-    def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=4.5, shape=None):
+    def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=4.5):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
         self.params = np.array([bern_p, gamma_a, gamma_scale])
-        self.const_shape = shape
 
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
@@ -35,10 +34,7 @@ class StateDistribution:
 
     def dof(self):
         """ Return the degrees of freedom. """
-        if self.const_shape is None:
-            return 3
-
-        return 2
+        return 3
 
     def pdf(self, x):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
@@ -88,7 +84,7 @@ class StateDistribution:
         # Don't allow Bernoulli to hit extremes
         self.params[0] = np.clip(self.params[0], 0.00001, 0.99999)
 
-        self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], self.const_shape, self.params[1:3])
+        self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], self.params[1:3])
 
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters

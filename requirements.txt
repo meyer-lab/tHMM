@@ -11,6 +11,8 @@ pandoc-eqnos==2.5.0
 pandoc-tablenos==2.3.0
 openpyxl==3.0.5
 Biopython==1.78
+jax==0.2.7
+jaxlib==0.1.57
 statsmodels
 networkx
 XlsxWriter
