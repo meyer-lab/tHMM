@@ -26,7 +26,7 @@ def makeFigure():
             dataFull.append(data)
 
         # Run fitting
-        output = run_Analyze_over(dataFull, desired_num_states)
+        output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
         AICs = np.array([oo[0][0].get_AIC(oo[2], atonce=True)[0] for oo in output])
 
         return AICs - np.min(AICs, axis=0)
