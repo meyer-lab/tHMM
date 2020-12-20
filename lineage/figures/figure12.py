@@ -13,8 +13,8 @@ from .figure11 import twice, plot_networkx
 
 
 data = [gemControl + Lapatinib_Control, gem5uM, Gem10uM, Gem30uM]
-concs = ["cntrl", "Gem 5nM", "Gem 10nM", "Gem 30nM"]
-concsValues = ["cntrl", "5nM", "10nM", "30nM"]
+concs = ["control", "gemcitabine 5 nM", "gemcitabine 10 nM", "gemcitabine 30 nM"]
+concsValues = ["control", "5 nM", "10 nM", "30 nM"]
 
 
 tHMM_solver = tHMM(X=data[0], num_states=1)
@@ -72,29 +72,29 @@ def makeFigure():
 def plot_gemc(ax, gmc_avg, bern_gmc, concs):
 
     for i in range(num_states):  # gemcitabine that has 3 states
-        ax[5].plot(concs, gmc_avg[:, i, 0], label="st " + str(i + 1), alpha=0.7)
+        ax[5].plot(concs, gmc_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7)
         ax[5].set_title("G1 phase")
-        ax[6].plot(concs, gmc_avg[:, i, 1], label="st " + str(i + 1), alpha=0.7)
+        ax[6].plot(concs, gmc_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7)
         ax[6].set_title("G2 phase")
-        ax[7].plot(concs, bern_gmc[:, i, 0], label="st " + str(i + 1), alpha=0.7)
+        ax[7].plot(concs, bern_gmc[:, i, 0], label="state " + str(i + 1), alpha=0.7)
         ax[7].set_title("G1 phase")
-        ax[8].plot(concs, bern_gmc[:, i, 1], label="st " + str(i + 1), alpha=0.7)
+        ax[8].plot(concs, bern_gmc[:, i, 1], label="state " + str(i + 1), alpha=0.7)
         ax[8].set_title("G2 phase")
 
     # ylim and ylabel
     for i in range(5, 7):
-        ax[i].set_ylabel("prog. rate 1/[hr]")
+        ax[i].set_ylabel("progression rate 1/[hr]")
         ax[i].set_ylim([0, 0.05])
 
     # ylim and ylabel
     for i in range(7, 9):
-        ax[i].set_ylabel("death rate")
+        ax[i].set_ylabel("division rate")
         ax[i].set_ylim([0, 1.05])
 
     # legend and xlabel
     for i in range(5, 9):
         ax[i].legend()
-        ax[i].set_xlabel("conc. [nM]")
+        ax[i].set_xlabel("concentration [nM]")
         ax[i].set_xticklabels(concsValues, rotation=30)
 
     subplotLabel(ax)
