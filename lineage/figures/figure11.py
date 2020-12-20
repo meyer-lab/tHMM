@@ -11,8 +11,8 @@ from ..tHMM import tHMM
 from ..data.Lineage_collections import gemControl, gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .figureCommon import getSetup, subplotLabel
 
-concs = ["cntrl", "Lapt 25nM", "Lapt 50nM", "Lapt 250nM", "cntrl", "5nM", "10nM", "30nM"]
-concsValues = ["cntrl", "25nM", "50nM", "250nM"]
+concs = ["control", "lapatinib 25 nM", "lapatinib 50 nM", "lapatinib 250 nM"]
+concsValues = ["control", "25 nM", "50 nM", "250 nM"]
 data = [Lapatinib_Control + gemControl, Lapt25uM, Lapt50uM, Lap250uM]
 
 num_states = 3
@@ -64,29 +64,29 @@ def plot_all(ax, num_states, lapt_tHMMobj_list, lapt_states_list, Dname):
 def plotting(ax, lpt_avg, bern_lpt, concs):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(num_states):  # lapatinib that has 3 states
-        ax[5].plot(concs[0: 4], lpt_avg[:, i, 0], label="st " + str(i + 1), alpha=0.7)
+        ax[5].plot(concs, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7)
         ax[5].set_title("G1 phase")
-        ax[6].plot(concs[0: 4], lpt_avg[:, i, 1], label="st " + str(i + 1), alpha=0.7)
+        ax[6].plot(concs, lpt_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7)
         ax[6].set_title("G2 phase")
-        ax[7].plot(concs[0: 4], bern_lpt[:, i, 0], label="st " + str(i + 1), alpha=0.7)
+        ax[7].plot(concs, bern_lpt[:, i, 0], label="state " + str(i + 1), alpha=0.7)
         ax[7].set_title("G1 phase")
-        ax[8].plot(concs[0: 4], bern_lpt[:, i, 1], label="st " + str(i + 1), alpha=0.7)
+        ax[8].plot(concs, bern_lpt[:, i, 1], label="state " + str(i + 1), alpha=0.7)
         ax[8].set_title("G2 phase")
 
     # ylim and ylabel
     for i in range(5, 7):
-        ax[i].set_ylabel("prog. rate 1/[hr]")
+        ax[i].set_ylabel("progression rate 1/[hr]")
         ax[i].set_ylim([0, 0.04])
 
     # ylim and ylabel
     for i in range(7, 9):
-        ax[i].set_ylabel("div. prob.")
+        ax[i].set_ylabel("division probability")
         ax[i].set_ylim([0, 1.05])
 
     # legend and xlabel
     for i in range(5, 9):
         ax[i].legend()
-        ax[i].set_xlabel("conc. [nM]")
+        ax[i].set_xlabel("concentration [nM]")
         ax[i].set_xticklabels(concsValues, rotation=30)
 
     subplotLabel(ax)

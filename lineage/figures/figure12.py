@@ -13,8 +13,8 @@ from .figure11 import twice, plot_networkx, plot_all
 
 
 data = [gemControl + Lapatinib_Control, gem5uM, Gem10uM, Gem30uM]
-concs = ["cntrl", "Gem 5nM", "Gem 10nM", "Gem 30nM"]
-concsValues = ["cntrl", "5nM", "10nM", "30nM"]
+concs = ["control", "gemcitabine 5 nM", "gemcitabine 10 nM", "gemcitabine 30 nM"]
+concsValues = ["control", "5 nM", "10 nM", "30 nM"]
 
 
 num_states = 3
