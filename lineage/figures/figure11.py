@@ -11,7 +11,7 @@ from ..tHMM import tHMM
 from ..data.Lineage_collections import gemControl, gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .figureCommon import getSetup, subplotLabel
 
-concs = ["control", "lapatinib 25 nM", "lapatinib 50 nM", "lapatinib 250 nM"]
+concs = ["control", "lapatinib 25 nM", "lapatinib 50 nM", "lapatinib 250 nM", "control", "5 nM", "10 nM", "30 nM"]
 concsValues = ["control", "25 nM", "50 nM", "250 nM"]
 data = [Lapatinib_Control + gemControl, Lapt25uM, Lapt50uM, Lap250uM]
 
