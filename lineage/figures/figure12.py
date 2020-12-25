@@ -29,4 +29,5 @@ def makeFigure():
     plot_all(ax, num_states, gemc_tHMMobj_list, gemc_states_list, "Gemcitabine")
     return f
 
+
 plot_networkx(T_gem.shape[0], T_gem, 'gemcitabine')

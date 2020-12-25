@@ -47,4 +47,3 @@ def makeFigure():
     ax[1].set_title("Gemcitabine")
 
     return f
-
