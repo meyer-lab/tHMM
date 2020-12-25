@@ -21,6 +21,7 @@ def nLL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     cens = jnp.dot(cens_gammas, gammaincc(a, cens_obs / scale))
     return -1 * (uncens + cens)
 
+
 nLL_sepG = jit(grad(nLL_sep, 0))
 
 

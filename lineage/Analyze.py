@@ -9,10 +9,10 @@ from .tHMM import tHMM, fit_list
 
 class DummyExecutor(Executor):
     def submit(self, fn, *args, **kwargs):
-            f = Future()
-            result = fn(*args, **kwargs)
-            f.set_result(result)
-            return f
+        f = Future()
+        result = fn(*args, **kwargs)
+        f.set_result(result)
+        return f
 
 
 def Analyze(X, num_states, **kwargs):
@@ -73,9 +73,9 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=Fals
 
     prom_holder = []
     for idx, population in enumerate(list_of_populations):
-        if atonce: # if we are running all the concentration simultaneously, they should be given to Analyze_list() specifically in the case of figure 9
+        if atonce:  # if we are running all the concentration simultaneously, they should be given to Analyze_list() specifically in the case of figure 9
             prom_holder.append(exe.submit(Analyze_list, population, num_states[idx], fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
-        else: # if we are not fitting all conditions at once, we need to pass the populations to the Analyze()
+        else:  # if we are not fitting all conditions at once, we need to pass the populations to the Analyze()
             prom_holder.append(exe.submit(Analyze, population, num_states[idx], fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
     output = [prom.result() for prom in prom_holder]
@@ -169,6 +169,6 @@ def run_Results_over(output, parallel=True):
         exe = ProcessPoolExecutor()
     else:
         exe = DummyExecutor()
-    
+
     prom_holder = [exe.submit(Results, *x) for x in output]
     return [prom.result() for prom in prom_holder]
