@@ -45,3 +45,6 @@ def makeFigure():
 
     ax[0].set_title("Lapatinib")
     ax[1].set_title("Gemcitabine")
+
+    return f
+
