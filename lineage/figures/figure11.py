@@ -38,7 +38,7 @@ def plot_all(ax, num_states, lapt_tHMMobj_list, lapt_states_list, Dname):
     lpt_avg = np.zeros((4, num_states, 2))  # the avg lifetime: num_conc x num_states x num_phases
     bern_lpt = np.zeros((4, num_states, 2))  # bernoulli
     # print parameters and estimated values
-    print(Dname,"\n the \u03C0: ", lapt_tHMMobj_list[0].estimate.pi, "\n the transition matrix: ", lapt_tHMMobj_list[0].estimate.T)
+    print(Dname, "\n the \u03C0: ", lapt_tHMMobj_list[0].estimate.pi, "\n the transition matrix: ", lapt_tHMMobj_list[0].estimate.T)
 
     for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):  # for each concentration data
         for i in range(num_states):
