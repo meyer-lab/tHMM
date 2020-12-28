@@ -61,7 +61,6 @@ def plot_all(ax, num_states, lapt_tHMMobj_list, lapt_states_list, Dname):
 
     plotting(ax, lpt_avg, bern_lpt, concs)
 
-
 def plotting(ax, lpt_avg, bern_lpt, concs):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(num_states):  # lapatinib that has 3 states
