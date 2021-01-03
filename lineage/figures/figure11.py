@@ -29,7 +29,7 @@ def makeFigure():
     return f
 
 
-def plot_all(ax, num_states, lapt_tHMMobj_list, lapt_states_list, Dname):
+def plot_all(ax, num_states, lapt_tHMMobj_list, lapt_states_list, Dname, concsValues):
     ax[4].axis("off")
     ax[9].axis("off")
     ax[4].text(-0.2, 1.25, ascii_lowercase[8], transform=ax[4].transAxes, fontsize=16, fontweight="bold", va="top")
@@ -59,10 +59,10 @@ def plot_all(ax, num_states, lapt_tHMMobj_list, lapt_states_list, Dname):
         ax[idx].set_xlabel("state")
         ax[idx].set_ylim([0.0, 150.0])
 
-    plotting(ax, lpt_avg, bern_lpt, concs)
+    plotting(ax, lpt_avg, bern_lpt, concs, concsValues)
 
 
-def plotting(ax, lpt_avg, bern_lpt, concs):
+def plotting(ax, lpt_avg, bern_lpt, concs, concsValues):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(num_states):  # lapatinib that has 3 states
         ax[5].plot(concs[0: 4], lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7)
