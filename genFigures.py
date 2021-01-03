@@ -88,12 +88,12 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figure6.svg',
                        f'{cartoon_dir}/figure6.svg', 150, 50, scalee=0.5)
 
-    if sys.argv[1] == '11':
-        # Overlay Transition block
-        overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/lapatinib.svg', 930, 120, scalee=0.9)
+    # if sys.argv[1] == '11':
+    #     # Overlay Transition block
+    #     overlayCartoon(fdir + 'figure11.svg',
+    #                    f'{cartoon_dir}/lapatinib.svg', 930, 120, scalee=0.9)
 
-    if sys.argv[1] == '12':
-        # Overlay Transition block
-        overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/gemcitabine.svg', 930, 120, scalee=0.9)
+    # if sys.argv[1] == '12':
+    #     # Overlay Transition block
+    #     overlayCartoon(fdir + 'figure12.svg',
+    #                    f'{cartoon_dir}/gemcitabine.svg', 930, 120, scalee=0.9)
