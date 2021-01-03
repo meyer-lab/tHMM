@@ -26,7 +26,7 @@ def makeFigure():
     """ Makes figure 12. """
 
     ax, f = getSetup((16, 6.0), (2, 5))
-    plot_all(ax, num_states, gemc_tHMMobj_list, gemc_states_list, "Gemcitabine")
+    plot_all(ax, num_states, gemc_tHMMobj_list, gemc_states_list, "Gemcitabine", concsValues)
     return f
 
 
