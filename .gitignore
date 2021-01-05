@@ -12,12 +12,9 @@ nosetests.xml
 
 
 venv/
-output/
 profile
 profile.svg
 .DS_Store
 pylint.log
 spell.txt
 .vscode/settings.json
-lineage/figures/cartoons/gemcitabine.svg
-lineage/figures/cartoons/lapatinib.svg
