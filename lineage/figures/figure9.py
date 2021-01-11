@@ -7,7 +7,7 @@ from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem
 
 from .figureCommon import getSetup, subplotLabel
 
-desired_num_states = np.arange(1, 6)
+desired_num_states = np.arange(1, 9)
 
 
 def makeFigure():
