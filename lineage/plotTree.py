@@ -6,7 +6,7 @@ from Bio import Phylo
 from matplotlib import pylab
 
 
-def CladeRecursive(cell, a, censore):
+def CladeRecursive(cell, a, censore, color):
     """ To plot the lineage while censored (from G1 or G2).
     If cell died in G1, the lifetime of the cell until dies is shown in red.
     If cell died in G2, the lifetime of the cell until dies is shown in blue.
@@ -15,14 +15,17 @@ def CladeRecursive(cell, a, censore):
     If you are interested, you can take a look at the source code for creating Clades manually:
     https://github.com/biopython/biopython/blob/fce4b11b4b8e414f1bf093a76e04a3260d782905/Bio/Phylo/BaseTree.py#L801
     """
-    if cell.state == 0:
-        colorr = "blue"
-    elif cell.state == 1:
-        colorr = "green"
-    elif cell.state == 2:
-        colorr = "red"
-    elif cell.state == 3:
-        colorr = "yellow"
+    if color:
+        if cell.state == 0:
+            colorr = "blue"
+        elif cell.state == 1:
+            colorr = "green"
+        elif cell.state == 2:
+            colorr = "red"
+        elif cell.state == 3:
+            colorr = "yellow"
+        else:
+            colorr = "black"
     else:
         colorr = "black"
 
@@ -38,9 +41,9 @@ def CladeRecursive(cell, a, censore):
     else:
         clades = []
         if cell.left is not None and cell.left.observed:
-            clades.append(CladeRecursive(cell.left, a, censore))
+            clades.append(CladeRecursive(cell.left, a, censore, color))
         if cell.right is not None and cell.right.observed:
-            clades.append(CladeRecursive(cell.right, a, censore))
+            clades.append(CladeRecursive(cell.right, a, censore, color))
         if np.isnan(cell.obs[3]):  # if the cell got stuck in G1
             lengths = cell.obs[2]
         elif np.isnan(cell.obs[2]):  # is a root parent and G1 is not observed
@@ -50,7 +53,7 @@ def CladeRecursive(cell, a, censore):
         return Clade(branch_length=lengths, width=1, clades=clades, color=colorr)
 
 
-def plotLineage(lineage, axes, censore=True):
+def plotLineage(lineage, axes, censore=True, color=True):
     """
     Makes lineage tree.
     """
@@ -65,6 +68,6 @@ def plotLineage(lineage, axes, censore=True):
     a = [Clade(length)]
 
     # input the root cells in the lineage
-    c = CladeRecursive(lineage.output_lineage[0], a, censore)
+    c = CladeRecursive(lineage.output_lineage[0], a, censore, color)
 
     return Phylo.draw(c, axes=axes)
