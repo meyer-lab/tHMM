@@ -72,6 +72,7 @@ def gamma_estimator(gamma_obs, time_cen, gammas, x0):
 
     nLL = lambda x, *args: nLL_sep(x[1], x[0], *args)
     res = minimize(fun=nLL, jac="3-point", x0=x0, bounds=(bnd, bnd), args=arrgs, options=opt)
+    assert res.success is True
 
     return res.x
 
@@ -162,6 +163,8 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
     linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)
     bnds = Bounds(lb=np.zeros_like(x0), ub=np.ones_like(x0) * 100.0)
 
-    res = minimize(nLL_atonce, x0=x0, jac=nLL_atonceJ, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
+    options = {'xtol': 1e-12, 'gtol': 1e-12}
+    res = minimize(nLL_atonce, x0=x0, jac=nLL_atonceJ, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc], options=options)
+    assert res.success is True
 
     return res.x
