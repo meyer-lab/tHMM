@@ -4,6 +4,7 @@ from string import ascii_lowercase
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from copy import deepcopy
 
 from .figureCommon import (
     getSetup,
@@ -45,7 +46,7 @@ def makeFigure():
     """
     Makes fig 4.
     """
-    x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen, _, _ = accuracy()
+    x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen = accuracy()
 
     # Get list of axis objects
     ax, f = getSetup((9, 6), (2, 2))
@@ -63,19 +64,25 @@ def accuracy():
     We increase the desired number of cells in a lineage by
     the experiment time.
     """
-    np.random.seed(1)
+    # np.random.seed(1)
     # Creating a list of populations to analyze over
     num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
     num_cells = np.linspace(5, 31, num_data_points, dtype=int)
     list_of_fpi = [pi] * num_lineages.size
 
     # Adding populations into a holder for analysing
-    list_of_populations = [[regGen(num_cells[i]) for _ in range(num)] for i, num in enumerate(num_lineages)]
     list_of_populationsSim = [[cenGen(num_cells[i]) for _ in range(num)] for i, num in enumerate(num_lineages)]
 
-    x_Sim, _, output_Sim, _ = commonAnalyze(list_of_populationsSim, 2, list_of_fpi=list_of_fpi)
-    x_Cen, _, output_Cen, _ = commonAnalyze(list_of_populations, 2, list_of_fpi=list_of_fpi)
-    return x_Sim, output_Sim, x_Cen, output_Cen, list_of_populationsSim, list_of_populations
+    SecondPopulation = [[cenGen(num_cells[i]) for _ in range(num)] for i, num in enumerate(num_lineages)]
+    for lin_list in SecondPopulation:
+        for lins in lin_list:
+            for cells in lins.output_lineage:
+                cells.obs[4] = float('nan')
+                cells.obs[5] = float('nan')
+
+    x_Sim, _, output_Sim, _ = commonAnalyze(SecondPopulation, 2, list_of_fpi=list_of_fpi)
+    x_Cen, _, output_Cen, _ = commonAnalyze(list_of_populationsSim, 2, list_of_fpi=list_of_fpi)
+    return x_Sim, output_Sim, x_Cen, output_Cen
 
 
 def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cells"):
@@ -98,16 +105,16 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
     ax[i].axis('off')
 
     i += 1
+    plotLineage(cenGen(45), axes=ax[i], censore=True)
+    ax[i].axis('off')
+
+    i += 1
     ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
     sns.regplot(x="Cell number", y="State Assignment Accuracy", data=accuracy_sim_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=0, top=101)
     ax[i].set_ylabel(r"State Accuracy [%]")
     ax[i].set_title("Full lineage data")
-
-    i += 1
-    plotLineage(cenGen(45), axes=ax[i], censore=True)
-    ax[i].axis('off')
 
     i += 1
     ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
