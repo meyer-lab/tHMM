@@ -73,12 +73,12 @@ def accuracy():
     # Adding populations into a holder for analysing
     list_of_populationsSim = [[cenGen(num_cells[i]) for _ in range(num)] for i, num in enumerate(num_lineages)]
 
-    SecondPopulation = [[cenGen(num_cells[i]) for _ in range(num)] for i, num in enumerate(num_lineages)]
+    SecondPopulation = deepcopy(list_of_populationsSim)
     for lin_list in SecondPopulation:
         for lins in lin_list:
             for cells in lins.output_lineage:
-                cells.obs[4] = float('nan')
-                cells.obs[5] = float('nan')
+                cells.obs[4] = 1.0
+                cells.obs[5] = 1.0
 
     x_Sim, _, output_Sim, _ = commonAnalyze(SecondPopulation, 2, list_of_fpi=list_of_fpi)
     x_Cen, _, output_Cen, _ = commonAnalyze(list_of_populationsSim, 2, list_of_fpi=list_of_fpi)
@@ -114,7 +114,7 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=0, top=101)
     ax[i].set_ylabel(r"State Accuracy [%]")
-    ax[i].set_title("Full lineage data")
+    ax[i].set_title("Censored data, uncensored model")
 
     i += 1
     ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
@@ -122,4 +122,4 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=0, top=101)
     ax[i].set_ylabel(r"State Accuracy [%]")
-    ax[i].set_title("Censored Data")
+    ax[i].set_title("Censored data, censored model")
