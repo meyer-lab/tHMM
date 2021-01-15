@@ -4,6 +4,7 @@ from string import ascii_lowercase
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from copy import deepcopy
 
 from .figureCommon import (
     getSetup,
