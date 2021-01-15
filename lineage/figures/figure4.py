@@ -6,10 +6,10 @@ import pandas as pd
 import seaborn as sns
 from copy import deepcopy
 
-from ..Analyze import run_Analyze_over
 from .figureCommon import (
     getSetup,
     subplotLabel,
+    commonAnalyze,
     figureMaker,
     pi,
     T,
