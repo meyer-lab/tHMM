@@ -6,10 +6,10 @@ import pandas as pd
 import seaborn as sns
 from copy import deepcopy
 
+from ..Analyze import run_Analyze_over
 from .figureCommon import (
     getSetup,
     subplotLabel,
-    commonAnalyze,
     figureMaker,
     pi,
     T,
@@ -46,12 +46,12 @@ def makeFigure():
     """
     Makes fig 4.
     """
-    x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen = accuracy()
+    x_Sim, output_Sim, x_Cen, output_Cen = accuracy()
 
     # Get list of axis objects
     ax, f = getSetup((9, 6), (2, 2))
 
-    figureMaker3(ax, x_Sim, x_Cen, Accuracy_Sim, Accuracy_Cen)
+    figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen)
     subplotLabel(ax)
     return f
 
@@ -76,8 +76,12 @@ def accuracy():
     for lin_list in SecondPopulation:
         for lins in lin_list:
             for cells in lins.output_lineage:
-                cells.obs[4] = 1.0
-                cells.obs[5] = 1.0
+                if cells.obs[4] == 0.0:
+                    cells.obs[4] = 1.0
+                    assert np.isfinite(cells.obs[2])
+                if cells.obs[5] == 0.0:
+                    cells.obs[5] = 1.0
+                    assert np.isfinite(cells.obs[3])
 
     x_Sim, _, output_Sim, _ = commonAnalyze(SecondPopulation, 2, list_of_fpi=list_of_fpi)
     x_Cen, _, output_Cen, _ = commonAnalyze(list_of_populationsSim, 2, list_of_fpi=list_of_fpi)
