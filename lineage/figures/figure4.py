@@ -4,7 +4,6 @@ from string import ascii_lowercase
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from copy import deepcopy
 
 from .figureCommon import (
     getSetup,
@@ -64,7 +63,6 @@ def accuracy():
     We increase the desired number of cells in a lineage by
     the experiment time.
     """
-    # np.random.seed(1)
     # Creating a list of populations to analyze over
     num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
     num_cells = np.linspace(5, 31, num_data_points, dtype=int)
