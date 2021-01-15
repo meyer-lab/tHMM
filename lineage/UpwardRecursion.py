@@ -64,11 +64,6 @@ def get_Emission_Likelihoods(tHMMobj, E=None):
 
     for k in range(tHMMobj.num_states):  # for each state
         ELstack[:, k] = E[k].pdf(all_cells)
-        indxs = []
-        if not np.all(np.isfinite(ELstack[:, k])):
-            for i, element in enumerate(ELstack[:, k]):
-                if not np.isfinite(element):
-                    indxs.append(i)
         assert np.all(np.isfinite(ELstack[:, k]))
     EL = []
     ii = 0
