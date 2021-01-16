@@ -64,11 +64,13 @@ def get_Emission_Likelihoods(tHMMobj, E=None):
 
     for k in range(tHMMobj.num_states):  # for each state
         ELstack[:, k] = E[k].pdf(all_cells)
+        assert np.all(np.isfinite(ELstack[:, k]))
     EL = []
     ii = 0
     for lineageObj in tHMMobj.X:  # for each lineage in our Population
         nl = len(lineageObj.output_lineage)  # getting the lineage length
         EL.append(ELstack[ii:(ii + nl), :])  # append the EL_array for each lineage
+
         ii += nl
 
     return EL
@@ -113,7 +115,7 @@ def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
             # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
             # the sum of the joint probabilities is the marginal probability
             NF_array[leaf_idx] = np.dot(MSD_array[leaf_idx, :], EL_array[leaf_idx, :])  # def of conditional prob
-
+            assert np.all(np.isfinite(NF_array))
         NF.append(NF_array)
     return NF
 

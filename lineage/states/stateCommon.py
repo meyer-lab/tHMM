@@ -68,14 +68,13 @@ def gamma_estimator(gamma_obs, time_cen, gammas, x0):
     assert gammas.shape[0] == gamma_obs.shape[0]
     arrgs = (gamma_obs[time_cen == 1], gammas[time_cen == 1], gamma_obs[time_cen == 0], gammas[time_cen == 0])
     opt = {'gtol': 1e-12, 'ftol': 1e-12}
-    bnd = (1.0, 800.0)
+    bnd = (1.0, 100.0)
 
     nLL = lambda x, *args: nLL_sep(x[1], x[0], *args)
     res = minimize(fun=nLL, jac="3-point", x0=x0, bounds=(bnd, bnd), args=arrgs, options=opt)
-    assert res.success is True
+    # assert res.success is True
 
     return res.x
-
 
 def get_experiment_time(lineageObj):
     """

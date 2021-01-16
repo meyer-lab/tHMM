@@ -131,6 +131,7 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
 
     T_estimate = numer_e / denom_e[:, np.newaxis]
     T_estimate /= T_estimate.sum(axis=1)[:, np.newaxis]
+
     assert np.all(np.isfinite(T_estimate))
 
     return T_estimate

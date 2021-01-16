@@ -28,6 +28,8 @@ def get_gammas(tHMMobj, MSD, betas):
                     coeffs = betas[num] / MSDn
                     beta_parent = np.clip(T @ coeffs[ci, :], np.finfo(np.float).eps, np.inf)
                     gammas[num][ci, :] = coeffs[ci, :] * np.matmul(gam / beta_parent, T)
+    for gamm in gammas:
+        assert np.all(np.isfinite(gamm))
 
     return gammas
 
@@ -42,5 +44,6 @@ def sum_nonleaf_gammas(lineageObj, gamma_arr):
             if not cell.isLeaf():
                 cell_idx = lineageObj.output_lineage.index(cell)
                 holder_wo_leaves += gamma_arr[cell_idx, :]
+    assert np.all(np.isfinite(holder_wo_leaves))
 
     return holder_wo_leaves
