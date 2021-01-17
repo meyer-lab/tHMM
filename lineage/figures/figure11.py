@@ -5,6 +5,7 @@ import seaborn as sns
 import networkx as nx
 import pygraphviz
 from string import ascii_lowercase
+import pickle
 
 from ..Analyze import Analyze_list
 from ..tHMM import tHMM
@@ -15,6 +16,9 @@ concs = ["control", "lapatinib 25 nM", "lapatinib 50 nM", "lapatinib 250 nM", "c
 concsValues = ["control", "25 nM", "50 nM", "250 nM"]
 data = [Lapatinib_Control + gemControl, Lapt25uM, Lapt50uM, Lap250uM]
 
+pik1 = open("lapatinibs.pkl", "rb")
+for i in range(4):
+    lapatinibs = pickle.load(pik1)
 num_states = 3
 # Run fitting
 lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data, num_states, fpi=True)
@@ -25,7 +29,7 @@ def makeFigure():
     """ Makes figure 11. """
 
     ax, f = getSetup((16, 6.0), (2, 5))
-    plot_all(ax, num_states, lapt_tHMMobj_list, lapt_states_list, "Laptinib")
+    plot_all(ax, num_states, lapt_tHMMobj_list, lapt_states_list, "Laptinib", concsValues)
     return f
 
 
