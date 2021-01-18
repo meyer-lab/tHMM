@@ -20,7 +20,7 @@ gemc_tHMMobj_list = []
 for _ in range(4):
     gemc_tHMMobj_list.append(pickle.load(pik1))
 
-length = len(lapt_tHMMobj_list[1]) # 25 nM
+length = len(lapt_tHMMobj_list[1].X) # 25 nM
 
 def makeFigure():
     """
