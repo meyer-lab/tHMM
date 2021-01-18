@@ -62,8 +62,8 @@ def makeFigure():
 
     #create a pickle file for gemcitabine
     pik2 = open("gemcitabines.pkl", "wb")
-    with open(pik2, "wb") as f:
-        pickle.dump(gemc_tHMMobj_list, f)
+    for gemc in gemc_tHMMobj_list:
+        pickle.dump(gemc, pik2)
     pik2.close()
 
     # Plotting AICs
