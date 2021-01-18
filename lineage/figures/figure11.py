@@ -1,39 +1,35 @@
 """ This file depicts the distribution of phase lengths versus the states for each concentration of lapatinib. """
 import numpy as np
-import itertools
 import seaborn as sns
 import networkx as nx
 import pygraphviz
 from string import ascii_lowercase
 import pickle
 
-from ..Analyze import Analyze_list
 from ..tHMM import tHMM
-from ..data.Lineage_collections import gemControl, gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .figureCommon import getSetup, subplotLabel
 
 concs = ["control", "lapatinib 25 nM", "lapatinib 50 nM", "lapatinib 250 nM", "control", "5 nM", "10 nM", "30 nM"]
 concsValues = ["control", "25 nM", "50 nM", "250 nM"]
-data = [Lapatinib_Control + gemControl, Lapt25uM, Lapt50uM, Lap250uM]
 
 pik1 = open("lapatinibs.pkl", "rb")
+lapt_tHMMobj_list = []
 for i in range(4):
-    lapatinibs = pickle.load(pik1)
-num_states = 3
-# Run fitting
-lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data, num_states, fpi=True)
+    lapt_tHMMobj_list.append(pickle.load(pik1))
+
 T_lap = lapt_tHMMobj_list[0].estimate.T
+num_states = lapt_tHMMobj_list[0].num_states
 
 
 def makeFigure():
     """ Makes figure 11. """
 
     ax, f = getSetup((16, 6.0), (2, 5))
-    plot_all(ax, num_states, lapt_tHMMobj_list, lapt_states_list, "Laptinib", concsValues)
+    plot_all(ax, num_states, lapt_tHMMobj_list, "Laptinib", concsValues)
     return f
 
 
-def plot_all(ax, num_states, lapt_tHMMobj_list, lapt_states_list, Dname, concsValues):
+def plot_all(ax, num_states, lapt_tHMMobj_list, Dname, concsValues):
     ax[4].axis("off")
     ax[9].axis("off")
     ax[4].text(-0.2, 1.25, ascii_lowercase[8], transform=ax[4].transAxes, fontsize=16, fontweight="bold", va="top")
@@ -52,8 +48,7 @@ def plot_all(ax, num_states, lapt_tHMMobj_list, lapt_states_list, Dname, concsVa
             for j in range(2):
                 bern_lpt[idx, i, j] = lapt_tHMMobj.estimate.E[i].params[j]
 
-        lapt_states_list_plusone = [i + 1 for i in lapt_states_list[idx]]
-        LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj, lapt_states_list_plusone)
+        LAP_state, LAP_phaseLength, Lpt_phase = twice(lapt_tHMMobj)
 
         # plot lapatinib
         sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx])
@@ -97,12 +92,14 @@ def plotting(ax, lpt_avg, bern_lpt, concs, concsValues):
     subplotLabel(ax)
 
 
-def twice(tHMMobj, state):
+def twice(tHMMobj):
     """ For each tHMM object, connects the state and the emissions. """
     g1 = []
     g2 = []
+    state = []
     for lin in tHMMobj.X:  # for each lineage list
         for cell in lin.output_lineage:  # for each cell in the lineage
+            state.append((cell.state + 1))
             if cell.obs[4] == 1:
                 g1.append(cell.obs[2])
             else:
@@ -112,10 +109,10 @@ def twice(tHMMobj, state):
             else:
                 g2.append(np.nan)
 
-    state = list(itertools.chain(*state)) + list(itertools.chain(*state))
+    states = state + state # accounts for both phases
     phaseLength = g1 + g2
     phase = len(g1) * ["G1"] + len(g2) * ["G2"]
-    return state, phaseLength, phase
+    return states, phaseLength, phase
 
 
 def plot_networkx(num_states, T, drug_name):

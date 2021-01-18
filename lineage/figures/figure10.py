@@ -1,62 +1,47 @@
-""" This file plots the trees with their predicted states. """
+""" This file plots the trees with their predicted states for lapatinib. """
 
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 import itertools
+import pickle
 
-from ..Analyze import Analyze_list
-from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .figureCommon import getSetup, subplotLabel
 from ..plotTree import plotLineage
 
+# open lapatinib
+pik1 = open("lapatinibs.pkl", "rb")
+lapt_tHMMobj_list = []
+for _ in range(4):
+    lapt_tHMMobj_list.append(pickle.load(pik1))
+
+# open gemcitabine
+pik1 = open("gemcitabines.pkl", "rb")
+gemc_tHMMobj_list = []
+for _ in range(4):
+    gemc_tHMMobj_list.append(pickle.load(pik1))
+
+length = len(lapt_tHMMobj_list[1]) # 25 nM
 
 def makeFigure():
     """
     Makes figure 10.
     """
-    ax, f = getSetup((7, 12), (8, 2))
+    ax, f = getSetup((50, 5), (length, 1))
     subplotLabel(ax)
-    data = [Gemcitabine_Control + Lapatinib_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
-
-    lapatinib = []
-    gemcitabine = []
-    # Run fitting
-    lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(data[4:], 3, fpi=True)
-    gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(data[0:4], 4, fpi=True)
-
-    for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
-        for lin_indx, lin in enumerate(lapt_tHMMobj.X):
-            for cell_indx, cell in enumerate(lin.output_lineage):
-                cell.state = lapt_states_list[idx][lin_indx][cell_indx]
-        lapatinib.append([lapt_tHMMobj.X[4], lapt_tHMMobj.X[7]])
-
-    for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
-        for lin_indx, lin in enumerate(gemc_tHMMobj.X):
-            for cell_indx, cell in enumerate(lin.output_lineage):
-                cell.state = gemc_states_list[idx][lin_indx][cell_indx]
-        gemcitabine.append([gemc_tHMMobj.X[0], gemc_tHMMobj.X[3]])
 
     # Plotting the lineages
-    figure_maker(ax, list(itertools.chain(*lapatinib)), list(itertools.chain(*gemcitabine)))
+    figure_maker(ax, list(itertools.chain(*lapt_tHMMobj_list[1])))
 
     return f
 
 
-def figure_maker(ax, lapatinib, gemcitabine):
+def figure_maker(ax, lapatinib):
     """
     Makes figure 10.
     """
 
     ax[0].set_title("Lapatinib")
-    ax[1].set_title("Gemcitabine")
 
-    i = 0
-    for j in np.arange(0, 15, 2):
+    for j in range(length):
         ax[j].axis('off')
-        plotLineage(lapatinib[i], ax[j], censore=True)
-        i += 1
-    i = 0
-    for j in np.arange(1, 16, 2):
-        ax[j].axis('off')
-        plotLineage(gemcitabine[i], ax[j], censore=True)
-        i += 1
+        plotLineage(lapatinib[j], ax[j])
