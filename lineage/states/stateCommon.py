@@ -76,6 +76,7 @@ def gamma_estimator(gamma_obs, time_cen, gammas, x0):
 
     return res.x
 
+
 def get_experiment_time(lineageObj):
     """
     This function returns the longest experiment time
