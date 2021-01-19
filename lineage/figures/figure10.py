@@ -30,7 +30,7 @@ def makeFigure():
     subplotLabel(ax)
 
     # Plotting the lineages
-    figure_maker(ax, list(itertools.chain(*lapt_tHMMobj_list[1])))
+    figure_maker(ax, list(itertools.chain(*lapt_tHMMobj_list[1].X)))
 
     return f
 
