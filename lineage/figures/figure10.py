@@ -20,7 +20,7 @@ gemc_tHMMobj_list = []
 for _ in range(4):
     gemc_tHMMobj_list.append(pickle.load(pik1))
 
-length = len(lapt_tHMMobj_list[1].X) # 25 nM
+length = len(lapt_tHMMobj_list[1].X.output_lineage) # 25 nM
 
 def makeFigure():
     """
@@ -30,7 +30,7 @@ def makeFigure():
     subplotLabel(ax)
 
     # Plotting the lineages
-    figure_maker(ax, list(itertools.chain(*lapt_tHMMobj_list[1].X)))
+    figure_maker(ax, list(itertools.chain(*lapt_tHMMobj_list[1].X.output_lineage)))
 
     return f
 
