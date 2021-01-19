@@ -98,7 +98,7 @@ class tHMM:
             degrees_of_freedom += self.num_states * (self.num_states - 1)
 
         if atonce:  # assuming we are fitting all 4 concentrations at once and we have cell cycle phase specific distributions.
-            degrees_of_freedom = self.num_states * 4.5
+            degrees_of_freedom += self.num_states * 4.5
         else:
             for ii in range(self.num_states):
                 degrees_of_freedom += self.estimate.E[ii].dof()
