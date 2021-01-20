@@ -165,7 +165,6 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
 
     options = {'xtol': 1e-12, 'gtol': 1e-12}
     res = minimize(nLL_atonce, x0=x0, jac=nLL_atonceJ, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc], options=options)
-
     # assert res.success is True
 
     return res.x
