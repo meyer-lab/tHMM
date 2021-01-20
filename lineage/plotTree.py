@@ -4,6 +4,8 @@ import numpy as np
 from Bio.Phylo.BaseTree import Clade
 from Bio import Phylo
 from matplotlib import pylab
+import networkx as nx
+import pygraphviz
 
 
 def CladeRecursive(cell, a, censore, color):
@@ -24,8 +26,14 @@ def CladeRecursive(cell, a, censore, color):
             colorr = "red"
         elif cell.state == 3:
             colorr = "yellow"
-        else:
+        elif cell.state == 4:
             colorr = "black"
+        elif cell.state == 5:
+            colorr = "cyan"
+        elif cell.state == 6:
+            colorr = "pink"
+        else:
+            colorr = "brown"
     else:
         colorr = "black"
 
@@ -60,7 +68,10 @@ def plotLineage(lineage, axes, censore=True, color=True):
 
     root = lineage.output_lineage[0]
     if np.isfinite(root.obs[4]):  # starts from G1
-        length = root.obs[2] + root.obs[3]
+        if np.isfinite(root.obs[3]):
+            length = root.obs[2] + root.obs[3]
+        else:
+            length = root.obs[2]
         assert np.isfinite(length)
     else:  # starts from G2
         length = root.obs[3]
@@ -71,3 +82,37 @@ def plotLineage(lineage, axes, censore=True, color=True):
     c = CladeRecursive(lineage.output_lineage[0], a, censore, color)
 
     return Phylo.draw(c, axes=axes)
+
+def plot_networkx(num_states, T, drug_name):
+    """ This plots the Transition matrix for each condition. """
+    G = nx.MultiDiGraph()
+    num_states = T.shape[0]
+
+    # node labels
+    labels = {}
+    for i in range(num_states):
+        labels[i] = "state " + str(i + 1)
+
+    cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'olive', 'gray']
+
+    # add nodes
+    for i in range(num_states):
+        G.add_node(i, pos=(-2, -2), label=labels[i], style='filled', fillcolor=cs[i])
+
+    # add edges
+    for i in range(num_states):
+        for j in range(num_states):
+            G.add_edge(i, j, penwidth=2 * T[i, j], minlen=1, label=str(np.round(T[i, j], 2)))
+
+    # add graphviz layout options (see https://stackoverflow.com/a/39662097)
+    G.graph['edge'] = {'arrowsize': '0.6', 'splines': 'curved'}
+    G.graph['graph'] = {'scale': '1'}
+
+    # adding attributes to edges in multigraphs is more complicated but see
+    # https://stackoverflow.com/a/26694158
+    for i in range(num_states):
+        G[i][i][0]['color'] = 'black'
+
+    A = nx.drawing.nx_agraph.to_agraph(G)
+    A.layout('dot')
+    A.draw('lineage/figures/cartoons/' + str(drug_name) + '.svg')
