@@ -16,14 +16,14 @@ for _ in range(4):
 
 def makeFigure():
     """
-    Makes figure 10.
+    Makes figure 103.
     """
     ax, f = getSetup((5, 50), (100, 1))
     subplotLabel(ax)
 
-    ax[0].set_title("Control")
+    ax[0].set_title("50 nM Lapatinib")
 
     for i in range(100):
         ax[i].axis('off')
-        plotLineage(lapt_tHMMobj_list[0].X[i], ax[i])
+        plotLineage(lapt_tHMMobj_list[3].X[i], ax[i])
     return f
