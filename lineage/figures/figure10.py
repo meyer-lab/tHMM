@@ -24,7 +24,8 @@ length0 = len(lapt_tHMMobj_list[0].X) # control
 length1 = len(lapt_tHMMobj_list[1].X) # 25 nM
 length2 = len(lapt_tHMMobj_list[2].X) # 50 nM
 length3 = len(lapt_tHMMobj_list[3].X) # 250 nM
-lng = np.min(length0, length1, length2, length3)
+lng = np.min([length0, length1, length2, length3])
+
 def makeFigure():
     """
     Makes figure 10.
