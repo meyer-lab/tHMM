@@ -16,7 +16,7 @@ for _ in range(4):
 
 def makeFigure():
     """
-    Makes figure 102.
+    Makes figure 101.
     """
     ax, f = getSetup((5, 50), (100, 1))
     subplotLabel(ax)

@@ -8,22 +8,22 @@ import pickle
 from .figureCommon import getSetup, subplotLabel
 from ..plotTree import plotLineage
 
-# open lapatinib
-pik1 = open("lapatinibs.pkl", "rb")
-lapt_tHMMobj_list = []
+# open gemcitabine
+pik1 = open("gemcitabines.pkl", "rb")
+gemc_tHMMobj_list = []
 for _ in range(4):
-    lapt_tHMMobj_list.append(pickle.load(pik1))
+    gemc_tHMMobj_list.append(pickle.load(pik1))
 
 def makeFigure():
     """
-    Makes figure 103.
+    Makes figure 151.
     """
-    ax, f = getSetup((5, 50), (100, 1))
+    ax, f = getSetup((5, 50), (len(gemc_tHMMobj_list[1].X), 1))
     subplotLabel(ax)
 
-    ax[0].set_title("250 nM Lapatinib")
+    ax[0].set_title("5 nM Gemcitabine")
 
-    for i in range(100):
+    for i in range(len(gemc_tHMMobj_list[1].X)):
         ax[i].axis('off')
-        plotLineage(lapt_tHMMobj_list[3].X[i], ax[i])
+        plotLineage(gemc_tHMMobj_list[1].X[i], ax[i])
     return f
