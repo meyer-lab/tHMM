@@ -32,4 +32,5 @@ def makeFigure():
     plot_all(ax, num_states, lapt_tHMMobj_list, "Laptinib", concs, concsValues)
     return f
 
+
 plot_networkx(T_lap.shape[0], T_lap, 'lapatinib')

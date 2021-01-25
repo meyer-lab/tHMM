@@ -371,7 +371,6 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].set_ylim([0.0, 1.0])
 
 
-
 def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(num_states):  # lapatinib that has 3 states
@@ -420,10 +419,11 @@ def twice(tHMMobj):
             else:
                 g2.append(np.nan)
 
-    states = state + state # accounts for both phases
+    states = state + state  # accounts for both phases
     phaseLength = g1 + g2
     phase = len(g1) * ["G1"] + len(g2) * ["G2"]
     return states, phaseLength, phase
+
 
 def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     ax[4].axis("off")
