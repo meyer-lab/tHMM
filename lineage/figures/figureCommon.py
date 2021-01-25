@@ -369,3 +369,88 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].set_title(r"Error in estimating $\pi$")
             ax[i].set_xlabel("Number of Lineages")
             ax[i].set_ylim([0.0, 1.0])
+
+
+
+def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
+    """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
+    for i in range(num_states):  # lapatinib that has 3 states
+        ax[6].plot(cons, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7)
+        ax[6].set_title("G1 phase")
+        ax[7].plot(cons, lpt_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7)
+        ax[7].set_title("G2 phase")
+        ax[8].plot(cons, bern_lpt[:, i, 0], label="state " + str(i + 1), alpha=0.7)
+        ax[8].set_title("G1 phase")
+        ax[9].plot(cons, bern_lpt[:, i, 1], label="state " + str(i + 1), alpha=0.7)
+        ax[9].set_title("G2 phase")
+
+    # ylim and ylabel
+    for i in range(6, 8):
+        ax[i].set_ylabel("progression rate 1/[hr]")
+        ax[i].set_ylim([0, 0.05])
+
+    # ylim and ylabel
+    for i in range(8, 10):
+        ax[i].set_ylabel("division probability")
+        ax[i].set_ylim([0, 1.05])
+
+    # legend and xlabel
+    for i in range(6, 10):
+        ax[i].legend()
+        ax[i].set_xlabel("concentration [nM]")
+        ax[i].set_xticklabels(concsValues, rotation=30)
+
+    subplotLabel(ax)
+
+
+def twice(tHMMobj):
+    """ For each tHMM object, connects the state and the emissions. """
+    g1 = []
+    g2 = []
+    state = []
+    for lin in tHMMobj.X:  # for each lineage list
+        for cell in lin.output_lineage:  # for each cell in the lineage
+            state.append((cell.state + 1))
+            if cell.obs[4] == 1:
+                g1.append(cell.obs[2])
+            else:
+                g1.append(np.nan)
+            if cell.obs[5] == 1:
+                g2.append(cell.obs[3])
+            else:
+                g2.append(np.nan)
+
+    states = state + state # accounts for both phases
+    phaseLength = g1 + g2
+    phase = len(g1) * ["G1"] + len(g2) * ["G2"]
+    return states, phaseLength, phase
+
+def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
+    ax[4].axis("off")
+    ax[4].text(-0.2, 1.25, ascii_lowercase[8], transform=ax[4].transAxes, fontsize=16, fontweight="bold", va="top")
+
+    # lapatinib
+    lpt_avg = np.zeros((4, num_states, 2))  # the avg lifetime: num_conc x num_states x num_phases
+    bern_lpt = np.zeros((4, num_states, 2))  # bernoulli
+    # print parameters and estimated values
+    print(Dname, "\n the \u03C0: ", tHMMobj_list[0].estimate.pi, "\n the transition matrix: ", tHMMobj_list[0].estimate.T)
+
+    for idx, tHMMobj in enumerate(tHMMobj_list):  # for each concentration data
+        for i in range(num_states):
+            lpt_avg[idx, i, 0] = 1 / (tHMMobj.estimate.E[i].params[2] * tHMMobj.estimate.E[i].params[3])  # G1
+            lpt_avg[idx, i, 1] = 1 / (tHMMobj.estimate.E[i].params[4] * tHMMobj.estimate.E[i].params[5])  # G2
+            # bernoullis
+            for j in range(2):
+                bern_lpt[idx, i, j] = tHMMobj.estimate.E[i].params[j]
+
+        LAP_state, LAP_phaseLength, Lpt_phase = twice(tHMMobj)
+
+        # plot lapatinib
+        sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx])
+
+        ax[idx].set_title(cons[idx])
+        ax[idx].set_ylabel("phase lengths [hr]")
+        ax[idx].set_xlabel("state")
+        ax[idx].set_ylim([0.0, 150.0])
+
+    plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states)
