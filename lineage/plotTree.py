@@ -83,6 +83,7 @@ def plotLineage(lineage, axes, censore=True, color=True):
 
     return Phylo.draw(c, axes=axes)
 
+
 def plot_networkx(num_states, T, drug_name):
     """ This plots the Transition matrix for each condition. """
     G = nx.MultiDiGraph()
