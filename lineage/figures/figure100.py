@@ -2,7 +2,6 @@
 
 from .figureCommon import getSetup, subplotLabel
 
-
 def makeFigure():
     """
     Makes figure 100.

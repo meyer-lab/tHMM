@@ -1,11 +1,8 @@
 """ This file plots the trees with their predicted states for lapatinib. """
 
-import numpy as np
-from matplotlib.ticker import MaxNLocator
-import itertools
 import pickle
 
-from .figureCommon import getSetup, subplotLabel
+from .figureCommon import getSetup
 from ..plotTree import plotLineage
 
 # open gemcitabine
@@ -19,10 +16,7 @@ def makeFigure():
     """
     Makes figure 151.
     """
-    ax, f = getSetup((5, 50), (len(gemc_tHMMobj_list[1].X), 1))
-    subplotLabel(ax)
-
-    ax[0].set_title("5 nM Gemcitabine")
+    ax, f = getSetup((7, 40), (len(gemc_tHMMobj_list[1].X), 1))
 
     for i in range(len(gemc_tHMMobj_list[1].X)):
         ax[i].axis('off')
