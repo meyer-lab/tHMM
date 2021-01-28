@@ -97,3 +97,25 @@ if __name__ == '__main__':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure12.svg',
                        f'{cartoon_dir}/gemcitabine.svg', 1120, 50, scalee=0.75, scale_x=0.8)
+
+    if sys.argv[1] == '100':
+        # Overlay Transition block
+        overlayCartoon(fdir + 'figure100.svg',
+                        f'{cartoon_dir}/figure10.svg', 5, 5, scalee=0.4, scale_y=0.5)
+        overlayCartoon(fdir + 'figure100.svg',
+                        f'{cartoon_dir}/figure101.svg', 105, 5, scalee=0.4, scale_y=0.5)
+        overlayCartoon(fdir + 'figure100.svg',
+                        f'{cartoon_dir}/figure102.svg', 205, 5, scalee=0.4, scale_y=0.5)
+        overlayCartoon(fdir + 'figure100.svg',
+                        f'{cartoon_dir}/figure103.svg', 305, 5, scalee=0.4, scale_y=0.5)
+
+    if sys.argv[1] == '150':
+        # Overlay Transition block
+        overlayCartoon(fdir + 'figure150.svg',
+                        f'{cartoon_dir}/figure10.svg', 5, 5, scalee=0.4, scale_y=0.5)
+        overlayCartoon(fdir + 'figure150.svg',
+                        f'{cartoon_dir}/figure151.svg', 105, 5, scalee=0.4, scale_y=0.5)
+        overlayCartoon(fdir + 'figure150.svg',
+                        f'{cartoon_dir}/figure152.svg', 205, 5, scalee=0.4, scale_y=0.5)
+        overlayCartoon(fdir + 'figure150.svg',
+                        f'{cartoon_dir}/figure153.svg', 305, 5, scalee=0.4, scale_y=0.5)
