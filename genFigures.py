@@ -101,7 +101,6 @@ if __name__ == '__main__':
     if sys.argv[1] == '100':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure100.svg',
-<<<<<<< HEAD
                         f'{cartoon_dir}/figure10.svg', 5, 5, scalee=0.4, scale_y=0.5)
         overlayCartoon(fdir + 'figure100.svg',
                         f'{cartoon_dir}/figure101.svg', 105, 5, scalee=0.4, scale_y=0.5)
@@ -109,20 +108,10 @@ if __name__ == '__main__':
                         f'{cartoon_dir}/figure102.svg', 205, 5, scalee=0.4, scale_y=0.5)
         overlayCartoon(fdir + 'figure100.svg',
                         f'{cartoon_dir}/figure103.svg', 305, 5, scalee=0.4, scale_y=0.5)
-=======
-                       f'{cartoon_dir}/figure10.svg', 5, 5, scalee=0.4, scale_y=0.5)
-        overlayCartoon(fdir + 'figure100.svg',
-                       f'{cartoon_dir}/figure101.svg', 105, 5, scalee=0.4, scale_y=0.5)
-        overlayCartoon(fdir + 'figure100.svg',
-                       f'{cartoon_dir}/figure102.svg', 205, 5, scalee=0.4, scale_y=0.5)
-        overlayCartoon(fdir + 'figure100.svg',
-                       f'{cartoon_dir}/figure103.svg', 305, 5, scalee=0.4, scale_y=0.5)
->>>>>>> master
 
     if sys.argv[1] == '150':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure150.svg',
-<<<<<<< HEAD
                         f'{cartoon_dir}/figure10.svg', 5, 5, scalee=0.4, scale_y=0.5)
         overlayCartoon(fdir + 'figure150.svg',
                         f'{cartoon_dir}/figure151.svg', 105, 5, scalee=0.4, scale_y=0.5)
@@ -130,12 +119,3 @@ if __name__ == '__main__':
                         f'{cartoon_dir}/figure152.svg', 205, 5, scalee=0.4, scale_y=0.5)
         overlayCartoon(fdir + 'figure150.svg',
                         f'{cartoon_dir}/figure153.svg', 305, 5, scalee=0.4, scale_y=0.5)
-=======
-                       f'{cartoon_dir}/figure10.svg', 5, 5, scalee=0.4, scale_y=0.5)
-        overlayCartoon(fdir + 'figure150.svg',
-                       f'{cartoon_dir}/figure151.svg', 105, 5, scalee=0.4, scale_y=0.5)
-        overlayCartoon(fdir + 'figure150.svg',
-                       f'{cartoon_dir}/figure152.svg', 205, 5, scalee=0.4, scale_y=0.5)
-        overlayCartoon(fdir + 'figure150.svg',
-                       f'{cartoon_dir}/figure153.svg', 305, 5, scalee=0.4, scale_y=0.5)
->>>>>>> master
