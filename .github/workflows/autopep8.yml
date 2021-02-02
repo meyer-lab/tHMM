@@ -15,9 +15,8 @@ jobs:
           args: --exit-code -raai --max-line-length 200 .
       - name: Create Pull Request
         if: steps.autopep8.outputs.exit-code == 2
-        uses: peter-evans/create-pull-request@v2
+        uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: autopep8 action fixes
           title: Fixes by autopep8 action
           body: This is an auto-generated PR with fixes by autopep8.
