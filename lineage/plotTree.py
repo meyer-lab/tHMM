@@ -24,14 +24,6 @@ def CladeRecursive(cell, a, censore, color):
             colorr = "orange"
         elif cell.state == 2:
             colorr = "green"
-        elif cell.state == 3:
-            colorr = "red"
-        elif cell.state == 4:
-            colorr = "yellow"
-        elif cell.state == 5:
-            colorr = "cyan"
-        elif cell.state == 6:
-            colorr = "pink"
         else:
             colorr = "brown"
     else:

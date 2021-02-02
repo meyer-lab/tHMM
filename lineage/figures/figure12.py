@@ -3,26 +3,29 @@ import pickle
 
 from .figureCommon import getSetup, subplotLabel, plot_all
 from ..plotTree import plot_networkx
-from ..Analyze import Analyze_list
-from ..data.Lineage_collections import Lapatinib_Control, Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM
 
 
 concs = ["control", "gemcitabine 5 nM", "gemcitabine 10 nM", "gemcitabine 30 nM"]
 concsValues = ["control", "5 nM", "10 nM", "30 nM"]
-gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
 
-gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(gemcitabine, 2, fpi=True)
+pik1 = open("gemcitabines.pkl", "rb")
+gemc_tHMMobj_list = []
+for i in range(4):
+    gemc_tHMMobj_list.append(pickle.load(pik1))
 
-for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
-    for lin_indx, lin in enumerate(gemc_tHMMobj.X):
-        for cell_indx, cell in enumerate(lin.output_lineage):
-            cell.state = gemc_states_list[idx][lin_indx][cell_indx]
 
-# create a pickle file for gemcitabine
-pik2 = open("gemcitabines.pkl", "wb")
-for gemc in gemc_tHMMobj_list:
-    pickle.dump(gemc, pik2)
-pik2.close()
+# gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(gemcitabine, 3, fpi=True)
+
+# for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
+#     for lin_indx, lin in enumerate(gemc_tHMMobj.X):
+#         for cell_indx, cell in enumerate(lin.output_lineage):
+#             cell.state = gemc_states_list[idx][lin_indx][cell_indx]
+
+# # create a pickle file for gemcitabine
+# pik2 = open("gemcitabines.pkl", "wb")
+# for gemc in gemc_tHMMobj_list:
+#     pickle.dump(gemc, pik2)
+# pik2.close()
 
 T_gem = gemc_tHMMobj_list[0].estimate.T
 num_states = gemc_tHMMobj_list[0].num_states
