@@ -1,16 +1,14 @@
 """ Common utilities used between states regardless of distribution. """
 
-import math
 import warnings
 import numpy as np
-import scipy.stats as sp
 import scipy.special as sc
 from jax import jit, grad
 import jax.numpy as jnp
 from jax.scipy.special import gammaincc
 from jax.scipy.stats import gamma
 from jax.config import config
-from scipy.optimize import toms748, minimize, Bounds, LinearConstraint
+from scipy.optimize import toms748, minimize, Bounds, LinearConstraint, BFGS
 
 config.update("jax_enable_x64", True)
 warnings.filterwarnings('ignore', r'delta_grad == 0.0.')
@@ -160,11 +158,12 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
     if np.allclose(np.dot(A, x0), 0.0):
         x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
 
-    linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0, keep_feasible=True)
+    linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)
     bnds = Bounds(lb=np.zeros_like(x0), ub=np.ones_like(x0) * 100.0, keep_feasible=True)
+    HH = BFGS()
 
     options = {'xtol': 1e-12, 'gtol': 1e-12}
-    res = minimize(nLL_atonce, x0=x0, jac=nLL_atonceJ, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc], options=options)
-    # assert res.success is True
+    res = minimize(nLL_atonce, x0=x0, jac=nLL_atonceJ, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc], options=options)
+    assert res.success is True
 
     return res.x
