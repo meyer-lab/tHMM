@@ -5,6 +5,7 @@ from .figureCommon import getSetup
 from string import ascii_lowercase
 
 
+
 def makeFigure():
     """
     Makes figure 100.

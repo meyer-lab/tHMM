@@ -2,6 +2,7 @@
 from string import ascii_lowercase
 from .figureCommon import getSetup
 
+
 def makeFigure():
     """
     Makes figure 150.
