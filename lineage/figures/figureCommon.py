@@ -114,7 +114,7 @@ def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1, r
     template = st.fromfile(figFile)
     cartoon = st.fromfile(cartoonFile).getroot()
 
-    cartoon.moveto(x, y, scale=scalee)
+    cartoon.moveto(x, y, scale_x=scalee)
     cartoon.scale_xy(scale_x, scale_y)
     if rotate:
         cartoon.rotate(rotate, x, y)
