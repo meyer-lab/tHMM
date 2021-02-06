@@ -78,10 +78,6 @@ class TestModel(unittest.TestCase):
         for i, lineage in enumerate(lineages):
             # soft check that the order is probably the same
             assert lineage[len(lineage) - 1].gen == 1
-            for j, value in enumerate(lineage):
-                for k in range(6):
-                    self.assertTrue(value.obs[k] == self.lin[i][j].obs[k] or (
-                        math.isnan(value.obs[k]) and math.isnan(self.lin[i][j].obs[k])))
 
     def test_tryRecursion(self):
         """

@@ -161,8 +161,8 @@ def import_Heiser(path):
     # fix the unit of observations
     for lins in lineages:
         for cells in lins:
-            for i in range(2,4):
-                cells.obs[i] = cells.obs[i] / 2
+                for i in range(2,4):
+                    cells.obs[i] = cells.obs[i] / 2
 
     return lineages
 
