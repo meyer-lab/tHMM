@@ -8,13 +8,6 @@ from ..LineageTree import LineageTree
 desired_num_states = 2
 E = [StateDistribution() for _ in range(desired_num_states)]
 
-def fix_obs(lin_list):
-    for lins in lin_list:
-        for cell in lins.output_lineage:
-            for i in range(2,4):
-                cell.obs[i] = cell.obs[i] / 2
-    return lin_list
-
 
 # -- Lapatinib control
 
@@ -23,8 +16,7 @@ lap012 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=
 lap02 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00701_A5_1_V4.xlsx")]
 lap03 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_A5_1_V4.xlsx")]
 
-lapatinib_Control = lap01 + lap012 + lap02 + lap03
-Lapatinib_Control = fix_obs(lapatinib_Control)
+Lapatinib_Control = lap01 + lap012 + lap02 + lap03
 # used for when we want to writes states instead of phase lengths
 len_lp_cntr = [len(lap01), len(lap012), len(lap02), len(lap03)]
 
@@ -39,8 +31,7 @@ lapb652 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path
 lapb653 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_B6_3_V4.xlsx")]
 
 
-lapt25uM = lapb63 + lapb632 + lapb64 + lapb642 + lapb65 + lapb652 + lapb653
-Lapt25uM = fix_obs(lapt25uM)
+Lapt25uM = lapb63 + lapb632 + lapb64 + lapb642 + lapb65 + lapb652 + lapb653
 len_lp_25 = [len(lapb63), len(lapb632), len(lapb64), len(lapb642), len(lapb65), len(lapb652), len(lapb653)]
 
 # -- LAPATINIB 50 uMolars
@@ -62,9 +53,8 @@ lapC512 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path
 lapC513 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_C5_3_1.xlsx")]
 lapC514 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_C5_3_2.xlsx")]
 
-lapt50uM = lapC501 + lapC502 + lapC503 + lapC504 + lapC505 + lapC506 + lapC507 + \
+Lapt50uM = lapC501 + lapC502 + lapC503 + lapC504 + lapC505 + lapC506 + lapC507 + \
     lapC508 + lapC509 + lapC510 + lapC511 + lapC512 + lapC513 + lapC514
-Lapt50uM = fix_obs(lapt50uM)
 len_lp_50 = [
     len(lapC501),
     len(lapC502),
@@ -91,8 +81,7 @@ lapD53 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=
 lapD56 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_D5_2_V4.xlsx")]
 lapD58 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_D5_3_V4.xlsx")]
 
-lap250uM = lapD51 + lapD54 + lapD57 + lapD52 + lapD55 + lapD53 + lapD56 + lapD58
-Lap250uM = fix_obs(lap250uM)
+Lap250uM = lapD51 + lapD54 + lapD57 + lapD52 + lapD55 + lapD53 + lapD56 + lapD58
 len_lp_250 = [len(lapD51), len(lapD54), len(lapD57), len(lapD52), len(lapD55), len(lapD53), len(lapD56), len(lapD58)]
 
 # -- Gemcitabine control
@@ -105,8 +94,7 @@ gem052 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=
 gem06 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_A3_1_V4.xlsx")]
 gem062 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_A3_2_V4.xlsx")]
 
-gemcitabine_Control = gem04 + gem05 + gem06 + gem042 + gem052 + gem062 + gem043
-Gemcitabine_Control = fix_obs(gemcitabine_Control)
+Gemcitabine_Control = gem04 + gem05 + gem06 + gem042 + gem052 + gem062 + gem043
 len_gm_cntr = [len(gem04), len(gem05), len(gem06), len(gem042), len(gem052), len(gem062), len(gem043)]
 
 # -- GEMCITABINE 5 uMolars
@@ -118,8 +106,7 @@ gemc342 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path
 gemc35 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_C3_1_V5.xlsx")]
 gemc352 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_C3_2_V4.xlsx")]
 
-gem5uM = gemc33 + gemc332 + gemc34 + gemc342 + gemc35 + gemc352
-Gem5uM = fix_obs(gem5uM)
+Gem5uM = gemc33 + gemc332 + gemc34 + gemc342 + gemc35 + gemc352
 len_gm_5 = [len(gemc33), len(gemc332), len(gemc34), len(gemc342), len(gemc35), len(gemc352)]
 
 # -- GEMCITABINE 10 uMolars
@@ -142,9 +129,8 @@ gemc413 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path
 gemc414 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_C4_4_1.xlsx")]
 gemc415 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_C4_4_2.xlsx")]
 
-gem10uM = gemc401 + gemc402 + gemc403 + gemc404 + gemc405 + gemc406 + gemc407 + \
+Gem10uM = gemc401 + gemc402 + gemc403 + gemc404 + gemc405 + gemc406 + gemc407 + \
     gemc408 + gemc409 + gemc410 + gemc411 + gemc412 + gemc413 + gemc414 + gemc415
-Gem10uM = fix_obs(gem10uM) 
 len_gm_10 = [
     len(gemc401),
     len(gemc402),
@@ -173,8 +159,7 @@ gemD33 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=
 gemD36 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_D3_2_V4.xlsx")]
 gemD38 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_D3_3_V4.xlsx")]
 
-gem30uM = gemD31 + gemD34 + gemD37 + gemD32 + gemD35 + gemD33 + gemD36 + gemD38
-Gem30uM = fix_obs(gem30uM)
+Gem30uM = gemD31 + gemD34 + gemD37 + gemD32 + gemD35 + gemD33 + gemD36 + gemD38
 len_gm_30 = [len(gemD31), len(gemD34), len(gemD37), len(gemD32), len(gemD35), len(gemD33), len(gemD36), len(gemD38)]
 
 # -- PACLITAXEL 2 uMolars
