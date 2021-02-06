@@ -105,7 +105,6 @@ class tHMM:
 
 
         # the whole population has one AIC value.
-        # AIC_value = -2 * np.sum(LL) + 2 * degrees_of_freedom
         BIC_value = -2 * np.sum(LL) + np.log(num_cells) * degrees_of_freedom
 
         return BIC_value, degrees_of_freedom

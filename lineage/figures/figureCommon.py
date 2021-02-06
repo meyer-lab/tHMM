@@ -451,6 +451,6 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
         ax[idx].set_title(cons[idx])
         ax[idx].set_ylabel("phase lengths [hr]")
         ax[idx].set_xlabel("state")
-        ax[idx].set_ylim([0.0, 150.0])
+        ax[idx].set_ylim([0.0, 100.0])
 
     plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states)
