@@ -111,6 +111,10 @@ def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     outt = 0.0
     for i in range(4):
         outt += nLL_sep(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
+
+    if ~np.isfinite(outt):
+        raise RuntimeError(f"Failed with: {x}")
+
     return outt
 
 
@@ -126,6 +130,9 @@ def nLL_atonceJ(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
 
     for i in range(4):
         grad[1 + i] = nLL_sepG(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
+
+    if ~np.all(np.isfinite(grad)):
+        raise RuntimeError(f"Failed with: {x}")
 
     return grad
 
@@ -162,7 +169,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
     bnds = Bounds(lb=np.zeros_like(x0), ub=np.ones_like(x0) * 100.0, keep_feasible=True)
     HH = BFGS()
 
-    options = {'xtol': 1e-12, 'gtol': 1e-12}
+    options = {'xtol': 1e-9, 'gtol': 1e-9}
     res = minimize(nLL_atonce, x0=x0, jac=nLL_atonceJ, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc], options=options)
     assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
