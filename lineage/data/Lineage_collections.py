@@ -170,7 +170,7 @@ taxb41 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=
 taxb412 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00702_B4_2_V4.xlsx")]
 taxb42 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00802_B4_1_V4.xlsx")]
 taxb422 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00802_B4_2_V4.xlsx")]
-
+Tax2uM = taxb40 + taxb402 + taxb41 + taxb412 + taxb42 + taxb422
 
 # --PACLITAXEL 7.5 uMolars
 
