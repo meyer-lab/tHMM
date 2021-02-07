@@ -157,6 +157,13 @@ def import_Heiser(path):
             currentLineage.append(parentCell)
             # store lineage in list of lineages
             lineages.append(currentLineage)
+
+    # fix the unit of observations
+    for lins in lineages:
+        for cells in lins:
+                for i in range(2,4):
+                    cells.obs[i] = cells.obs[i] / 2
+
     return lineages
 
 

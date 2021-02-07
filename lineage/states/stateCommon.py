@@ -1,16 +1,14 @@
 """ Common utilities used between states regardless of distribution. """
 
-import math
 import warnings
 import numpy as np
-import scipy.stats as sp
 import scipy.special as sc
 from jax import jit, grad
 import jax.numpy as jnp
 from jax.scipy.special import gammaincc
 from jax.scipy.stats import gamma
 from jax.config import config
-from scipy.optimize import toms748, minimize, Bounds, LinearConstraint
+from scipy.optimize import toms748, minimize, Bounds, LinearConstraint, BFGS
 
 config.update("jax_enable_x64", True)
 warnings.filterwarnings('ignore', r'delta_grad == 0.0.')
@@ -110,16 +108,22 @@ def basic_censor(cell):
 
 def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
+    x = np.clip(x, 0.001, 100.0) # Horrible hack
+
     outt = 0.0
     for i in range(4):
         outt += nLL_sep(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
-        if not np.isfinite(outt):
-            print(x)
+
+    if ~np.isfinite(outt):
+        raise RuntimeError(f"Failed with: {x}")
+
     return outt
 
 
 def nLL_atonceJ(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     """ Gradient for nLL_atonce mostly by autodiff. """
+    x = np.clip(x, 0.001, 100.0) # Horrible hack
+
     grad = np.zeros(x.size)
 
     val = nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas)
@@ -130,6 +134,9 @@ def nLL_atonceJ(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
 
     for i in range(4):
         grad[1 + i] = nLL_sepG(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
+
+    if ~np.all(np.isfinite(grad)):
+        raise RuntimeError(f"Failed with: {x}")
 
     return grad
 
@@ -160,12 +167,13 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
 
     # Override x0 if we were given a bad starting point
     if np.allclose(np.dot(A, x0), 0.0):
-        x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
+        x0 = np.array([20.0, 1.0, 2.0, 3.0, 4.0])
 
-    linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 10.0)
-    bnds = Bounds(lb=np.ones_like(x0)/20, ub=np.ones_like(x0) * 50.0)
+    linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)
+    bnds = Bounds(lb=np.ones_like(x0) * 0.001, ub=np.ones_like(x0) * 100.0, keep_feasible=True)
+    HH = BFGS()
 
-    res = minimize(nLL_atonce, x0=x0, jac=nLL_atonceJ, args=arrgs, method="SLSQP", bounds=bnds, constraints=[linc])
-    # assert res.success is True
+    res = minimize(nLL_atonce, x0=x0, jac=nLL_atonceJ, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
+    assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
