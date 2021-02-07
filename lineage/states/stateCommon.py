@@ -156,7 +156,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
 
     # Override x0 if we were given a bad starting point
     if np.allclose(np.dot(A, x0), 0.0):
-        x0 = np.array([10.0, 1.0, 2.0, 3.0, 4.0])
+        x0 = np.array([20.0, 1.0, 2.0, 3.0, 4.0])
 
     linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)
     bnds = Bounds(lb=np.zeros_like(x0), ub=np.ones_like(x0) * 100.0, keep_feasible=True)
@@ -164,6 +164,6 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
 
     options = {'xtol': 1e-12, 'gtol': 1e-12}
     res = minimize(nLL_atonce, x0=x0, jac=nLL_atonceJ, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc], options=options)
-    assert res.success is True
+    assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
