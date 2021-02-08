@@ -108,7 +108,7 @@ def basic_censor(cell):
 
 def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
-    x = np.clip(x, 0.001, 100.0) # Horrible hack
+    x = np.clip(x, 0.001, 100.0)  # Horrible hack
 
     outt = 0.0
     for i in range(4):
@@ -122,7 +122,7 @@ def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
 
 def nLL_atonceJ(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     """ Gradient for nLL_atonce mostly by autodiff. """
-    x = np.clip(x, 0.001, 100.0) # Horrible hack
+    x = np.clip(x, 0.001, 100.0)  # Horrible hack
 
     grad = np.zeros(x.size)
 
