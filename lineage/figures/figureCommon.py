@@ -385,7 +385,7 @@ def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
     # ylim and ylabel
     for i in range(6, 8):
         ax[i].set_ylabel("progression rate 1/[hr]")
-        ax[i].set_ylim([0, 0.05])
+        ax[i].set_ylim([0, 0.1])
 
     # ylim and ylabel
     for i in range(8, 10):
@@ -450,6 +450,6 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
         ax[idx].set_title(cons[idx])
         ax[idx].set_ylabel("phase lengths [hr]")
         ax[idx].set_xlabel("state")
-        ax[idx].set_ylim([0.0, 150.0])
+        ax[idx].set_ylim([0.0, 100.0])
 
     plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states)

@@ -91,12 +91,12 @@ if __name__ == '__main__':
     if sys.argv[1] == '11':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/lapatinib.svg', 1130, 50, scalee=0.75, scale_x=0.8)
+                       f'{cartoon_dir}/lapatinib.svg', 1130, 70, scalee=1.2)
 
     if sys.argv[1] == '12':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/gemcitabine.svg', 1120, 50, scalee=0.75, scale_x=0.8)
+                       f'{cartoon_dir}/gemcitabine.svg', 1130, 70, scalee=1.2)
 
     if sys.argv[1] == '100':
         # Overlay Transition block
