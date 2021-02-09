@@ -50,7 +50,6 @@ def makeFigure():
     #     pickle.dump(laps, pik1)
     # pik1.close()
 
-
     # # Gemcitabine
     # gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(gemcitabine, 3, fpi=True)
 
