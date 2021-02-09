@@ -23,11 +23,9 @@ num_states = lapt_tHMMobj_list[0].num_states
 def makeFigure():
     """ Makes figure 11. """
 
-    ax, f = getSetup((22, 7.0), (2, 6))
-    for u in range(4, 6):
-        ax[u].axis("off")
-    for u in range(10, 12):
-        ax[u].axis("off")
+    ax, f = getSetup((22, 7.0), (2, 5))
+    ax[4].axis("off")
+    ax[9].axis("off")
 
     plot_all(ax, num_states, lapt_tHMMobj_list, "Laptinib", concs, concsValues)
     return f
