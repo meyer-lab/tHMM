@@ -103,7 +103,6 @@ class tHMM:
             for ii in range(self.num_states):
                 degrees_of_freedom += self.estimate.E[ii].dof()
 
-
         # the whole population has one AIC value.
         BIC_value = -2 * np.sum(LL) + np.log(num_cells) * degrees_of_freedom
 
