@@ -101,21 +101,21 @@ if __name__ == '__main__':
     if sys.argv[1] == '100':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure100.svg',
-                       f'{cartoon_dir}/figure10.svg', 0, 20, scalee=0.4, scale_y=0.5)
+                       f'{cartoon_dir}/figure10.svg', 0, 20, scalee=0.33, scale_y=0.5)
         overlayCartoon(fdir + 'figure100.svg',
-                       f'{cartoon_dir}/figure101.svg', 180, 20, scalee=0.4, scale_y=0.5)
+                       f'{cartoon_dir}/figure101.svg', 180, 20, scalee=0.33, scale_y=0.5)
         overlayCartoon(fdir + 'figure100.svg',
-                       f'{cartoon_dir}/figure102.svg', 360, 20, scalee=0.4, scale_y=0.5)
+                       f'{cartoon_dir}/figure102.svg', 360, 20, scalee=0.33, scale_y=0.5)
         overlayCartoon(fdir + 'figure100.svg',
-                       f'{cartoon_dir}/figure103.svg', 540, 20, scalee=0.4, scale_y=0.5)
+                       f'{cartoon_dir}/figure103.svg', 540, 20, scalee=0.33, scale_y=0.5)
 
     if sys.argv[1] == '150':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure150.svg',
-                       f'{cartoon_dir}/figure10.svg', 0, 20, scalee=0.4, scale_y=0.5)
+                       f'{cartoon_dir}/figure15.svg', 0, 20, scalee=0.33, scale_y=0.5)
         overlayCartoon(fdir + 'figure150.svg',
-                       f'{cartoon_dir}/figure151.svg', 180, 20, scalee=0.4, scale_y=0.5)
+                       f'{cartoon_dir}/figure151.svg', 180, 20, scalee=0.33, scale_y=0.5)
         overlayCartoon(fdir + 'figure150.svg',
-                       f'{cartoon_dir}/figure152.svg', 360, 20, scalee=0.4, scale_y=0.5)
+                       f'{cartoon_dir}/figure152.svg', 360, 20, scalee=0.33, scale_y=0.5)
         overlayCartoon(fdir + 'figure150.svg',
-                       f'{cartoon_dir}/figure153.svg', 540, 20, scalee=0.4, scale_y=0.5)
+                       f'{cartoon_dir}/figure153.svg', 540, 20, scalee=0.33, scale_y=0.5)

@@ -11,6 +11,19 @@ gemc_tHMMobj_list = []
 for _ in range(4):
     gemc_tHMMobj_list.append(pickle.load(pik1))
 
+st1 = []
+st2 = []
+st3 = []
+
+for lins in gemc_tHMMobj_list[1].X:
+    if lins.output_lineage[0].state == 0:
+        st1.append(lins)
+    elif lins.output_lineage[0].state == 1:
+        st2.append(lins)
+    else:
+        st3.append(lins)
+gemc_tHMMobj_list[1].X = st1[0:min(50, len(st1))] + st2[0:min(50, len(st2))] + st3[0:min(50, len(st3))]
+
 
 def makeFigure():
     """
@@ -18,7 +31,7 @@ def makeFigure():
     """
     ax, f = getSetup((7, 40), (len(gemc_tHMMobj_list[1].X), 1))
 
-    for i in range(len(gemc_tHMMobj_list[1].X)):
+    for i, X in enumerate(gemc_tHMMobj_list[1].X):
         ax[i].axis('off')
-        plotLineage(gemc_tHMMobj_list[1].X[i], ax[i])
+        plotLineage(X, ax[i])
     return f
