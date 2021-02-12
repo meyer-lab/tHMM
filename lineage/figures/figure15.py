@@ -24,6 +24,7 @@ for thmmObj in gemc_tHMMobj_list:
             st3.append(lins)
     thmmObj.X = st1[-51:-1] + st2[-51:-1] + st3[-51:-1]
 
+
 def makeFigure():
     """
     Makes figure 15.
