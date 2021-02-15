@@ -13,6 +13,7 @@ for _ in range(4):
 
 only_gemcitabine_control_1 = lapt_tHMMobj_list[0].X[100:200]
 
+
 def makeFigure():
     """
     Makes figure 16.
