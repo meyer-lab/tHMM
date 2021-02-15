@@ -119,3 +119,17 @@ if __name__ == '__main__':
                        f'{cartoon_dir}/figure152.svg', 360, 20, scalee=0.33, scale_y=0.5)
         overlayCartoon(fdir + 'figure150.svg',
                        f'{cartoon_dir}/figure153.svg', 540, 20, scalee=0.33, scale_y=0.5)
+
+    if sys.argv[1] == '160':
+        # Overlay Transition block
+        overlayCartoon(fdir + 'figure160.svg',
+                       f'{cartoon_dir}/figure16.svg', 0, 20, scalee=0.8, scale_y=0.5)
+        overlayCartoon(fdir + 'figure160.svg',
+                       f'{cartoon_dir}/figure161.svg', 200, 20, scalee=0.8, scale_y=0.5)
+
+    if sys.argv[1] == '170':
+        # Overlay Transition block
+        overlayCartoon(fdir + 'figure170.svg',
+                       f'{cartoon_dir}/figure17.svg', 0, 20, scalee=0.8, scale_y=0.5)
+        overlayCartoon(fdir + 'figure170.svg',
+                       f'{cartoon_dir}/figure171.svg', 200, 20, scalee=0.8, scale_y=0.5)
