@@ -10,7 +10,7 @@ def makeFigure():
     Makes figure 100.
     """
     titles = ["Control", "lapatinib 25 nM", "lapatinib 50 nM", "lapatinib 250 nM"]
-    ax, f = getSetup((10, 7), (1, 4))
+    ax, f = getSetup((10, 17), (1, 4))
 
     for i in range(4):
         ax[i].axis('off')

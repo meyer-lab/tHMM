@@ -101,24 +101,24 @@ if __name__ == '__main__':
     if sys.argv[1] == 'S11':
         # Overlay Transition block
         overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/figure10.svg', 0, 20, scalee=0.33, scale_y=0.5)
+                       f'{cartoon_dir}/figure10.svg', 0, 20, scalee=0.33, scale_y=1.5)
         overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/figure101.svg', 180, 20, scalee=0.33, scale_y=0.5)
+                       f'{cartoon_dir}/figure101.svg', 180, 20, scalee=0.33, scale_y=1.5)
         overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/figure102.svg', 360, 20, scalee=0.33, scale_y=0.5)
+                       f'{cartoon_dir}/figure102.svg', 360, 20, scalee=0.33, scale_y=1.5)
         overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/figure103.svg', 540, 20, scalee=0.33, scale_y=0.5)
+                       f'{cartoon_dir}/figure103.svg', 540, 20, scalee=0.33, scale_y=1.5)
 
     if sys.argv[1] == 'S12':
         # Overlay Transition block
         overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/figure15.svg', 0, 20, scalee=0.33, scale_y=0.5)
+                       f'{cartoon_dir}/figure15.svg', 0, 20, scalee=0.33, scale_y=1.5)
         overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/figure151.svg', 180, 20, scalee=0.33, scale_y=0.5)
+                       f'{cartoon_dir}/figure151.svg', 180, 20, scalee=0.33, scale_y=1.5)
         overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/figure152.svg', 360, 20, scalee=0.33, scale_y=0.5)
+                       f'{cartoon_dir}/figure152.svg', 360, 20, scalee=0.33, scale_y=1.5)
         overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/figure153.svg', 540, 20, scalee=0.33, scale_y=0.5)
+                       f'{cartoon_dir}/figure153.svg', 540, 20, scalee=0.33, scale_y=1.5)
 
     if sys.argv[1] == 'S13':
         # Overlay Transition block
