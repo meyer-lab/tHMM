@@ -1,0 +1,51 @@
+[
+{
+    "id": "devijver",
+    "URL": "https://www.sciencedirect.com/science/article/abs/pii/0167865585900236",
+    "number": "6",
+    "volume": "3",
+    "title": "Baum's forward-backward algorithm revisited",
+    "pages": "369-373",
+    "issued": {
+      "date-parts": [
+        [
+          1986,
+          11
+        ]
+      ]
+    },
+    "author": [
+      {
+        "given": "Pierre A.",
+        "family": "Devijver"
+      }
+    ],
+    "container-title": "Pattern Recognition Letters",
+    "publisher": "Elsevier",
+    "type": "report"
+  },
+  {
+    "id": "gamma",
+    "URL": "https://tminka.github.io/papers/minka-gamma.pdf",
+    "number": "",
+    "title": "Estimating a Gamma distribution",
+    "pages": "",
+    "issued": {
+      "date-parts": [
+        [
+          2002,
+          2
+        ]
+      ]
+    },
+    "author": [
+      {
+        "given": "Thomas P.",
+        "family": "Minka"
+      }
+    ],
+    "container-title": "",
+    "publisher": "Unpublished",
+    "type": "report"
+  }
+]
