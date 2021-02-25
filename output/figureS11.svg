@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='ASCII' standalone='yes'?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="497.1933pt" version="1.1" viewBox="0 0 712.970148 497.1933" width="712.970148pt">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="1215.5058pt" version="1.1" viewBox="0 0 712.970148 1215.5058" width="712.970148pt">
  <metadata>
   <rdf:RDF xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2021-02-24T16:08:04.226859</dc:date>
+    <dc:date>2021-02-24T19:31:43.901920</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -19,7 +19,7 @@
  </defs>
  <g id="figure_1">
   <g id="patch_1">
-   <path d="M 0 497.1933  L 712.970148 497.1933  L 712.970148 0  L 0 0  z " style="fill:#ffffff;"/>
+   <path d="M 0 1215.5058  L 712.970148 1215.5058  L 712.970148 0  L 0 0  z " style="fill:#ffffff;"/>
   </g>
   <g id="axes_1">
    <g id="text_1">
@@ -160,7 +160,7 @@
    </g>
   </g>
  </g>
-<g transform="translate(0, 20) scale(0.33 0.165) "><metadata>
+<g transform="translate(0, 20) scale(0.33 0.495) "><metadata>
   <rdf:RDF xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
@@ -9351,7 +9351,7 @@
    <rect height="13.878433" width="497.99952" x="0" y="2860.121087"/>
   </clipPath>
  </defs>
-</g><g transform="translate(180, 20) scale(0.33 0.165) "><metadata>
+</g><g transform="translate(180, 20) scale(0.33 0.495) "><metadata>
   <rdf:RDF xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
@@ -14517,7 +14517,7 @@
    <rect height="21.675645" width="497.99952" x="0" y="2852.323875"/>
   </clipPath>
  </defs>
-</g><g transform="translate(360, 20) scale(0.33 0.165) "><metadata>
+</g><g transform="translate(360, 20) scale(0.33 0.495) "><metadata>
   <rdf:RDF xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
@@ -18616,7 +18616,7 @@
    <rect height="16.582406" width="497.99952" x="0" y="2857.417114"/>
   </clipPath>
  </defs>
-</g><g transform="translate(540, 20) scale(0.33 0.165) "><metadata>
+</g><g transform="translate(540, 20) scale(0.33 0.495) "><metadata>
   <rdf:RDF xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
