@@ -7,7 +7,7 @@ from string import ascii_lowercase
 
 from .figureCommon import getSetup
 from ..plotTree import plotLineage
-from lineage.data.Lineage_collections import Gem5uM, gemControl as gem
+from lineage.data.Lineage_collections import Gem5uM, Gemcitabine_Control as gem
 
 
 def makeFigure():
