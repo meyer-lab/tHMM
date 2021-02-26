@@ -8,17 +8,17 @@ keywords:
 lang: en-US
 authors:
   -
-    github: shak360
-    name: Shakthi Visagan
-    initials: SV
-    orcid: 0000-0001-9295-2188
-    affiliations:
-      - Department of Bioengineering, University of California, Los Angeles
-  -
     github: farnazmdi
     name: Farnaz Mohammadi
     initials: FM
     orcid: 0000-0002-0197-4670
+    affiliations:
+      - Department of Bioengineering, University of California, Los Angeles
+  -
+    github: shak360
+    name: Shakthi Visagan
+    initials: SV
+    orcid: 0000-0001-9295-2188
     affiliations:
       - Department of Bioengineering, University of California, Los Angeles
   -
