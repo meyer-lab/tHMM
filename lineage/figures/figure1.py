@@ -7,7 +7,7 @@ from string import ascii_lowercase
 
 from .figureCommon import getSetup
 from ..plotTree import plotLineage
-from lineage.data.Lineage_collections import Gem5uM, Gemcitabine_Control as gem
+from lineage.data.Lineage_collections import gem5uM, Gemcitabine_Control as gem
 
 
 def makeFigure():
@@ -28,14 +28,14 @@ def figureMaker(ax):
     """
     Makes figure 1.
     """
-    plotLineage(Gem5uM[13], ax[1], censore=False, color=False)
+    plotLineage(gem5uM[13], ax[1], censore=False, color=False)
     ax[1].set_title("Gemcitabine 5 nM", fontsize=10)
     ax[1].axis('off')
 
-    plotLineage(Gem5uM[4], ax[3], censore=False, color=False)
+    plotLineage(gem5uM[4], ax[3], censore=False, color=False)
     ax[3].axis('off')
 
-    plotLineage(Gem5uM[10], ax[5], censore=False, color=False)
+    plotLineage(gem5uM[10], ax[5], censore=False, color=False)
     ax[5].axis('off')
 
     for cell in gem[3].output_lineage:
@@ -48,7 +48,7 @@ def figureMaker(ax):
     ax[0].set_title("Control", fontsize=10)
     ax[0].axis('off')
 
-    plotLineage(gem[9], ax[2], censore=False, color=False)
+    plotLineage(gem[16], ax[2], censore=False, color=False)
     ax[2].axis('off')
 
     plotLineage(gem[2], ax[4], censore=False, color=False)

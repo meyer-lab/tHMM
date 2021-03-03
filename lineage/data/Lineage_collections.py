@@ -8,6 +8,16 @@ from ..LineageTree import LineageTree
 desired_num_states = 2
 E = [StateDistribution() for _ in range(desired_num_states)]
 
+def popout_single_lineages(lineages):
+    """ To remove lineages with cell numbers <= 5. """
+    trimed_lineages = []
+    for cells in lineages:
+        if len(cells) < 5:
+            pass
+        else:
+            trimed_lineages.append(cells)
+    assert len(trimed_lineages) > 0
+    return trimed_lineages
 
 # -- Lapatinib control
 
@@ -107,6 +117,7 @@ gemc35 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=
 gemc352 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00801_C3_2_V4.xlsx")]
 
 Gem5uM = gemc33 + gemc332 + gemc34 + gemc342 + gemc35 + gemc352
+gem5uM = popout_single_lineages(Gem5uM)
 len_gm_5 = [len(gemc33), len(gemc332), len(gemc34), len(gemc342), len(gemc35), len(gemc352)]
 
 # -- GEMCITABINE 10 uMolars
