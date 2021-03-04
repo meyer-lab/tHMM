@@ -109,7 +109,7 @@ def figure_maker(ax, AIC_Holder, true_state_no, upper_ylim, censored=False):
     # Creating AIC plot and matching gridlines
     ax.set_xlabel("Number of States Predicted")
     ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
-    ax.set_ylabel("Normalized AIC")
+    ax.set_ylabel("Normalized BIC")
     ax.set_yticks(np.linspace(0, upper_ylim, 5))
     ax.set_ylim([0, 1.1 * upper_ylim])
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
