@@ -365,16 +365,16 @@
             <rect x="2319" y="3721" width="1261" height="1237" style="fill:none;stroke:rgb(2,157,33);stroke-width:2px;stroke-linecap:butt;stroke-dasharray:6.01,6.01,6.01,6.01;"/>
         </g>
         <g transform="matrix(1.31215,0,0,0.819509,6935.47,3976.47)">
-            <text x="0px" y="0px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:125px;">state distribution parameters</text>
+            <text x="0px" y="0px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:125px;">State distribution parameters</text>
         </g>
         <g transform="matrix(1.31215,0,0,0.819509,6897.42,4668.14)">
-            <text x="0px" y="0px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:125px;">tree of states</text>
+            <text x="0px" y="0px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:125px;">T<tspan x="71.716px 113.342px " y="0px 0px ">re</tspan>e of states</text>
         </g>
         <g transform="matrix(1.31215,0,0,0.819509,6882.98,5397.5)">
-            <text x="0px" y="0px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:125px;">number of states</text>
+            <text x="0px" y="0px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:125px;">Number of states</text>
         </g>
-        <g transform="matrix(1.31215,0,0,0.819509,6867.25,3363.48)">
-            <text x="0px" y="0px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:125px;">transition probability between states</text>
+        <g transform="matrix(1.31345,0,0,0.820322,6817.38,3363.55)">
+            <text x="0px" y="0px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:125px;">T<tspan x="71.716px 113.342px " y="0px 0px ">ra</tspan>nsition probability between states</text>
         </g>
         <g transform="matrix(1.79599,0,0,1.2828,-4514.14,-1493.02)">
             <g transform="matrix(0.730183,7.0282e-23,-3.53268e-22,0.637718,6437.34,3898.83)">

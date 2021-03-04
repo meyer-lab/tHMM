@@ -21,7 +21,7 @@ def CladeRecursive(cell, a, censore, color):
         if cell.state == 0:
             colorr = "blue"
         elif cell.state == 1:
-            colorr = "green"
+            colorr = "orange"
         elif cell.state == 2:
             colorr = "green"
         else:
@@ -105,7 +105,7 @@ def plot_networkx(num_states, T, drug_name):
     # add edges
     for i in range(num_states):
         for j in range(num_states):
-            G.add_edge(i, j, penwidth=2 * T[i, j], minlen=1, label=str(np.round(T[i, j], 2)))
+            G.add_edge(i, j, penwidth=3 * T[i, j], minlen=1, label=str(np.round(T[i, j], 2)))
 
     # add graphviz layout options (see https://stackoverflow.com/a/39662097)
     G.graph['edge'] = {'arrowsize': '0.6', 'splines': 'curved'}
