@@ -8,6 +8,7 @@ from ..LineageTree import LineageTree
 desired_num_states = 2
 E = [StateDistribution() for _ in range(desired_num_states)]
 
+
 def popout_single_lineages(lineages):
     """ To remove lineages with cell numbers <= 5. """
     trimed_lineages = []
@@ -20,6 +21,7 @@ def popout_single_lineages(lineages):
     return trimed_lineages
 
 # -- Lapatinib control
+
 
 lap01 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00601_A5_1_V5.xlsx")]
 lap012 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00601_A5_2_V4.xlsx")]
