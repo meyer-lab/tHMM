@@ -87,7 +87,11 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10, censored=Fals
     output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, parallel=False)
 
     for idx in range(len(desired_num_states)):
-        AIC, _ = output[idx][0].get_AIC(output[idx][2])
+        nums = 0
+        for lin in output[idx][0].X:
+            nums += len(lin.output_lineage)
+        AIC, _ = output[idx][0].get_AIC(output[idx][2], num_cells=nums)
+        print(nums)
         AICs[idx] = AIC
     # normalize
     return AICs - np.min(AICs)
