@@ -87,7 +87,11 @@ def run_AIC(relative_state_change, E, num_lineages_to_evaluate=10, censored=Fals
     output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, parallel=False)
 
     for idx in range(len(desired_num_states)):
-        AIC, _ = output[idx][0].get_AIC(output[idx][2])
+        nums = 0
+        for lin in output[idx][0].X:
+            nums += len(lin.output_lineage)
+        AIC, _ = output[idx][0].get_AIC(output[idx][2], num_cells=nums)
+        print(nums)
         AICs[idx] = AIC
     # normalize
     return AICs - np.min(AICs)
@@ -109,7 +113,7 @@ def figure_maker(ax, AIC_Holder, true_state_no, upper_ylim, censored=False):
     # Creating AIC plot and matching gridlines
     ax.set_xlabel("Number of States Predicted")
     ax.plot(desired_num_states, AIC_holder, "k", alpha=0.5)
-    ax.set_ylabel("Normalized AIC")
+    ax.set_ylabel("Normalized BIC")
     ax.set_yticks(np.linspace(0, upper_ylim, 5))
     ax.set_ylim([0, 1.1 * upper_ylim])
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))

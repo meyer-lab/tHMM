@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from copy import deepcopy
-
+import random
 from .figureCommon import (
     getSetup,
     subplotLabel,
@@ -29,6 +29,7 @@ scatter_state_1_kws = {
 
 
 def regGen(num):
+    random.seed(0)
     tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=num)
     while len(tmp.output_lineage) < 5:
         tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=num)
@@ -36,6 +37,7 @@ def regGen(num):
 
 
 def cenGen(num):
+    random.seed(0)
     tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=num, censor_condition=3, desired_experiment_time=250)
     while len(tmp.output_lineage) < 5:
         tmp = LineageTree.init_from_parameters(pi, T, E2, desired_num_cells=num, censor_condition=3, desired_experiment_time=250)
