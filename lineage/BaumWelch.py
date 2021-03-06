@@ -177,8 +177,8 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
     """
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
-    betaMSD = beta_array / np.clip(MSD_array, np.finfo(np.float).eps, np.inf)
-    TbetaMSD = np.clip(betaMSD @ T.T, np.finfo(np.float).eps, np.inf)
+    betaMSD = beta_array / np.clip(MSD_array, np.finfo(float).eps, np.inf)
+    TbetaMSD = np.clip(betaMSD @ T.T, np.finfo(float).eps, np.inf)
     lineage = lineageObj.output_lineage
     holder = np.zeros(T.shape)
 

@@ -166,7 +166,7 @@ def get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas):
     """
     for num, lO in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lO.output_lineage  # getting the lineage in the Population by index
-        MSD_array = np.clip(MSD[num], np.finfo(np.float).eps, np.inf)  # getting the MSD of the respective lineage
+        MSD_array = np.clip(MSD[num], np.finfo(float).eps, np.inf)  # getting the MSD of the respective lineage
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
         ELMSD = EL[num] * MSD[num]
 
