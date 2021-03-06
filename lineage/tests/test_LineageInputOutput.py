@@ -24,40 +24,40 @@ class TestModel(unittest.TestCase):
 
         # manually setting up trees from Synth_data
         # 1
-        self.parent1 = c(parent=None, gen=1, synthetic=False)
+        self.parent1 = c(parent=None, gen=1)
         self.parent1.obs = [1, 1, 10, 10, 0, 1]
-        self.left1 = c(parent=self.parent1, gen=2, synthetic=False)
+        self.left1 = c(parent=self.parent1, gen=2)
         self.left1.obs = [1, 0, 10, 10, 1, 1]
-        self.right1 = c(parent=self.parent1, gen=2, synthetic=False)
+        self.right1 = c(parent=self.parent1, gen=2)
         self.right1.obs = [1, float('nan'), 20, 105, 1, 0]
         self.parent1.left = self.left1
         self.parent1.right = self.right1
         self.lin1 = [self.left1, self.right1, self.parent1]
 
         # 2
-        self.parent2 = c(parent=None, gen=1, synthetic=False)
+        self.parent2 = c(parent=None, gen=1)
         self.parent2.obs = [1, 1, 10, 10, 0, 1]
-        self.left2 = c(parent=self.parent2, gen=2, synthetic=False)
+        self.left2 = c(parent=self.parent2, gen=2)
         self.left2.obs = [float('nan'), float(
             'nan'), 125, float('nan'), 0, float('nan')]
-        self.right2 = c(parent=self.parent2, gen=2, synthetic=False)
+        self.right2 = c(parent=self.parent2, gen=2)
         self.right2.obs = [1, 0, 10, 10, 1, 1]
         self.parent2.left = self.left2
         self.parent2.right = self.right2
         self.lin2 = [self.left2, self.right2, self.parent2]
 
         # 3
-        self.parent3 = c(parent=None, gen=1, synthetic=False)
+        self.parent3 = c(parent=None, gen=1)
         self.parent3.obs = [1, 1, float('nan'), 30, float('nan'), 0]
-        self.left3_1 = c(parent=self.parent3, gen=2, synthetic=False)
+        self.left3_1 = c(parent=self.parent3, gen=2)
         self.left3_1.obs = [1, 1, 30, 30, 1, 1]
-        self.right3_1 = c(parent=self.parent3, gen=2, synthetic=False)
+        self.right3_1 = c(parent=self.parent3, gen=2)
         self.right3_1.obs = [1, 0, 10, 80, 1, 1]
         self.parent3.left = self.left3_1
         self.parent3.right = self.right3_1
-        self.left3_2 = c(parent=self.left3_1, gen=3, synthetic=False)
+        self.left3_2 = c(parent=self.left3_1, gen=3)
         self.left3_2.obs = [1, float('nan'), 30, 25, 1, 0]
-        self.right3_2 = c(parent=self.left3_1, gen=3, synthetic=False)
+        self.right3_2 = c(parent=self.left3_1, gen=3)
         self.right3_2.obs = [1, float('nan'), 25, 30, 1, 0]
         self.lin3 = [self.left3_2, self.right3_2,
                      self.left3_1, self.right3_1, self.parent3]
