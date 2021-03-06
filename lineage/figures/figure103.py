@@ -22,7 +22,7 @@ for lins in lapt_tHMMobj_list[3].X:
     else:
         st3.append(lins)
 
-lapt_tHMMobj_list[3].X = st1[0:min(50, len(st1))] + st2[0:min(50, len(st2))] + st3[0:min(50, len(st3))]
+lapt_tHMMobj_list[3].X = st1[0:min(25, len(st1))] + st2[0:min(25, len(st2))] + st3[0:min(25, len(st3))]
 
 
 def makeFigure():
