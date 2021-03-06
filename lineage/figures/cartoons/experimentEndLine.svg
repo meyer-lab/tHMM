@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 102 650" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g id="Artboard1" transform="matrix(0.231293,0,0,0.872483,-210.245,-1120.27)">
+        <rect x="909" y="1284" width="441" height="745" style="fill:none;"/>
+        <clipPath id="_clip1">
+            <rect x="909" y="1284" width="441" height="745"/>
+        </clipPath>
+        <g clip-path="url(#_clip1)">
+            <g transform="matrix(4.32353,0,0,1.12436,-4344.09,-253.018)">
+                <path d="M1226,1366L1226,1997" style="fill:none;stroke:rgb(197,0,0);stroke-width:4.18px;stroke-dasharray:4.18,20.88,20.88,0;"/>
+            </g>
+            <g transform="matrix(2.67461e-16,1.14615,-4.32353,6.92861e-17,6738.73,249.787)">
+                <text x="971px" y="1295.82px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:50px;">end of experiment</text>
+            </g>
+        </g>
+    </g>
+</svg>
