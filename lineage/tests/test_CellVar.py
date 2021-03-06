@@ -55,32 +55,6 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell.gen == 1)
         self.assertTrue(left_cell.gen == 2 and right_cell.gen == 2)
 
-    def test_isParent(self):
-        """
-        Tests the parent relationships of cells.
-        """
-        T = np.array([[1.0, 0.0], [0.0, 1.0]])
-
-        parent_state = 1
-        cell = c(state=parent_state, parent=None, gen=1)
-        self.assertFalse(cell.isParent())
-        left_cell, right_cell = cell.divide(T)
-        self.assertTrue(cell.isParent())
-        self.assertTrue(left_cell.get_sister() is right_cell)
-        self.assertTrue(right_cell.get_sister() is left_cell)
-
-    def test_isChild(self):
-        """
-        Tests the daughter relationships of cells.
-        """
-        T = np.array([[1.0, 0.0], [0.0, 1.0]])
-
-        parent_state = 1
-        cell = c(state=parent_state, parent=None, gen=1)
-        self.assertFalse(cell.isChild())
-        left_cell, right_cell = cell.divide(T)
-        self.assertTrue(left_cell.isChild() and right_cell.isChild())
-
     def test_isRootParent(self):
         """
         Tests whether the correct root parent asserts work.

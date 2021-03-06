@@ -82,23 +82,6 @@ class CellVar:
         """
         return self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreNotObserved()
 
-    def isParent(self):
-        """
-        Boolean.
-        Returns true if the cell has daughters.
-        """
-        return not self.isLeaf()
-
-    def isChild(self):
-        """
-        Boolean.
-        Returns true if this cell has a known parent.
-        """
-        if self.parent:
-            return self.parent.isParent()
-
-        return False
-
     def isRootParent(self):
         """
         Boolean.
