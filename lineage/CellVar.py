@@ -31,7 +31,6 @@ class CellVar:
             self.left = kwargs.get("left", None)
             self.right = kwargs.get("right", None)
             self.obs = kwargs.get("obs", [])
-            self.synthetic = kwargs.get("synthetic", True)
 
     def divide(self, T):
         """

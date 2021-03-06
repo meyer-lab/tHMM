@@ -15,13 +15,12 @@ class LineageTree:
     The lineage tree is then censord based on the censor condition.
     """
 
-    def __init__(self, list_of_cells, E, synthetic=False):
+    def __init__(self, list_of_cells, E):
         self.E = E
         self.output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
         self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
-        if not synthetic:
-            # assign times using the state distribution specific time model
-            E[0].assign_times(self.output_list_of_gens)
+        # assign times using the state distribution specific time model
+        E[0].assign_times(self.output_list_of_gens)
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
 
     @classmethod
@@ -70,7 +69,7 @@ class LineageTree:
 
         output_lineage = E[0].censor_lineage(censor_condition, full_list_of_gens, full_lineage, **kwargs)
 
-        lineageObj = cls(output_lineage, E, synthetic=True)
+        lineageObj = cls(output_lineage, E)
 
         lineageObj.pi = pi
         lineageObj.T = T
@@ -112,7 +111,7 @@ def generate_lineage_list(pi, T, desired_num_cells):
     """
     first_state_results = sp.multinomial.rvs(1, pi)  # roll the dice and yield the state for the first cell
     first_cell_state = first_state_results.tolist().index(1)
-    first_cell = CellVar(parent=None, gen=1, state=first_cell_state, synthetic=True)  # create first cell
+    first_cell = CellVar(parent=None, gen=1, state=first_cell_state)  # create first cell
     full_lineage = [first_cell]  # instantiate lineage with first cell
 
     for cell in full_lineage:  # letting the first cell proliferate

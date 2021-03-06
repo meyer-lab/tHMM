@@ -59,7 +59,7 @@ def import_Heiser(path):
             # add list for the lineage
             currentLineage = []
             # make Parent
-            parentCell = c(parent=None, gen=1, synthetic=False)
+            parentCell = c(parent=None, gen=1)
             divisionTime = data[lPos][1 + 2]
             parentCell.obs = [0, 0, 0, 0, 0, 0]
 
@@ -201,8 +201,7 @@ def tryRecursion(pColumn, lower, upper, parentCell, currentLineage, data, divisi
         data[parentPos][pColumn + 2]), f"Value missing in cell"
 
     # Creating daughter
-    daughterCell = c(parent=parentCell, gen=parentCell.gen +
-                     1, synthetic=parentCell.synthetic)
+    daughterCell = c(parent=parentCell, gen=parentCell.gen + 1)
     daughterCell.obs = [0, 0, 0, 0, 0, 0]
 
     # find upper daughter
