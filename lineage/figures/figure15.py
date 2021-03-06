@@ -22,16 +22,16 @@ for thmmObj in gemc_tHMMobj_list:
             st2.append(lins)
         else:
             st3.append(lins)
-    thmmObj.X = st1[-51:-1] + st2[-51:-1] + st3[-51:-1]
+    thmmObj.X = st1[-26:-1] + st2[-26:-1] + st3[-26:-1]
 
 
 def makeFigure():
     """
     Makes figure 15.
     """
-    ax, f = getSetup((7, 40), (150, 1))
+    ax, f = getSetup((7, 40), (75, 1))
 
-    for i in range(150):
+    for i in range(75):
         ax[i].axis('off')
         plotLineage(gemc_tHMMobj_list[0].X[i], ax[i])
 
