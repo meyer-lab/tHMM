@@ -1,6 +1,6 @@
 """ This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
+import numpy as np
 from dataclasses import dataclass
-import scipy.stats as sp
 
 # temporary style guide:
 # Boolean functions are in camelCase.
@@ -37,8 +37,11 @@ class CellVar:
         Member function that performs division of a cell.
         Equivalent to adding another timestep in a Markov process.
         """
+        # Checking that the inputs are of the right shape
+        assert T.shape[0] == T.shape[1]
+
         # roll a loaded die according to the row in the transtion matrix
-        left_state, right_state = double(self.state, T)
+        left_state, right_state = np.random.choice(T.shape[0], size=2, p=T[self.state, :])
         self.left = CellVar(state=left_state, parent=self, gen=self.gen + 1)
         self.right = CellVar(state=right_state, parent=self, gen=self.gen + 1)
 
@@ -78,23 +81,6 @@ class CellVar:
         (an or statement) for it to be a leaf.
         """
         return self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreNotObserved()
-
-    def isParent(self):
-        """
-        Boolean.
-        Returns true if the cell has daughters.
-        """
-        return not self.isLeaf()
-
-    def isChild(self):
-        """
-        Boolean.
-        Returns true if this cell has a known parent.
-        """
-        if self.parent:
-            return self.parent.isParent()
-
-        return False
 
     def isRootParent(self):
         """
@@ -138,25 +124,6 @@ class CellVar:
             if self.right is not None and self.right.observed:
                 temp.append(self.right)
         return temp
-
-
-def double(parent_state, T):
-    """
-    Function that essentially rolls two of the same loaded dice
-    given a state that determines the row of the transition matrix.
-    The results of the roll of the loaded dice are two new states that are returned.
-    """
-    # Checking that the inputs are of the right shape
-    assert T.shape[0] == T.shape[1]
-    assert 0 <= parent_state <= T.shape[0] - 1
-
-    # Rolling two of the same loaded dice separate times and assigning
-    # where they landed to states
-    left_state_results, right_state_results = sp.multinomial.rvs(n=1, p=T[parent_state, :], size=2)
-
-    # The index of the 1 value in the resulting list in the two trials represent the state that was picked for that
-    # dice toss.
-    return left_state_results.tolist().index(1), right_state_results.tolist().index(1)
 
 
 def tree_recursion(cell, subtree):

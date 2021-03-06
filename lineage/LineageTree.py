@@ -1,6 +1,6 @@
 """ This file contains the LineageTree class. """
+import numpy as np
 import operator
-import scipy.stats as sp
 
 from .CellVar import CellVar
 
@@ -109,8 +109,7 @@ def generate_lineage_list(pi, T, desired_num_cells):
     This only generates the hidden variables (i.e., the states) in a output binary tree manner.
     It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
     """
-    first_state_results = sp.multinomial.rvs(1, pi)  # roll the dice and yield the state for the first cell
-    first_cell_state = first_state_results.tolist().index(1)
+    first_cell_state = np.random.choice(pi.size, size=1, p=pi)[0]  # roll the dice and yield the state for the first cell
     first_cell = CellVar(parent=None, gen=1, state=first_cell_state)  # create first cell
     full_lineage = [first_cell]  # instantiate lineage with first cell
 
