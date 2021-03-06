@@ -1,7 +1,7 @@
 """ Unit test file. """
 import unittest
 import numpy as np
-from ..CellVar import CellVar as c, double
+from ..CellVar import CellVar as c
 
 
 # pylint: disable=protected-access
@@ -128,20 +128,3 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell.get_root_cell() is cell)
         left_cell, right_cell = cell.divide(T)
         self.assertTrue(left_cell.get_root_cell() is cell and right_cell.get_root_cell() is cell)
-
-    def test_cell_double(self):
-        """
-        Make sure double function creates the right and left states properly.
-        """
-        # transition matrix
-        T = np.array([[1.0, 0.0], [0.0, 1.0]])
-
-        parent_state = 0
-        left_state, right_state = double(parent_state, T)
-        self.assertTrue(left_state == 0)
-        self.assertTrue(right_state == 0)
-
-        parent_state = 1
-        left_state, right_state = double(parent_state, T)
-        self.assertTrue(left_state == 1)
-        self.assertTrue(right_state == 1)
