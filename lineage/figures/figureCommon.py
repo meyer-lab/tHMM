@@ -397,7 +397,8 @@ def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
         ax[i].legend()
         ax[i].set_xlabel("concentration [nM]")
         ax[i].set_xticklabels(concsValues, rotation=30)
-        ax[i].text(-0.2, 1.25, ascii_lowercase[i-1], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
+        ax[i].text(-0.2, 1.25, ascii_lowercase[i - 1], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
+
 
 def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     ax[4].axis("off")
