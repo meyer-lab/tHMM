@@ -6,7 +6,6 @@ import numpy as np
 import scipy.stats as sp
 from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
-from ..states.stateCommon import get_experiment_time
 from ..LineageTree import LineageTree
 
 
@@ -80,14 +79,6 @@ class TestModel(unittest.TestCase):
                 if not cell.isRootParent:
                     if not cell.parent.observed:
                         self.assertFalse(cell.observed)
-
-    def test_get_experiment_time(self):
-        """
-        A unittest for obtaining the experiment time.
-        """
-        experiment_time2 = get_experiment_time(self.lineage2)
-        experiment_time = get_experiment_time(self.lineage)
-        self.assertLess(experiment_time2, experiment_time)
 
 
 @pytest.mark.parametrize("dist", [StateDistribution, StateDistPhase])
