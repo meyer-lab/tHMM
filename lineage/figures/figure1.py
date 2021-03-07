@@ -9,7 +9,6 @@ from .figureCommon import getSetup
 from ..plotTree import plotLineage
 from lineage.data.Lineage_collections import gem5uM, Gemcitabine_Control as gem
 
-
 def makeFigure():
     """
     Makes figure 1.
@@ -30,13 +29,9 @@ def figureMaker(ax):
     """
     plotLineage(gem5uM[13], ax[1], censore=False, color=False)
     ax[1].set_title("Gemcitabine 5 nM", fontsize=10)
-    ax[1].axis('off')
 
     plotLineage(gem5uM[4], ax[3], censore=False, color=False)
-    ax[3].axis('off')
-
     plotLineage(gem5uM[10], ax[5], censore=False, color=False)
-    ax[5].axis('off')
 
     for cell in gem[3].output_lineage:
         cell.state = 0
@@ -46,13 +41,9 @@ def figureMaker(ax):
 
     plotLineage(gem[3], ax[0], censore=False, color=False)
     ax[0].set_title("Control", fontsize=10)
-    ax[0].axis('off')
 
     plotLineage(gem[16], ax[2], censore=False, color=False)
-    ax[2].axis('off')
-
     plotLineage(gem[2], ax[4], censore=False, color=False)
-    ax[4].axis('off')
 
-    ax[7].axis('off')
-    ax[6].axis('off')
+    for i in range(8):
+        ax[i].axis('off')

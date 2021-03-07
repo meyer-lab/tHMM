@@ -397,31 +397,7 @@ def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
         ax[i].legend()
         ax[i].set_xlabel("concentration [nM]")
         ax[i].set_xticklabels(concsValues, rotation=30)
-
-    subplotLabel(ax)
-
-
-def twice(tHMMobj):
-    """ For each tHMM object, connects the state and the emissions. """
-    g1 = []
-    g2 = []
-    state = []
-    for lin in tHMMobj.X:  # for each lineage list
-        for cell in lin.output_lineage:  # for each cell in the lineage
-            state.append((cell.state + 1))
-            if cell.obs[4] == 1:
-                g1.append(cell.obs[2])
-            else:
-                g1.append(np.nan)
-            if cell.obs[5] == 1:
-                g2.append(cell.obs[3])
-            else:
-                g2.append(np.nan)
-
-    states = state + state  # accounts for both phases
-    phaseLength = g1 + g2
-    phase = len(g1) * ["G1"] + len(g2) * ["G2"]
-    return states, phaseLength, phase
+        ax[i].text(-0.2, 1.25, ascii_lowercase[i], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
 
 
 def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
@@ -433,7 +409,6 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     bern_lpt = np.zeros((4, num_states, 2))  # bernoulli
     # print parameters and estimated values
     print(Dname, "\n the \u03C0: ", tHMMobj_list[0].estimate.pi, "\n the transition matrix: ", tHMMobj_list[0].estimate.T)
-
     for idx, tHMMobj in enumerate(tHMMobj_list):  # for each concentration data
         for i in range(num_states):
             lpt_avg[idx, i, 0] = np.log(tHMMobj.estimate.E[i].params[2] * tHMMobj.estimate.E[i].params[3])  # G1
@@ -441,15 +416,5 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
             # bernoullis
             for j in range(2):
                 bern_lpt[idx, i, j] = tHMMobj.estimate.E[i].params[j]
-
-        LAP_state, LAP_phaseLength, Lpt_phase = twice(tHMMobj)
-
-        # plot lapatinib
-        sns.stripplot(x=LAP_state, y=LAP_phaseLength, hue=Lpt_phase, size=1.5, palette="Set2", dodge=True, ax=ax[idx])
-
-        ax[idx].set_title(cons[idx])
-        ax[idx].set_ylabel("phase lengths [hr]")
-        ax[idx].set_xlabel("state")
-        ax[idx].set_ylim([0.0, 100.0])
 
     plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states)
