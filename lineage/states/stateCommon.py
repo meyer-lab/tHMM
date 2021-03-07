@@ -75,17 +75,6 @@ def gamma_estimator(gamma_obs, time_cen, gammas, x0):
     return res.x
 
 
-def get_experiment_time(lineageObj):
-    """
-    This function returns the longest experiment time
-    experienced by cells in the lineage.
-    We can simply find the leaf cell with the
-    longest end time. This is effectively
-    the same as the experiment time for synthetic lineages.
-    """
-    return max(cell.time.endT for cell in lineageObj.output_leaves)
-
-
 def basic_censor(cell):
     """
     Censors a cell, its daughters, its sister, and

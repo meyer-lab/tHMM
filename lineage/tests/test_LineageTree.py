@@ -4,7 +4,6 @@ import numpy as np
 from ..CellVar import CellVar as c, get_subtrees, find_two_subtrees
 from ..LineageTree import LineageTree, max_gen, get_leaves
 from ..states.StateDistributionGamma import StateDistribution
-from ..states.stateCommon import get_experiment_time
 
 
 class TestModel(unittest.TestCase):
@@ -83,9 +82,8 @@ class TestModel(unittest.TestCase):
         A unittest for censor_lineage.
         """
 
-        # checking all the cells in the censord version should have all the
+        # checking all the cells in the censored version should have all the
         # bernoulli observations == 1 (dead cells have been removed.)
-        self.assertGreater(get_experiment_time(self.lineage1), 500)
         for cell in self.lineage1.output_lineage:
             self.assertTrue(cell.observed)
         for cell in self.lineage2_fate_censored.output_lineage:
