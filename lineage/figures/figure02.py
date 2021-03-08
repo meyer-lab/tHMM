@@ -1,5 +1,5 @@
 """
-Handful of lineages in figure 12. 
+Handful of lineages in figure 12.
 """
 from string import ascii_lowercase
 import pickle
@@ -25,6 +25,7 @@ for i, thmmobj in enumerate(gemc_tHMMobj_list):
         else:
             st3.append(lins)
     thmmobj.X = st1[11:13] + st2[1:3] + st3[15:17]
+
 
 def makeFigure():
     """

@@ -9,6 +9,7 @@ from .figureCommon import getSetup
 from ..plotTree import plotLineage
 from lineage.data.Lineage_collections import gem5uM, Gemcitabine_Control as gem
 
+
 def makeFigure():
     """
     Makes figure 1.

@@ -16,6 +16,7 @@ for i in range(4):
 T_gem = gemc_tHMMobj_list[0].estimate.T
 num_states = gemc_tHMMobj_list[0].num_states
 
+
 def makeFigure():
     """ Makes figure 12. """
 
@@ -29,5 +30,6 @@ def makeFigure():
 
     plot_all(ax, num_states, gemc_tHMMobj_list, "Gemcitabine", concs, concsValues)
     return f
+
 
 plot_networkx(T_gem.shape[0], T_gem, 'gemcitabine')

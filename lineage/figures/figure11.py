@@ -16,6 +16,7 @@ for i in range(4):
 T_lap = lapt_tHMMobj_list[0].estimate.T
 num_states = lapt_tHMMobj_list[0].num_states
 
+
 def makeFigure():
     """ Makes figure 11. """
 
@@ -29,5 +30,6 @@ def makeFigure():
         ax[i].axis('off')
 
     return f
+
 
 plot_networkx(T_lap.shape[0], T_lap, 'lapatinib')
