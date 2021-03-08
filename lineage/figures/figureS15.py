@@ -1,7 +1,7 @@
 """ In this file we plot the abundance of states over time for experimental data. """
 import numpy as np
 import pickle
-from .figureCommon import getSetup
+from .figureCommon import getSetup, subplotLabel
 
 pik1 = open("lapatinibs.pkl", "rb")
 lapt_tHMMobj_list = []
@@ -35,68 +35,55 @@ def find_state_proportions(lapt_tHMMobj):
         state1.append(st1)
         state2.append(st2)
 
-    return state0, state1, state2
+    return [state0, state1, state2]
 
+# labels
+concs = ["control", "lapatinib 25 nM", "lapatinib 50 nM", "lapatinib 250 nM", "control", "gemcitabine 5 nM", "gemcitabine 10 nM", "gemcitabine 30 nM"]
 # control
-CT_state0, CT_state1, CT_state2 = find_state_proportions(lapt_tHMMobj_list[0])
+control_L = find_state_proportions(lapt_tHMMobj_list[0])
 
 # 25 nM
-one_state0, one_state1, one_state2 = find_state_proportions(lapt_tHMMobj_list[1])
+conc1_L = find_state_proportions(lapt_tHMMobj_list[1])
 
 # 50 nM
-two_state0, two_state1, two_state2 = find_state_proportions(lapt_tHMMobj_list[2])
+conc2_L = find_state_proportions(lapt_tHMMobj_list[2])
 
 # 250 nM
-three_state0, three_state1, three_state2 = find_state_proportions(lapt_tHMMobj_list[3])
+conc3_L = find_state_proportions(lapt_tHMMobj_list[3])
 
 # control
-C_state0, C_state1, C_state2 = find_state_proportions(gemc_tHMMobj_list[0])
+control_G = find_state_proportions(gemc_tHMMobj_list[0])
 
 # 5 nM
-oneG_state0, oneG_state1, oneG_state2 = find_state_proportions(gemc_tHMMobj_list[1])
+conc1_G = find_state_proportions(gemc_tHMMobj_list[1])
 
 # 10 nM
-twoG_state0, twoG_state1, twoG_state2 = find_state_proportions(gemc_tHMMobj_list[2])
+conc2_G = find_state_proportions(gemc_tHMMobj_list[2])
 
 # 30 nM
-threeG_state0, threeG_state1, threeG_state2 = find_state_proportions(gemc_tHMMobj_list[3])
+conc3_G = find_state_proportions(gemc_tHMMobj_list[3])
 
 def makeFigure():
     """ Makes figure S15. """
 
-    ax, f = getSetup((8, 3.0), (2, 4))
+    ax, f = getSetup((11, 6), (2, 4))
 
-    # lapatinibs
-    ax[0].plot(times, CT_state0)
-    ax[0].plot(times, CT_state1)
-    ax[0].plot(times, CT_state2)
+    ax[0].stackplot(times, control_L[0], control_L[1], control_L[2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
+    ax[1].stackplot(times, conc1_L[0], conc1_L[1], conc1_L[2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
+    ax[2].stackplot(times, conc2_L[0], conc2_L[1], conc2_L[2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
+    ax[3].stackplot(times, conc3_L[0], conc3_L[1], conc3_L[2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
 
-    ax[1].plot(times, one_state0)
-    ax[1].plot(times, one_state1)
-    ax[1].plot(times, one_state2)
+    ax[4].stackplot(times, control_G[0], control_G[1], control_G[2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
+    ax[5].stackplot(times, conc1_G[0], conc1_G[1], conc1_G[2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
+    ax[6].stackplot(times, conc2_G[0], conc2_G[1], conc2_G[2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
+    ax[7].stackplot(times, conc3_G[0], conc3_G[1], conc3_G[2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
 
-    ax[2].plot(times, two_state0)
-    ax[2].plot(times, two_state1)
-    ax[2].plot(times, two_state2)
+    for i in range(8):
+        ax[i].legend()
+        ax[i].set_title(concs[i])
+        ax[i].set_xlabel("time [hr]")
+        ax[i].set_ylabel("cell number")
+        ax[i].set_ylim([0.0, 350.0])
 
-    ax[3].plot(times, three_state0)
-    ax[3].plot(times, three_state1)
-    ax[3].plot(times, three_state2)
-
-    # gemcitabines
-    ax[4].plot(times, C_state0)
-    ax[4].plot(times, C_state1)
-    ax[4].plot(times, C_state2)
-
-    ax[5].plot(times, oneG_state0)
-    ax[5].plot(times, oneG_state1)
-    ax[5].plot(times, oneG_state2)
-
-    ax[6].plot(times, twoG_state0)
-    ax[6].plot(times, twoG_state1)
-    ax[6].plot(times, twoG_state2)
-
-    ax[7].plot(times, threeG_state0)
-    ax[7].plot(times, threeG_state1)
-    ax[7].plot(times, threeG_state2)
+    subplotLabel(ax)
     return f
