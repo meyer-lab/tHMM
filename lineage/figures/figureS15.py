@@ -1,5 +1,6 @@
 """ In this file we plot the abundance of states over time for experimental data. """
 import numpy as np
+import math
 import pickle
 from .figureCommon import getSetup, subplotLabel
 
@@ -24,6 +25,10 @@ def find_state_proportions(lapt_tHMMobj):
         st2 = 0
         for lineage in lapt_tHMMobj.X:
             for cell in lineage.output_lineage:
+                if math.isnan(cell.time.startT): # left censored. startT = 0
+                    cell.time.startT = 0.0
+                if math.isnan(cell.time.endT): # right censored. endT = 96
+                    cell.time.endT = 96.0
                 if cell.time.startT <= t <= cell.time.endT:
                     if cell.state == 0:
                         st0 += 1
@@ -66,7 +71,7 @@ conc3_G = find_state_proportions(gemc_tHMMobj_list[3])
 def makeFigure():
     """ Makes figure S15. """
 
-    ax, f = getSetup((11, 6), (2, 4))
+    ax, f = getSetup((10, 5), (2, 4))
 
     ax[0].stackplot(times, control_L[0], control_L[1], control_L[2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
     ax[1].stackplot(times, conc1_L[0], conc1_L[1], conc1_L[2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
@@ -83,7 +88,7 @@ def makeFigure():
         ax[i].set_title(concs[i])
         ax[i].set_xlabel("time [hr]")
         ax[i].set_ylabel("cell number")
-        ax[i].set_ylim([0.0, 350.0])
+        ax[i].set_ylim([0.0, 1500.0])
 
     subplotLabel(ax)
     return f
