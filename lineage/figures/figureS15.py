@@ -76,15 +76,15 @@ def makeFigure():
 
     ax, f = getSetup((10, 5), (2, 4))
 
-    ax[0].stackplot(times, control_L[:, 0], control_L[:, 1], control_L[:, 2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
-    ax[1].stackplot(times, conc1_L[:, 0], conc1_L[:, 1], conc1_L[:, 2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
-    ax[2].stackplot(times, conc2_L[:, 0], conc2_L[:, 1], conc2_L[:, 2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
-    ax[3].stackplot(times, conc3_L[:, 0], conc3_L[:, 1], conc3_L[:, 2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
+    ax[0].stackplot(times, control_L[:, 0], control_L[:, 1], control_L[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
+    ax[1].stackplot(times, conc1_L[:, 0], conc1_L[:, 1], conc1_L[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
+    ax[2].stackplot(times, conc2_L[:, 0], conc2_L[:, 1], conc2_L[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
+    ax[3].stackplot(times, conc3_L[:, 0], conc3_L[:, 1], conc3_L[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
 
-    ax[4].stackplot(times, control_G[:, 0], control_G[:, 1], control_G[:, 2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
-    ax[5].stackplot(times, conc1_G[:, 0], conc1_G[:, 1], conc1_G[:, 2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
-    ax[6].stackplot(times, conc2_G[:, 0], conc2_G[:, 1], conc2_G[:, 2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
-    ax[7].stackplot(times, conc3_G[:, 0], conc3_G[:, 1], conc3_G[:, 2], labels=['state 1', 'state 2', 'state3'], alpha=0.6)
+    ax[4].stackplot(times, control_G[:, 0], control_G[:, 1], control_G[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
+    ax[5].stackplot(times, conc1_G[:, 0], conc1_G[:, 1], conc1_G[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
+    ax[6].stackplot(times, conc2_G[:, 0], conc2_G[:, 1], conc2_G[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
+    ax[7].stackplot(times, conc3_G[:, 0], conc3_G[:, 1], conc3_G[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
 
     for i in range(8):
         ax[i].legend()
