@@ -15,6 +15,8 @@ for i in range(4):
     gemc_tHMMobj_list.append(pickle.load(pik1))
 
 times = np.linspace(0.0, 96.0, 48)
+
+
 def find_state_proportions(lapt_tHMMobj, control=False):
     states = np.zeros((len(times), 3))
     for indx, t in enumerate(times):
@@ -28,9 +30,9 @@ def find_state_proportions(lapt_tHMMobj, control=False):
 
         for lineage in thmm:
             for cell in lineage.output_lineage:
-                if math.isnan(cell.time.startT): # left censored. startT = 0
+                if math.isnan(cell.time.startT):  # left censored. startT = 0
                     cell.time.startT = 0.0
-                if math.isnan(cell.time.endT): # right censored. endT = 96
+                if math.isnan(cell.time.endT):  # right censored. endT = 96
                     cell.time.endT = 96.0
                 if cell.time.startT <= t <= cell.time.endT:
                     if cell.state == 0:
@@ -39,15 +41,16 @@ def find_state_proportions(lapt_tHMMobj, control=False):
                         st1 += 1
                     else:
                         st2 += 1
-        states[indx, 0] = 100.0 * st0/(st0 + st1 + st2)
-        states[indx, 1] = 100.0 * st1/(st0 + st1 + st2)
-        states[indx, 2] = 100.0 * st2/(st0 + st1 + st2)
+        states[indx, 0] = 100.0 * st0 / (st0 + st1 + st2)
+        states[indx, 1] = 100.0 * st1 / (st0 + st1 + st2)
+        states[indx, 2] = 100.0 * st2 / (st0 + st1 + st2)
 
     return states
 
+
 # labels
 concs = ["control", "lapatinib 25 nM", "lapatinib 50 nM", "lapatinib 250 nM", "control", "gemcitabine 5 nM", "gemcitabine 10 nM", "gemcitabine 30 nM"]
-# control     
+# control
 control_L = find_state_proportions(lapt_tHMMobj_list[0], control=lapt_tHMMobj_list[0].X[0:100])
 
 # 25 nM
@@ -60,7 +63,7 @@ conc2_L = find_state_proportions(lapt_tHMMobj_list[2])
 conc3_L = find_state_proportions(lapt_tHMMobj_list[3])
 
 # control
-control_G = find_state_proportions(gemc_tHMMobj_list[0], control= gemc_tHMMobj_list[0].X[101:])
+control_G = find_state_proportions(gemc_tHMMobj_list[0], control=gemc_tHMMobj_list[0].X[101:])
 
 # 5 nM
 conc1_G = find_state_proportions(gemc_tHMMobj_list[1])
@@ -70,6 +73,7 @@ conc2_G = find_state_proportions(gemc_tHMMobj_list[2])
 
 # 30 nM
 conc3_G = find_state_proportions(gemc_tHMMobj_list[3])
+
 
 def makeFigure():
     """ Makes figure S15. """
