@@ -15,7 +15,7 @@ def makeFigure():
     """
     Makes figure 9.
     """
-    ax, f = getSetup((7, 3), (1, 2))
+    ax, f = getSetup((9, 4), (1, 2))
 
     lapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
     gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
