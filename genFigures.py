@@ -108,7 +108,6 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figure11.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 545, 215, scalee=1.24)
 
-
     if sys.argv[1] == '12':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure12.svg',
@@ -122,7 +121,7 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figure12.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 370, 215, scalee=1.24)
         overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 545, 215, scalee=1.24)            
+                       f'{cartoon_dir}/xaxis-h.svg', 545, 215, scalee=1.24)
 
     if sys.argv[1] == 'S11':
         # Overlay Transition block
