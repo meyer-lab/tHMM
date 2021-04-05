@@ -7,7 +7,8 @@ from matplotlib import pylab
 import networkx as nx
 import pygraphviz
 
-
+cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'olive', 'gray']
+stateColors = ['blue', 'orange', 'green', 'red', 'purple', 'olive', 'gray']
 def CladeRecursive(cell, a, censore, color):
     """ To plot the lineage while censored (from G1 or G2).
     If cell died in G1, the lifetime of the cell until dies is shown in red.
@@ -17,15 +18,8 @@ def CladeRecursive(cell, a, censore, color):
     If you are interested, you can take a look at the source code for creating Clades manually:
     https://github.com/biopython/biopython/blob/fce4b11b4b8e414f1bf093a76e04a3260d782905/Bio/Phylo/BaseTree.py#L801
     """
-    if color:
-        if cell.state == 0:
-            colorr = "blue"
-        elif cell.state == 1:
-            colorr = "orange"
-        elif cell.state == 2:
-            colorr = "green"
-        else:
-            colorr = "brown"
+    if np.isfinite(cell.state):
+        colorr = stateColors[cell.state]
     else:
         colorr = "black"
 
@@ -96,7 +90,6 @@ def plot_networkx(num_states, T, drug_name):
     for i in range(num_states):
         labels[i] = "state " + str(i + 1)
 
-    cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'olive', 'gray']
 
     # add nodes
     for i in range(num_states):
