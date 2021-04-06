@@ -29,8 +29,8 @@ def figureMaker(ax):
     """
     Makes figure 1.
     """
-    indxs_control = [random.randint(0, len(control)) for _ in range(10)]
-    indxs_gem = [random.randint(0, len(gem5uM)) for _ in range(10)]
+    indxs_control = [random.randint(0, (len(control)-1)) for _ in range(10)]
+    indxs_gem = [random.randint(0, (len(gem5uM)-1)) for _ in range(10)]
     # titles
     ax[0].set_title("Control", fontsize=10)
     ax[1].set_title("Gemcitabine 5 nM", fontsize=10)
