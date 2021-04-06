@@ -9,6 +9,7 @@ import pygraphviz
 
 cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'olive', 'gray']
 stateColors = ['blue', 'orange', 'green', 'red', 'purple', 'olive', 'gray']
+
 def CladeRecursive(cell, a, censore, color):
     """ To plot the lineage while censored (from G1 or G2).
     If cell died in G1, the lifetime of the cell until dies is shown in red.
@@ -18,8 +19,11 @@ def CladeRecursive(cell, a, censore, color):
     If you are interested, you can take a look at the source code for creating Clades manually:
     https://github.com/biopython/biopython/blob/fce4b11b4b8e414f1bf093a76e04a3260d782905/Bio/Phylo/BaseTree.py#L801
     """
-    if np.isfinite(cell.state):
-        colorr = stateColors[cell.state]
+    if color:
+        if np.isfinite(cell.state):
+            colorr = stateColors[cell.state]
+        else:
+            colorr = "black"
     else:
         colorr = "black"
 
