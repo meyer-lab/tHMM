@@ -9,7 +9,7 @@ import numpy as np
 
 from .figureCommon import getSetup
 from ..plotTree import plotLineage
-from lineage.data.Lineage_collections import gem5uM, Gemcitabine_Control as control
+from lineage.data.Lineage_collections import Gem10uM, Gemcitabine_Control as control
 
 
 def makeFigure():
@@ -30,16 +30,16 @@ def figureMaker(ax):
     Makes figure 1.
     """
     indxs_control = [random.randint(0, (len(control)-1)) for _ in range(10)]
-    indxs_gem = [random.randint(0, (len(gem5uM)-1)) for _ in range(10)]
+    indxs_gem = [random.randint(0, (len(Gem10uM)-1)) for _ in range(10)]
     # titles
     ax[0].set_title("Control", fontsize=10)
     ax[1].set_title("Gemcitabine 5 nM", fontsize=10)
     # lineages
     for i in range(10):
         control[indxs_control[i]].state = np.nan
-        gem5uM[indxs_gem[i]].state = np.nan
+        Gem10uM[indxs_gem[i]].state = np.nan
         plotLineage(control[indxs_control[i]], ax[2*i], censore=False, color=False)
-        plotLineage(gem5uM[indxs_gem[i]], ax[2*i+1], censore=False, color=False)
+        plotLineage(Gem10uM[indxs_gem[i]], ax[2*i+1], censore=False, color=False)
 
     for i in range(22):
         ax[i].axis('off')

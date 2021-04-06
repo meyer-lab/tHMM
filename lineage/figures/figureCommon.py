@@ -420,3 +420,28 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
                 bern_lpt[idx, i, j] = tHMMobj.estimate.E[i].params[j]
 
     plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states)
+
+
+def sort_lins(lapt_tHMMobj_list):
+    """ Sorts lineages based on their root cell state for plotting the lineage trees. """
+    st1 = []
+    st2 = []
+    st3 = []
+    st4 = []
+    st5 = []
+    st6 = []
+    for lins in lapt_tHMMobj_list.X:
+        if lins.output_lineage[0].state == 0:
+            st1.append(lins)
+        elif lins.output_lineage[0].state == 1:
+            st2.append(lins)
+        elif lins.output_lineage[0].state == 2:
+            st3.append(lins)
+        elif lins.output_lineage[0].state == 3:
+            st4.append(lins)
+        elif lins.output_lineage[0].state == 4:
+            st5.append(lins)
+        else:
+            st6.append(lins)
+
+    return st1[0:min(10, len(st1))] + st2[0:min(10, len(st2))] + st3[0:min(10, len(st3))] + st4[0:min(10, len(st4))] + st5[0:min(10, len(st5))] + st6[0:min(10, len(st6))]
