@@ -74,9 +74,9 @@ if __name__ == '__main__':
     if sys.argv[1] == '1':
         # Overlay Figure 1 cartoon
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 30, 110, scalee=1.1)
+                       f'{cartoon_dir}/xaxis-h.svg', 30, 196, scalee=1.1)
         overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 215, 110, scalee=1.1)
+                       f'{cartoon_dir}/xaxis-h.svg', 215, 196, scalee=1.1)
 
     if sys.argv[1] == '4':
         # Overlay Figure 4 cartoon
@@ -96,32 +96,32 @@ if __name__ == '__main__':
     if sys.argv[1] == '11':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/figure01.svg', 20, 50, scale_x=0.8, scale_y=1.2)
+                       f'{cartoon_dir}/figure01.svg', 20, 50, scale_x=0.9, scale_y=1.2)
         overlayCartoon(fdir + 'figure11.svg',
                        f'{cartoon_dir}/lapatinib.svg', 690, 100, scale_x=0.82, scale_y=0.82)
         overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 22, 215, scalee=1.24)
+                       f'{cartoon_dir}/xaxis-h.svg', 22, 215, scalee=1.44)
         overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 197, 215, scalee=1.24)
+                       f'{cartoon_dir}/xaxis-h.svg', 220, 215, scalee=1.44)
         overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 370, 215, scalee=1.24)
+                       f'{cartoon_dir}/xaxis-h.svg', 420, 215, scalee=1.44)
         overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 545, 215, scalee=1.24)
+                       f'{cartoon_dir}/xaxis-h.svg', 600, 215, scalee=1.44)
 
     if sys.argv[1] == '12':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/figure02.svg', 20, 50, scale_x=0.8, scale_y=1.2)
+                       f'{cartoon_dir}/figure02.svg', 20, 50, scale_x=0.9, scale_y=1.2)
         overlayCartoon(fdir + 'figure12.svg',
                        f'{cartoon_dir}/gemcitabine.svg', 690, 100, scale_x=0.82, scale_y=0.82)
         overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 22, 215, scalee=1.24)
+                       f'{cartoon_dir}/xaxis-h.svg', 22, 215, scalee=1.44)
         overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 197, 215, scalee=1.24)
+                       f'{cartoon_dir}/xaxis-h.svg', 220, 215, scalee=1.44)
         overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 370, 215, scalee=1.24)
+                       f'{cartoon_dir}/xaxis-h.svg', 420, 215, scalee=1.44)
         overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 545, 215, scalee=1.24)
+                       f'{cartoon_dir}/xaxis-h.svg', 600, 215, scalee=1.44)
 
     if sys.argv[1] == 'S11':
         # Overlay Transition block
