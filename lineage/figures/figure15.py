@@ -14,24 +14,35 @@ for _ in range(4):
 st1 = []
 st2 = []
 st3 = []
-for thmmObj in gemc_tHMMobj_list:
-    for lins in thmmObj.X:
-        if lins.output_lineage[0].state == 0:
-            st1.append(lins)
-        elif lins.output_lineage[0].state == 1:
-            st2.append(lins)
-        else:
-            st3.append(lins)
-    thmmObj.X = st1[-26:-1] + st2[-26:-1] + st3[-26:-1]
+st4 = []
+st5 = []
+st6 = []
+
+for lins in gemc_tHMMobj_list[0].X:
+    if lins.output_lineage[0].state == 0:
+        st1.append(lins)
+    elif lins.output_lineage[0].state == 1:
+        st2.append(lins)
+    elif lins.output_lineage[0].state == 2:
+        st3.append(lins)
+    elif lins.output_lineage[0].state == 3:
+        st4.append(lins)
+    elif lins.output_lineage[0].state == 4:
+        st5.append(lins)
+    elif lins.output_lineage[0].state == 5:
+        st6.append(lins)
+    else:
+        st3.append(lins)
+    gemc_tHMMobj_list[0].X = st1[-11:-1] + st2[-11:-1] + st3[-11:-1] + st4[-11:-1] + st5[-11:-1] + st6[-11:-1]
 
 
 def makeFigure():
     """
     Makes figure 15.
     """
-    ax, f = getSetup((7, 40), (75, 1))
+    ax, f = getSetup((7, 40), (len(gemc_tHMMobj_list[0].X), 1))
 
-    for i in range(75):
+    for i in range(len(gemc_tHMMobj_list[0].X)):
         ax[i].axis('off')
         plotLineage(gemc_tHMMobj_list[0].X[i], ax[i])
 
