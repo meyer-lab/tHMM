@@ -98,7 +98,7 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figure11.svg',
                        f'{cartoon_dir}/figure01.svg', 20, 50, scale_x=0.9, scale_y=1.2)
         overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/lapatinib.svg', 690, 100, scale_x=0.82, scale_y=0.82)
+                       f'{cartoon_dir}/lapatinib.svg', 785, 50, scalee=0.8)
         overlayCartoon(fdir + 'figure11.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 22, 215, scalee=1.44)
         overlayCartoon(fdir + 'figure11.svg',
@@ -113,7 +113,7 @@ if __name__ == '__main__':
         overlayCartoon(fdir + 'figure12.svg',
                        f'{cartoon_dir}/figure02.svg', 20, 50, scale_x=0.9, scale_y=1.2)
         overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/gemcitabine.svg', 690, 100, scale_x=0.82, scale_y=0.82)
+                       f'{cartoon_dir}/gemcitabine.svg', 810, 50)
         overlayCartoon(fdir + 'figure12.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 22, 215, scalee=1.44)
         overlayCartoon(fdir + 'figure12.svg',

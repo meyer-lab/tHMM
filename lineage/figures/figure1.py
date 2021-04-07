@@ -33,7 +33,7 @@ def figureMaker(ax):
     indxs_gem = [random.randint(0, (len(Gem10uM)-1)) for _ in range(10)]
     # titles
     ax[0].set_title("Control", fontsize=10)
-    ax[1].set_title("Gemcitabine 5 nM", fontsize=10)
+    ax[1].set_title("Gemcitabine 10 nM", fontsize=10)
     # lineages
     for i in range(10):
         control[indxs_control[i]].state = np.nan
