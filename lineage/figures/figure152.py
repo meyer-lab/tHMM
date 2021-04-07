@@ -2,7 +2,7 @@
 
 import pickle
 
-from .figureCommon import getSetup
+from .figureCommon import getSetup, sort_lins
 from ..plotTree import plotLineage
 
 # open gemcitabine
@@ -11,19 +11,7 @@ gemc_tHMMobj_list = []
 for _ in range(4):
     gemc_tHMMobj_list.append(pickle.load(pik1))
 
-
-st1 = []
-st2 = []
-st3 = []
-for lins in gemc_tHMMobj_list[2].X:
-    if lins.output_lineage[0].state == 0:
-        st1.append(lins)
-    elif lins.output_lineage[0].state == 1:
-        st2.append(lins)
-    else:
-        st3.append(lins)
-gemc_tHMMobj_list[2].X = st1[0:min(25, len(st1))] + st2[0:min(25, len(st2))] + st3[0:min(25, len(st3))]
-
+gemc_tHMMobj_list[2].X = sort_lins(gemc_tHMMobj_list[2])
 
 def makeFigure():
     """

@@ -20,9 +20,7 @@ num_states = lapt_tHMMobj_list[0].num_states
 def makeFigure():
     """ Makes figure 11. """
 
-    ax, f = getSetup((12, 7.0), (2, 5))
-    ax[4].axis("off")
-    ax[9].axis("off")
+    ax, f = getSetup((17, 7.0), (2, 7))
     plot_all(ax, num_states, lapt_tHMMobj_list, "Laptinib", concs, concsValues)
     for i in range(4):
         ax[i].set_title(concs[i], fontsize=16)
@@ -32,4 +30,4 @@ def makeFigure():
     return f
 
 
-plot_networkx(T_lap.shape[0], T_lap, 'lapatinib')
+# plot_networkx(T_lap.shape[0], T_lap, 'lapatinib')
