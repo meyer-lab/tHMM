@@ -43,13 +43,13 @@ max_num_lineages = 40
 num_data_points = 100
 
 scatter_state_1_kws = {
-    "alpha": 0.33,
+    "alpha": 0.5,
     "marker": "+",
     "s": 20,
 }
 
 scatter_state_2_kws = {
-    "alpha": 0.33,
+    "alpha": 0.5,
     "marker": "x",
     "s": 20,
     "color": "green"
@@ -263,7 +263,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         if dist_dist:  # plot gamma distance
             sns.regplot(x="x", y='wasserstein distance 0', data=accuracy_df, ax=ax[i], lowess=True, label="state 1", marker='+', scatter_kws=scatter_kws_list[0])
             sns.regplot(x="x", y='wasserstein distance 1', data=accuracy_df, ax=ax[i], lowess=True, label="state 2", marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
-            ax[i].set_title(r"distance bw true and estm. gamma dists")
+            ax[i].set_title(r"Distance bw true and estm. gamma dists")
             ax[i].set_ylabel(r"Wasserstein distance")
             ax[i].set_xlabel(xlabel)
             ax[i].set_ylim(0.0, 10.0)
