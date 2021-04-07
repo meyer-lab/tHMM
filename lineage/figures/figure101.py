@@ -13,6 +13,7 @@ for _ in range(4):
 
 lapt_tHMMobj_list[1].X = sort_lins(lapt_tHMMobj_list[1])
 
+
 def makeFigure():
     """
     Makes figure 101.
