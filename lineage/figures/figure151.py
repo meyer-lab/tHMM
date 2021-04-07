@@ -13,6 +13,7 @@ for _ in range(4):
 
 gemc_tHMMobj_list[1].X = sort_lins(gemc_tHMMobj_list[1])
 
+
 def makeFigure():
     """
     Makes figure 151.

@@ -402,8 +402,8 @@ def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
 
 def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     for i in range(3):
-        ax[4+i].axis("off")
-        ax[11+i].axis("off")
+        ax[4 + i].axis("off")
+        ax[11 + i].axis("off")
     ax[4].text(-0.2, 1.25, ascii_lowercase[8], transform=ax[4].transAxes, fontsize=16, fontweight="bold", va="top")
 
     # lapatinib
