@@ -10,6 +10,7 @@ import pygraphviz
 cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'olive', 'gray']
 stateColors = ['blue', 'orange', 'green', 'red', 'purple', 'olive', 'gray']
 
+
 def CladeRecursive(cell, a, censore, color):
     """ To plot the lineage while censored (from G1 or G2).
     If cell died in G1, the lifetime of the cell until dies is shown in red.
@@ -93,7 +94,6 @@ def plot_networkx(num_states, T, drug_name):
     labels = {}
     for i in range(num_states):
         labels[i] = "state " + str(i + 1)
-
 
     # add nodes
     for i in range(num_states):
