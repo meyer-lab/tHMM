@@ -1049,5 +1049,11 @@
                 </g>
             </g>
         </g>
+        <g transform="matrix(1,0,0,1.21739,2,-41.6522)">
+            <ellipse cx="265.5" cy="244.5" rx="15.5" ry="11.5" style="fill:none;stroke:black;stroke-width:0.9px;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
+        </g>
+        <g transform="matrix(1,0,0,1.21739,285,-43.6522)">
+            <ellipse cx="265.5" cy="244.5" rx="15.5" ry="11.5" style="fill:none;stroke:black;stroke-width:0.9px;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
+        </g>
     </g>
 </svg>
