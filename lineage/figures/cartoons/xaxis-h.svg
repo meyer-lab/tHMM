@@ -16,22 +16,22 @@
             <path d="M41,2L41,4" style="fill:none;stroke:black;stroke-width:0.42px;"/>
         </g>
     </g>
-    <g transform="matrix(1,0,0,1,101,10.474)">
+    <g transform="matrix(1.15559,0,0,1.15559,100.959,11.182)">
         <text x="0px" y="0px" style="font-family:'MicrosoftSansSerif', 'Microsoft Sans Serif', sans-serif;font-size:6.25px;">96</text>
     </g>
-    <g transform="matrix(1,0,0,1,76,11.474)">
+    <g transform="matrix(1.15792,0,0,1.15792,76.9528,11.1926)">
         <text x="0px" y="0px" style="font-family:'MicrosoftSansSerif', 'Microsoft Sans Serif', sans-serif;font-size:6.25px;">72</text>
     </g>
-    <g transform="matrix(1,0,0,1,49,10.474)">
+    <g transform="matrix(1.15163,0,0,1.15163,48.9857,11.164)">
         <text x="0px" y="0px" style="font-family:'MicrosoftSansSerif', 'Microsoft Sans Serif', sans-serif;font-size:6.25px;">48</text>
     </g>
-    <g transform="matrix(1,0,0,1,2,9.474)">
+    <g transform="matrix(1.21615,0,0,1.21615,1.93931,10.4575)">
         <text x="0px" y="0px" style="font-family:'MicrosoftSansSerif', 'Microsoft Sans Serif', sans-serif;font-size:6.25px;">0</text>
     </g>
-    <g transform="matrix(1,0,0,1,22,10.474)">
+    <g transform="matrix(1.15457,0,0,1.15457,21.9703,11.1773)">
         <text x="0px" y="0px" style="font-family:'MicrosoftSansSerif', 'Microsoft Sans Serif', sans-serif;font-size:6.25px;">24</text>
     </g>
-    <g transform="matrix(1,0,0,1,32.836,18.445)">
+    <g transform="matrix(1.14217,0,0,1.14217,38.8165,18.0811)">
         <text x="0px" y="0px" style="font-family:'MicrosoftSansSerif', 'Microsoft Sans Serif', sans-serif;font-size:6.25px;">Time [Hours]</text>
     </g>
 </svg>

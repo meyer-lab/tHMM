@@ -19,11 +19,11 @@ num_states = gemc_tHMMobj_list[0].num_states
 
 def makeFigure():
     """ Makes figure 12. """
-    ax, f = getSetup((17, 7.0), (2, 7))
+    ax, f = getSetup((17, 7.5), (2, 7))
     plot_all(ax, num_states, gemc_tHMMobj_list, "Gemcitabine", concs, concsValues)
-    for i in range(4):
-        ax[i].set_title(concs[i], fontsize=16)
-        ax[i].text(-0.2, 1.25, ascii_lowercase[i], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
+    for i in range(3, 7):
+        ax[i].set_title(concs[i-3], fontsize=16)
+        ax[i].text(-0.2, 1.25, ascii_lowercase[i-2], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
         ax[i].axis('off')
 
     return f
