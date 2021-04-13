@@ -369,42 +369,41 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].set_xlabel("Number of Lineages")
             ax[i].set_ylim([0.0, 1.0])
 
-
 def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(num_states):  # lapatinib that has 3 states
-        ax[7].plot(cons, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7)
-        ax[7].set_title("G1 phase")
-        ax[8].plot(cons, lpt_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7)
-        ax[8].set_title("G2 phase")
-        ax[9].plot(cons, bern_lpt[:, i, 0], label="state " + str(i + 1), alpha=0.7)
-        ax[9].set_title("G1 phase")
-        ax[10].plot(cons, bern_lpt[:, i, 1], label="state " + str(i + 1), alpha=0.7)
-        ax[10].set_title("G2 phase")
+        ax[10].plot(cons, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7)
+        ax[10].set_title("G1 phase")
+        ax[11].plot(cons, lpt_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7)
+        ax[11].set_title("G2 phase")
+        ax[12].plot(cons, bern_lpt[:, i, 0], label="state " + str(i + 1), alpha=0.7)
+        ax[12].set_title("G1 phase")
+        ax[13].plot(cons, bern_lpt[:, i, 1], label="state " + str(i + 1), alpha=0.7)
+        ax[13].set_title("G2 phase")
 
     # ylim and ylabel
-    for i in range(7, 9):
+    for i in range(10, 12):
         ax[i].set_ylabel("log mean time [hr]")
         ax[i].set_ylim([0, 8.0])
 
     # ylim and ylabel
-    for i in range(9, 11):
+    for i in range(12, 14):
         ax[i].set_ylabel("division probability")
         ax[i].set_ylim([0, 1.05])
 
     # legend and xlabel
-    for i in range(7, 11):
+    for i in range(10, 14):
         ax[i].legend()
         ax[i].set_xlabel("concentration [nM]")
         ax[i].set_xticklabels(concsValues, rotation=30)
-        ax[i].text(-0.2, 1.15, ascii_lowercase[i - 2], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
+        ax[i].text(-0.2, 1.25, ascii_lowercase[i - 5], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
 
 
 def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     for i in range(3):
-        ax[4 + i].axis("off")
-        ax[11 + i].axis("off")
-    ax[4].text(-0.2, 1.25, ascii_lowercase[8], transform=ax[4].transAxes, fontsize=16, fontweight="bold", va="top")
+        ax[i].axis("off")
+        ax[7+i].axis("off")
+    ax[0].text(-0.2, 1.25, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
 
     # lapatinib
     lpt_avg = np.zeros((4, num_states, 2))  # the avg lifetime: num_conc x num_states x num_phases
