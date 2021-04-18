@@ -369,6 +369,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].set_xlabel("Number of Lineages")
             ax[i].set_ylim([0.0, 1.0])
 
+
 def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(num_states):  # lapatinib that has 3 states
@@ -402,7 +403,7 @@ def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
 def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     for i in range(3):
         ax[i].axis("off")
-        ax[7+i].axis("off")
+        ax[7 + i].axis("off")
     ax[0].text(-0.2, 1.25, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
 
     # lapatinib
