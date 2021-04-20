@@ -141,7 +141,6 @@ if __name__ == '__main__':
                        f'{cartoon_dir}/figure103.svg', 540, 20, scalee=0.2, scale_x=1.6, scale_y=1.2)
         overlayCartoon(fdir + 'figureS11.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 540, 707, scalee=0.8, scale_x=1.6, scale_y=1.6)
-        
 
     if sys.argv[1] == 'S12':
         # Overlay Transition block
