@@ -28,5 +28,4 @@ def makeFigure():
 
     return f
 
-
 # plot_networkx(T_gem.shape[0], T_gem, 'gemcitabine')
