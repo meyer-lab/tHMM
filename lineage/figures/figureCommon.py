@@ -223,7 +223,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
     ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", s=20, c="#00ffff", alpha=0.5)
     ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", s=20, c="#00cc00", alpha=0.5)
     ax[i].set_xlabel(xlabel)
-    ax[i].set_ylim(bottom=0.66, top=1.02)
+    ax[i].set_ylim(bottom=0.0, top=1.02)
     if number_of_params == 6:
         ax[i].set_ylabel("G1 Bernoulli $p$")
         ax[i].set_title(r"G1 Bernoulli $p$")
@@ -238,7 +238,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             sns.regplot(x="x", y="bern 1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
             ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5)
             ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5)
-            ax[i].set_ylim(bottom=0.66, top=1.02)
+            ax[i].set_ylim(bottom=0.0, top=1.02)
             ax[i].set_ylabel("G2 Bernoulli $p$")
             ax[i].set_title(r"G2 Bernoulli $p$")
         else:
@@ -296,7 +296,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         sns.regplot(x="x", y="bern 1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
         ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5)
-        ax[i].set_ylim(bottom=0.66, top=1.02)
+        ax[i].set_ylim(bottom=0.0, top=1.02)
         ax[i].set_ylabel("G2 Bernoulli $p$")
         ax[i].set_title(r"G2 Bernoulli $p$")
     else:
