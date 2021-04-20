@@ -22,11 +22,10 @@ def makeFigure():
     ax, f = getSetup((17, 7.5), (2, 7))
     plot_all(ax, num_states, gemc_tHMMobj_list, "Gemcitabine", concs, concsValues)
     for i in range(3, 7):
-        ax[i].set_title(concs[i-3], fontsize=16)
-        ax[i].text(-0.2, 1.25, ascii_lowercase[i-2], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
+        ax[i].set_title(concs[i - 3], fontsize=16)
+        ax[i].text(-0.2, 1.25, ascii_lowercase[i - 2], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
         ax[i].axis('off')
 
     return f
-
 
 # plot_networkx(T_gem.shape[0], T_gem, 'gemcitabine')
