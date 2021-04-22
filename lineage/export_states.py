@@ -2,7 +2,6 @@
 
 import numpy as np
 import pandas as pd
-import xlsxwriter
 
 from .Analyze import Analyze_list
 from .tHMM import tHMM
@@ -103,7 +102,7 @@ def write_onExcel(lapt_tHMMobj_list, len_lp_cntr, len_lp_25, len_lp_50, len_lp_2
 
     for ind, sheet in enumerate(lpt_cnt):
         j = 1
-        writer = pd.ExcelWriter(cnt + str(ind) + ".xlsx", engine='xlsxwriter')
+        writer = pd.ExcelWriter(cnt + str(ind) + ".xlsx", engine='openpyxl')
         for arrays in sheet:
             df = pd.DataFrame(arrays)
             df.to_excel(writer, sheet_name='sheet1', startrow=j)
@@ -112,7 +111,7 @@ def write_onExcel(lapt_tHMMobj_list, len_lp_cntr, len_lp_25, len_lp_50, len_lp_2
 
     for ind, sheet in enumerate(lpt_25):
         j = 1
-        writer = pd.ExcelWriter(conc1 + str(ind) + ".xlsx", engine='xlsxwriter')
+        writer = pd.ExcelWriter(conc1 + str(ind) + ".xlsx", engine='openpyxl')
         for arrays in sheet:
             df = pd.DataFrame(arrays)
             df.to_excel(writer, sheet_name='sheet1', startrow=j)
@@ -121,7 +120,7 @@ def write_onExcel(lapt_tHMMobj_list, len_lp_cntr, len_lp_25, len_lp_50, len_lp_2
 
     for ind, sheet in enumerate(lpt_50):
         j = 1
-        writer = pd.ExcelWriter(conc2 + str(ind) + ".xlsx", engine='xlsxwriter')
+        writer = pd.ExcelWriter(conc2 + str(ind) + ".xlsx", engine='openpyxl')
         for arrays in sheet:
             df = pd.DataFrame(arrays)
             df.to_excel(writer, sheet_name='sheet1', startrow=j)
@@ -130,7 +129,7 @@ def write_onExcel(lapt_tHMMobj_list, len_lp_cntr, len_lp_25, len_lp_50, len_lp_2
 
     for ind, sheet in enumerate(lpt_250):
         j = 1
-        writer = pd.ExcelWriter(conc3 + str(ind) + ".xlsx", engine='xlsxwriter')
+        writer = pd.ExcelWriter(conc3 + str(ind) + ".xlsx", engine='openpyxl')
         for arrays in sheet:
             df = pd.DataFrame(arrays)
             df.to_excel(writer, sheet_name='sheet1', startrow=j)
