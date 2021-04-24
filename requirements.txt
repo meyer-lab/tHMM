@@ -4,7 +4,7 @@ scipy==1.6.2
 seaborn==0.11.1
 scikit-learn==0.24.1
 svgutils==0.3.4
-manubot==0.5.0
+manubot==0.5.1
 panflute==1.12.5
 pandoc-fignos==2.4.0
 pandoc-eqnos==2.5.0
@@ -13,7 +13,4 @@ openpyxl==3.0.7
 Biopython==1.78
 jax==0.2.12
 jaxlib==0.1.65
-statsmodels
-networkx
-XlsxWriter
-pygraphviz
+networkx==2.5.1

@@ -2,10 +2,7 @@
 
 import numpy as np
 from Bio.Phylo.BaseTree import Clade
-from Bio import Phylo
-from matplotlib import pylab
 import networkx as nx
-import pygraphviz
 
 cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'olive', 'gray']
 stateColors = ['blue', 'orange', 'green', 'red', 'purple', 'olive', 'gray']

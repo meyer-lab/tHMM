@@ -2,7 +2,6 @@
 import itertools
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor, Future, Executor
-from scipy.stats import wasserstein_distance
 from sklearn.metrics import balanced_accuracy_score
 from .tHMM import tHMM, fit_list
 
