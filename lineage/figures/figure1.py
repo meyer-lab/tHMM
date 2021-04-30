@@ -17,10 +17,11 @@ def makeFigure():
     Makes figure 1.
     """
     # Get list of axis objects
-    ax, f = getSetup((5.1, 3.1), (11, 2))
+    ax, f = getSetup((7.6, 3.1), (11, 3))
     figureMaker(ax)
     ax[0].text(-0.2, 1.7, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
     ax[1].text(-0.2, 1.7, ascii_lowercase[1], transform=ax[1].transAxes, fontsize=16, fontweight="bold", va="top")
+    ax[2].text(-0.2, 1.7, ascii_lowercase[2], transform=ax[2].transAxes, fontsize=16, fontweight="bold", va="top")
 
     return f
 
@@ -34,12 +35,14 @@ def figureMaker(ax):
     # titles
     ax[0].set_title("Control", fontsize=10)
     ax[1].set_title("Gemcitabine 10 nM", fontsize=10)
+    ax[1].set_title("Control - random", fontsize=10)
     # lineages
     for i in range(10):
         control[indxs_control[i]].state = np.nan
         Gem10uM[indxs_gem[i]].state = np.nan
-        plotLineage(control[indxs_control[i]], ax[2 * i], censore=False, color=False)
-        plotLineage(Gem10uM[indxs_gem[i]], ax[2 * i + 1], censore=False, color=False)
+        plotLineage(control[2 * i], ax[3 * i], censore=False, color=False)
+        plotLineage(Gem10uM[2 * i], ax[3 * i + 1], censore=False, color=False)
+        plotLineage(control[indxs_control[i]], ax[3 * i + 2], censore=False, color=False)
 
-    for i in range(22):
+    for i in range(33):
         ax[i].axis('off')
