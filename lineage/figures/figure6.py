@@ -28,7 +28,7 @@ def makeFigure():
     """
 
     # Get list of axis objects
-    ax, f = getSetup((9, 6), (2, 2))
+    ax, f = getSetup((12, 5), (1, 3))
     figureMaker5(ax, *accuracy())
 
     subplotLabel(ax)
@@ -59,12 +59,12 @@ def accuracy():
 
     wass, _, dict_out, _ = commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=[pi] * num_data_points, list_of_fT=[T] * num_data_points, parallel=True)
     accuracy = dict_out["balanced_accuracy_score"]
-    distribution_df = pd.DataFrame(columns=["Distribution type", "G1 lifetime", "State"])
+    distribution_df = pd.DataFrame(columns=["Distribution similarity", "G1 lifetime", "State"])
     lineages = [list_of_populations2[int(num_data_points * i / 4.)][0] for i in range(4)]
     len_lineages = [len(lineage) for lineage in lineages]
     distribution_df["G1 lifetime"] = [(cell.obs[1] + cell.obs[2]) for lineage in lineages for cell in lineage.output_lineage]
     distribution_df["State"] = ["State 1" if cell.state == 0 else "State 2" for lineage in lineages for cell in lineage.output_lineage]
-    distribution_df["Distribution type"] = len_lineages[0] * ["Same\n" + str(0) + "-" + str(wass[-1] / 4)] +\
+    distribution_df["Distribution similarity"] = len_lineages[0] * ["Same\n" + str(0) + "-" + str(wass[-1] / 4)] +\
         len_lineages[1] * ["Similar\n" + str(wass[-1] / 4) + "-" + str(wass[-1] / 2)] +\
         len_lineages[2] * ["Different\n" + str(wass[-1] / 2) + "-" + str(wass[-1] * 0.75)] +\
         len_lineages[3] * ["Distinct\n>" + str(wass[-1] * 0.75)]
@@ -84,13 +84,11 @@ def figureMaker5(ax, distribution_df, wasser_df):
     # cartoon to show different shapes --> similar shapes
     i = 0
     ax[i].axis('off')
+    ax[i].set_title("state difference")
 
     i += 1
-    ax[i].axis('off')
 
-    i += 1
-
-    sns.violinplot(x="Distribution type", y="G1 lifetime", hue="State", palette={"State 2": "g", "State 1": "b"}, split=True, data=distribution_df, ax=ax[i])
+    sns.violinplot(x="G1 lifetime", y="Distribution similarity", hue="State", palette={"State 1": "b", "State 2": "g"}, split=True, data=distribution_df, ax=ax[i])
 
     i += 1
     # state accuracy
