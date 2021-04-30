@@ -14,3 +14,4 @@ Biopython==1.78
 jax==0.2.12
 jaxlib==0.1.65
 networkx==2.5.1
+statsmodels==0.12.2
