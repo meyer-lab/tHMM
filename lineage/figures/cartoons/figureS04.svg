@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg width="100%" height="100%" viewBox="0 0 1280 400" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g transform="matrix(1.61795,0,0,1.61795,-3.51117,-111.654)">
+    <g transform="matrix(1.61795,0,0,1.61795,-7.39711,-87.1295)">
         <g id="figure-S04" serif:id="figure S04">
             <g transform="matrix(-1.83697e-16,-1,1,-1.83697e-16,0,0)">
                 <g>
@@ -829,5 +829,8 @@
                 <path d="M433.156,245.633C433.66,246.138 433.66,246.955 433.156,247.459C432.652,247.963 431.834,247.963 431.33,247.459L424.982,241.111C424.478,240.607 424.478,239.789 424.982,239.285C425.486,238.781 426.303,238.781 426.808,239.285L433.156,245.633Z" style="fill-rule:nonzero;"/>
             </g>
         </g>
+    </g>
+    <g transform="matrix(1,3.85153e-32,-9.86161e-32,1,-0.166127,18.9064)">
+        <text x="280.376px" y="18.625px" style="font-family:'DejaVuSans', 'DejaVu Sans', sans-serif;font-size:19px;">V<tspan x="291.899px 303.542px " y="18.625px 18.625px ">ar</tspan>ying the pr<tspan x="414.694px 426.318px " y="18.625px 18.625px ">op</tspan>ortion of state 1 and state 2 cells in an uncensor<tspan x="899.88px 911.57px " y="18.625px 18.625px ">ed</tspan> lineage</text>
     </g>
 </svg>

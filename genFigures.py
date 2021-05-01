@@ -29,12 +29,12 @@ if __name__ == '__main__':
     if sys.argv[1] == 'S02':
         # Overlay Figure 2 cartoon
         overlayCartoon(fdir + 'figureS02.svg',
-                       f'{cartoon_dir}/figureS02.svg', 80, 0, scalee=0.7)
+                       f'{cartoon_dir}/figureS02.svg', 80, 0, scalee=0.65)
 
     if sys.argv[1] == 'S03':
         # Overlay Figure 3 cartoon
         overlayCartoon(fdir + 'figureS03.svg',
-                       f'{cartoon_dir}/figureS03.svg', 90, 5, scalee=0.67)
+                       f'{cartoon_dir}/figureS03.svg', 80, 0, scalee=0.65)
 
     if sys.argv[1] == 'S04':
         # Overlay Figure 4 cartoon
@@ -49,27 +49,27 @@ if __name__ == '__main__':
     if sys.argv[1] == 'S06':
         # Overlay Figure 6 cartoon
         overlayCartoon(fdir + 'figureS06.svg',
-                       f'{cartoon_dir}/figureS06.svg', 30, 0, scalee=0.53)
+                       f'{cartoon_dir}/figureS06.svg', 40, 0, scalee=0.50)
 
     if sys.argv[1] == 'S07':
         # Overlay Figure 7 cartoon
         overlayCartoon(fdir + 'figureS07.svg',
-                       f'{cartoon_dir}/figureS07.svg', 30, 0, scalee=0.53)
+                       f'{cartoon_dir}/figureS07.svg', 30, 0, scalee=0.50)
 
     if sys.argv[1] == 'S08':
         # Overlay Figure 8 cartoon
         overlayCartoon(fdir + 'figureS08.svg',
-                       f'{cartoon_dir}/figureS01.svg', 95, -10, scalee=0.62)
+                       f'{cartoon_dir}/figureS08.svg', 110, 0, scalee=0.58)
 
     if sys.argv[1] == 'S09':
         # Overlay Figure 9 cartoon
         overlayCartoon(fdir + 'figureS09.svg',
-                       f'{cartoon_dir}/figureS02.svg', 170, 0, scalee=0.5)
+                       f'{cartoon_dir}/figureS09.svg', 170, 0, scalee=0.47)
 
     if sys.argv[1] == 'S10':
         # Overlay Figure 10 cartoon
         overlayCartoon(fdir + 'figureS10.svg',
-                       f'{cartoon_dir}/figureS03.svg', 150, 0, scalee=0.5)
+                       f'{cartoon_dir}/figureS10.svg', 150, 0, scalee=0.45)
 
     if sys.argv[1] == '1':
         # Overlay Figure 1 cartoon
