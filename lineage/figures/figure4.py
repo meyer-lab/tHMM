@@ -4,6 +4,7 @@ from string import ascii_lowercase
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import matplotlib.pyplot as plt
 from copy import deepcopy
 import random
 from .figureCommon import (
@@ -55,7 +56,9 @@ def makeFigure():
 
     figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen)
     subplotLabel(ax)
-    
+    plt.text(350, 275, "Hello World8!")
+    plt.text(-120, 275, "Hello World11!")
+
     return f
 
 
