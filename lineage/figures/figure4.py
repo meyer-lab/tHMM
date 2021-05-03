@@ -55,6 +55,7 @@ def makeFigure():
 
     figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen)
     subplotLabel(ax)
+
     return f
 
 
