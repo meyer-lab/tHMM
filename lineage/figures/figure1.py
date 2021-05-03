@@ -25,6 +25,7 @@ def makeFigure():
 
     return f
 
+
 def figureMaker(ax):
     """
     Makes figure 1.
