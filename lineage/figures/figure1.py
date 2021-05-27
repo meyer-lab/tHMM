@@ -43,6 +43,7 @@ def figureMaker(ax):
         plotLineage(control[indxs_c1[i]], ax[3 * i], censore=False, color=False)
         plotLineage(control[indxs_c2[i]], ax[3 * i + 1], censore=False, color=False)
         plotLineage(Gem10uM[indxs_gem[i]], ax[3 * i + 2], censore=False, color=False)
-
+        
     for i in range(24):
         ax[i].axis('off')
+    
