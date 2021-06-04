@@ -390,7 +390,7 @@ def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
 
     # ylim and ylabel
     for i in range(10, 12):
-        ax[i].set_ylabel("log mean time [hr]")
+        ax[i].set_ylabel("log10 mean time [hr]")
         ax[i].set_ylim([0, 8.0])
 
     # ylim and ylabel
