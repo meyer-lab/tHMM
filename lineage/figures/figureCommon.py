@@ -390,7 +390,7 @@ def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
 
     # ylim and ylabel
     for i in range(10, 12):
-        ax[i].set_ylabel("log mean time [hr]")
+        ax[i].set_ylabel("log10 mean time [hr]")
         ax[i].set_ylim([0, 8.0])
 
     # ylim and ylabel
@@ -419,8 +419,8 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     print(Dname, "\n the \u03C0: ", tHMMobj_list[0].estimate.pi, "\n the transition matrix: ", tHMMobj_list[0].estimate.T)
     for idx, tHMMobj in enumerate(tHMMobj_list):  # for each concentration data
         for i in range(num_states):
-            lpt_avg[idx, i, 0] = np.log(tHMMobj.estimate.E[i].params[2] * tHMMobj.estimate.E[i].params[3])  # G1
-            lpt_avg[idx, i, 1] = np.log(tHMMobj.estimate.E[i].params[4] * tHMMobj.estimate.E[i].params[5])  # G2
+            lpt_avg[idx, i, 0] = np.log10(tHMMobj.estimate.E[i].params[2] * tHMMobj.estimate.E[i].params[3])  # G1
+            lpt_avg[idx, i, 1] = np.log10(tHMMobj.estimate.E[i].params[4] * tHMMobj.estimate.E[i].params[5])  # G2
             # bernoullis
             for j in range(2):
                 bern_lpt[idx, i, j] = tHMMobj.estimate.E[i].params[j]
