@@ -391,12 +391,12 @@ def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
     # ylim and ylabel
     for i in range(10, 12):
         ax[i].set_ylabel("log10 mean time [hr]")
-        ax[i].set_ylim([0, 8.0])
+        ax[i].set_ylim([0, 3.5])
 
     # ylim and ylabel
     for i in range(12, 14):
         ax[i].set_ylabel("division probability")
-        ax[i].set_ylim([0, 1.05])
+        ax[i].set_ylim([0.0, 1.05])
 
     # legend and xlabel
     for i in range(10, 14):
