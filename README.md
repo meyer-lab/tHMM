@@ -18,7 +18,7 @@
 `tHMM` is an open-source Python package that implements an Expectation-Maximization algorithm for a hidden Markov model to simultaneously solve for hidden states and model parameters. The purpose of this model is to identify phenotypic heterogeneity among cancer cells exposed to different concentrations of a drug, and cluster the cells based on various observations, most importantly, taking to account the cell-cell reationship in decision making. The model takes in experimental observations in the form of binary lineages of single cells in a specific format in Excel sheets (please refer to lineage/data/heiser_data/new_version to see the excel sheets for each condition). Currently, the experimental observations include the single cell fate, and cell cycle phase durations, but the model is flexible with no limitations of how many observations to use, so long as they are heritable. The model has been tested on synthetic data, and also on experimental data of AU565 breast cancer cells exposed to lapatinib and gemcitabine doses. This framework properly accounts for time and fate censorship, as the experiments run for a finite amount of time. For a thorough tutorial of the implemented method, please refer to `manuscript/05.methods.md`.
 
 # Documentation
-The `docs` folder holds a few tutorials for getting started with the package. All the functions should have a docstring explaining the purpose of the function, as well as the inputs, outputs, and the type of the variables used.
+The `docs` folder includes a few tutorials for getting started with the package. All the functions should have a docstring explaining the purpose of the function, as well as the inputs, outputs, and the type of the variables used.
 
 # System Requirements
 ## Hardware requirements
@@ -68,6 +68,8 @@ The following shows how to create a 2-state synthetic lineage of cells with cell
 
 ```
 import numpy as np
+from lineage.states.StateDistributionGamma import StateDistribution
+from lineage.LineageTree import LineageTree
 
 # pi: the initial probability vector
 pi = np.array([0.6, 0.4], dtype="float")
@@ -96,7 +98,7 @@ state_obj1 = StateDistribution(bern_p1, gamma_a1, gamma_scale1)
 E = [state_obj0, state_obj1]
 
 # creating the synthetic lineage of 15 cells, given the state distributions, transition probability, and the initial probability vector.
-lineage1 = LineageTree(pi, T, E, desired_num_cells=2**5 - 1)
+lineage = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=2**9 - 1)
 ```
 
 Now that we have created the lineages as Python objects, we use the following function to fit this data into the model.
@@ -104,7 +106,7 @@ Now that we have created the lineages as Python objects, we use the following fu
 ```
 from lineage.Analyze import Analyze
 
-X = [lineage1] # population just contains one lineage
+X = [lineage] # population just contains one lineage
 tHMMobj, pred_states_by_lineage, LL = Analyze(X, 2) # find two states
 
 # Estimating the initial probability vector
@@ -113,9 +115,9 @@ print(tHMMobj.estimate.pi)
 # Estimating the transition probability matrix
 print(tHMMobj.estimate.T)
 
-for state in range(lineage1.num_states):
+for state in range(lineage.num_states):
     print("State {}:".format(state))
-    print("       estimated state:", tHMMobj.estimate.E[state])
-    print("original parameters given for state:", E[state])
+    print("       estimated state:", tHMMobj.estimate.E[state].params)
+    print("original parameters given for state:", E[state].params)
     print("\n")
 ```

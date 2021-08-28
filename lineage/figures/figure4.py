@@ -1,6 +1,5 @@
 """ This file contains functions for plotting the performance of the model for censored data. """
 
-from string import ascii_lowercase
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -10,7 +9,6 @@ from .figureCommon import (
     getSetup,
     subplotLabel,
     commonAnalyze,
-    figureMaker,
     pi,
     T,
     E2,
