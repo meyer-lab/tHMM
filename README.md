@@ -29,7 +29,7 @@ The `docs` folder includes a few tutorials for getting started with the package.
 ### OS requirements
 This package is supported for *macOS*, *Windows*, and *Linux*. The package has been tested on the following systems:
 macOS: Mojave (10.14.1)
-Linux: Ubuntu 16.04
+Linux: Ubuntu 20.04
 Windows: 10
 
 ### Python dependencies
@@ -63,6 +63,8 @@ To build figures of the manuscript, for instance figure4, you can run the follow
 ```
 make output/figure4.svg
 ```
+
+#### Creating synthetic data and fitting the model
 
 The following shows how to create a 2-state synthetic lineage of cells with cell fate and cell lifetime observations, fit them to the model, and output the corresponding transition matrix, initial probability matrix, and the estimated parameters for the distribution of each state.
 
@@ -115,9 +117,33 @@ print(tHMMobj.estimate.pi)
 # Estimating the transition probability matrix
 print(tHMMobj.estimate.T)
 
+# The total log likelihood
+print(LL)
+
 for state in range(lineage.num_states):
     print("State {}:".format(state))
     print("       estimated state:", tHMMobj.estimate.E[state].params)
     print("original parameters given for state:", E[state].params)
     print("\n")
 ```
+
+#### Importing the experimental data and fitting the model
+
+```
+import numpy as np
+
+from lineage.LineageInputOutput import import_Heiser
+from lineage.states.StateDistributionGaPhs import StateDistribution
+from lineage.LineageTree import LineageTree
+from lineage.Analyze import run_Analyze_over
+
+desired_num_states = 2 # does not make a difference what number we choose for importing the data.
+E = [StateDistribution() for _ in range(desired_num_states)]
+
+lap01 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00601_A5_1_V5.xlsx")]
+
+output = run_Analyze_over([[lap01]], 2, atonce=True)
+AICs = np.array([oo[0][0].get_AIC(oo[2], 75, atonce=True)[0] for oo in output])
+```
+
+# License
