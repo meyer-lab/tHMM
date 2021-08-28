@@ -131,7 +131,6 @@ for state in range(lineage.num_states):
 
 ```
 import numpy as np
-
 from lineage.LineageInputOutput import import_Heiser
 from lineage.states.StateDistributionGaPhs import StateDistribution
 from lineage.LineageTree import LineageTree
@@ -140,11 +139,42 @@ from lineage.Analyze import run_Analyze_over
 desired_num_states = 2 # does not make a difference what number we choose for importing the data.
 E = [StateDistribution() for _ in range(desired_num_states)]
 
-lap01 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00601_A5_1_V5.xlsx")]
+# Importing only one of the replicates of control condition
+control1 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00601_A5_1_V5.xlsx")]
 
-output = run_Analyze_over([[lap01]], 2, atonce=True)
-AICs = np.array([oo[0][0].get_AIC(oo[2], 75, atonce=True)[0] for oo in output])
+output = run_Analyze_over([control1], 2, atonce=False)
 ```
+To find the most likely number of states, we can calculate the AIC metrc for 1,2,3,... number of states and find out the likelihoods.
+The following calculates the AIC for 2 states, as we chose in the `run_Analyze_over` above.
+
+```
+AICs = np.array([oo[0].get_AIC(oo[2], 75, atonce=True)[0] for oo in output])
+```
+
+The output of fitting could be the transition matrix:
+```
+np.array([oo[0].estimate.T for oo in output])
+```
+
+initial probability matrix:
+```
+np.array([oo[0].estimate.pi for oo in output])
+```
+
+the assigned cell states lineage by lineage:
+```
+np.array([oo[1] for oo in output])
+```
+
+the distribution parameters for each state:
+```
+for state in range(2):
+    print("State {}:".format(state))
+    print("       estimated state:", output[0][0].estimate.E[state].params)
+    print("\n")
+```
+
+Depending on the number of cells and lineages being used for fitting, the run time for `Analyze` and other similar functions that run the fitting, could takes minutes to hours.
 
 # License
 This project is covered under the MIT License.
