@@ -28,9 +28,9 @@ The `docs` folder includes a few tutorials for getting started with the package.
 
 ### OS requirements
 This package is supported for *macOS*, *Windows*, and *Linux*. The package has been tested on the following systems:
-macOS: Mojave (10.14.1)
-Linux: Ubuntu 20.04
-Windows: 10
+- macOS: Mojave (10.14.1)
+- Linux: Ubuntu 20.04
+- Windows: 10
 
 ### Python dependencies
 `tHMM` mainly depends on the Python scientific stack.
@@ -147,3 +147,4 @@ AICs = np.array([oo[0][0].get_AIC(oo[2], 75, atonce=True)[0] for oo in output])
 ```
 
 # License
+This project is covered under the MIT License.
