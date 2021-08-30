@@ -33,7 +33,7 @@ This package is supported for *macOS*, *Windows*, and *Linux*. The package has b
 - Windows: 10
 
 ### Python dependencies
-`tHMM` mainly depends on the Python scientific stack.
+`tHMM` requires `virtualenv` and all the required packages can be installed using `make venv` after setting up the virtual environment. The following is the list of Python packages that will be installed:
 
 ```
 numpy
@@ -58,10 +58,23 @@ It typically takes a few minutes to clone the repository.
 # Demo and Instructions for Use
 
 All functions for creating synthetic data, importing experimental data, and fitting are in the `lineage` folder. Each figures in the manuscript has a separate file in the `lineage/figures` folder. The synthetic observations were created under the name of state distributions in the `lineage/states` folder, and unit tests for almost all functions written in the package are in the `lineage/tests` folder.
+ 
 To build figures of the manuscript, for instance figure4, you can run the following in the terminal while in the main repository folder:
 
 ```
 make output/figure4.svg
+```
+
+To run the unit tests:
+
+```
+make test
+```
+
+To make the manuscript:
+
+```
+make output/manuscript.html 
 ```
 
 #### Creating synthetic data and fitting the model
