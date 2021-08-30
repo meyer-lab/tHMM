@@ -15,7 +15,7 @@
 
 # Overview
 
-`tHMM` is an open-source Python package that implements an Expectation-Maximization algorithm for a hidden Markov model to simultaneously solve for hidden states and model parameters. The purpose of this model is to identify phenotypic heterogeneity among cancer cells exposed to different concentrations of a drug, and cluster the cells based on various observations, most importantly, taking to account the cell-cell reationship in decision making. The model takes in experimental observations in the form of binary lineages of single cells in a specific format in Excel sheets (please refer to lineage/data/heiser_data/new_version to see the excel sheets for each condition). Currently, the experimental observations include the single cell fate, and cell cycle phase durations, but the model is flexible with no limitations of how many observations to use, so long as they are heritable. The model has been tested on synthetic data, and also on experimental data of AU565 breast cancer cells exposed to lapatinib and gemcitabine doses. This framework properly accounts for time and fate censorship, as the experiments run for a finite amount of time. For a thorough tutorial of the implemented method, please refer to `manuscript/05.methods.md`.
+`tHMM` is an open-source Python package that implements hidden Markov models built on binary lineage trees. The purpose of this model is to identify phenotypic heterogeneity among cancer cells exposed to different concentrations of a drug, and cluster the cells based on various observations, most importantly, taking to account the cell-cell reationship in decision making. The model takes in experimental observations in the form of binary lineages of single cells in a specific Excel sheet format (please refer to lineage/data/heiser_data/new_version to see the excel sheets for each condition). Currently, the experimental observations include the single cell fate, and cell cycle phase durations, but the model is flexible with no limitations of how many observations to use, so long as they are heritable. The model has been tested on synthetic data, and also on experimental data of AU565 breast cancer cells exposed to lapatinib and gemcitabine. This framework properly accounts for time and fate censorship due to experimental limitations. For a thorough tutorial of the implemented method, please refer to `manuscript/05.methods.md`.
 
 # Documentation
 The `docs` folder includes a few tutorials for getting started with the package. All the functions should have a docstring explaining the purpose of the function, as well as the inputs, outputs, and the type of the variables used.
@@ -33,19 +33,7 @@ This package is supported for *macOS*, *Windows*, and *Linux*. The package has b
 - Windows: 10
 
 ### Python dependencies
-`tHMM` requires `virtualenv` and all the required packages can be installed using `make venv` after setting up the virtual environment. The following is the list of Python packages that will be installed:
-
-```
-numpy
-scipy
-pandas
-scikit-learn
-Biopython
-networkx
-statsmodels
-seaborn
-matplotlib
-```
+`tHMM` requires `virtualenv`. All other required packages can then be installed using `make venv` to establish a virtual environment. The Python packages that will be installed are listed in `requirements.txt`.
 
 # Installation Guide:
 
@@ -53,7 +41,7 @@ matplotlib
 ```
 git clone https://github.com/meyer-lab/tHMM
 ```
-It typically takes a few minutes to clone the repository.
+It may take a few minutes to clone the repository.
 
 # Demo and Instructions for Use
 
