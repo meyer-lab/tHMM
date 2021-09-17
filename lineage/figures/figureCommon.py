@@ -81,7 +81,7 @@ def getSetup(figsize, gridd):
                 "ytick.direction": "inout",
                 "ytick.major.width": 1. / 4,  # major tick width in points
                 "ytick.minor.width": 0.5 / 4,  # minor tick width in points
-                "svg.fonttype": "svgfont" # Embed fonts
+                "svg.fonttype": "none" # Keep as text
                 },
         )
 
