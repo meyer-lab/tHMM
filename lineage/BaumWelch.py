@@ -20,6 +20,7 @@ from .states.StateDistributionGamma import atonce_estimator
 def do_E_step(tHMMobj):
     """
     Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
+
     :param tHMMobj: A class object with properties of the lineages of cells
     :type tHMMobj: object
     :return MSD: Marginal state distribution
@@ -45,6 +46,7 @@ def do_E_step(tHMMobj):
 def calculate_log_likelihood(NF):
     """
     Calculates log likelihood of NF for each lineage.
+
     :param NF: normalizing factor
     :type NF: list
     return: the sum of log likelihoods for each lineage
@@ -57,7 +59,12 @@ def calculate_log_likelihood(NF):
 def calculate_stationary(T):
     """
     Calculate the stationary distribution of states from T.
-    Note that this does not take into account potential influences of the emissions. 
+    Note that this does not take into account potential influences of the emissions.
+
+    :param T: transition matrix, a square matrix with probabilities of transitioning from one state to the other
+    :type T: ndarray
+    :return: The stationary distribution of states which can be obtained by solving w = w * T
+    :rtype: array
     """
     eigenvalues, eigenvectors = np.linalg.eig(T.T)
     idx = np.argmin(np.abs(eigenvalues - 1))
@@ -67,11 +74,19 @@ def calculate_stationary(T):
 
 def do_M_step(tHMMobj, MSD, betas, gammas):
     """
-    Calculates the M-step of the Baum Welch algorithm
-    given output of the E step.
+    Calculates the maximization step of the Baum Welch algorithm
+    given output of the expectation step.
     The individual parameter estimations are performed in
     separate functions.
-    
+
+    :param tHMMobj: A class object with properties of the lineages of cells
+    :type tHMMobj: object
+    :param MSD: The marginal state distribution P(z_n = k)
+    :type MSD: list
+    :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
+    :type betas: list
+    :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
+    :type gammas: list
     """
     if not isinstance(tHMMobj, list):
         tHMMobj = [tHMMobj]
@@ -117,6 +132,11 @@ def do_M_pi_step(tHMMobj, gammas):
     given output of the E step.
     Does the parameter estimation for the pi
     initial probability vector.
+
+    :param tHMMobj: A class object with properties of the lineages of cells
+    :type tHMMobj: object
+    :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
+    :type gammas: list
     """
     pi_e = np.zeros(tHMMobj[0].num_states, dtype=float)
     for i, tt in enumerate(tHMMobj):
@@ -133,6 +153,15 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
     given output of the E step.
     Does the parameter estimation for the T
     Markov stochastic transition matrix.
+
+    :param tHMMobj: A class object with properties of the lineages of cells
+    :type tHMMobj: object
+    :param MSD: The marginal state distribution P(z_n = k)
+    :type MSD: list
+    :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
+    :type betas: list
+    :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
+    :type gammas: list
     """
     n = tHMMobj[0].num_states
 
@@ -160,6 +189,11 @@ def do_M_E_step(tHMMobj, gammas):
     given output of the E step.
     Does the parameter estimation for the E
     Emissions matrix (state probabilistic distributions).
+
+    :param tHMMobj: A class object with properties of the lineages of cells
+    :type tHMMobj: object
+    :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
+    :type gammas: list
     """
     all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
     all_gammas = np.vstack(gammas)
@@ -168,9 +202,15 @@ def do_M_E_step(tHMMobj, gammas):
 
 
 def do_M_E_step_atonce(all_tHMMobj, all_gammas):
-    """ perform the M_E step when all the concentrations are given at once for all the states.
-    gms is a list of arrays with size = N x K.
+    """
+    Performs the maximization step for emission estimation when data for all the concentrations are given at once for all the states.
     After reshaping, we will have a list of lists for each state.
+    This function is specifically written for the experimental data of G1 and S-G2 cell cycle fates and durations.
+
+    :param all_tHMMobj: list of tHMMobj for all conditions
+    :type all_tHMMobj: list
+    :param all_gammas: list of gamma values for all conditions
+    :type all_gammas: list
     """
     gms = []
     for gm in all_gammas:
@@ -185,8 +225,8 @@ def do_M_E_step_atonce(all_tHMMobj, all_gammas):
     # reshape the gammas so that each list in this list of lists is for each state.
     for j in range(all_tHMMobj[0].num_states):
         gammas_1st = [array[:, j] for array in gms]
-        atonce_estimator(all_tHMMobj, G1cells, gammas_1st, "G1", j)  # [shape, sc1, sc2, sc3, sc4] for G1
-        atonce_estimator(all_tHMMobj, G2cells, gammas_1st, "G2", j)  # [shape, sc1, sc2, sc3, sc4] for G2
+        atonce_estimator(all_tHMMobj, G1cells, gammas_1st, "G1", j)  # [shape, scale1, scale2, scale3, scale4] for G1
+        atonce_estimator(all_tHMMobj, G2cells, gammas_1st, "G2", j)  # [shape, scale1, scale2, scale3, scale4] for G2
 
 
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
@@ -200,7 +240,7 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     holder = np.zeros(T.shape)
 
     for level in lineageObj.output_list_of_gens[1:]:
-        for cell in level:  # get lineage for the gen
+        for cell in level:  # get lineage for the generation
             gamma_parent = gamma_array[lineage.index(cell), :]  # x by j
 
             if not cell.isLeaf():
