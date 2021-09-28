@@ -15,13 +15,43 @@ class DummyExecutor(Executor):
 
 
 def Analyze(X, num_states, **kwargs):
-    """ Runs a tHMM and outputs the tHMM object, state assignments, and likelihood. """
+    """ 
+    Runs a tHMM and outputs the tHMM object, state assignments, and likelihood 
+    after fitting experimental data from :func: `Analyze_list`. 
+    
+    :param X: list of objects (cells) in a lineage
+    :type: list
+    :param num_states: the number of states to identify
+    :type: int
+    :return: tHMM object after fitting
+    :rtype: object
+    :return: state assignments for each cell in the lineage
+    :rtype: object
+    :return: the likelihood of state assignments for each cell 
+    :rtype: array
+    
+    """
     tHMMobj_list, st, LL = Analyze_list([X], num_states, **kwargs)
     return tHMMobj_list[0], st[0], LL
 
 
 def Analyze_list(Population_list, num_states, **kwargs):
-    """ This function runs the analyze for the case when we want to fit the experimental data. (fig 11)"""
+    """ 
+
+    This function runs the analyze for the case when we want to fit the experimental data. (fig 11)
+    
+    :param Population_list: a list of the population of cells that contain a lineage
+    :type: list
+    :param num_states: the number of states to identify
+    :type: int
+    :return: list of tHMM objects
+    :rtype: list
+    :return: list of predicted states for population of cells
+    :rtype: list
+    :return: the likelihood of state assingments for each cell
+    :rtype: array
+
+    """
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
     _, _, _, _, LL = fit_list(tHMMobj_list)
 
@@ -54,7 +84,7 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=Fals
     :type: list
     :param num_states: An integer number of states to identify (a hyper-parameter of our model)
     :type num_states: Int or list
-    :return: A list of tuples from passing the populations to Analyze_list() or Analyze()
+    :return: A list of tuples from passing the populations to :func:`Analyze_list` or :func:`Analyze`
     :rtype: list
     """
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
@@ -88,6 +118,16 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=Fals
 def Results(tHMMobj, pred_states_by_lineage, LL):
     """
     This function calculates several results of fitting a synthetic lineage.
+
+    :param tHMMobj: the tHMM class that has been built
+    :type: object
+    :param pred_states_by_lineage: list of predicted states for the population of cells
+    :type: list
+    :param LL: the likelihood value of cells being assigned a certain state
+    :type: array
+    :return: a dictionary containing metrics for the accuracy of state estimation, Wasserstein distance 
+             and between state distributions
+    :rtype: dictionary
     """
     # Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
     results_dict = {}
@@ -154,7 +194,7 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     results_dict["accuracy_after_switching"] = 100 * np.mean(ravel_true_states == ravel_switched_pred_states)
     results_dict["balanced_accuracy_score"] = 100 * balanced_accuracy_score(ravel_true_states, ravel_switched_pred_states)
 
-    # 4. Calculate the Wasserstein distance
+    # 3. Calculate the Wasserstein distance
     results_dict["wasserstein"] = tHMMobj.X[0].E[0].dist(tHMMobj.X[0].E[1])
 
     return results_dict
