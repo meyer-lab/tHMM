@@ -20,7 +20,16 @@ from .states.StateDistributionGamma import atonce_estimator
 def do_E_step(tHMMobj):
     """
     Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
-    :param tHMMobj: 
+    :param tHMMobj: A class object with properties of the lineages of cells
+    :type tHMMobj: object
+    :return MSD: Marginal state distribution
+    :rtype MSD: list
+    :return NF: normalizing factor
+    :rtype NF: list
+    :return betas: beta values (conditional probability of cell states given cell observations)
+    :rtype betas: list
+    :return gammas: gamma values (used to calculate the downward reursion)
+    :rtype gammas: list
     """
     MSD = get_Marginal_State_Distributions(tHMMobj)
     EL = get_Emission_Likelihoods(tHMMobj)
@@ -36,14 +45,20 @@ def do_E_step(tHMMobj):
 def calculate_log_likelihood(NF):
     """
     Calculates log likelihood of NF for each lineage.
+    :param NF: normalizing factor
+    :type NF: list
+    return: the sum of log likelihoods for each lineage
+    rtype: array
     """
     # NF is a list of arrays, an array for each lineage in the population
     return np.array([sum(np.log(arr)) for arr in NF])
 
 
 def calculate_stationary(T):
-    """ Calculate the stationary distribution of states from T.
-    Note that this does not take into account potential influences of the emissions. """
+    """
+    Calculate the stationary distribution of states from T.
+    Note that this does not take into account potential influences of the emissions. 
+    """
     eigenvalues, eigenvectors = np.linalg.eig(T.T)
     idx = np.argmin(np.abs(eigenvalues - 1))
     w = np.real(eigenvectors[:, idx]).T
@@ -56,6 +71,7 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
     given output of the E step.
     The individual parameter estimations are performed in
     separate functions.
+    
     """
     if not isinstance(tHMMobj, list):
         tHMMobj = [tHMMobj]
