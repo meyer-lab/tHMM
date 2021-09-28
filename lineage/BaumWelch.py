@@ -20,6 +20,7 @@ from .states.StateDistributionGamma import atonce_estimator
 def do_E_step(tHMMobj):
     """
     Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
+    :param tHMMobj: 
     """
     MSD = get_Marginal_State_Distributions(tHMMobj)
     EL = get_Emission_Likelihoods(tHMMobj)
