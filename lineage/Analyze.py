@@ -37,7 +37,6 @@ def Analyze(X, num_states, **kwargs):
 
 def Analyze_list(Population_list, num_states, **kwargs):
     """ 
-
     This function runs the analyze for the case when we want to fit the experimental data. (fig 11)
     
     :param Population_list: a list of the population of cells that contain a lineage
@@ -50,7 +49,6 @@ def Analyze_list(Population_list, num_states, **kwargs):
     :rtype: list
     :return: the likelihood of state assingments for each cell
     :rtype: array
-
     """
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
     _, _, _, _, LL = fit_list(tHMMobj_list)
@@ -117,7 +115,8 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=Fals
 
 def Results(tHMMobj, pred_states_by_lineage, LL):
     """
-    This function calculates several results of fitting a synthetic lineage.
+    This function calculates several results of fitting a synthetic lineage, such as the accuracy
+    of state predictions for cells in a population.
 
     :param tHMMobj: the tHMM class that has been built
     :type: object
