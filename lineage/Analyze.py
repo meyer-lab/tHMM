@@ -54,6 +54,8 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=Fals
     :type: list
     :param num_states: An integer number of states to identify (a hyper-parameter of our model)
     :type num_states: Int or list
+    :return: A list of tuples from passing the populations to Analyze_list() or Analyze()
+    :rtype: list
     """
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
@@ -70,6 +72,7 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=Fals
     else:
         exe = DummyExecutor()
 
+    
     prom_holder = []
     for idx, population in enumerate(list_of_populations):
         if atonce:  # if we are running all the concentration simultaneously, they should be given to Analyze_list() specifically in the case of figure 9
