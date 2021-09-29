@@ -18,9 +18,17 @@ class CellVar:
     """
 
     def __init__(self, parent, gen, **kwargs):
-        """Instantiates the cell object.
-        Contains memeber variables that identify daughter cells
+        """
+        Instantiates the cell object.
+        Contains member variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
+
+        :param self: Instance of the cell object
+        :type self: object
+        :param parent: The parent cells in the lineage
+        :type parent: object
+        :param gen: The generation of cells in the lineage
+        :type object:
         """
         self.parent = parent
         self.gen = gen
@@ -36,6 +44,13 @@ class CellVar:
         """
         Member function that performs division of a cell.
         Equivalent to adding another timestep in a Markov process.
+
+        :param self: Instance of the cell object
+        :type self: object
+        :param T: Transition matrix containing the probability of state transitions
+        :type T: matrix
+        :return: Daughter cells after cell division
+        :rtype: object
         """
         # Checking that the inputs are of the right shape
         assert T.shape[0] == T.shape[1]
@@ -95,6 +110,11 @@ class CellVar:
     def get_sister(self):
         """
         Member function that gets the sister of the current cell.
+
+        :param self: Instance of the cell object
+        :type self: object
+        :return: The sister of the current cell object
+        :rtype: object
         """
         cell_to_return = None
         if self.parent.left is self:
@@ -106,6 +126,9 @@ class CellVar:
     def get_root_cell(self):
         """
         Get the first cell in the lineage to which this cell belongs.
+
+        :param self: Instance of the cell object
+        :type self: object
         """
         curr_cell = self
         while curr_cell.gen > 1:
@@ -116,6 +139,11 @@ class CellVar:
     def get_daughters(self):
         """
         Get the left and right daughters of a cell if they exist.
+
+        :param self: Instance of the cell object
+        :type self: object
+        :return: The daughter cells of the cell object
+        :rtype: object
         """
         temp = []
         if hasattr(self, "left") and hasattr(self, "right"):
@@ -129,6 +157,11 @@ class CellVar:
 def tree_recursion(cell, subtree):
     """
     A recursive helper function that traverses upwards from the leaf to the root.
+
+    :param cell: The cell object
+    :type cell: object
+    :param subtree: A grouping of cells in the lineage
+    :type subtree: object
     """
     if cell.isLeaf():
         return
@@ -143,6 +176,11 @@ def get_subtrees(node, lineage):
     """
     Given one cell, return the subtree of that cell,
     and return all the tree other than that subtree.
+
+    :param node: Cell object that is the parent of two daughter cells
+    :type node: object
+    :param lineage: List of cells
+    :type lineage: list
     """
     subtree = [node]
     tree_recursion(node, subtree)
@@ -153,6 +191,11 @@ def get_subtrees(node, lineage):
 def find_two_subtrees(cell, lineage):
     """
     Gets the left and right subtrees from a cell.
+    
+    :param cell: Cell object
+    :type cell: object
+    :param lineage: List of cells
+    :type lineage: list
     """
     if cell.isLeaf():
         return None, None, lineage

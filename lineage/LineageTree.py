@@ -18,12 +18,12 @@ class LineageTree:
 
     def __init__(self, list_of_cells, E):
         """
-        Initializes the lineage tree class
+        Instantiates the lineage tree object
 
-        :param self: The lineage tree class
-        :type self: Class
+        :param self: Instance of the lineage tree class
+        :type self: object
         :param list_of_cells: A list of cells that will be used for the lineage tree class
-        :type list_of_cells: List
+        :type list_of_cells: list
         :param E: The emissions matrix containing observations of the state distributions
         :type E: array
 
