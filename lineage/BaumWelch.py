@@ -233,6 +233,19 @@ def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     """
     Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
     This is an inner component in calculating the overall transition probability matrix.
+
+    :param lineageObj: the lineage tree of cells
+    :type lineageObj: object
+    :param beta_array: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
+    :type beta_array: ndarray
+    :param MSD_array: marginal state distribution
+    :type MSD_array: ndarray
+    :param gamma_array: gamma values. The conditional probability of states, given the observation of the whole tree
+    :type gamma_array: ndarray
+    :param T: transition probability matrix
+    :type T: ndarray
+    :return: numerator for calculating the transition probabilities
+    :rtype: ndarray
     """
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
     betaMSD = beta_array / np.clip(MSD_array, np.finfo(float).eps, np.inf)

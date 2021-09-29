@@ -113,7 +113,17 @@ def Viterbi(tHMMobj, deltas, state_ptrs):
     """
     Runs the viterbi algorithm and returns a list of arrays containing the optimal state of each cell.
     This function returns the most likely sequence of states for each lineage.
+
+    :param tHMMobj: a class object with properties of the lineages of cells
+    :type tHMMobj: object
+    :param deltas: a list of N by K matrices containing the delta values for each lineage
+    :type deltas: list
+    :param state_ptrs: a list of tuples of daughter cell indexes and their state pointers
+    :type state_ptrs: list
+    :return: assigned states to each cell in all lineages
+    :rtype: list
     """
+
     all_states = []
 
     for num, lineageObj in enumerate(tHMMobj.X):
