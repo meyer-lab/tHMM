@@ -6,16 +6,29 @@ from .CellVar import CellVar
 
 
 class LineageTree:
-    """A class for lineage trees.
+    """
+    A class for lineage trees.
     Every lineage object from this class is a binary tree built based on initial probabilities,
     transition probabilities, and emissions defined by state distributions given by the user.
     Lineages are generated in full (no pruning) by creating cells of different states in a
     binary fashion utilizing the pi and the transtion probabilities. Cells are then filled with
     observations based on their states by sampling observations from their emission distributions.
-    The lineage tree is then censord based on the censor condition.
+    The lineage tree is then censored based on the censor condition.
     """
 
     def __init__(self, list_of_cells, E):
+        """
+        Initializes the lineage tree class
+
+        :param self: The lineage tree class
+        :type self: Class
+        :param list_of_cells: A list of cells that will be used for the lineage tree class
+        :type list_of_cells: List
+        :param E: The emissions matrix containing observations of the state distributions
+        :type E: array
+
+
+        """
         self.E = E
         self.output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
         self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
