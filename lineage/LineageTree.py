@@ -96,7 +96,8 @@ class LineageTree:
         return lineageObj
 
     def get_parents_for_level(self, level):
-        """Get the parents's index of a generation in the population list.
+        """
+        Get the parents's index of a generation in the population list.
         Given the generation level, this function returns the index of parent cells of the cells being in that generation level.
 
         :param level: A list containing cells in a specific generation level.
@@ -110,7 +111,8 @@ class LineageTree:
         return parent_holder
 
     def __len__(self):
-        """Defines the length of a lineage by returning the number of cells
+        """
+        Defines the length of a lineage by returning the number of cells
         it contains.
         """
         return len(self.output_lineage)
@@ -121,6 +123,16 @@ def generate_lineage_list(pi, T, desired_num_cells):
     Generates a single lineage tree given Markov variables.
     This only generates the hidden variables (i.e., the states) in a output binary tree manner.
     It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
+
+    :param pi: Matrix containing the initial cell states 
+    :type pi: array
+    :param T: Matrix containing the probability of a cell transitioning states
+    :type T: array
+    :param desired_num_cells: The number of cells in the lineage
+    :type desired_num_cells: int
+    :return: A single lineage containing cells
+    :rtype: list
+
     """
     first_cell_state = np.random.choice(pi.size, size=1, p=pi)[0]  # roll the dice and yield the state for the first cell
     first_cell = CellVar(parent=None, gen=1, state=first_cell_state)  # create first cell
@@ -146,7 +158,11 @@ def output_assign_obs(state, full_lineage, E):
     comming from specific distributions for that state.
 
     :param state: The number assigned to a state.
-    :type state: Int
+    :type state: int
+    :param full_lineage: The single lineage created from :func:`generate_lineage_list`
+    :type full_lineage: list
+    :param E: Emissions matrix containing cell distribution observations
+    :type E: matrix
     """
     cells_in_state = [cell for cell in full_lineage if cell.state == state]
     list_of_tuples_of_obs = E[state].rvs(size=len(cells_in_state))
@@ -161,14 +177,16 @@ def output_assign_obs(state, full_lineage, E):
 
 
 def max_gen(lineage):
-    """Finds the maximal generation in the tree, and cells organized by their generations.
-    This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
-    creates a list of them, appends the lists leading to have a list of the lists of cells in specific generations.
+    """
+    Finds the maximal generation in the tree, and cells organized by their generations.
+    This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to 
+    a same generation and creates a list of them, appends the lists leading to have a list of the lists of cells in 
+    specific generations.
 
     :param lineage: A list of cells (objects) with known state, generation, ect.
     :type lineage: list
     :return: The maximal generation in the given lineage.
-    :rtype: Int
+    :rtype: int
     :return: A list of lists of cells, organized by their generations.
     :rtype: list
     """
