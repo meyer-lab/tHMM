@@ -1,4 +1,4 @@
-""" This file plots the AIC for the experimental data. """
+""" This file plots the BIC for the experimental data. """
 
 import numpy as np
 import pickle
@@ -20,7 +20,7 @@ def makeFigure():
     lapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
     gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
 
-    def find_AIC(data, desired_num_states, num_cells):
+    def find_BIC(data, desired_num_states, num_cells):
         # Copy out data to full set
         dataFull = []
         for _ in desired_num_states:
@@ -28,12 +28,12 @@ def makeFigure():
 
         # Run fitting
         output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
-        AICs = np.array([oo[0][0].get_AIC(oo[2], num_cells, atonce=True)[0] for oo in output])
+        BICs = np.array([oo[0][0].get_BIC(oo[2], num_cells, atonce=True)[0] for oo in output])
 
-        return AICs - np.min(AICs, axis=0)
+        return BICs - np.min(BICs, axis=0)
 
-    lapAIC = find_AIC(lapatinib, desired_num_states, num_cells=5290)
-    gemAIC = find_AIC(gemcitabine, desired_num_states, num_cells=4537)
+    lapBIC = find_BIC(lapatinib, desired_num_states, num_cells=5290)
+    gemBIC = find_BIC(gemcitabine, desired_num_states, num_cells=4537)
 
     # # Lapatinib
     # lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(lapatinib, 3, fpi=True)
@@ -64,9 +64,9 @@ def makeFigure():
     #     pickle.dump(gemc, pik2)
     # pik2.close()
 
-    # Plotting AICs
-    ax[0].plot(desired_num_states, lapAIC)
-    ax[1].plot(desired_num_states, gemAIC)
+    # Plotting BICs
+    ax[0].plot(desired_num_states, lapBIC)
+    ax[1].plot(desired_num_states, gemBIC)
 
     for i in range(2):
         ax[i].set_xlabel("Number of States Predicted")

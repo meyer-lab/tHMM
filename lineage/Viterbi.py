@@ -6,7 +6,9 @@ import numpy as np
 
 
 def get_leaf_deltas(tHMMobj):
-    """Delta matrix and base case at the leaves. Each element in this N by K matrix is the probability for the leaves :math:`P(x_n = x | z_n = k)`.
+    """
+    Delta matrix and base case at the leaves. 
+    Each element in this N by K matrix is the probability for the leaves :math:`P(x_n = x | z_n = k)`.
 
     :param tHMMobj: the tHMM object
     :type tHMMobj: object
@@ -18,16 +20,13 @@ def get_leaf_deltas(tHMMobj):
     deltas = []
     state_ptrs = []
 
-    # for each lineage in our Population
-    for num, lineageObj in enumerate(tHMMobj.X):
-        # getting the lineage in the Population by index
+    for num, lineageObj in enumerate(tHMMobj.X): # getting the lineage in the Population by index
         lineage = lineageObj.output_lineage
-        # instantiating N by K array
-        delta_array = np.zeros((len(lineage), num_states))
-        state_ptrs_array = np.empty((len(lineage), 2), dtype=object)  # instantiating N by K array
+        delta_array = np.zeros((len(lineage), num_states)) # instantiating N by K array
+        state_ptrs_array = np.empty((len(lineage), 2), dtype=object)
 
-        for cell in lineage:  # for each cell in the lineage
-            if cell.isLeaf():  # if it is a leaf
+        for cell in lineage:
+            if cell.isLeaf():
                 # get the index of the leaf
                 leaf_cell_idx = lineage.index(cell)
                 delta_array[leaf_cell_idx, :] = tHMMobj.EL[num][leaf_cell_idx, :]
@@ -38,7 +37,8 @@ def get_leaf_deltas(tHMMobj):
 
 
 def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
-    """Calculates the delta values for all non-leaf cells by filling out the delta matrix passed to it from the :func:`get_leaf_deltas`.
+    """
+    Calculates the delta values for all non-leaf cells by filling out the delta matrix passed to it from the :func:`get_leaf_deltas`.
 
     :param tHMMobj: the tHMM object
     :type tHMMobj: object
@@ -50,10 +50,8 @@ def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
     :type state_ptrs: list
     """
 
-    # for each lineage in our Population
     for num, lineageObj in enumerate(tHMMobj.X):
-        # getting the lineage in the Population by index
-        lineage = lineageObj.output_lineage
+        lineage = lineageObj.output_lineage # getting the lineage in the Population by index
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
 
         # move up one generation until the 2nd generation is the children
@@ -69,7 +67,8 @@ def get_nonleaf_deltas(tHMMobj, deltas, state_ptrs):
 
 
 def get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx):
-    """Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.
+    """
+    Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.
 
     :param lineage: A list containing cells (which are objects with their own properties).
     :type lineage: list
@@ -79,10 +78,10 @@ def get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx):
     :type T: Matrix
     :param node_parent_m_index: The index of the parent to the currently-intended-cell.
     :type node_parent_m_index: Int
-    :return: A list to hold the factors in the product.
-    rtype: list
-    :return: A list of tuples of daughter cell indexes and their state pointers.
-    :rtype: list
+    :return delta_m_n_holder: A list to hold the factors in the product.
+    :rtype delta_m_n_holder: list
+    :return max_state_ptr: A list of tuples of daughter cell indexes and their state pointers.
+    :rtype max_state_ptr: list
     """
     delta_m_n_holder = np.ones(T.shape[0])  # list to hold the factors in the product
     max_state_ptr = []
@@ -111,7 +110,9 @@ def get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx):
 
 
 def Viterbi(tHMMobj, deltas, state_ptrs):
-    """Runs the viterbi algorithm and returns a list of arrays containing the optimal state of each cell. This function returns the most likely sequence of states for each lineage.
+    """
+    Runs the viterbi algorithm and returns a list of arrays containing the optimal state of each cell.
+    This function returns the most likely sequence of states for each lineage.
     """
     all_states = []
 

@@ -12,6 +12,7 @@ def get_gammas(tHMMobj, MSD, betas):
     gamma_n (k) = P(z_n = k | X_bar = x_bar)
 
     :param tHMMobj: A class object with properties of the lineages of cells
+    :type tHMMobj: object
     :param MSD: The marginal state distribution P(z_n = k)
     :type MSD: list
     :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
@@ -52,6 +53,7 @@ def sum_nonleaf_gammas(lineageObj, gamma_arr):
     """
     Sum of the gammas of the cells that are able to divide, that is,
     sum the of the gammas of all the nonleaf cells. It is used in estimating the transition probability matrix.
+    This is an inner component in calculating the overall transition probability matrix.
 
     :param lineageObj: the object of lineage tree
     :type lineageObj: object

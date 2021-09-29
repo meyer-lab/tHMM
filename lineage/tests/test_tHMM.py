@@ -104,9 +104,9 @@ def test_small_lineages(sizze, stateNum):
     assert np.all(np.isfinite(LL1))
 
 
-def test_AIC():
+def test_BIC():
     """
-    To test the AIC function. One a 1-state population, we run the AIC for 1, 2, and 3 states.
+    To test the BIC function. One a 1-state population, we run the BIC for 1, 2, and 3 states.
     We run it 20 times and make sure it got the right answer for more than half the times.
     """
     # create 1-state lineages
@@ -121,11 +121,11 @@ def test_AIC():
         for _ in lins[0].output_lineage:
             nums += 1
     # run a few times and make sure it gives one state as the answer more than half the time.
-    AIC = np.empty((len(desired_num_states), 20))
+    BIC = np.empty((len(desired_num_states), 20))
     for j in range(20):
         output = run_Analyze_over(lin, desired_num_states)
 
         for idx in range(len(desired_num_states)):
-            AIC[idx, j], _ = output[idx][0].get_AIC(output[idx][2], nums)
-        AIC[:, j] = AIC[:, j] - np.min(AIC[:, j])
-    assert np.count_nonzero(AIC[0, :] == 0) > 10
+            BIC[idx, j], _ = output[idx][0].get_BIC(output[idx][2], nums)
+        BIC[:, j] = BIC[:, j] - np.min(BIC[:, j])
+    assert np.count_nonzero(BIC[0, :] == 0) > 10

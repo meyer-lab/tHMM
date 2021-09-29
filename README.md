@@ -145,11 +145,11 @@ control1 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(pat
 
 output = run_Analyze_over([control1], 2, atonce=False)
 ```
-To find the most likely number of states, we can calculate the AIC metrc for 1,2,3,... number of states and find out the likelihoods.
-The following calculates the AIC for 2 states, as we chose in the `run_Analyze_over` above.
+To find the most likely number of states, we can calculate the BIC metrc for 1,2,3,... number of states and find out the likelihoods.
+The following calculates the BIC for 2 states, as we chose in the `run_Analyze_over` above.
 
 ```
-AICs = np.array([oo[0].get_AIC(oo[2], 75, atonce=True)[0] for oo in output])
+BICs = np.array([oo[0].get_BIC(oo[2], 75, atonce=True)[0] for oo in output])
 ```
 
 The output of fitting could be the transition matrix:

@@ -232,6 +232,7 @@ def do_M_E_step_atonce(all_tHMMobj, all_gammas):
 def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
     """
     Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
+    This is an inner component in calculating the overall transition probability matrix.
     """
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
     betaMSD = beta_array / np.clip(MSD_array, np.finfo(float).eps, np.inf)

@@ -152,7 +152,7 @@ def max_gen(lineage):
     This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
     creates a list of them, appends the lists leading to have a list of the lists of cells in specific generations.
 
-    :param lineage: A list of cells (objects) with known state, generation, ect.
+    :param lineage: A list of cells (objects) with known state, generation, etc.
     :type lineage: list
     :return: The maximal generation in the given lineage.
     :rtype: Int
