@@ -23,10 +23,10 @@ class CellVar:
         Contains member variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
 
-        :param parent: The parent cells in the lineage
+        :param parent: the parent cells in the lineage
         :type parent: object
-        :param gen: The generation of cells in the lineage
-        :type object:
+        :param gen: the generation of cells in the lineage
+        :type gen: object
         """
         self.parent = parent
         self.gen = gen
@@ -43,9 +43,9 @@ class CellVar:
         Member function that performs division of a cell.
         Equivalent to adding another timestep in a Markov process.
 
-        :param T: Transition matrix containing the probability of state transitions
+        :param T: transition matrix containing the probability of state transitions
         :type T: matrix
-        :return: Daughter cells after cell division
+        :return: daughter cells after cell division
         :rtype: object
         """
         # Checking that the inputs are of the right shape
@@ -107,7 +107,7 @@ class CellVar:
         """
         Member function that gets the sister of the current cell.
 
-        :return: The sister of the current cell object used as a parameter
+        :return: the sister of the current cell object used as a parameter
         :rtype: object
         """
         cell_to_return = None
@@ -133,7 +133,7 @@ class CellVar:
         """
         Get the left and right daughters of a cell if they exist.
 
-        :return: The daughter cells of the cell object
+        :return: the daughter cells of the cell object
         :rtype: object
         """
         temp = []
@@ -149,9 +149,9 @@ def tree_recursion(cell, subtree):
     """
     A recursive helper function that traverses upwards from the leaf to the root.
 
-    :param cell: The cell object
+    :param cell: the cell object
     :type cell: object
-    :param subtree: A grouping of cells in the lineage
+    :param subtree: a grouping of cells in the lineage
     :type subtree: object
     """
     if cell.isLeaf():
@@ -168,9 +168,9 @@ def get_subtrees(node, lineage):
     Given one cell, return the subtree of that cell,
     and return all the tree other than that subtree.
 
-    :param node: Cell object that is the parent of two daughter cells
+    :param node: cell object that is the parent of two daughter cells
     :type node: object
-    :param lineage: List of cells
+    :param lineage: list of cells
     :type lineage: list
     """
     subtree = [node]
@@ -183,9 +183,9 @@ def find_two_subtrees(cell, lineage):
     """
     Gets the left and right subtrees from a cell.
     
-    :param cell: Cell object
+    :param cell: cell object
     :type cell: object
-    :param lineage: List of cells
+    :param lineage: list of cells
     :type lineage: list
     """
     if cell.isLeaf():
