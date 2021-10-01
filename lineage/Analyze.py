@@ -27,8 +27,8 @@ def Analyze(X, num_states, **kwargs):
     :rtype: object
     :return: State assignments for each cell in the lineage
     :rtype: object
-    :return: The likelihood of state assignments for each cell 
-    :rtype: array
+    :return: The summation of the log-likelihood value of cells being assigned a certain state 
+    :rtype: float
     
     """
     tHMMobj_list, st, LL = Analyze_list([X], num_states, **kwargs)
@@ -47,8 +47,8 @@ def Analyze_list(Population_list, num_states, **kwargs):
     :rtype: list
     :return: List of predicted states for population of cells
     :rtype: list
-    :return: The likelihood of state assingments for each cell
-    :rtype: array
+    :return: The summation of the log-likelihood value of cells being assigned a certain state
+    :rtype: float
     """
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
     _, _, _, _, LL = fit_list(tHMMobj_list)
@@ -122,8 +122,8 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     :type tHMMobj: object
     :param pred_states_by_lineage: List of predicted states for the population of cells
     :type pred_states_by_lineage: list
-    :param LL: The likelihood value of cells being assigned a certain state
-    :type LL: array
+    :param LL: The summation of the log-likelihood value of cells being assigned a certain state
+    :type LL: float
     :return: a dictionary containing metrics for the accuracy of state estimation, Wasserstein distance 
              and between state distributions
     :rtype: dictionary
