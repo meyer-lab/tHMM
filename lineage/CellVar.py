@@ -23,8 +23,6 @@ class CellVar:
         Contains member variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
 
-        :param self: Instance of the cell object
-        :type self: object
         :param parent: The parent cells in the lineage
         :type parent: object
         :param gen: The generation of cells in the lineage
@@ -45,8 +43,6 @@ class CellVar:
         Member function that performs division of a cell.
         Equivalent to adding another timestep in a Markov process.
 
-        :param self: Instance of the cell object
-        :type self: object
         :param T: Transition matrix containing the probability of state transitions
         :type T: matrix
         :return: Daughter cells after cell division
@@ -111,9 +107,7 @@ class CellVar:
         """
         Member function that gets the sister of the current cell.
 
-        :param self: Instance of the cell object
-        :type self: object
-        :return: The sister of the current cell object
+        :return: The sister of the current cell object used as a parameter
         :rtype: object
         """
         cell_to_return = None
@@ -125,10 +119,9 @@ class CellVar:
 
     def get_root_cell(self):
         """
-        Get the first cell in the lineage to which this cell belongs.
+        Returns the first cell in the lineage to which this cell belongs.
 
-        :param self: Instance of the cell object
-        :type self: object
+        :rtype: object
         """
         curr_cell = self
         while curr_cell.gen > 1:
@@ -140,8 +133,6 @@ class CellVar:
         """
         Get the left and right daughters of a cell if they exist.
 
-        :param self: Instance of the cell object
-        :type self: object
         :return: The daughter cells of the cell object
         :rtype: object
         """
