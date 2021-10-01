@@ -20,11 +20,11 @@ class LineageTree:
         """
         Instantiates the lineage tree object
 
-        :param self: Instance of the lineage tree class
+        :param self: instance of the lineage tree class
         :type self: object
-        :param list_of_cells: A list of cells that will be used for the lineage tree class
+        :param list_of_cells: a list of cells that will be used for the lineage tree class
         :type list_of_cells: list
-        :param E: The emissions matrix containing observations of the state distributions
+        :param E: the emissions matrix containing observations of the state distributions
         :type E: array
 
 
@@ -41,16 +41,16 @@ class LineageTree:
         r"""
         Constructor method
 
-        :param :math:`\pi`: The initial probability matrix; its shape must be the same as the number of states and all of them must sum up to 1.
-        :type :math:`\pi`: Array
-        :param T: The transition probability matrix; every row must sum up to 1.
+        :param :math:`\pi`: the initial probability matrix; its shape must be the same as the number of states and all of them must sum up to 1.
+        :type :math:`\pi`: array
+        :param T: the transition probability matrix; every row must sum up to 1.
         :type T: square Matrix
-        :param E: A list containing state distribution objects, the length of it is the same as the number of states.
+        :param E: a list containing state distribution objects, the length of it is the same as the number of states.
         :type E: list
-        :param desired_num_cells: The desired number of cells we want the lineage to end up with.
-        :type desired_num_cells: Int
-        :param censor_condition: An integer :math:`\in` \{0, 1, 2, 3\} that decides the type of censoring.
-        :type censor_condition: Int
+        :param desired_num_cells: the desired number of cells we want the lineage to end up with.
+        :type desired_num_cells: int
+        :param censor_condition: an integer :math:`\in` \{0, 1, 2, 3\} that decides the type of censoring.
+        :type censor_condition: int
 
         Censoring guide
         - 0 means no pruning
@@ -100,9 +100,9 @@ class LineageTree:
         Get the parents's index of a generation in the population list.
         Given the generation level, this function returns the index of parent cells of the cells being in that generation level.
 
-        :param level: A list containing cells in a specific generation level.
+        :param level: a list containing cells in a specific generation level.
         :type level: list
-        :return: A set holding the parents' indexes of cells in a given generation.
+        :return: a set holding the parents' indexes of cells in a given generation.
         :rtype: set
         """
         parent_holder = set()  # set makes sure only one index is put in and no overlap
@@ -124,13 +124,13 @@ def generate_lineage_list(pi, T, desired_num_cells):
     This only generates the hidden variables (i.e., the states) in a output binary tree manner.
     It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
 
-    :param pi: Matrix containing the initial cell states 
+    :param pi: matrix containing the initial cell states 
     :type pi: array
-    :param T: Matrix containing the probability of a cell transitioning states
+    :param T: matrix containing the probability of a cell transitioning states
     :type T: array
-    :param desired_num_cells: The number of cells in the lineage
+    :param desired_num_cells: the number of cells in the lineage
     :type desired_num_cells: int
-    :return: A single lineage containing cells
+    :return: a single lineage containing cells
     :rtype: list
 
     """
@@ -157,11 +157,11 @@ def output_assign_obs(state, full_lineage, E):
     Given the lineageTree object and the intended state, this function assigns the corresponding observations
     comming from specific distributions for that state.
 
-    :param state: The number assigned to a state.
+    :param state: the number assigned to a state.
     :type state: int
-    :param full_lineage: The single lineage created from :func:`generate_lineage_list`
+    :param full_lineage: the single lineage created from :func:`generate_lineage_list`
     :type full_lineage: list
-    :param E: Emissions matrix containing cell distribution observations
+    :param E: emissions matrix containing cell distribution observations
     :type E: matrix
     """
     cells_in_state = [cell for cell in full_lineage if cell.state == state]
@@ -183,11 +183,11 @@ def max_gen(lineage):
     a same generation and creates a list of them, appends the lists leading to have a list of the lists of cells in 
     specific generations.
 
-    :param lineage: A list of cells (objects) with known state, generation, ect.
+    :param lineage: a list of cells (objects) with known state, generation, ect.
     :type lineage: list
-    :return: The maximal generation in the given lineage.
+    :return: the maximal generation in the given lineage.
     :rtype: int
-    :return: A list of lists of cells, organized by their generations.
+    :return: a list of lists of cells, organized by their generations.
     :rtype: list
     """
     gens = sorted({cell.gen for cell in lineage})  # appending the generation of cells in the lineage
@@ -202,11 +202,11 @@ def get_leaves(lineage):
     """
     A function to find the leaves and their indexes in the lineage list.
 
-    :param lineage: A list of cells in the lineage.
+    :param lineage: a list of cells in the lineage.
     :type lineage: list
-    :return: A list of indexes to the leaf cells in the lineage list.
+    :return: a list of indexes to the leaf cells in the lineage list.
     :rtype: list
-    :return: A list holding the leaf cells in the lineage given.
+    :return: a list holding the leaf cells in the lineage given.
     :rtype: list
     """
     leaf_indices = []
