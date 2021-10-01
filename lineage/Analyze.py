@@ -19,15 +19,15 @@ def Analyze(X, num_states, **kwargs):
     Runs a tHMM and outputs the tHMM object, state assignments, and likelihood 
     after fitting experimental data from :func: `Analyze_list`. 
     
-    :param X: List of objects (cells) in a lineage
+    :param X: list of objects (cells) in a lineage
     :type X: list
-    :param num_states: The number of states to identify
+    :param num_states: the number of states to identify
     :type num_states: int
-    :return: The tHMM object after fitting
+    :return: the tHMM object after fitting
     :rtype: object
-    :return: State assignments for each cell in the lineage
+    :return: state assignments for each cell in the lineage
     :rtype: object
-    :return: The summation of the log-likelihood value of cells being assigned a certain state 
+    :return: the summation of the log-likelihood value of cells being assigned a certain state 
     :rtype: float
     
     """
@@ -39,15 +39,15 @@ def Analyze_list(Population_list, num_states, **kwargs):
     """ 
     This function runs the analyze for the case when we want to fit the experimental data. (fig 11)
     
-    :param Population_list: A list of the population of cells that contain a lineage
+    :param Population_list: a list of the population of cells that contain a lineage
     :type Population_list: list
-    :param num_states: The number of states to identify
+    :param num_states: the number of states to identify
     :type num_states: int
-    :return: List of tHMM objects
+    :return: list of tHMM objects
     :rtype: list
-    :return: List of predicted states for population of cells
+    :return: list of predicted states for population of cells
     :rtype: list
-    :return: The summation of the log-likelihood value of cells being assigned a certain state
+    :return: the summation of the log-likelihood value of cells being assigned a certain state
     :rtype: float
     """
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
@@ -78,11 +78,11 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=Fals
     and computing certain statistics, most of which can be done in an
     additional for loop over the results from Analyze.
 
-    :param list_of_populations: A list of populations that contain lineages.
+    :param list_of_populations: a list of populations that contain lineages.
     :type list_of_populations: list
-    :param num_states: An integer number of states to identify (a hyper-parameter of our model)
+    :param num_states: an integer number of states to identify (a hyper-parameter of our model)
     :type num_states: int or list
-    :return: A list of tuples from passing the populations to :func:`Analyze_list` or :func:`Analyze`
+    :return: a list of tuples from passing the populations to :func:`Analyze_list` or :func:`Analyze`
     :rtype: list
     """
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
@@ -118,11 +118,11 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     This function calculates several results of fitting a synthetic lineage, such as the accuracy
     of state predictions for cells in a population.
 
-    :param tHMMobj: The tHMM class that has been built
+    :param tHMMobj: the tHMM class that has been built
     :type tHMMobj: object
-    :param pred_states_by_lineage: List of predicted states for the population of cells
+    :param pred_states_by_lineage: list of predicted states for the population of cells
     :type pred_states_by_lineage: list
-    :param LL: The summation of the log-likelihood value of cells being assigned a certain state
+    :param LL: the summation of the log-likelihood value of cells being assigned a certain state
     :type LL: float
     :return: a dictionary containing metrics for the accuracy of state estimation, Wasserstein distance 
              and between state distributions
