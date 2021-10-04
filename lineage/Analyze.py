@@ -33,14 +33,12 @@ def Analyze(X: list, num_states: int, **kwargs):
     return tHMMobj_list[0], st[0], LL
 
 
-def Analyze_list(Population_list, num_states, **kwargs):
+def Analyze_list(Population_list: list, num_states: int, **kwargs):
     """ 
     This function runs the analyze for the case when we want to fit the experimental data. (fig 11)
     
     :param Population_list: a list of the population of cells that contain a lineage
-    :type Population_list: list
     :param num_states: the number of states to identify
-    :type num_states: int
     :return: list of tHMM objects
     :rtype: list
     :return: list of predicted states for population of cells
