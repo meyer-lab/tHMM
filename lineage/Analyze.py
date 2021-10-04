@@ -14,15 +14,13 @@ class DummyExecutor(Executor):
         return f
 
 
-def Analyze(X, num_states, **kwargs):
+def Analyze(X: list, num_states: int, **kwargs):
     """ 
     Runs a tHMM and outputs the tHMM object, state assignments, and likelihood 
     after fitting experimental data from :func: `Analyze_list`. 
     
     :param X: list of objects (cells) in a lineage
-    :type X: list
     :param num_states: the number of states to identify
-    :type num_states: int
     :return: the tHMM object after fitting
     :rtype: object
     :return: state assignments for each cell in the lineage
