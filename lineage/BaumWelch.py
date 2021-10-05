@@ -43,12 +43,11 @@ def do_E_step(tHMMobj):
     return MSD, NF, betas, gammas
 
 
-def calculate_log_likelihood(NF):
+def calculate_log_likelihood(NF: list):
     """
     Calculates log likelihood of NF for each lineage.
 
     :param NF: normalizing factor
-    :type NF: list
     return: the sum of log likelihoods for each lineage
     rtype: array
     """
@@ -72,7 +71,7 @@ def calculate_stationary(T):
     return w / np.sum(w)
 
 
-def do_M_step(tHMMobj, MSD, betas, gammas):
+def do_M_step(tHMMobj, MSD: list, betas: list, gammas: list):
     """
     Calculates the maximization step of the Baum Welch algorithm
     given output of the expectation step.
@@ -82,11 +81,8 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
     :param tHMMobj: A class object with properties of the lineages of cells
     :type tHMMobj: object
     :param MSD: The marginal state distribution P(z_n = k)
-    :type MSD: list
     :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
-    :type betas: list
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
-    :type gammas: list
     """
     if not isinstance(tHMMobj, list):
         tHMMobj = [tHMMobj]
@@ -126,7 +122,7 @@ def do_M_step(tHMMobj, MSD, betas, gammas):
             do_M_E_step_atonce(tHMMobj, gammas)
 
 
-def do_M_pi_step(tHMMobj, gammas):
+def do_M_pi_step(tHMMobj, gammas: list):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -136,7 +132,6 @@ def do_M_pi_step(tHMMobj, gammas):
     :param tHMMobj: A class object with properties of the lineages of cells
     :type tHMMobj: object
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
-    :type gammas: list
     """
     pi_e = np.zeros(tHMMobj[0].num_states, dtype=float)
     for i, tt in enumerate(tHMMobj):
@@ -147,7 +142,7 @@ def do_M_pi_step(tHMMobj, gammas):
     return pi_e / np.sum(pi_e)
 
 
-def do_M_T_step(tHMMobj, MSD, betas, gammas):
+def do_M_T_step(tHMMobj, MSD: list, betas: list, gammas: list):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -157,11 +152,8 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
     :param tHMMobj: A class object with properties of the lineages of cells
     :type tHMMobj: object
     :param MSD: The marginal state distribution P(z_n = k)
-    :type MSD: list
     :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
-    :type betas: list
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
-    :type gammas: list
     """
     n = tHMMobj[0].num_states
 
@@ -183,7 +175,7 @@ def do_M_T_step(tHMMobj, MSD, betas, gammas):
     return T_estimate
 
 
-def do_M_E_step(tHMMobj, gammas):
+def do_M_E_step(tHMMobj, gammas: list):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -193,7 +185,6 @@ def do_M_E_step(tHMMobj, gammas):
     :param tHMMobj: A class object with properties of the lineages of cells
     :type tHMMobj: object
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
-    :type gammas: list
     """
     all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
     all_gammas = np.vstack(gammas)
@@ -201,16 +192,11 @@ def do_M_E_step(tHMMobj, gammas):
         tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
 
 
-def do_M_E_step_atonce(all_tHMMobj, all_gammas):
+def do_M_E_step_atonce(all_tHMMobj: list, all_gammas: list):
     """
     Performs the maximization step for emission estimation when data for all the concentrations are given at once for all the states.
     After reshaping, we will have a list of lists for each state.
     This function is specifically written for the experimental data of G1 and S-G2 cell cycle fates and durations.
-
-    :param all_tHMMobj: list of tHMMobj for all conditions
-    :type all_tHMMobj: list
-    :param all_gammas: list of gamma values for all conditions
-    :type all_gammas: list
     """
     gms = []
     for gm in all_gammas:

@@ -3,7 +3,7 @@
 import numpy as np
 
 
-def get_gammas(tHMMobj, MSD, betas):
+def get_gammas(tHMMobj, MSD, betas) -> list:
     """
     Get the gammas for all other nodes using recursion from the root nodes.
     The conditional probability of states, given the observation of the whole tree P(z_n = k | X_bar = x_bar)
@@ -18,7 +18,6 @@ def get_gammas(tHMMobj, MSD, betas):
     :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
     :type betas: list of ndarray
     :return: gammas list
-    :rtype: list
     """
     T = tHMMobj.estimate.T
     gammas = []
@@ -30,7 +29,6 @@ def get_gammas(tHMMobj, MSD, betas):
 
     for num, lO in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lO.output_lineage
-        MSDn = np.clip(MSD[num], np.finfo(float).eps, np.inf)
 
         for level in lO.output_list_of_gens[1:]:
             for cell in level:
@@ -40,7 +38,7 @@ def get_gammas(tHMMobj, MSD, betas):
                 for d in cell.get_daughters():
                     ci = lineage.index(d)
 
-                    coeffs = betas[num] / MSDn
+                    coeffs = betas[num] / np.clip(MSD[num], np.finfo(float).eps, np.inf)
                     beta_parent = np.clip(T @ coeffs[ci, :], np.finfo(float).eps, np.inf)
                     gammas[num][ci, :] = coeffs[ci, :] * np.matmul(gam / beta_parent, T)
     for gamm in gammas:

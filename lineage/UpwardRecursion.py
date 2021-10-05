@@ -50,7 +50,7 @@ def get_Marginal_State_Distributions(tHMMobj):
     return MSD
 
 
-def get_Emission_Likelihoods(tHMMobj, E=None):
+def get_Emission_Likelihoods(tHMMobj, E=None) -> list:
     """
     Emission Likelihood (EL) matrix.
 
@@ -65,7 +65,6 @@ def get_Emission_Likelihoods(tHMMobj, E=None):
     :param E: The emissions likelihood
     :type E: list
     :return: The marginal state distribution
-    :rtype: list
     """
     if E is None:
         E = tHMMobj.estimate.E
@@ -87,7 +86,7 @@ def get_Emission_Likelihoods(tHMMobj, E=None):
     return EL
 
 
-def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
+def get_leaf_Normalizing_Factors(tHMMobj, MSD: list, EL: list) -> list:
     """
     Normalizing factor (NF) matrix and base case at the leaves.
 
@@ -112,11 +111,8 @@ def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
     :param tHMMobj: A class object with properties of the lineages of cells
     :type tHMMobj: object
     :param EL: The emissions likelihood
-    :type EL: list
     :param MSD: The marginal state distribution P(z_n = k)
-    :type MSD: list
     :return: normalizing factor. The marginal observation distribution P(x_n = x)
-    :rtype: list
     """
 
     NF = []  # full Normalizing Factors holder
@@ -140,7 +136,7 @@ def get_leaf_Normalizing_Factors(tHMMobj, MSD, EL):
     return NF
 
 
-def get_leaf_betas(tHMMobj, MSD, EL, NF):
+def get_leaf_betas(tHMMobj, MSD: list, EL: list, NF: list) -> list:
     """
     Beta matrix and base case at the leaves.
 
@@ -165,13 +161,9 @@ def get_leaf_betas(tHMMobj, MSD, EL, NF):
     denominator is the Normalizing Factor.
     :param tHMMobj: A class object with properties of the lineages of cells
     :param MSD: The marginal state distribution P(z_n = k)
-    :type MSD: list
     :param EL: The emissions likelihood
-    :type EL: list
     :param NF: normalizing factor. The marginal observation distribution P(x_n = x)
-    :type NF: list
     :return: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
-    :rtype: list
     """
     betas = [np.zeros((len(lO.output_lineage), tHMMobj.num_states)) for lO in tHMMobj.X]  # full betas holder
 
@@ -185,7 +177,7 @@ def get_leaf_betas(tHMMobj, MSD, EL, NF):
     return betas
 
 
-def get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas):
+def get_nonleaf_NF_and_betas(tHMMobj, MSD: list, EL: list, NF: list, betas):
     """
     Traverses through each tree and calculates the
     beta value for each non-leaf cell. The normalizing factors (NFs)
@@ -197,11 +189,8 @@ def get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas):
 
     :param tHMMobj: A class object with properties of the lineages of cells
     :param MSD: The marginal state distribution P(z_n = k)
-    :type MSD: list
     :param EL: The emissions likelihood
-    :type EL: list
     :param NF: normalizing factor. The marginal observation distribution P(x_n = x)
-    :type NF: list
     :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
     :type betas: list of ndarray
     """
