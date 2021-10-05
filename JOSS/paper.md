@@ -7,21 +7,34 @@ tags:
   - heterogeneity
   - clustering
 authors:
-  - name: Adrian M. Price-Whelan^[co-first author] # note this makes a footnote saying 'co-first author'
-    orcid: 0000-0003-0872-7098
-    affiliation: "1, 2" # (Multiple affiliations must be quoted)
-  - name: Author Without ORCID^[co-first author] # note this makes a footnote saying 'co-first author'
+  - name: Farnaz Mohammadi
+    orcid: 0000-0002-0197-4670
+    affiliation: 1 # (Multiple affiliations must be quoted)
+  - name: Shakthi Visagan
+    orcid: 0000-0001-9295-2188
+    affiliation: 1
+  - name: Luka Karginov
+    orcid: 0000-0002-2455-1558
     affiliation: 2
-  - name: Author with no affiliation^[corresponding author]
-    affiliation: 3
+  - name: JC Lagarde
+    orcid: 0000-0002-3738-3119
+    affiliation: 1
+  - name: Aaron S. Meyer
+    orcid: 0000-0003-4513-1840
+    affiliation: "1, 3, 4, 5"
+
 affiliations:
- - name: Lyman Spitzer, Jr. Fellow, Princeton University
+ - name: Department of Bioengineering, University of California, Los Angeles
    index: 1
- - name: Institution Name
+ - name: Department of Bioengineering, University of Illinois, Urbana Champaign
    index: 2
- - name: Independent Researcher
+ - name: Department of Bioinformatics, University of California, Los Angeles
    index: 3
-date: 13 August 2017
+ - name: Jonsson Comprehensive Cancer Center, University of California, Los Angeles
+   index: 4
+ - name: Eli and Edythe Broad Center of Regenerative Medicine and Stem Cell Research, University of California, Los Angeles
+   index: 5
+date: 5 October 2021
 bibliography: paper.bib
 
 # Optional fields if submitting to a AAS journal too, see this blog post:
@@ -38,7 +51,7 @@ Cell plasticity, which is the ability of cells to reversibly alter their phenoty
 
 `tHMM` is a Python package for exploring phenotypic heterogeneity in single-cell lineage data. It leverages the well-known principles of hidden Markov models and is adjusted to work with lineage tree data [@durand]. `tHMM` clusters cells based on their measured phenotypes and relations with other cells for improved specificity in pinpointing the structure and dynamics of variability in drug response. Integrating this model with a modular interface for defining observed phenotypes allows the model to easily be adapted to any phenotype measured in single cells.
 
-To benchmark our model, we paired cell fate with either cell lifetimes or individual cell cycle phase lengths (G1 and S/G2) as our observed phenotypes on synthetic data and demonstrated that the model successfully classifies cells within experimentally tractable dataset sizes. As an application, we analyzed experimental measurements of cell fate and phase duration in cancer cell populations treated with chemotherapies to determine the number of distinct subpopulations [@thmm]. This `tHMM` framework allows for the flexible classification of not only single cell heterogeneity, but also any data in the form of lineage trees, such as ...?
+To benchmark our model, we paired cell fate with either cell lifetimes or individual cell cycle phase lengths (G1 and S/G2) as our observed phenotypes on synthetic data and demonstrated that the model successfully classifies cells within experimentally tractable dataset sizes. As an application, we analyzed experimental measurements of cell fate and phase duration in cancer cell populations treated with chemotherapies to determine the number of distinct subpopulations [@thmm]. This `tHMM` framework allows for the flexible classification of not only single cell heterogeneity, but also any data in the form of lineage trees, such as genetic mutations, linkage data, stock price, etc.
 
 # Mathematics
 
@@ -134,6 +147,9 @@ In the M-step, we find the maximum likelihood of the hidden Markov model distrib
 $$ \pi^*_k = \gamma_1(k)$$
 Similarly, the transition probability matrix is estimated by calculating the prevalence of each transition across the lineage trees:  
 $$ T^*_{i,j} = \frac{\sum_{n=1}^{N-1} \xi_n(i,j)}{\sum_{n=1}^{N-1} \gamma_n(i)} $$
+where
+$$ \xi_n{i,j} = (\frac{\gamma_{p(n)}(i)}{\frac{\beta_n(i)}{MSD(n,i)} T(i, j)})^T \times \frac{\beta_n(j)}{MSD(n,j)} $$
+and $T$ is initialized with a dirichlet function.
 
 # Acknowledgements
 

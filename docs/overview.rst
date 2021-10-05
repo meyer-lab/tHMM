@@ -4,13 +4,18 @@
 Authors: Shakthi Visagan, Farnaz Mohammadi, Nikan Namiri, Adam Wiener, Ali Farhat, Alex Lim, JC Lagarde, and Aaron Meyer, PhD
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We present a model to analyze populations of heterogeneous lineages, that is, lineages containing objects that belong to different states and can be clustered according to their different states. In particular, we study lineages of cells that present heterogeneous behaviour and observations. Some examples of possible input to our model are lineages of cells in a developmental sequence that start as undifferentiated stem cells and end up as clusters of differentiated cells or lineages of cells in a cancerous population rapidly differentiating over time growing resistance to different chemotherapies. We also present a way to computationally synthesize such populations.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+We present a model to analyze populations of cells where we have one or more phenotypic measurements from, such as cell lifetime, cell fates, cell shape, migration, etc.
+The data should be in the form of a lineage binary tree, where each node represents one cell with its measurements.
+We have provided a way to create synthetic data in the same format to test the performance of our model.
+tHMM uses expectation-maximization (EM) algorithm to cluster the cells based solely on their measurements and their relationship with other cells in a lineage.
+Each cluster, aka state, represents a sub-population of cells that belong to a distribution for their observations.
+For instance, considering cell lifetime as a measurement, cells that belong to state 1 have the lifetime duration that comes from a Gamma(s1, k1), and cells that belong to state2 have the lifetime duration that comes from a Gamma(s2, k2).
+This way, we can quantify phenotypic heterogeneity within a population of cells by revealing each cell's hidden state. Our model, incorporating the cell-cell relationship within each lineage is superior to other clustering methods such as K-means.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We first introduce how to synthesize these populations by working up from the basic unit, cells. We then introduce how to synthesize lineages, which are just hierarchical lineage tree groupings of cells based on their family history. Our model ultimately analyzes populations which are groups of one or more lineages that share the same states.
+We first introduce how to synthesize these populations by working up from the basic unit; cells. We then introduce how to synthesize lineages, which are just hierarchical lineage tree groupings of cells based on their family history. Our model ultimately analyzes populations which are groups of one or more lineages that share the same states.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
---------------
 
 1. Synthesizing Cells
 ---------------------
@@ -55,7 +60,7 @@ will deal with two states, i.e., :math:`K=2`.
     # T = np.array([[0.75, 0.25],
     #               [0.15, 0.85]], dtype="float")
     #
-    # Note that the rows of the transition matrix have to sum one because of the
+    # Note that the rows of the transition matrix have to sum one, because of the
     # Law of Total Probability and the Law of Conditional Probability. This will be
     # expanded on in a later notebook.
 
@@ -80,103 +85,48 @@ cells.
 
 .. code:: ipython3
 
-    from lineage.CellVar import CellVar as c, double
+    import numpy as np
+    from lineage.CellVar import CellVar as c
     # Question 3 will focus on the code written here.
-    parent_cell = c(state=0, left=None, right=None, parent=None, gen=1)
+    parent_cell = c(state=0, parent=None, gen=1)
+    T = np.array([[0.75, 0.25],
+                  [0.15, 0.85]], dtype="float")
     left_cell, right_cell = parent_cell.divide(T)
 
 --------------
 
-QUESTION 1:
-
-The transition matrix above is the two-dimensional Identity matrix. What
-does this imply about the transitions between cells that follow this
-transition process? Are there any transitions that go from state
-:math:`1` to state :math:`0`, what about from state :math:`0` to state
-:math:`1`? Show that you’re correct by printing out the states of all
-the cells involved. Write your answer and code below. Find the
-probability of transitioning from state :math:`0` to state :math:`0`, by
-accessing the element of the transition rate matrix that represents
-this.
-
-
-
-
-ANSWER 1:
-
 .. code:: ipython3
 
-    # The transition matrix being the identity matrix implies that the cells never transition between 
-    # different states because the probability of doing so is 0.
-    # The parent cell is state 0, so the daughters should also be state 0, because the probability of transitioning
-    # from state 0 to state 0 is 1.
-    
     print(parent_cell)
+    # <lineage.CellVar.CellVar object at 0x000001A685C55E10>
     print(left_cell, right_cell)
-    print(f"\nThe value of the element at (0,0) of the transition rate matrix is {T[0,0]},")
+    # <lineage.CellVar.CellVar object at 0x000001A6961B3EF0> <lineage.CellVar.CellVar object at 0x000001A69609C978>
+    print(f"\nThe value of the element at (0,0) of the transition rate matrix is {T[0,0]}")
+    # The value of the element at (0,0) of the transition rate matrix is 0.75
 
 --------------
-
-QUESTION 2:
 
 The ``gen`` argument for instantiating cells represents the generation
-of the cell. Are generations in the tHMM / lineage-growth codebase
-``0``-indexed or ``1``-indexed? (Do the generations of cell lineages
-start at ``0`` or ``1``?) Write your answer below.
+of the cell which start at 1.
 
-
-
-
-ANSWER 2:
-
-.. code:: ipython3
-
-    # The generations of cells start at 1. The 0-generation of a lineage contains the None.
 
 --------------
 
-QUESTION 3:
 
-``parent_cell``, ``left_cell``, and ``right_cell`` define a 3 cell
+``parent_cell``, ``left_cell``, and ``right_cell`` define a 3-cell
 lineage, with 2 generations. The first generation has one cell which was
 declared and can be accessed at ``parent_cell``. Calling the member
-function ``_divide`` on ``parent_cell`` created two new cells which can
+function ``divide`` on ``parent_cell`` created two new cells which can
 be accessed at ``left_cell`` and ``right_cell``. The daughter cells of
-any cell can also ALWAYS be accessed using “dot” notation, using the
-member variables, ``left`` and ``right``. Note that the division process
+any cell can also be accessed using “dot” notation, using the
+member variables, ``left`` and ``right``. The division process
 utilizes the transition matrix. Our code provides some very basic
-printing methods to print out cells. Verify that the object stored at
-the ``left_cell`` and ``right_cell`` variables are the same as the
-object referenced at ``parent_cell.left`` and ``parent_cell.right`` by
-printing out these variables or using ``assert`` statements.
-
-
-
-
-ANSWER 3:
+printing methods to print out cells. The following code verifies that the ``left_cell`` is actually the left daughter of ``parent_cell``.
 
 .. code:: ipython3
 
     # Use the `is` keyword to compare Python objects.
     assert left_cell is parent_cell.left
-    assert right_cell is parent_cell.right
-
---------------
-
-QUESTION 4:
-
-Check that ``left_cell.parent`` and ``right_cell.parent`` are equivalent
-to ``parent_cell`` by printing the cells out, just as you did in
-QUESTION 3.
-
-
-
-
-ANSWER 4:
-
-.. code:: ipython3
-
-    assert left_cell.parent is right_cell.parent is parent_cell
 
 --------------
 
@@ -230,9 +180,9 @@ extract from images of their cells, or test on synthetically created
 lineages. For example, if one is observing kinematics or physics, they
 might want to use the Gaussian distribution parameterized by a mean and
 covariance to model their observations (velocity, acceleration, etc.).
-If one wanted to model lifetimes of cell, one could utilize one of many
-of the exponential distributions with a nonnegative support to define
-time. These distributions can then be combined into a multivariate
+If one wanted to model lifetimes of cell, one could utilize a Gamma 
+distribution with a shape and scale parameter.
+These distributions can then be combined into a multivariate
 distribution.
 
 Ultimately, the user needs to provide three things based on the
@@ -244,16 +194,16 @@ phenotype they wish to observe, model, and predict:
 2. a *random variable*: a function that returns **random observations**
    from the distribution when given **parameters** describing the
    distribution
-3. a *estimator*: a function that returns **parameters** that describe a
+3. an *estimator*: a function that returns **parameters** that describe a
    distribution when given **random observations**
 
 These three things fundamentally define any probability distribution.
 
-An optional boolean function can be provided to “prune” or “censor”
+An optional boolean function can be provided to “censor”
 cells based on the observation. In our example, cells with a Bernoulli
-observation of :math:`0`, which implies that the cell died, are pruned
-from the tree. Another prune rule we’ve implemented is removing cells
-that were born after an experimental time.
+observation of :math:`0`, which implies that the cell died, are excluded
+from the tree. Another censoring rule we have implemented is removing cells
+that were born after an experimental end time.
 
 We have already built, as a starting example, a model that resembles
 lineage trees of cancer cells. In our synthetic model, our emissions are
@@ -273,7 +223,7 @@ as mentioned above,
 3. a estimator that returns a Bernoulli parameter and two gamma
    parameters when input multiple multivariate observations.
 
-Finally, we also define a prune rule, as explained previously.
+Finally, we also define a censoring rule, as explained previously.
 
 Ultimately, :math:`E` is defined as a :math:`K\times 1` size list of
 state distribution objects. These distribution objects are rich in what
@@ -289,12 +239,12 @@ instantiated via their parameters.
 
     # E: states are defined as StateDistribution objects
     
-    # State 0 parameters "Resistant"
-    bern_p0 = 0.99
-    gamma_a0 = 7
-    gamma_scale0 = 7
+    # State 0 parameters corresponding to the "Resistant" cells
+    bern_p0 = 0.99   # bernoulli distribution parameter
+    gamma_a0 = 7     # gamma distribution shape parameter
+    gamma_scale0 = 7 # gamma distribution scale parameter
     
-    # State 1 parameters "Susceptible"
+    # State 1 parameters corresponding to the "Susceptible" cells
     bern_p1 = 0.88
     gamma_a1 = 7
     gamma_scale1 = 1
@@ -305,16 +255,16 @@ instantiated via their parameters.
     E = [state_obj0, state_obj1]
 
 The final required parameters are more obvious. The first is the desired
-number of cells one would like in their full unpruned lineage tree. This
+number of cells one would like in their full uncensored lineage tree. This
 can be any number. Since one of our observations is time-based, we can
-also add a prune condition based on time as well. Ultimately, these
+also add a censoring condition based on time as well. Ultimately, these
 design choices are left up to the user to customize based on their state
 distribution type. Without loss of generality, we provide the following
-example of an ‘unpruned’ lineage tree.
+example of a full lineage tree.
 
 .. code:: ipython3
 
-    lineage1 = LineageTree(pi, T, E, desired_num_cells=2**5 - 1)
+    lineage1 = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=2**5 - 1)
     # These are the minimal arguments required to instantiate lineages
     print(lineage1)
     print("\n")
@@ -336,7 +286,7 @@ Analyzing our first full lineage
 Our project’s goal is to analyze heterogeneity. We packaged the main
 capability of our codebase into one function ``Analyze``, which runs the
 tree-hidden Markov Model on an appropriately formatted dataset. In the
-following example, we analyze the unrpuned lineage from above.
+following example, we analyze the full lineage from above.
 
 .. code:: ipython3
 
@@ -348,10 +298,9 @@ following example, we analyze the unrpuned lineage from above.
 Estimated Markov parameters (:math:`\pi`, :math:`T`, :math:`E`)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Let’s see how well our model estimated the parameters that created this
-lineage. Recall that the model is BLIND to the true states of the cells
-(unlike the code blocks above where we knew the identity of the cells
-(in terms of their state)). This model primarily has to segment or
+Our model is blind to the true states of the cells
+(unlike the code blocks above where we knew the identity of the cells, 
+in terms of their state). This model primarily has to segment or
 partition the tree and its cells into the number of states we think is
 present in our data, and then identify the parameters that describe each
 state’s distributions. We can not only check how well it estimated the

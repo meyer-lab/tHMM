@@ -1,5 +1,6 @@
 """ This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
 import numpy as np
+from typing import TypeVar, Generic
 from dataclasses import dataclass
 
 # temporary style guide:
@@ -11,13 +12,14 @@ from dataclasses import dataclass
 # Docstrings use """ and not '''.
 # Class names use camelCase.
 
+cell = TypeVar('cell')
 
-class CellVar:
+class CellVar(Generic[cell]):
     """
     Cell class.
     """
 
-    def __init__(self, parent, gen, **kwargs):
+    def __init__(self, parent: cell, gen: int, **kwargs):
         """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
@@ -32,7 +34,7 @@ class CellVar:
             self.right = kwargs.get("right", None)
             self.obs = kwargs.get("obs", [])
 
-    def divide(self, T):
+    def divide(self, T: np.ndarray):
         """
         Member function that performs division of a cell.
         Equivalent to adding another timestep in a Markov process.
@@ -47,7 +49,7 @@ class CellVar:
 
         return self.left, self.right
 
-    def isLeafBecauseTerminal(self):
+    def isLeafBecauseTerminal(self) -> bool:
         """
         Boolean.
         Returns true when a cell is a leaf with no children.
@@ -60,7 +62,7 @@ class CellVar:
         # otherwise, it has no left and right daughters
         return True
 
-    def isLeafBecauseDaughtersAreNotObserved(self):
+    def isLeafBecauseDaughtersAreNotObserved(self) -> bool:
         """
         Boolean.
         Returns true when a cell is a leaf because its children are unobserved
@@ -73,7 +75,7 @@ class CellVar:
         # otherwise, it itself is observed and at least one of its daughters is observed
         return False
 
-    def isLeaf(self):
+    def isLeaf(self) -> bool:
         """
         Boolean.
         Returns true when a cell is a leaf defined by the two conditions that determine
@@ -82,7 +84,7 @@ class CellVar:
         """
         return self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreNotObserved()
 
-    def isRootParent(self):
+    def isRootParent(self) -> bool:
         """
         Boolean.
         Returns true if this cell is the first cell in a lineage.
@@ -92,7 +94,7 @@ class CellVar:
 
         return False
 
-    def get_sister(self):
+    def get_sister(self) -> cell:
         """
         Member function that gets the sister of the current cell.
         """
@@ -103,7 +105,7 @@ class CellVar:
             cell_to_return = self.parent.left
         return cell_to_return
 
-    def get_root_cell(self):
+    def get_root_cell(self) -> cell:
         """
         Get the first cell in the lineage to which this cell belongs.
         """
@@ -113,7 +115,7 @@ class CellVar:
         assert curr_cell.isRootParent()
         return curr_cell
 
-    def get_daughters(self):
+    def get_daughters(self) -> list:
         """
         Get the left and right daughters of a cell if they exist.
         """
@@ -126,20 +128,20 @@ class CellVar:
         return temp
 
 
-def tree_recursion(cell, subtree):
+def tree_recursion(Cell: cell, subtree: list) -> None:
     """
     A recursive helper function that traverses upwards from the leaf to the root.
     """
-    if cell.isLeaf():
+    if Cell.isLeaf():
         return
-    subtree.append(cell.left)
-    subtree.append(cell.right)
-    tree_recursion(cell.left, subtree)
-    tree_recursion(cell.right, subtree)
+    subtree.append(Cell.left)
+    subtree.append(Cell.right)
+    tree_recursion(Cell.left, subtree)
+    tree_recursion(Cell.right, subtree)
     return
 
 
-def get_subtrees(node, lineage):
+def get_subtrees(node: cell, lineage: list):
     """
     Given one cell, return the subtree of that cell,
     and return all the tree other than that subtree.
@@ -150,14 +152,14 @@ def get_subtrees(node, lineage):
     return subtree, not_subtree
 
 
-def find_two_subtrees(cell, lineage):
+def find_two_subtrees(Cell: cell, lineage: list):
     """
     Gets the left and right subtrees from a cell.
     """
-    if cell.isLeaf():
+    if Cell.isLeaf():
         return None, None, lineage
-    left_sub, _ = get_subtrees(cell.left, lineage)
-    right_sub, _ = get_subtrees(cell.right, lineage)
+    left_sub, _ = get_subtrees(Cell.left, lineage)
+    right_sub, _ = get_subtrees(Cell.right, lineage)
     neither_subtree = [node for node in lineage if node not in left_sub and node not in right_sub]
     return left_sub, right_sub, neither_subtree
 
