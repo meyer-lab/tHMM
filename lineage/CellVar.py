@@ -34,7 +34,7 @@ class CellVar(Generic[cell]):
             self.right = kwargs.get("right", None)
             self.obs = kwargs.get("obs", [])
 
-    def divide(self, T: np.ndarray):
+    def divide(self, T: np.ndarray[float]):
         """
         Member function that performs division of a cell.
         Equivalent to adding another timestep in a Markov process.
