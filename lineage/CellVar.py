@@ -1,17 +1,17 @@
 """ This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
 import numpy as np
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, Tuple
 from dataclasses import dataclass
 
 
-cell = TypeVar('cell')
+cellType = TypeVar('cellType')
 
-class CellVar(Generic[cell]):
+class CellVar(Generic[cellType]):
     """
     Cell class.
     """
 
-    def __init__(self, parent: cell, gen: int, **kwargs):
+    def __init__(self, parent: cellType, gen: int, **kwargs):
         """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
@@ -26,7 +26,7 @@ class CellVar(Generic[cell]):
             self.right = kwargs.get("right", None)
             self.obs = kwargs.get("obs", [])
 
-    def divide(self, T: np.ndarray):
+    def divide(self, T: np.ndarray) -> Tuple[cellType, cellType]:
         """
         Member function that performs division of a cell.
         Equivalent to adding another timestep in a Markov process.
@@ -86,7 +86,7 @@ class CellVar(Generic[cell]):
 
         return False
 
-    def get_sister(self) -> cell:
+    def get_sister(self) -> cellType:
         """
         Member function that gets the sister of the current cell.
         """
@@ -97,7 +97,7 @@ class CellVar(Generic[cell]):
             cell_to_return = self.parent.left
         return cell_to_return
 
-    def get_root_cell(self) -> cell:
+    def get_root_cell(self) -> cellType:
         """
         Get the first cell in the lineage to which this cell belongs.
         """
@@ -120,20 +120,20 @@ class CellVar(Generic[cell]):
         return temp
 
 
-def tree_recursion(Cell: cell, subtree: list) -> None:
+def tree_recursion(cell: cellType, subtree: list) -> None:
     """
     A recursive helper function that traverses upwards from the leaf to the root.
     """
-    if Cell.isLeaf():
+    if cell.isLeaf():
         return
-    subtree.append(Cell.left)
-    subtree.append(Cell.right)
-    tree_recursion(Cell.left, subtree)
-    tree_recursion(Cell.right, subtree)
+    subtree.append(cell.left)
+    subtree.append(cell.right)
+    tree_recursion(cell.left, subtree)
+    tree_recursion(cell.right, subtree)
     return
 
 
-def get_subtrees(node: cell, lineage: list):
+def get_subtrees(node: cellType, lineage: list) -> Tuple[list, list]:
     """
     Given one cell, return the subtree of that cell,
     and return all the tree other than that subtree.
@@ -144,14 +144,14 @@ def get_subtrees(node: cell, lineage: list):
     return subtree, not_subtree
 
 
-def find_two_subtrees(Cell: cell, lineage: list):
+def find_two_subtrees(cell: cellType, lineage: list) -> Tuple[list, list, list]:
     """
     Gets the left and right subtrees from a cell.
     """
-    if Cell.isLeaf():
+    if cell.isLeaf():
         return None, None, lineage
-    left_sub, _ = get_subtrees(Cell.left, lineage)
-    right_sub, _ = get_subtrees(Cell.right, lineage)
+    left_sub, _ = get_subtrees(cell.left, lineage)
+    right_sub, _ = get_subtrees(cell.right, lineage)
     neither_subtree = [node for node in lineage if node not in left_sub and node not in right_sub]
     return left_sub, right_sub, neither_subtree
 
