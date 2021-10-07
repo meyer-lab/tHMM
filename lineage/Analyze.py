@@ -14,7 +14,7 @@ class DummyExecutor(Executor):
         return f
 
 
-def Analyze(X: list, num_states: int, **kwargs) -> Tuple[list[tHMM], list[list], float]:
+def Analyze(X: list, num_states: int, **kwargs) -> Tuple[tHMMclass, int, float]:
     """ Runs a tHMM and outputs the tHMM object, state assignments, and likelihood. """
     tHMMobj_list, st, LL = Analyze_list([X], num_states, **kwargs)
     return tHMMobj_list[0], st[0], LL
