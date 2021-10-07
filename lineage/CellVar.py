@@ -12,8 +12,9 @@ class CellVar(Generic[cellType]):
     """
 
     def __init__(self, parent: cellType, gen: int, **kwargs):
-        """Instantiates the cell object.
-        Contains memeber variables that identify daughter cells
+        """
+        Instantiates the cell object.
+        Contains member variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
         """
         self.parent = parent
