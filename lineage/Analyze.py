@@ -3,8 +3,8 @@ import itertools
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor, Future, Executor
 from sklearn.metrics import balanced_accuracy_score
-from .tHMM import tHMM, fit_list
-
+from .tHMM import tHMM, fit_list, tHMMclass
+from typing import Tuple
 
 class DummyExecutor(Executor):
     def submit(self, fn, *args, **kwargs):
@@ -14,13 +14,13 @@ class DummyExecutor(Executor):
         return f
 
 
-def Analyze(X, num_states, **kwargs):
+def Analyze(X: list, num_states: int, **kwargs) -> Tuple[list[tHMM], list[list], float]:
     """ Runs a tHMM and outputs the tHMM object, state assignments, and likelihood. """
     tHMMobj_list, st, LL = Analyze_list([X], num_states, **kwargs)
     return tHMMobj_list[0], st[0], LL
 
 
-def Analyze_list(Population_list, num_states, **kwargs):
+def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list, list, float]:
     """ This function runs the analyze for the case when we want to fit the experimental data. (fig 11)"""
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
     _, _, _, _, LL = fit_list(tHMMobj_list)
@@ -38,7 +38,7 @@ def Analyze_list(Population_list, num_states, **kwargs):
     return tHMMobj_list, pred_states_by_lineage_by_conc, LL
 
 
-def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=False, **kwargs):
+def run_Analyze_over(list_of_populations: list, num_states: int, parallel=True, atonce=False, **kwargs) -> list:
     """
     A function that can be parallelized to speed up figure creation.
 
@@ -49,11 +49,6 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=Fals
     rest of the code involved in figure creation deals with collecting
     and computing certain statistics, most of which can be done in an
     additional for loop over the results from Analyze.
-
-    :param list_of_populations: A list of populations that contain lineages.
-    :type: list
-    :param num_states: An integer number of states to identify (a hyper-parameter of our model)
-    :type num_states: Int or list
     """
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
@@ -82,7 +77,7 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=Fals
     return output
 
 
-def Results(tHMMobj, pred_states_by_lineage, LL):
+def Results(tHMMobj: tHMMclass, pred_states_by_lineage: list, LL: float) -> dict:
     """
     This function calculates several results of fitting a synthetic lineage.
     """
@@ -157,12 +152,10 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     return results_dict
 
 
-def run_Results_over(output, parallel=True):
+def run_Results_over(output: list, parallel=True) -> list:
     """
-    A function that can be parallelized to speed up figure creation
-
-    :param output: a list of tuples from the results of running :func:`run_Analyze_over`
-    :type output: list
+    A function that can be parallelized to speed up figure creation.
+    Output is a list of tuples from the results of running :func:`run_Analyze_over`
     """
     if parallel:
         exe = ProcessPoolExecutor()

@@ -7,7 +7,7 @@ import scipy.stats as sp
 from .UpwardRecursion import get_Emission_Likelihoods
 from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step, do_M_E_step_atonce
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
-
+from typing import TypeVar, Generic
 
 class estimate:
     """Estimation class.
@@ -35,8 +35,9 @@ class estimate:
         else:
             self.E = self.fE
 
+tHMMclass = TypeVar('tHMMclass')
 
-class tHMM:
+class tHMM(Generic[tHMMclass]):
     """Main tHMM class.
     """
 
