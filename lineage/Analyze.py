@@ -79,7 +79,11 @@ def run_Analyze_over(list_of_populations: list, num_states: int, parallel=True, 
 
 def Results(tHMMobj: tHMMclass, pred_states_by_lineage: list, LL: float) -> dict:
     """
-    This function calculates several results of fitting a synthetic lineage.
+    This function calculates several results of fitting a synthetic lineage and stores it in a dictionary.
+    The dictionary contains the total number of lineages, the log likelihood of state assignments, and
+    the total number of cells. It also contains metrics such as the accuracy of state assignment predictions,
+    the distance between two distributions, and the Wasserstein distance between two states.
+
     """
     # Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
     results_dict = {}
