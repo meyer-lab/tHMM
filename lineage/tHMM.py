@@ -2,12 +2,14 @@
 
 from copy import deepcopy
 import numpy as np
+from typing import TypeVar, Tuple
 import scipy.stats as sp
 
 from .UpwardRecursion import get_Emission_Likelihoods
 from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step, do_M_E_step_atonce
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 
+linType = TypeVar('linType')
 
 class estimate:
     """Estimation class.
@@ -88,7 +90,7 @@ class tHMM:
         pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
         return pred_states_by_lineage
 
-    def get_BIC(self, LL: float, num_cells: int, atonce=False):
+    def get_BIC(self, LL: float, num_cells: int, atonce=False) -> Tuple[float, float]:
         """
         Gets the BIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.
@@ -147,7 +149,7 @@ class tHMM:
         return log_scores
 
 
-def log_T_score(T, state_tree_sequence: list, lineageObj) -> float:
+def log_T_score(T, state_tree_sequence: list, lineageObj: linType) -> float:
     """
     To calculate the joint probability of state and observations.
     This function calculates the second term.

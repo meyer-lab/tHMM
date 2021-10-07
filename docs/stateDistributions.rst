@@ -9,8 +9,7 @@ distributions/parameters. Just as a state can be defined in whatever way
 one desires, so can the distributions - typically as some type of
 physical observation/phenotype.
 
-Review the StateDistribution class below. Note that this particular
-distribution uses two separate distributions corresponding to two
+The following Emissions is composed of two separate distributions corresponding to two
 different measurements a particular cell can have - a bernoulli variable
 to define whether the cell lives or dies, and gamma variables to define
 cell lifetime. In this case, they are independent of each other, but
