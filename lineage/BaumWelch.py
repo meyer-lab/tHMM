@@ -2,7 +2,6 @@
 import numpy as np
 from typing import Tuple
 
-from .tHMM import tHMMclass
 from .LineageTree import lineageClass
 from .UpwardRecursion import (
     get_Marginal_State_Distributions,

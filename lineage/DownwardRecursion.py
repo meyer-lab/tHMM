@@ -2,7 +2,6 @@
 
 import numpy as np
 
-from .tHMM import tHMMclass
 from .LineageTree import lineageClass
 
 
