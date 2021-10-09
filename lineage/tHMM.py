@@ -2,14 +2,13 @@
 
 from copy import deepcopy
 import numpy as np
-from typing import TypeVar, Tuple, Generic
+from typing import TypeVar, Tuple
 import scipy.stats as sp
 
 from .UpwardRecursion import get_Emission_Likelihoods
 from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step, do_M_E_step_atonce
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 
-tHMMclass = TypeVar('tHMMclass')
 
 class estimate:
     """Estimation class.
@@ -46,10 +45,11 @@ class estimate:
             self.E = self.fE
 
 
-class tHMM(Generic[tHMMclass]):
+class tHMM():
     """Main tHMM class.
     """
 
+    tHMMclass = TypeVar('tHMMclass')
     def __init__(self, X: list, num_states: int, fpi=None, fT=None, fE=None):
         """Instantiates a tHMM.
         This function uses the following functions and assings them to the cells

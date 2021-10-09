@@ -1,15 +1,14 @@
 """ This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
 import numpy as np
-from typing import TypeVar, Generic, Tuple
+from typing import TypeVar, Tuple
 from dataclasses import dataclass
 
 
-cellType = TypeVar('cellType')
-
-class CellVar(Generic[cellType]):
+class CellVar():
     """
     Cell class.
     """
+    cellType = TypeVar('cellType')
 
     def __init__(self, parent: cellType, gen: int, **kwargs):
         """Instantiates the cell object.

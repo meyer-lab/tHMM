@@ -1,13 +1,12 @@
 """ This file contains the LineageTree class. """
 import numpy as np
 import operator
-from typing import TypeVar, Generic, Tuple
+from typing import TypeVar, Tuple
 
 from .CellVar import CellVar
 
-lineageClass = TypeVar('lineageClass')
 
-class LineageTree(Generic[lineageClass]):
+class LineageTree():
     """A class for lineage trees.
     Every lineage object from this class is a binary tree built based on initial probabilities,
     transition probabilities, and emissions defined by state distributions given by the user.
@@ -16,6 +15,7 @@ class LineageTree(Generic[lineageClass]):
     observations based on their states by sampling observations from their emission distributions.
     The lineage tree is then censord based on the censor condition.
     """
+    lineageClass = TypeVar('lineageClass')
 
     def __init__(self, list_of_cells: list, E: list):
         self.E = E
