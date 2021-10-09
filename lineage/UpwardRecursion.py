@@ -1,8 +1,9 @@
 """This file contains the methods that completes the downward recursion and evaulates the beta values."""
 
 import numpy as np
+from typing import TypeVar
 
-from .tHMM import tHMMclass
+tHMMclass = TypeVar('tHMMclass')
 
 def get_Marginal_State_Distributions(tHMMobj: tHMMclass):
     r"""Marginal State Distribution (MSD) matrix and recursion.

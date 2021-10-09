@@ -26,7 +26,7 @@ class LineageTree(Generic[lineageClass]):
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
 
     @classmethod
-    def init_from_parameters(cls, pi: np.array, T: np.ndarray, E: list, desired_num_cells: float, censor_condition=0, **kwargs) -> linType:
+    def init_from_parameters(cls, pi: np.array, T: np.ndarray, E: list, desired_num_cells: float, censor_condition=0, **kwargs) -> lineageClass:
         r"""
         Constructor method
 
