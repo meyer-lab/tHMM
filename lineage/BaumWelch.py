@@ -2,7 +2,6 @@
 import numpy as np
 from typing import Tuple
 
-from .LineageTree import lineageClass
 from .UpwardRecursion import (
     get_Marginal_State_Distributions,
     get_Emission_Likelihoods,
@@ -19,7 +18,7 @@ from .DownwardRecursion import (
 from .states.StateDistributionGamma import atonce_estimator
 
 
-def do_E_step(tHMMobj: tHMMclass) -> Tuple[list, list, list, list]:
+def do_E_step(tHMMobj) -> Tuple[list, list, list, list]:
     """
     Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
 
@@ -68,7 +67,7 @@ def calculate_stationary(T: np.ndarray):
     return w / np.sum(w)
 
 
-def do_M_step(tHMMobj: tHMMclass, MSD: list, betas: list, gammas: list):
+def do_M_step(tHMMobj, MSD: list, betas: list, gammas: list):
     """
     Calculates the maximization step of the Baum Welch algorithm
     given output of the expectation step.
@@ -119,7 +118,7 @@ def do_M_step(tHMMobj: tHMMclass, MSD: list, betas: list, gammas: list):
             do_M_E_step_atonce(tHMMobj, gammas)
 
 
-def do_M_pi_step(tHMMobj: tHMMclass, gammas: list):
+def do_M_pi_step(tHMMobj, gammas: list):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -139,7 +138,7 @@ def do_M_pi_step(tHMMobj: tHMMclass, gammas: list):
     return pi_e / np.sum(pi_e)
 
 
-def do_M_T_step(tHMMobj: tHMMclass, MSD: list, betas: list, gammas: list):
+def do_M_T_step(tHMMobj, MSD: list, betas: list, gammas: list):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -172,7 +171,7 @@ def do_M_T_step(tHMMobj: tHMMclass, MSD: list, betas: list, gammas: list):
     return T_estimate
 
 
-def do_M_E_step(tHMMobj: tHMMclass, gammas: list):
+def do_M_E_step(tHMMobj, gammas: list):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -212,7 +211,7 @@ def do_M_E_step_atonce(all_tHMMobj: list, all_gammas: list):
         atonce_estimator(all_tHMMobj, G2cells, gammas_1st, "G2", j)  # [shape, scale1, scale2, scale3, scale4] for G2
 
 
-def get_all_zetas(lineageObj: lineageClass, beta_array: np.ndarray, MSD_array: np.ndarray, gamma_array: np.ndarray, T: np.ndarray) -> np.ndarray:
+def get_all_zetas(lineageObj, beta_array: np.ndarray, MSD_array: np.ndarray, gamma_array: np.ndarray, T: np.ndarray) -> np.ndarray:
     """
     Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
     This is an inner component in calculating the overall transition probability matrix.

@@ -2,10 +2,8 @@
 
 import numpy as np
 
-from .LineageTree import lineageClass
 
-
-def get_gammas(tHMMobj: tHMMclass, MSD: list, betas: list) -> list:
+def get_gammas(tHMMobj, MSD: list, betas: list) -> list:
     """
     Get the gammas for all other nodes using recursion from the root nodes.
     The conditional probability of states, given the observation of the whole tree P(z_n = k | X_bar = x_bar)
@@ -46,7 +44,7 @@ def get_gammas(tHMMobj: tHMMclass, MSD: list, betas: list) -> list:
     return gammas
 
 
-def sum_nonleaf_gammas(lineageObj: lineageClass, gamma_arr: np.ndarray) -> np.ndarray:
+def sum_nonleaf_gammas(lineageObj, gamma_arr: np.ndarray) -> np.ndarray:
     """
     Sum of the gammas of the cells that are able to divide, that is,
     sum the of the gammas of all the nonleaf cells. It is used in estimating the transition probability matrix.
