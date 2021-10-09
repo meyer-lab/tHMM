@@ -4,7 +4,6 @@ import scipy.stats as sp
 from typing import Generic, TypeVar, Union
 
 from .stateCommon import gamma_estimator, gamma_estimator_atonce, basic_censor
-from ..CellVar import Time, cellType
 
 StateType = TypeVar('StateType')
 
@@ -166,7 +165,7 @@ class StateDistribution(Generic[StateType]):
         return output_lineage
 
 
-def fate_censor(cell: cellType):
+def fate_censor(cell):
     """
     Checks whether a cell has died based on its fate, and if so, it will remove its subtree.
     Our example is based on the standard requirement that the first observation
@@ -178,7 +177,7 @@ def fate_censor(cell: cellType):
             cell.right.observed = False
 
 
-def time_censor(cell: cellType, desired_experiment_time: Union[int, float]):
+def time_censor(cell, desired_experiment_time: Union[int, float]):
     """
     Checks whether a cell has lived beyond the experiment end time and if so, it will remove its subtree.
     Our example is based on the standard requirement that the second observation

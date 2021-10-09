@@ -149,7 +149,7 @@ class tHMM(Generic[tHMMclass]):
         return log_scores
 
 
-def log_T_score(T, state_tree_sequence: list, lineageObj: lineageClass) -> float:
+def log_T_score(T, state_tree_sequence: list, lineageObj) -> float:
     """
     To calculate the joint probability of state and observations.
     This function calculates the second term.
