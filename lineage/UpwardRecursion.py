@@ -20,9 +20,7 @@ def get_Marginal_State_Distributions(tHMMobj):
 
     :math:`P(z_u = k) = \sum_j(Transition(j -> k) * P(parent_{cell_u}) = j)`
     :param tHMMobj: A class object with properties of the lineages of cells
-    :type tHMMobj: object
     :return: The marginal state distribution
-    :rtype: list
     """
     MSD = [np.zeros((len(lO.output_lineage), tHMMobj.num_states)) for lO in tHMMobj.X]
     np.testing.assert_almost_equal(np.sum(tHMMobj.estimate.pi), 1.0)
@@ -48,7 +46,7 @@ def get_Marginal_State_Distributions(tHMMobj):
     return MSD
 
 
-def get_Emission_Likelihoods(tHMMobj, E=None)->list:
+def get_Emission_Likelihoods(tHMMobj, E=None):
     """
     Emission Likelihood (EL) matrix.
 
@@ -134,7 +132,7 @@ def get_leaf_Normalizing_Factors(tHMMobj, MSD: list, EL: list) -> list:
     return NF
 
 
-def get_leaf_betas(tHMMobj, MSD: list, EL: list, NF: list) -> list:
+def get_leaf_betas(tHMMobj, MSD: list, EL: list, NF: list):
     r"""Beta matrix and base case at the leaves.
 
     Each element in this N by K matrix is the beta value
