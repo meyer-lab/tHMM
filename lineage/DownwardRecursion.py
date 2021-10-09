@@ -2,8 +2,11 @@
 
 import numpy as np
 
+from .tHMM import tHMMclass
+from .LineageTree import lineageClass
 
-def get_gammas(tHMMobj, MSD, betas) -> list:
+
+def get_gammas(tHMMobj: tHMMclass, MSD: list, betas: list) -> list:
     """
     Get the gammas for all other nodes using recursion from the root nodes.
     The conditional probability of states, given the observation of the whole tree P(z_n = k | X_bar = x_bar)
@@ -12,12 +15,9 @@ def get_gammas(tHMMobj, MSD, betas) -> list:
     gamma_n (k) = P(z_n = k | X_bar = x_bar)
 
     :param tHMMobj: A class object with properties of the lineages of cells
-    :type tHMMobj: object
     :param MSD: The marginal state distribution P(z_n = k)
-    :type MSD: list
     :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
     :type betas: list of ndarray
-    :return: gammas list
     """
     T = tHMMobj.estimate.T
     gammas = []
@@ -47,18 +47,15 @@ def get_gammas(tHMMobj, MSD, betas) -> list:
     return gammas
 
 
-def sum_nonleaf_gammas(lineageObj, gamma_arr):
+def sum_nonleaf_gammas(lineageObj: lineageClass, gamma_arr: np.ndarray) -> np.ndarray:
     """
     Sum of the gammas of the cells that are able to divide, that is,
     sum the of the gammas of all the nonleaf cells. It is used in estimating the transition probability matrix.
     This is an inner component in calculating the overall transition probability matrix.
 
     :param lineageObj: the object of lineage tree
-    :type lineageObj: object
     :param gamma_arr: the gamma values for each lineage
-    :type gamma_arr: ndarray
     :return: the sum of gamma values for each state for non-leaf cells.
-    :rtype: ndarray
     """
     holder_wo_leaves = np.zeros(gamma_arr.shape[1])
     for level in lineageObj.output_list_of_gens[1:]:  # sum the gammas for cells that are transitioning

@@ -2,10 +2,10 @@
 
 import numpy as np
 
+from .tHMM import tHMMclass
 
-def get_Marginal_State_Distributions(tHMMobj):
-    r"""
-    Marginal State Distribution (MSD) matrix and recursion.
+def get_Marginal_State_Distributions(tHMMobj: tHMMclass):
+    r"""Marginal State Distribution (MSD) matrix and recursion.
     This is the probability that a hidden state variable :math:`z_n` is of
     state k, that is, each value in the N by K MSD array for each lineage is
     the probability
@@ -50,7 +50,7 @@ def get_Marginal_State_Distributions(tHMMobj):
     return MSD
 
 
-def get_Emission_Likelihoods(tHMMobj, E=None) -> list:
+def get_Emission_Likelihoods(tHMMobj: tHMMclass, E=None)->list:
     """
     Emission Likelihood (EL) matrix.
 
@@ -86,7 +86,7 @@ def get_Emission_Likelihoods(tHMMobj, E=None) -> list:
     return EL
 
 
-def get_leaf_Normalizing_Factors(tHMMobj, MSD: list, EL: list) -> list:
+def get_leaf_Normalizing_Factors(tHMMobj: tHMMclass, MSD: list, EL: list) -> list:
     """
     Normalizing factor (NF) matrix and base case at the leaves.
 
@@ -137,8 +137,7 @@ def get_leaf_Normalizing_Factors(tHMMobj, MSD: list, EL: list) -> list:
 
 
 def get_leaf_betas(tHMMobj, MSD: list, EL: list, NF: list) -> list:
-    """
-    Beta matrix and base case at the leaves.
+    r"""Beta matrix and base case at the leaves.
 
     Each element in this N by K matrix is the beta value
     for each cell and at each state. In particular, this
@@ -177,7 +176,7 @@ def get_leaf_betas(tHMMobj, MSD: list, EL: list, NF: list) -> list:
     return betas
 
 
-def get_nonleaf_NF_and_betas(tHMMobj, MSD: list, EL: list, NF: list, betas):
+def get_nonleaf_NF_and_betas(tHMMobj: tHMMclass, MSD: list, EL: list, NF: list, betas):
     """
     Traverses through each tree and calculates the
     beta value for each non-leaf cell. The normalizing factors (NFs)

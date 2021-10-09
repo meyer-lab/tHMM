@@ -24,11 +24,11 @@ that may not always be the case.
     from numba import njit
     import scipy.special as sc
     from scipy.optimize import brentq
-    
-    
+
+
     from lineage.states.stateCommon import bern_pdf, bernoulli_estimator
-    
-    
+
+
     class StateDistribution:
         def __init__(self, bern_p, gamma_a, gamma_scale):
             """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """

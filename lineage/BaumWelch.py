@@ -1,6 +1,9 @@
 """ Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch. """
 import numpy as np
+from typing import Tuple
 
+from .tHMM import tHMMclass
+from .LineageTree import lineageClass
 from .UpwardRecursion import (
     get_Marginal_State_Distributions,
     get_Emission_Likelihoods,
@@ -17,20 +20,15 @@ from .DownwardRecursion import (
 from .states.StateDistributionGamma import atonce_estimator
 
 
-def do_E_step(tHMMobj):
+def do_E_step(tHMMobj: tHMMclass) -> Tuple[list, list, list, list]:
     """
     Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
 
-    :param tHMMobj: A class object with properties of the lineages of cells
-    :type tHMMobj: object
+    :param tHMMobj: A tHMM object with properties of the lineages of cells, such as 
     :return MSD: Marginal state distribution
-    :rtype MSD: list
     :return NF: normalizing factor
-    :rtype NF: list
     :return betas: beta values (conditional probability of cell states given cell observations)
-    :rtype betas: list
     :return gammas: gamma values (used to calculate the downward reursion)
-    :rtype gammas: list
     """
     MSD = get_Marginal_State_Distributions(tHMMobj)
     EL = get_Emission_Likelihoods(tHMMobj)
@@ -55,7 +53,7 @@ def calculate_log_likelihood(NF: list):
     return np.array([sum(np.log(arr)) for arr in NF])
 
 
-def calculate_stationary(T):
+def calculate_stationary(T: np.ndarray):
     """
     Calculate the stationary distribution of states from T.
     Note that this does not take into account potential influences of the emissions.
@@ -71,7 +69,7 @@ def calculate_stationary(T):
     return w / np.sum(w)
 
 
-def do_M_step(tHMMobj, MSD: list, betas: list, gammas: list):
+def do_M_step(tHMMobj: tHMMclass, MSD: list, betas: list, gammas: list):
     """
     Calculates the maximization step of the Baum Welch algorithm
     given output of the expectation step.
@@ -122,7 +120,7 @@ def do_M_step(tHMMobj, MSD: list, betas: list, gammas: list):
             do_M_E_step_atonce(tHMMobj, gammas)
 
 
-def do_M_pi_step(tHMMobj, gammas: list):
+def do_M_pi_step(tHMMobj: tHMMclass, gammas: list):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -142,7 +140,7 @@ def do_M_pi_step(tHMMobj, gammas: list):
     return pi_e / np.sum(pi_e)
 
 
-def do_M_T_step(tHMMobj, MSD: list, betas: list, gammas: list):
+def do_M_T_step(tHMMobj: tHMMclass, MSD: list, betas: list, gammas: list):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -175,7 +173,7 @@ def do_M_T_step(tHMMobj, MSD: list, betas: list, gammas: list):
     return T_estimate
 
 
-def do_M_E_step(tHMMobj, gammas: list):
+def do_M_E_step(tHMMobj: tHMMclass, gammas: list):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -215,23 +213,17 @@ def do_M_E_step_atonce(all_tHMMobj: list, all_gammas: list):
         atonce_estimator(all_tHMMobj, G2cells, gammas_1st, "G2", j)  # [shape, scale1, scale2, scale3, scale4] for G2
 
 
-def get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T):
+def get_all_zetas(lineageObj: lineageClass, beta_array: np.ndarray, MSD_array: np.ndarray, gamma_array: np.ndarray, T: np.ndarray) -> np.ndarray:
     """
     Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
     This is an inner component in calculating the overall transition probability matrix.
 
     :param lineageObj: the lineage tree of cells
-    :type lineageObj: object
     :param beta_array: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
-    :type beta_array: ndarray
     :param MSD_array: marginal state distribution
-    :type MSD_array: ndarray
     :param gamma_array: gamma values. The conditional probability of states, given the observation of the whole tree
-    :type gamma_array: ndarray
     :param T: transition probability matrix
-    :type T: ndarray
     :return: numerator for calculating the transition probabilities
-    :rtype: ndarray
     """
     assert MSD_array.shape[1] == gamma_array.shape[1] == beta_array.shape[1], "Number of states in tHMM object mismatched!"
     betaMSD = beta_array / np.clip(MSD_array, np.finfo(float).eps, np.inf)

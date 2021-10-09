@@ -1,13 +1,13 @@
 """ This file contains the LineageTree class. """
 import numpy as np
 import operator
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, Tuple
 
 from .CellVar import CellVar
 
-linType = TypeVar('linType')
+lineageClass = TypeVar('lineageClass')
 
-class LineageTree(Generic[linType]):
+class LineageTree(Generic[lineageClass]):
     """A class for lineage trees.
     Every lineage object from this class is a binary tree built based on initial probabilities,
     transition probabilities, and emissions defined by state distributions given by the user.
@@ -26,20 +26,15 @@ class LineageTree(Generic[linType]):
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
 
     @classmethod
-    def init_from_parameters(cls, pi, T, E, desired_num_cells, censor_condition=0, **kwargs):
+    def init_from_parameters(cls, pi: np.array, T: np.ndarray, E: list, desired_num_cells: float, censor_condition=0, **kwargs) -> linType:
         r"""
         Constructor method
 
         :param :math:`\pi`: The initial probability matrix; its shape must be the same as the number of states and all of them must sum up to 1.
-        :type :math:`\pi`: Array
         :param T: The transition probability matrix; every row must sum up to 1.
-        :type T: square Matrix
         :param E: A list containing state distribution objects, the length of it is the same as the number of states.
-        :type E: list
         :param desired_num_cells: The desired number of cells we want the lineage to end up with.
-        :type desired_num_cells: Int
         :param censor_condition: An integer :math:`\in` \{0, 1, 2, 3\} that decides the type of censoring.
-        :type censor_condition: Int
 
         Censoring guide
         - 0 means no pruning
@@ -84,14 +79,12 @@ class LineageTree(Generic[linType]):
 
         return lineageObj
 
-    def get_parents_for_level(self, level):
+    def get_parents_for_level(self, level: list) -> set:
         """Get the parents's index of a generation in the population list.
         Given the generation level, this function returns the index of parent cells of the cells being in that generation level.
 
         :param level: A list containing cells in a specific generation level.
-        :type level: list
         :return: A set holding the parents' indexes of cells in a given generation.
-        :rtype: set
         """
         parent_holder = set()  # set makes sure only one index is put in and no overlap
         for cell in level:
@@ -105,7 +98,7 @@ class LineageTree(Generic[linType]):
         return len(self.output_lineage)
 
 
-def generate_lineage_list(pi, T, desired_num_cells):
+def generate_lineage_list(pi: np.array, T: np.ndarray, desired_num_cells: int) -> list:
     """
     Generates a single lineage tree given Markov variables.
     This only generates the hidden variables (i.e., the states) in a output binary tree manner.
@@ -128,14 +121,13 @@ def generate_lineage_list(pi, T, desired_num_cells):
     return full_lineage
 
 
-def output_assign_obs(state, full_lineage, E):
+def output_assign_obs(state: int, full_lineage: list, E: list):
     """
     Observation assignment give a state.
     Given the lineageTree object and the intended state, this function assigns the corresponding observations
     comming from specific distributions for that state.
 
     :param state: The number assigned to a state.
-    :type state: Int
     """
     cells_in_state = [cell for cell in full_lineage if cell.state == state]
     list_of_tuples_of_obs = E[state].rvs(size=len(cells_in_state))
@@ -149,17 +141,14 @@ def output_assign_obs(state, full_lineage, E):
 # tools for analyzing trees
 
 
-def max_gen(lineage):
+def max_gen(lineage: list) -> Tuple[int, list]:
     """Finds the maximal generation in the tree, and cells organized by their generations.
     This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
     creates a list of them, appends the lists leading to have a list of the lists of cells in specific generations.
 
     :param lineage: A list of cells (objects) with known state, generation, etc.
-    :type lineage: list
     :return: The maximal generation in the given lineage.
-    :rtype: Int
     :return: A list of lists of cells, organized by their generations.
-    :rtype: list
     """
     gens = sorted({cell.gen for cell in lineage})  # appending the generation of cells in the lineage
     list_of_lists_of_cells_by_gen = [[None]]
@@ -169,16 +158,13 @@ def max_gen(lineage):
     return max(gens), list_of_lists_of_cells_by_gen
 
 
-def get_leaves(lineage):
+def get_leaves(lineage: list) -> Tuple[list, list]:
     """
     A function to find the leaves and their indexes in the lineage list.
 
     :param lineage: A list of cells in the lineage.
-    :type lineage: list
     :return: A list of indexes to the leaf cells in the lineage list.
-    :rtype: list
     :return: A list holding the leaf cells in the lineage given.
-    :rtype: list
     """
     leaf_indices = []
     leaves = []

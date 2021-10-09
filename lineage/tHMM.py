@@ -2,14 +2,14 @@
 
 from copy import deepcopy
 import numpy as np
-from typing import TypeVar, Tuple
+from typing import TypeVar, Tuple, Generic
 import scipy.stats as sp
 
 from .UpwardRecursion import get_Emission_Likelihoods
 from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step, do_M_E_step_atonce
 from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
 
-linType = TypeVar('linType')
+tHMMclass = TypeVar('tHMMclass')
 
 class estimate:
     """Estimation class.
@@ -46,7 +46,7 @@ class estimate:
             self.E = self.fE
 
 
-class tHMM:
+class tHMM(Generic[tHMMclass]):
     """Main tHMM class.
     """
 
@@ -149,7 +149,7 @@ class tHMM:
         return log_scores
 
 
-def log_T_score(T, state_tree_sequence: list, lineageObj: linType) -> float:
+def log_T_score(T, state_tree_sequence: list, lineageObj: lineageClass) -> float:
     """
     To calculate the joint probability of state and observations.
     This function calculates the second term.
@@ -178,7 +178,7 @@ def log_T_score(T, state_tree_sequence: list, lineageObj: linType) -> float:
     return log_T_score_holder
 
 
-def log_E_score(EL_array, state_tree_sequence: list) -> float:
+def log_E_score(EL_array: np.ndarray, state_tree_sequence: list) -> float:
     """
     To calculate the joint probability of state and observations.
     This function calculates the third term.
@@ -186,7 +186,6 @@ def log_E_score(EL_array, state_tree_sequence: list) -> float:
     :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
 
     :param EL_array: emission likelihood for a given lineage tree object
-    :type EL_array: ndarray
     :param state_tree_sequence: the assigned states to cells at each lineage object
     :return: the log-likelihood of emissions
     """
@@ -197,25 +196,18 @@ def log_E_score(EL_array, state_tree_sequence: list) -> float:
     return log_E_score_holder
 
 
-def fit_list(tHMMobj_list: list, tolerance=1e-9, max_iter=1000):
+def fit_list(tHMMobj_list: list, tolerance=1e-9, max_iter=1000) -> Tuple[list, list, list, list, float]:
     """
     Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
 
     :param tHMMobj_list: all lineage trees we want to fit at once
     :param tolerance: the stopping criteria for fitting. when the likelihood does not change more than tolerance from one step to the other, the fitting converges.
-    :type tolerance: float
     :param max_iter: the maximum number of iterations for fitting
-    :type max_iter: int
     :return MSD_list: marginal state distributions for all populations we fit at once
-    :rtype MSD: list
     :return NF: normalizing factor
-    :rtype NF: list
     :return betas: beta values (conditional probability of cell states given cell observations)
-    :rtype betas: list
     :return gammas: gamma values (used to calculate the downward reursion)
-    :rtype gammas: list
     :return new_LL: the log-likelihood of the optimized solution
-    :rtype new_LL: float
     """
 
     # Step 0: initialize with random assignments and do an M step

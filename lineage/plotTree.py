@@ -1,40 +1,49 @@
-""" In this file we plot! """
+""" This file includes function to plot lineage trees. It relies on the NetworkX and the Bio packages. """
 
 import numpy as np
 from Bio.Phylo.BaseTree import Clade
 import networkx as nx
+from typing import TypeVar
+
+from .CellVar import cellType
+from .LineageTree import lineageClass
+
+CladeType = TypeVar('CladeType')
 
 cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'olive', 'gray']
 stateColors = ['blue', 'orange', 'green', 'red', 'purple', 'olive', 'gray']
 
 
-def CladeRecursive(cell, a, censore, color):
-    """ To plot the lineage while censored (from G1 or G2).
-    If cell died in G1, the lifetime of the cell until dies is shown in red.
-    If cell died in G2, the lifetime of the cell until dies is shown in blue.
-    If none of the above, the cell continues to divide and is shown in black.
-    a should be: a = [Clade(lineage1.full_lineage[0].obs[2]+lineage1.full_lineage[0].obs[3])]
-    If you are interested, you can take a look at the source code for creating Clades manually:
+def CladeRecursive(cell: cellType, a: list, censor: bool, color: bool) -> CladeType:
+    """ A recurssive function that takes in the root cell and traverses through cells to plot the lineage.
+    The width of the lines show the phase of the cells.
+    The color of the lines show the state of the cells.
+
+    "a" should be: a = [Clade(lineage1.full_lineage[0].obs[2]+lineage1.full_lineage[0].obs[3])] which is the root cell
+    The following is the source code used to create Clades manually:
     https://github.com/biopython/biopython/blob/fce4b11b4b8e414f1bf093a76e04a3260d782905/Bio/Phylo/BaseTree.py#L801
     """
     if color:
         if np.isfinite(cell.state):
             colorr = stateColors[cell.state]
         else:
+            # in case that the cells we wish to plot, have not been assigned any states.
             colorr = "black"
     else:
         colorr = "black"
 
-    if cell.isLeaf() and censore:
+    if cell.isLeaf() and censor:
         if np.isfinite(cell.obs[2]) and np.isfinite(cell.obs[3]):
             length = cell.obs[2] + cell.obs[3]
         elif np.isnan(cell.obs[2]):
             length = cell.obs[3]
         elif np.isnan(cell.obs[3]):
             length = cell.obs[2]
+        # Creating the clade and assigning the color
         my_clade = Clade(branch_length=length, width=1, color=colorr)
-        my_clade.G1lw = 1.1
-        my_clade.G2lw = 0.8
+        # Assigning the line width according to the phase
+        my_clade.G1lw = 1.2
+        my_clade.G2lw = 0.6
         my_clade.G1 = cell.obs[2] if np.isfinite(cell.obs[2]) else 1e-4
         my_clade.G2 = cell.obs[3] if np.isfinite(cell.obs[3]) else 1e-4
         return my_clade
@@ -42,9 +51,9 @@ def CladeRecursive(cell, a, censore, color):
     else:
         clades = []
         if cell.left is not None and cell.left.observed:
-            clades.append(CladeRecursive(cell.left, a, censore, color))
+            clades.append(CladeRecursive(cell.left, a, censor, color))
         if cell.right is not None and cell.right.observed:
-            clades.append(CladeRecursive(cell.right, a, censore, color))
+            clades.append(CladeRecursive(cell.right, a, censor, color))
         if np.isnan(cell.obs[3]):  # if the cell got stuck in G1
             lengths = cell.obs[2]
         elif np.isnan(cell.obs[2]):  # is a root parent and G1 is not observed
@@ -53,37 +62,40 @@ def CladeRecursive(cell, a, censore, color):
             lengths = cell.obs[2] + cell.obs[3]  # both are observed
         my_clade = Clade(branch_length=lengths, width=1, clades=clades, color=colorr)
         my_clade.G1lw = 1.2
-        my_clade.G2lw = 0.5
+        my_clade.G2lw = 0.6
         my_clade.G1 = cell.obs[2] if np.isfinite(cell.obs[2]) else 1e-4
         my_clade.G2 = cell.obs[3] if np.isfinite(cell.obs[3]) else 1e-4
         return my_clade
 
 
-def plotLineage(lineage, axes, censore=True, color=True):
+def plotLineage(lineage: lineageClass, axes, censor=True, color=True):
     """
-    Makes lineage tree.
+    Given a lineage of cells, uses the `CladeRecursive` function to plot the lineage.
     """
 
     root = lineage.output_lineage[0]
-    if np.isfinite(root.obs[4]):  # starts from G1
+    if np.isfinite(root.obs[4]):  # the lineage starts from G1 phase
         if np.isfinite(root.obs[3]):
             length = root.obs[2] + root.obs[3]
         else:
             length = root.obs[2]
         assert np.isfinite(length)
-    else:  # starts from G2
+    else:  # the lineage starts from S/G2 phase
         length = root.obs[3]
         assert np.isfinite(length)
     a = [Clade(length)]
 
-    # input the root cells in the lineage
-    c = CladeRecursive(lineage.output_lineage[0], a, censore, color)
+    # input the root cell
+    c = CladeRecursive(lineage.output_lineage[0], a, censor, color)
 
     return draw(c, axes=axes)
 
 
-def plot_networkx(num_states, T, drug_name):
-    """ This plots the Transition matrix for each condition. """
+def plot_networkx(num_states: int, T: np.ndarray, drug_name: str):
+    """
+    This function plots the Transition network for each drug tratment.
+    The nodes show the states and the edges show the transition probabilities.
+    """
     G = nx.MultiDiGraph()
     num_states = T.shape[0]
 
