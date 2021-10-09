@@ -4,6 +4,7 @@ import scipy.stats as sp
 from typing import Generic, TypeVar, Union
 
 from .stateCommon import gamma_estimator, gamma_estimator_atonce, basic_censor
+from ..CellVar import Time
 
 StateType = TypeVar('StateType')
 
