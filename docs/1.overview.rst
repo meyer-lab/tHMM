@@ -46,7 +46,7 @@ will deal with two states, i.e., :math:`K=2`.
 .. code:: ipython3
 
     import numpy as np
-    # The capital letter T will represent the transition matrix.
+    # The capital letter T will represent the state transition probability matrix.
     # This transition matrix, in particular, is the two-dimensional 
     # identity matrix. Recall that the elements of the transition matrix
     # represent the probability of transitioning from one state to another.
@@ -87,7 +87,7 @@ cells.
 
     import numpy as np
     from lineage.CellVar import CellVar as c
-    # Question 3 will focus on the code written here.
+
     parent_cell = c(state=0, parent=None, gen=1)
     T = np.array([[0.75, 0.25],
                   [0.15, 0.85]], dtype="float")
@@ -198,6 +198,7 @@ phenotype they wish to observe, model, and predict:
    distribution when given **random observations**
 
 These three things fundamentally define any probability distribution.
+For more information about how to define these functions by example, please see "2.stateDistribution.rst".
 
 An optional boolean function can be provided to “censor”
 cells based on the observation. In our example, cells with a Bernoulli
@@ -209,27 +210,13 @@ We have already built, as a starting example, a model that resembles
 lineage trees of cancer cells. In our synthetic model, our emissions are
 multivariate. This first emission is a Bernoulli observation, :math:`0`
 implying death and :math:`1` implying division. The second emission is
-continuous and are gamma distributed. Though these can be thought of
+continuous RVs and are gamma distributed. Though these can be thought of
 cell lifetimes or periods in a certain cell phase, we want the user to
 know that these values can really mean anything and they are completely
-free in choosing what the emissions and their values mean. We provide,
-as mentioned above,
-
-1. a probability distribution function that takes in as input
-   multivariate samples, a Bernoulli rate parameter, and two parameters
-   that define the gamma distribution, and returns a likelihood,
-2. a random variable that takes in a Bernoulli parameter and two gamma
-   parameters and returns multivariate samples, and
-3. a estimator that returns a Bernoulli parameter and two gamma
-   parameters when input multiple multivariate observations.
-
-Finally, we also define a censoring rule, as explained previously.
+free in choosing what the emissions and their values mean.
 
 Ultimately, :math:`E` is defined as a :math:`K\times 1` size list of
-state distribution objects. These distribution objects are rich in what
-they can already do, and a user can easily add more to their
-functionality. They only need to be instantiated by what parameters
-define that state’s distribution.
+``stateDistribution`` objects, explained in detail in "2.stateDistribution.rst"
 
 The following code block is a standard way to define state distrbutions
 and store them in an emissions list. State distributions are
@@ -308,6 +295,41 @@ state parameters, but also the initial probability vector :math:`\pi`
 and transition matrix :math:`T` vector. Note that estimating these also
 get better as more lineages are added (for the :math:`\pi` vector in
 particular) and in general as more cells and more lineages are added.
+
+.. code:: ipython3
+
+    print(tHMMobj.estimate.pi)
+
+.. code:: ipython3
+
+    print(tHMMobj.estimate.T)
+
+.. code:: ipython3
+
+    for state in range(lineage1.num_states):
+        print("State {}:".format(state))
+        print("                    estimated state:", tHMMobj.estimate.E[state])
+        print("original parameters given for state:", E[state])
+        print("\n")
+
+
+Creating a population with multiple lineages:
+
+The following is an analysis run on a larger set of lineages. We first create 10 lineages and append them to a list to form our cell populations.
+In this case, we are choosing that all lineages should have 35 cells.
+``Analyze()`` takes in the list of populations and the number of states,
+and returns the ``tHMMobject``, the list of assigned states ,(``pred_states_by_lineage``) and the likelihood (``LL``) after running the EM algoithm.
+The instances of ``tHMMobj`` include the information about the distributions corresponding to each state and phenotypie.
+In this case, we are running the ``Analyze`` with 2 states, and we know it is the true number of states,
+because we used ``E`` as the Emissions which we defined as a list with two ``StateDistribution``s.
+
+
+.. code:: ipython3
+
+    Y = []
+    for _ in range(10):
+        Y.append(LineageTree.init_from_parameters(pi, T, E, desired_num_cells=35))
+    tHMMobj, pred_states_by_lineage, LL = Analyze(Y, 2) # find two states
 
 .. code:: ipython3
 
