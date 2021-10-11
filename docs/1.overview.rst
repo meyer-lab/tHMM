@@ -11,7 +11,7 @@ tHMM uses expectation-maximization (EM) algorithm to cluster the cells based sol
 Each cluster, aka state, represents a sub-population of cells that belong to a distribution for their observations.
 For instance, considering cell lifetime as a measurement, cells that belong to state 1 have the lifetime duration that comes from a Gamma(s1, k1), and cells that belong to state2 have the lifetime duration that comes from a Gamma(s2, k2).
 This way, we can quantify phenotypic heterogeneity within a population of cells by revealing each cell's hidden state. Our model, incorporating the cell-cell relationship within each lineage is superior to other clustering methods such as K-means.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 
 We first introduce how to synthesize these populations by working up from the basic unit; cells. We then introduce how to synthesize lineages, which are just hierarchical lineage tree groupings of cells based on their family history. Our model ultimately analyzes populations which are groups of one or more lineages that share the same states.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -326,10 +326,12 @@ because we used ``E`` as the Emissions which we defined as a list with two ``Sta
 
 .. code:: ipython3
 
+    from lineage.Analyze import Analyze_list
+
     Y = []
     for _ in range(10):
         Y.append(LineageTree.init_from_parameters(pi, T, E, desired_num_cells=35))
-    tHMMobj, pred_states_by_lineage, LL = Analyze(Y, 2) # find two states
+    tHMMobj, pred_states_by_lineage, LL = Analyze_list(Y, 2) # find two states
 
 .. code:: ipython3
 
@@ -346,3 +348,57 @@ because we used ``E`` as the Emissions which we defined as a list with two ``Sta
         print("                    estimated state:", tHMMobj.estimate.E[state])
         print("original parameters given for state:", E[state])
         print("\n")
+
+
+The function ``Results()`` provides calculated features when analyzing a synthetic data.
+
+.. code:: ipython3
+
+    from lineage.Analyze import Results
+
+    results_dict = Results(tHMMobj, pred_states_by_lineage, LL)
+    print("total number of cells: ", results_dict["total_number_of_cells"])
+    print("\n total number of lineages: ", results_dict["total_number_of_lineages"])
+    print("\n transition matrix norm: ", results_dict["transition_matrix_norm"])
+    print("\n parameter estimtes: ", results_dict["param_estimates"])
+    print("\n accuracy of state assignemnts: ", results_dict["balanced_accuracy_score"])
+    print("\n the distance between state 0 and state 1: ", results_dict["wasserstein"])
+
+
+**Applications**: A guide to use the `tHMM` for imported experimental data.
+---------------------------------------------------------------------------
+
+As an application, we fit experimental data of cell cycle phase durations (G1 and S/G2) in response to lapatinib and gemcitabine treatments to analyze the phenotypic heterogeneity.
+The data is in the form of binary tree in excel, shown beloow. We have written "lineage/LineageInputOutput.py" to properly import this data and convert it into the format usable for `tHMM`.
+The following shows one lineage in the excel sheets. In each row, the difference between the two values corresponding to each cell shows the duration of G1 cell cycle phase, and 
+the difference between the second value and the first value of the daughter cell shows the duration of S/G2 cell cycle phase.
+
+
+.. image:: treeExcel.png
+    :width: 700
+    :alt: Example of a lineage tree from experimental data of G1 and S/G2 cell cycle phase durations.
+
+.. code:: ipython3
+
+    from lineage.LineageInputOutput import import_exp_data
+    from lineage.states.StateDistributionGaPhs import StateDistribution
+    from lineage.LineageTree import LineageTree
+
+    desired_num_states = 2 # dummy value just to initialize
+    E = [StateDistribution() for _ in range(desired_num_states)]
+
+    # control condition:
+    c1 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_A5_1_V5.xlsx")]
+    c2 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_A5_2_V4.xlsx")]
+    c3 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00701_A5_1_V4.xlsx")]
+    c4 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00801_A5_1_V4.xlsx")]
+
+    Control = c1 + c2 + c3 + c4
+    
+    tHMMobj_list, pred_states_by_lineage_by_conc, LL = Analyze_list(Control, desired_num_states=3)
+    # in this example, we are running the model with 3 states.
+
+    print("the likelihood of having 3 states: ", LL)
+    print("BIC value for each lineage tree: ", [tHMMobj_list[i].get_BIC()])
+To find out the likelihood of running the model with different number of states, in parallel (to minimize the time of running) 
+we can use ``run_Analyze_over()``. 

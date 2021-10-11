@@ -132,7 +132,7 @@ for state in range(lineage.num_states):
 
 ```
 import numpy as np
-from lineage.LineageInputOutput import import_Heiser
+from lineage.LineageInputOutput import import_exp_data
 from lineage.states.StateDistributionGaPhs import StateDistribution
 from lineage.LineageTree import LineageTree
 from lineage.Analyze import run_Analyze_over
@@ -141,7 +141,7 @@ desired_num_states = 2 # does not make a difference what number we choose for im
 E = [StateDistribution() for _ in range(desired_num_states)]
 
 # Importing only one of the replicates of control condition
-control1 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00601_A5_1_V5.xlsx")]
+control1 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_A5_1_V5.xlsx")]
 
 output = run_Analyze_over([control1], 2, atonce=False)
 ```
