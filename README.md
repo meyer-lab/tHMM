@@ -27,10 +27,9 @@ The `docs` folder includes a few tutorials for getting started with the package.
 ## Software requirements
 
 ### OS requirements
-This package is supported for *macOS*, *Windows*, and *Linux*. The package has been tested on the following systems:
+This package is supported for *macOS* and *Linux*. The package has been tested on the following systems:
 - macOS: Mojave (10.14.1)
 - Linux: Ubuntu 20.04
-- Windows: 10
 
 ### Python dependencies
 `tHMM` requires `virtualenv`. All other required packages can then be installed using `make venv` to establish a virtual environment. The Python packages that will be installed are listed in `requirements.txt`.
