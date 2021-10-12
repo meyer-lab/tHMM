@@ -3,7 +3,7 @@ import itertools
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor, Future, Executor
 from sklearn.metrics import balanced_accuracy_score
-from .tHMM import tHMM, fit_list, tHMMclass
+from .tHMM import tHMM, fit_list
 from typing import Tuple
 
 class DummyExecutor(Executor):
@@ -14,7 +14,7 @@ class DummyExecutor(Executor):
         return f
 
 
-def Analyze(X: list, num_states: int, **kwargs) -> Tuple[tHMMclass, int, float]:
+def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, int, float]:
     """ Runs a tHMM and outputs the tHMM object, state assignments, and likelihood. """
     tHMMobj_list, st, LL = Analyze_list([X], num_states, **kwargs)
     return tHMMobj_list[0], st[0], LL
@@ -77,7 +77,7 @@ def run_Analyze_over(list_of_populations: list, num_states: int, parallel=True, 
     return output
 
 
-def Results(tHMMobj: tHMMclass, pred_states_by_lineage: list, LL: float) -> dict:
+def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict:
     """
     This function calculates several results of fitting a synthetic lineage and stores it in a dictionary.
     The dictionary contains the total number of lineages, the log likelihood of state assignments, and
