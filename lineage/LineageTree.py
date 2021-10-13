@@ -3,11 +3,9 @@ import numpy as np
 import operator
 
 from .CellVar import CellVar
-from typing import TypeVar, Generic, Tuple
+from typing import TypeVar, Tuple
 
-lineageClass = TypeVar('lineageClass')
-
-class LineageTree(Generic[lineageClass]):
+class LineageTree():
     """A class for lineage trees.
     Every lineage object from this class is a binary tree built based on initial probabilities,
     transition probabilities, and emissions defined by state distributions given by the user.
@@ -26,7 +24,7 @@ class LineageTree(Generic[lineageClass]):
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
 
     @classmethod
-    def init_from_parameters(cls, pi: np.ndarray, T: np.ndarray, E: list, desired_num_cells: int, censor_condition=0, **kwargs) -> lineageClass:
+    def init_from_parameters(cls, pi: np.ndarray, T: np.ndarray, E: list, desired_num_cells: int, censor_condition=0, **kwargs):
         r"""
         Constructor method
 
