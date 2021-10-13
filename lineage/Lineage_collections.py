@@ -1,6 +1,6 @@
 """ This file is to collect those lineages that have the same condition, and have 3 or greater number of cells in their lineages. """
 
-from .LineageInputOutput import import_Heiser
+from .LineageInputOutput import import_exp_data
 from .states.StateDistributionGaPhs import StateDistribution
 from .LineageTree import LineageTree
 

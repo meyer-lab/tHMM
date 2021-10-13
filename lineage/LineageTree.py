@@ -25,7 +25,7 @@ class LineageTree:
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
 
     @classmethod
-    def init_from_parameters(cls, pi: vector, T: np.ndarray, E: list, desired_num_cells: int, censor_condition=0, **kwargs):
+    def init_from_parameters(cls, pi: np.ndarray, T: np.ndarray, E: list, desired_num_cells: int, censor_condition=0, **kwargs):
         r"""
         Constructor method
 
@@ -97,7 +97,7 @@ class LineageTree:
         return len(self.output_lineage)
 
 
-def generate_lineage_list(pi: vector, T: np.ndarray, desired_num_cells: int) -> list:
+def generate_lineage_list(pi: np.ndarray, T: np.ndarray, desired_num_cells: int) -> list:
     """
     Generates a single lineage tree given Markov variables.
     This only generates the hidden variables (i.e., the states) in a output binary tree manner.

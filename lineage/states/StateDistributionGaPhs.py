@@ -1,14 +1,12 @@
 """ State distribution class for separated G1 and G2 phase durations as observation. """
 import numpy as np
-from typing import Generic, TypeVar
 
 from .stateCommon import basic_censor
 from .StateDistributionGamma import StateDistribution as GammaSD
 from ..CellVar import Time
 
-StateType = TypeVar('StateType')
 
-class StateDistribution(Generic[StateType]):
+class StateDistribution():
     """ For G1 and G2 separated as observations. """
 
     def __init__(self, bern_p1=0.9, bern_p2=0.75, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6):  # user has to identify what parameters to use for each state
@@ -26,7 +24,7 @@ class StateDistribution(Generic[StateType]):
         # These tuples of observations will go into the cells in the lineage tree.
         return bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, gamma_censor_obsG1, gamma_censor_obsG2
 
-    def dist(self, other: StateType):
+    def dist(self, other):
         """ Calculate the Wasserstein distance between this state emissions and the given. """
         assert isinstance(self, type(other))
         return self.G1.dist(other.G1) + self.G2.dist(other.G2)

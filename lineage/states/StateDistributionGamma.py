@@ -1,14 +1,13 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
 import numpy as np
 import scipy.stats as sp
-from typing import Generic, TypeVar, Union
+from typing import Union
 
 from .stateCommon import gamma_estimator, gamma_estimator_atonce, basic_censor
 from ..CellVar import Time
 
-StateType = TypeVar('StateType')
 
-class StateDistribution(Generic[StateType]):
+class StateDistribution:
     """
     StateDistribution for cells with gamma distributed times.
     """
@@ -22,7 +21,7 @@ class StateDistribution(Generic[StateType]):
         self.params = np.array([bern_p, gamma_a, gamma_scale])
 
     def rvs(self, size: int):  # user has to identify what the multivariate (or univariate) random variable looks like
-        """ User-defined way of calculating a random variable given the parameters of the state stored in their StateType object. """
+        """ User-defined way of calculating a random variable given the parameters of the state stored in their object. """
         # {
         bern_obs = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
         gamma_obs = sp.gamma.rvs(a=self.params[1], scale=self.params[2], size=size)  # gamma observations
@@ -31,7 +30,7 @@ class StateDistribution(Generic[StateType]):
         # These tuples of observations will go into the cells in the lineage tree.
         return bern_obs, gamma_obs, gamma_obs_censor
 
-    def dist(self, other: StateType):
+    def dist(self, other):
         """ Calculate the Wasserstein distance between two gamma distributions that each correspond to a state.
         This is our way of calculating the distance between two state, when their bernoulli distribution is kept the same.
         For more information about wasserstein distance, please see https://en.wikipedia.org/wiki/Wasserstein_metric.
@@ -71,12 +70,12 @@ class StateDistribution(Generic[StateType]):
 
         return np.exp(ll)
 
-    def estimator(self, x: list, gammas: np.array):
+    def estimator(self, X: list, gammas: np.ndarray):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
 
         # getting the observations as individual lists
         # {
-        x = np.array(x)
+        x = np.array(X)
         bern_obs = x[:, 0].astype('bool')
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
