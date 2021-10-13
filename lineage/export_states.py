@@ -3,29 +3,6 @@
 import numpy as np
 import pandas as pd
 
-from .Analyze import Analyze_list
-from .data.Lineage_collections import gemControl, gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM, len_lp_cntr, len_lp_25, len_lp_50, len_lp_250, len_gm_cntr, len_gm_5, len_gm_10, len_gm_30
-
-""" This is to run the tHMM objects
-# fitting gemc and lapat
-gemm = [Lapatinib_Control + gemControl, gem5uM, Gem10uM, Gem30uM]
-lptt = [Lapatinib_Control + gemControl, Lapt25uM, Lapt50uM, Lap250uM]
-
-lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(lptt, 3, fpi=True)
-gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(gemm, 4, fpi=True)
-
-# assigning the estimated states to the cells
-for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
-    for lin_indx, lin in enumerate(lapt_tHMMobj.X):
-        for cell_indx, cell in enumerate(lin.output_lineage):
-            cell.state = lapt_states_list[idx][lin_indx][cell_indx]
-
-for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
-    for lin_indx, lin in enumerate(gemc_tHMMobj.X):
-        for cell_indx, cell in enumerate(lin.output_lineage):
-            cell.state = gemc_states_list[idx][lin_indx][cell_indx]
-"""
-
 
 def assign_states(input_X):
     """ Given a list of lineages, it returns a 2D array of cell states in the form of a tree that will then be written into excel sheets. """
