@@ -6,7 +6,7 @@ from typing import Tuple
 # pylint: disable=too-many-nested-blocks
 
 
-def get_leaf_deltas(tHMMobj) -> list:
+def get_leaf_deltas(tHMMobj) -> Tuple[list, list]:
     """
     Delta matrix and base case at the leaves. 
     Each element in this N by K matrix is the probability for the leaves :math:`P(x_n = x | z_n = k)`.
@@ -60,7 +60,7 @@ def get_nonleaf_deltas(tHMMobj, deltas: list, state_ptrs: list):
                 state_ptrs[num][node_parent_m_idx, :] = max_state_ptr
 
 
-def get_delta_parent_child_prod(lineage: list, delta_array: np.ndarray, T: np.ndarray, node_parent_m_idx: int) -> Tuple[list, list]:
+def get_delta_parent_child_prod(lineage: list, delta_array: np.ndarray, T: np.ndarray, node_parent_m_idx: int) -> Tuple[vector, list]:
     """
     Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.
 

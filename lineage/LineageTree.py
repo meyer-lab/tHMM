@@ -1,13 +1,12 @@
 """ This file contains the LineageTree class. """
 import numpy as np
 import operator
-from typing import TypeVar, Generic, Tuple
+from typing import Tuple
 
 from .CellVar import CellVar
 
-lineageClass = TypeVar('lineageClass')
 
-class LineageTree(Generic[lineageClass]):
+class LineageTree:
     """A class for lineage trees.
     Every lineage object from this class is a binary tree built based on initial probabilities,
     transition probabilities, and emissions defined by state distributions given by the user.
@@ -26,7 +25,7 @@ class LineageTree(Generic[lineageClass]):
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
 
     @classmethod
-    def init_from_parameters(cls, pi: np.array, T: np.ndarray, E: list, desired_num_cells: float, censor_condition=0, **kwargs) -> lineageClass:
+    def init_from_parameters(cls, pi: vector, T: np.ndarray, E: list, desired_num_cells: int, censor_condition=0, **kwargs):
         r"""
         Constructor method
 
@@ -98,7 +97,7 @@ class LineageTree(Generic[lineageClass]):
         return len(self.output_lineage)
 
 
-def generate_lineage_list(pi: np.array, T: np.ndarray, desired_num_cells: int) -> list:
+def generate_lineage_list(pi: vector, T: np.ndarray, desired_num_cells: int) -> list:
     """
     Generates a single lineage tree given Markov variables.
     This only generates the hidden variables (i.e., the states) in a output binary tree manner.
