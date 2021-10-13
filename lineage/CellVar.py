@@ -53,10 +53,8 @@ class CellVar:
         Returns true when a cell is a leaf because its children are unobserved
         but it itself is observed.
         """
-        if hasattr(self.left, "observed") and hasattr(self.right, "observed"):
-            # if its daughters are unobserved and it itself is observed
-            if not self.left.observed and not self.right.observed and self.observed:
-                return True
+        if not self.left.observed and not self.right.observed and self.observed:
+            return True
         # otherwise, it itself is observed and at least one of its daughters is observed
         return False
 
