@@ -3,7 +3,7 @@ import numpy as np
 import operator
 
 from .CellVar import CellVar
-from typing import TypeVar, Tuple
+from typing import Tuple
 
 class LineageTree():
     """A class for lineage trees.
