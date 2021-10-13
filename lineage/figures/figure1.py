@@ -9,7 +9,7 @@ import numpy as np
 
 from .figureCommon import getSetup
 from ..plotTree import plotLineage
-from lineage.data.Lineage_collections import Gem10uM, Gemcitabine_Control as control
+from lineage.Lineage_collections import Gem10uM, Gemcitabine_Control as control
 
 
 def makeFigure():

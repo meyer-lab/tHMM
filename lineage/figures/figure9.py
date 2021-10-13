@@ -1,12 +1,11 @@
 """ This file plots the AIC for the experimental data. """
 
 import numpy as np
-import pickle
 
 from matplotlib.ticker import MaxNLocator
-from ..Analyze import run_Analyze_over, Analyze_list
-from ..data.Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
-from .figureCommon import getSetup, subplotLabel
+from ..Analyze import run_Analyze_over
+from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
+from .figureCommon import getSetup
 
 desired_num_states = np.arange(1, 8)
 

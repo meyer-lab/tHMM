@@ -1,18 +1,15 @@
 """ This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
 import numpy as np
-from typing import TypeVar, Generic, Tuple
+from typing import Tuple, Optional
 from dataclasses import dataclass
 
 
-cellType = TypeVar('cellType')
-
-
-class CellVar(Generic[cellType]):
+class CellVar:
     """
     Cell class.
     """
 
-    def __init__(self, parent: cellType, gen: int, **kwargs):
+    def __init__(self, parent, gen: int, state: Optional[int] = None):
         """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
@@ -20,14 +17,9 @@ class CellVar(Generic[cellType]):
         self.parent = parent
         self.gen = gen
         self.observed = True
+        self.state = state
 
-        if kwargs:
-            self.state = kwargs.get("state", None)
-            self.left = kwargs.get("left", None)
-            self.right = kwargs.get("right", None)
-            self.obs = kwargs.get("obs", [])
-
-    def divide(self, T: np.ndarray) -> Tuple[cellType, cellType]:
+    def divide(self, T: np.ndarray):
         """
         Member function that performs division of a cell.
         Equivalent to adding another timestep in a Markov process.
@@ -61,10 +53,8 @@ class CellVar(Generic[cellType]):
         Returns true when a cell is a leaf because its children are unobserved
         but it itself is observed.
         """
-        if hasattr(self.left, "observed") and hasattr(self.right, "observed"):
-            # if its daughters are unobserved and it itself is observed
-            if not self.left.observed and not self.right.observed and self.observed:
-                return True
+        if not self.left.observed and not self.right.observed and self.observed:
+            return True
         # otherwise, it itself is observed and at least one of its daughters is observed
         return False
 
@@ -87,7 +77,7 @@ class CellVar(Generic[cellType]):
 
         return False
 
-    def get_sister(self) -> cellType:
+    def get_sister(self):
         """
         Member function that gets the sister of the current cell.
         """
@@ -98,7 +88,7 @@ class CellVar(Generic[cellType]):
             cell_to_return = self.parent.left
         return cell_to_return
 
-    def get_root_cell(self) -> cellType:
+    def get_root_cell(self):
         """
         Get the first cell in the lineage to which this cell belongs.
         """
@@ -121,7 +111,7 @@ class CellVar(Generic[cellType]):
         return temp
 
 
-def tree_recursion(cell: cellType, subtree: list) -> None:
+def tree_recursion(cell, subtree: list) -> None:
     """
     A recursive helper function that traverses upwards from the leaf to the root.
     """
@@ -134,7 +124,7 @@ def tree_recursion(cell: cellType, subtree: list) -> None:
     return
 
 
-def get_subtrees(node: cellType, lineage: list) -> Tuple[list, list]:
+def get_subtrees(node, lineage: list) -> Tuple[list, list]:
     """
     Given one cell, return the subtree of that cell,
     and return all the tree other than that subtree.
@@ -145,7 +135,7 @@ def get_subtrees(node: cellType, lineage: list) -> Tuple[list, list]:
     return subtree, not_subtree
 
 
-def find_two_subtrees(cell: cellType, lineage: list) -> Tuple[list, list, list]:
+def find_two_subtrees(cell, lineage: list) -> Tuple[Optional[list], Optional[list], list]:
     """
     Gets the left and right subtrees from a cell.
     """
