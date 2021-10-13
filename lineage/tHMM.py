@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 import numpy as np
-from typing import Tuple, Union
+from typing import Tuple
 import scipy.stats as sp
 
 from .UpwardRecursion import get_Emission_Likelihoods
@@ -44,9 +44,8 @@ class estimate:
         else:
             self.E = self.fE
 
-tHMMclass = TypeVar('tHMMclass')
 
-class tHMM(Generic[tHMMclass]):
+class tHMM:
     """Main tHMM class.
     """
 
@@ -90,7 +89,7 @@ class tHMM(Generic[tHMMclass]):
         pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
         return pred_states_by_lineage
 
-    def get_BIC(self, LL: float, num_cells: Union(int, float), atonce=False) -> Tuple[float, float]:
+    def get_BIC(self, LL: float, num_cells: int, atonce=False) -> Tuple[float, float]:
         """
         Gets the BIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.
@@ -196,7 +195,7 @@ def log_E_score(EL_array: np.ndarray, state_tree_sequence: list) -> float:
     return log_E_score_holder
 
 
-def fit_list(tHMMobj_list: list, tolerance=1e-9, max_iter=1000) -> Tuple[list, list, list, list, float]:
+def fit_list(tHMMobj_list: list, tolerance: float = 1e-9, max_iter: int = 1000) -> Tuple[list, list, list, list, float]:
     """
     Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
 
