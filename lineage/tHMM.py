@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 import numpy as np
-from typing import TypeVar, Tuple, Generic
+from typing import Tuple, Union
 import scipy.stats as sp
 
 from .UpwardRecursion import get_Emission_Likelihoods
@@ -90,7 +90,7 @@ class tHMM(Generic[tHMMclass]):
         pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
         return pred_states_by_lineage
 
-    def get_BIC(self, LL: float, num_cells: int, atonce=False) -> Tuple[float, float]:
+    def get_BIC(self, LL: float, num_cells: Union(int, float), atonce=False) -> Tuple[float, float]:
         """
         Gets the BIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.

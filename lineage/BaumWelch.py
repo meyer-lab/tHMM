@@ -39,27 +39,24 @@ def do_E_step(tHMMobj) -> Tuple[list, list, list, list]:
     return MSD, NF, betas, gammas
 
 
-def calculate_log_likelihood(NF: list):
+def calculate_log_likelihood(NF: list) -> np.ndarray:
     """
     Calculates log likelihood of NF for each lineage.
 
     :param NF: normalizing factor
     return: the sum of log likelihoods for each lineage
-    rtype: array
     """
     # NF is a list of arrays, an array for each lineage in the population
     return np.array([sum(np.log(arr)) for arr in NF])
 
 
-def calculate_stationary(T: np.ndarray):
+def calculate_stationary(T: np.ndarray) -> np.ndarray:
     """
     Calculate the stationary distribution of states from T.
     Note that this does not take into account potential influences of the emissions.
 
     :param T: transition matrix, a square matrix with probabilities of transitioning from one state to the other
-    :type T: ndarray
     :return: The stationary distribution of states which can be obtained by solving w = w * T
-    :rtype: array
     """
     eigenvalues, eigenvectors = np.linalg.eig(T.T)
     idx = np.argmin(np.abs(eigenvalues - 1))
@@ -118,7 +115,7 @@ def do_M_step(tHMMobj, MSD: list, betas: list, gammas: list):
             do_M_E_step_atonce(tHMMobj, gammas)
 
 
-def do_M_pi_step(tHMMobj, gammas: list):
+def do_M_pi_step(tHMMobj, gammas: list) -> np.ndarray:
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -138,7 +135,7 @@ def do_M_pi_step(tHMMobj, gammas: list):
     return pi_e / np.sum(pi_e)
 
 
-def do_M_T_step(tHMMobj, MSD: list, betas: list, gammas: list):
+def do_M_T_step(tHMMobj, MSD: list, betas: list, gammas: list) -> np.ndarray:
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.

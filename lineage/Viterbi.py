@@ -60,7 +60,7 @@ def get_nonleaf_deltas(tHMMobj, deltas: list, state_ptrs: list):
                 state_ptrs[num][node_parent_m_idx, :] = max_state_ptr
 
 
-def get_delta_parent_child_prod(lineage: list, delta_array: np.ndarray, T: np.ndarray, node_parent_m_idx: int) -> Tuple[np.array, list]:
+def get_delta_parent_child_prod(lineage: list, delta_array: np.ndarray, T: np.ndarray, node_parent_m_idx: int) -> Tuple[np.ndarray, list]:
     """
     Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.
 
