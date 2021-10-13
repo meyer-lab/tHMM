@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 cellType = TypeVar('cellType')
 
+
 class CellVar(Generic[cellType]):
     """
     Cell class.
