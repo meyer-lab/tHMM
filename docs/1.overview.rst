@@ -1,8 +1,5 @@
-**Overview**: A guide to the tree-hidden Markov model for analyzing heterogeneous cell lineages
+**Overview** - A guide to the tree-hidden Markov model for analyzing heterogeneous cell lineages
 ===============================================================================================
-
-Authors: Shakthi Visagan, Farnaz Mohammadi, Nikan Namiri, Adam Wiener, Ali Farhat, Alex Lim, JC Lagarde, and Aaron Meyer, PhD
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We present a model to analyze populations of cells where we have one or more phenotypic measurements from, such as cell lifetime, cell fates, cell shape, migration, etc.
 The data should be in the form of a lineage binary tree, where each node represents one cell with its measurements.
@@ -14,7 +11,6 @@ This way, we can quantify phenotypic heterogeneity within a population of cells 
 
 
 We first introduce how to synthesize these populations by working up from the basic unit; cells. We then introduce how to synthesize lineages, which are just hierarchical lineage tree groupings of cells based on their family history. Our model ultimately analyzes populations which are groups of one or more lineages that share the same states.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 1. Synthesizing Cells
@@ -139,7 +135,6 @@ printing methods to print out cells. The following code verifies that the ``left
     from lineage.states.StateDistributionGamma import StateDistribution
 
 Defining the :math:`\pi` initial probability vector and :math:`T` stochastic transition rate matrix
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Before, we “hard-coded” that the first cell in our lineage should be
 state :math:`0`. In a Markov model, this first state (the state of the
@@ -170,7 +165,7 @@ An example is shown below.
                   [0.25, 0.75]], dtype="float")
 
 Defining the :math:`E` emissions matrix using state distributions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 
 The emission matrix :math:`E` is a little more complicated to define
 because this is where the user has complete freedom in defining what
@@ -268,7 +263,7 @@ probability distribution with a gamma distribution that draws longer
 times.
 
 Analyzing our first full lineage
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 Our project’s goal is to analyze heterogeneity. We packaged the main
 capability of our codebase into one function ``Analyze``, which runs the
@@ -283,7 +278,7 @@ following example, we analyze the full lineage from above.
     tHMMobj, pred_states_by_lineage, LL = Analyze(X, 2) # find two states
 
 Estimated Markov parameters (:math:`\pi`, :math:`T`, :math:`E`)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 Our model is blind to the true states of the cells
 (unlike the code blocks above where we knew the identity of the cells, 
@@ -365,7 +360,7 @@ The function ``Results()`` provides calculated features when analyzing a synthet
     print("\n the distance between state 0 and state 1: ", results_dict["wasserstein"])
 
 
-**Applications**: A guide to use the `tHMM` for imported experimental data.
+**Applications** - A guide to use the `tHMM` for imported experimental data.
 ---------------------------------------------------------------------------
 
 As an application, we fit experimental data of cell cycle phase durations (G1 and S/G2) in response to lapatinib and gemcitabine treatments to analyze the phenotypic heterogeneity.
