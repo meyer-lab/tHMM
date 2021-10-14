@@ -1,6 +1,6 @@
 """ Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch. """
 import numpy as np
-from typing import Tuple
+from typing import Tuple, Any
 
 from .UpwardRecursion import (
     get_Marginal_State_Distributions,
@@ -39,7 +39,7 @@ def do_E_step(tHMMobj) -> Tuple[list, list, list, list]:
     return MSD, NF, betas, gammas
 
 
-def calculate_log_likelihood(NF: list) -> np.ndarray:
+def calculate_log_likelihood(NF: Any) -> np.ndarray:
     """
     Calculates log likelihood of NF for each lineage.
 
