@@ -134,7 +134,8 @@ printing methods to print out cells. The following code verifies that the ``left
     from lineage.LineageTree import LineageTree
     from lineage.states.StateDistributionGamma import StateDistribution
 
-Defining the :math:`\pi` initial probability vector and :math:`T` stochastic transition rate matrix
+2.1. Defining the :math:`\pi` initial probability vector and :math:`T` stochastic transition rate matrix
+--------------------------------------------------------------------------------------------------------
 
 Before, we “hard-coded” that the first cell in our lineage should be
 state :math:`0`. In a Markov model, this first state (the state of the
@@ -164,8 +165,8 @@ An example is shown below.
     T = np.array([[0.75, 0.25],
                   [0.25, 0.75]], dtype="float")
 
-Defining the :math:`E` emissions matrix using state distributions
-
+2.2. Defining the :math:`E` emissions matrix using state distributions
+----------------------------------------------------------------------
 
 The emission matrix :math:`E` is a little more complicated to define
 because this is where the user has complete freedom in defining what
@@ -236,7 +237,7 @@ instantiated via their parameters.
     
     E = [state_obj0, state_obj1]
 
-The final required parameters are more obvious. The first is the desired
+The final required parameters are more obvious. The first is the
 number of cells one would like in their full uncensored lineage tree. This
 can be any number. Since one of our observations is time-based, we can
 also add a censoring condition based on time as well. Ultimately, these
@@ -262,8 +263,8 @@ far longer than others. This is because one of the states has a
 probability distribution with a gamma distribution that draws longer
 times.
 
-Analyzing our first full lineage
-
+3. Analyzing a full lineage
+-----------------------------------
 
 Our project’s goal is to analyze heterogeneity. We packaged the main
 capability of our codebase into one function ``Analyze``, which runs the
@@ -308,7 +309,8 @@ particular) and in general as more cells and more lineages are added.
         print("\n")
 
 
-Creating a population with multiple lineages:
+3. Creating a population with multiple lineages:
+------------------------------------------------
 
 The following is an analysis run on a larger set of lineages. We first create 10 lineages and append them to a list to form our cell populations.
 In this case, we are choosing that all lineages should have 35 cells.
@@ -360,7 +362,7 @@ The function ``Results()`` provides calculated features when analyzing a synthet
     print("\n the distance between state 0 and state 1: ", results_dict["wasserstein"])
 
 
-**Applications** - A guide to use the `tHMM` for imported experimental data.
+4. Applications - A guide to use the `tHMM` for imported experimental data.
 ---------------------------------------------------------------------------
 
 As an application, we fit experimental data of cell cycle phase durations (G1 and S/G2) in response to lapatinib and gemcitabine treatments to analyze the phenotypic heterogeneity.
