@@ -170,7 +170,7 @@ def get_leaf_betas(tHMMobj, MSD: list, EL: list, NF: list):
     return betas
 
 
-def get_nonleaf_NF_and_betas(tHMMobj, MSD: list, EL: list, NF: list, betas: np.ndarray):
+def get_nonleaf_NF_and_betas(tHMMobj, MSD: list, EL: list, NF: list, betas: list):
     """
     Traverses through each tree and calculates the
     beta value for each non-leaf cell. The normalizing factors (NFs)
