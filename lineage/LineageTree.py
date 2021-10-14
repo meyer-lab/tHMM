@@ -15,6 +15,14 @@ class LineageTree:
     observations based on their states by sampling observations from their emission distributions.
     The lineage tree is then censord based on the censor condition.
     """
+    pi: np.ndarray
+    T: np.ndarray
+    num_states: int
+    full_lineage: list
+    full_max_gen: int
+    full_list_of_gens: list
+    full_leaves_idx: list
+    full_leaves: list
 
     def __init__(self, list_of_cells: list, E: list):
         self.E = E

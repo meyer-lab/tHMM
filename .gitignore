@@ -4,6 +4,7 @@
 **/.pytest_cache
 **/__pycache__/
 nosetests.xml
+**/.mypy_cache
 
 # Notebooks
 **.ipynb

@@ -96,7 +96,7 @@ class tHMM:
         :math:`BIC = - 2 * log(LL) + log(number_of_cells) * DoF` in which k is the number of free parameters and LL is the maximum of likelihood function.
         Minimum of BIC detremines the relatively better model.
         """
-        degrees_of_freedom = 0
+        degrees_of_freedom = 0.0
         # initial prob. matrix
         if self.fpi is None:
             degrees_of_freedom += self.num_states - 1
@@ -137,7 +137,7 @@ class tHMM:
 
         log_scores = []
         for idx, lineageObj in enumerate(self.X):
-            log_score = 0
+            log_score = 0.0
             # the first term is the value of pi for the state of the first cell
             log_score += np.log(pi[X_state_tree_sequence[idx][0]])
             log_score += log_T_score(T, X_state_tree_sequence[idx], lineageObj)
