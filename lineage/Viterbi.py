@@ -22,7 +22,7 @@ def get_leaf_deltas(tHMMobj) -> Tuple[list, list]:
     for num, lineageObj in enumerate(tHMMobj.X): # getting the lineage in the Population by index
         lineage = lineageObj.output_lineage
         delta_array = np.zeros((len(lineage), num_states)) # instantiating N by K array
-        state_ptrs_array = np.empty((len(lineage), 2), dtype=object)
+        state_ptrs_array = np.empty((len(lineage), 2), dtype=int)
 
         for cell in lineage:
             if cell.isLeaf():

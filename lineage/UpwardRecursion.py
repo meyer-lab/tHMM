@@ -46,7 +46,7 @@ def get_Marginal_State_Distributions(tHMMobj):
     return MSD
 
 
-def get_Emission_Likelihoods(tHMMobj, E=None):
+def get_Emission_Likelihoods(tHMMobj, E: list = None) -> list:
     """
     Emission Likelihood (EL) matrix.
 
@@ -57,9 +57,7 @@ def get_Emission_Likelihoods(tHMMobj, E=None):
     for all :math:`x_n` and :math:`z_n` in our observed and hidden state tree
     and for all possible discrete states k.
     :param tHMMobj: A class object with properties of the lineages of cells
-    :type tHMMobj: object
     :param E: The emissions likelihood
-    :type E: list
     :return: The marginal state distribution
     """
     if E is None:
@@ -172,7 +170,7 @@ def get_leaf_betas(tHMMobj, MSD: list, EL: list, NF: list):
     return betas
 
 
-def get_nonleaf_NF_and_betas(tHMMobj, MSD: list, EL: list, NF: list, betas):
+def get_nonleaf_NF_and_betas(tHMMobj, MSD: list, EL: list, NF: list, betas: np.ndarray):
     """
     Traverses through each tree and calculates the
     beta value for each non-leaf cell. The normalizing factors (NFs)
@@ -187,7 +185,6 @@ def get_nonleaf_NF_and_betas(tHMMobj, MSD: list, EL: list, NF: list, betas):
     :param EL: The emissions likelihood
     :param NF: normalizing factor. The marginal observation distribution P(x_n = x)
     :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
-    :type betas: list of ndarray
     """
     for num, lO in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lO.output_lineage  # getting the lineage in the Population by index
