@@ -13,7 +13,6 @@ class DummyExecutor(Executor):
         f.set_result(result)
         return f
 
-
 def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, int, float]:
     """ Runs a tHMM and outputs the tHMM object, state assignments, and likelihood. """
     tHMMobj_list, st, LL = Analyze_list([X], num_states, **kwargs)
@@ -22,6 +21,10 @@ def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, int, float]:
 
 def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list, list, float]:
     """ This function runs the analyze for the case when we want to fit the experimental data. (fig 11)"""
+    
+    tHMMobj_list: list
+    tHMMobj_list2: list
+    
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
     _, _, _, _, LL = fit_list(tHMMobj_list)
 
