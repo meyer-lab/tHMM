@@ -16,9 +16,8 @@ Welcome to lineage-growth's documentation!
 Tutorials
 ==================
 
-   :doc:`../overview`
-   :doc:`../stateDistributions`
-   :doc:`../estimating_states`
+   :doc:`../1.overview`
+   :doc:`../2.stateDistributions`
 
 
 Indices and tables
