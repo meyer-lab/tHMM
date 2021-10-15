@@ -34,7 +34,6 @@ end up. That is, if an element at the index of a transition matrix
 
 .. math:: T_{i,j} = \mathbb{P}(z = j | z = i).
 
-$$ T_{i,j} = \mathbb{P}(z = j | z = i)$$
 
 \ Indexing for this matrix and the states starts at :math:`0`. Usually
 the number of states is represented as the capital letter :math:`K` and
