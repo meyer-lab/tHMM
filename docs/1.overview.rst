@@ -34,6 +34,8 @@ end up. That is, if an element at the index of a transition matrix
 
 .. math:: T_{i,j} = \mathbb{P}(z = j | z = i).
 
+$$ T_{i,j} = \mathbb{P}(z = j | z = i)$$
+
 \ Indexing for this matrix and the states starts at :math:`0`. Usually
 the number of states is represented as the capital letter :math:`K` and
 indexed by the lower-case letter :math:`k`. For most of our examples, we
@@ -309,7 +311,7 @@ particular) and in general as more cells and more lineages are added.
         print("\n")
 
 
-3. Creating a population with multiple lineages:
+4. Creating a population with multiple lineages:
 ------------------------------------------------
 
 The following is an analysis run on a larger set of lineages. We first create 10 lineages and append them to a list to form our cell populations.
@@ -362,7 +364,7 @@ The function ``Results()`` provides calculated features when analyzing a synthet
     print("\n the distance between state 0 and state 1: ", results_dict["wasserstein"])
 
 
-4. Applications - A guide to use the `tHMM` for imported experimental data.
+5. Applications - A guide to use the `tHMM` for imported experimental data.
 ---------------------------------------------------------------------------
 
 As an application, we fit experimental data of cell cycle phase durations (G1 and S/G2) in response to lapatinib and gemcitabine treatments to analyze the phenotypic heterogeneity.

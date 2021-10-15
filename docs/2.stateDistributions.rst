@@ -13,12 +13,12 @@ The first example shows that a state of a cell, can be determined by two phenoty
 that are cell fate and cell lifetime. Cell fate, which is whether a cell dies or gets to divide,
 is representated by a Bernoulli distribution which is defined by one parameter, shown as bern_p. 
 Cell lifetime, which is the intermitotic time for each cell, is represented by a Gamma distribution
-which is defined by two parameters, shown as gamma_a and gamma_scale.
+which is defined by two parameters, shown as `gamma_a` and `gamma_scale`.
 In this case, they are independent of each other -- but that may not always be the case.
 
 The second example shows that a state of a cell can be determined only using cell size.
 We used a Normal distribution to model the cell size, which has two parameters;
-mean and standard deviation, shown as norm_loc and norm_scale, respectively. Please note that
+mean and standard deviation, shown as `norm_loc` and `norm_scale`, respectively. Please note that
 in this case we are assuming all cells should be accounted for, i.e., we have no censorship.
 
 Necessary components to create StateDistribution class compatible with tHMM are listed bellow:
@@ -28,8 +28,8 @@ Necessary components to create StateDistribution class compatible with tHMM are 
 
 This should take in all defining
 parameters for all distributions being used. For the first example, Bernoulli and Gamma, it would be
-bern_p, gamma_a, and gamma_scale, and for the sencond example, the normal distribution,
-this would be norm_loc, and norm_scale.
+`bern_p`, `gamma_a`, and `gamma_scale`, and for the sencond example, the normal distribution,
+this would be `norm_loc`, and `norm_scale`.
 These are assigned as instances of the class object. One can assert that the given values
 actually make sense for the distribution. For example, a normal
 distribution cannot have a negative or zero standard deviation.
@@ -97,7 +97,7 @@ The rvs function returns the observed phenotypes as a tuple of lists.
         # These tuples of observations will go into the cells in the lineage tree.
         return norm_obs, norm_obs_censor
 
-------
+
 3. PDF
 ------
 
@@ -149,7 +149,7 @@ Those cells that died are then removed in the first example that cell's fate mat
 
         return ll
 
-----------------
+
 4. The estimator
 ----------------
 
@@ -217,7 +217,7 @@ the function is located in the lineage/states/stateCommon.py
         self.params[0] = np.average(norm_obs[s_mask], weights=gammas[s_mask]) # mean
         self.params[1] = ((np.sum(gammas[s_mask]*(norm_obs-self.params[0])**2) + 1e-10)/ (np.sum(gammas[s_mask])+ 1e-10))**.5 # std
 
--------
+
 Example
 -------
 
