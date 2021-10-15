@@ -1,6 +1,7 @@
 """ This file is completely user defined. We have provided a general starting point for the user to use as an example. """
 import numpy as np
 import scipy.stats as sp
+from typing import Union
 
 from .stateCommon import gamma_estimator, gamma_estimator_atonce, basic_censor
 from ..CellVar import Time
@@ -12,11 +13,15 @@ class StateDistribution:
     """
 
     def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=4.5):
-        """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
+        """ Initialization function should take in just in the parameters 
+        for the observations that comprise the multivariate random variable emission they expect their data to have.
+        In this case, we used Gamma distribution for cell lifetime, which has 2 parameters; shape and scale.
+        And we used bernoulli distribution for cell lifetime, which has 1 parameter.
+        """
         self.params = np.array([bern_p, gamma_a, gamma_scale])
 
-    def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
-        """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
+    def rvs(self, size: int):  # user has to identify what the multivariate (or univariate) random variable looks like
+        """ User-defined way of calculating a random variable given the parameters of the state stored in their object. """
         # {
         bern_obs = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
         gamma_obs = sp.gamma.rvs(a=self.params[1], scale=self.params[2], size=size)  # gamma observations
@@ -26,24 +31,29 @@ class StateDistribution:
         return bern_obs, gamma_obs, gamma_obs_censor
 
     def dist(self, other):
-        """ Calculate the Wasserstein distance between this state emissions and the given.
-        Note that this does not take the Bernoulli into account. """
+        """ Calculate the Wasserstein distance between two gamma distributions that each correspond to a state.
+        This is our way of calculating the distance between two state, when their bernoulli distribution is kept the same.
+        For more information about wasserstein distance, please see https://en.wikipedia.org/wiki/Wasserstein_metric.
+        """
         assert isinstance(self, type(other))
         dist = np.absolute(self.params[1] * self.params[2] - other.params[1] * other.params[2])
         return dist
 
     def dof(self):
-        """ Return the degrees of freedom. """
+        """ Return the degrees of freedom.
+        In this case, each state has 1 bernoulli distribution parameter, and 2 gamma distribution parameters.
+        """
         return 3
 
-    def pdf(self, x):  # user has to define how to calculate the likelihood
-        """ User-defined way of calculating the likelihood of the observation stored in a cell. """
-        # In the case of a univariate observation, the user still has to define how the likelihood is calculated,
-        # but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
-        # In the case of a multivariate observation, the user has to decide how the likelihood is calculated.
-        # In our example, we assume the observation's are uncorrelated across the dimensions (across the different
-        # distribution observations), so the likelihood of observing the multivariate observation is just the product of
-        # the individual observation likelihoods.
+    def pdf(self, x: np.ndarray):
+        """ User-defined way of calculating the likelihood of the observation stored in a cell.
+        In the case of a univariate observation, the user still has to define how the likelihood is calculated,
+        but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
+        In the case of a multivariate observation, the user has to decide how the likelihood is calculated.
+        In our example, we assume the observation's are uncorrelated across the dimensions (across the different
+        distribution observations), so the likelihood of observing the multivariate observation is just the product of
+        the individual observation likelihoods.
+        """
         ll = np.zeros(x.shape[0])
 
         # Update uncensored Gamma
@@ -60,12 +70,12 @@ class StateDistribution:
 
         return np.exp(ll)
 
-    def estimator(self, x, gammas):
+    def estimator(self, X: list, gammas: np.ndarray):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
 
         # getting the observations as individual lists
         # {
-        x = np.array(x)
+        x = np.array(X)
         bern_obs = x[:, 0].astype('bool')
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
@@ -91,12 +101,12 @@ class StateDistribution:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
 
-    def assign_times(self, list_of_gens):
+    def assign_times(self, list_of_gens: list):
         """
         Assigns the start and end time for each cell in the lineage.
         The time observation will be stored in the cell's observation parameter list
         in the second position (index 1). See the other time functions to understand.
-        This is used in the creation of LineageTrees
+        This is used in the creation of LineageTrees.
         """
         # traversing the cells by generation
         for gen_minus_1, level in enumerate(list_of_gens[1:]):
@@ -109,13 +119,13 @@ class StateDistribution:
                 for cell in level:
                     cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
 
-    def censor_lineage(self, censor_condition, full_list_of_gens, full_lineage, **kwargs):
+    def censor_lineage(self, censor_condition: int, full_list_of_gens: list, full_lineage: list, **kwargs):
         """
-        This function removes those cells that are intended to be remove
-        from the output binary tree based on emissions.
+        This function removes those cells that are intended to be removed.
+        These cells include the descendants of a cell that has died, or has lived beyonf the experimental end time.
         It takes in LineageTree object, walks through all the cells in the output binary tree,
-        applies the pruning to each cell that is supposed to be removed,
-        and returns the censored list of cells.
+        applies the censorship to each cell that is supposed to be removed,
+        and returns the lineage of cells that are supposed to be alive and accounted for.
         """
         if kwargs:
             desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
@@ -157,10 +167,9 @@ class StateDistribution:
 
 def fate_censor(cell):
     """
-    User-defined function that checks whether a cell's subtree should be removed.
+    Checks whether a cell has died based on its fate, and if so, it will remove its subtree.
     Our example is based on the standard requirement that the first observation
     (index 0) is a measure of the cell's fate (1 being alive, 0 being dead).
-    Clearly if a cell has died, its subtree must be removed.
     """
     if cell.obs[0] == 0:
         if not cell.isLeafBecauseTerminal():
@@ -168,13 +177,11 @@ def fate_censor(cell):
             cell.right.observed = False
 
 
-def time_censor(cell, desired_experiment_time):
+def time_censor(cell, desired_experiment_time: Union[int, float]):
     """
-    User-defined function that checks whether a cell's subtree should be removed.
+    Checks whether a cell has lived beyond the experiment end time and if so, it will remove its subtree.
     Our example is based on the standard requirement that the second observation
     (index 1) is a measure of the cell's lifetime.
-    If a cell has lived beyond a certain experiment time, then its subtree
-    must be removed.
     """
     if cell.time.endT > desired_experiment_time:
         cell.time.endT = desired_experiment_time
@@ -187,9 +194,10 @@ def time_censor(cell, desired_experiment_time):
             cell.right.observed = False
 
 
-def atonce_estimator(all_tHMMobj, x_list, gammas_list, phase, state_j):
-    """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells.
-        gammas_list is only for one state. """
+def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: str, state_j: int):
+    """ Estimating the parameters for one state, in this case bernoulli nad gamma distirbution parameters,
+    given a list of the tuples of observations from a group of cells.
+    gammas_list is only for one state. """
     # unzipping the list of tuples
     x_data = [np.array(x) for x in x_list]
 

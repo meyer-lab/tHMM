@@ -1,14 +1,12 @@
 """ State distribution class for separated G1 and G2 phase durations as observation. """
-import math
 import numpy as np
-import scipy.stats as sp
 
 from .stateCommon import basic_censor
 from .StateDistributionGamma import StateDistribution as GammaSD
 from ..CellVar import Time
 
 
-class StateDistribution:
+class StateDistribution():
     """ For G1 and G2 separated as observations. """
 
     def __init__(self, bern_p1=0.9, bern_p2=0.75, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6):  # user has to identify what parameters to use for each state
@@ -17,7 +15,7 @@ class StateDistribution:
         self.G1 = GammaSD(bern_p=bern_p1, gamma_a=gamma_a1, gamma_scale=gamma_scale1)
         self.G2 = GammaSD(bern_p=bern_p2, gamma_a=gamma_a2, gamma_scale=gamma_scale2)
 
-    def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
+    def rvs(self, size: int):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
         # {
         bern_obsG1, gamma_obsG1, gamma_censor_obsG1 = self.G1.rvs(size)
@@ -35,7 +33,7 @@ class StateDistribution:
         """ Return the degrees of freedom. """
         return self.G1.dof() + self.G2.dof()
 
-    def pdf(self, x):  # user has to define how to calculate the likelihood
+    def pdf(self, x: np.ndarray):
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
         # In the case of a univariate observation, the user still has to define how the likelihood is calculated,
         # but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
@@ -48,7 +46,7 @@ class StateDistribution:
 
         return G1_LL * G2_LL
 
-    def estimator(self, x, gammas):
+    def estimator(self, x: np.ndarray, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
         x = np.array(x)
 
@@ -65,7 +63,7 @@ class StateDistribution:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
 
-    def assign_times(self, list_of_gens):
+    def assign_times(self, list_of_gens: list):
         """
         Assigns the start and end time for each cell in the lineage.
         The time observation will be stored in the cell's observation parameter list
@@ -85,7 +83,7 @@ class StateDistribution:
                     cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[2] + cell.obs[3])
                     cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
 
-    def censor_lineage(self, censor_condition, full_list_of_gens, full_lineage, **kwargs):
+    def censor_lineage(self, censor_condition: int, full_list_of_gens: list, full_lineage, **kwargs):
         """
         This function removes those cells that are intended to be remove
         from the output binary tree based on emissions.

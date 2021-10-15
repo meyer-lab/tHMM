@@ -5,7 +5,7 @@ from .CellVar import CellVar as c
 import numpy as np
 
 
-def import_Heiser(path):
+def import_exp_data(path):
     global_exp_time = [-1]
     """
     Imports data from the Heiser lab

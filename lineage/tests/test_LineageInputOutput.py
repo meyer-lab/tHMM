@@ -3,7 +3,7 @@ import unittest
 import math
 import pandas as pd
 
-from ..LineageInputOutput import import_Heiser, tryRecursion
+from ..LineageInputOutput import import_exp_data, tryRecursion
 from ..CellVar import CellVar as c
 
 
@@ -68,7 +68,7 @@ class TestModel(unittest.TestCase):
         Tests the main import function for Heiser lab data.
         """
         path2use = self.path_to_synthetic_data
-        lineages = import_Heiser(path2use)
+        lineages = import_exp_data(path2use)
         self.assertTrue(len(lineages) == 3)
         self.assertTrue(len(lineages[0]) == 3)
         self.assertTrue(len(lineages[1]) == 3)

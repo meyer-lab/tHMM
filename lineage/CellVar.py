@@ -156,3 +156,4 @@ class Time:
     """
     startT: float
     endT: float
+    transition_time: float = 0.0
