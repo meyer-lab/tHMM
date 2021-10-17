@@ -27,13 +27,12 @@ The `docs` folder includes a few tutorials for getting started with the package.
 ## Software requirements
 
 ### OS requirements
-This package is supported for *macOS*, *Windows*, and *Linux*. The package has been tested on the following systems:
+This package is supported for *macOS* and *Linux*. The package has been tested on the following systems:
 - macOS: Mojave (10.14.1)
 - Linux: Ubuntu 20.04
-- Windows: 10
 
 ### Python dependencies
-`tHMM` requires `virtualenv`. All other required packages can then be installed using `make venv` to establish a virtual environment. The Python packages that will be installed are listed in `requirements.txt`.
+`tHMM` requires `virtualenv`. All other required packages can then be installed using `make venv` to establish a virtual environment. The Python packages that will be installed are listed in `requirements.txt`, and can be directly installed using `pip install -r requirements.txt`.
 
 # Installation Guide:
 
@@ -132,7 +131,7 @@ for state in range(lineage.num_states):
 
 ```
 import numpy as np
-from lineage.LineageInputOutput import import_Heiser
+from lineage.LineageInputOutput import import_exp_data
 from lineage.states.StateDistributionGaPhs import StateDistribution
 from lineage.LineageTree import LineageTree
 from lineage.Analyze import run_Analyze_over
@@ -141,15 +140,15 @@ desired_num_states = 2 # does not make a difference what number we choose for im
 E = [StateDistribution() for _ in range(desired_num_states)]
 
 # Importing only one of the replicates of control condition
-control1 = [LineageTree(list_of_cells, E) for list_of_cells in import_Heiser(path=r"lineage/data/heiser_data/new_version/AU00601_A5_1_V5.xlsx")]
+control1 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_A5_1_V5.xlsx")]
 
 output = run_Analyze_over([control1], 2, atonce=False)
 ```
-To find the most likely number of states, we can calculate the AIC metrc for 1,2,3,... number of states and find out the likelihoods.
-The following calculates the AIC for 2 states, as we chose in the `run_Analyze_over` above.
+To find the most likely number of states, we can calculate the BIC metrc for 1,2,3,... number of states and find out the likelihoods.
+The following calculates the BIC for 2 states, as we chose in the `run_Analyze_over` above.
 
 ```
-AICs = np.array([oo[0].get_AIC(oo[2], 75, atonce=True)[0] for oo in output])
+BICs = np.array([oo[0].get_BIC(oo[2], 75, atonce=True)[0] for oo in output])
 ```
 
 The output of fitting could be the transition matrix:

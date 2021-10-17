@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 import numpy as np
+from typing import Tuple
 import scipy.stats as sp
 
 from .UpwardRecursion import get_Emission_Likelihoods
@@ -13,7 +14,15 @@ class estimate:
     """Estimation class.
     """
 
-    def __init__(self, X, nState: int, fpi=None, fT=None, fE=None):
+    def __init__(self, X: list, nState: int, fpi=None, fT=None, fE=None):
+        """
+        Instantiating the estimation class. 
+        The initial probability array (pi), transition probability matrix (T), and the emission likelihood (E) are initialized.
+        If these parameters are already estimated, then they are assigned as an instance to the estimate class.
+
+        :param X: A list of objects (cells) in one lineage
+        :param nStates: The number of hidden states
+        """
         self.fpi = fpi
         self.fT = fT
         self.fE = fE
@@ -41,15 +50,13 @@ class tHMM(Generic[tHMMclass]):
     """Main tHMM class.
     """
 
-    def __init__(self, X, num_states: int, fpi=None, fT=None, fE=None):
+    def __init__(self, X: list, num_states: int, fpi=None, fT=None, fE=None):
         """Instantiates a tHMM.
         This function uses the following functions and assings them to the cells
         (objects) in the lineage.
-        :param X: A list of objects (cells) in a lineage in which
-        the NaNs have been removed.
-        :type X: list of objects
-        :param num_states: The number of hidden states that we want our model have.
-        :type num_states: Int
+
+        :param X: A list of objects (cells) in one lineage
+        :param nStates: The number of hidden states
         """
         self.fpi = fpi
         self.fT = fT
@@ -61,35 +68,36 @@ class tHMM(Generic[tHMMclass]):
         self.EL = get_Emission_Likelihoods(self)
 
     def fit(self, tolerance=1e-9, max_iter=1000):
-        """Runs the tHMM function through Baum Welch fitting"""
+        """
+        Runs the tHMM function through Baum Welch fitting.
+
+        :param tolerance: the tolerance for change of likelihood between two steps
+        :param max_iter: the maximum number of iterations for fitting
+        """
         MSD_list, NF_list, betas_list, gammas_list, new_LL = fit_list([self], tolerance=tolerance, max_iter=max_iter)
 
         return self, MSD_list[0], NF_list[0], betas_list[0], gammas_list[0], new_LL
 
-    def predict(self):
+    def predict(self) -> list:
         """
         Given a fit model, the model predicts an optimal
         state assignment using the Viterbi algorithm.
+
+        :return: assigned states to each cell in each lineage. It is organized in the form of list of arrays, each array shows the state of cells in one lineage.
         """
         deltas, state_ptrs = get_leaf_deltas(self)
         get_nonleaf_deltas(self, deltas, state_ptrs)
         pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
         return pred_states_by_lineage
 
-    def get_AIC(self, LL, num_cells, atonce=False):
+    def get_BIC(self, LL: float, num_cells: int, atonce=False) -> Tuple[float, float]:
         """
-        Gets the AIC values. Akaike Information Criterion, used for model selection and deals with the trade off
+        Gets the BIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.
-        :math:`AIC = 2*k - 2 * log(LL)` in which k is the number of free parameters and LL is the maximum of likelihood function.
-        Minimum of AIC detremines the relatively better model.
-        :param tHMMobj: the tHMM class which has been built.
-        :type tHMMobj: object
-        :param LL: the likelihood value
-        :param AIC_value: containing AIC values relative to 0 for each lineage.
-        :type AIC_value: float
-        :param AIC_degrees_of_freedom: the degrees of freedom in AIC calculation :math:`(num_{states}^2 + num_{states} * numberOfParameters - 1)` - same for each lineage
+        :math:`BIC = - 2 * log(LL) + log(number_of_cells) * DoF` in which k is the number of free parameters and LL is the maximum of likelihood function.
+        Minimum of BIC detremines the relatively better model.
         """
-        degrees_of_freedom = 0
+        degrees_of_freedom = 0.0
         # initial prob. matrix
         if self.fpi is None:
             degrees_of_freedom += self.num_states - 1
@@ -104,12 +112,12 @@ class tHMM(Generic[tHMMclass]):
             for ii in range(self.num_states):
                 degrees_of_freedom += self.estimate.E[ii].dof()
 
-        # the whole population has one AIC value.
+        # the whole population has one BIC value.
         BIC_value = -2 * np.sum(LL) + np.log(num_cells) * degrees_of_freedom
 
         return BIC_value, degrees_of_freedom
 
-    def log_score(self, X_state_tree_sequence, pi=None, T=None, E=None):
+    def log_score(self, X_state_tree_sequence: list, pi=None, T=None, E=None) -> list:
         """
         This function returns the log-likelihood of a possible state assignment
         given the estimated model parameters.
@@ -117,6 +125,9 @@ class tHMM(Generic[tHMMclass]):
         a possible state assignment.
         :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
         :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
+
+        :param X_state_tree_sequence: the assigned states to cells at each lineage object
+        :return: the log-likelihood of states assigned to single cells, based on the pi, T, and E, separate for each lineage tree
         """
         if pi is None:
             pi = self.estimate.pi
@@ -127,7 +138,7 @@ class tHMM(Generic[tHMMclass]):
 
         log_scores = []
         for idx, lineageObj in enumerate(self.X):
-            log_score = 0
+            log_score = 0.0
             # the first term is the value of pi for the state of the first cell
             log_score += np.log(pi[X_state_tree_sequence[idx][0]])
             log_score += log_T_score(T, X_state_tree_sequence[idx], lineageObj)
@@ -138,12 +149,19 @@ class tHMM(Generic[tHMMclass]):
         return log_scores
 
 
-def log_T_score(T, state_tree_sequence, lineageObj):
+def log_T_score(T, state_tree_sequence: list, lineageObj) -> float:
     """
     To calculate the joint probability of state and observations.
     This function calculates the second term.
     :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
     :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
+
+    :param T: transition probability matrix
+    :type T: ndarray
+    :param state_tree_sequence: the assigned states to cells at each lineage object
+    :param lineageObj: the lineage trees
+    :type lineageObj: object
+    :return: the log-likelihood of the transition probability matrix
     """
     log_T_score_holder = 0
     log_T = np.log(T)
@@ -160,12 +178,16 @@ def log_T_score(T, state_tree_sequence, lineageObj):
     return log_T_score_holder
 
 
-def log_E_score(EL_array, state_tree_sequence):
+def log_E_score(EL_array: np.ndarray, state_tree_sequence: list) -> float:
     """
     To calculate the joint probability of state and observations.
-    This function calculates the thid term.
+    This function calculates the third term.
     :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
     :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
+
+    :param EL_array: emission likelihood for a given lineage tree object
+    :param state_tree_sequence: the assigned states to cells at each lineage object
+    :return: the log-likelihood of emissions
     """
     log_EL_array = np.log(EL_array)
     log_E_score_holder = 0
@@ -174,8 +196,19 @@ def log_E_score(EL_array, state_tree_sequence):
     return log_E_score_holder
 
 
-def fit_list(tHMMobj_list, tolerance=1e-9, max_iter=1000):
-    """Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations"""
+def fit_list(tHMMobj_list: list, tolerance: float = 1e-9, max_iter: int = 1000) -> Tuple[list, list, list, list, float]:
+    """
+    Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
+
+    :param tHMMobj_list: all lineage trees we want to fit at once
+    :param tolerance: the stopping criteria for fitting. when the likelihood does not change more than tolerance from one step to the other, the fitting converges.
+    :param max_iter: the maximum number of iterations for fitting
+    :return MSD_list: marginal state distributions for all populations we fit at once
+    :return NF: normalizing factor
+    :return betas: beta values (conditional probability of cell states given cell observations)
+    :return gammas: gamma values (used to calculate the downward reursion)
+    :return new_LL: the log-likelihood of the optimized solution
+    """
 
     # Step 0: initialize with random assignments and do an M step
     # when there are no fixed emissions, we need to randomize the start

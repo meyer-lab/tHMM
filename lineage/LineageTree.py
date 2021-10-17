@@ -1,6 +1,7 @@
 """ This file contains the LineageTree class. """
 import numpy as np
 import operator
+from typing import Tuple
 
 from .CellVar import CellVar
 from typing import Tuple
@@ -23,7 +24,7 @@ class LineageTree():
     full_leaves_idx: list
     full_leaves: list
 
-    def __init__(self, list_of_cells, E):
+    def __init__(self, list_of_cells: list, E: list):
         self.E = E
         self.output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
         self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
@@ -41,7 +42,6 @@ class LineageTree():
         :param E: A list containing state distribution objects, the length of it is the same as the number of states.
         :param desired_num_cells: The desired number of cells we want the lineage to end up with.
         :param censor_condition: An integer :math:`\in` \{0, 1, 2, 3\} that decides the type of censoring.
-        :type censor_condition: Int
 
         Censoring guide
         - 0 means no pruning
@@ -126,7 +126,7 @@ def generate_lineage_list(pi: np.ndarray, T: np.ndarray, desired_num_cells: int)
     return full_lineage
 
 
-def output_assign_obs(state: int, full_lineage: list, E: list) -> None:
+def output_assign_obs(state: int, full_lineage: list, E: list):
     """
     Observation assignment give a state.
     Given the lineageTree object and the intended state, this function assigns the corresponding observations
