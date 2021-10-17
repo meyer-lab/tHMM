@@ -4,7 +4,7 @@ import numpy as np
 from concurrent.futures import ProcessPoolExecutor, Future, Executor
 from sklearn.metrics import balanced_accuracy_score
 from .tHMM import tHMM, fit_list
-from typing import Tuple
+from typing import Any, Tuple
 
 class DummyExecutor(Executor):
     def submit(self, fn, *args, **kwargs):
@@ -41,7 +41,7 @@ def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list
     return tHMMobj_list, pred_states_by_lineage_by_conc, LL
 
 
-def run_Analyze_over(list_of_populations: list, num_states: int, parallel=True, atonce=False, **kwargs) -> list:
+def run_Analyze_over(list_of_populations: list, num_states: np.ndarray, parallel=True, atonce=False, **kwargs) -> list:
     """
     A function that can be parallelized to speed up figure creation.
 
@@ -63,6 +63,7 @@ def run_Analyze_over(list_of_populations: list, num_states: int, parallel=True, 
         num_states = np.full(len(list_of_populations), num_states)
 
     output = []
+    exe: Any
     if parallel:
         exe = ProcessPoolExecutor()
     else:
@@ -89,6 +90,7 @@ def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict:
 
     """
     # Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
+    results_dict: dict[Any, Any]
     results_dict = {}
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
@@ -155,7 +157,7 @@ def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict:
 
     # 4. Calculate the Wasserstein distance
     results_dict["wasserstein"] = tHMMobj.X[0].E[0].dist(tHMMobj.X[0].E[1])
-
+    
     return results_dict
 
 
@@ -164,6 +166,7 @@ def run_Results_over(output: list, parallel=True) -> list:
     A function that can be parallelized to speed up figure creation.
     Output is a list of tuples from the results of running :func:`run_Analyze_over`
     """
+    exe: Any
     if parallel:
         exe = ProcessPoolExecutor()
     else:
