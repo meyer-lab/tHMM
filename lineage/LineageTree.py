@@ -2,11 +2,9 @@
 import numpy as np
 import operator
 from typing import Tuple
-
 from .CellVar import CellVar
-from typing import Tuple
 
-class LineageTree():
+class LineageTree:
     """A class for lineage trees.
     Every lineage object from this class is a binary tree built based on initial probabilities,
     transition probabilities, and emissions defined by state distributions given by the user.
