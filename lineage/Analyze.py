@@ -90,7 +90,7 @@ def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict:
 
     """
     # Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
-    results_dict: dict[Any, Any]
+    results_dict: dict[str, Any]
     results_dict = {}
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
