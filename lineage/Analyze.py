@@ -22,9 +22,6 @@ def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, int, float]:
 def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list, list, float]:
     """ This function runs the analyze for the case when we want to fit the experimental data. (fig 11)"""
     
-    tHMMobj_list: list
-    tHMMobj_list2: list
-    
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
     _, _, _, _, LL = fit_list(tHMMobj_list)
 
@@ -63,7 +60,6 @@ def run_Analyze_over(list_of_populations: list, num_states: np.ndarray, parallel
         num_states = np.full(len(list_of_populations), num_states)
 
     output = []
-    exe: Any
     if parallel:
         exe = ProcessPoolExecutor()
     else:
@@ -81,7 +77,7 @@ def run_Analyze_over(list_of_populations: list, num_states: np.ndarray, parallel
     return output
 
 
-def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict:
+def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict[str, Any]:
     """
     This function calculates several results of fitting a synthetic lineage and stores it in a dictionary.
     The dictionary contains the total number of lineages, the log likelihood of state assignments, and
@@ -158,6 +154,7 @@ def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict:
     # 4. Calculate the Wasserstein distance
     results_dict["wasserstein"] = tHMMobj.X[0].E[0].dist(tHMMobj.X[0].E[1])
     
+    
     return results_dict
 
 
@@ -166,7 +163,6 @@ def run_Results_over(output: list, parallel=True) -> list:
     A function that can be parallelized to speed up figure creation.
     Output is a list of tuples from the results of running :func:`run_Analyze_over`
     """
-    exe: Any
     if parallel:
         exe = ProcessPoolExecutor()
     else:
