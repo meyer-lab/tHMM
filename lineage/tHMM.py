@@ -16,7 +16,7 @@ class estimate:
 
     def __init__(self, X: list, nState: int, fpi=None, fT=None, fE=None):
         """
-        Instantiating the estimation class. 
+        Instantiating the estimation class.
         The initial probability array (pi), transition probability matrix (T), and the emission likelihood (E) are initialized.
         If these parameters are already estimated, then they are assigned as an instance to the estimate class.
 
