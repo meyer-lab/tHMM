@@ -13,7 +13,7 @@ class StateDistribution:
     """
 
     def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=4.5):
-        """ Initialization function should take in just in the parameters 
+        """ Initialization function should take in just in the parameters
         for the observations that comprise the multivariate random variable emission they expect their data to have.
         In this case, we used Gamma distribution for cell lifetime, which has 2 parameters; shape and scale.
         And we used bernoulli distribution for cell lifetime, which has 1 parameter.
