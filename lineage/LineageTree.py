@@ -4,6 +4,7 @@ import operator
 from typing import Tuple
 from .CellVar import CellVar
 
+
 class LineageTree:
     """A class for lineage trees.
     Every lineage object from this class is a binary tree built based on initial probabilities,

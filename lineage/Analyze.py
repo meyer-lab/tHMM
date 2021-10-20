@@ -4,7 +4,8 @@ import numpy as np
 from concurrent.futures import ProcessPoolExecutor, Future, Executor
 from sklearn.metrics import balanced_accuracy_score
 from .tHMM import tHMM, fit_list
-from typing import Any, Tuple
+from typing import Any, Tuple, Union
+
 
 class DummyExecutor(Executor):
     def submit(self, fn, *args, **kwargs):
@@ -12,6 +13,7 @@ class DummyExecutor(Executor):
         result = fn(*args, **kwargs)
         f.set_result(result)
         return f
+
 
 def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, int, float]:
     """ Runs a tHMM and outputs the tHMM object, state assignments, and likelihood. """
@@ -21,7 +23,7 @@ def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, int, float]:
 
 def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list, list, float]:
     """ This function runs the analyze for the case when we want to fit the experimental data. (fig 11)"""
-    
+
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
     _, _, _, _, LL = fit_list(tHMMobj_list)
 
@@ -60,6 +62,7 @@ def run_Analyze_over(list_of_populations: list, num_states: np.ndarray, parallel
         num_states = np.full(len(list_of_populations), num_states)
 
     output = []
+    exe: Union[ProcessPoolExecutor, DummyExecutor]
     if parallel:
         exe = ProcessPoolExecutor()
     else:
@@ -153,8 +156,7 @@ def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict[str, Any]:
 
     # 4. Calculate the Wasserstein distance
     results_dict["wasserstein"] = tHMMobj.X[0].E[0].dist(tHMMobj.X[0].E[1])
-    
-    
+
     return results_dict
 
 
@@ -163,6 +165,7 @@ def run_Results_over(output: list, parallel=True) -> list:
     A function that can be parallelized to speed up figure creation.
     Output is a list of tuples from the results of running :func:`run_Analyze_over`
     """
+    exe: Union[ProcessPoolExecutor, DummyExecutor]
     if parallel:
         exe = ProcessPoolExecutor()
     else:

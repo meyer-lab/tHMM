@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 def get_Marginal_State_Distributions(tHMMobj):
     r"""Marginal State Distribution (MSD) matrix and recursion.
     This is the probability that a hidden state variable :math:`z_n` is of
