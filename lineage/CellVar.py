@@ -10,8 +10,9 @@ class CellVar:
     """
 
     def __init__(self, parent, gen: int, state: Optional[int] = None):
-        """Instantiates the cell object.
-        Contains memeber variables that identify daughter cells
+        """
+        Instantiates the cell object.
+        Contains member variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
         """
         self.parent = parent
@@ -36,7 +37,6 @@ class CellVar:
 
     def isLeafBecauseTerminal(self) -> bool:
         """
-        Boolean.
         Returns true when a cell is a leaf with no children.
         These are cells at the end of the tree.
         """
@@ -49,7 +49,6 @@ class CellVar:
 
     def isLeafBecauseDaughtersAreNotObserved(self) -> bool:
         """
-        Boolean.
         Returns true when a cell is a leaf because its children are unobserved
         but it itself is observed.
         """
@@ -60,7 +59,6 @@ class CellVar:
 
     def isLeaf(self) -> bool:
         """
-        Boolean.
         Returns true when a cell is a leaf defined by the two conditions that determine
         whether a cell is a leaf. A cell only has to satisfy one of the conditions
         (an or statement) for it to be a leaf.
@@ -69,7 +67,6 @@ class CellVar:
 
     def isRootParent(self) -> bool:
         """
-        Boolean.
         Returns true if this cell is the first cell in a lineage.
         """
         if not self.parent and self.gen == 1:

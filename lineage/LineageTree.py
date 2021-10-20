@@ -2,7 +2,6 @@
 import numpy as np
 import operator
 from typing import Tuple
-
 from .CellVar import CellVar
 
 
@@ -87,11 +86,9 @@ class LineageTree:
         return lineageObj
 
     def get_parents_for_level(self, level: list) -> set:
-        """Get the parents's index of a generation in the population list.
+        """
+        Get the parents's index of a generation in the population list.
         Given the generation level, this function returns the index of parent cells of the cells being in that generation level.
-
-        :param level: A list containing cells in a specific generation level.
-        :return: A set holding the parents' indexes of cells in a given generation.
         """
         parent_holder = set()  # set makes sure only one index is put in and no overlap
         for cell in level:
@@ -132,9 +129,7 @@ def output_assign_obs(state: int, full_lineage: list, E: list):
     """
     Observation assignment give a state.
     Given the lineageTree object and the intended state, this function assigns the corresponding observations
-    comming from specific distributions for that state.
-
-    :param state: The number assigned to a state.
+    coming from specific distributions for that state.
     """
     cells_in_state = [cell for cell in full_lineage if cell.state == state]
     list_of_tuples_of_obs = E[state].rvs(size=len(cells_in_state))
@@ -149,13 +144,10 @@ def output_assign_obs(state: int, full_lineage: list, E: list):
 
 
 def max_gen(lineage: list) -> Tuple[int, list]:
-    """Finds the maximal generation in the tree, and cells organized by their generations.
+    """
+    Finds the maximal generation in the tree, and cells organized by their generations.
     This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
     creates a list of them, appends the lists leading to have a list of the lists of cells in specific generations.
-
-    :param lineage: A list of cells (objects) with known state, generation, etc.
-    :return: The maximal generation in the given lineage.
-    :return: A list of lists of cells, organized by their generations.
     """
     gens = sorted({cell.gen for cell in lineage})  # appending the generation of cells in the lineage
     list_of_lists_of_cells_by_gen = [[None]]
@@ -168,10 +160,6 @@ def max_gen(lineage: list) -> Tuple[int, list]:
 def get_leaves(lineage: list) -> Tuple[list, list]:
     """
     A function to find the leaves and their indexes in the lineage list.
-
-    :param lineage: A list of cells in the lineage.
-    :return: A list of indexes to the leaf cells in the lineage list.
-    :return: A list holding the leaf cells in the lineage given.
     """
     leaf_indices = []
     leaves = []
