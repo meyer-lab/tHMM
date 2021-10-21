@@ -108,7 +108,7 @@ class CellVar:
         return temp
 
 
-def tree_recursion(cell, subtree: list) -> None:
+def tree_recursion(cell, subtree) -> None:
     """
     A recursive helper function that traverses upwards from the leaf to the root.
     """

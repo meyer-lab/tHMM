@@ -9,7 +9,7 @@ stateColors = ['blue', 'orange', 'green', 'red', 'purple', 'olive', 'gray']
 
 
 def CladeRecursive(cell, a: list, censor: bool, color: bool):
-    """ A recurssive function that takes in the root cell and traverses through cells to plot the lineage.
+    """ A recursive function that takes in the root cell and traverses through cells to plot the lineage.
     The width of the lines show the phase of the cells.
     The color of the lines show the state of the cells.
 
