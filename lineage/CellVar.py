@@ -9,7 +9,7 @@ class CellVar:
     Cell class.
     """
 
-    def __init__(self, parent, gen: int, state: Optional[int] = None):
+    def __init__(self, parent, gen: int, state: Optional[int] = None, left=None, right=None):
         """
         Instantiates the cell object.
         Contains member variables that identify daughter cells
@@ -19,6 +19,8 @@ class CellVar:
         self.gen = gen
         self.observed = True
         self.state = state
+        self.left = left
+        self.right = right
 
     def divide(self, T: np.ndarray):
         """
