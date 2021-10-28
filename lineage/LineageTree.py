@@ -33,7 +33,7 @@ class LineageTree:
         self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
 
     @classmethod
-    def init_from_parameters(cls, pi: np.ndarray, T: np.ndarray, E: list, desired_num_cells: int, censor_condition=0, **kwargs):
+    def init_from_parameters(cls, pi: np.ndarray, T: np.ndarray, E: list, desired_num_cells: int, barcode: int=0, censor_condition=0, **kwargs):
         r"""
         Constructor method
 
@@ -61,7 +61,7 @@ class LineageTree:
 
         num_states = pi_num_states
 
-        full_lineage = generate_lineage_list(pi=pi, T=T, desired_num_cells=desired_num_cells)
+        full_lineage = generate_lineage_list(pi=pi, T=T, desired_num_cells=desired_num_cells, barcode=barcode)
         for i_state in range(num_states):
             output_assign_obs(i_state, full_lineage, E)
 
@@ -105,14 +105,14 @@ class LineageTree:
         return len(self.output_lineage)
 
 
-def generate_lineage_list(pi: np.ndarray, T: np.ndarray, desired_num_cells: int) -> list:
+def generate_lineage_list(pi: np.ndarray, T: np.ndarray, desired_num_cells: int, barcode: int) -> list:
     """
     Generates a single lineage tree given Markov variables.
     This only generates the hidden variables (i.e., the states) in a output binary tree manner.
     It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
     """
     first_cell_state = np.random.choice(pi.size, size=1, p=pi)[0]  # roll the dice and yield the state for the first cell
-    first_cell = CellVar(parent=None, gen=1, state=first_cell_state)  # create first cell
+    first_cell = CellVar(parent=None, gen=1, state=first_cell_state, barcode=barcode)  # create first cell
     full_lineage = [first_cell]  # instantiate lineage with first cell
 
     for cell in full_lineage:  # letting the first cell proliferate

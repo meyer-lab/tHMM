@@ -105,11 +105,11 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
     accuracy_cen_df["State Assignment Accuracy"] = Accuracy_Cen
 
     i = 0
-    plotLineage(regGen(45), axes=ax[i], censore=False)
+    plotLineage(regGen(45), axes=ax[i], censor=False)
     ax[i].axis('off')
 
     i += 1
-    plotLineage(cenGen(45), axes=ax[i], censore=True)
+    plotLineage(cenGen(45), axes=ax[i], censor=True)
     ax[i].axis('off')
 
     i += 1
