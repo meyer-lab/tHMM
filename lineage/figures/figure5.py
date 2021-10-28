@@ -46,5 +46,5 @@ def makeFigure():
     figureMaker(ax, *commonAnalyze(list_of_populations, 2), num_lineages=num_lineages, dist_dist=True)
 
     subplotLabel(ax)
-    
+
     return f
