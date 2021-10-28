@@ -8,7 +8,7 @@ from typing import Tuple
 
 def get_leaf_deltas(tHMMobj) -> Tuple[list, list]:
     """
-    Delta matrix and base case at the leaves. 
+    Delta matrix and base case at the leaves.
     Each element in this N by K matrix is the probability for the leaves :math:`P(x_n = x | z_n = k)`.
 
     :param tHMMobj: the tHMM object
@@ -19,9 +19,9 @@ def get_leaf_deltas(tHMMobj) -> Tuple[list, list]:
     deltas = []
     state_ptrs = []
 
-    for num, lineageObj in enumerate(tHMMobj.X): # getting the lineage in the Population by index
+    for num, lineageObj in enumerate(tHMMobj.X):  # getting the lineage in the Population by index
         lineage = lineageObj.output_lineage
-        delta_array = np.zeros((len(lineage), num_states)) # instantiating N by K array
+        delta_array = np.zeros((len(lineage), num_states))  # instantiating N by K array
         state_ptrs_array = np.empty((len(lineage), 2), dtype=object)
 
         for cell in lineage:
@@ -45,7 +45,7 @@ def get_nonleaf_deltas(tHMMobj, deltas: list, state_ptrs: list):
     """
 
     for num, lineageObj in enumerate(tHMMobj.X):
-        lineage = lineageObj.output_lineage # getting the lineage in the Population by index
+        lineage = lineageObj.output_lineage  # getting the lineage in the Population by index
         T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
 
         # move up one generation until the 2nd generation is the children
