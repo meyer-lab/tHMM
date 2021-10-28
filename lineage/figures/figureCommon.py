@@ -224,18 +224,23 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=0.0, top=1.02)
     if number_of_params == 6:
-        ax[i].set_ylabel("Accuracy [%]")
-        ax[i].set_title(r"G1 Bernoulli $p$")
-    else:
-        ax[i].set_ylabel("Bernoulli $p$")
-        ax[i].set_title(r"Bernoulli $p$")
+        if dist_dist:
+            ax[i].set_ylim(bottom=0.5, top=1.02)
+            ax[i].set_ylabel("Accuracy [%]")
+            ax[i].set_title(r"G1 Bernoulli $p$")
+        elif dist_dist == False:
+            ax[i].set_ylabel("G1 Bernoulli $p$")
+            ax[i].set_title(r"G1 Bernoulli $p$")
+        else:
+            ax[i].set_ylabel("Bernoulli $p$")
+            ax[i].set_title(r"Bernoulli $p$")
 
     i += 1  # i = 4
     if number_of_params == 6:  # phase specific gamma
         if dist_dist:  # bernoulli G2
             sns.regplot(x="x", y="bern 0 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
             sns.regplot(x="x", y="bern 1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
-            ax[i].set_ylim(bottom=0.0, top=1.02)
+            ax[i].set_ylim(bottom=0.5, top=1.02)
             ax[i].set_ylabel("Accuracy [%]")
             ax[i].set_title(r"S/G2 Bernoulli $p$")
         else:
