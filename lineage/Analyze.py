@@ -4,6 +4,7 @@ import numpy as np
 from concurrent.futures import ProcessPoolExecutor, Future, Executor
 from sklearn.metrics import balanced_accuracy_score
 from .tHMM import tHMM, fit_list
+from typing import Any, Tuple, Union
 
 
 class DummyExecutor(Executor):
@@ -14,14 +15,15 @@ class DummyExecutor(Executor):
         return f
 
 
-def Analyze(X, num_states, **kwargs):
+def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, int, float]:
     """ Runs a tHMM and outputs the tHMM object, state assignments, and likelihood. """
     tHMMobj_list, st, LL = Analyze_list([X], num_states, **kwargs)
     return tHMMobj_list[0], st[0], LL
 
 
-def Analyze_list(Population_list, num_states, **kwargs):
+def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list, list, float]:
     """ This function runs the analyze for the case when we want to fit the experimental data. (fig 11)"""
+
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
     _, _, _, _, LL = fit_list(tHMMobj_list)
 
@@ -38,7 +40,7 @@ def Analyze_list(Population_list, num_states, **kwargs):
     return tHMMobj_list, pred_states_by_lineage_by_conc, LL
 
 
-def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=False, **kwargs):
+def run_Analyze_over(list_of_populations: list, num_states: np.ndarray, parallel=True, atonce=False, **kwargs) -> list:
     """
     A function that can be parallelized to speed up figure creation.
 
@@ -49,11 +51,6 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=Fals
     rest of the code involved in figure creation deals with collecting
     and computing certain statistics, most of which can be done in an
     additional for loop over the results from Analyze.
-
-    :param list_of_populations: A list of populations that contain lineages.
-    :type: list
-    :param num_states: An integer number of states to identify (a hyper-parameter of our model)
-    :type num_states: Int or list
     """
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
@@ -65,6 +62,7 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=Fals
         num_states = np.full(len(list_of_populations), num_states)
 
     output = []
+    exe: Union[ProcessPoolExecutor, DummyExecutor]
     if parallel:
         exe = ProcessPoolExecutor()
     else:
@@ -82,11 +80,16 @@ def run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=Fals
     return output
 
 
-def Results(tHMMobj, pred_states_by_lineage, LL):
+def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict[str, Any]:
     """
-    This function calculates several results of fitting a synthetic lineage.
+    This function calculates several results of fitting a synthetic lineage and stores it in a dictionary.
+    The dictionary contains the total number of lineages, the log likelihood of state assignments, and
+    the total number of cells. It also contains metrics such as the accuracy of state assignment predictions,
+    the distance between two distributions, and the Wasserstein distance between two states.
+
     """
     # Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
+    results_dict: dict[str, Any]
     results_dict = {}
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
@@ -157,13 +160,12 @@ def Results(tHMMobj, pred_states_by_lineage, LL):
     return results_dict
 
 
-def run_Results_over(output, parallel=True):
+def run_Results_over(output: list, parallel=True) -> list:
     """
-    A function that can be parallelized to speed up figure creation
-
-    :param output: a list of tuples from the results of running :func:`run_Analyze_over`
-    :type output: list
+    A function that can be parallelized to speed up figure creation.
+    Output is a list of tuples from the results of running :func:`run_Analyze_over`
     """
+    exe: Union[ProcessPoolExecutor, DummyExecutor]
     if parallel:
         exe = ProcessPoolExecutor()
     else:

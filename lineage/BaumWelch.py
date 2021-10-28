@@ -22,7 +22,7 @@ def do_E_step(tHMMobj) -> Tuple[list, list, list, list]:
     """
     Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
 
-    :param tHMMobj: A tHMM object with properties of the lineages of cells, such as 
+    :param tHMMobj: A tHMM object with properties of the lineages of cells, such as
     :return MSD: Marginal state distribution
     :return NF: normalizing factor
     :return betas: beta values (conditional probability of cell states given cell observations)
