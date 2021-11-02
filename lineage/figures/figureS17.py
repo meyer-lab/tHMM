@@ -83,9 +83,22 @@ def plot_Sankey_time(drug_name, condition, indx_condition):
         tHMMobj_list.append(pickle.load(pik))
     if drug_name == "lapatinibs":
         numST = 6
+        label = ["S00", "S01", "S02", "S03", "S04", "S05",
+                 "S10", "S11", "S12", "S13", "S14", "S15",
+                 "S20", "S21", "S22", "S23", "S24", "S25"]
+        source = 6*[0] + 6*[1] + 6*[2] + 6*[3] + 6*[4] + 6*[5] +
+                 6*[6] + 6*[7] + 6*[8] + 6*[9] + 6*[10] + 6*[11]
+        target = 6 * [6, 7, 8, 9, 10, 11] + 6 * [12, 13, 14, 15, 16, 17]
+        color = 3*['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'olive']
     elif drug_name == "gemcitabines":
         numST = 5
-
+        label = ["S00", "S01", "S02", "S03", "S04",
+                "S10", "S11", "S12", "S13", "S14",
+                "S20", "S21", "S22", "S23", "S24"]
+        source = 5*[0] + 5*[1] + 5*[2] + 5*[3] + 5*[4] + 5*[5] +
+                 5*[6] + 5*[7] + 5*[8] + 5*[9]
+        target = 5 * [5, 6, 7, 8, 9, 10] + 6 * [11, 12, 13, 14, 15]
+        color = 3*['lightblue', 'orange', 'lightgreen', 'red', 'purple']
     counts = counts_transit_time(tHMMobj_list[indx_condition], numST)
 
     # let's just plot control for now
@@ -93,15 +106,12 @@ def plot_Sankey_time(drug_name, condition, indx_condition):
         pad = 15,
         thickness = 20,
         line = dict(color = "black", width = 0.5),
-        label = ["S00", "S01", "S02", "S03", "S04", "S05",
-                 "S10", "S11", "S12", "S13", "S14", "S15",
-                 "S20", "S21", "S22", "S23", "S24", "S25"],
-        color = 3*['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'olive']
+        label-label,
+        color = color
     )
     link = dict(
-        source = 6*[0] + 6*[1] + 6*[2] + 6*[3] + 6*[4] + 6*[5] +
-                 6*[6] + 6*[7] + 6*[8] + 6*[9] + 6*[10] + 6*[11],
-        target = 6 * [6, 7, 8, 9, 10, 11] + 6 * [12, 13, 14, 15, 16, 17],
+        source = source,
+        target = target,
         value = list(counts[0, :, :].flatten()) + list(counts[1, :, :].flatten())
     )
     fig = go.Figure(data=go.Sankey(node=node, link=link))
