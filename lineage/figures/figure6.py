@@ -59,7 +59,9 @@ def accuracy():
 
     wass, _, dict_out, _ = commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=[pi] * num_data_points, list_of_fT=[T] * num_data_points, parallel=True)
     accuracy = dict_out["balanced_accuracy_score"]
-    print(dict_out["state_proportions_0"])
+    for idx, x in enumerate(accuracy):
+        if x<= 50.0: 
+            print(dict_out["LL"][idx])
     distribution_df = pd.DataFrame(columns=["Distribution similarity", "G1 lifetime", "State"])
     lineages = [list_of_populations2[int(num_data_points * i / 4.)][0] for i in range(4)]
     len_lineages = [len(lineage) for lineage in lineages]
