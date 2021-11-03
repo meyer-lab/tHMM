@@ -17,7 +17,7 @@ from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 
 # T: transition probability matrix
-T = np.array([[0.9, 0.1], [0.1, 0.9]], dtype="float")
+T = np.array([[0.9, 0.1], [0.05, 0.95]], dtype="float")
 
 # pi: the initial probability vector
 pi = calculate_stationary(T)
