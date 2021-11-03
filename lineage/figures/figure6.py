@@ -39,8 +39,16 @@ def makeFigure():
 def accuracy():
     """ A Helper function to create more random copies of a population. """
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(E2[1].params[0], E2[1].params[1], E2[1].params[2], a, E2[1].params[4], E2[1].params[5]), E2[1]] for a in np.linspace(4.0, 10.0, num_data_points)]
-    list_of_populations = [[LineageTree.init_from_parameters(pi, T, E, max_desired_num_cells)] for E in list_of_Es]
+    list_of_Es = [[StateDistribution(E2[1].params[0], E2[1].params[1], E2[1].params[2], a, E2[1].params[4], E2[1].params[5]), E2[1]] for a in np.linspace(4.0, 20.0, num_data_points)]
+    list_of_populations = []
+    for E in list_of_Es:
+        tmp = LineageTree.init_from_parameters(pi, T, E, 3*max_desired_num_cells)
+        st1prop = np.mean([cell.state for cell in tmp.full_lineage])
+        while not(0.4 <= st1prop <= 0.6):
+            tmp = LineageTree.init_from_parameters(pi, T, E, 3*max_desired_num_cells)
+            st1prop = np.mean([cell.state for cell in tmp.full_lineage])
+        list_of_populations.append([tmp])
+
     # for the violin plots
     list_of_Es2 = [[StateDistribution(E2[1].params[0], E2[1].params[1], E2[1].params[2], a, E2[1].params[4], E2[1].params[5]), E2[1]] for a in np.linspace(4.0, 20.0, num_data_points)]
     list_of_populations2 = [[LineageTree.init_from_parameters(pi, T, E, 3 * max_desired_num_cells)] for E in list_of_Es2]
@@ -57,20 +65,17 @@ def accuracy():
     # replace x with 1-x if the accuracy is less than 50%
     balanced_score[balanced_score < 50.0] = 100.0 - balanced_score[balanced_score < 50.0]
 
-    wass, _, dict_out, _ = commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=[pi] * num_data_points, list_of_fT=[T] * num_data_points, parallel=True)
+    wass, _, dict_out, _ = commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=[pi] * 2*num_data_points, list_of_fT=[T] * 2*num_data_points, parallel=True)
     accuracy = dict_out["balanced_accuracy_score"]
-    for idx, x in enumerate(accuracy):
-        if x<= 50.0: 
-            print(dict_out["LL"][idx])
     distribution_df = pd.DataFrame(columns=["Distribution similarity", "G1 lifetime", "State"])
     lineages = [list_of_populations2[int(num_data_points * i / 4.)][0] for i in range(4)]
     len_lineages = [len(lineage) for lineage in lineages]
     distribution_df["G1 lifetime"] = [(cell.obs[1] + cell.obs[2]) for lineage in lineages for cell in lineage.output_lineage]
     distribution_df["State"] = ["State 1" if cell.state == 0 else "State 2" for lineage in lineages for cell in lineage.output_lineage]
-    distribution_df["Distribution similarity"] = len_lineages[0] * ["Same\n" + str(0) + "-" + str(wass[-1] / 4)] +\
-        len_lineages[1] * ["Similar\n" + str(wass[-1] / 4) + "-" + str(wass[-1] / 2)] +\
-        len_lineages[2] * ["Different\n" + str(wass[-1] / 2) + "-" + str(wass[-1] * 0.75)] +\
-        len_lineages[3] * ["Distinct\n>" + str(wass[-1] * 0.75)]
+    distribution_df["Distribution similarity"] = len_lineages[0] * ["Same\n" + str(0) + "-" + str(round(wass[-1] / 4, 2))] +\
+        len_lineages[1] * ["Similar\n" + str(round(wass[-1] / 4, 2)) + "-" + str(round(wass[-1] / 2, 2))] +\
+        len_lineages[2] * ["Different\n" + str(round(wass[-1] / 2, 2)) + "-" + str(round(wass[-1] * 0.75, 2))] +\
+        len_lineages[3] * ["Distinct\n>" + str(round(wass[-1] * 0.75, 2))]
 
     # for the violin plot (distributions)
     wasser_df = pd.DataFrame(columns=["Wasserstein distance", "State Assignment Accuracy"])

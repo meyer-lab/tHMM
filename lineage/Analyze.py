@@ -115,7 +115,7 @@ def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict[str, Any]:
     for ii, switcher in enumerate(switcher_map_holder):
         sw_states = [[switcher[st] for st in st_ass] for st_ass in pred_states_by_lineage]
         switcher_LL_holder[ii] = np.sum(tHMMobj.log_score(sw_states, pi=pi_arg, T=T_arg, E=E_arg))
-
+        results_dict[str("log_score"+str(ii))] = np.sum(tHMMobj.log_score(sw_states, pi=pi_arg, T=T_arg, E=E_arg))
     # Create switcher map based on the max likelihood of different permutations of state assignments
     switcher_map = np.array(switcher_map_holder[np.argmax(switcher_LL_holder)])
     results_dict["switcher_map"] = switcher_map
@@ -151,6 +151,7 @@ def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict[str, Any]:
     results_dict["state_counter"] = np.bincount(ravel_switched_pred_states)
     results_dict["state_proportions"] = [100 * i / len(ravel_switched_pred_states) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
+    results_dict["accuracy_before_switching"] = 100 * np.mean(ravel_true_states == pred_states_by_lineage)
     results_dict["accuracy_after_switching"] = 100 * np.mean(ravel_true_states == ravel_switched_pred_states)
     results_dict["balanced_accuracy_score"] = 100 * balanced_accuracy_score(ravel_true_states, ravel_switched_pred_states)
 
