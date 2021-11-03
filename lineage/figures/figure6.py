@@ -42,10 +42,10 @@ def accuracy():
     list_of_Es = [[StateDistribution(E2[1].params[0], E2[1].params[1], E2[1].params[2], a, E2[1].params[4], E2[1].params[5]), E2[1]] for a in np.linspace(4.0, 20.0, num_data_points)]
     list_of_populations = []
     for E in list_of_Es:
-        tmp = LineageTree.init_from_parameters(pi, T, E, 3*max_desired_num_cells)
+        tmp = LineageTree.init_from_parameters(pi, T, E, 2*max_desired_num_cells)
         st1prop = np.mean([cell.state for cell in tmp.full_lineage])
         while not(0.4 <= st1prop <= 0.6):
-            tmp = LineageTree.init_from_parameters(pi, T, E, 3*max_desired_num_cells)
+            tmp = LineageTree.init_from_parameters(pi, T, E, 2*max_desired_num_cells)
             st1prop = np.mean([cell.state for cell in tmp.full_lineage])
         list_of_populations.append([tmp])
 
