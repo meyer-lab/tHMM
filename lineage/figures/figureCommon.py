@@ -221,16 +221,16 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
     i += 1  # i = 3: plot estimation of bernoulli parameter
     sns.regplot(x="x", y="bern 0 0", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
     sns.regplot(x="x", y="bern 1 0", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
-    ax[i].scatter(x, paramTrues[:, 0, 0], marker="_", s=20, c="#00ffff", alpha=0.5)
-    ax[i].scatter(x, paramTrues[:, 1, 0], marker="_", s=20, c="#00cc00", alpha=0.5)
+    ax[i].axhline(y=paramTrues[1, 0, 0], linestyle="-", c="#00ffff", alpha=0.5)
+    ax[i].axhline(y=paramTrues[1, 1, 0], linestyle="-", c="#00cc00", alpha=0.5)
     ax[i].set_xlabel(xlabel)
-    ax[i].set_ylim(bottom=0.0, top=1.02)
+    ax[i].set_ylim(bottom=0.5, top=1.02)
     if number_of_params == 6:
         ax[i].set_ylabel("G1 Bernoulli $p$")
-        ax[i].set_title(r"G1 Bernoulli $p$")
+        ax[i].set_title(r"G1 Bernoulli $p$ Estimation")
     else:
         ax[i].set_ylabel("Bernoulli $p$")
-        ax[i].set_title(r"Bernoulli $p$")
+        ax[i].set_title(r"Bernoulli $p$ Estimation")
 
     i += 1  # i = 4
     if number_of_params == 6:  # phase specific gamma
@@ -239,26 +239,26 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             sns.regplot(x="x", y="bern 1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
             ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5)
             ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5)
-            ax[i].set_ylim(bottom=0.0, top=1.02)
+            ax[i].set_ylim(bottom=0.5, top=1.02)
             ax[i].set_ylabel("S/G2 Bernoulli $p$")
-            ax[i].set_title(r"S/G2 Bernoulli $p$")
+            ax[i].set_title(r"S/G2 Bernoulli $p$ Estimation")
         else:
             sns.regplot(x="x", y="gamma 0 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
             sns.regplot(x="x", y="gamma 1 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
-            ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", s=20, c="#00ffff", alpha=0.5)
-            ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", s=20, c="#00cc00", alpha=0.5)
+            ax[i].axhline(y=paramTrues[1, 0, 2], linestyle="-", c="#00ffff", alpha=0.5)
+            ax[i].axhline(y=paramTrues[1, 1, 2], linestyle="-", c="#00cc00", alpha=0.5)
             ax[i].set_ylabel(r"G1 Gamma $k$")
-            ax[i].set_title(r"G1 Gamma $k$")
-            ax[i].set_ylim([0.0, 20.0])
+            ax[i].set_title(r"G1 Gamma $k$ Estimation")
+            ax[i].set_ylim([0.0, 15.0])
 
     else:  # simple lifetime gamma
         sns.regplot(x="x", y="0 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         sns.regplot(x="x", y="1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
-        ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5)
-        ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5)
+        ax[i].axhline(y=paramTrues[1, 0, 1], linestyle="-", c="#00ffff", alpha=0.5)
+        ax[i].axhline(y=paramTrues[1, 1, 1], linestyle="-", c="#00cc00", alpha=0.5)
         ax[i].set_ylabel(r"Gamma $k$")
-        ax[i].set_title(r"Gamma $k$")
-        ax[i].set_ylim([0.0, 20.0])
+        ax[i].set_title(r"Gamma $k$ Estimation")
+        ax[i].set_ylim([0.0, 15.0])
     ax[i].set_xlabel(xlabel)
 
     i += 1  # i = 5
@@ -267,21 +267,21 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             sns.regplot(x="x", y='wasserstein distance 0', data=accuracy_df, ax=ax[i], lowess=True, label="state 1", marker='+', scatter_kws=scatter_kws_list[0])
             sns.regplot(x="x", y='wasserstein distance 1', data=accuracy_df, ax=ax[i], lowess=True, label="state 2", marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
             ax[i].set_title(r"Distance bw true and estm. gamma dists")
-            ax[i].set_ylabel(r"Wasserstein distance")
+            ax[i].set_ylabel(r"Wasserstein Distance")
             ax[i].set_xlabel(xlabel)
             ax[i].set_ylim(0.0, 10.0)
             ax[i].legend()
         else:  # plot gamma params scale
             sns.regplot(x="x", y="gamma 0 3", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
             sns.regplot(x="x", y="gamma 1 3", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
-            ax[i].scatter(x, paramTrues[:, 0, 3], marker="_", s=20,
+            ax[i].axhline(y=paramTrues[1, 0, 3], linestyle="-",
                           c="#00ffff", alpha=0.5, label="State 1")
-            ax[i].scatter(x, paramTrues[:, 1, 3], marker="_", s=20,
+            ax[i].axhline(y=paramTrues[1, 1, 3], linestyle="-",
                           c="#00cc00", alpha=0.5, label="State 2")
             ax[i].set_xlabel(xlabel)
             ax[i].set_ylabel(r"G1 Gamma $\theta$")
-            ax[i].set_title(r"G1 Gamma $\theta$")
-            ax[i].set_ylim([0.0, 20.0])
+            ax[i].set_title(r"G1 Gamma $\theta$ Estimation")
+            ax[i].set_ylim([0.0, 15.0])
     else:  # just simple gamma params
         sns.regplot(x="x", y="gamma 0 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         sns.regplot(x="x", y="gamma 1 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
@@ -291,8 +291,8 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
                       c="#00cc00", alpha=0.5, label="State 2")
         ax[i].set_xlabel(xlabel)
         ax[i].set_ylabel(r"Gamma $\theta$")
-        ax[i].set_title(r"Gamma $\theta$")
-        ax[i].set_ylim([0.0, 20.0])
+        ax[i].set_title(r"Gamma $\theta$ Estimation")
+        ax[i].set_ylim([0.0, 15.0])
     ax[i].legend()
 
     i += 1  # i = 6
@@ -308,7 +308,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_ylim(bottom=0, top=101)
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_ylabel(r"Accuracy [%]")
-        ax[i].set_title("State Assignment Accuracy")
+        ax[i].set_title("State Assignment Performance")
     ax[i].set_xlabel(xlabel)
 
     i += 1  # i = 7
@@ -319,7 +319,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].scatter(x, paramTrues[:, 1, 4], marker="_", s=20, c="#00cc00", alpha=0.5)
         ax[i].set_ylabel(r"S/G2 Gamma $k$")
         ax[i].set_title(r"S/G2 Gamma $k$")
-        ax[i].set_ylim([0.0, 20.0])
+        ax[i].set_ylim([0.0, 15.0])
     else:
         ax[i].set_ylim(bottom=0, top=np.mean(tr) + 0.2)
         sns.regplot(x="x", y="tr", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
@@ -337,7 +337,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_ylabel(r"S/G2 Gamma $\theta$")
         ax[i].set_title(r"S/G2 Gamma $\theta$")
         ax[i].set_xlabel(xlabel)
-        ax[i].set_ylim([0.0, 20.0])
+        ax[i].set_ylim([0.0, 15.0])
     else:
         if (len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1])) or (num_lineages is None):
             ax[i].axis('off')
@@ -354,7 +354,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_ylim(bottom=0, top=101)
         ax[i].set_ylabel(r"Accuracy [%]")
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-        ax[i].set_title("State Assignment Accuracy")
+        ax[i].set_title("State Assignment Performance")
         ax[i].set_xlabel(xlabel)
 
         i += 1

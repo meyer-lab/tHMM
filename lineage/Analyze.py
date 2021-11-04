@@ -91,7 +91,7 @@ def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict[str, Any]:
     # Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
     results_dict: dict[str, Any]
     results_dict = {}
-    tHMMobj, pred_states = permute_state(tHMMobj, pred_states_by_lineage)
+    tHMMobj, pred_states = permute_states(tHMMobj, pred_states_by_lineage)
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
     results_dict["total_number_of_cells"] = sum([len(lineage.output_lineage) for lineage in tHMMobj.X])
@@ -114,9 +114,9 @@ def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict[str, Any]:
 
     # 2. Calculate accuracy after switching states
     results_dict["state_counter"] = np.bincount(pred_states[0])
-    results_dict["state_proportions"] = [100 * i / len(pred_states) for i in results_dict["state_counter"]]
+    results_dict["state_proportions"] = [100.0 * i / len(pred_states[0]) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
-    results_dict["state_similarity"] = 100 * rand_score(list(itertools.chain(*true_states_by_lineage)), list(itertools.chain(*pred_states_by_lineage)))
+    results_dict["state_similarity"] = 100.0 * rand_score(list(itertools.chain(*true_states_by_lineage)), list(itertools.chain(*pred_states_by_lineage)))
 
     # 4. Calculate the Wasserstein distance
     results_dict["wasserstein"] = tHMMobj.X[0].E[0].dist(tHMMobj.X[0].E[1])
@@ -138,10 +138,10 @@ def run_Results_over(output: list, parallel=True) -> list:
     prom_holder = [exe.submit(Results, *x) for x in output]
     return [prom.result() for prom in prom_holder]
 
-def permute_state(tHMMobj, pred_states: list):
+def permute_states(tHMMobj: Any, pred_states: list) -> Tuple[Any, list]:
     """
     This function takes the tHMMobj and the predicted states,
-    and finds out whether we need to switch the state identities or not.
+    and finds out whether we need to switch the state identities or not based on the likelihood.
     """
     true_states = [[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X]
     permutes = list(itertools.permutations(list(range(tHMMobj.num_states))))
