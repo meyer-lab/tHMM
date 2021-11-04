@@ -8,6 +8,7 @@ class CellVar:
     """
     Cell class.
     """
+
     def __init__(self, parent, gen: int, state: Optional[int] = None, barcode: Optional[int] = None, left=None, right=None):
         """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
