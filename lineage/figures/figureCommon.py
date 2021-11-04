@@ -229,7 +229,8 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].set_ylabel("Accuracy [%]")
             ax[i].set_title(r"G1 Bernoulli $p$")
         elif dist_dist == False:
-            ax[i].set_ylabel("G1 Bernoulli $p$")
+            ax[i].set_ylim(bottom=0.5, top=1)
+            ax[i].set_ylabel("Accuracy [%]")
             ax[i].set_title(r"G1 Bernoulli $p$")
         else:
             ax[i].set_ylabel("Bernoulli $p$")
@@ -248,9 +249,9 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             sns.regplot(x="x", y="gamma 1 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
             ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", s=20, c="#00ffff", alpha=0.5)
             ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", s=20, c="#00cc00", alpha=0.5)
-            ax[i].set_ylabel(r"G1 Gamma $k$")
+            ax[i].set_ylabel(r"Accuracy [%]")
             ax[i].set_title(r"G1 Gamma $k$")
-            ax[i].set_ylim([0.0, 20.0])
+            ax[i].set_ylim([0.0, 15.0])
 
     else:  # simple lifetime gamma
         sns.regplot(x="x", y="0 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
@@ -280,9 +281,9 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].scatter(x, paramTrues[:, 1, 3], marker="_", s=20,
                           c="#00cc00", alpha=0.5, label="State 2")
             ax[i].set_xlabel(xlabel)
-            ax[i].set_ylabel(r"G1 Gamma $\theta$")
+            ax[i].set_ylabel(r"Accuracy [%]")
             ax[i].set_title(r"G1 Gamma $\theta$")
-            ax[i].set_ylim([0.0, 20.0])
+            ax[i].set_ylim([0.0, 15.0])
     else:  # just simple gamma params
         sns.regplot(x="x", y="gamma 0 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         sns.regplot(x="x", y="gamma 1 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
@@ -302,7 +303,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         sns.regplot(x="x", y="bern 1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
         ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5)
-        ax[i].set_ylim(bottom=0.0, top=1.02)
+        ax[i].set_ylim(bottom=0.5, top=1)
         ax[i].set_ylabel("S/G2 Bernoulli $p$")
         ax[i].set_title(r"S/G2 Bernoulli $p$")
     else:
@@ -320,7 +321,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].scatter(x, paramTrues[:, 1, 4], marker="_", s=20, c="#00cc00", alpha=0.5)
         ax[i].set_ylabel(r"S/G2 Gamma $k$")
         ax[i].set_title(r"S/G2 Gamma $k$")
-        ax[i].set_ylim([0.0, 20.0])
+        ax[i].set_ylim([0.0, 15.0])
     else:
         ax[i].set_ylim(bottom=0, top=np.mean(tr) + 0.2)
         sns.regplot(x="x", y="tr", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
@@ -338,7 +339,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_ylabel(r"S/G2 Gamma $\theta$")
         ax[i].set_title(r"S/G2 Gamma $\theta$")
         ax[i].set_xlabel(xlabel)
-        ax[i].set_ylim([0.0, 20.0])
+        ax[i].set_ylim([0.0, 15.0])
     else:
         if (len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1])) or (num_lineages is None):
             ax[i].axis('off')
