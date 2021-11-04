@@ -4,8 +4,7 @@ from sklearn.cluster import KMeans
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from sklearn.metrics import balanced_accuracy_score
-import itertools
+from sklearn.metrics import rand_score
 
 from .figureCommon import (
     getSetup,
@@ -52,13 +51,13 @@ def accuracy():
         all_cells = np.array([cell.obs for lineage in pop for cell in lineage.output_lineage])
 
         kmeans = KMeans(n_clusters=2).fit(all_cells).labels_
-        balanced_score[ii] = 100 * balanced_accuracy_score(ravel_true_states, kmeans)
+        balanced_score[ii] = 100 * rand_score(ravel_true_states, kmeans)
 
     # replace x with 1-x if the accuracy is less than 50%
     balanced_score[balanced_score < 50.0] = 100.0 - balanced_score[balanced_score < 50.0]
 
     wass, _, dict_out, _ = commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=[pi] * num_data_points, list_of_fT=[T] * num_data_points, parallel=True)
-    accuracy = dict_out["balanced_accuracy_score"]
+    accuracy = dict_out["state_similarity"]
     distribution_df = pd.DataFrame(columns=["Distribution similarity", "G1 lifetime", "State"])
     lineages = [list_of_populations2[int(num_data_points * i / 4.)][0] for i in range(4)]
     len_lineages = [len(lineage) for lineage in lineages]

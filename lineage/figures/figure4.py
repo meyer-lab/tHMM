@@ -94,8 +94,8 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
     Makes a 2 panel figures displaying state accuracy estimation across lineages
     of different censoring states.
     """
-    Accuracy_Sim = output_Sim["balanced_accuracy_score"]
-    Accuracy_Cen = output_Cen["balanced_accuracy_score"]
+    Accuracy_Sim = output_Sim["state_similarity"]
+    Accuracy_Cen = output_Cen["state_similarity"]
     accuracy_sim_df = pd.DataFrame(columns=["Cell number", "State Assignment Accuracy"])
     accuracy_sim_df["Cell number"] = x_Sim
     accuracy_sim_df["State Assignment Accuracy"] = Accuracy_Sim

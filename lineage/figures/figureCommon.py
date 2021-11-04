@@ -177,9 +177,9 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
     """
     # Checks whether we are plotting exponential results, or gamma results
     number_of_params = paramEst.shape[-1]
-    accuracies = dictOut["balanced_accuracy_score"]
-    tr = dictOut["transition_matrix_norm"]
-    pii = dictOut["pi_vector_norm"]
+    accuracies = dictOut["state_similarity"]
+    tr = dictOut["transition_matrix_similarity"]
+    pii = dictOut["pi_similarity"]
 
     accuracy_df = pd.DataFrame(columns=["x", 'accuracy'])
     accuracy_df['x'] = x
