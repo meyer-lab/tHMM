@@ -30,9 +30,10 @@ def counts_transit_time(tHMM, num_states):
                                 T_counts[0, cell.get_root_cell().state, cell.parent.parent.parent.state] += 1
     return T_counts
 
+
 def plot_Sankey_time(drug_name, condition, indx_condition):
     """ Given the number of cells transitioned in each generation, plots the sankey figures. """
-    pik = open(str(drug_name) +".pkl", "rb")
+    pik = open(str(drug_name) + ".pkl", "rb")
     tHMMobj_list = []
     for i in range(4):
         tHMMobj_list.append(pickle.load(pik))
@@ -45,19 +46,19 @@ def plot_Sankey_time(drug_name, condition, indx_condition):
 
     # let's just plot control for now
     node = dict(
-        pad = 15,
-        thickness = 20,
-        line = dict(color = "black", width = 0.5),
-        label = ["S00", "S01", "S02", "S03", "S04", "S05",
-                 "S10", "S11", "S12", "S13", "S14", "S15",
-                 "S20", "S21", "S22", "S23", "S24", "S25"],
-        color = 3*['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'olive']
+        pad=15,
+        thickness=20,
+        line=dict(color="black", width=0.5),
+        label=["S00", "S01", "S02", "S03", "S04", "S05",
+               "S10", "S11", "S12", "S13", "S14", "S15",
+               "S20", "S21", "S22", "S23", "S24", "S25"],
+        color=3 * ['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'olive']
     )
     link = dict(
-        source = 6*[0] + 6*[1] + 6*[2] + 6*[3] + 6*[4] + 6*[5] +
-                 6*[6] + 6*[7] + 6*[8] + 6*[9] + 6*[10] + 6*[11],
-        target = 6 * [6, 7, 8, 9, 10, 11] + 6 * [12, 13, 14, 15, 16, 17],
-        value = list(counts[0, :, :].flatten()) + list(counts[1, :, :].flatten())
+        source=6 * [0] + 6 * [1] + 6 * [2] + 6 * [3] + 6 * [4] + 6 * [5] +
+        6 * [6] + 6 * [7] + 6 * [8] + 6 * [9] + 6 * [10] + 6 * [11],
+        target=6 * [6, 7, 8, 9, 10, 11] + 6 * [12, 13, 14, 15, 16, 17],
+        value=list(counts[0, :, :].flatten()) + list(counts[1, :, :].flatten())
     )
     fig = go.Figure(data=go.Sankey(node=node, link=link))
     fig.update_layout(title_text="The flow of states over time" + str(condition), font_size=10)
