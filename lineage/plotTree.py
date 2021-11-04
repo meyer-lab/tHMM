@@ -4,8 +4,8 @@ import numpy as np
 from Bio.Phylo.BaseTree import Clade
 import networkx as nx
 
-cs = ['lightblue', 'lightgreen', 'orange', 'red', 'purple', 'olive', 'gray']
-stateColors = ['blue', 'green', 'orange', 'red', 'purple', 'olive', 'gray']
+cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'olive', 'gray']
+stateColors = ['blue', 'orange', 'green', 'red', 'purple', 'olive', 'gray']
 
 
 def CladeRecursive(cell, a: list, censor: bool, color: bool):
