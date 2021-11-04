@@ -4,7 +4,7 @@ import numpy as np
 from Bio.Phylo.BaseTree import Clade
 import networkx as nx
 
-cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'olive', 'gray']
+cs = ['lightblue', 'lightgreen', 'orange', 'red', 'purple', 'olive', 'gray']
 stateColors = ['blue', 'green', 'orange', 'red', 'purple', 'olive', 'gray']
 
 
