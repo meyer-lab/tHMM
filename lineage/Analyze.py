@@ -138,18 +138,18 @@ def run_Results_over(output: list, parallel=True) -> list:
     prom_holder = [exe.submit(Results, *x) for x in output]
     return [prom.result() for prom in prom_holder]
 
+
 def permute_states(tHMMobj: Any, pred_states: list) -> Tuple[Any, list]:
     """
     This function takes the tHMMobj and the predicted states,
     and finds out whether we need to switch the state identities or not based on the likelihood.
     """
-    true_states = [[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X]
-    permutes = list(itertools.permutations(list(range(tHMMobj.num_states))))
+    permutes = list(itertools.permutations(np.arange(tHMMobj.num_states)))
     score_permutes = np.empty(len(permutes))
 
-    pi_arg = tHMMobj.fpi if (tHMMobj.fpi is not None) else tHMMobj.X[0].pi
-    E_arg = tHMMobj.fE if (tHMMobj.fE is not None) else tHMMobj.X[0].E
-    T_arg = tHMMobj.fT if (tHMMobj.fT is not None) else tHMMobj.X[0].T
+    pi_arg = tHMMobj.X[0].pi if (tHMMobj.fpi is None) else tHMMobj.fpi
+    E_arg = tHMMobj.X[0].E if (tHMMobj.fE is None) else tHMMobj.fE
+    T_arg = tHMMobj.X[0].T if (tHMMobj.fT is None) else tHMMobj.fT
 
     for i, perm in enumerate(permutes):
         predState_permute = [[perm[st] for st in st_assgn] for st_assgn in pred_states]
@@ -160,22 +160,13 @@ def permute_states(tHMMobj: Any, pred_states: list) -> Tuple[Any, list]:
     pred_states_switched = [np.array([switch_map[st] for sublist in pred_states for st in sublist])]
 
     # Rearrange the values in the transition matrix
-    T_switched = np.zeros(tHMMobj.estimate.T.shape)
-    for row in range(tHMMobj.num_states):
-        for col in range(tHMMobj.num_states):
-            T_switched[row, col] = tHMMobj.estimate.T[switch_map[row], switch_map[col]]
-
-    # embed the switched transition matrix in the tHMMobj
-    tHMMobj.estimate.T = T_switched
+    tHMMobj.estimate.T = tHMMobj.estimate.T[switch_map, :]
+    tHMMobj.estimate.T = tHMMobj.estimate.T[:, switch_map]
 
     # Rearrange the values in the pi vector
-    pi_switched = tHMMobj.estimate.pi[switch_map]
-
-    # embed the switched pi vector in the thMM
-    tHMMobj.estimate.pi = pi_switched
+    tHMMobj.estimate.pi = tHMMobj.estimate.pi[switch_map]
 
     # Rearrange the emissions list
-    switched_E = [tHMMobj.estimate.E[switch_map[x]] for x in range(tHMMobj.num_states)]
-    tHMMobj.estimate.E = switched_E
+    tHMMobj.estimate.E = [tHMMobj.estimate.E[ii] for ii in switch_map]
 
     return tHMMobj, pred_states_switched
