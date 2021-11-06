@@ -75,9 +75,10 @@ def counts_transit_time(tHMM, num_states):
                                 T_counts[0, cell.get_root_cell().state, cell.parent.parent.parent.state] += 1
     return T_counts
 
+
 def plot_Sankey_time(drug_name, condition, indx_condition):
     """ Given the number of cells transitioned in each generation, plots the sankey figures. """
-    pik = open(str(drug_name) +".pkl", "rb")
+    pik = open(str(drug_name) + ".pkl", "rb")
     tHMMobj_list = []
     for i in range(4):
         tHMMobj_list.append(pickle.load(pik))
@@ -99,7 +100,6 @@ def plot_Sankey_time(drug_name, condition, indx_condition):
         color = 3*['lightblue', 'orange', 'lightgreen', 'red', 'purple']
     counts = counts_transit_time(tHMMobj_list[indx_condition], numST)
 
-    # let's just plot control for now
     node = dict(
         pad = 15,
         thickness = 20,
