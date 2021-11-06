@@ -18,5 +18,5 @@ class TestViterbi(unittest.TestCase):
 
         for _ in range(5):
             # Generate a random sequence
-            random_log_scores = tHMMobj.log_score([randint(0, 2, (2 ** 9) - 1)])[0]
+            random_log_scores = tHMMobj.log_score([np.random.randint(0, 2, (2 ** 9) - 1)])[0]
             self.assertLessEqual(random_log_scores, model_log_score)
