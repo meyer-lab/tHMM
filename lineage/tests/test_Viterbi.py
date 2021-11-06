@@ -1,7 +1,6 @@
 """ Unit test file for Viterbi. """
 import unittest
 import numpy as np
-from sklearn.metrics import rand_score
 from ..tHMM import tHMM
 from ..LineageTree import LineageTree
 from ..figures.figureCommon import pi, T, E
