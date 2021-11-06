@@ -27,7 +27,7 @@ def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
     _, _, _, _, LL = fit_list(tHMMobj_list)
 
-    for _ in range(10):
+    for _ in range(2):
         tHMMobj_list2 = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
         _, _, _, _, LL2 = fit_list(tHMMobj_list2)
 
@@ -115,6 +115,7 @@ def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict[str, Any]:
     for ii, switcher in enumerate(switcher_map_holder):
         sw_states = [[switcher[st] for st in st_ass] for st_ass in pred_states_by_lineage]
         switcher_LL_holder[ii] = np.sum(tHMMobj.log_score(sw_states, pi=pi_arg, T=T_arg, E=E_arg))
+
     # Create switcher map based on the max likelihood of different permutations of state assignments
     switcher_map = np.array(switcher_map_holder[np.argmax(switcher_LL_holder)])
     results_dict["switcher_map"] = switcher_map
