@@ -91,7 +91,6 @@ def run_BIC(relative_state_change, E, num_lineages_to_evaluate=10, censored=Fals
         for lin in output[idx][0].X:
             nums += len(lin.output_lineage)
         BIC, _ = output[idx][0].get_BIC(output[idx][2], num_cells=nums)
-        print(nums)
         BICs[idx] = BIC
     # normalize
     return BICs - np.min(BICs)
@@ -104,11 +103,11 @@ def figure_maker(ax, BIC_Holder, true_state_no, upper_ylim, censored=False):
     BIC_holder = list(map(list, zip(*BIC_Holder)))
 
     # Creating Histogram and setting ylim
-    ax2 = ax.twinx()
-    ax2.hist(np.argmin(BIC_holder, axis=0) + 1, rwidth=1,
-             alpha=.2, bins=desired_num_states, align='left')
-    ax2.set_yticklabels([])
-    ax2.set_yticks([])
+    # ax2 = ax.twinx()
+    # ax2.hist(np.argmin(BIC_holder, axis=0) + 1, rwidth=1,
+    #          alpha=.2, bins=desired_num_states, align='left')
+    # ax2.set_yticklabels([])
+    # ax2.set_yticks([])
 
     # Creating BIC plot and matching gridlines
     ax.set_xlabel("Number of States Predicted")
