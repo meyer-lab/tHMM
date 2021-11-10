@@ -93,7 +93,7 @@ def figureMaker5(ax, distribution_df, wasser_df):
     # state accuracy
     sns.regplot(x="Wasserstein distance", y="Random Index Accuracy", data=wasser_df, label="tHMM", ax=ax[i], lowess=True, marker='+')
     sns.regplot(x="Wasserstein distance", y="KMeans Accuracy", data=wasser_df, ax=ax[i], label="K-means", lowess=True, marker='+')
-    ax[i].set_title("Random Index Accuracy")
-    ax[i].set_ylabel("Accuracy [%]")
+    ax[i].set_title("State Assignment Accuracy")
+    ax[i].set_ylabel("Random Index Accuracy [%]")
     ax[i].set_ylim(bottom=10.0, top=101)
     ax[i].legend()
