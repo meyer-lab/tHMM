@@ -28,7 +28,3 @@ def makeFigure():
         ax[i].axis('off')
 
     return f
-
-# plot_networkx(T_lap.shape[0], T_lap, 'lapatinib')
-
-def 
