@@ -7,7 +7,7 @@ from cycler import cycler
 import math
 import numpy as np
 import pandas as pd
-from matplotlib import gridspec, pyplot as plt
+from matplotlib import gridspec, rcParams, pyplot as plt
 import seaborn as sns
 import svgutils.transform as st
 from ..Analyze import run_Results_over, run_Analyze_over
@@ -54,7 +54,7 @@ scatter_state_2_kws = {
     "s": 20,
     "color": "green"
 }
-
+rcParams['font.sans-serif'] = "Arial"
 scatter_kws_list = [scatter_state_1_kws, scatter_state_2_kws]
 
 
@@ -307,8 +307,8 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
     else:
         ax[i].set_ylim(bottom=0, top=101)
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-        ax[i].set_ylabel(r"Accuracy [%]")
-        ax[i].set_title("Random Index Accuracy")
+        ax[i].set_ylabel(r"Random Index Accuracy [%]")
+        ax[i].set_title("State Assignment Accuracy")
     ax[i].set_xlabel(xlabel)
 
     i += 1  # i = 7
@@ -352,9 +352,9 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
     if number_of_params == 6 and (not dist_dist):
         i += 1
         ax[i].set_ylim(bottom=0, top=101)
-        ax[i].set_ylabel(r"Accuracy [%]")
+        ax[i].set_ylabel(r"Random Index Accuracy [%]")
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-        ax[i].set_title("Random Index Accuracy")
+        ax[i].set_title("State Assignment Accuracy")
         ax[i].set_xlabel(xlabel)
 
         i += 1
