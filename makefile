@@ -39,8 +39,7 @@ test: venv
 	. venv/bin/activate; pytest -s -v -x
 
 mypy: venv
-	. venv/bin/activate; mypy --install-types -r requirements.txt
-	. venv/bin/activate; mypy --non-interactive --ignore-missing-imports lineage
+	. venv/bin/activate; mypy --install-types --non-interactive --ignore-missing-imports lineage
 
 spell.txt: manuscript/*.md
 	pandoc --lua-filter common/templates/spell.lua manuscript/*.md | sort | uniq -ic > spell.txt
