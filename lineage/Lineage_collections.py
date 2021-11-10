@@ -31,7 +31,7 @@ lap03 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path
 Lapatinib_Control = lap01 + lap012 + lap02 + lap03
 # used for when we want to writes states instead of phase lengths
 len_lp_cntr = [len(lap01), len(lap012), len(lap02), len(lap03)]
-
+lpt_cn_reps = [len(lap01 + lap012), len(lap02), len(lap03)]
 # -- LAPATINIB 25 uMolars
 
 lapb63 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_B6_1_V4.xlsx")]
@@ -45,7 +45,7 @@ lapb653 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pa
 
 Lapt25uM = lapb63 + lapb632 + lapb64 + lapb642 + lapb65 + lapb652 + lapb653
 len_lp_25 = [len(lapb63), len(lapb632), len(lapb64), len(lapb642), len(lapb65), len(lapb652), len(lapb653)]
-
+lpt_25_reps = [len(lapb63 + lapb632), len(lapb64 + lapb642), len(lapb65 + lapb652 + lapb653)]
 # -- LAPATINIB 50 uMolars
 
 lapC501 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_C5_1_V4.xlsx")]
@@ -67,6 +67,7 @@ lapC514 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pa
 
 Lapt50uM = lapC501 + lapC502 + lapC503 + lapC504 + lapC505 + lapC506 + lapC507 + \
     lapC508 + lapC509 + lapC510 + lapC511 + lapC512 + lapC513 + lapC514
+lpt_50_reps = [len(lapC501 + lapC502 + lapC503 + lapC504 + lapC505 + lapC506), len(lapC507 + lapC508 + lapC509 + lapC510), len(lapC511 + lapC512 + lapC513 + lapC514)]
 len_lp_50 = [
     len(lapC501),
     len(lapC502),
@@ -95,7 +96,7 @@ lapD58 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pat
 
 Lap250uM = lapD51 + lapD54 + lapD57 + lapD52 + lapD55 + lapD53 + lapD56 + lapD58
 len_lp_250 = [len(lapD51), len(lapD54), len(lapD57), len(lapD52), len(lapD55), len(lapD53), len(lapD56), len(lapD58)]
-
+lpt_250_reps = [len(lapD51 + lapD54 + lapD57), len(lapD52 + lapD55), len(lapD53 + lapD56 + lapD58)]
 # -- Gemcitabine control
 
 gem04 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_A3_1_V4.xlsx")]
