@@ -124,7 +124,6 @@ class tHMM:
         a possible state assignment.
         :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
         :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
-
         :param X_state_tree_sequence: the assigned states to cells at each lineage object
         :return: the log-likelihood of states assigned to single cells, based on the pi, T, and E, separate for each lineage tree
         """
@@ -154,7 +153,6 @@ def log_T_score(T, state_tree_sequence: list, lineageObj) -> float:
     This function calculates the second term.
     :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
     :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
-
     :param T: transition probability matrix
     :type T: ndarray
     :param state_tree_sequence: the assigned states to cells at each lineage object
@@ -183,7 +181,6 @@ def log_E_score(EL_array: np.ndarray, state_tree_sequence: list) -> float:
     This function calculates the third term.
     :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
     :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
-
     :param EL_array: emission likelihood for a given lineage tree object
     :param state_tree_sequence: the assigned states to cells at each lineage object
     :return: the log-likelihood of emissions

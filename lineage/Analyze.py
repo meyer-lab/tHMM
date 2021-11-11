@@ -2,7 +2,7 @@
 import itertools
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor, Future, Executor
-from sklearn.metrics import balanced_accuracy_score
+from sklearn.metrics import rand_score
 from .tHMM import tHMM, fit_list
 from typing import Any, Tuple, Union
 
@@ -91,68 +91,32 @@ def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict[str, Any]:
     # Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
     results_dict: dict[str, Any]
     results_dict = {}
+    tHMMobj, pred_states = permute_states(tHMMobj)
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
     results_dict["total_number_of_cells"] = sum([len(lineage.output_lineage) for lineage in tHMMobj.X])
 
     true_states_by_lineage = [[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X]
-    ravel_true_states = np.array([state for sublist in true_states_by_lineage for state in sublist])
 
-    # 1. Decide how to switch states based on the state assignment that yields the maximum likelihood
-    switcher_map_holder = list(itertools.permutations(list(range(tHMMobj.num_states))))
-    switcher_LL_holder = np.empty(len(switcher_map_holder))
+    results_dict["transition_matrix_similarity"] = np.linalg.norm(tHMMobj.estimate.T - tHMMobj.X[0].T)
 
-    pi_arg = tHMMobj.X[0].pi
-    T_arg = tHMMobj.X[0].T
-    E_arg = tHMMobj.X[0].E
-    if tHMMobj.fpi is not None:
-        pi_arg = tHMMobj.fpi
-    if tHMMobj.fT is not None:
-        T_arg = tHMMobj.fT
-    if tHMMobj.fE is not None:
-        E_arg = tHMMobj.fE
-
-    for ii, switcher in enumerate(switcher_map_holder):
-        sw_states = [[switcher[st] for st in st_ass] for st_ass in pred_states_by_lineage]
-        switcher_LL_holder[ii] = np.sum(tHMMobj.log_score(sw_states, pi=pi_arg, T=T_arg, E=E_arg))
-
-    # Create switcher map based on the max likelihood of different permutations of state assignments
-    switcher_map = np.array(switcher_map_holder[np.argmax(switcher_LL_holder)])
-    results_dict["switcher_map"] = switcher_map
-    ravel_switched_pred_states = np.array([switcher_map[st] for sublist in pred_states_by_lineage for st in sublist])
-
-    # Rearrange the values in the transition matrix
-    temp_T = np.zeros(tHMMobj.estimate.T.shape)
-    for row in range(tHMMobj.num_states):
-        for col in range(tHMMobj.num_states):
-            temp_T[row, col] = tHMMobj.estimate.T[switcher_map[row], switcher_map[col]]
-
-    results_dict["switched_transition_matrix"] = temp_T
-    results_dict["transition_matrix_norm"] = np.linalg.norm(temp_T - tHMMobj.X[0].T)
-
-    # Rearrange the values in the pi vector
-    results_dict["switched_pi_vector"] = tHMMobj.estimate.pi[switcher_map]
-    results_dict["pi_vector_norm"] = np.linalg.norm(results_dict["switched_pi_vector"] - tHMMobj.X[0].pi)
-
-    # Rearrange the emissions list
-    results_dict["switched_emissions"] = [tHMMobj.estimate.E[switcher_map[x]] for x in range(tHMMobj.num_states)]
+    results_dict["pi_similarity"] = np.linalg.norm(tHMMobj.X[0].pi - tHMMobj.estimate.pi)
 
     # Get the estimated parameter values
-    results_dict["param_estimates"] = [results_dict["switched_emissions"][x].params for x in range(tHMMobj.num_states)]
+    results_dict["param_estimates"] = [tHMMobj.estimate.E[x].params for x in range(tHMMobj.num_states)]
 
     # Get the true parameter values
     results_dict["param_trues"] = [tHMMobj.X[0].E[x].params for x in range(tHMMobj.num_states)]
 
     # Get the distance between distributions of two states
-    results_dict["distribution distance 0"] = results_dict["switched_emissions"][0].dist(tHMMobj.X[0].E[0])
-    results_dict["distribution distance 1"] = results_dict["switched_emissions"][1].dist(tHMMobj.X[0].E[1])
+    results_dict["distribution distance 0"] = tHMMobj.estimate.E[0].dist(tHMMobj.X[0].E[0])
+    results_dict["distribution distance 1"] = tHMMobj.estimate.E[1].dist(tHMMobj.X[0].E[1])
 
     # 2. Calculate accuracy after switching states
-    results_dict["state_counter"] = np.bincount(ravel_switched_pred_states)
-    results_dict["state_proportions"] = [100 * i / len(ravel_switched_pred_states) for i in results_dict["state_counter"]]
+    results_dict["state_counter"] = np.bincount(pred_states[0])
+    results_dict["state_proportions"] = [100.0 * i / len(pred_states[0]) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
-    results_dict["accuracy_after_switching"] = 100 * np.mean(ravel_true_states == ravel_switched_pred_states)
-    results_dict["balanced_accuracy_score"] = 100 * balanced_accuracy_score(ravel_true_states, ravel_switched_pred_states)
+    results_dict["state_similarity"] = 100.0 * rand_score(list(itertools.chain(*true_states_by_lineage)), list(itertools.chain(*tHMMobj.predict())))
 
     # 4. Calculate the Wasserstein distance
     results_dict["wasserstein"] = tHMMobj.X[0].E[0].dist(tHMMobj.X[0].E[1])
@@ -173,3 +137,37 @@ def run_Results_over(output: list, parallel=True) -> list:
 
     prom_holder = [exe.submit(Results, *x) for x in output]
     return [prom.result() for prom in prom_holder]
+
+
+def permute_states(tHMMobj: Any) -> Tuple[Any, list]:
+    """
+    This function takes the tHMMobj and the predicted states,
+    and finds out whether we need to switch the state identities or not based on the likelihood.
+    """
+    pred_states = tHMMobj.predict()
+    permutes = list(itertools.permutations(np.arange(tHMMobj.num_states)))
+    score_permutes = np.empty(len(permutes))
+
+    pi_arg = tHMMobj.X[0].pi if (tHMMobj.fpi is None) else tHMMobj.fpi
+    E_arg = tHMMobj.X[0].E if (tHMMobj.fE is None) else tHMMobj.fE
+    T_arg = tHMMobj.X[0].T if (tHMMobj.fT is None) else tHMMobj.fT
+
+    for i, perm in enumerate(permutes):
+        predState_permute = [[perm[st] for st in st_assgn] for st_assgn in pred_states]
+        score_permutes[i] = np.sum(tHMMobj.log_score(predState_permute, pi=pi_arg, T=T_arg, E=E_arg))
+
+    # Create switcher map based on the max likelihood of different permutations of state assignments
+    switch_map = np.array(permutes[np.argmax(score_permutes)])
+    pred_states_switched = [np.array([switch_map[st] for sublist in pred_states for st in sublist])]
+
+    # Rearrange the values in the transition matrix
+    tHMMobj.estimate.T = tHMMobj.estimate.T[switch_map, :]
+    tHMMobj.estimate.T = tHMMobj.estimate.T[:, switch_map]
+
+    # Rearrange the values in the pi vector
+    tHMMobj.estimate.pi = tHMMobj.estimate.pi[switch_map]
+
+    # Rearrange the emissions list
+    tHMMobj.estimate.E = [tHMMobj.estimate.E[ii] for ii in switch_map]
+
+    return tHMMobj, pred_states_switched

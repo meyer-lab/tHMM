@@ -357,9 +357,9 @@ The function ``Results()`` provides calculated features when analyzing a synthet
     results_dict = Results(tHMMobj, pred_states_by_lineage, LL)
     print("total number of cells: ", results_dict["total_number_of_cells"])
     print("\n total number of lineages: ", results_dict["total_number_of_lineages"])
-    print("\n transition matrix norm: ", results_dict["transition_matrix_norm"])
+    print("\n transition matrix norm: ", results_dict["transition_matrix_similarity"])
     print("\n parameter estimtes: ", results_dict["param_estimates"])
-    print("\n accuracy of state assignemnts: ", results_dict["balanced_accuracy_score"])
+    print("\n accuracy of state assignemnts: ", results_dict["state_similarity"])
     print("\n the distance between state 0 and state 1: ", results_dict["wasserstein"])
 
 
