@@ -109,7 +109,7 @@ gem062 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pat
 
 Gemcitabine_Control = gem04 + gem05 + gem06 + gem042 + gem052 + gem062 + gem043
 len_gm_cntr = [len(gem04), len(gem05), len(gem06), len(gem042), len(gem052), len(gem062), len(gem043)]
-
+gem_cn_reps = [len(gem04 + gem05 + gem06), len(gem042 + gem052), len(gem062 + gem043)]
 # -- GEMCITABINE 5 uMolars
 
 gemc33 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_C3_1_V4.xlsx")]
@@ -122,7 +122,7 @@ gemc352 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pa
 Gem5uM = gemc33 + gemc332 + gemc34 + gemc342 + gemc35 + gemc352
 gem5uM = popout_single_lineages(Gem5uM)
 len_gm_5 = [len(gemc33), len(gemc332), len(gemc34), len(gemc342), len(gemc35), len(gemc352)]
-
+gem_5_reps = [len(gemc33 + gemc332), len(gemc34 + gemc342), len(gemc35 + gemc352)]
 # -- GEMCITABINE 10 uMolars
 
 gemc401 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_C4_1_V5.xlsx")]
