@@ -4,8 +4,7 @@ from sklearn.cluster import KMeans
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from sklearn.metrics import balanced_accuracy_score
-import itertools
+from sklearn.metrics import rand_score
 
 from .figureCommon import (
     getSetup,
@@ -52,28 +51,28 @@ def accuracy():
         all_cells = np.array([cell.obs for lineage in pop for cell in lineage.output_lineage])
 
         kmeans = KMeans(n_clusters=2).fit(all_cells).labels_
-        balanced_score[ii] = 100 * balanced_accuracy_score(ravel_true_states, kmeans)
+        balanced_score[ii] = 100 * rand_score(ravel_true_states, kmeans)
 
     # replace x with 1-x if the accuracy is less than 50%
     balanced_score[balanced_score < 50.0] = 100.0 - balanced_score[balanced_score < 50.0]
 
     wass, _, dict_out, _ = commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=[pi] * num_data_points, list_of_fT=[T] * num_data_points, parallel=True)
-    accuracy = dict_out["balanced_accuracy_score"]
-    distribution_df = pd.DataFrame(columns=["Distribution similarity", "G1 lifetime", "State"])
+    accuracy = dict_out["state_similarity"]
+    distribution_df = pd.DataFrame(columns=["Distribution Similarity", "G1 lifetime", "State"])
     lineages = [list_of_populations2[int(num_data_points * i / 4.)][0] for i in range(4)]
     len_lineages = [len(lineage) for lineage in lineages]
     distribution_df["G1 lifetime"] = [(cell.obs[1] + cell.obs[2]) for lineage in lineages for cell in lineage.output_lineage]
     distribution_df["State"] = ["State 1" if cell.state == 0 else "State 2" for lineage in lineages for cell in lineage.output_lineage]
-    distribution_df["Distribution similarity"] = len_lineages[0] * ["Same\n" + str(0) + "-" + str(wass[-1] / 4)] +\
+    distribution_df["Distribution Similarity"] = len_lineages[0] * ["Same\n" + str(0) + "-" + str(wass[-1] / 4)] +\
         len_lineages[1] * ["Similar\n" + str(wass[-1] / 4) + "-" + str(wass[-1] / 2)] +\
         len_lineages[2] * ["Different\n" + str(wass[-1] / 2) + "-" + str(wass[-1] * 0.75)] +\
         len_lineages[3] * ["Distinct\n>" + str(wass[-1] * 0.75)]
 
     # for the violin plot (distributions)
-    wasser_df = pd.DataFrame(columns=["Wasserstein distance", "State Assignment Accuracy"])
+    wasser_df = pd.DataFrame(columns=["Wasserstein distance", "Random Index Accuracy"])
     wasser_df["Wasserstein distance"] = wass
-    wasser_df["State Assignment Accuracy"] = accuracy
-    wasser_df["KMeans accuracy"] = balanced_score
+    wasser_df["Random Index Accuracy"] = accuracy
+    wasser_df["KMeans Accuracy"] = balanced_score
     return distribution_df, wasser_df
 
 
@@ -88,13 +87,13 @@ def figureMaker5(ax, distribution_df, wasser_df):
 
     i += 1
 
-    sns.violinplot(x="G1 lifetime", y="Distribution similarity", hue="State", palette={"State 1": "b", "State 2": "g"}, split=True, data=distribution_df, ax=ax[i])
+    sns.violinplot(x="G1 lifetime", y="Distribution Similarity", hue="State", palette={"State 1": "b", "State 2": "g"}, split=True, data=distribution_df, ax=ax[i])
 
     i += 1
     # state accuracy
-    sns.regplot(x="Wasserstein distance", y="State Assignment Accuracy", data=wasser_df, label="tHMM", ax=ax[i], lowess=True, marker='+')
-    sns.regplot(x="Wasserstein distance", y="KMeans accuracy", data=wasser_df, ax=ax[i], label="K-means", lowess=True, marker='+')
+    sns.regplot(x="Wasserstein distance", y="Random Index Accuracy", data=wasser_df, label="tHMM", ax=ax[i], lowess=True, marker='+')
+    sns.regplot(x="Wasserstein distance", y="KMeans Accuracy", data=wasser_df, ax=ax[i], label="K-means", lowess=True, marker='+')
     ax[i].set_title("State Assignment Accuracy")
-    ax[i].set_ylabel("Accuracy [%]")
+    ax[i].set_ylabel("Random Index Accuracy [%]")
     ax[i].set_ylim(bottom=10.0, top=101)
     ax[i].legend()
