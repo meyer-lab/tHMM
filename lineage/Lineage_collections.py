@@ -145,6 +145,7 @@ gemc415 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pa
 
 Gem10uM = gemc401 + gemc402 + gemc403 + gemc404 + gemc405 + gemc406 + gemc407 + \
     gemc408 + gemc409 + gemc410 + gemc411 + gemc412 + gemc413 + gemc414 + gemc415
+gem_10_reps = [len(gemc401 + gemc402 + gemc403 + gemc404 + gemc405 + gemc406), len(gemc407 + gemc408 + gemc409 + gemc410), len(gemc411 + gemc412 + gemc413 + gemc414 + gemc415)]
 len_gm_10 = [
     len(gemc401),
     len(gemc402),
@@ -175,7 +176,7 @@ gemD38 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pat
 
 Gem30uM = gemD31 + gemD34 + gemD37 + gemD32 + gemD35 + gemD33 + gemD36 + gemD38
 len_gm_30 = [len(gemD31), len(gemD34), len(gemD37), len(gemD32), len(gemD35), len(gemD33), len(gemD36), len(gemD38)]
-
+gem_30_reps = [len(gemD31 + gemD34 + gemD37), len(gemD32 + gemD35), len(gemD33 + gemD36 + gemD38)]
 # -- PACLITAXEL 2 uMolars
 
 taxb40 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00602_B6_1_V4.xlsx")]
