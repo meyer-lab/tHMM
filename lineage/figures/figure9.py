@@ -72,7 +72,7 @@ def makeFigure():
         ax[i].set_ylabel("Normalized BIC")
         ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
 
-    ax[0].set_title("Lapatinib")
-    ax[1].set_title("Gemcitabine")
+    ax[0].set_title("Lapatinib Treated Populations")
+    ax[1].set_title("Gemcitabine Treated Populations")
 
     return f

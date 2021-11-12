@@ -5,8 +5,8 @@ from string import ascii_lowercase
 from .figureCommon import getSetup, plot_all
 from ..plotTree import plot_networkx
 
-concs = ["control", "lapatinib 25 nM", "lapatinib 50 nM", "lapatinib 250 nM"]
-concsValues = ["control", "25 nM", "50 nM", "250 nM"]
+concs = ["Control", "Lapatinib 25 nM", "Lapatinib 50 nM", "Lapatinib 250 nM"]
+concsValues = ["Control", "25 nM", "50 nM", "250 nM"]
 
 pik1 = open("lapatinibs.pkl", "rb")
 lapt_tHMMobj_list = []

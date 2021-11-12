@@ -5,8 +5,8 @@ from string import ascii_lowercase
 from .figureCommon import getSetup, subplotLabel, plot_all
 from ..plotTree import plot_networkx
 
-concs = ["control", "gemcitabine 5 nM", "gemcitabine 10 nM", "gemcitabine 30 nM"]
-concsValues = ["control", "5 nM", "10 nM", "30 nM"]
+concs = ["Control", "Gemcitabine 5 nM", "Gemcitabine 10 nM", "Gemcitabine 30 nM"]
+concsValues = ["Control", "5 nM", "10 nM", "30 nM"]
 
 pik1 = open("gemcitabines.pkl", "rb")
 gemc_tHMMobj_list = []

@@ -226,11 +226,11 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=0.5, top=1.02)
     if number_of_params == 6:
-        ax[i].set_ylabel("G1 Bernoulli $p$")
-        ax[i].set_title(r"G1 Bernoulli $p$ Estimation")
+        ax[i].set_ylabel("G1 Bernoulli p")
+        ax[i].set_title(r"G1 Bernoulli p Estimation")
     else:
-        ax[i].set_ylabel("Bernoulli $p$")
-        ax[i].set_title(r"Bernoulli $p$ Estimation")
+        ax[i].set_ylabel("Bernoulli p")
+        ax[i].set_title(r"Bernoulli p Estimation")
 
     i += 1  # i = 4
     if number_of_params == 6:  # phase specific gamma
@@ -240,15 +240,15 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5)
             ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5)
             ax[i].set_ylim(bottom=0.5, top=1.02)
-            ax[i].set_ylabel("S/G2 Bernoulli $p$")
-            ax[i].set_title(r"S/G2 Bernoulli $p$ Estimation")
+            ax[i].set_ylabel("S/G2 Bernoulli p")
+            ax[i].set_title(r"S/G2 Bernoulli p Estimation")
         else:
             sns.regplot(x="x", y="gamma 0 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
             sns.regplot(x="x", y="gamma 1 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
             ax[i].axhline(y=paramTrues[1, 0, 2], linestyle="-", c="#00ffff", alpha=0.5)
             ax[i].axhline(y=paramTrues[1, 1, 2], linestyle="-", c="#00cc00", alpha=0.5)
-            ax[i].set_ylabel(r"G1 Gamma $k$")
-            ax[i].set_title(r"G1 Gamma $k$ Estimation")
+            ax[i].set_ylabel(r"G1 Gamma k")
+            ax[i].set_title(r"G1 Gamma k Estimation")
             ax[i].set_ylim([0.0, 15.0])
 
     else:  # simple lifetime gamma
@@ -256,8 +256,8 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         sns.regplot(x="x", y="1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
         ax[i].axhline(y=paramTrues[1, 0, 1], linestyle="-", c="#00ffff", alpha=0.5)
         ax[i].axhline(y=paramTrues[1, 1, 1], linestyle="-", c="#00cc00", alpha=0.5)
-        ax[i].set_ylabel(r"Gamma $k$")
-        ax[i].set_title(r"Gamma $k$ Estimation")
+        ax[i].set_ylabel(r"Gamma k")
+        ax[i].set_title(r"Gamma k Estimation")
         ax[i].set_ylim([0.0, 15.0])
     ax[i].set_xlabel(xlabel)
 
@@ -302,8 +302,8 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5)
         ax[i].set_ylim(bottom=0.0, top=1.02)
-        ax[i].set_ylabel("S/G2 Bernoulli $p$")
-        ax[i].set_title(r"S/G2 Bernoulli $p$")
+        ax[i].set_ylabel("S/G2 Bernoulli p")
+        ax[i].set_title(r"S/G2 Bernoulli p")
     else:
         ax[i].set_ylim(bottom=0, top=101)
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
@@ -324,7 +324,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_ylim(bottom=0, top=np.mean(tr) + 0.2)
         sns.regplot(x="x", y="tr", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
-        ax[i].set_title(r"Error in estimating $T$")
+        ax[i].set_title(r"Error in Estimating T")
         ax[i].set_ylim([0.0, 1.0])
     ax[i].set_xlabel(xlabel)
 
@@ -361,7 +361,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_ylim(bottom=0, top=np.mean(tr) + 0.2)
         sns.regplot(x="x", y="tr", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
-        ax[i].set_title(r"Error in estimating $T$")
+        ax[i].set_title(r"Error in estimating T")
         ax[i].set_ylim([0.0, 1.0])
         ax[i].set_xlabel(xlabel)
 
@@ -372,7 +372,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
             sns.regplot(x="num lineages", y="pii", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
             ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
-            ax[i].set_title(r"Error in estimating $\pi$")
+            ax[i].set_title(r"Error in Estimating $\pi$")
             ax[i].set_xlabel("Number of Lineages")
             ax[i].set_ylim([0.0, 1.0])
 
@@ -391,18 +391,18 @@ def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
 
     # ylim and ylabel
     for i in range(10, 12):
-        ax[i].set_ylabel("log10 mean time [hr]")
+        ax[i].set_ylabel("Log10 Mean Time [hr]")
         ax[i].set_ylim([0, 3.5])
 
     # ylim and ylabel
     for i in range(12, 14):
-        ax[i].set_ylabel("division probability")
+        ax[i].set_ylabel("Division Probability")
         ax[i].set_ylim([0.0, 1.05])
 
     # legend and xlabel
     for i in range(10, 14):
         ax[i].legend()
-        ax[i].set_xlabel("concentration [nM]")
+        ax[i].set_xlabel("Concentration [nM]")
         ax[i].set_xticklabels(concsValues, rotation=30)
         ax[i].text(-0.2, 1.25, ascii_lowercase[i - 5], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
 
