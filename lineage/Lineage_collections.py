@@ -31,7 +31,7 @@ lap03 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path
 Lapatinib_Control = lap01 + lap012 + lap02 + lap03
 # used for when we want to writes states instead of phase lengths
 len_lp_cntr = [len(lap01), len(lap012), len(lap02), len(lap03)]
-
+lpt_cn_reps = [len(lap01 + lap012), len(lap02), len(lap03)]
 # -- LAPATINIB 25 uMolars
 
 lapb63 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_B6_1_V4.xlsx")]
@@ -45,7 +45,7 @@ lapb653 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pa
 
 Lapt25uM = lapb63 + lapb632 + lapb64 + lapb642 + lapb65 + lapb652 + lapb653
 len_lp_25 = [len(lapb63), len(lapb632), len(lapb64), len(lapb642), len(lapb65), len(lapb652), len(lapb653)]
-
+lpt_25_reps = [len(lapb63 + lapb632), len(lapb64 + lapb642), len(lapb65 + lapb652 + lapb653)]
 # -- LAPATINIB 50 uMolars
 
 lapC501 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_C5_1_V4.xlsx")]
@@ -67,6 +67,7 @@ lapC514 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pa
 
 Lapt50uM = lapC501 + lapC502 + lapC503 + lapC504 + lapC505 + lapC506 + lapC507 + \
     lapC508 + lapC509 + lapC510 + lapC511 + lapC512 + lapC513 + lapC514
+lpt_50_reps = [len(lapC501 + lapC502 + lapC503 + lapC504 + lapC505 + lapC506), len(lapC507 + lapC508 + lapC509 + lapC510), len(lapC511 + lapC512 + lapC513 + lapC514)]
 len_lp_50 = [
     len(lapC501),
     len(lapC502),
@@ -95,7 +96,7 @@ lapD58 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pat
 
 Lap250uM = lapD51 + lapD54 + lapD57 + lapD52 + lapD55 + lapD53 + lapD56 + lapD58
 len_lp_250 = [len(lapD51), len(lapD54), len(lapD57), len(lapD52), len(lapD55), len(lapD53), len(lapD56), len(lapD58)]
-
+lpt_250_reps = [len(lapD51 + lapD54 + lapD57), len(lapD52 + lapD55), len(lapD53 + lapD56 + lapD58)]
 # -- Gemcitabine control
 
 gem04 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_A3_1_V4.xlsx")]
@@ -108,7 +109,7 @@ gem062 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pat
 
 Gemcitabine_Control = gem04 + gem05 + gem06 + gem042 + gem052 + gem062 + gem043
 len_gm_cntr = [len(gem04), len(gem05), len(gem06), len(gem042), len(gem052), len(gem062), len(gem043)]
-
+gem_cn_reps = [len(gem04 + gem05 + gem06), len(gem042 + gem052), len(gem062 + gem043)]
 # -- GEMCITABINE 5 uMolars
 
 gemc33 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_C3_1_V4.xlsx")]
@@ -121,7 +122,7 @@ gemc352 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pa
 Gem5uM = gemc33 + gemc332 + gemc34 + gemc342 + gemc35 + gemc352
 gem5uM = popout_single_lineages(Gem5uM)
 len_gm_5 = [len(gemc33), len(gemc332), len(gemc34), len(gemc342), len(gemc35), len(gemc352)]
-
+gem_5_reps = [len(gemc33 + gemc332), len(gemc34 + gemc342), len(gemc35 + gemc352)]
 # -- GEMCITABINE 10 uMolars
 
 gemc401 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_C4_1_V5.xlsx")]
@@ -144,6 +145,7 @@ gemc415 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pa
 
 Gem10uM = gemc401 + gemc402 + gemc403 + gemc404 + gemc405 + gemc406 + gemc407 + \
     gemc408 + gemc409 + gemc410 + gemc411 + gemc412 + gemc413 + gemc414 + gemc415
+gem_10_reps = [len(gemc401 + gemc402 + gemc403 + gemc404 + gemc405 + gemc406), len(gemc407 + gemc408 + gemc409 + gemc410), len(gemc411 + gemc412 + gemc413 + gemc414 + gemc415)]
 len_gm_10 = [
     len(gemc401),
     len(gemc402),
@@ -174,7 +176,7 @@ gemD38 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pat
 
 Gem30uM = gemD31 + gemD34 + gemD37 + gemD32 + gemD35 + gemD33 + gemD36 + gemD38
 len_gm_30 = [len(gemD31), len(gemD34), len(gemD37), len(gemD32), len(gemD35), len(gemD33), len(gemD36), len(gemD38)]
-
+gem_30_reps = [len(gemD31 + gemD34 + gemD37), len(gemD32 + gemD35), len(gemD33 + gemD36 + gemD38)]
 # -- PACLITAXEL 2 uMolars
 
 taxb40 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00602_B6_1_V4.xlsx")]
