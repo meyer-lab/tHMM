@@ -17,31 +17,43 @@ for i in range(4):
 
 
 def convertToIndex(lpt_cn_reps):
-    """ Takes the list containing the lineage numbers of each replicate, 
+    """ Takes the list containing the lineage numbers of each replicate,
     and returning the list of their index correspondance."""
     for i, val in enumerate(lpt_cn_reps):
         if i == 0:
             lpt_cn_reps[i] = val
         else:
-            lpt_cn_reps[i] = lpt_cn_reps[i] + lpt_cn_reps[i-1]
+            lpt_cn_reps[i] = lpt_cn_reps[i] + lpt_cn_reps[i - 1]
     return [0] + lpt_cn_reps
-    
+
+
 def separate_reps(rep_indx_list, thmm):
-    """ For a given condition, ie., control, 25nM, etc., 
+    """ For a given condition, ie., control, 25nM, etc.,
     makes a list of lists containing lineage_trees of separate replicates."""
     reps = []
     for k, val in enumerate(rep_indx_list):
-        reps.append([thmm.X[val:rep_indx_list[k+1]]])
+        reps.append([thmm.X[val:rep_indx_list[k + 1]]])
         if k >= 2:
             break
     assert len(reps) == 3
     return reps
 
+
 def state_abundance_perRep(reps):
     """Finds the number of cells in each state for all replicates of a condition. """
-    s0 = []; s1 = []; s2 = []; s3 = []; s4 = []; s5 = []
+    s0 = []
+    s1 = []
+    s2 = []
+    s3 = []
+    s4 = []
+    s5 = []
     for rep in reps:
-        st0 = 0; st1 = 0; st2 = 0; st3 = 0; st4 = 0; st5 = 0
+        st0 = 0
+        st1 = 0
+        st2 = 0
+        st3 = 0
+        st4 = 0
+        st5 = 0
         for lineageTree_list in rep:
             for lineage_tree in lineageTree_list:
                 for cell in lineage_tree.output_lineage:
@@ -65,6 +77,7 @@ def state_abundance_perRep(reps):
         s5.append(st5)
 
     return [s0, s1, s2, s3, s4, s5]
+
 
 def reps_all_conditions(cn, one, two, three, tHMMobj_list):
     """ collects all the states abundances for all replicates. Preparation for plotting. """
@@ -100,15 +113,15 @@ def makeFigure():
         ax[i].set_xticklabels(labels_L)
         ax[i].legend()
 
-        ax[i+4].bar(x2 - width, GEM[i, 0:5, 0], width, label="rep1")
-        ax[i+4].bar(x2, GEM[i, 0:5, 1], width, label="rep2")
-        ax[i+4].bar(x2 + width, GEM[i, 0:5, 2], width, label="rep3")
-        ax[i+4].set_title(titles_G[i])
-        ax[i+4].set_xlabel("States")
-        ax[i+4].set_ylabel("State # frequencies")
-        ax[i+4].set_xticks(x2)
-        ax[i+4].set_xticklabels(labels_G)
-        ax[i+4].legend()
-    
+        ax[i + 4].bar(x2 - width, GEM[i, 0:5, 0], width, label="rep1")
+        ax[i + 4].bar(x2, GEM[i, 0:5, 1], width, label="rep2")
+        ax[i + 4].bar(x2 + width, GEM[i, 0:5, 2], width, label="rep3")
+        ax[i + 4].set_title(titles_G[i])
+        ax[i + 4].set_xlabel("States")
+        ax[i + 4].set_ylabel("State # frequencies")
+        ax[i + 4].set_xticks(x2)
+        ax[i + 4].set_xticklabels(labels_G)
+        ax[i + 4].legend()
+
         f.tight_layout()
     return f
