@@ -345,7 +345,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
             sns.regplot(x="num lineages", y="pii", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
             ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
-            ax[i].set_title(r"Error in estimating $\pi$")
+            ax[i].set_title(r"Error in Estimating $\pi$")
             ax[i].set_xlabel("Number of Lineages")
             ax[i].set_ylim([0.0, 1.0])
 
@@ -361,7 +361,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_ylim(bottom=0, top=np.mean(tr) + 0.2)
         sns.regplot(x="x", y="tr", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
-        ax[i].set_title(r"Error in estimating T")
+        ax[i].set_title(r"Error in Estimating T")
         ax[i].set_ylim([0.0, 1.0])
         ax[i].set_xlabel(xlabel)
 
