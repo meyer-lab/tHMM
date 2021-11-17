@@ -7,45 +7,38 @@ flistPath = $(patsubst %, output/figure%.svg, $(flist))
 
 all: spell.txt $(patsubst %, output/figure%.svg, $(flist))
 
-venv: venv/bin/activate
-
-venv/bin/activate: requirements.txt
-	test -d venv || virtualenv venv
-	. venv/bin/activate && pip install -Uqr requirements.txt
-	touch venv/bin/activate
-
-output/figure%.svg: venv genFigures.py lineage/figures/figure%.py
+output/figure%.svg: genFigures.py lineage/figures/figure%.py
 	if test -r "$@"; then \
 		touch $@; \
 	else \
-		. venv/bin/activate && JAX_PLATFORM_NAME=cpu ./genFigures.py $*; \
+		poetry run ./genFigures.py $*; \
 	fi
 
-output/manuscript.md: venv manuscript/*.md
+output/manuscript.md: manuscript/*.md
 	. venv/bin/activate && manubot process --content-directory=manuscript --output-directory=output --cache-directory=cache --skip-citations --log-level=INFO
 	git remote rm rootstock
 
-output/manuscript.html: venv output/manuscript.md $(flistPath)
+output/manuscript.html: output/manuscript.md $(flistPath)
 	. venv/bin/activate && pandoc --verbose \
 		--defaults=./common/templates/manubot/pandoc/common.yaml \
 		--defaults=./common/templates/manubot/pandoc/html.yaml output/manuscript.md
 
-output/manuscript.docx: venv output/manuscript.md $(flistPath)
+output/manuscript.docx: output/manuscript.md $(flistPath)
 	. venv/bin/activate && pandoc --verbose \
 		--defaults=./common/templates/manubot/pandoc/common.yaml \
 		--defaults=./common/templates/manubot/pandoc/docx.yaml output/manuscript.md
 
-test: venv
-	. venv/bin/activate; pytest -s -v -x
+test:
+	poetry run pytest -s -v -x
 
-mypy: venv
-	. venv/bin/activate; mypy --install-types --non-interactive --ignore-missing-imports lineage
+mypy:
+	poetry run mypy --install-types --non-interactive --ignore-missing-imports lineage
 
 spell.txt: manuscript/*.md
 	pandoc --lua-filter common/templates/spell.lua manuscript/*.md | sort | uniq -ic > spell.txt
 
-testprofile: venv
-	python3 -m cProfile -o profile /usr/local/bin/pytest
+testprofile:
+	poetry run python3 -m cProfile -o profile -m pytest -s -v -x
 	gprof2dot -f pstats --node-thres=5.0 profile | dot -Tsvg -o profile.svg
 
 clean:

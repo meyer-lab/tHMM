@@ -3,24 +3,17 @@
 import warnings
 import numpy as np
 import scipy.special as sc
-from jax import jit, grad
-import jax.numpy as jnp
-from jax.scipy.special import gammaincc
-from jax.scipy.stats import gamma
-from jax.config import config
+from scipy.stats import gamma
 from scipy.optimize import toms748, minimize, Bounds, LinearConstraint, BFGS
 
-config.update("jax_enable_x64", True)
+
 warnings.filterwarnings('ignore', r'delta_grad == 0.0.')
 
 
 def nLL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
-    uncens = jnp.dot(uncens_gammas, gamma.logpdf(uncens_obs, a=a, scale=scale))
-    cens = jnp.dot(cens_gammas, gammaincc(a, cens_obs / scale))
+    uncens = np.dot(uncens_gammas, gamma.logpdf(uncens_obs, a=a, scale=scale))
+    cens = np.dot(cens_gammas, sc.gammaincc(a, cens_obs / scale))
     return -1 * (uncens + cens)
-
-
-nLL_sepG = jit(grad(nLL_sep, 0))
 
 
 def gamma_uncensored(gamma_obs, gammas):
@@ -109,27 +102,6 @@ def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     return outt
 
 
-def nLL_atonceJ(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
-    """ Gradient for nLL_atonce mostly by autodiff. """
-    x = np.clip(x, 0.001, 100.0)  # Horrible hack
-
-    grad = np.zeros(x.size)
-
-    val = nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas)
-    x = x.copy()
-    x[0] += 1.0e-9
-    valU = nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas)
-    grad[0] = (valU - val) / 1.0e-9
-
-    for i in range(4):
-        grad[1 + i] = nLL_sepG(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
-
-    if ~np.all(np.isfinite(grad)):
-        raise RuntimeError(f"Failed with: {x}")
-
-    return grad
-
-
 def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
     """
     This is a weighted, closed-form estimator for two parameters
@@ -158,11 +130,12 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
     if np.allclose(np.dot(A, x0), 0.0):
         x0 = np.array([20.0, 1.0, 2.0, 3.0, 4.0])
 
-    linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)
-    bnds = Bounds(lb=np.ones_like(x0) * 0.001, ub=np.ones_like(x0) * 100.0, keep_feasible=True)
+    linc = LinearConstraint(A, lb=np.zeros(3), ub=np.full(3, 100.0))
+    bnds = Bounds(lb=np.full_like(x0, 0.001), ub=np.full_like(x0, 100.0), keep_feasible=True)
     HH = BFGS()
 
-    res = minimize(nLL_atonce, x0=x0, jac=nLL_atonceJ, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
-    assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
+    res = minimize(nLL_atonce, x0=x0, jac="3-point", hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
+    print(res)
+    assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
