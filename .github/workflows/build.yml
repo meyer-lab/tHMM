@@ -15,18 +15,14 @@ jobs:
     - name: Install dependencies
       run: |
         git submodule update --init --recursive && make clean
-        make venv
     - name: Build figures
       run: make all
-    - name: Build manuscript
-      run: make output/manuscript.html output/manuscript.docx
     - name: Upload files
       uses: actions/upload-artifact@v2
       with:
         name: files
         path: |
           output/*.svg
-          output/*.docx
           spell.txt
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@4.1.4
