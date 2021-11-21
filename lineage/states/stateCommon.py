@@ -8,7 +8,7 @@ import jax.numpy as jnp
 from jax.scipy.special import gammaincc
 from jax.scipy.stats import gamma
 from jax.config import config
-from scipy.optimize import toms748, minimize, Bounds, LinearConstraint, BFGS
+from scipy.optimize import newton, minimize, Bounds, LinearConstraint, BFGS
 
 config.update("jax_enable_x64", True)
 warnings.filterwarnings('ignore', r'delta_grad == 0.0.')
@@ -31,18 +31,28 @@ def gamma_uncensored(gamma_obs, gammas):
 
     def f(k):
         return np.log(k) - sc.polygamma(0, k) - s
+    
+    def df(k):
+        """ Derivative of f(k). """
+        return 1.0 / k - sc.polygamma(1, k)
+    
+    def ddf(k):
+        """ Derivative of df(k). """
+        return -1.0 / (k**2.0) - sc.polygamma(2, k)
 
-    flow = f(1.0)
+    flow = f(0.1)
     fhigh = f(100.0)
     if flow * fhigh > 0.0:
         if np.absolute(flow) < np.absolute(fhigh):
-            a_hat0 = 1.0
+            a_hat0 = 0.1
         elif np.absolute(flow) > np.absolute(fhigh):
             a_hat0 = 100.0
         else:
-            a_hat0 = 10.0
+            raise RuntimeError("Should never end up here.")
     else:
-        a_hat0 = toms748(f, 1.0, 100.0)
+        a_hat0 = newton(f, 1.0, fprime=df, fprime2=ddf, full_output=True, tol=1e-9)
+        assert a_hat0[1].converged
+        a_hat0 = a_hat0[0]
 
     return [a_hat0, gammaCor / a_hat0]
 
@@ -67,6 +77,7 @@ def gamma_estimator(gamma_obs, time_cen, gammas, x0):
     nLL = lambda x, *args: nLL_sep(x[1], x[0], *args)
     nLLg = value_and_grad(nLL)
     res = minimize(nLLg, jac=True, x0=x0, method="TNC", bounds=(bnd, bnd), args=arrgs)
+    print(res)
     assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
