@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 from ..tHMM import tHMM
 from ..LineageTree import LineageTree
-from ..figures.figureCommon import pi, T, E
+from ..figures.common import pi, T, E
 
 
 class TestViterbi(unittest.TestCase):

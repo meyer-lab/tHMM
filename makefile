@@ -1,11 +1,9 @@
 SHELL := /bin/bash
 
 .PHONY: clean test testprofile testcover docs
+flist = $(wildcard lineage/figures/figure*.py)
 
-flist = 1 4 5 6 8 9 11 12 S01 S02 S03 S04 S05 S06 S07 S08 S09 S10 S16 111
-flistPath = $(patsubst %, output/figure%.svg, $(flist))
-
-all: $(patsubst %, output/figure%.svg, $(flist))
+all: $(patsubst lineage/figures/figure%.py, output/figure%.svg, $(flist))
 
 output/figure%.svg: lineage/figures/figure%.py
 	if test -r "$@"; then \
