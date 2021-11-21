@@ -16,6 +16,7 @@ openpyxl = "^3.0.9"
 biopython = "^1.79"
 statsmodels = "^0.13.1"
 networkx = "^2.6.3"
+plotly = "^5.4.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "6.2"

@@ -59,6 +59,7 @@ def plot_networkx(num_states, T, drug_name):
     for i in range(num_states):
         G[i][i][0]['color'] = 'black'
 
-    A = to_agraph(G)
-    A.layout('dot')
-    A.draw('output/' + str(drug_name) + '.svg')
+    # Uncomment for transition graph. Depends on pygraphviz
+    # A = to_agraph(G)
+    # A.layout('dot')
+    # A.draw('output/' + str(drug_name) + '.svg')
