@@ -13,17 +13,14 @@ jobs:
         path: cache
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Install dependencies
-      run: |
-        git submodule update --init --recursive && make clean
+      run: make clean
     - name: Build figures
-      run: make all
+      run: make all -j 12
     - name: Upload files
       uses: actions/upload-artifact@v2
       with:
         name: files
-        path: |
-          output/*.svg
-          spell.txt
+        path: output/*.svg
     - name: Deploy 🚀
       uses: JamesIves/github-pages-deploy-action@4.1.4
       if: github.ref == 'refs/heads/master'

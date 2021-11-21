@@ -3,8 +3,6 @@
 [![codecov](https://codecov.io/gh/meyer-lab/tHMM/branch/master/graph/badge.svg)](https://codecov.io/gh/meyer-lab/tHMM)
 [![Documentation Status](https://readthedocs.org/projects/tHMM/badge/?version=latest)](https://lineage-growth.readthedocs.io/en/latest/?badge=latest)
 
-[Manuscript Build](https://meyer-lab.github.io/tHMM/manuscript.html)
-
 `tHMM` is a Python package for developing methods to quantify drug response heterogeneity, using single-cell data in the form of cell lineages.
 
 - [Overview](#Overview)
