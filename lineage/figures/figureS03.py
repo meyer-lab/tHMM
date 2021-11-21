@@ -6,7 +6,7 @@ populations of lineages (more than one lineage per populations).
 """
 import numpy as np
 
-from .figureCommon import (
+from .common import (
     getSetup,
     subplotLabel,
     commonAnalyze,

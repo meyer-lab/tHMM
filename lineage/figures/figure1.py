@@ -7,7 +7,7 @@ from string import ascii_lowercase
 import random
 import numpy as np
 
-from .figureCommon import getSetup
+from .common import getSetup
 from ..plotTree import plotLineage
 from lineage.Lineage_collections import Gem10uM, Gemcitabine_Control as control
 

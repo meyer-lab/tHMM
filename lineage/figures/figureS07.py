@@ -8,7 +8,7 @@ of varying distributions.
 """
 import numpy as np
 
-from .figureCommon import (
+from .common import (
     getSetup,
     subplotLabel,
     commonAnalyze,

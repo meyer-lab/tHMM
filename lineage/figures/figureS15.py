@@ -2,7 +2,7 @@
 import numpy as np
 import math
 import pickle
-from .figureCommon import getSetup, subplotLabel
+from .common import getSetup, subplotLabel
 
 pik1 = open("lapatinibs.pkl", "rb")
 lapt_tHMMobj_list = []

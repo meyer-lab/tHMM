@@ -2,7 +2,7 @@
 import pickle
 from string import ascii_lowercase
 
-from .figureCommon import getSetup, plot_all
+from .common import getSetup, plot_all
 
 concs = ["Control", "Gemcitabine 5 nM", "Gemcitabine 10 nM", "Gemcitabine 30 nM"]
 concsValues = ["Control", "5 nM", "10 nM", "30 nM"]

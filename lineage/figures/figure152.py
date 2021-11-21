@@ -2,7 +2,7 @@
 
 import pickle
 
-from .figureCommon import getSetup, sort_lins
+from .common import getSetup, sort_lins
 from ..plotTree import plotLineage
 
 # open gemcitabine

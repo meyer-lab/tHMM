@@ -8,7 +8,7 @@ changing the values in the transition matrices.
 """
 import numpy as np
 
-from .figureCommon import (
+from .common import (
     getSetup,
     subplotLabel,
     commonAnalyze,

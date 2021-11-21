@@ -1,7 +1,7 @@
 """ This file includes functions to separate cell states of different replicates, and plot the barchart for each condition."""
 import pickle
 import numpy as np
-from .figureCommon import getSetup
+from .common import getSetup
 from lineage.Lineage_collections import lpt_cn_reps, lpt_25_reps, lpt_50_reps, lpt_250_reps, gem_cn_reps, gem_5_reps, gem_10_reps, gem_30_reps
 
 

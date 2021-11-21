@@ -1,8 +1,6 @@
 """ This file contains figures related to how big the experment needs to be. """
 import numpy as np
-import pandas as pd
-import seaborn as sns
-from .figureCommon import (
+from .common import (
     getSetup,
     subplotLabel,
     pi,

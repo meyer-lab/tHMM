@@ -5,7 +5,7 @@ import pandas as pd
 import seaborn as sns
 from matplotlib.colors import ListedColormap
 from copy import deepcopy
-from .figureCommon import (
+from .common import (
     getSetup,
     subplotLabel,
     num_data_points,

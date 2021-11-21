@@ -6,7 +6,7 @@ single lineages (no more than one lineage per population).
 """
 import numpy as np
 
-from .figureCommon import (
+from .common import (
     getSetup,
     subplotLabel,
     commonAnalyze,

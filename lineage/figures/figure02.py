@@ -1,10 +1,9 @@
 """
 Handful of lineages in figure 11.
 """
-from string import ascii_lowercase
 import pickle
 
-from .figureCommon import getSetup
+from .common import getSetup
 from ..plotTree import plotLineage
 
 # open lapatinib
