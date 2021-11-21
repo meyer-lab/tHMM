@@ -124,7 +124,7 @@ def makeFigure():
     ax[1].set_xticks(x2)
     ax[1].set_xticklabels(labels_G)
     ax[1].legend()
-    
+
     f.tight_layout()
 
     return f
