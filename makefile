@@ -7,11 +7,11 @@ flistPath = $(patsubst %, output/figure%.svg, $(flist))
 
 all: $(patsubst %, output/figure%.svg, $(flist))
 
-output/figure%.svg: genFigures.py lineage/figures/figure%.py
+output/figure%.svg: lineage/figures/figure%.py
 	if test -r "$@"; then \
 		touch $@; \
 	else \
-		poetry run ./genFigures.py $*; \
+		poetry run fbuild $*; \
 	fi
 
 test:

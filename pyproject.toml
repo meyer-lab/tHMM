@@ -14,6 +14,7 @@ seaborn = "0.11"
 svgutils = "^0.3.4"
 openpyxl = "^3.0.9"
 biopython = "^1.79"
+statsmodels = "^0.13.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "6.2"
@@ -23,3 +24,6 @@ mypy = "^0.910"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]                                                           
+fbuild = "lineage.figures.figureCommon:genFigure"

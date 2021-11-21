@@ -1,6 +1,4 @@
 """ To draw transition matrix """
-import numpy as np
-import seaborn as sns
 import networkx as nx
 from networkx.drawing.nx_agraph import to_agraph
 
