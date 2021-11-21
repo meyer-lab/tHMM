@@ -3,16 +3,20 @@
 import warnings
 import numpy as np
 import scipy.special as sc
-from scipy.stats import gamma
+from jax import value_and_grad
+import jax.numpy as jnp
+from jax.scipy.special import gammaincc
+from jax.scipy.stats import gamma
+from jax.config import config
 from scipy.optimize import toms748, minimize, Bounds, LinearConstraint, BFGS
 
-
+config.update("jax_enable_x64", True)
 warnings.filterwarnings('ignore', r'delta_grad == 0.0.')
 
 
 def nLL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
-    uncens = np.dot(uncens_gammas, gamma.logpdf(uncens_obs, a=a, scale=scale))
-    cens = np.dot(cens_gammas, sc.gammaincc(a, cens_obs / scale))
+    uncens = jnp.dot(uncens_gammas, gamma.logpdf(uncens_obs, a=a, scale=scale))
+    cens = jnp.dot(cens_gammas, gammaincc(a, cens_obs / scale))
     return -1 * (uncens + cens)
 
 
@@ -90,16 +94,14 @@ def basic_censor(cell):
 
 def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
-    x = np.clip(x, 0.001, 100.0)  # Horrible hack
-
     outt = 0.0
     for i in range(4):
         outt += nLL_sep(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
 
-    if ~np.isfinite(outt):
-        raise RuntimeError(f"Failed with: {x}")
-
     return outt
+
+
+nLL_atonceJ = value_and_grad(nLL_atonce)
 
 
 def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
@@ -132,10 +134,8 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
 
     linc = LinearConstraint(A, lb=np.zeros(3), ub=np.full(3, 100.0))
     bnds = Bounds(lb=np.full_like(x0, 0.001), ub=np.full_like(x0, 100.0), keep_feasible=True)
-    HH = BFGS()
 
-    res = minimize(nLL_atonce, x0=x0, jac="3-point", hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
-    print(res)
-    assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
+    res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=BFGS(), args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
+    assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
