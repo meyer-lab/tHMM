@@ -62,12 +62,12 @@ def gamma_estimator(gamma_obs, time_cen, gammas, x0):
 
     assert gammas.shape[0] == gamma_obs.shape[0]
     arrgs = (gamma_obs[time_cen == 1], gammas[time_cen == 1], gamma_obs[time_cen == 0], gammas[time_cen == 0])
-    opt = {'gtol': 1e-12, 'ftol': 1e-12}
     bnd = (1.0, 100.0)
 
     nLL = lambda x, *args: nLL_sep(x[1], x[0], *args)
-    res = minimize(fun=nLL, jac="3-point", x0=x0, bounds=(bnd, bnd), args=arrgs, options=opt)
-    # assert res.success is True
+    nLLg = value_and_grad(nLL)
+    res = minimize(nLLg, jac=True, x0=x0, method="TNC", bounds=(bnd, bnd), args=arrgs)
+    assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
 
