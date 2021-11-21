@@ -11,6 +11,7 @@ from jax.config import config
 from scipy.optimize import newton, minimize, Bounds, LinearConstraint, BFGS
 
 config.update("jax_enable_x64", True)
+config.update('jax_platform_name', 'cpu')
 warnings.filterwarnings('ignore', r'delta_grad == 0.0.')
 
 
@@ -77,7 +78,8 @@ def gamma_estimator(gamma_obs, time_cen, gammas, x0):
     nLL = lambda x, *args: nLL_sep(x[1], x[0], *args)
     nLLg = value_and_grad(nLL)
     res = minimize(nLLg, jac=True, x0=x0, method="TNC", bounds=(bnd, bnd), args=arrgs)
-    print(res)
+    if res.success is False:
+        print(res)
     assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
