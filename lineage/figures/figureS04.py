@@ -13,7 +13,6 @@ from .common import (
     subplotLabel,
     commonAnalyze,
     figureMaker,
-    pi,
     E,
     max_desired_num_cells,
     num_data_points,

@@ -13,10 +13,8 @@ from .common import (
     subplotLabel,
     commonAnalyze,
     figureMaker,
-    pi,
     E,
     max_desired_num_cells,
-    max_experiment_time,
     num_data_points,
 )
 from ..LineageTree import LineageTree
