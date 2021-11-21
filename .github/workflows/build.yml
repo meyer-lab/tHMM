@@ -7,13 +7,8 @@ jobs:
     runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
-    - name: Cache references
-      uses: actions/cache@v2
-      with:
-        path: cache
-        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Install dependencies
-      run: make clean
+      run: poetry install --no-root
     - name: Build figures
       run: make all -j 12
     - name: Upload files
