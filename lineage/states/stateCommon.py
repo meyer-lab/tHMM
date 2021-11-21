@@ -3,15 +3,14 @@
 import warnings
 import numpy as np
 import scipy.special as sc
-from jax import value_and_grad
+from jax import jit, grad
 import jax.numpy as jnp
 from jax.scipy.special import gammaincc
 from jax.scipy.stats import gamma
 from jax.config import config
-from scipy.optimize import newton, minimize, Bounds, LinearConstraint, BFGS
+from scipy.optimize import toms748, minimize, Bounds, LinearConstraint, BFGS
 
 config.update("jax_enable_x64", True)
-config.update('jax_platform_name', 'cpu')
 warnings.filterwarnings('ignore', r'delta_grad == 0.0.')
 
 
@@ -19,6 +18,9 @@ def nLL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     uncens = jnp.dot(uncens_gammas, gamma.logpdf(uncens_obs, a=a, scale=scale))
     cens = jnp.dot(cens_gammas, gammaincc(a, cens_obs / scale))
     return -1 * (uncens + cens)
+
+
+nLL_sepG = jit(grad(nLL_sep, 0))
 
 
 def gamma_uncensored(gamma_obs, gammas):
@@ -32,28 +34,18 @@ def gamma_uncensored(gamma_obs, gammas):
 
     def f(k):
         return np.log(k) - sc.polygamma(0, k) - s
-    
-    def df(k):
-        """ Derivative of f(k). """
-        return 1.0 / k - sc.polygamma(1, k)
-    
-    def ddf(k):
-        """ Derivative of df(k). """
-        return -1.0 / (k**2.0) - sc.polygamma(2, k)
 
-    flow = f(0.1)
+    flow = f(1.0)
     fhigh = f(100.0)
     if flow * fhigh > 0.0:
         if np.absolute(flow) < np.absolute(fhigh):
-            a_hat0 = 0.1
+            a_hat0 = 1.0
         elif np.absolute(flow) > np.absolute(fhigh):
             a_hat0 = 100.0
         else:
-            raise RuntimeError("Should never end up here.")
+            a_hat0 = 10.0
     else:
-        a_hat0 = newton(f, 1.0, fprime=df, fprime2=ddf, full_output=True, tol=1e-9)
-        assert a_hat0[1].converged
-        a_hat0 = a_hat0[0]
+        a_hat0 = toms748(f, 1.0, 100.0)
 
     return [a_hat0, gammaCor / a_hat0]
 
@@ -73,14 +65,12 @@ def gamma_estimator(gamma_obs, time_cen, gammas, x0):
 
     assert gammas.shape[0] == gamma_obs.shape[0]
     arrgs = (gamma_obs[time_cen == 1], gammas[time_cen == 1], gamma_obs[time_cen == 0], gammas[time_cen == 0])
+    opt = {'gtol': 1e-12, 'ftol': 1e-12}
     bnd = (1.0, 100.0)
 
     nLL = lambda x, *args: nLL_sep(x[1], x[0], *args)
-    nLLg = value_and_grad(nLL)
-    res = minimize(nLLg, jac=True, x0=x0, method="TNC", bounds=(bnd, bnd), args=arrgs)
-    if res.success is False:
-        print(res)
-    assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
+    res = minimize(fun=nLL, jac="3-point", x0=x0, bounds=(bnd, bnd), args=arrgs, options=opt)
+    # assert res.success is True
 
     return res.x
 
@@ -107,14 +97,37 @@ def basic_censor(cell):
 
 def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
+    x = np.clip(x, 0.001, 100.0)  # Horrible hack
+
     outt = 0.0
     for i in range(4):
         outt += nLL_sep(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
 
+    if ~np.isfinite(outt):
+        raise RuntimeError(f"Failed with: {x}")
+
     return outt
 
 
-nLL_atonceJ = value_and_grad(nLL_atonce)
+def nLL_atonceJ(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
+    """ Gradient for nLL_atonce mostly by autodiff. """
+    x = np.clip(x, 0.001, 100.0)  # Horrible hack
+
+    grad = np.zeros(x.size)
+
+    val = nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas)
+    x = x.copy()
+    x[0] += 1.0e-9
+    valU = nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas)
+    grad[0] = (valU - val) / 1.0e-9
+
+    for i in range(4):
+        grad[1 + i] = nLL_sepG(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
+
+    if ~np.all(np.isfinite(grad)):
+        raise RuntimeError(f"Failed with: {x}")
+
+    return grad
 
 
 def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
@@ -145,10 +158,11 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
     if np.allclose(np.dot(A, x0), 0.0):
         x0 = np.array([20.0, 1.0, 2.0, 3.0, 4.0])
 
-    linc = LinearConstraint(A, lb=np.zeros(3), ub=np.full(3, 100.0))
-    bnds = Bounds(lb=np.full_like(x0, 0.001), ub=np.full_like(x0, 100.0), keep_feasible=True)
+    linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)
+    bnds = Bounds(lb=np.ones_like(x0) * 0.001, ub=np.ones_like(x0) * 100.0, keep_feasible=True)
+    HH = BFGS()
 
-    res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=BFGS(), args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
+    res = minimize(nLL_atonce, x0=x0, jac=nLL_atonceJ, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
     assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
