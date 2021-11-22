@@ -11,13 +11,18 @@ from jax.config import config
 from scipy.optimize import toms748, minimize, Bounds, LinearConstraint, BFGS
 
 config.update("jax_enable_x64", True)
+config.update('jax_platform_name', 'cpu')
 warnings.filterwarnings('ignore', r'delta_grad == 0.0.')
 
 
-def nLL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
+def nLL_sep(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
+    a, scale = x
     uncens = jnp.dot(uncens_gammas, gamma.logpdf(uncens_obs, a=a, scale=scale))
     cens = jnp.dot(cens_gammas, gammaincc(a, cens_obs / scale))
     return -1 * (uncens + cens)
+
+
+GnLL_sep = jit(value_and_grad(nLL_sep))
 
 
 def gamma_uncensored(gamma_obs, gammas):
@@ -62,13 +67,14 @@ def gamma_estimator(gamma_obs, time_cen, gammas, x0):
 
     assert gammas.shape[0] == gamma_obs.shape[0]
     arrgs = (gamma_obs[time_cen == 1], gammas[time_cen == 1], gamma_obs[time_cen == 0], gammas[time_cen == 0])
-    opt = {'gtol': 1e-12}
+    opt = {'gtol': 1e-6, 'ftol': 1e-6}
     bnd = (1.0, 100.0)
 
-    nLL = lambda x, *args: nLL_sep(x[1], x[0], *args)
-    GnLL = jit(value_and_grad(nLL))
+    def GnLL(x, *args):
+        val, grad = GnLL_sep(x, *args)
+        return val, np.array(grad)
 
-    res = minimize(GnLL, x0, jac=True, method="trust-constr", bounds=(bnd, bnd), args=arrgs, options=opt)
+    res = minimize(GnLL, x0, jac=True, bounds=(bnd, bnd), args=arrgs, options=opt)
     assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
@@ -98,7 +104,7 @@ def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
     outt = 0.0
     for i in range(4):
-        outt += nLL_sep(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
+        outt += nLL_sep([x[0], x[1 + i]], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
 
     return outt
 
