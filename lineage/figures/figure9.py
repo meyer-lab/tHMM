@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import run_Analyze_over
 from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
-from .figureCommon import getSetup
+from .common import getSetup
 
 desired_num_states = np.arange(1, 8)
 

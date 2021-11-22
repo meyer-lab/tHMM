@@ -4,7 +4,7 @@ import numpy as np
 from ..BaumWelch import do_E_step, calculate_log_likelihood
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
-from ..figures.figureCommon import pi, T, E
+from ..figures.common import pi, T, E
 
 
 @pytest.mark.parametrize("cens", [0, 2])

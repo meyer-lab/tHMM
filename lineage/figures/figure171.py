@@ -2,7 +2,7 @@
 
 import pickle
 
-from .figureCommon import getSetup
+from .common import getSetup
 from ..plotTree import plotLineage
 
 # open lapatinib

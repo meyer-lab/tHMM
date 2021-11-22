@@ -13,10 +13,9 @@ jobs:
     - name: Setup submodule
       run: git submodule update --init --recursive
     - name: Install dependencies
-      run: make venv
+      run: poetry install --no-root
     - name: Test with pytest
-      run: |
-        . venv/bin/activate; pytest --cov=lineage --cov-report=xml --cov-config=.github/workflows/coveragerc
+      run: poetry run pytest --cov=lineage --cov-report=xml --cov-config=.github/workflows/coveragerc
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
       with:

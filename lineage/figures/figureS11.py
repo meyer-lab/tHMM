@@ -1,7 +1,6 @@
 """ This is a file to put together 4 conditions of lapatinib together. """
 
-from .figureCommon import getSetup
-
+from .common import getSetup
 from string import ascii_lowercase
 
 

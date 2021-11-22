@@ -1,20 +1,10 @@
 """ Barcoding computational experinece. """
 import numpy as np
 import pickle
-import pandas as pd
-import seaborn as sns
-from matplotlib.colors import ListedColormap
-from copy import deepcopy
-from .figureCommon import (
+from .common import (
     getSetup,
-    subplotLabel,
-    num_data_points,
+    subplotLabel
 )
-from ..LineageTree import LineageTree, max_gen
-from ..BaumWelch import calculate_stationary
-from ..plotTree import plotLineage
-from ..Analyze import run_Analyze_over
-from ..states.StateDistributionGaPhs import StateDistribution
 
 
 num_lineages = 10

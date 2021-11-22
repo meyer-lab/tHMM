@@ -1,12 +1,10 @@
 """ To draw transition matrix """
-import numpy as np
-import seaborn as sns
 import networkx as nx
 from networkx.drawing.nx_agraph import to_agraph
 
 from .figure11 import lapt_tHMMobj_list
 from .figure12 import gemc_tHMMobj_list
-from .figureCommon import getSetup, subplotLabel
+from .common import getSetup, subplotLabel
 
 gemc = gemc_tHMMobj_list[0]
 lapt = lapt_tHMMobj_list[0]
@@ -61,6 +59,7 @@ def plot_networkx(num_states, T, drug_name):
     for i in range(num_states):
         G[i][i][0]['color'] = 'black'
 
-    A = to_agraph(G)
-    A.layout('dot')
-    A.draw('output/' + str(drug_name) + '.svg')
+    # Uncomment for transition graph. Depends on pygraphviz
+    # A = to_agraph(G)
+    # A.layout('dot')
+    # A.draw('output/' + str(drug_name) + '.svg')

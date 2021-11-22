@@ -10,7 +10,7 @@ from ..UpwardRecursion import (
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
-from ..figures.figureCommon import pi, T, E
+from ..figures.common import pi, T, E
 from ..Analyze import Analyze, Results, run_Analyze_over
 
 

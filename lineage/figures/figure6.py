@@ -6,7 +6,7 @@ import pandas as pd
 import seaborn as sns
 from sklearn.metrics import rand_score
 
-from .figureCommon import (
+from .common import (
     getSetup,
     subplotLabel,
     commonAnalyze,

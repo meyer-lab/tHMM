@@ -13,7 +13,7 @@ from ..LineageTree import LineageTree
 # States to evaluate with the model
 from ..states.StateDistributionGaPhs import StateDistribution
 
-from .figureCommon import getSetup, subplotLabel
+from .common import getSetup, subplotLabel
 
 
 desired_num_states = np.arange(1, 6)

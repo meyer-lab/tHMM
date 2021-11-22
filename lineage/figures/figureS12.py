@@ -1,6 +1,6 @@
 """ This is a file to put together 4 conditions of gemcitabine together. """
 from string import ascii_lowercase
-from .figureCommon import getSetup
+from .common import getSetup
 
 
 def makeFigure():

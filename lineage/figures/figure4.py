@@ -5,7 +5,7 @@ import pandas as pd
 import seaborn as sns
 from copy import deepcopy
 import random
-from .figureCommon import (
+from .common import (
     getSetup,
     subplotLabel,
     commonAnalyze,

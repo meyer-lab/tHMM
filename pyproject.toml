@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "lineage"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.10"
+numpy = "1.21"
+scipy = "1.7"
+scikit-learn = "1.0"
+seaborn = "0.11"
+svgutils = "^0.3.4"
+openpyxl = "^3.0.9"
+biopython = "^1.79"
+statsmodels = "^0.13.1"
+networkx = "^2.6.3"
+plotly = "^5.4.0"
+jax = "^0.2.25"
+jaxlib = "^0.1.74"
+
+[tool.poetry.dev-dependencies]
+pytest = "6.2"
+pytest-cov = "3.0"
+mypy = "^0.910"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]                                                           
+fbuild = "lineage.figures.common:genFigure"

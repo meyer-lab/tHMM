@@ -8,15 +8,13 @@ changing the values in the transition matrices.
 """
 import numpy as np
 
-from .figureCommon import (
+from .common import (
     getSetup,
     subplotLabel,
     commonAnalyze,
     figureMaker,
-    pi,
     E,
     max_desired_num_cells,
-    max_experiment_time,
     num_data_points,
 )
 from ..LineageTree import LineageTree
