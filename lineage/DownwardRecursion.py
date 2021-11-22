@@ -26,6 +26,7 @@ def get_gammas(tHMMobj, MSD: list, betas: list) -> list:
 
     for num, lO in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lO.output_lineage
+        coeffs = betas[num] / np.clip(MSD[num], np.finfo(float).eps, np.inf)
 
         for level in lO.output_list_of_gens[1:]:
             for cell in level:
@@ -34,10 +35,9 @@ def get_gammas(tHMMobj, MSD: list, betas: list) -> list:
 
                 for d in cell.get_daughters():
                     ci = lineage.index(d)
-
-                    coeffs = betas[num] / np.clip(MSD[num], np.finfo(float).eps, np.inf)
                     beta_parent = np.clip(T @ coeffs[ci, :], np.finfo(float).eps, np.inf)
                     gammas[num][ci, :] = coeffs[ci, :] * np.matmul(gam / beta_parent, T)
+
     for gamm in gammas:
         assert np.all(np.isfinite(gamm))
 
