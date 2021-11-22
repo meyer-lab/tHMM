@@ -2,6 +2,8 @@
 Contains utilities, functions, and variables that are commonly used or shared amongst
 the figure creation files.
 """
+from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
+from ..states.StateDistributionGamma import StateDistribution
 import sys
 import time
 import matplotlib
@@ -17,8 +19,6 @@ from ..BaumWelch import calculate_stationary
 
 matplotlib.use('AGG')
 
-from ..states.StateDistributionGamma import StateDistribution
-from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 
 # T: transition probability matrix
 T = np.array([[0.9, 0.1], [0.1, 0.9]], dtype=float)
