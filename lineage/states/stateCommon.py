@@ -3,7 +3,7 @@
 import warnings
 import numpy as np
 import scipy.special as sc
-from jax import jit, grad
+from jax import jit, value_and_grad
 import jax.numpy as jnp
 from jax.scipy.special import gammaincc
 from jax.scipy.stats import gamma
@@ -18,9 +18,6 @@ def nLL_sep(scale, a, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     uncens = jnp.dot(uncens_gammas, gamma.logpdf(uncens_obs, a=a, scale=scale))
     cens = jnp.dot(cens_gammas, gammaincc(a, cens_obs / scale))
     return -1 * (uncens + cens)
-
-
-nLL_sepG = jit(grad(nLL_sep, 0))
 
 
 def gamma_uncensored(gamma_obs, gammas):
@@ -65,12 +62,14 @@ def gamma_estimator(gamma_obs, time_cen, gammas, x0):
 
     assert gammas.shape[0] == gamma_obs.shape[0]
     arrgs = (gamma_obs[time_cen == 1], gammas[time_cen == 1], gamma_obs[time_cen == 0], gammas[time_cen == 0])
-    opt = {'gtol': 1e-12, 'ftol': 1e-12}
+    opt = {'gtol': 1e-12}
     bnd = (1.0, 100.0)
 
     nLL = lambda x, *args: nLL_sep(x[1], x[0], *args)
-    res = minimize(fun=nLL, jac="3-point", x0=x0, bounds=(bnd, bnd), args=arrgs, options=opt)
-    # assert res.success is True
+    GnLL = jit(value_and_grad(nLL))
+
+    res = minimize(GnLL, x0, jac=True, method="trust-constr", bounds=(bnd, bnd), args=arrgs, options=opt)
+    assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
 
@@ -97,37 +96,14 @@ def basic_censor(cell):
 
 def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
-    x = np.clip(x, 0.001, 100.0)  # Horrible hack
-
     outt = 0.0
     for i in range(4):
         outt += nLL_sep(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
 
-    if ~np.isfinite(outt):
-        raise RuntimeError(f"Failed with: {x}")
-
     return outt
 
 
-def nLL_atonceJ(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
-    """ Gradient for nLL_atonce mostly by autodiff. """
-    x = np.clip(x, 0.001, 100.0)  # Horrible hack
-
-    grad = np.zeros(x.size)
-
-    val = nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas)
-    x = x.copy()
-    x[0] += 1.0e-9
-    valU = nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas)
-    grad[0] = (valU - val) / 1.0e-9
-
-    for i in range(4):
-        grad[1 + i] = nLL_sepG(x[1 + i], x[0], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
-
-    if ~np.all(np.isfinite(grad)):
-        raise RuntimeError(f"Failed with: {x}")
-
-    return grad
+nLL_atonceJ = jit(value_and_grad(nLL_atonce))
 
 
 def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
@@ -162,7 +138,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
     bnds = Bounds(lb=np.ones_like(x0) * 0.001, ub=np.ones_like(x0) * 100.0, keep_feasible=True)
     HH = BFGS()
 
-    res = minimize(nLL_atonce, x0=x0, jac=nLL_atonceJ, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
+    res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
     assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
