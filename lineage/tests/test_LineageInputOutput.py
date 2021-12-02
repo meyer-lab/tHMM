@@ -20,7 +20,7 @@ class TestModel(unittest.TestCase):
         should be able to handle.
         """
 
-        self.path_to_synthetic_data = r"lineage/data/heiser_data/Synth_data.xlsx"
+        self.path_to_synthetic_data = r"lineage/data/Synth_data.xlsx"
 
         # manually setting up trees from Synth_data
         # 1
