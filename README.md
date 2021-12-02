@@ -13,7 +13,7 @@
 
 # Overview
 
-`tHMM` is an open-source Python package that implements hidden Markov models built on binary lineage trees. The purpose of this model is to identify phenotypic heterogeneity among cancer cells exposed to different concentrations of a drug, and cluster the cells based on various observations, most importantly, taking to account the cell-cell reationship in decision making. The model takes in experimental observations in the form of binary lineages of single cells in a specific Excel sheet format (please refer to lineage/data/heiser_data/new_version to see the excel sheets for each condition). Currently, the experimental observations include the single cell fate, and cell cycle phase durations, but the model is flexible with no limitations of how many observations to use, so long as they are heritable. The model has been tested on synthetic data, and also on experimental data of AU565 breast cancer cells exposed to lapatinib and gemcitabine. This framework properly accounts for time and fate censorship due to experimental limitations. For a thorough tutorial of the implemented method, please refer to `manuscript/05.methods.md`.
+`tHMM` is an open-source Python package that implements hidden Markov models built on binary lineage trees. The purpose of this model is to identify phenotypic heterogeneity among cancer cells exposed to different concentrations of a drug, and cluster the cells based on various observations, most importantly, taking to account the cell-cell reationship in decision making. The model takes in experimental observations in the form of binary lineages of single cells in a specific Excel sheet format (please refer to lineage/data/LineageData to see the excel sheets for each condition). Currently, the experimental observations include the single cell fate, and cell cycle phase durations, but the model is flexible with no limitations of how many observations to use, so long as they are heritable. The model has been tested on synthetic data, and also on experimental data of AU565 breast cancer cells exposed to lapatinib and gemcitabine. This framework properly accounts for time and fate censorship due to experimental limitations. For a thorough tutorial of the implemented method, please refer to `manuscript/05.methods.md`.
 
 # Documentation
 The `docs` folder includes a few tutorials for getting started with the package. All the functions should have a docstring explaining the purpose of the function, as well as the inputs, outputs, and the type of the variables used.
@@ -138,7 +138,7 @@ desired_num_states = 2 # does not make a difference what number we choose for im
 E = [StateDistribution() for _ in range(desired_num_states)]
 
 # Importing only one of the replicates of control condition
-control1 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_A5_1_V5.xlsx")]
+control1 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_A5_1_V5.xlsx")]
 
 output = run_Analyze_over([control1], 2, atonce=False)
 ```
