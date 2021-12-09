@@ -386,10 +386,10 @@ the difference between the second value and the first value of the daughter cell
     E = [StateDistribution() for _ in range(desired_num_states)]
 
     # control condition:
-    c1 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_A5_1_V5.xlsx")]
-    c2 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00601_A5_2_V4.xlsx")]
-    c3 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00701_A5_1_V4.xlsx")]
-    c4 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/heiser_data/new_version/AU00801_A5_1_V4.xlsx")]
+    c1 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_A5_1_V5.xlsx")]
+    c2 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_A5_2_V4.xlsx")]
+    c3 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00701_A5_1_V4.xlsx")]
+    c4 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00801_A5_1_V4.xlsx")]
     Control = c1 + c2 + c3 + c4
 
     from lineage.Analyze import Analyze_list
