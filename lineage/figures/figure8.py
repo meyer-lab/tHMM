@@ -38,9 +38,33 @@ def makeFigure():
 
     # making lineages and finding BICs (assign number of lineages here)
     exe = ProcessPoolExecutor()
-    BICprom = [[exe.submit(run_BIC, .1, e, 10, idx > 3) for idx, e in enumerate(E)] for _ in range(10)]
+    # Setting up pi and Transition matrix T:
+    #   pi: All states have equal initial probabilities
+    #   T:  States have high likelihood of NOT changing, with frequency of change determined mostly by the relative_state_change variable
+    #   (as relative state change -> inf state change probabilities approach equality)
+    BICprom = []
+    for _ in range(10):
+        tmp = []
+        for idx, e in enumerate(E):
+            pi = np.ones(len(e)) / len(e)
+            T = (np.eye(len(e)) + 0.1)
+            T = T / np.sum(T, axis=1)[:, np.newaxis]
+            if idx < 3:
+                # uncensored lineage generation
+                lineages = [LineageTree.init_from_parameters(
+                    pi, T, e, 2**6 - 1) for _ in range(10)]
+            else:
+                # censored lineage creation
+                lineages = [LineageTree.init_from_parameters(
+                pi, T, e, 2**6 - 1, censor_condition=3, experiment_time=1200) for _ in range(10)]
+            tmp.append(exe.submit(run_BIC, e, lineages))
+        BICprom.append(tmp)
     Bic = [[aaa.result() for aaa in ee] for ee in BICprom]
     BIC = list(map(list, zip(*Bic)))
+    print(Bic)
+    print(BIC)
+    print(len(BIC))
+    print(len(BIC[0]))
 
     # Finding proper ylim range for all 4 uncensored graphs and rounding up
     upper_ylim_uncensored = int(1 + max([np.max(np.ptp(BIC[i], axis=0)) for i in range(4)]) / 25.0) * 25
@@ -58,29 +82,11 @@ def makeFigure():
     return f
 
 
-def run_BIC(relative_state_change, E, num_lineages_to_evaluate=10, censored=False):
+def run_BIC(E, lineages):
     """
-    Run's BIC for known lineages with known pi,
-    and T values and stores the output for
+    Run's BIC for known lineages with known lineages and stores the output for
     figure drawing.
     """
-    # Setting up pi and Transition matrix T:
-    #   pi: All states have equal initial probabilities
-    #   T:  States have high likelihood of NOT changing, with frequency of change determined mostly by the relative_state_change variable
-    #   (as relative state change -> inf state change probabilities approach equality)
-    pi = np.ones(len(E)) / len(E)
-    T = (np.eye(len(E)) + relative_state_change)
-    T = T / np.sum(T, axis=1)[:, np.newaxis]
-
-    # Creating censored lineages
-    if censored:
-        lineages = [LineageTree.init_from_parameters(
-            pi, T, E, 2**6 - 1, censor_condition=3, experiment_time=1200) for _ in range(num_lineages_to_evaluate)]
-
-    # Creating uncensored lineages
-    else:
-        lineages = [LineageTree.init_from_parameters(
-            pi, T, E, 2**6 - 1) for _ in range(num_lineages_to_evaluate)]
 
     # Storing BICs into array
     BICs = np.empty((len(desired_num_states)))
