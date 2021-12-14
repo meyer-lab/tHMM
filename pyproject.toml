@@ -18,6 +18,7 @@ networkx = "^2.6.3"
 plotly = "^5.4.0"
 jax = "^0.2.25"
 jaxlib = "^0.1.74"
+statsmodels = "^0.13.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "6.2"
