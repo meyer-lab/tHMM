@@ -1,5 +1,7 @@
 """ This file includes functions to import the new lineage data. """
 import pandas as pd
+import itertools
+from more_itertools import locate
 import numpy as np
 from .CellVar import CellVar as c
 
@@ -12,60 +14,48 @@ def read_lineage_data():
         lineage = df.loc[df['lineageId'] == i] # select all the cells that belong to that lineage
 
         if not(lineage.empty): # if the lineage Id exists, do the rest, if not, pass
-            unique_trackIDs = lineage["trackId"].unique() # the length of this shows the number of cells in this lineage
-            parent_trackIDs = lineage["parentTrackId"].unique() # self-explanatory!
+            unique_cell_ids = list(lineage["trackId"].unique()) # the length of this shows the number of cells in this lineage
+            unique_parent_trackIDs = lineage["parentTrackId"].unique() # self-explanatory!
+
+            pid = [[0]] # root parnt's parent id
+            for i in unique_parent_trackIDs:
+                if i != 0:
+                    pid.append(np.count_nonzero(lineage["parentTrackId"]== i) * [i])
+            parent_ids = list(itertools.chain(*pid))
 
             # the root parent cell
             parent_cell = c(parent=None, gen=1)
             parent_cell.obs = [0, 0, 0, 0] # [fate, lifetime, diameter, censored?]
-            parent_cell.obs[1] = 0.5*(np.max(lineage.loc[lineage['trackId'] == unique_trackIDs[0]]['frame']) - np.min(lineage.loc[lineage['trackId'] == unique_trackIDs[0]]['frame']))
-            parent_cell.obs[2] = np.mean(lineage.loc[lineage['trackId'] == unique_trackIDs[0]]['Diameter_0'])
+            parent_cell.obs[1] = 0.5*(np.max(lineage.loc[lineage['trackId'] == unique_cell_ids[0]]['frame']) - np.min(lineage.loc[lineage['trackId'] == unique_cell_ids[0]]['frame']))
+            parent_cell.obs[2] = np.mean(lineage.loc[lineage['trackId'] == unique_cell_ids[0]]['Diameter_0'])
             parent_cell.obs[3] = 1 # certainly left-censored.
 
-            lineage.drop(lineage.loc[lineage['trackId'] == unique_trackIDs[0]].index, inplace=True)
-            ### we can add any other feature here...
             lineage_list = [parent_cell]
-            while not(lineage.empty):
-                daughter.left, lineage = recurssive(parent_cell, lineage)
-                daughter.right, lineage = recurssive(parent_cell, lineage)
-                lineage_list.append(daughter.left)
-                lineage_list.append(daughter.right)
-                parent_cell = daughter
+            for i, val in enumerate(unique_cell_ids):
+                if val in parent_ids: # divides
+                    parent_index = [indx for indx, value in enumerate(parent_ids) if value == val] # find whose mother it is
+                    if len(parent_index) > 1: # has two children
+                        lineage_list[i].left = c(parent=lineage_list[i], gen=lineage_list[i].gen+1)
+                        lineage_list[i].left = assign_observs(lineage_list[i].left, lineage, unique_cell_ids[parent_index[0]])
+                        lineage_list[i].right = c(parent=lineage_list[i], gen=lineage_list[i].gen+1)
+                        lineage_list[i].right = assign_observs(lineage_list[i].right, lineage, unique_cell_ids[parent_index[1]])
+                    elif len(parent_index) == 1: # has one child
+                        lineage_list[i].left = c(parent=lineage_list[i], gen=lineage_list[i].gen+1)
+                        lineage_list[i].left = assign_observs(lineage_list[i].left, lineage, unique_cell_ids[parent_index[0]])
+                        lineage_list[i].right = None
+                    else:
+                        print("error here!")
+                    lineage_list.append(lineage_list[i].left)
+                    lineage_list.append(lineage_list[i].right)
 
         population.append(lineage_list)
         
     return population
 
-def recurssive(parent_cell, lineage):
-
-    unique_trackIDs = lineage["trackId"].unique()
-    parent_trackIDs = lineage["parentTrackId"].unique()
-
-    if unique_trackIDs[0] in parent_trackIDs: # the cell of interest has divided
-        daughter = c(parent=parent_cell, gen=parent_cell.gen+1)
-
-        if len(unique_trackIDs) > 0: # only one of the daughters exist
-            # left daughter
-            daughter.left.obs = [0, 0, 0, 0]
-            daughter.left.obs[0] = 0 #? I don't know yet. If 0 means died, if 1 means divided, if nan means we don't know
-            daughter.left.obs[1] = 0.5*(np.max(lineage.loc[lineage['trackId'] == unique_trackIDs[0]]['frame']) - np.min(lineage.loc[lineage['trackId'] == unique_trackIDs[0]]['frame']))
-            daughter.left.obs[2] = np.mean(lineage.loc[lineage['trackId'] == unique_trackIDs[0]]['Diameter_0'])
-            daughter.left.obs[3] = 1 # TO BE DETERMINED
-            # remove the parent cell from the lineage and try recurssion
-            lineage.drop(lineage.loc[lineage['trackId'] == unique_trackIDs[0]].index, inplace=True)
-
-        if len(unique_trackIDs) > 1: # both daughters exist
-            # right daughter
-            daughter.right.obs = [0, 0, 0, 0]
-            daughter.right.obs[0] = 0 #? I don't know yet. If 0 means died, if 1 means divided, if nan means we don't know
-            daughter.right.obs[1] = 0.5*(np.max(lineage.loc[lineage['trackId'] == unique_trackIDs[1]]['frame']) - np.min(lineage.loc[lineage['trackId'] == unique_trackIDs[1]]['frame']))
-            daughter.right.obs[2] = np.mean(lineage.loc[lineage['trackId'] == unique_trackIDs[1]]['Diameter_0'])
-            daughter.right.obs[3] = 1 # TO BE DETERMINED
-            lineage.drop(lineage.loc[lineage['trackId'] == unique_trackIDs[1]].index, inplace=True)
-        else:
-            daughter.right = None
-
-    else: # the cell of interest has not divided
-        return # nada
-
-    return daughter, lineage
+def assign_observs(cell, lineage, uniq_id):
+    cell.obs = [0, 0, 0, 0]
+    # cell.obs[0] = ?
+    cell.obs[1] = 0.5*(np.max(lineage.loc[lineage['trackId'] == uniq_id]['frame']) - np.min(lineage.loc[lineage['trackId'] == uniq_id]['frame']))
+    cell.obs[2] = np.mean(lineage.loc[lineage['trackId'] == uniq_id]['Diameter_0'])
+    # cell.obs[3] = ?
+    return cell
