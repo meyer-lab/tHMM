@@ -48,6 +48,7 @@ def read_lineage_data():
                     lineage_list.append(lineage_list[i].left)
                     lineage_list.append(lineage_list[i].right)
 
+        assert len(lineage_list) == len(unique_cell_ids)
         population.append(lineage_list)
         
     return population
@@ -55,15 +56,17 @@ def read_lineage_data():
 def assign_observs(cell, lineage, uniq_id):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
     # initialize
-    cell.obs = [0, 0, 0, 0]
+    cell.obs = [1, 0, 0, 0]
+    parent_id = lineage["parentTrackId"].unique()
     # cell fate: die = 0, divide = 1
-    # cell.obs[0] = ?
+    if not(uniq_id in parent_id):
+        cell.obs[0] = 0
+        cell.obs[3] = 1
     # cell's lifetime
     cell.obs[1] = 0.5*(np.max(lineage.loc[lineage['trackId'] == uniq_id]['frame']) - np.min(lineage.loc[lineage['trackId'] == uniq_id]['frame']))
     # cell's diameter
     cell.obs[2] = np.mean(lineage.loc[lineage['trackId'] == uniq_id]['Diameter_0'])
     # wether a cell's lifetime is censored or not
-    # cell.obs[3] = ?
     return cell
 
 # TODO: trim the lineages and remove the cells that their lifetime and/or diameter is zero
