@@ -34,7 +34,7 @@ def read_lineage_data(path):
             # create a list to store cells belonging to a lineage
             lineage_list = [parent_cell]
             for k, val in enumerate(unique_cell_ids):
-                if val in parent_ids: # if the id of a cell exists in the parent ids, it meana the cell divides
+                if val in parent_ids: # if the id of a cell exists in the parent ids, it means the cell divides
                     parent_index = [indx for indx, value in enumerate(parent_ids) if value == val] # find whose mother it is
                     assert len(parent_index) == 2 # make sure has two children
                     lineage_list[k].left = c(parent=lineage_list[k], gen=lineage_list[k].gen+1)
@@ -79,7 +79,14 @@ def assign_observs(cell, lineage: list, uniq_id: int):
     # cell's lifetime
     cell.obs[1] = 0.5*(np.max(lineage.loc[lineage['trackId'] == uniq_id]['frame']) - np.min(lineage.loc[lineage['trackId'] == uniq_id]['frame']))
     # cell's diameter
-    diam = lineage.loc[lineage['trackId'] == uniq_id]['Diameter_0']
-    cell.obs[2] = np.nanmean(diam)
+    diam = np.array(lineage.loc[lineage['trackId'] == uniq_id]['Diameter_0'])
+    if np.count_nonzero(diam==0.0) != 0:
+        diam[diam == 0.0] = np.nan
+        if diam.size == 0: # if all are nan
+            cell.obs[2] = np.nan
+        else:
+            cell.obs[2] = np.nanmean(diam)
+    else:
+        cell.obs[2] = np.mean(diam)
 
     return cell
