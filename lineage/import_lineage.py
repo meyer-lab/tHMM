@@ -4,13 +4,15 @@ import itertools
 import numpy as np
 from .CellVar import CellVar as c
 
-def read_lineage_data():
+# path = "lineage/data/LineageData/AU02101_A3_field_1_RP_50_CSV-Table.csv"
+
+def read_lineage_data(path):
     """ Reading the data and extracting lineages with their corresponding observations. """
-    df = pd.read_csv(r"lineage/data/LineageData/AU02101_A3_field_1_RP_50_CSV-Table.csv")
+    df = pd.read_csv(path)
 
     population = []
     # loop over "lineageId"s
-    for i in range(2, np.max(df["lineageId"])+1):
+    for i in df["lineageId"].unique():
         # select all the cells that belong to that lineage
         lineage = df.loc[df['lineageId'] == i]
 
@@ -20,9 +22,9 @@ def read_lineage_data():
             unique_parent_trackIDs = lineage["parentTrackId"].unique()
 
             pid = [[0]] # root parent's parent id
-            for i in unique_parent_trackIDs:
-                if i != 0:
-                    pid.append(np.count_nonzero(lineage["parentTrackId"]== i) * [i])
+            for j in unique_parent_trackIDs:
+                if j != 0:
+                    pid.append(np.count_nonzero(lineage["parentTrackId"]== j) * [j])
             parent_ids = list(itertools.chain(*pid))
 
             # create the root parent cell and assign obsrvations
@@ -31,42 +33,53 @@ def read_lineage_data():
 
             # create a list to store cells belonging to a lineage
             lineage_list = [parent_cell]
-            for i, val in enumerate(unique_cell_ids):
+            for k, val in enumerate(unique_cell_ids):
                 if val in parent_ids: # if the id of a cell exists in the parent ids, it meana the cell divides
                     parent_index = [indx for indx, value in enumerate(parent_ids) if value == val] # find whose mother it is
-                    if len(parent_index) > 1: # has two children
-                        lineage_list[i].left = c(parent=lineage_list[i], gen=lineage_list[i].gen+1)
-                        lineage_list[i].left = assign_observs(lineage_list[i].left, lineage, unique_cell_ids[parent_index[0]])
-                        lineage_list[i].right = c(parent=lineage_list[i], gen=lineage_list[i].gen+1)
-                        lineage_list[i].right = assign_observs(lineage_list[i].right, lineage, unique_cell_ids[parent_index[1]])
-                    elif len(parent_index) == 1: # has one child
-                        lineage_list[i].left = c(parent=lineage_list[i], gen=lineage_list[i].gen+1)
-                        lineage_list[i].left = assign_observs(lineage_list[i].left, lineage, unique_cell_ids[parent_index[0]])
-                        lineage_list[i].right = None
-                    else:
-                        print("error here!")
-                    lineage_list.append(lineage_list[i].left)
-                    lineage_list.append(lineage_list[i].right)
+                    assert len(parent_index) == 2 # make sure has two children
+                    lineage_list[k].left = c(parent=lineage_list[k], gen=lineage_list[k].gen+1)
+                    lineage_list[k].left = assign_observs(lineage_list[k].left, lineage, unique_cell_ids[parent_index[0]])
+                    lineage_list[k].right = c(parent=lineage_list[k], gen=lineage_list[k].gen+1)
+                    lineage_list[k].right = assign_observs(lineage_list[k].right, lineage, unique_cell_ids[parent_index[1]])
+
+                    lineage_list.append(lineage_list[k].left)
+                    lineage_list.append(lineage_list[k].right)
 
         assert len(lineage_list) == len(unique_cell_ids)
+        # if both observations are zero, remove the cell
+        for n, cell in enumerate(lineage_list):
+            if (cell.obs[1] == 0 and cell.obs[2] == 0):
+                lineage_list.pop(n)
+
+        # give all cells of the same lineage a track id
+        for cell in lineage_list:
+            cell.lineageID = i
+
         population.append(lineage_list)
         
     return population
 
-def assign_observs(cell, lineage, uniq_id):
+def assign_observs(cell, lineage: list, uniq_id: int):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
     # initialize
     cell.obs = [1, 0, 0, 0]
     parent_id = lineage["parentTrackId"].unique()
     # cell fate: die = 0, divide = 1
-    if not(uniq_id in parent_id):
-        cell.obs[0] = 0
-        cell.obs[3] = 1
+    if not(uniq_id in parent_id): # if the cell has not divided, means either died or reached experiment end time
+        if np.max(lineage.loc[lineage["trackId"] == uniq_id]["frame"]) == 49: # means reached end of experiment
+            cell.obs[0] = np.nan # don't know
+            cell.obs[3] = 1 # censored
+        else: # means cell died before experiment ended
+            cell.obs[0] = 0 # died
+            cell.obs[3] = 0 # not censored
+
+    if cell.gen == 1: # it is root parent
+        cell.obs[3] = 1 # meaning it is left censored in its lifetime
+
     # cell's lifetime
     cell.obs[1] = 0.5*(np.max(lineage.loc[lineage['trackId'] == uniq_id]['frame']) - np.min(lineage.loc[lineage['trackId'] == uniq_id]['frame']))
     # cell's diameter
-    cell.obs[2] = np.mean(lineage.loc[lineage['trackId'] == uniq_id]['Diameter_0'])
-    # wether a cell's lifetime is censored or not
-    return cell
+    diam = lineage.loc[lineage['trackId'] == uniq_id]['Diameter_0']
+    cell.obs[2] = np.nanmean(diam)
 
-# TODO: trim the lineages and remove the cells that their lifetime and/or diameter is zero
+    return cell
