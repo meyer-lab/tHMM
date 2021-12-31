@@ -7,6 +7,7 @@ import numpy as np
 from ..CellVar import CellVar as c
 from ..import_lineage import read_lineage_data
 
+
 class TestModel(unittest.TestCase):
     """
     Unit test class for importing data.
@@ -37,8 +38,8 @@ class TestModel(unittest.TestCase):
     def test_data(self):
         """ import and test. """
         lineages = read_lineage_data("lineage/data/LineageData/AU02101_A3_field_1_RP_50_CSV-Table.csv")
-        lin1 = lineages[0] # lineageID = 2
-        lin2 = lineages[2] # lineageID = 3
+        lin1 = lineages[0]  # lineageID = 2
+        lin2 = lineages[2]  # lineageID = 3
 
         assert len(lin1) == 3
         assert len(lin2) == 3
