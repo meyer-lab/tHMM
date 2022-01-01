@@ -34,10 +34,10 @@ def read_lineage_data(df, cell_line: str):
 
         # if the lineage Id exists, do the rest, if not, pass
         if not(lineage.empty):
-            unique_cell_ids = list(lineage["trackId"].unique()) # the length of this shows the number of cells in this lineage
+            unique_cell_ids = list(lineage["trackId"].unique())  # the length of this shows the number of cells in this lineage
             unique_parent_trackIDs = lineage["parentTrackId"].unique()
 
-            pid = [[0]] # root parent's parent id
+            pid = [[0]]  # root parent's parent id
             for j in unique_parent_trackIDs:
                 if j != 0:
                     pid.append(2 * [j])
@@ -95,7 +95,7 @@ def read_lineage_data(df, cell_line: str):
             cell.lineageID = i
 
         population.append(lineage_list)
-        
+
     return population
 
 def assign_observs_AU565(cell, lineage: list, uniq_id: int):
@@ -104,24 +104,24 @@ def assign_observs_AU565(cell, lineage: list, uniq_id: int):
     cell.obs = [1, 0, 0, 0]
     parent_id = lineage["parentTrackId"].unique()
     # cell fate: die = 0, divide = 1
-    if not(uniq_id in parent_id): # if the cell has not divided, means either died or reached experiment end time
-        if np.max(lineage.loc[lineage["trackId"] == uniq_id]["frame"]) == 49: # means reached end of experiment
-            cell.obs[0] = np.nan # don't know
-            cell.obs[3] = 1 # censored
-        else: # means cell died before experiment ended
-            cell.obs[0] = 0 # died
-            cell.obs[3] = 0 # not censored
+    if not(uniq_id in parent_id):  # if the cell has not divided, means either died or reached experiment end time
+        if np.max(lineage.loc[lineage["trackId"] == uniq_id]["frame"]) == 49:  # means reached end of experiment
+            cell.obs[0] = np.nan  # don't know
+            cell.obs[3] = 1  # censored
+        else:  # means cell died before experiment ended
+            cell.obs[0] = 0  # died
+            cell.obs[3] = 0  # not censored
 
-    if cell.gen == 1: # it is root parent
-        cell.obs[3] = 1 # meaning it is left censored in its lifetime
+    if cell.gen == 1:  # it is root parent
+        cell.obs[3] = 1  # meaning it is left censored in its lifetime
 
     # cell's lifetime
-    cell.obs[1] = 0.5*(np.max(lineage.loc[lineage['trackId'] == uniq_id]['frame']) - np.min(lineage.loc[lineage['trackId'] == uniq_id]['frame']))
+    cell.obs[1] = 0.5 * (np.max(lineage.loc[lineage['trackId'] == uniq_id]['frame']) - np.min(lineage.loc[lineage['trackId'] == uniq_id]['frame']))
     # cell's diameter
     diam = np.array(lineage.loc[lineage['trackId'] == uniq_id]['Diameter_0'])
-    if np.count_nonzero(diam==0.0) != 0:
+    if np.count_nonzero(diam == 0.0) != 0:
         diam[diam == 0.0] = np.nan
-        if diam.size == 0: # if all are nan
+        if diam.size == 0:  # if all are nan
             cell.obs[2] = np.nan
         else:
             cell.obs[2] = np.nanmean(diam)
@@ -204,4 +204,3 @@ def MCF10A(condition:str):
     
     else:
         raise ValueError("condition does not exist. choose between [PBS, EGF, HGF, OSM]")
-
