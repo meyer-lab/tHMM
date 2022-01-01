@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 from ..CellVar import CellVar as c
-from ..import_lineage import read_lineage_data
+from ..import_lineage import read_lineage_data, MCF10A
 
 
 class TestModel(unittest.TestCase):
@@ -37,7 +37,8 @@ class TestModel(unittest.TestCase):
 
     def test_data(self):
         """ import and test. """
-        lineages = read_lineage_data("lineage/data/LineageData/AU02101_A3_field_1_RP_50_CSV-Table.csv")
+        df = pd.read_csv("lineage/data/LineageData/AU02101_A3_field_1_RP_50_CSV-Table.csv")
+        lineages = read_lineage_data(df, "AU565")
         lin1 = lineages[0]  # lineageID = 2
         lin2 = lineages[2]  # lineageID = 3
 
@@ -50,3 +51,9 @@ class TestModel(unittest.TestCase):
         for j, cells in enumerate(lin2):
             np.testing.assert_allclose(cells.obs, self.lin2[j].obs, rtol=1e-2)
             assert cells.lineageID == 3
+
+    def test_MCF10A(self):
+        pbs = MCF10A("PBS")
+        egf = MCF10A("EGF")
+        hgf = MCF10A("HGF")
+        osm = MCF10A("OSM")
