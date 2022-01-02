@@ -100,7 +100,7 @@ def assign_observs_AU565(cell, lineage: list, uniq_id: int):
 
 def import_MCF10A(path):
     """ Reading the data and extracting lineages and assigning their corresponding observations. """
-
+    df = pd.read_csv(path)
     population = []
     # loop over "lineageId"s
     for i in df["lineage"].unique():
@@ -147,7 +147,7 @@ def import_MCF10A(path):
                     lineage_list.append(lineage_list[k].right)
 
         else:
-            break
+            continue
 
         assert len(lineage_list) == len(unique_cell_ids)
         # if both observations are zero, remove the cell
