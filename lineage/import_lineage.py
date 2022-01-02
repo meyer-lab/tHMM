@@ -97,32 +97,24 @@ def assign_observs_AU565(cell, lineage: list, uniq_id: int):
 # importing MCF10A data
 #######################
 # partof_path = "lineage/data/MCF10A/"
-# df = prepare_MCF10A(path)
 
-def prepare_MCF10A(path):
-    df = pd.read_csv(path)
-    # extract useful information
-    data = df[["TID", "lineage", "motherID", "generation", "treatment", "tmin", "average_velocity"]]
-    dd = data.rename(columns={'TID': 'trackId', 'lineage': 'lineageId', 'motherID': 'parentTrackId'})
-    return dd
-
-def import_MCF10A(df, cell_line: str):
+def import_MCF10A(path):
     """ Reading the data and extracting lineages and assigning their corresponding observations. """
 
     population = []
     # loop over "lineageId"s
-    for i in df["lineageId"].unique():
+    for i in df["lineage"].unique():
         # select all the cells that belong to that lineage
-        lineage = df.loc[df['lineageId'] == i]
+        lineage = df.loc[df['lineage'] == i]
 
-        unique_cell_ids = list(lineage["trackId"].unique())  # the length of this shows the number of cells in this lineage
-        unique_parent_trackIDs = lineage["parentTrackId"].unique()
+        unique_cell_ids = list(lineage["TID"].unique())  # the length of this shows the number of cells in this lineage
+        unique_parent_trackIDs = lineage["motherID"].unique()
 
         # if a cell has 3 children, remove the third one.
         cell_id = []
         for j in unique_parent_trackIDs:
-            tmp = lineage.loc[lineage["parentTrackId"]==j]
-            trackIDs = list(tmp["trackId"].unique())
+            tmp = lineage.loc[lineage["motherID"]==j]
+            trackIDs = list(tmp["TID"].unique())
             cell_id.append(trackIDs[0:2])
 
         # make sure there is still at least one cell in the lineage
@@ -173,24 +165,22 @@ def import_MCF10A(df, cell_line: str):
 def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
     # initialize
-    cell.obs = [1, 0, 0, 0] # [fate, lifetime, avg_velocity, censored?]
-    parent_id = lineage["parentTrackId"].unique()
+    cell.obs = [1, 0, 0] # [fate, lifetime, censored?]
+    parent_id = lineage["motherID"].unique()
     # cell fate: die = 0, divide = 1
     if not(uniq_id in parent_id): # if the cell has not divided, means either died or reached experiment end time
-        if np.max(lineage.loc[lineage["trackId"] == uniq_id]["tmin"]) == 2880: # means reached end of experiment
+        if np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"]) == 2880: # means reached end of experiment
             cell.obs[0] = np.nan # don't know
-            cell.obs[3] = 1 # censored
+            cell.obs[2] = 1 # censored
         else: # means cell died before experiment ended
             cell.obs[0] = 0 # died
-            cell.obs[3] = 0 # not censored
+            cell.obs[2] = 0 # not censored
 
     if cell.gen == 1: # it is root parent
-        cell.obs[3] = 1 # meaning it is left censored in its lifetime
+        cell.obs[2] = 1 # meaning it is left censored in its lifetime
 
     # cell's lifetime
-    cell.obs[1] = (np.max(lineage.loc[lineage['trackId'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['trackId'] == uniq_id]['tmin'])) / 60
-    # cell's velocity
-    cell.obs[2] = np.mean(lineage.loc[lineage['trackId'] == uniq_id]['average_velocity'])
+    cell.obs[1] = (np.max(lineage.loc[lineage['TID'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['TID'] == uniq_id]['tmin'])) / 60
 
     return cell
 
@@ -198,47 +188,31 @@ def MCF10A(condition:str):
     """ Creates the population of lineages for each condition.
     Conditions include: PBS, EGF-treated, HGF-treated, OSM-treated. """
     if condition == "PBS":
-        d1 = prepare_MCF10A("lineage/data/MCF10A/PBS_1.csv")
-        data1 = import_MCF10A(d1, "MCF10A")
-        d2 = prepare_MCF10A("lineage/data/MCF10A/PBS_2.csv")
-        data2 = import_MCF10A(d2, "MCF10A")
+        data1 = import_MCF10A("lineage/data/MCF10A/PBS_1.csv")
+        data2 = import_MCF10A("lineage/data/MCF10A/PBS_2.csv")
         return data1 + data2
 
     elif condition == "EGF":
-        d1 = prepare_MCF10A("lineage/data/MCF10A/EGF_1.csv")
-        data1 = import_MCF10A(d1, "MCF10A")
-        d2 = prepare_MCF10A("lineage/data/MCF10A/EGF_2.csv")
-        data2 = import_MCF10A(d2, "MCF10A")
-        d3 = prepare_MCF10A("lineage/data/MCF10A/EGF_3.csv")
-        data3 = import_MCF10A(d3, "MCF10A")
+        data1 = import_MCF10A("lineage/data/MCF10A/EGF_1.csv")
+        data2 = import_MCF10A("lineage/data/MCF10A/EGF_2.csv")
+        data3 = import_MCF10A("lineage/data/MCF10A/EGF_3.csv")
         return data1 + data2 + data3
     
     elif condition == "HGF":
-        d1 = prepare_MCF10A("lineage/data/MCF10A/HGF_1.csv")
-        data1 = import_MCF10A(d1, "MCF10A")
-        d2 = prepare_MCF10A("lineage/data/MCF10A/HGF_2.csv")
-        # data2 = import_MCF10A(d2, "MCF10A")
-        d3 = prepare_MCF10A("lineage/data/MCF10A/HGF_3.csv")
-        data3 = import_MCF10A(d3, "MCF10A")
-        d4 = prepare_MCF10A("lineage/data/MCF10A/HGF_4.csv")
-        data4 = import_MCF10A(d4, "MCF10A")
-        d5 = prepare_MCF10A("lineage/data/MCF10A/HGF_5.csv")
-        data5 = import_MCF10A(d5, "MCF10A")
+        data1 = import_MCF10A("lineage/data/MCF10A/HGF_1.csv")
+        # data2 = import_MCF10A("lineage/data/MCF10A/HGF_2.csv")
+        data3 = import_MCF10A("lineage/data/MCF10A/HGF_3.csv")
+        data4 = import_MCF10A("lineage/data/MCF10A/HGF_4.csv")
+        data5 = import_MCF10A("lineage/data/MCF10A/HGF_5.csv")
         return data1 + data3 + data4 + data5
 
     elif condition == "OSM":
-        d1 = prepare_MCF10A("lineage/data/MCF10A/OSM_1.csv")
-        data1 = import_MCF10A(d1, "MCF10A")
-        d2 = prepare_MCF10A("lineage/data/MCF10A/OSM_2.csv")
-        data2 = import_MCF10A(d2, "MCF10A")
-        d3 = prepare_MCF10A("lineage/data/MCF10A/OSM_3.csv")
-        data3 = import_MCF10A(d3, "MCF10A")
-        d4 = prepare_MCF10A("lineage/data/MCF10A/OSM_4.csv")
-        data4 = import_MCF10A(d4, "MCF10A")
-        d5 = prepare_MCF10A("lineage/data/MCF10A/OSM_5.csv")
-        data5 = import_MCF10A(d5, "MCF10A")
-        d5 = prepare_MCF10A("lineage/data/MCF10A/OSM_6.csv")
-        data6 = import_MCF10A(d5, "MCF10A")
+        data1 = import_MCF10A("lineage/data/MCF10A/OSM_1.csv")
+        data2 = import_MCF10A("lineage/data/MCF10A/OSM_2.csv")
+        data3 = import_MCF10A("lineage/data/MCF10A/OSM_3.csv")
+        data4 = import_MCF10A("lineage/data/MCF10A/OSM_4.csv")
+        data5 = import_MCF10A("lineage/data/MCF10A/OSM_5.csv")
+        data6 = import_MCF10A("lineage/data/MCF10A/OSM_6.csv")
         return data1 + data2 + data3 + data4 + data5 + data6
     
     else:
