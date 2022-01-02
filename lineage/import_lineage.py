@@ -32,18 +32,28 @@ def read_lineage_data(df, cell_line: str):
         # select all the cells that belong to that lineage
         lineage = df.loc[df['lineageId'] == i]
 
-        # if the lineage Id exists, do the rest, if not, pass
-        if not(lineage.empty):
-            unique_cell_ids = list(lineage["trackId"].unique())  # the length of this shows the number of cells in this lineage
-            unique_parent_trackIDs = lineage["parentTrackId"].unique()
+        unique_cell_ids = list(lineage["trackId"].unique())  # the length of this shows the number of cells in this lineage
+        unique_parent_trackIDs = lineage["parentTrackId"].unique()
 
+        # if a cell has 3 children, remove the third one.
+        cell_id = []
+        for j in unique_parent_trackIDs:
+            tmp = lineage.loc[lineage["parentTrackId"]==j]
+            trackIDs = list(tmp["trackId"].unique())
+            cell_id.append(trackIDs[0:2])
+
+        # make sure there is still at least one cell in the lineage
+        if not(lineage.empty):
             pid = [[0]]  # root parent's parent id
             for j in unique_parent_trackIDs:
                 if j != 0:
                     pid.append(2 * [j])
             parent_ids = list(itertools.chain(*pid))
+            unique_cell_ids = list(itertools.chain(*cell_id))
 
-            # create the root parent cell and assign obsrvations
+            if len(parent_ids) != len(unique_cell_ids):
+                continue
+
             parent_cell = c(parent=None, gen=1)
             if cell_line == "MCF10A":
                 parent_cell = assign_observs_MCF10A(parent_cell, lineage, unique_cell_ids[0])
@@ -82,8 +92,9 @@ def read_lineage_data(df, cell_line: str):
             else:
                 raise ValueError('The cell line does not exist yet! Please choose between AU565 and MCF10A')
 
-        print(len(unique_cell_ids))
-        print(len(lineage_list))
+        else:
+            break
+
         assert len(lineage_list) == len(unique_cell_ids)
         # if both observations are zero, remove the cell
         for n, cell in enumerate(lineage_list):
@@ -178,14 +189,14 @@ def MCF10A(condition:str):
         d1 = prepare_MCF10A("lineage/data/MCF10A/HGF_1.csv")
         data1 = read_lineage_data(d1, "MCF10A")
         d2 = prepare_MCF10A("lineage/data/MCF10A/HGF_2.csv")
-        data2 = read_lineage_data(d2, "MCF10A")
+        # data2 = read_lineage_data(d2, "MCF10A")
         d3 = prepare_MCF10A("lineage/data/MCF10A/HGF_3.csv")
         data3 = read_lineage_data(d3, "MCF10A")
         d4 = prepare_MCF10A("lineage/data/MCF10A/HGF_4.csv")
         data4 = read_lineage_data(d4, "MCF10A")
         d5 = prepare_MCF10A("lineage/data/MCF10A/HGF_5.csv")
         data5 = read_lineage_data(d5, "MCF10A")
-        return data1 + data2 + data3 + data4 + data5
+        return data1 + data3 + data4 + data5
 
     elif condition == "OSM":
         d1 = prepare_MCF10A("lineage/data/MCF10A/OSM_1.csv")
