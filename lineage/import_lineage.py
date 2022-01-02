@@ -61,6 +61,38 @@ def import_AU565(path):
         population.append(lineage_list)
     return population
 
+def assign_observs_AU565(cell, lineage: list, uniq_id: int):
+    """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
+    # initialize
+    cell.obs = [1, 0, 0, 0]
+    parent_id = lineage["parentTrackId"].unique()
+    # cell fate: die = 0, divide = 1
+    if not(uniq_id in parent_id):  # if the cell has not divided, means either died or reached experiment end time
+        if np.max(lineage.loc[lineage["trackId"] == uniq_id]["frame"]) == 49:  # means reached end of experiment
+            cell.obs[0] = np.nan  # don't know
+            cell.obs[3] = 1  # censored
+        else:  # means cell died before experiment ended
+            cell.obs[0] = 0  # died
+            cell.obs[3] = 0  # not censored
+
+    if cell.gen == 1:  # it is root parent
+        cell.obs[3] = 1  # meaning it is left censored in its lifetime
+
+    # cell's lifetime
+    cell.obs[1] = 0.5 * (np.max(lineage.loc[lineage['trackId'] == uniq_id]['frame']) - np.min(lineage.loc[lineage['trackId'] == uniq_id]['frame']))
+    # cell's diameter
+    diam = np.array(lineage.loc[lineage['trackId'] == uniq_id]['Diameter_0'])
+    if np.count_nonzero(diam == 0.0) != 0:
+        diam[diam == 0.0] = np.nan
+        if diam.size == 0:  # if all are nan
+            cell.obs[2] = np.nan
+        else:
+            cell.obs[2] = np.nanmean(diam)
+    else:
+        cell.obs[2] = np.mean(diam)
+
+    return cell
+
 #######################
 # importing MCF10A data
 #######################
@@ -137,39 +169,6 @@ def import_MCF10A(df, cell_line: str):
 
         population.append(lineage_list)
     return population
-
-def assign_observs_AU565(cell, lineage: list, uniq_id: int):
-    """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
-    # initialize
-    cell.obs = [1, 0, 0, 0]
-    parent_id = lineage["parentTrackId"].unique()
-    # cell fate: die = 0, divide = 1
-    if not(uniq_id in parent_id):  # if the cell has not divided, means either died or reached experiment end time
-        if np.max(lineage.loc[lineage["trackId"] == uniq_id]["frame"]) == 49:  # means reached end of experiment
-            cell.obs[0] = np.nan  # don't know
-            cell.obs[3] = 1  # censored
-        else:  # means cell died before experiment ended
-            cell.obs[0] = 0  # died
-            cell.obs[3] = 0  # not censored
-
-    if cell.gen == 1:  # it is root parent
-        cell.obs[3] = 1  # meaning it is left censored in its lifetime
-
-    # cell's lifetime
-    cell.obs[1] = 0.5 * (np.max(lineage.loc[lineage['trackId'] == uniq_id]['frame']) - np.min(lineage.loc[lineage['trackId'] == uniq_id]['frame']))
-    # cell's diameter
-    diam = np.array(lineage.loc[lineage['trackId'] == uniq_id]['Diameter_0'])
-    if np.count_nonzero(diam == 0.0) != 0:
-        diam[diam == 0.0] = np.nan
-        if diam.size == 0:  # if all are nan
-            cell.obs[2] = np.nan
-        else:
-            cell.obs[2] = np.nanmean(diam)
-    else:
-        cell.obs[2] = np.mean(diam)
-
-    return cell
-
 
 def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
