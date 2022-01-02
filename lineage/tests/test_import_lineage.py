@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 from ..CellVar import CellVar as c
-from ..import_lineage import read_lineage_data, MCF10A
+from ..import_lineage import import_AU565, MCF10A
 
 
 class TestModel(unittest.TestCase):
@@ -37,8 +37,7 @@ class TestModel(unittest.TestCase):
 
     def test_data(self):
         """ import and test. """
-        df = pd.read_csv("lineage/data/LineageData/AU02101_A3_field_1_RP_50_CSV-Table.csv")
-        lineages = read_lineage_data(df, "AU565")
+        lineages = import_AU565("lineage/data/LineageData/AU02101_A3_field_1_RP_50_CSV-Table.csv")
         lin1 = lineages[0]  # lineageID = 2
         lin2 = lineages[2]  # lineageID = 3
 
