@@ -8,20 +8,6 @@ from .CellVar import CellVar as c
 # importing AU565 data (new)
 ############################
 # path = "lineage/data/LineageData/AU02101_A3_field_1_RP_50_CSV-Table.csv"
-# df = pd.read_csv(path)
-
-#######################
-# importing MCF10A data
-#######################
-# partof_path = "lineage/data/MCF10A/"
-# df = prepare_MCF10A(path)
-
-def prepare_MCF10A(path):
-    df = pd.read_csv(path)
-    # extract useful information
-    data = df[["TID", "lineage", "motherID", "generation", "treatment", "tmin", "average_velocity"]]
-    dd = data.rename(columns={'TID': 'trackId', 'lineage': 'lineageId', 'motherID': 'parentTrackId'})
-    return dd
 
 def import_AU565(path):
     """ Importing AU565 file cells. """
@@ -74,6 +60,19 @@ def import_AU565(path):
 
         population.append(lineage_list)
     return population
+
+#######################
+# importing MCF10A data
+#######################
+# partof_path = "lineage/data/MCF10A/"
+# df = prepare_MCF10A(path)
+
+def prepare_MCF10A(path):
+    df = pd.read_csv(path)
+    # extract useful information
+    data = df[["TID", "lineage", "motherID", "generation", "treatment", "tmin", "average_velocity"]]
+    dd = data.rename(columns={'TID': 'trackId', 'lineage': 'lineageId', 'motherID': 'parentTrackId'})
+    return dd
 
 def import_MCF10A(df, cell_line: str):
     """ Reading the data and extracting lineages and assigning their corresponding observations. """
