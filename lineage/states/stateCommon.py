@@ -18,7 +18,7 @@ warnings.filterwarnings('ignore', r'delta_grad == 0.0.')
 def nLL_sep(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     a, scale = x
     uncens = jnp.dot(uncens_gammas, gamma.logpdf(uncens_obs, a=a, scale=scale))
-    cens = jnp.dot(cens_gammas, gammaincc(a, cens_obs / scale))
+    cens = jnp.dot(cens_gammas, gammaincc(a, cens_obs / (scale + 1e-6)))
     return -1 * (uncens + cens)
 
 
@@ -103,7 +103,7 @@ def basic_censor(cell):
 def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
     outt = 0.0
-    for i in range(4):
+    for i in range(len(x)-1):
         outt += nLL_sep([x[0], x[1 + i]], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
 
     return outt
@@ -112,10 +112,12 @@ def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
 nLL_atonceJ = jit(value_and_grad(nLL_atonce))
 
 
-def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
+def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None, phase=True):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
+    In the phase-specific case, we have 3 linear constraints: scale1 > scale2, scale2 > scale3, scale3 > scale 4.
+    In the non-specific case, we have only 1 constraint: scale1 > scale2 ==> A = np.array([1, 3])
     """
     # Handle no observations
     gammas = [np.ones_like(g) if np.sum(g) == 0.0 else g for g in gamas]
@@ -129,19 +131,30 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None):
 
     arrgs = (arg1, arg2, arg3, arg4)
 
+    if phase: # phase-specific observations
+        A = np.zeros((3, 5)) # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
+        np.fill_diagonal(A[:, 1:], -1.0)
+        np.fill_diagonal(A[:, 2:], 1.0)
+        linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)
+
+    else: # phase-nonspecific observations
+        A = np.array([0.0, -1.0, 1.0])
+        linc = LinearConstraint(A, lb=0.0, ub=100.0)
+
     if x0 is None:
-        x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
+        if phase:
+            x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
+        else:
+            x0 = np.array([20.0, 2.0, 3.0])
 
-    A = np.zeros((3, 5))
-    np.fill_diagonal(A[:, 1:], -1.0)
-    np.fill_diagonal(A[:, 2:], 1.0)
+    # Overwrite x0 if we were given a bad starting point
+    if np.allclose(np.dot(A, x0), 0.0) or np.isnan(np.dot(A, x0)).any():
+        if phase:
+            x0 = np.array([20.0, 1.0, 2.0, 3.0, 4.0])
+        else:
+            x0 = np.array([20.0, 1.0, 2.0])
 
-    # Override x0 if we were given a bad starting point
-    if np.allclose(np.dot(A, x0), 0.0):
-        x0 = np.array([20.0, 1.0, 2.0, 3.0, 4.0])
-
-    linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)
-    bnds = Bounds(lb=np.ones_like(x0) * 0.001, ub=np.ones_like(x0) * 100.0, keep_feasible=True)
+    bnds = Bounds(lb=np.ones_like(x0) * 0.01, ub=np.ones_like(x0) * 100.0, keep_feasible=True)
     HH = BFGS()
 
     res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])

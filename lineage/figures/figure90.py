@@ -7,7 +7,7 @@ from ..Analyze import run_Analyze_over
 from ..Lineage_collections import pbs, egf, hgf, osm
 from .common import getSetup
 
-desired_num_states = np.arange(1, 8)
+desired_num_states = np.arange(1, 6)
 
 def find_BIC(data, desired_num_states, num_cells):
     # Copy out data to full set
@@ -29,8 +29,8 @@ def makeFigure():
 
     # cell numbers: pbs: 31, egf: 255, hgf: 507, osm: 692
     # after removing single lineages [262, 503, 695]
-    HGF = [pbs + hgf]
-    OSM = [pbs + osm]
+    HGF = [pbs, hgf]
+    OSM = [pbs, osm]
 
     hgfBIC = find_BIC(HGF, desired_num_states, num_cells=538)
     osmBIC = find_BIC(OSM, desired_num_states, num_cells=723)

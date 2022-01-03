@@ -194,19 +194,32 @@ def do_M_E_step_atonce(all_tHMMobj: list, all_gammas: list):
     gms = []
     for gm in all_gammas:
         gms.append(np.vstack(gm))
+
+    all_cells = np.array([cell.obs for lineage in all_tHMMobj[0].X for cell in lineage.output_lineage])
+    if len(all_cells[1, :]) == 6:
+        phase = True
+    else:
+        phase = False
+
     G1cells = []
     G2cells = []
+    cells = []
     for tHMMobj in all_tHMMobj:
         all_cells = np.array([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
-        G1cells.append(all_cells[:, np.array([0, 2, 4])])
-        G2cells.append(all_cells[:, np.array([1, 3, 5])])
+        if phase:
+            G1cells.append(all_cells[:, np.array([0, 2, 4])])
+            G2cells.append(all_cells[:, np.array([1, 3, 5])])
+        else:
+            cells.append(all_cells)
 
     # reshape the gammas so that each list in this list of lists is for each state.
     for j in range(all_tHMMobj[0].num_states):
         gammas_1st = [array[:, j] for array in gms]
-        atonce_estimator(all_tHMMobj, G1cells, gammas_1st, "G1", j)  # [shape, scale1, scale2, scale3, scale4] for G1
-        atonce_estimator(all_tHMMobj, G2cells, gammas_1st, "G2", j)  # [shape, scale1, scale2, scale3, scale4] for G2
-
+        if phase:
+            atonce_estimator(all_tHMMobj, G1cells, gammas_1st, "G1", j)  # [shape, scale1, scale2, scale3, scale4] for G1
+            atonce_estimator(all_tHMMobj, G2cells, gammas_1st, "G2", j)  # [shape, scale1, scale2, scale3, scale4] for G2
+        else:
+            atonce_estimator(all_tHMMobj, cells, gammas_1st, "all", j)  # [shape, scale1, scale2]
 
 def get_all_zetas(lineageObj, beta_array: np.ndarray, MSD_array: np.ndarray, gamma_array: np.ndarray, T: np.ndarray) -> np.ndarray:
     """

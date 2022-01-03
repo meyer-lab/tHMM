@@ -8,7 +8,7 @@ from ..Analyze import Analyze_list
 from ..Lineage_collections import pbs, hgf
 from ..plotTree import plot_networkx
 
-HGF = [pbs + hgf]
+HGF = [pbs, hgf]
 concs = concsValues = ["PBS", "HGF"]
 
 # HGF
@@ -23,7 +23,6 @@ for idx, hgf_tHMMobj in enumerate(hgf_tHMMobj_list):
 T_hgf = hgf_tHMMobj_list[0].estimate.T
 num_states = hgf_tHMMobj_list[0].num_states
 
-
 def makeFigure():
     """ Makes figure 11. """
 
@@ -33,7 +32,7 @@ def makeFigure():
         ax[i].set_title(concs[i - 2], fontsize=16)
         ax[i].text(-0.2, 1.25, ascii_lowercase[i - 2], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
         ax[i].axis('off')
-    plot_networkx(5, T_hgf, "HGF")
+    # plot_networkx(5, T_hgf, "HGF")
 
     return f
 
@@ -43,7 +42,7 @@ def plot1(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
         ax[6].plot(cons, lpt_avg[:, i], label="state " + str(i + 1), alpha=0.7)
         ax[6].set_title("Lifetime")
         ax[6].set_ylabel("Log10 Mean Time [hr]")
-        ax[7].set_ylim([0.0, 30.0])
+        ax[7].set_ylim([0.0, 4.0])
         ax[7].plot(cons, bern_lpt[:, i], label="state " + str(i + 1), alpha=0.7)
         ax[7].set_title("Fate")
         ax[7].set_ylabel("Division Probability")
@@ -67,10 +66,11 @@ def plot2(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     lpt_avg = np.zeros((2, num_states))  # the avg lifetime: num_conc x num_states x num_phases
     bern_lpt = np.zeros((2, num_states))  # bernoulli
     # print parameters and estimated values
-    print(Dname, "\n the \u03C0: ", tHMMobj_list[0].estimate.pi, "\n the transition matrix: ", tHMMobj_list[0].estimate.T)
+    # print(Dname, "\n the \u03C0: ", tHMMobj_list[0].estimate.pi, "\n the transition matrix: ", tHMMobj_list[0].estimate.T)
     for idx, tHMMobj in enumerate(tHMMobj_list):  # for each concentration data
         for i in range(num_states):
-            lpt_avg[idx, i] = tHMMobj.estimate.E[i].params[1] * tHMMobj.estimate.E[i].params[2]
+            print(tHMMobj.estimate.E[i].params[0], tHMMobj.estimate.E[i].params[1], tHMMobj.estimate.E[i].params[2], "\n")
+            lpt_avg[idx, i] = np.log10(tHMMobj.estimate.E[i].params[1] * tHMMobj.estimate.E[i].params[2])
             # bernoullis
             bern_lpt[idx, i] = tHMMobj.estimate.E[i].params[0]
 
