@@ -18,7 +18,7 @@ warnings.filterwarnings('ignore', r'delta_grad == 0.0.')
 def nLL_sep(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     a, scale = x
     uncens = jnp.dot(uncens_gammas, gamma.logpdf(uncens_obs, a=a, scale=scale))
-    cens = jnp.dot(cens_gammas, gammaincc(a, cens_obs / (scale + 1e-6)))
+    cens = jnp.dot(cens_gammas, gammaincc(a, cens_obs / scale))
     return -1 * (uncens + cens)
 
 
@@ -75,6 +75,8 @@ def gamma_estimator(gamma_obs, time_cen, gammas, x0):
         return val, np.array(grad)
 
     res = minimize(GnLL, x0, jac=True, bounds=(bnd, bnd), args=arrgs, options=opt)
+    if not res.success:
+        print(res.message)
     # assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
@@ -131,33 +133,35 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None, phase=True):
 
     arrgs = (arg1, arg2, arg3, arg4)
 
-    if phase: # phase-specific observations
-        A = np.zeros((3, 5)) # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
-        np.fill_diagonal(A[:, 1:], -1.0)
-        np.fill_diagonal(A[:, 2:], 1.0)
-        linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)
-
-    else: # phase-nonspecific observations
-        A = np.array([0.0, -1.0, 1.0])
-        linc = LinearConstraint(A, lb=0.0, ub=100.0)
-
     if x0 is None:
         if phase:
             x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
         else:
             x0 = np.array([20.0, 2.0, 3.0])
 
-    # Overwrite x0 if we were given a bad starting point
-    if np.allclose(np.dot(A, x0), 0.0) or np.isnan(np.dot(A, x0)).any():
-        if phase:
+    if phase: # phase-specific observations
+        A = np.zeros((3, 5)) # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
+        np.fill_diagonal(A[:, 1:], -1.0)
+        np.fill_diagonal(A[:, 2:], 1.0)
+        linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)
+        if np.allclose(np.dot(A, x0), 0.0):
             x0 = np.array([20.0, 1.0, 2.0, 3.0, 4.0])
-        else:
-            x0 = np.array([20.0, 1.0, 2.0])
 
     bnds = Bounds(lb=np.ones_like(x0) * 0.01, ub=np.ones_like(x0) * 100.0, keep_feasible=True)
     HH = BFGS()
 
-    res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
-    assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
+    if phase:
+        res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
+        assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
+    else:
+        def nLL_ato(x, *args):
+            val, grad = nLL_atonceJ(x, *args)
+            return val, np.array(grad)
+        opt = {'eps': 1e-12}
+        res = minimize(nLL_ato, x0=x0, jac=True, args=arrgs, bounds=bnds, method="L-BFGS-B", options=opt)
+        if not res.success:
+            print(res.message)
+            print(nLL_ato(x0, arg1, arg2, arg3, arg4))
+        # assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
