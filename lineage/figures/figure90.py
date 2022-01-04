@@ -7,7 +7,7 @@ from ..Analyze import run_Analyze_over
 from ..Lineage_collections import pbs, egf, hgf, osm
 from .common import getSetup
 
-desired_num_states = np.arange(1, 6)
+desired_num_states = np.arange(1, 8)
 
 def find_BIC(data, desired_num_states, num_cells):
     # Copy out data to full set

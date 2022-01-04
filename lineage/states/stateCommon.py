@@ -70,14 +70,14 @@ def gamma_estimator(gamma_obs, time_cen, gammas, x0):
     opt = {'gtol': 1e-12, 'ftol': 1e-12}
     bnd = (1.0, 100.0)
 
-    def GnLL(x, *args):
-        val, grad = GnLL_sep(x, *args)
-        return val, np.array(grad)
+    # def GnLL(x, *args):
+    #     val, grad = GnLL_sep(x, *args)
+    #     return val, np.array(grad)
 
-    res = minimize(GnLL, x0, jac=True, bounds=(bnd, bnd), args=arrgs, options=opt)
+    res = minimize(GnLL_sep, x0, jac=True, bounds=(bnd, bnd), args=arrgs, method="trust-constr")
     if not res.success:
         print(res.message)
-    # assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
+    assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
 
@@ -154,14 +154,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None, phase=True):
         res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
         assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
     else:
-        def nLL_ato(x, *args):
-            val, grad = nLL_atonceJ(x, *args)
-            return val, np.array(grad)
-        opt = {'eps': 1e-12}
-        res = minimize(nLL_ato, x0=x0, jac=True, args=arrgs, bounds=bnds, method="L-BFGS-B", options=opt)
-        if not res.success:
-            print(res.message)
-            print(nLL_ato(x0, arg1, arg2, arg3, arg4))
-        # assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
+        res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=HH, args=arrgs, bounds=bnds, method="trust-constr")
+        assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x

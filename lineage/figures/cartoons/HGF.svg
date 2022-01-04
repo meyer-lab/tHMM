@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 506 392" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;">
+    <g id="graph0" transform="matrix(1,0,0,1,4,388)">
+        <rect x="-4" y="-388" width="506" height="392" style="fill:white;fill-rule:nonzero;"/>
+        <g id="node1">
+            <ellipse cx="175" cy="-366" rx="34" ry="18" style="fill:rgb(173,216,230);stroke:black;stroke-width:1px;"/>
+            <g transform="matrix(1,0,0,1,175,-362.3)">
+                <text x="-18.078px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">state 1</text>
+            </g>
+        </g>
+        <g id="edge1">
+            <path d="M205.58,-373.85C217.19,-374.15 226.8,-371.54 226.8,-366C226.8,-361.46 220.34,-358.88 211.6,-358.27" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.39px;"/>
+            <path d="M211.62,-356.17L205.58,-358.15L211.54,-360.37L211.62,-356.17Z" style="fill-rule:nonzero;stroke:black;stroke-width:0.39px;"/>
+            <g transform="matrix(1,0,0,1,239.3,-362.3)">
+                <text x="-12.25px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.13</text>
+            </g>
+        </g>
+        <g id="node2">
+            <ellipse cx="243" cy="-279" rx="34" ry="18" style="fill:rgb(255,165,0);stroke:black;stroke-width:1px;"/>
+            <g transform="matrix(1,0,0,1,243,-275.3)">
+                <text x="-18.078px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">state 2</text>
+            </g>
+        </g>
+        <g id="edge2">
+            <path d="M177.54,-347.94C179.75,-337.61 183.78,-324.62 191,-315C197.01,-307 205.4,-300.23 213.7,-294.84" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:2.59px;"/>
+            <path d="M214.83,-296.61L218.83,-291.67L212.62,-293.04L214.83,-296.61Z" style="fill-rule:nonzero;stroke:black;stroke-width:2.59px;"/>
+            <g transform="matrix(1,0,0,1,203.5,-318.8)">
+                <text x="-12.25px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.86</text>
+            </g>
+        </g>
+        <g id="node3">
+            <ellipse cx="177" cy="-18" rx="34" ry="18" style="fill:rgb(144,238,144);stroke:black;stroke-width:1px;"/>
+            <g transform="matrix(1,0,0,1,177,-14.3)">
+                <text x="-18.078px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">state 3</text>
+            </g>
+        </g>
+        <g id="node4">
+            <ellipse cx="243" cy="-105" rx="34" ry="18" style="fill:rgb(255,0,0);stroke:black;stroke-width:1px;"/>
+            <g transform="matrix(1,0,0,1,243,-101.3)">
+                <text x="-18.078px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">state 4</text>
+            </g>
+        </g>
+        <g id="node5">
+            <ellipse cx="131" cy="-192" rx="34" ry="18" style="fill:rgb(128,0,128);stroke:black;stroke-width:1px;"/>
+            <g transform="matrix(1,0,0,1,131,-188.3)">
+                <text x="-18.078px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">state 5</text>
+            </g>
+        </g>
+        <g id="edge6">
+            <path d="M235.89,-296.7C231.11,-306.89 224.18,-319.87 216,-330C211.13,-336.03 205.12,-341.82 199.22,-346.89" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.69px;"/>
+            <path d="M197.58,-345.53L194.31,-350.98L200.26,-348.75L197.58,-345.53Z" style="fill-rule:nonzero;stroke:black;stroke-width:0.69px;"/>
+            <g transform="matrix(1,0,0,1,237.5,-318.8)">
+                <text x="-12.25px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.23</text>
+            </g>
+        </g>
+        <g id="edge7">
+            <path d="M273.58,-286.85C285.19,-287.15 294.8,-284.54 294.8,-279C294.8,-274.46 288.34,-271.88 279.6,-271.27" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:1.99px;"/>
+            <path d="M279.62,-269.17L273.58,-271.15L279.54,-273.37L279.62,-269.17Z" style="fill-rule:nonzero;stroke:black;stroke-width:1.99px;"/>
+            <g transform="matrix(1,0,0,1,307.3,-275.3)">
+                <text x="-12.25px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.66</text>
+            </g>
+        </g>
+        <g id="edge10">
+            <path d="M228.48,-262.62C218.25,-252.22 203.94,-238.51 190,-228C180.53,-220.86 169.5,-213.98 159.56,-208.24" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.31px;"/>
+            <path d="M160.42,-206.31L154.17,-205.17L158.34,-209.96L160.42,-206.31Z" style="fill-rule:nonzero;stroke:black;stroke-width:0.31px;"/>
+            <g transform="matrix(1,0,0,1,215,-231.8)">
+                <text x="-8.75px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.1</text>
+            </g>
+        </g>
+        <g id="edge11">
+            <path d="M146.28,-25.94C129.569,-35.249 98.159,-57.734 78.89,-96.763C60.894,-133.212 53.383,-178.635 54,-192.579C57.822,-278.915 122.243,-345.646 138.74,-356.08" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:2.05px;"/>
+            <path d="M138.43,-358.18L144.78,-357.9L139.64,-354.16L138.43,-358.18Z" style="fill-rule:nonzero;stroke:black;stroke-width:2.05px;"/>
+            <g transform="matrix(1,0,0,1,82.5,-246.3)">
+                <text x="-12.25px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.68</text>
+            </g>
+        </g>
+        <g id="edge12">
+            <path d="M208.98,-23.86C243.62,-31.02 297.24,-48.05 322,-87C358.66,-144.68 297.05,-222.25 263.1,-258.19" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.56px;"/>
+            <path d="M261.34,-256.99L258.7,-262.77L264.37,-259.9L261.34,-256.99Z" style="fill-rule:nonzero;stroke:black;stroke-width:0.56px;"/>
+            <g transform="matrix(1,0,0,1,343.5,-144.8)">
+                <text x="-12.25px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.19</text>
+            </g>
+        </g>
+        <g id="edge13">
+            <path d="M207.58,-25.85C219.19,-26.15 228.8,-23.54 228.8,-18C228.8,-13.46 222.34,-10.88 213.6,-10.27" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.23px;"/>
+            <path d="M213.62,-8.17L207.58,-10.15L213.54,-12.37L213.62,-8.17Z" style="fill-rule:nonzero;stroke:black;stroke-width:0.23px;"/>
+            <g transform="matrix(1,0,0,1,241.3,-14.3)">
+                <text x="-12.25px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.08</text>
+            </g>
+        </g>
+        <g id="edge14">
+            <path d="M180.44,-35.97C183.14,-46.27 187.7,-59.26 195,-69C200.43,-76.24 207.77,-82.63 215.09,-87.9" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.03px;"/>
+            <path d="M213.99,-89.69L220.12,-91.37L216.37,-86.23L213.99,-89.69Z" style="fill-rule:nonzero;stroke:black;stroke-width:0.03px;"/>
+            <g transform="matrix(1,0,0,1,207.5,-57.8)">
+                <text x="-12.25px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.01</text>
+            </g>
+        </g>
+        <g id="edge15">
+            <path d="M172.44,-36.05C164.15,-67.04 146.62,-132.61 137.23,-167.7" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.12px;"/>
+            <path d="M135.1,-167.54L135.58,-173.88L139.16,-168.62L135.1,-167.54Z" style="fill-rule:nonzero;stroke:black;stroke-width:0.12px;"/>
+            <g transform="matrix(1,0,0,1,171.5,-101.3)">
+                <text x="-12.25px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.04</text>
+            </g>
+        </g>
+        <g id="edge16">
+            <path d="M276.8,-105.91C304.1,-107.86 341.01,-115.49 360,-141C402.22,-197.7 373.76,-242.29 329,-297C299.87,-332.6 248.35,-350.13 212.98,-358.35" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:1.91px;"/>
+            <path d="M212.4,-356.33L207.01,-359.69L213.32,-360.42L212.4,-356.33Z" style="fill-rule:nonzero;stroke:black;stroke-width:1.91px;"/>
+            <g transform="matrix(1,0,0,1,385.5,-231.8)">
+                <text x="-12.25px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.64</text>
+            </g>
+        </g>
+        <g id="edge17">
+            <path d="M250.39,-122.64C255.9,-136.16 262.84,-155.89 265,-174C268.66,-204.65 266.39,-213.59 257,-243C255.72,-247.02 254.19,-251.24 252.63,-255.3" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:1.08px;"/>
+            <path d="M250.59,-254.74L250.33,-261.09L254.5,-256.29L250.59,-254.74Z" style="fill-rule:nonzero;stroke:black;stroke-width:1.08px;"/>
+            <g transform="matrix(1,0,0,1,278.5,-188.3)">
+                <text x="-12.25px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.36</text>
+            </g>
+        </g>
+        <g id="edge21">
+            <path d="M135.36,-210.05C143.29,-241.04 160.06,-306.61 169.04,-341.7" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:1.21px;"/>
+            <path d="M167.1,-342.59L170.62,-347.88L171.17,-341.55L167.1,-342.59Z" style="fill-rule:nonzero;stroke:black;stroke-width:1.21px;"/>
+            <g transform="matrix(1,0,0,1,167,-275.3)">
+                <text x="-8.75px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.4</text>
+            </g>
+        </g>
+        <g id="edge22">
+            <path d="M137.75,-209.7C142.8,-220.41 150.62,-233.95 161,-243C174.19,-254.49 191.71,-262.66 207.17,-268.2" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.65px;"/>
+            <path d="M206.84,-270.31L213.2,-270.26L208.2,-266.33L206.84,-270.31Z" style="fill-rule:nonzero;stroke:black;stroke-width:0.65px;"/>
+            <g transform="matrix(1,0,0,1,173.5,-231.8)">
+                <text x="-12.25px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.22</text>
+            </g>
+        </g>
+        <g id="edge23">
+            <path d="M125.07,-174.24C118.6,-153.22 110.46,-116.37 121,-87C127.81,-68.03 142.45,-50.56 155.06,-38.09" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.39px;"/>
+            <path d="M156.73,-39.4L159.59,-33.72L153.81,-36.37L156.73,-39.4Z" style="fill-rule:nonzero;stroke:black;stroke-width:0.39px;"/>
+            <g transform="matrix(1,0,0,1,133.5,-101.3)">
+                <text x="-12.25px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.13</text>
+            </g>
+        </g>
+        <g id="edge25">
+            <path d="M161.58,-199.85C173.19,-200.15 182.8,-197.54 182.8,-192C182.8,-187.46 176.34,-184.88 167.6,-184.27" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.74px;"/>
+            <path d="M167.62,-182.17L161.58,-184.15L167.54,-186.37L167.62,-182.17Z" style="fill-rule:nonzero;stroke:black;stroke-width:0.74px;"/>
+            <g transform="matrix(1,0,0,1,195.3,-188.3)">
+                <text x="-12.25px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.25</text>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -84,6 +84,62 @@ def plotLineage(lineage, axes, censor=True, color=True):
 
     return draw(c, axes=axes)
 
+def plotLineage_MCF10A(lineage, axes, censor=True, color=True):
+    """
+    Given a lineage of cells, uses the `CladeRecursive` function to plot the lineage.
+    """
+
+    root = lineage.output_lineage[0]
+    length = root.obs[1]
+    assert np.isfinite(length)
+    a = [Clade(length)]
+
+    # input the root cell
+    c = CladeRecursive_MCF10A(lineage.output_lineage[0], a, censor, color)
+
+    return draw(c, axes=axes)
+
+def CladeRecursive_MCF10A(cell, a: list, censor: bool, color: bool):
+    """ A recurssive function that takes in the root cell and traverses through cells to plot the lineage.
+    The width of the lines show the phase of the cells.
+    The color of the lines show the state of the cells.
+
+    "a" should be: a = [Clade(lineage1.full_lineage[0].obs[1])] which is the root cell
+    """
+    if color:
+        if np.isfinite(cell.state):
+            colorr = stateColors[cell.state]
+        else:
+            # in case that the cells we wish to plot, have not been assigned any states.
+            colorr = "black"
+    else:
+        colorr = "black"
+
+    if cell.isLeaf():
+        if np.isfinite(cell.obs[1]):
+            length = cell.obs[1]
+        # Creating the clade and assigning the color
+        my_clade = Clade(branch_length=length, width=1, color=colorr)
+        # Assigning the line width according to the phase
+        my_clade.G1lw = 1.0
+        my_clade.G2lw = 1.0
+        my_clade.G1 = cell.obs[1]
+        my_clade.G2 = 1e-4
+        return my_clade
+    else:
+        clades = []
+        if cell.left is not None and cell.left.observed:
+            clades.append(CladeRecursive_MCF10A(cell.left, a, censor, color))
+        if cell.right is not None and cell.right.observed:
+            clades.append(CladeRecursive_MCF10A(cell.right, a, censor, color))
+        lengths = cell.obs[1]
+        my_clade = Clade(branch_length=lengths, width=1, clades=clades, color=colorr)
+        my_clade.G1lw = 1.0
+        my_clade.G2lw = 1.0
+        my_clade.G1 = cell.obs[1]
+        my_clade.G2 = 1e-4
+        return my_clade
+
 
 def plot_networkx(num_states: int, T: np.ndarray, drug_name: str):
     """
