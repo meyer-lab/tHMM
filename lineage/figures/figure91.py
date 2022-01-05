@@ -1,10 +1,12 @@
 """ Plotting the results for HGF. """
 """ This file depicts the distribution of phase lengths versus the states for each concentration of lapatinib. """
 from string import ascii_lowercase
+from matplotlib import gridspec, rcParams, pyplot as plt
 import pickle
+import seaborn as sns
 import numpy as np
+import pandas as pd
 
-from .common import getSetup
 from ..Lineage_collections import pbs, egf, hgf, osm
 from ..plotTree import plot_networkx
 
@@ -19,47 +21,78 @@ for i in range(4):
 T_hgf = hgf_tHMMobj_list[0].estimate.T
 num_states = hgf_tHMMobj_list[0].num_states
 
+rcParams['font.sans-serif'] = "Arial"
+
+
+def getSetup(figsize, gridd):
+    """
+    Establish figure set-up with subplots.
+    """
+    with sns.plotting_context("paper"):
+        sns.set(
+            palette="deep",
+            rc={"axes.facecolor": "#ffffff",  # axes background color
+                "axes.edgecolor": "#000000",  # axes edge color
+                "axes.xmargin": 0,            # x margin.  See `axes.Axes.margins`
+                "axes.ymargin": 0,            # y margin See `axes.Axes.margins`
+                "axes.linewidth": 1. / 4,
+                "grid.linestyle": "-",
+                "grid.alpha": 1. / 4,
+                "grid.color": "#000000",
+                "xtick.bottom": True,
+                "xtick.direction": "inout",
+                "xtick.major.width": 1. / 4,  # major tick width in points
+                "xtick.minor.width": 0.5 / 4,  # minor tick width in points
+                "ytick.left": True,
+                "ytick.direction": "inout",
+                "ytick.major.width": 1. / 4,  # major tick width in points
+                "ytick.minor.width": 0.5 / 4,  # minor tick width in points
+                "svg.fonttype": "none"  # Keep as text
+                },
+        )
+
+        # Setup plotting space and grid
+        f = plt.figure(figsize=figsize, dpi=400, constrained_layout=True)
+        gs1 = gridspec.GridSpec(*gridd, figure=f)
+
+        # Get list of axis objects
+        ax = list()
+        for x in range(8):
+            ax.append(f.add_subplot(gs1[x]))
+
+        ax.append(f.add_subplot(gs1[1, 2:4]))
+        ax.append(f.add_subplot(gs1[1, 4:]))
+    return ax, f
+
 def makeFigure():
     """ Makes figure 11. """
 
     ax, f = getSetup((16, 7.5), (2, 6))
     plot2(ax, num_states, hgf_tHMMobj_list, "Growth Factors", concs, concsValues)
-    for i in range(3, 6):
-        ax[i].set_title(concs[i - 3], fontsize=16)
-        ax[i].text(-0.2, 1.25, ascii_lowercase[i-2], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
+    for i in range(2, 6):
+        ax[i].set_title(concs[i-2], fontsize=16)
+        ax[i].text(-0.2, 1.25, ascii_lowercase[i-1], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
         ax[i].axis('off')
-    ax[9].set_title(concs[3], fontsize=16)
-    ax[9].text(-0.2, 1.25, ascii_lowercase[4], transform=ax[9].transAxes, fontsize=16, fontweight="bold", va="top")
-    ax[9].axis('off')
+
     # plot_networkx(T_hgf.shape[0], T_hgf, 'HGF')
-    ax[3].set_title("PBS")
-    ax[4].set_title("EGF")
-    ax[5].set_title("HGF")
-    ax[9].set_title("OSM")
 
     return f
 
-def plot1(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
+def plot1(ax, df1, df2, cons, concsValues, num_states):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
-    for i in range(num_states):
-        ax[10].plot(cons, lpt_avg[:, i], label="state " + str(i + 1), alpha=0.7)
-        ax[10].set_title("Lifetime")
-        ax[10].set_ylabel("Log10 Mean Time [hr]")
-        ax[10].set_ylim([0.0, 4.0])
-        ax[11].plot(cons, bern_lpt[:, i], label="state " + str(i + 1), alpha=0.7)
-        ax[11].set_title("Fate")
-        ax[11].set_ylabel("Division Probability")
-        ax[11].set_ylim([0.0, 1.05])
+    df1[['Growth Factors', 'State1', 'State2', 'State3', 'State4', 'State5', 'State6']].plot(x='Growth Factors', kind='bar', ax=ax[8])
+    df2[['Growth Factors', 'State1', 'State2', 'State3', 'State4', 'State5', 'State6']].plot(x='Growth Factors', kind='bar', ax=ax[9])
+    ax[8].set_title("Lifetime")
+    ax[8].set_ylabel("Log10 Mean Time [hr]")
+    ax[9].set_title("Fate")
+    ax[9].set_ylabel("Division Probability")
 
     # legend and xlabel
-    for i in range(10, 12):
-        ax[i].legend()
-        ax[i].set_xlabel("Growth Factor")
-        ax[i].set_xticklabels(concsValues, rotation=30)
-        ax[i].text(-0.2, 1.25, ascii_lowercase[i - 5], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
+    for i in range(8, 10):
+        ax[i].text(-0.2, 1.25, ascii_lowercase[i - 3], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
 
 def plot2(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
-    for i in range(3):
+    for i in range(2):
         ax[i].axis("off")
         ax[6 + i].axis("off")
     ax[0].text(-0.2, 1.25, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
@@ -71,9 +104,24 @@ def plot2(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     # print parameters and estimated values
     for idx, tHMMobj in enumerate(tHMMobj_list):  # for each concentration data
         for i in range(num_states):
-            print("state ", i, " params ", tHMMobj.estimate.E[i].params)
             lpt_avg[idx, i] = np.log10(tHMMobj.estimate.E[i].params[1] * tHMMobj.estimate.E[i].params[2])
             # bernoullis
             bern_lpt[idx, i] = tHMMobj.estimate.E[i].params[0]
 
-    plot1(ax, lpt_avg, bern_lpt, cons, concsValues, num_states)
+    df1 = pd.DataFrame({'Growth Factors': ['PBS', 'EGF', 'HGF', 'OSM'],
+                       'State1': lpt_avg[:, 0], 
+                       'State2': lpt_avg[:, 1],
+                       'State3': lpt_avg[:, 2],
+                       'State4': lpt_avg[:, 3],
+                       'State5': lpt_avg[:, 4],
+                       "State6": lpt_avg[:, 5]})
+
+    df2 = pd.DataFrame({'Growth Factors': ['PBS', 'EGF', 'HGF', 'OSM'],
+                       'State1': bern_lpt[:, 0], 
+                       'State2': bern_lpt[:, 1],
+                       'State3': bern_lpt[:, 2],
+                       'State4': bern_lpt[:, 3],
+                       'State5': bern_lpt[:, 4],
+                       "State6": bern_lpt[:, 5]})
+    
+    plot1(ax, df1, df2, cons, concsValues, num_states)

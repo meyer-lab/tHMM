@@ -13,24 +13,13 @@ for i in range(4):
 
 def makeFigure():
     """
-    Makes figure 12 lineage.
+    Makes figure 91 lineage.
     """
-    ax, f = getSetup((12, 4), (14, 3))
+    ax, f = getSetup((12, 2), (6, 4))
     k = 0
     for i in range(6):
-        for objs in gf_tHMMobj_list[0:3]:
+        for objs in gf_tHMMobj_list:
             ax[k].axis('off')
             plotLineage_MCF10A(objs.X[i], ax[k])
             k += 1
-
-    k = 24
-    for i in range(6):
-        ax[k].axis('off')
-        ax[k+1].axis('off')
-        ax[k+2].axis('off')
-        plotLineage_MCF10A(gf_tHMMobj_list[3].X[i], ax[k])
-        k += 3
-
-    for j in range(18, 24):
-        ax[j].axis('off')
     return f

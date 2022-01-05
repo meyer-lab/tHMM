@@ -259,13 +259,13 @@ def genFigure():
         overlayCartoon(fdir + 'figure91.svg',
                        f'{cartoon_dir}/GFs.svg', 0, 50, scale_y=1.1)
         overlayCartoon(fdir + 'figure91.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 430, 250, scalee=1.83)
+                       f'{cartoon_dir}/xaxis-h.svg', 430, 270, scalee=1.44)
         overlayCartoon(fdir + 'figure91.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 690, 250, scalee=1.83)
+                       f'{cartoon_dir}/xaxis-h.svg', 625, 270, scalee=1.44)
         overlayCartoon(fdir + 'figure91.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 950, 250, scalee=1.83)
+                       f'{cartoon_dir}/xaxis-h.svg', 820, 270, scalee=1.4)
         overlayCartoon(fdir + 'figure91.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 435, 520, scalee=1.83)
+                       f'{cartoon_dir}/xaxis-h.svg', 1010, 270, scalee=1.3)
 
     if sys.argv[1] == 'S11':
         # Overlay Transition block
@@ -648,4 +648,5 @@ def sort_lins(lapt_tHMMobj_list):
         else:
             st6.append(lins)
 
-    return st1[0:min(10, len(st1))] + st2[0:min(10, len(st2))] + st3[0:min(10, len(st3))] + st4[0:min(10, len(st4))] + st5[0:min(10, len(st5))] + st6[0:min(10, len(st6))]
+    return st1 + st2 + st3 + st4 + st5 + st6
+    # return st1[0:min(10, len(st1))] + st2[0:min(10, len(st2))] + st3[0:min(10, len(st3))] + st4[0:min(10, len(st4))] + st5[0:min(10, len(st5))] + st6[0:min(10, len(st6))]
