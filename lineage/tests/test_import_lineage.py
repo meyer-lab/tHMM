@@ -62,10 +62,3 @@ class TestModel(unittest.TestCase):
         np.testing.assert_allclose(lin1[0].obs, [1, 30.0, 1], rtol=1e-2)
         np.testing.assert_allclose(lin1[1].obs, [np.nan, 17.5, 1], rtol=1e-2)
         np.testing.assert_allclose(lin1[2].obs, [np.nan, 17.5, 1], rtol=1e-2)
-
-        # test for EGF
-        lin2 = egf[0]
-        assert len(lin2) == 5 # has 5 cells
-        np.testing.assert_allclose(lin2[0].obs, [1, 26.0, 1], rtol=1e-2)
-        np.testing.assert_allclose(lin2[1].obs, [np.nan, 21.5, 1], rtol=1e-2)
-        np.testing.assert_allclose(lin2[2].obs, [1, 16.5, 0], rtol=1e-2)
