@@ -1,13 +1,15 @@
 """ BIC foe MCF10A data. """
 
 import numpy as np
+import pickle
 
 from matplotlib.ticker import MaxNLocator
-from ..Analyze import run_Analyze_over
+from ..Analyze import run_Analyze_over, Analyze_list
 from ..Lineage_collections import pbs, egf, hgf, osm
 from .common import getSetup
 
 desired_num_states = np.arange(1, 8)
+GFs = [pbs, egf, hgf, osm]
 
 def find_BIC(data, desired_num_states, num_cells):
     # Copy out data to full set
@@ -21,30 +23,38 @@ def find_BIC(data, desired_num_states, num_cells):
 
     return BICs - np.min(BICs, axis=0)
 
+hgfBIC = find_BIC(GFs, desired_num_states, num_cells=1306)
+
+# HGF
+hgf_tHMMobj_list, hgf_states_list, _ = Analyze_list(GFs, list(hgfBIC).index(0)+1, fpi=True)
+
+# assign the predicted states to each cell
+for idx, hgf_tHMMobj in enumerate(hgf_tHMMobj_list):
+    for lin_indx, lin in enumerate(hgf_tHMMobj.X):
+        for cell_indx, cell in enumerate(lin.output_lineage):
+            cell.state = hgf_states_list[idx][lin_indx][cell_indx]
+
+# create a pickle file for osm
+pik1 = open("gf.pkl", "wb")
+for hgfd in hgf_tHMMobj_list:
+    pickle.dump(hgfd, pik1)
+pik1.close()
+
+
 def makeFigure():
     """
     Makes figure 90.
     """
-    ax, f = getSetup((8, 3), (1, 2))
+    ax, f = getSetup((4, 4), (1, 1))
 
-    # cell numbers: pbs: 31, egf: 255, hgf: 507, osm: 692
+    # cell numbers: pbs: 31, egf: 76, hgf: 507, osm: 692
     # after removing single lineages [262, 503, 695]
-    HGF = [pbs, hgf]
-    OSM = [pbs, osm]
-
-    hgfBIC = find_BIC(HGF, desired_num_states, num_cells=538)
-    osmBIC = find_BIC(OSM, desired_num_states, num_cells=723)
 
     # Plotting BICs
     ax[0].plot(desired_num_states, hgfBIC)
-    ax[1].plot(desired_num_states, osmBIC)
-
-    for i in range(2):
-        ax[i].set_xlabel("Number of States Predicted")
-        ax[i].set_ylabel("Normalized BIC")
-        ax[i].xaxis.set_major_locator(MaxNLocator(integer=True))
-
-    ax[0].set_title("HGF Treated Populations")
-    ax[1].set_title("OSM Treated Populations")
+    ax[0].set_xlabel("Number of States Predicted")
+    ax[0].set_ylabel("Normalized BIC")
+    ax[0].xaxis.set_major_locator(MaxNLocator(integer=True))
+    ax[0].set_title("GF Treated Populations")
 
     return f

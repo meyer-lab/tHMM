@@ -194,9 +194,9 @@ def MCF10A(condition:str):
 
     elif condition == "EGF":
         data1 = import_MCF10A("lineage/data/MCF10A/EGF_1.csv")
-        data2 = import_MCF10A("lineage/data/MCF10A/EGF_2.csv")
+        # data2 = import_MCF10A("lineage/data/MCF10A/EGF_2.csv")
         data3 = import_MCF10A("lineage/data/MCF10A/EGF_3.csv")
-        return data1 + data2 + data3
+        return data3
     
     elif condition == "HGF":
         data1 = import_MCF10A("lineage/data/MCF10A/HGF_1.csv")
