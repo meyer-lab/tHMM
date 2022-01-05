@@ -71,6 +71,7 @@ def plot2(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     # print parameters and estimated values
     for idx, tHMMobj in enumerate(tHMMobj_list):  # for each concentration data
         for i in range(num_states):
+            print("state ", i, " params ", tHMMobj.estimate.E[i].params)
             lpt_avg[idx, i] = np.log10(tHMMobj.estimate.E[i].params[1] * tHMMobj.estimate.E[i].params[2])
             # bernoullis
             bern_lpt[idx, i] = tHMMobj.estimate.E[i].params[0]

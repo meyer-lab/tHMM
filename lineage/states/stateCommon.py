@@ -114,7 +114,7 @@ def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
 nLL_atonceJ = jit(value_and_grad(nLL_atonce))
 
 
-def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None, phase=True):
+def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None, constr=True):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
@@ -134,27 +134,22 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None, phase=True):
     arrgs = (arg1, arg2, arg3, arg4)
 
     if x0 is None:
-        if phase:
-            x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
-        else:
-            x0 = np.array([20.0, 2.0, 3.0])
+        x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
 
-    if phase: # phase-specific observations
+    if constr: # for constrained optimization
         A = np.zeros((3, 5)) # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)
-        linc = LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)
+        linc = [LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)]
         if np.allclose(np.dot(A, x0), 0.0):
             x0 = np.array([20.0, 1.0, 2.0, 3.0, 4.0])
+    else:
+        linc = ()
 
-    bnds = Bounds(lb=np.ones_like(x0) * 0.01, ub=np.ones_like(x0) * 100.0, keep_feasible=True)
+    bnds = Bounds(lb=np.ones_like(x0) * 0.001, ub=np.ones_like(x0) * 100.0, keep_feasible=True)
     HH = BFGS()
 
-    if phase:
-        res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=[linc])
-        assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
-    else:
-        res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=HH, args=arrgs, bounds=bnds, method="trust-constr")
-        assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
+    res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=linc)
+    assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x

@@ -248,7 +248,7 @@ def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: 
 
     elif phase == "all":
         x0 = np.array([all_tHMMobj[0].estimate.E[state_j].params[1]] + [tHMMobj.estimate.E[state_j].params[2] for tHMMobj in all_tHMMobj])
-        output = gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total, x0, phase=False)
+        output = gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total, x0, constr=False)
         for i, tHMMobj in enumerate(all_tHMMobj):
             tHMMobj.estimate.E[state_j].params[0] = bern_params[i]
             tHMMobj.estimate.E[state_j].params[1] = output[0]
