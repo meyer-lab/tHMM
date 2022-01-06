@@ -19,7 +19,7 @@ def find_BIC(data, desired_num_states, num_cells):
 
     # Run fitting
     output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
-    BICs = np.array([oo[0][0].get_BIC(oo[2], num_cells, atonce=True)[0] for oo in output])
+    BICs = np.array([oo[0][0].get_BIC(oo[2], num_cells, atonce=True, mcf10a=True)[0] for oo in output])
 
     return BICs - np.min(BICs, axis=0)
 
