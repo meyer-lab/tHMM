@@ -70,14 +70,12 @@ def gamma_estimator(gamma_obs, time_cen, gammas, x0):
     opt = {'gtol': 1e-12, 'ftol': 1e-12}
     bnd = (1.0, 100.0)
 
-    # def GnLL(x, *args):
-    #     val, grad = GnLL_sep(x, *args)
-    #     return val, np.array(grad)
+    def GnLL(x, *args):
+        val, grad = GnLL_sep(x, *args)
+        return val, np.array(grad)
 
-    res = minimize(GnLL_sep, x0, jac=True, bounds=(bnd, bnd), args=arrgs, method="trust-constr")
-    if not res.success:
-        print(res.message)
-    assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
+    res = minimize(GnLL, x0, jac=True, bounds=(bnd, bnd), args=arrgs, options=opt)
+    # assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
 
