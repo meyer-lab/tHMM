@@ -9,6 +9,7 @@ from .CellVar import CellVar as c
 ############################
 # path = "lineage/data/LineageData/AU02101_A3_field_1_RP_50_CSV-Table.csv"
 
+
 def import_AU565(path):
     """ Importing AU565 file cells. """
     df = pd.read_csv(path)
@@ -135,12 +136,12 @@ def import_MCF10A(path):
             # create a list to store cells belonging to a lineage
             lineage_list = [parent_cell]
             for k, val in enumerate(unique_cell_ids):
-                if val in parent_ids: # if the id of a cell exists in the parent ids, it means the cell divides
-                    parent_index = [indx for indx, value in enumerate(parent_ids) if value == val] # find whose mother it is
-                    assert len(parent_index) == 2 # make sure has two children
-                    lineage_list[k].left = c(parent=lineage_list[k], gen=lineage_list[k].gen+1)
+                if val in parent_ids:  # if the id of a cell exists in the parent ids, it means the cell divides
+                    parent_index = [indx for indx, value in enumerate(parent_ids) if value == val]  # find whose mother it is
+                    assert len(parent_index) == 2  # make sure has two children
+                    lineage_list[k].left = c(parent=lineage_list[k], gen=lineage_list[k].gen + 1)
                     lineage_list[k].left = assign_observs_MCF10A(lineage_list[k].left, lineage, unique_cell_ids[parent_index[0]])
-                    lineage_list[k].right = c(parent=lineage_list[k], gen=lineage_list[k].gen+1)
+                    lineage_list[k].right = c(parent=lineage_list[k], gen=lineage_list[k].gen + 1)
                     lineage_list[k].right = assign_observs_MCF10A(lineage_list[k].right, lineage, unique_cell_ids[parent_index[1]])
 
                     lineage_list.append(lineage_list[k].left)
@@ -184,7 +185,8 @@ def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
 
     return cell
 
-def MCF10A(condition:str):
+
+def MCF10A(condition: str):
     """ Creates the population of lineages for each condition.
     Conditions include: PBS, EGF-treated, HGF-treated, OSM-treated. """
     if condition == "PBS":
@@ -197,7 +199,7 @@ def MCF10A(condition:str):
         # data2 = import_MCF10A("lineage/data/MCF10A/EGF_2.csv")
         data3 = import_MCF10A("lineage/data/MCF10A/EGF_3.csv")
         return data3
-    
+
     elif condition == "HGF":
         data1 = import_MCF10A("lineage/data/MCF10A/HGF_1.csv")
         # data2 = import_MCF10A("lineage/data/MCF10A/HGF_2.csv")
@@ -214,6 +216,6 @@ def MCF10A(condition:str):
         data5 = import_MCF10A("lineage/data/MCF10A/OSM_5.csv")
         data6 = import_MCF10A("lineage/data/MCF10A/OSM_6.csv")
         return data1 + data2 + data3 + data4 + data5 + data6
-    
+
     else:
         raise ValueError("condition does not exist. choose between [PBS, EGF, HGF, OSM]")
