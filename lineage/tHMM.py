@@ -89,7 +89,7 @@ class tHMM:
         pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
         return pred_states_by_lineage
 
-    def get_BIC(self, LL: float, num_cells: int, atonce=False) -> Tuple[float, float]:
+    def get_BIC(self, LL: float, num_cells: int, atonce=False, mcf10a=False) -> Tuple[float, float]:
         """
         Gets the BIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.
@@ -106,7 +106,10 @@ class tHMM:
             degrees_of_freedom += self.num_states * (self.num_states - 1)
 
         if atonce:  # assuming we are fitting all 4 concentrations at once and we have cell cycle phase specific distributions.
-            degrees_of_freedom += self.num_states * 4.5
+            if mcf10a:
+                degrees_of_freedom += self.num_states * 2.25
+            else:
+                degrees_of_freedom += self.num_states * 4.5
         else:
             for ii in range(self.num_states):
                 degrees_of_freedom += self.estimate.E[ii].dof()

@@ -252,6 +252,21 @@ def genFigure():
         overlayCartoon(fdir + 'figure12.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 1040, 215, scalee=1.44)
 
+    if sys.argv[1] == '91':
+        # Overlay Transition block
+        overlayCartoon(fdir + 'figure91.svg',
+                       f'{cartoon_dir}/figure03.svg', 430, 30, scale_x=0.9, scale_y=1.7)
+        overlayCartoon(fdir + 'figure91.svg',
+                       f'{cartoon_dir}/GFs.svg', 0, 50, scale_y=1.1)
+        overlayCartoon(fdir + 'figure91.svg',
+                       f'{cartoon_dir}/xaxis-h.svg', 430, 270, scalee=1.44)
+        overlayCartoon(fdir + 'figure91.svg',
+                       f'{cartoon_dir}/xaxis-h.svg', 625, 270, scalee=1.44)
+        overlayCartoon(fdir + 'figure91.svg',
+                       f'{cartoon_dir}/xaxis-h.svg', 820, 270, scalee=1.4)
+        overlayCartoon(fdir + 'figure91.svg',
+                       f'{cartoon_dir}/xaxis-h.svg', 1010, 270, scalee=1.3)
+
     if sys.argv[1] == 'S11':
         # Overlay Transition block
         overlayCartoon(fdir + 'figureS11.svg',
@@ -611,26 +626,19 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states)
 
 
-def sort_lins(lapt_tHMMobj_list):
+def sort_lins(tHMMobj):
     """ Sorts lineages based on their root cell state for plotting the lineage trees. """
-    st1 = []
-    st2 = []
-    st3 = []
-    st4 = []
-    st5 = []
-    st6 = []
-    for lins in lapt_tHMMobj_list.X:
-        if lins.output_lineage[0].state == 0:
-            st1.append(lins)
-        elif lins.output_lineage[0].state == 1:
-            st2.append(lins)
-        elif lins.output_lineage[0].state == 2:
-            st3.append(lins)
-        elif lins.output_lineage[0].state == 3:
-            st4.append(lins)
-        elif lins.output_lineage[0].state == 4:
-            st5.append(lins)
-        else:
-            st6.append(lins)
+    num_st = tHMMobj.estimate.num_states
 
-    return st1[0:min(10, len(st1))] + st2[0:min(10, len(st2))] + st3[0:min(10, len(st3))] + st4[0:min(10, len(st4))] + st5[0:min(10, len(st5))] + st6[0:min(10, len(st6))]
+    st = [] # holds the state of root cell in all lineages for this particular tHMMobj
+    for lins in tHMMobj.X:
+        st.append(lins.output_lineage[0].state)
+
+    states = []
+    for i in range(num_st):
+        st_i = [index for index, val in enumerate(st) if val == i]
+        temp = [tHMMobj.X[k] for k in st_i]
+
+        states += temp[:10]
+
+    return states

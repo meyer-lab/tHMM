@@ -56,3 +56,9 @@ class TestModel(unittest.TestCase):
         egf = MCF10A("EGF")
         hgf = MCF10A("HGF")
         osm = MCF10A("OSM")
+        # test for PBS
+        lin1 = pbs[0]
+        assert len(lin1) == 3 # has 3 cells
+        np.testing.assert_allclose(lin1[0].obs, [1, 30.0, 1], rtol=1e-2)
+        np.testing.assert_allclose(lin1[1].obs, [np.nan, 17.5, 1], rtol=1e-2)
+        np.testing.assert_allclose(lin1[2].obs, [np.nan, 17.5, 1], rtol=1e-2)

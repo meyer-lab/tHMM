@@ -1,13 +1,15 @@
 """ This file is to collect those lineages that have the same condition, and have 3 or greater number of cells in their lineages. """
 
 from .LineageInputOutput import import_exp_data
+from .import_lineage import MCF10A
 from .states.StateDistributionGaPhs import StateDistribution
+from .states.StateDistributionGamma import StateDistribution as StDist
 from .LineageTree import LineageTree
 
 #----------------------- Control conditions from both old and new versions -----------------------#
 desired_num_states = 2
 E = [StateDistribution() for _ in range(desired_num_states)]
-
+E2 = [StDist() for _ in range(desired_num_states)]
 
 def popout_single_lineages(lineages):
     """ To remove lineages with cell numbers <= 5. """
@@ -203,3 +205,10 @@ palbD15 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(pa
 palbD16 = [LineageTree(list_of_cells, E) for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00802_D1_2_V4.xlsx")]
 
 Palbo250uM = palbD11 + palbD12 + palbD13 + palbD14 + palbD15 + palbD16
+
+#########################################################
+# MCF10A data:
+pbs = [LineageTree(cells, E2) for cells in MCF10A("PBS")]
+egf = [LineageTree(cells, E2) for cells in MCF10A("EGF")]
+hgf = [LineageTree(cells, E2) for cells in MCF10A("HGF")]
+osm = [LineageTree(cells, E2) for cells in MCF10A("OSM")]
