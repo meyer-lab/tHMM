@@ -630,7 +630,7 @@ def sort_lins(tHMMobj):
     """ Sorts lineages based on their root cell state for plotting the lineage trees. """
     num_st = tHMMobj.estimate.num_states
 
-    st = [] # holds the state of root cell in all lineages for this particular tHMMobj
+    st = []  # holds the state of root cell in all lineages for this particular tHMMobj
     for lins in tHMMobj.X:
         st.append(lins.output_lineage[0].state)
 

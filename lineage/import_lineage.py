@@ -62,6 +62,7 @@ def import_AU565(path):
         population.append(lineage_list)
     return population
 
+
 def assign_observs_AU565(cell, lineage: list, uniq_id: int):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
     # initialize
@@ -99,6 +100,7 @@ def assign_observs_AU565(cell, lineage: list, uniq_id: int):
 #######################
 # partof_path = "lineage/data/MCF10A/"
 
+
 def import_MCF10A(path):
     """ Reading the data and extracting lineages and assigning their corresponding observations. """
     df = pd.read_csv(path)
@@ -114,7 +116,7 @@ def import_MCF10A(path):
         # if a cell has 3 children, remove the third one.
         cell_id = []
         for j in unique_parent_trackIDs:
-            tmp = lineage.loc[lineage["motherID"]==j]
+            tmp = lineage.loc[lineage["motherID"] == j]
             trackIDs = list(tmp["TID"].unique())
             cell_id.append(trackIDs[0:2])
 
@@ -163,22 +165,23 @@ def import_MCF10A(path):
         population.append(lineage_list)
     return population
 
+
 def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
     # initialize
-    cell.obs = [1, 0, 0] # [fate, lifetime, censored?]
+    cell.obs = [1, 0, 0]  # [fate, lifetime, censored?]
     parent_id = lineage["motherID"].unique()
     # cell fate: die = 0, divide = 1
-    if not(uniq_id in parent_id): # if the cell has not divided, means either died or reached experiment end time
-        if np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"]) == 2880: # means reached end of experiment
-            cell.obs[0] = np.nan # don't know
-            cell.obs[2] = 1 # censored
-        else: # means cell died before experiment ended
-            cell.obs[0] = 0 # died
-            cell.obs[2] = 0 # not censored
+    if not(uniq_id in parent_id):  # if the cell has not divided, means either died or reached experiment end time
+        if np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"]) == 2880:  # means reached end of experiment
+            cell.obs[0] = np.nan  # don't know
+            cell.obs[2] = 1  # censored
+        else:  # means cell died before experiment ended
+            cell.obs[0] = 0  # died
+            cell.obs[2] = 0  # not censored
 
-    if cell.gen == 1: # it is root parent
-        cell.obs[2] = 1 # meaning it is left censored in its lifetime
+    if cell.gen == 1:  # it is root parent
+        cell.obs[2] = 1  # meaning it is left censored in its lifetime
 
     # cell's lifetime
     cell.obs[1] = (np.max(lineage.loc[lineage['TID'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['TID'] == uniq_id]['tmin'])) / 60

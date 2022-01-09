@@ -221,6 +221,7 @@ def do_M_E_step_atonce(all_tHMMobj: list, all_gammas: list):
         else:
             atonce_estimator(all_tHMMobj, cells, gammas_1st, "all", j)  # [shape, scale1, scale2]
 
+
 def get_all_zetas(lineageObj, beta_array: np.ndarray, MSD_array: np.ndarray, gamma_array: np.ndarray, T: np.ndarray) -> np.ndarray:
     """
     Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.

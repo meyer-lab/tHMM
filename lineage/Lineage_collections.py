@@ -11,6 +11,7 @@ desired_num_states = 2
 E = [StateDistribution() for _ in range(desired_num_states)]
 E2 = [StDist() for _ in range(desired_num_states)]
 
+
 def popout_single_lineages(lineages):
     """ To remove lineages with cell numbers <= 5. """
     trimed_lineages = []

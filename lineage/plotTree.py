@@ -84,6 +84,7 @@ def plotLineage(lineage, axes, censor=True, color=True):
 
     return draw(c, axes=axes)
 
+
 def plotLineage_MCF10A(lineage, axes, censor=True, color=True):
     """
     Given a lineage of cells, uses the `CladeRecursive` function to plot the lineage.
@@ -98,6 +99,7 @@ def plotLineage_MCF10A(lineage, axes, censor=True, color=True):
     c = CladeRecursive_MCF10A(lineage.output_lineage[0], a, censor, color)
 
     return draw(c, axes=axes)
+
 
 def CladeRecursive_MCF10A(cell, a: list, censor: bool, color: bool):
     """ A recurssive function that takes in the root cell and traverses through cells to plot the lineage.
