@@ -103,7 +103,7 @@ def basic_censor(cell):
 def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
     outt = 0.0
-    for i in range(len(x)-1):
+    for i in range(len(x) - 1):
         outt += nLL_sep([x[0], x[1 + i]], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
 
     return outt
@@ -134,8 +134,8 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None, constr=True):
     if x0 is None:
         x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
 
-    if constr: # for constrained optimization
-        A = np.zeros((3, 5)) # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
+    if constr:  # for constrained optimization
+        A = np.zeros((3, 5))  # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)
         linc = [LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)]
