@@ -165,7 +165,7 @@ def import_MCF10A(path):
 def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
     # initialize
-    cell.obs = [1, 0, 0] # [fate, lifetime, censored?]
+    cell.obs = [1, 0, 0, 0, 0] # [fate, lifetime, censored?, velocity, mean_distance]
     parent_id = lineage["motherID"].unique()
     # cell fate: die = 0, divide = 1
     if not(uniq_id in parent_id): # if the cell has not divided, means either died or reached experiment end time
@@ -181,7 +181,8 @@ def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
 
     # cell's lifetime
     cell.obs[1] = (np.max(lineage.loc[lineage['TID'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['TID'] == uniq_id]['tmin'])) / 60
-
+    cell.obs[3] = np.mean(lineage.loc[lineage['TID'] == uniq_id]['average_velocity'])
+    cell.obs[4] = np.mean(lineage.loc[lineage['TID'] == uniq_id]['distance_mean'])
     return cell
 
 def MCF10A(condition:str):

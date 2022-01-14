@@ -132,7 +132,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None, constr=True):
     arrgs = (arg1, arg2, arg3, arg4)
 
     if x0 is None:
-        x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
+        x0 = np.array([10.0, 5.0, 2.0, 2.0, 2.0])
 
     if constr: # for constrained optimization
         A = np.zeros((3, 5)) # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
