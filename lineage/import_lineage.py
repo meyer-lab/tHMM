@@ -9,6 +9,7 @@ from .CellVar import CellVar as c
 ############################
 # path = "lineage/data/LineageData/AU02101_A3_field_1_RP_50_CSV-Table.csv"
 
+
 def import_AU565(path):
     """ Importing AU565 file cells. """
     df = pd.read_csv(path)
@@ -61,6 +62,7 @@ def import_AU565(path):
         population.append(lineage_list)
     return population
 
+
 def assign_observs_AU565(cell, lineage: list, uniq_id: int):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
     # initialize
@@ -98,6 +100,7 @@ def assign_observs_AU565(cell, lineage: list, uniq_id: int):
 #######################
 # partof_path = "lineage/data/MCF10A/"
 
+
 def import_MCF10A(path):
     """ Reading the data and extracting lineages and assigning their corresponding observations. """
     df = pd.read_csv(path)
@@ -116,8 +119,8 @@ def import_MCF10A(path):
         # create a list to store cells belonging to a lineage
         lineage_list = [parent_cell]
         for k, val in enumerate(unique_parent_trackIDs[1:]):
-            temp_lin = lineage.loc[lineage["motherID"]==val]
-            child_id = temp_lin["TID"].unique() # find children
+            temp_lin = lineage.loc[lineage["motherID"] == val]
+            child_id = temp_lin["TID"].unique()  # find children
             if not (len(child_id) == 2):
                 break
                 lineage_list = []
@@ -125,9 +128,9 @@ def import_MCF10A(path):
                 if cells.barcode == val:
                     cell = cells
 
-            cell.left = c(parent=cell, gen=cell.gen+1, barcode=child_id[0])
+            cell.left = c(parent=cell, gen=cell.gen + 1, barcode=child_id[0])
             cell.left = assign_observs_MCF10A(cell.left, lineage, child_id[0])
-            cell.right = c(parent=cell, gen=cell.gen+1, barcode=child_id[1])
+            cell.right = c(parent=cell, gen=cell.gen + 1, barcode=child_id[1])
             cell.right = assign_observs_MCF10A(cell.right, lineage, child_id[1])
 
             lineage_list.append(cell.left)
@@ -137,7 +140,7 @@ def import_MCF10A(path):
             # organize the order of cells by their generation
             ordered_list = []
             max_gen = np.max(lineage["generation"])
-            for ii in range(1, max_gen+1):
+            for ii in range(1, max_gen + 1):
                 for cells in lineage_list:
                     if cells.gen == ii:
                         ordered_list.append(cells)
@@ -148,6 +151,7 @@ def import_MCF10A(path):
 
             population.append(ordered_list)
     return population
+
 
 def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
@@ -169,8 +173,8 @@ def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
             cell.obs[0] = 0 # died
             cell.obs[2] = 0 # not censored
 
-    if cell.gen == 1: # it is root parent
-        cell.obs[2] = 1 # meaning it is left censored in its lifetime
+    if cell.gen == 1:  # it is root parent
+        cell.obs[2] = 1  # meaning it is left censored in its lifetime
 
     # cell's lifetime
     cell.obs[1] = (np.max(lineage.loc[lineage['TID'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['TID'] == uniq_id]['tmin'])) / 60
@@ -179,7 +183,8 @@ def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
 
     return cell
 
-def MCF10A(condition:str):
+
+def MCF10A(condition: str):
     """ Creates the population of lineages for each condition.
     Conditions include: PBS, EGF-treated, HGF-treated, OSM-treated. """
     if condition == "PBS":
@@ -192,7 +197,7 @@ def MCF10A(condition:str):
         data2 = import_MCF10A("lineage/data/MCF10A/EGF_2.csv")
         data3 = import_MCF10A("lineage/data/MCF10A/EGF_3.csv")
         return data1 + data2 + data3
-    
+
     elif condition == "HGF":
         data1 = import_MCF10A("lineage/data/MCF10A/HGF_1.csv")
         data2 = import_MCF10A("lineage/data/MCF10A/HGF_2.csv")
@@ -209,6 +214,6 @@ def MCF10A(condition:str):
         data5 = import_MCF10A("lineage/data/MCF10A/OSM_5.csv")
         data6 = import_MCF10A("lineage/data/MCF10A/OSM_6.csv")
         return data1 + data2 + data3 + data4 + data5 + data6
-    
+
     else:
         raise ValueError("condition does not exist. choose between [PBS, EGF, HGF, OSM]")
