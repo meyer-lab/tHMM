@@ -159,7 +159,7 @@ def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
     cell.obs = [1, 0, 0, 0, 0]  # [fate, lifetime, censored?, velocity, mean_distance]
     t_end = 2880
     # check if cell's lifetime is zero
-    if (np.max(lineage.loc[lineage['TID'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['TID'] == uniq_id]['tmin'])) / 60 < 0.1:
+    if (np.max(lineage.loc[lineage['TID'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['TID'] == uniq_id]['tmin'])) / 60 == 0:
         lineage = lineage.loc[lineage["tmin"] < 2880]
         t_end = 2850
     parent_id = lineage["motherID"].unique()
