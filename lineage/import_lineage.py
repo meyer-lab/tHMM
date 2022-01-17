@@ -110,49 +110,43 @@ def import_MCF10A(path):
         unique_cell_ids = list(lineage["TID"].unique())  # the length of this shows the number of cells in this lineage
         unique_parent_trackIDs = lineage["motherID"].unique()
 
-        # make sure there is still at least one cell in the lineage
-        if not(lineage.empty):
+        parent_cell = c(parent=None, gen=1, barcode=unique_cell_ids[0])
+        parent_cell = assign_observs_MCF10A(parent_cell, lineage, unique_cell_ids[0])
 
-            parent_cell = c(parent=None, gen=1, barcode=unique_cell_ids[0])
-            parent_cell = assign_observs_MCF10A(parent_cell, lineage, unique_cell_ids[0])
-
-            # create a list to store cells belonging to a lineage
-            lineage_list = [parent_cell]
-            tmp = np.sort(unique_parent_trackIDs)
-            for k, val in enumerate(tmp[1:]):
-                cell = 0
-                temp_lin = lineage.loc[lineage["motherID"]==val]
-                child_id = temp_lin["TID"].unique() # find children
-                if len(child_id) <2:
-                    break
-                for cells in lineage_list:
-                    if cells.barcode == val:
-                        cell = cells
-                if cell == 0:
-                    continue
-
-                cell.left = c(parent=cell, gen=cell.gen+1, barcode=child_id[0])
-                cell.left = assign_observs_MCF10A(cell.left, lineage, child_id[0])
-                cell.right = c(parent=cell, gen=cell.gen+1, barcode=child_id[1])
-                cell.right = assign_observs_MCF10A(cell.right, lineage, child_id[1])
-
-                lineage_list.append(cell.left)
-                lineage_list.append(cell.right)
-        else:
-            continue
-
-        ordered_list = []
-        max_gen = np.max(lineage["generation"])
-        for i in range(1, max_gen+1):
+        # create a list to store cells belonging to a lineage
+        lineage_list = [parent_cell]
+        for k, val in enumerate(unique_parent_trackIDs[1:]):
+            temp_lin = lineage.loc[lineage["motherID"]==val]
+            child_id = temp_lin["TID"].unique() # find children
+            if not (len(child_id) == 2):
+                break
+                lineage_list = []
             for cells in lineage_list:
-                if cells.gen == i:
-                    ordered_list.append(cells)
+                if cells.barcode == val:
+                    cell = cells
 
-        # give all cells of the same lineage a track id
-        for cell in ordered_list:
-            cell.lineageID = i
+            cell.left = c(parent=cell, gen=cell.gen+1, barcode=child_id[0])
+            cell.left = assign_observs_MCF10A(cell.left, lineage, child_id[0])
+            cell.right = c(parent=cell, gen=cell.gen+1, barcode=child_id[1])
+            cell.right = assign_observs_MCF10A(cell.right, lineage, child_id[1])
 
-        population.append(ordered_list)
+            lineage_list.append(cell.left)
+            lineage_list.append(cell.right)
+
+        if lineage_list:
+            # organize the order of cells by their generation
+            ordered_list = []
+            max_gen = np.max(lineage["generation"])
+            for ii in range(1, max_gen+1):
+                for cells in lineage_list:
+                    if cells.gen == ii:
+                        ordered_list.append(cells)
+
+            # give all cells of the same lineage a track id
+            for cell in ordered_list:
+                cell.lineageID = i
+
+            population.append(ordered_list)
     return population
 
 def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
@@ -176,6 +170,8 @@ def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
     cell.obs[1] = (np.max(lineage.loc[lineage['TID'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['TID'] == uniq_id]['tmin'])) / 60
     cell.obs[3] = np.mean(lineage.loc[lineage['TID'] == uniq_id]['average_velocity'])
     cell.obs[4] = np.mean(lineage.loc[lineage['TID'] == uniq_id]['distance_mean'])
+    if cell.obs[1] <= 0.1:
+        cell.obs[1] = 0.5
     return cell
 
 def MCF10A(condition:str):
