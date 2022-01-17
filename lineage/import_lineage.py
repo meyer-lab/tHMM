@@ -110,56 +110,49 @@ def import_MCF10A(path):
         unique_cell_ids = list(lineage["TID"].unique())  # the length of this shows the number of cells in this lineage
         unique_parent_trackIDs = lineage["motherID"].unique()
 
-        # if a cell has 3 children, remove the third one.
-        cell_id = []
-        for j in unique_parent_trackIDs:
-            tmp = lineage.loc[lineage["motherID"]==j]
-            trackIDs = list(tmp["TID"].unique())
-            cell_id.append(trackIDs[0:2])
-
         # make sure there is still at least one cell in the lineage
         if not(lineage.empty):
-            pid = [[0]]  # root parent's parent id
-            for j in unique_parent_trackIDs:
-                if j != 0:
-                    pid.append(2 * [j])
-            parent_ids = list(itertools.chain(*pid))
-            unique_cell_ids = list(itertools.chain(*cell_id))
 
-            if len(parent_ids) != len(unique_cell_ids):
-                continue
-
-            parent_cell = c(parent=None, gen=1)
+            parent_cell = c(parent=None, gen=1, barcode=unique_cell_ids[0])
             parent_cell = assign_observs_MCF10A(parent_cell, lineage, unique_cell_ids[0])
 
             # create a list to store cells belonging to a lineage
             lineage_list = [parent_cell]
-            for k, val in enumerate(unique_cell_ids):
-                if val in parent_ids: # if the id of a cell exists in the parent ids, it means the cell divides
-                    parent_index = [indx for indx, value in enumerate(parent_ids) if value == val] # find whose mother it is
-                    assert len(parent_index) == 2 # make sure has two children
-                    lineage_list[k].left = c(parent=lineage_list[k], gen=lineage_list[k].gen+1)
-                    lineage_list[k].left = assign_observs_MCF10A(lineage_list[k].left, lineage, unique_cell_ids[parent_index[0]])
-                    lineage_list[k].right = c(parent=lineage_list[k], gen=lineage_list[k].gen+1)
-                    lineage_list[k].right = assign_observs_MCF10A(lineage_list[k].right, lineage, unique_cell_ids[parent_index[1]])
+            tmp = np.sort(unique_parent_trackIDs)
+            for k, val in enumerate(tmp[1:]):
+                cell = 0
+                temp_lin = lineage.loc[lineage["motherID"]==val]
+                child_id = temp_lin["TID"].unique() # find children
+                if len(child_id) <2:
+                    break
+                for cells in lineage_list:
+                    if cells.barcode == val:
+                        cell = cells
+                if cell == 0:
+                    continue
 
-                    lineage_list.append(lineage_list[k].left)
-                    lineage_list.append(lineage_list[k].right)
+                cell.left = c(parent=cell, gen=cell.gen+1, barcode=child_id[0])
+                cell.left = assign_observs_MCF10A(cell.left, lineage, child_id[0])
+                cell.right = c(parent=cell, gen=cell.gen+1, barcode=child_id[1])
+                cell.right = assign_observs_MCF10A(cell.right, lineage, child_id[1])
 
+                lineage_list.append(cell.left)
+                lineage_list.append(cell.right)
         else:
             continue
 
-        assert len(lineage_list) == len(unique_cell_ids)
-        # if both observations are zero, remove the cell
-        for n, cell in enumerate(lineage_list):
-            if (cell.obs[1] == 0 and cell.obs[2] == 0):
-                lineage_list.pop(n)
+        ordered_list = []
+        max_gen = np.max(lineage["generation"])
+        for i in range(1, max_gen+1):
+            for cells in lineage_list:
+                if cells.gen == i:
+                    ordered_list.append(cells)
 
         # give all cells of the same lineage a track id
-        for cell in lineage_list:
+        for cell in ordered_list:
             cell.lineageID = i
 
-        population.append(lineage_list)
+        population.append(ordered_list)
     return population
 
 def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
@@ -195,17 +188,17 @@ def MCF10A(condition:str):
 
     elif condition == "EGF":
         data1 = import_MCF10A("lineage/data/MCF10A/EGF_1.csv")
-        # data2 = import_MCF10A("lineage/data/MCF10A/EGF_2.csv")
+        data2 = import_MCF10A("lineage/data/MCF10A/EGF_2.csv")
         data3 = import_MCF10A("lineage/data/MCF10A/EGF_3.csv")
-        return data3
+        return data1 + data2 + data3
     
     elif condition == "HGF":
         data1 = import_MCF10A("lineage/data/MCF10A/HGF_1.csv")
-        # data2 = import_MCF10A("lineage/data/MCF10A/HGF_2.csv")
+        data2 = import_MCF10A("lineage/data/MCF10A/HGF_2.csv")
         data3 = import_MCF10A("lineage/data/MCF10A/HGF_3.csv")
         data4 = import_MCF10A("lineage/data/MCF10A/HGF_4.csv")
         data5 = import_MCF10A("lineage/data/MCF10A/HGF_5.csv")
-        return data1 + data3 + data4 + data5
+        return data1 + data2 + data3 + data4 + data5
 
     elif condition == "OSM":
         data1 = import_MCF10A("lineage/data/MCF10A/OSM_1.csv")
@@ -218,3 +211,5 @@ def MCF10A(condition:str):
     
     else:
         raise ValueError("condition does not exist. choose between [PBS, EGF, HGF, OSM]")
+
+
