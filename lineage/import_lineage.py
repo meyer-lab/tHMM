@@ -153,10 +153,16 @@ def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
     # initialize
     cell.obs = [1, 0, 0, 0, 0] # [fate, lifetime, censored?, velocity, mean_distance]
+    t_end = 2880
+    # check if cell's lifetime is zero
+    if (np.max(lineage.loc[lineage['TID'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['TID'] == uniq_id]['tmin'])) / 60 < 0.1:
+        lineage = lineage.loc[lineage["tmin"] < 2880]
+        t_end = 2850
     parent_id = lineage["motherID"].unique()
+
     # cell fate: die = 0, divide = 1
     if not(uniq_id in parent_id): # if the cell has not divided, means either died or reached experiment end time
-        if np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"]) == 2880: # means reached end of experiment
+        if np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"]) == t_end: # means reached end of experiment
             cell.obs[0] = np.nan # don't know
             cell.obs[2] = 1 # censored
         else: # means cell died before experiment ended
@@ -170,8 +176,7 @@ def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
     cell.obs[1] = (np.max(lineage.loc[lineage['TID'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['TID'] == uniq_id]['tmin'])) / 60
     cell.obs[3] = np.mean(lineage.loc[lineage['TID'] == uniq_id]['average_velocity'])
     cell.obs[4] = np.mean(lineage.loc[lineage['TID'] == uniq_id]['distance_mean'])
-    if cell.obs[1] <= 0.1:
-        cell.obs[1] = 0.5
+
     return cell
 
 def MCF10A(condition:str):
