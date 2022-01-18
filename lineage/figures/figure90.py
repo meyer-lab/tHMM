@@ -1,4 +1,4 @@
-""" BIC foe MCF10A data. """
+""" BIC for MCF10A data. """
 
 import numpy as np
 import pickle

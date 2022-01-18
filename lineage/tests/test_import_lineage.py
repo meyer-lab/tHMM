@@ -6,6 +6,8 @@ import numpy as np
 
 from ..CellVar import CellVar as c
 from ..import_lineage import import_AU565, MCF10A
+from ..Lineage_collections import egf as E
+from ..Analyze import run_Analyze_over
 
 
 class TestModel(unittest.TestCase):
@@ -59,6 +61,15 @@ class TestModel(unittest.TestCase):
         # test for PBS
         lin1 = pbs[0]
         assert len(lin1) == 3  # has 3 cells
-        np.testing.assert_allclose(lin1[0].obs, [1, 30.0, 1], rtol=1e-2)
-        np.testing.assert_allclose(lin1[1].obs, [np.nan, 17.5, 1], rtol=1e-2)
-        np.testing.assert_allclose(lin1[2].obs, [np.nan, 17.5, 1], rtol=1e-2)
+        np.testing.assert_allclose(lin1[0].obs, [1, 30.0, 1, 8.70, 4.35], rtol=1e-2)
+        np.testing.assert_allclose(lin1[1].obs, [np.nan, 17.5, 1, 2.85, 1.42], rtol=1e-2)
+        np.testing.assert_allclose(lin1[2].obs, [np.nan, 17.5, 1, 2.96, 1.48], rtol=1e-2)
+
+    def test_bic(self):
+
+        desired_num_states = np.arange(1, 9)
+        data = [E]
+        dataFull = []
+        for _ in desired_num_states:
+            dataFull.append(data)
+        output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
