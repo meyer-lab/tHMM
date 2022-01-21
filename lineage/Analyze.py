@@ -180,7 +180,7 @@ def rearrange_states(tHMMobj):
     shapes = np.zeros(num_states)
 
     for st in range(num_states):
-        shapes[st] = tHMMobj.estimate.E[st].params[1] # based on their shape which is shared among all conditions
+        shapes[st] = tHMMobj.estimate.E[st].params[1]  # based on their shape which is shared among all conditions
 
     sorted_index = np.argsort(shapes)
 

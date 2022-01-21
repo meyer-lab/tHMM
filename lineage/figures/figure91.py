@@ -11,7 +11,6 @@ import pandas as pd
 from ..Lineage_collections import pbs, egf, hgf, osm
 from ..plotTree import plot_networkx
 from ..Analyze import rearrange_states
-
 HGF = [pbs, egf, hgf, osm]
 concs = concsValues = ["PBS", "EGF", "HGF", "OSM"]
 
