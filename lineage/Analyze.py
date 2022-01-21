@@ -182,7 +182,7 @@ def rearrange_states(tHMMobj):
     for st in range(num_states):
         shapes[st] = tHMMobj.estimate.E[st].params[1]  # based on their shape which is shared among all conditions
 
-    sorted_index = np.argsort(shapes)
+    sorted_index = np.argsort(-1*shapes) # largest to smallest value
 
     # sort cell states based on the new rule
     for lins in tHMMobj.X:
