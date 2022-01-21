@@ -171,3 +171,36 @@ def permute_states(tHMMobj: Any) -> Tuple[Any, list]:
     tHMMobj.estimate.E = [tHMMobj.estimate.E[ii] for ii in switch_map]
 
     return tHMMobj, pred_states_switched
+
+
+def rearrange_states(tHMMobj):
+    """ re-arranges states from the highest self-transition prob to the least.
+    meaning; state 0 = max{T_ii} for i in range(num_states). """
+
+    states_by_lineage = [[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X]
+    ravel_true_states = np.array([state for sublist in true_states_by_lineage for state in sublist])
+
+    ravel_pred_states = np.array([state for sublist in pred_states_by_lineage for state in sublist])
+
+    # 1. Decide how to switch states based on the state assignment that yields the maximum likelihood
+    switcher_map_holder = list(itertools.permutations(list(range(tHMMobj.num_states))))
+    new_pred_states_by_lineage_holder = []
+    switcher_LL_holder = []
+    for _, switcher in enumerate(switcher_map_holder):
+        temp_pred_states_by_lineage = []
+        for state_assignment in pred_states_by_lineage:
+            temp_pred_states_by_lineage.append([switcher[state] for state in state_assignment])
+        new_pred_states_by_lineage_holder.append(temp_pred_states_by_lineage)
+        switcher_LL_holder.append(np.sum(tHMMobj.log_score(temp_pred_states_by_lineage, pi=tHMMobj.X[0].pi, T=tHMMobj.X[0].T, E=tHMMobj.X[0].E)))
+    max_idx = switcher_LL_holder.index(max(switcher_LL_holder))
+
+    # Create switcher map based on the minimal likelihood of different permutations of state
+    # assignments
+    switcher_map = switcher_map_holder[max_idx]
+    switched_pred_states_by_lineage = new_pred_states_by_lineage_holder[max_idx]
+    ravel_switched_pred_states = np.array([state for sublist in switched_pred_states_by_lineage for state in sublist])
+
+    results_dict["switcher_map"] = switcher_map
+
+    # Rearrange the values in the transition matrix
+    temp_T = np.copy(tHMMobj.estimate.T)
