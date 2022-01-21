@@ -174,33 +174,34 @@ def permute_states(tHMMobj: Any) -> Tuple[Any, list]:
 
 
 def rearrange_states(tHMMobj):
-    """ re-arranges states from the highest self-transition prob to the least.
-    meaning; state 0 = max{T_ii} for i in range(num_states). """
+    """ re-arranges states to unify the order that we see at every run. """
 
-    states_by_lineage = [[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X]
-    ravel_true_states = np.array([state for sublist in true_states_by_lineage for state in sublist])
+    num_states = tHMMobj.num_states
+    shapes = np.zeros(num_states)
 
-    ravel_pred_states = np.array([state for sublist in pred_states_by_lineage for state in sublist])
+    for st in range(num_states):
+        shapes[st] = tHMMobj.estimate.E[st].params[1] # based on their shape which is shared among all conditions
 
-    # 1. Decide how to switch states based on the state assignment that yields the maximum likelihood
-    switcher_map_holder = list(itertools.permutations(list(range(tHMMobj.num_states))))
-    new_pred_states_by_lineage_holder = []
-    switcher_LL_holder = []
-    for _, switcher in enumerate(switcher_map_holder):
-        temp_pred_states_by_lineage = []
-        for state_assignment in pred_states_by_lineage:
-            temp_pred_states_by_lineage.append([switcher[state] for state in state_assignment])
-        new_pred_states_by_lineage_holder.append(temp_pred_states_by_lineage)
-        switcher_LL_holder.append(np.sum(tHMMobj.log_score(temp_pred_states_by_lineage, pi=tHMMobj.X[0].pi, T=tHMMobj.X[0].T, E=tHMMobj.X[0].E)))
-    max_idx = switcher_LL_holder.index(max(switcher_LL_holder))
+    sorted_index = np.argsort(shapes)
 
-    # Create switcher map based on the minimal likelihood of different permutations of state
-    # assignments
-    switcher_map = switcher_map_holder[max_idx]
-    switched_pred_states_by_lineage = new_pred_states_by_lineage_holder[max_idx]
-    ravel_switched_pred_states = np.array([state for sublist in switched_pred_states_by_lineage for state in sublist])
+    # sort cell states based on the new rule
+    for lins in tHMMobj.X:
+        for cell in lins.output_lineage:
+            new_state = sorted_index[cell.state]
+            cell.state = new_state
 
-    results_dict["switcher_map"] = switcher_map
+    # sort transition matrix basedon the new rule
+    T_new = tHMMobj.estimate.T
+    for row in range(num_states):
+        for col in range(num_states):
+            T_new[row, col] = tHMMobj.estimate.T[sorted_index[row], sorted_index[col]]
 
-    # Rearrange the values in the transition matrix
-    temp_T = np.copy(tHMMobj.estimate.T)
+    tHMMobj.estimate.T = T_new
+
+    # sort initial probability matrix based on the new rule
+    pi_new = tHMMobj.estimate.pi
+    for st in range(num_states):
+        pi_new[st] = tHMMobj.estimate.pi[sorted_index[st]]
+    tHMMobj.estimate.pi = pi_new
+
+    return tHMMobj

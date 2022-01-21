@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 from ..Lineage_collections import pbs, egf, hgf, osm
 from ..plotTree import plot_networkx
+from ..Analyze import rearrange_states
+
 HGF = [pbs, egf, hgf, osm]
 concs = concsValues = ["PBS", "EGF", "HGF", "OSM"]
 
@@ -17,6 +19,9 @@ pik1 = open("gf.pkl", "rb")
 hgf_tHMMobj_list = []
 for i in range(4):
     hgf_tHMMobj_list.append(pickle.load(pik1))
+
+for i, tHMMobj in enumerate(hgf_tHMMobj_list):
+    hgf_tHMMobj_list[i] = rearrange_states(tHMMobj)
 
 T_hgf = hgf_tHMMobj_list[0].estimate.T
 num_states = hgf_tHMMobj_list[0].num_states
