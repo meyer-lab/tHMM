@@ -79,15 +79,15 @@ def makeFigure():
         ax[i].text(-0.2, 1.25, ascii_lowercase[i - 1], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
         ax[i].axis('off')
 
-    # plot_networkx(T_hgf.shape[0], T_hgf, 'HGF')
+    plot_networkx(T_hgf.shape[0], T_hgf, 'HGF')
 
     return f
 
 
 def plot1(ax, df1, df2, cons, concsValues, num_states):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
-    df1[['Growth Factors', 'State1', 'State2', 'State3', 'State4', 'State5', 'State6']].plot(x='Growth Factors', kind='bar', ax=ax[8])
-    df2[['Growth Factors', 'State1', 'State2', 'State3', 'State4', 'State5', 'State6']].plot(x='Growth Factors', kind='bar', ax=ax[9])
+    df1[['Growth Factors', 'State1', 'State2', 'State3', 'State4', 'State5']].plot(x='Growth Factors', kind='bar', ax=ax[8])
+    df2[['Growth Factors', 'State1', 'State2', 'State3', 'State4', 'State5']].plot(x='Growth Factors', kind='bar', ax=ax[9])
     ax[8].set_title("Lifetime")
     ax[8].set_ylabel("Log10 Mean Time [hr]")
     ax[9].set_title("Fate")
@@ -120,15 +120,13 @@ def plot2(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
                         'State2': lpt_avg[:, 1],
                         'State3': lpt_avg[:, 2],
                         'State4': lpt_avg[:, 3],
-                        'State5': lpt_avg[:, 4],
-                        "State6": lpt_avg[:, 5]})
+                        'State5': lpt_avg[:, 4]})
 
     df2 = pd.DataFrame({'Growth Factors': ['PBS', 'EGF', 'HGF', 'OSM'],
                         'State1': bern_lpt[:, 0],
                         'State2': bern_lpt[:, 1],
                         'State3': bern_lpt[:, 2],
                         'State4': bern_lpt[:, 3],
-                        'State5': bern_lpt[:, 4],
-                        "State6": bern_lpt[:, 5]})
+                        'State5': bern_lpt[:, 4]})
 
     plot1(ax, df1, df2, cons, concsValues, num_states)

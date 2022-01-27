@@ -257,7 +257,7 @@ def genFigure():
         overlayCartoon(fdir + 'figure91.svg',
                        f'{cartoon_dir}/figure03.svg', 430, 30, scale_x=0.9, scale_y=1.7)
         overlayCartoon(fdir + 'figure91.svg',
-                       f'{cartoon_dir}/GFs.svg', 0, 50, scale_y=1.1)
+                       f'{cartoon_dir}/GFs.svg', 0, 0, scale_y=0.7)
         overlayCartoon(fdir + 'figure91.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 430, 270, scalee=1.44)
         overlayCartoon(fdir + 'figure91.svg',
