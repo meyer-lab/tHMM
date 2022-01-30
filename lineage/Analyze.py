@@ -1,7 +1,6 @@
 """ Calls the tHMM functions and outputs the parameters needed to generate the Figures. """
 import itertools
 import numpy as np
-from copy import deepcopy
 from concurrent.futures import ProcessPoolExecutor, Future, Executor
 from sklearn.metrics import rand_score
 from .tHMM import tHMM, fit_list

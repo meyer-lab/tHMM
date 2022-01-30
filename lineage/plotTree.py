@@ -157,7 +157,7 @@ def plot_networkx(num_states: int, T: np.ndarray, drug_name: str):
 
     # add nodes
     for i in range(num_states):
-        G.add_node(i, pos=(-2, -2), label=labels[i], style='filled', color="white", fillcolor=cs[i])
+        G.add_node(i, pos=(-2, -2), label=labels[i], style='filled', fillcolor=cs[i])
 
     # add edges
     for i in range(num_states):

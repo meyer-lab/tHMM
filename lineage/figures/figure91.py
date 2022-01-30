@@ -12,7 +12,7 @@ from ..Lineage_collections import pbs, egf, hgf, osm
 from ..plotTree import plot_networkx
 
 HGF = [pbs, egf, hgf, osm]
-concs = concsValues = ["PBS", "EGF", "HGF", "OSM"]
+concs = ["PBS", "EGF", "HGF", "OSM"]
 
 pik1 = open("gf.pkl", "rb")
 hgf_tHMMobj_list = []
@@ -69,10 +69,10 @@ def getSetup(figsize, gridd):
 
 
 def makeFigure():
-    """ Makes figure 11. """
+    """ Makes figure 91. """
 
     ax, f = getSetup((16, 7.5), (2, 6))
-    plot2(ax, num_states, hgf_tHMMobj_list, "Growth Factors", concs, concsValues)
+    plot2(ax, num_states, hgf_tHMMobj_list)
     for i in range(2, 6):
         ax[i].set_title(concs[i - 2], fontsize=16)
         ax[i].text(-0.2, 1.25, ascii_lowercase[i - 1], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
@@ -83,7 +83,7 @@ def makeFigure():
     return f
 
 
-def plot1(ax, df1, df2, cons, concsValues, num_states):
+def plot1(ax, df1, df2):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     df1[['Growth Factors', 'State1', 'State2', 'State3', 'State4', 'State5', 'State6']].plot(x='Growth Factors', kind='bar', ax=ax[8], color=['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'grey'], rot=0)
     df2[['Growth Factors', 'State1', 'State2', 'State3', 'State4', 'State5', 'State6']].plot(x='Growth Factors', kind='bar', ax=ax[9], color=['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'grey'], rot=0)
@@ -97,7 +97,7 @@ def plot1(ax, df1, df2, cons, concsValues, num_states):
         ax[i].text(-0.2, 1.25, ascii_lowercase[i - 3], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
 
 
-def plot2(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
+def plot2(ax, num_states, tHMMobj_list):
     for i in range(2):
         ax[i].axis("off")
         ax[6 + i].axis("off")
@@ -130,4 +130,4 @@ def plot2(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
                         'State5': bern_lpt[:, 4],
                         'State6': bern_lpt[:, 5]})
 
-    plot1(ax, df1, df2, cons, concsValues, num_states)
+    plot1(ax, df1, df2)
