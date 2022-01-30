@@ -78,7 +78,7 @@ def makeFigure():
         ax[i].text(-0.2, 1.25, ascii_lowercase[i - 1], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
         ax[i].axis('off')
 
-    # plot_networkx(T_hgf.shape[0], T_hgf, 'HGF')
+    plot_networkx(T_hgf.shape[0], T_hgf, 'HGF')
 
     return f
 

@@ -61,10 +61,6 @@ def makeFigure():
         BICprom.append(tmp)
     Bic = [[aaa.result() for aaa in ee] for ee in BICprom]
     BIC = list(map(list, zip(*Bic)))
-    print(Bic)
-    print(BIC)
-    print(len(BIC))
-    print(len(BIC[0]))
 
     # Finding proper ylim range for all 4 uncensored graphs and rounding up
     upper_ylim_uncensored = int(1 + max([np.max(np.ptp(BIC[i], axis=0)) for i in range(4)]) / 25.0) * 25
