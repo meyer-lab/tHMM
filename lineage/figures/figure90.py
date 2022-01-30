@@ -8,7 +8,7 @@ from ..Analyze import run_Analyze_over, Analyze_list
 from ..Lineage_collections import pbs, egf, hgf, osm
 from .common import getSetup
 
-desired_num_states = np.arange(1, 9)
+desired_num_states = np.arange(1, 8)
 GFs = [pbs, egf, hgf, osm]
 
 

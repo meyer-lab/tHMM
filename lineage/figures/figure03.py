@@ -10,7 +10,6 @@ gf_tHMMobj_list = []
 for i in range(4):
     gf_tHMMobj_list.append(pickle.load(pik1))
 
-
 def makeFigure():
     """
     Makes figure 91 lineage.

@@ -104,34 +104,17 @@ def assign_observs_AU565(cell, lineage: list, uniq_id: int):
 def import_MCF10A(path):
     """ Reading the data and extracting lineages and assigning their corresponding observations. """
     df = pd.read_csv(path)
-
-    # check for cells with zero lifetime:
-    zero_lifetime = False
-    for i in df["lineage"].unique():
-        lin = df.loc[df['lineage'] == i]
-        for uniq_i in lin["TID"].unique():
-            if (np.max(lin.loc[lin['TID'] == uniq_i]['tmin']) - np.min(lin.loc[lin['TID'] == uniq_i]['tmin'])) / 60 == 0:
-                zero_lifetime = True
-
-    if zero_lifetime:
-        t_end = 2850
-    else:
-        t_end = 2880
-
     population = []
     # loop over "lineageId"s
     for i in df["lineage"].unique():
         # select all the cells that belong to that lineage
         lineage = df.loc[df['lineage'] == i]
 
-        if t_end == 2850:
-            lineage = lineage.loc[lineage["tmin"] < 2880]
-            
         unique_cell_ids = list(lineage["TID"].unique())  # the length of this shows the number of cells in this lineage
         unique_parent_trackIDs = lineage["motherID"].unique()
 
         parent_cell = c(parent=None, gen=1, barcode=unique_cell_ids[0])
-        parent_cell = assign_observs_MCF10A(parent_cell, lineage, unique_cell_ids[0], t_end)
+        parent_cell = assign_observs_MCF10A(parent_cell, lineage, unique_cell_ids[0])
 
         # create a list to store cells belonging to a lineage
         lineage_list = [parent_cell]
@@ -146,9 +129,9 @@ def import_MCF10A(path):
                     cell = cells
 
             cell.left = c(parent=cell, gen=cell.gen + 1, barcode=child_id[0])
-            cell.left = assign_observs_MCF10A(cell.left, lineage, child_id[0], t_end)
+            cell.left = assign_observs_MCF10A(cell.left, lineage, child_id[0])
             cell.right = c(parent=cell, gen=cell.gen + 1, barcode=child_id[1])
-            cell.right = assign_observs_MCF10A(cell.right, lineage, child_id[1], t_end)
+            cell.right = assign_observs_MCF10A(cell.right, lineage, child_id[1])
 
             lineage_list.append(cell.left)
             lineage_list.append(cell.right)
@@ -170,10 +153,15 @@ def import_MCF10A(path):
     return population
 
 
-def assign_observs_MCF10A(cell, lineage: list, uniq_id: int, t_end: int):
+def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
     # initialize
     cell.obs = [1, 0, 0, 0, 0]  # [fate, lifetime, censored?, velocity, mean_distance]
+    t_end = 2880
+    # check if cell's lifetime is zero
+    if (np.max(lineage.loc[lineage['TID'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['TID'] == uniq_id]['tmin'])) / 60 == 0:
+        lineage = lineage.loc[lineage["tmin"] < 2880]
+        t_end = 2850
     parent_id = lineage["motherID"].unique()
 
     # cell fate: die = 0, divide = 1

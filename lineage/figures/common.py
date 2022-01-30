@@ -255,17 +255,17 @@ def genFigure():
     if sys.argv[1] == '91':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure91.svg',
-                       f'{cartoon_dir}/figure03.svg', 430, 30, scale_x=0.9, scale_y=1.7)
+                       f'{cartoon_dir}/figure03.svg', 430, 30, scale_x=0.9, scale_y=1.5)
         overlayCartoon(fdir + 'figure91.svg',
-                       f'{cartoon_dir}/GFs.svg', 0, 0, scale_y=0.7)
+                       f'{cartoon_dir}/HGF.svg', 0, 80, scalee=0.8)
         overlayCartoon(fdir + 'figure91.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 430, 270, scalee=1.44)
+                       f'{cartoon_dir}/xaxis-h.svg', 430, 260, scalee=1.44)
         overlayCartoon(fdir + 'figure91.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 625, 270, scalee=1.44)
+                       f'{cartoon_dir}/xaxis-h.svg', 625, 260, scalee=1.44)
         overlayCartoon(fdir + 'figure91.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 820, 270, scalee=1.4)
+                       f'{cartoon_dir}/xaxis-h.svg', 820, 260, scalee=1.4)
         overlayCartoon(fdir + 'figure91.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 1010, 270, scalee=1.3)
+                       f'{cartoon_dir}/xaxis-h.svg', 1010, 260, scalee=1.3)
 
     if sys.argv[1] == 'S11':
         # Overlay Transition block
