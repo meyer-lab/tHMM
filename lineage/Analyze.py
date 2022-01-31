@@ -149,8 +149,8 @@ def permute_states(tHMMobj: Any, switch_map: np.array) -> Tuple[Any, list]:
     pred_states_switched = [np.array([switch_map[st] for sublist in pred_states for st in sublist])]
 
     # Rearrange the values in the transition matrix
-    thmmobj_copy.estimate.T = tHMMobj.estimate.T[switch_map, :]
-    thmmobj_copy.estimate.T = tHMMobj.estimate.T[:, switch_map]
+    tHMMobj.estimate.T = tHMMobj.estimate.T[switch_map, :]
+    tHMMobj.estimate.T = tHMMobj.estimate.T[:, switch_map]
 
     # Rearrange the values in the pi vector
     tHMMobj.estimate.pi = tHMMobj.estimate.pi[switch_map]
