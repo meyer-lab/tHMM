@@ -171,37 +171,3 @@ def permute_states(tHMMobj: Any) -> Tuple[Any, list]:
     tHMMobj.estimate.E = [tHMMobj.estimate.E[ii] for ii in switch_map]
 
     return tHMMobj, pred_states_switched
-
-
-def rearrange_states(tHMMobj):
-    """ re-arranges states to unify the order that we see at every run. """
-
-    num_states = tHMMobj.num_states
-    shapes = np.zeros(num_states)
-
-    for st in range(num_states):
-        shapes[st] = tHMMobj.estimate.E[st].params[1]  # based on their shape which is shared among all conditions
-
-    sorted_index = np.argsort(-1*shapes) # largest to smallest value
-
-    # sort cell states based on the new rule
-    for lins in tHMMobj.X:
-        for cell in lins.output_lineage:
-            new_state = sorted_index[cell.state]
-            cell.state = new_state
-
-    # sort transition matrix basedon the new rule
-    T_new = tHMMobj.estimate.T
-    for row in range(num_states):
-        for col in range(num_states):
-            T_new[row, col] = tHMMobj.estimate.T[sorted_index[row], sorted_index[col]]
-
-    tHMMobj.estimate.T = T_new
-
-    # sort initial probability matrix based on the new rule
-    pi_new = tHMMobj.estimate.pi
-    for st in range(num_states):
-        pi_new[st] = tHMMobj.estimate.pi[sorted_index[st]]
-    tHMMobj.estimate.pi = pi_new
-
-    return tHMMobj

@@ -4,8 +4,8 @@ import numpy as np
 from Bio.Phylo.BaseTree import Clade
 import networkx as nx
 
-cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'olive', 'gray']
-stateColors = ['blue', 'orange', 'green', 'red', 'purple', 'olive', 'gray']
+cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'grey']
+stateColors = ['blue', 'orange', 'green', 'red', 'purple', 'grey']
 
 
 def CladeRecursive(cell, a: list, censor: bool, color: bool):
@@ -118,8 +118,7 @@ def CladeRecursive_MCF10A(cell, a: list, censor: bool, color: bool):
         colorr = "black"
 
     if cell.isLeaf():
-        if np.isfinite(cell.obs[1]):
-            length = cell.obs[1]
+        length = cell.obs[1]
         # Creating the clade and assigning the color
         my_clade = Clade(branch_length=length, width=1, color=colorr)
         # Assigning the line width according to the phase
