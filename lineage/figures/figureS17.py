@@ -17,6 +17,7 @@ for thmm_obj in gf_tHMMobj_list:
 
 conditions = ["PBS", "EGF", "HGF", "OSM"]
 
+
 def makeFigure():
     """
     Makes figure 101.
@@ -24,12 +25,12 @@ def makeFigure():
     num_lins = [len(gf_tHMMobj_list[i].X) for i in range(4)]
     ax, f = getSetup((10, 20), (np.max(num_lins), 4))
 
-    for i in range(4*np.max(num_lins)):
+    for i in range(4 * np.max(num_lins)):
         ax[i].axis('off')
 
     for j, thmmobj in enumerate(gf_tHMMobj_list):
         for i, X in enumerate(thmmobj.X):
-            plotLineage_MCF10A(X, ax[4*i+j])
+            plotLineage_MCF10A(X, ax[4 * i + j])
 
     for i in range(4):
         ax[i].set_title(conditions[i])

@@ -10,7 +10,6 @@ import numpy as np
 import pandas as pd
 from ..Lineage_collections import pbs, egf, hgf, osm
 from ..plotTree import plot_networkx
-
 HGF = [pbs, egf, hgf, osm]
 concs = ["PBS", "EGF", "HGF", "OSM"]
 
@@ -85,8 +84,10 @@ def makeFigure():
 
 def plot1(ax, df1, df2):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
-    df1[['Growth Factors', 'State1', 'State2', 'State3', 'State4', 'State5', 'State6']].plot(x='Growth Factors', kind='bar', ax=ax[8], color=['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'grey'], rot=0)
-    df2[['Growth Factors', 'State1', 'State2', 'State3', 'State4', 'State5', 'State6']].plot(x='Growth Factors', kind='bar', ax=ax[9], color=['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'grey'], rot=0)
+    df1[['Growth Factors', 'State1', 'State2', 'State3', 'State4', 'State5', 'State6']].plot(
+        x='Growth Factors', kind='bar', ax=ax[8], color=['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'grey'], rot=0)
+    df2[['Growth Factors', 'State1', 'State2', 'State3', 'State4', 'State5', 'State6']].plot(
+        x='Growth Factors', kind='bar', ax=ax[9], color=['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'grey'], rot=0)
     ax[8].set_title("Lifetime")
     ax[8].set_ylabel("Mean Time [hr]")
     ax[9].set_title("Fate")
