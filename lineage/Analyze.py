@@ -91,7 +91,21 @@ def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict[str, Any]:
     # Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
     results_dict: dict[str, Any]
     results_dict = {}
-    tHMMobj, pred_states = permute_states(tHMMobj, np.arange(tHMMobj.num_states))
+    # To find the switcher map for states based on log-likelihood
+    permutes = list(itertools.permutations(np.arange(tHMMobj.num_states)))
+    score_permutes = np.empty(len(permutes))
+
+    pi_arg = tHMMobj.X[0].pi if (tHMMobj.fpi is None) else tHMMobj.fpi
+    E_arg = tHMMobj.X[0].E if (tHMMobj.fE is None) else tHMMobj.fE
+    T_arg = tHMMobj.X[0].T if (tHMMobj.fT is None) else tHMMobj.fT
+
+    for i, perm in enumerate(permutes):
+        predState_permute = [[perm[st] for st in st_assgn] for st_assgn in pred_states]
+        score_permutes[i] = np.sum(tHMMobj.log_score(predState_permute, pi=pi_arg, T=T_arg, E=E_arg))
+
+    # Create switcher map based on the max likelihood of different permutations of state assignments
+    switch_map = np.array(permutes[np.argmax(score_permutes)])
+    tHMMobj, pred_states = permute_states(tHMMobj, switch_map)
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
     results_dict["total_number_of_cells"] = sum([len(lineage.output_lineage) for lineage in tHMMobj.X])
