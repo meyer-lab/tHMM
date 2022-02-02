@@ -106,7 +106,7 @@ def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict[str, Any]:
 
     # Create switcher map based on the max likelihood of different permutations of state assignments
     switch_map = np.array(permutes[np.argmax(score_permutes)])
-    tHMMobj = permute_states(tHMMobj, switch_map)
+    tHMMobj, pred_states = permute_states(tHMMobj, switch_map)
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
     results_dict["total_number_of_cells"] = sum([len(lineage.output_lineage) for lineage in tHMMobj.X])
