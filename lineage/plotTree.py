@@ -36,8 +36,8 @@ def CladeRecursive(cell, a: list, censor: bool, color: bool):
         # Creating the clade and assigning the color
         my_clade = Clade(branch_length=length, width=1, color=colorr)
         # Assigning the line width according to the phase
-        my_clade.G1lw = 1.2
-        my_clade.G2lw = 0.6
+        my_clade.G1lw = 2.0
+        my_clade.G2lw = 1.0
         my_clade.G1 = cell.obs[2] if np.isfinite(cell.obs[2]) else 1e-4
         my_clade.G2 = cell.obs[3] if np.isfinite(cell.obs[3]) else 1e-4
         return my_clade
@@ -55,8 +55,8 @@ def CladeRecursive(cell, a: list, censor: bool, color: bool):
         else:
             lengths = cell.obs[2] + cell.obs[3]  # both are observed
         my_clade = Clade(branch_length=lengths, width=1, clades=clades, color=colorr)
-        my_clade.G1lw = 1.2
-        my_clade.G2lw = 0.6
+        my_clade.G1lw = 2.0
+        my_clade.G2lw = 1.0
         my_clade.G1 = cell.obs[2] if np.isfinite(cell.obs[2]) else 1e-4
         my_clade.G2 = cell.obs[3] if np.isfinite(cell.obs[3]) else 1e-4
         return my_clade
