@@ -15,9 +15,9 @@ def makeFigure():
     """
     Makes figure 91 lineage.
     """
-    ax, f = getSetup((12, 2), (6, 4))
+    ax, f = getSetup((12, 2), (8, 4))
     k = 0
-    for i in range(6):
+    for i in range(8):
         for objs in gf_tHMMobj_list:
             ax[k].axis('off')
             plotLineage_MCF10A(objs.X[i], ax[k])

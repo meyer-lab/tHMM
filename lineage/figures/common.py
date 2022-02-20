@@ -257,7 +257,7 @@ def genFigure():
         overlayCartoon(fdir + 'figure91.svg',
                        f'{cartoon_dir}/figure03.svg', 430, 30, scale_x=0.9, scale_y=1.5)
         overlayCartoon(fdir + 'figure91.svg',
-                       f'{cartoon_dir}/HGF.svg', 0, 80, scalee=0.8)
+                       f'{cartoon_dir}/HGF.svg', 0, 80, scalee=1.1)
         overlayCartoon(fdir + 'figure91.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 430, 260, scalee=1.44)
         overlayCartoon(fdir + 'figure91.svg',
@@ -588,8 +588,8 @@ def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
 
     # ylim and ylabel
     for i in range(10, 12):
-        ax[i].set_ylabel("Log10 Mean Time [hr]")
-        ax[i].set_ylim([0, 3.5])
+        ax[i].set_ylabel("Mean Time [hr]")
+        ax[i].set_ylim([0, 6.0])
 
     # ylim and ylabel
     for i in range(12, 14):
@@ -617,8 +617,8 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     print(Dname, "\n the \u03C0: ", tHMMobj_list[0].estimate.pi, "\n the transition matrix: ", tHMMobj_list[0].estimate.T)
     for idx, tHMMobj in enumerate(tHMMobj_list):  # for each concentration data
         for i in range(num_states):
-            lpt_avg[idx, i, 0] = np.log10(tHMMobj.estimate.E[i].params[2] * tHMMobj.estimate.E[i].params[3])  # G1
-            lpt_avg[idx, i, 1] = np.log10(tHMMobj.estimate.E[i].params[4] * tHMMobj.estimate.E[i].params[5])  # G2
+            lpt_avg[idx, i, 0] = tHMMobj.estimate.E[i].params[2] * tHMMobj.estimate.E[i].params[3]  # G1
+            lpt_avg[idx, i, 1] = tHMMobj.estimate.E[i].params[4] * tHMMobj.estimate.E[i].params[5]  # G2
             # bernoullis
             for j in range(2):
                 bern_lpt[idx, i, j] = tHMMobj.estimate.E[i].params[j]
@@ -639,6 +639,6 @@ def sort_lins(tHMMobj):
         st_i = [index for index, val in enumerate(st) if val == i]
         temp = [tHMMobj.X[k] for k in st_i]
 
-        states += temp[:10]
+        states += temp
 
     return states

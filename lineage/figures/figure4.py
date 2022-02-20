@@ -117,7 +117,7 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
     sns.regplot(x="Cell number", y="Random Index Accuracy", data=accuracy_sim_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=0, top=101)
-    ax[i].set_ylabel(r"State Accuracy [%]")
+    ax[i].set_ylabel(r"Random Index Accuracy [%]")
     ax[i].set_title("Censored data, uncensored model")
 
     i += 1
@@ -125,5 +125,5 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
     sns.regplot(x="Cell number", y="Random Index Accuracy", data=accuracy_cen_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=0, top=101)
-    ax[i].set_ylabel(r"State Accuracy [%]")
+    ax[i].set_ylabel(r"Random Index Accuracy [%]")
     ax[i].set_title("Censored data, censored model")

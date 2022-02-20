@@ -156,7 +156,7 @@ def import_MCF10A(path):
 def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
     # initialize
-    cell.obs = [1, 0, 0, 0, 0]  # [fate, lifetime, censored?, velocity, mean_distance]
+    cell.obs = [1, 0, 1, 0, 0]  # [fate, lifetime, censored?, velocity, mean_distance]
     t_end = 2880
     # check if cell's lifetime is zero
     if (np.max(lineage.loc[lineage['TID'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['TID'] == uniq_id]['tmin'])) / 60 == 0:
@@ -168,13 +168,13 @@ def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
     if not(uniq_id in parent_id):  # if the cell has not divided, means either died or reached experiment end time
         if np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"]) == t_end:  # means reached end of experiment
             cell.obs[0] = np.nan  # don't know
-            cell.obs[2] = 1  # censored
+            cell.obs[2] = 0  # censored
         else:  # means cell died before experiment ended
             cell.obs[0] = 0  # died
-            cell.obs[2] = 0  # not censored
+            cell.obs[2] = 1  # not censored
 
     if cell.gen == 1:  # it is root parent
-        cell.obs[2] = 1  # meaning it is left censored in its lifetime
+        cell.obs[2] = 0  # meaning it is left censored in its lifetime
 
     # cell's lifetime
     cell.obs[1] = (np.max(lineage.loc[lineage['TID'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['TID'] == uniq_id]['tmin'])) / 60

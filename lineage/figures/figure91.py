@@ -84,14 +84,14 @@ def makeFigure():
 
 def plot1(ax, df1, df2):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
-    df1[['Growth Factors', 'State1', 'State2', 'State3', 'State4', 'State5', 'State6']].plot(
-        x='Growth Factors', kind='bar', ax=ax[8], color=['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'grey'], rot=0)
-    df2[['Growth Factors', 'State1', 'State2', 'State3', 'State4', 'State5', 'State6']].plot(
-        x='Growth Factors', kind='bar', ax=ax[9], color=['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'grey'], rot=0)
+    df1[['Growth Factors', 'State1', 'State2', 'State3']].plot(x='Growth Factors', kind='bar', ax=ax[8], color=['lightblue', 'orange', 'lightgreen'], rot=0)
+    df2[['Growth Factors', 'State1', 'State2', 'State3']].plot(x='Growth Factors', kind='bar', ax=ax[9], color=['lightblue', 'orange', 'lightgreen'], rot=0)
     ax[8].set_title("Lifetime")
     ax[8].set_ylabel("Mean Time [hr]")
+    ax[8].set_ylim((0.0, 5.0))
     ax[9].set_title("Fate")
     ax[9].set_ylabel("Division Probability")
+    ax[9].set_ylim((0.0, 1.1))
 
     # legend and xlabel
     for i in range(8, 10):
@@ -111,24 +111,18 @@ def plot2(ax, num_states, tHMMobj_list):
     # print parameters and estimated values
     for idx, tHMMobj in enumerate(tHMMobj_list):  # for each concentration data
         for i in range(num_states):
-            lpt_avg[idx, i] = tHMMobj.estimate.E[i].params[1] * tHMMobj.estimate.E[i].params[2]
+            lpt_avg[idx, i] = np.log10(tHMMobj.estimate.E[i].params[1] * tHMMobj.estimate.E[i].params[2])
             # bernoullis
             bern_lpt[idx, i] = tHMMobj.estimate.E[i].params[0]
 
     df1 = pd.DataFrame({'Growth Factors': ['PBS', 'EGF', 'HGF', 'OSM'],
                         'State1': lpt_avg[:, 0],
                         'State2': lpt_avg[:, 1],
-                        'State3': lpt_avg[:, 2],
-                        'State4': lpt_avg[:, 3],
-                        'State5': lpt_avg[:, 4],
-                        'State6': lpt_avg[:, 5]})
+                        'State3': lpt_avg[:, 2]})
 
     df2 = pd.DataFrame({'Growth Factors': ['PBS', 'EGF', 'HGF', 'OSM'],
                         'State1': bern_lpt[:, 0],
                         'State2': bern_lpt[:, 1],
-                        'State3': bern_lpt[:, 2],
-                        'State4': bern_lpt[:, 3],
-                        'State5': bern_lpt[:, 4],
-                        'State6': bern_lpt[:, 5]})
+                        'State3': bern_lpt[:, 2]})
 
     plot1(ax, df1, df2)
