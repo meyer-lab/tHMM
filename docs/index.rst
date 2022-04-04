@@ -15,6 +15,13 @@ Features
 * Can plot the lineage trees with their associated cluster shown as a color.
 
 .. toctree:: 
+   :caption: Overview
+   :name: overview
+   :maxdepth: 1
+
+   overview.rst
+
+.. toctree:: 
    :caption: Installation
    :name: install
    :maxdepth: 1
@@ -22,11 +29,18 @@ Features
    installation.rst
 
 .. toctree:: 
-   :caption: Overview
-   :name: overview
+   :caption: Syatem Requirements
+   :name: syst-req
    :maxdepth: 1
 
-   overview.rst
+   system-reqs.rst
+
+.. toctree:: 
+   :caption: Demo
+   :name: demo
+   :maxdepth: 1
+
+   demo.rst
 
 .. toctree:: 
    :caption: Emissions
