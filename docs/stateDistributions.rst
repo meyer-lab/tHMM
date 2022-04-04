@@ -1,5 +1,5 @@
-**State Distributions** - How to create
-=======================================
+State Distributions - How to create
+===================================
 
 The Emissions matrix is created using State Distribution
 objects. A state can be defined as a particular condition the cell is in
