@@ -39,7 +39,8 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx_autodoc_typehints',
-    'IPython.sphinxext.ipython_console_highlighting'
+    'IPython.sphinxext.ipython_console_highlighting',
+    'autoapi.extension'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -88,3 +89,6 @@ todo_include_todos = True
 autodoc_mock_imports = [
     "matplotlib", "scipy", "seaborn"
 ]
+
+autoapi_type = 'python'
+autoapi_dirs = ['lineage']
