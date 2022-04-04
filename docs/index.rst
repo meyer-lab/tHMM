@@ -14,6 +14,9 @@ Features
 * Outputs the number of clusters, transition probability between the clusters, and distribution corresponding to the emission for each cluster.
 * Can plot the lineage trees with their associated cluster shown as a color.
 
+Outline
+-------
+
 .. toctree:: Overview
    :name: overview
    :maxdepth: 1
@@ -42,6 +45,10 @@ Features
    :name: stateDistribution
    :maxdepth: 1
 
+   stateDistributions.rst
+
 .. toctree:: API Reference
    :name: api
    :maxdepth: 1
+
+   API.rst   
