@@ -1,28 +1,36 @@
-Welcome to lineage-growth's documentation!
-==========================================
+.. _manual-main:
 
-.. automodule:: lineage
-    :members:
-    :undoc-members:
-    :show-inheritance:
+Welcome to tHMM's documentation!
+================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+tHMM is a Python3 library for clustering data in the form of a binary lineage tree.
+This documentation includes an overview of the package, and how to use the functions and classes, 
+and examples of the application of tHMM in identifying cellular phenotypic heterogeneity in cancer cells under treatment.
 
-   modules.rst
+Features
+--------
 
+* Uses lineage tree data for clustering individuals according to their relationship to each other and measurements. 
+* Outputs the number of clusters, transition probability between the clusters, and distribution corresponding to the emission for each cluster.
+* Can plot the lineage trees with their associated cluster shown as a color.
 
-Tutorials
-==================
+.. toctree:: 
+   :caption: Installation
+   :name: install
+   :maxdepth: 1
 
-   :doc:`../1.overview`
-   :doc:`../2.stateDistributions`
+   installation.rst
 
+.. toctree:: 
+   :caption: Overview
+   :name: overview
+   :maxdepth: 1
 
-Indices and tables
-==================
+   overview.rst
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. toctree:: 
+   :caption: Emissions
+   :name: stateDistribution
+   :maxdepth: 1
+
+   stateDistributions.rst
