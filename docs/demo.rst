@@ -1,55 +1,14 @@
-# tHMM
+.. _Demo:
 
-[![codecov](https://codecov.io/gh/meyer-lab/tHMM/branch/master/graph/badge.svg)](https://codecov.io/gh/meyer-lab/tHMM)
-[![Documentation Status](https://readthedocs.org/projects/tHMM/badge/?version=latest)](https://lineage-growth.readthedocs.io/en/latest/?badge=latest)
+.. highlight:: shell
 
-`tHMM` is a Python package for developing methods to quantify drug response heterogeneity, using single-cell data in the form of cell lineages.
+=====================
+Demo and Instructions
+=====================
 
-- [Overview](#Overview)
-- [Documentation](#Documentation)
-- [Systems Requirements](#system-requirements)
-- [Installation Guide](#Installation-Guide)
-- [Demo Instructions for Use](#Demo)
-
-# Overview
-
-We present `tHMM`, a Python3 package for exploring heterogeneity in the binary tree
-lineage format. `tHMM` leverages the well-known principles of hidden Markov models and
-is adjusted to work with lineage tree data. `tHMM` performs clustering of the
-individuals, based on their specific measurements and relations with other individuals
-for improved specificity in pinpointing the structure and dynamics of heterogeneity
-focused on the measured phenotypes.
-
-# Documentation
-The `docs` folder includes a few tutorials for getting started with the package. All the functions should have a docstring explaining the purpose of the function, as well as the inputs, outputs, and the type of the variables used.
-
-# System Requirements
-## Hardware requirements
-`tHMM` package requires only a standard computer with enough RAM to support the in-memory operations.
-
-## Software requirements
-
-### OS requirements
-This package is supported for *macOS* and *Linux*. The package has been tested on the following systems:
-- macOS: Mojave (10.14.1)
-- Linux: Ubuntu 20.04
-
-### Python dependencies
-`tHMM` requires `virtualenv`. All other required packages can then be installed using `make venv` to establish a virtual environment. The Python packages that will be installed are listed in `requirements.txt`, and can be directly installed using `pip install -r requirements.txt`.
-
-# Installation Guide:
-
-### Clone from GitHub
-```
-git clone https://github.com/meyer-lab/tHMM
-```
-It may take a few minutes to clone the repository.
-
-# Demo and Instructions for Use
-
-All functions for creating synthetic data, importing experimental data, and fitting are in the `lineage` folder. The synthetic observations were created under the name of state distributions in the `lineage/states` folder, and unit tests for almost all functions written in the package are in the `lineage/tests` folder.
+All functions for creating synthetic data, importing experimental data, and fitting are in the `lineage` folder. Benchmarking figure function that can be accessed through `lineage/figures` folder. The synthetic cellular observations were created under the name of state distributions in the `lineage/states` folder, and unit tests for almost all functions written in the package are in the `lineage/tests` folder.
  
-To build figures of the manuscript, for instance figure4, you can run the following in the terminal while in the main repository folder:
+To build the figures, for instance figure4, you can run the following in the terminal while in the main repository folder:
 
 ```
 make output/figure4.svg
@@ -61,13 +20,9 @@ To run the unit tests:
 make test
 ```
 
-To make the manuscript:
 
-```
-make output/manuscript.html 
-```
-
-#### Creating synthetic data and fitting the model
+Creating synthetic data and fitting the model
+---------------------------------------------
 
 The following shows how to create a 2-state synthetic lineage of cells with cell fate and cell lifetime observations, fit them to the model, and output the corresponding transition matrix, initial probability matrix, and the estimated parameters for the distribution of each state.
 
@@ -130,7 +85,8 @@ for state in range(lineage.num_states):
     print("\n")
 ```
 
-#### Importing the experimental data and fitting the model
+Importing the experimental data and fitting the model
+-----------------------------------------------------
 
 ```
 import numpy as np
@@ -178,6 +134,3 @@ for state in range(2):
 ```
 
 Depending on the number of cells and lineages being used for fitting, the run time for `Analyze` and other similar functions that run the fitting, could takes minutes to hours.
-
-# License
-This project is covered under the MIT License.
