@@ -14,37 +14,34 @@ Features
 * Outputs the number of clusters, transition probability between the clusters, and distribution corresponding to the emission for each cluster.
 * Can plot the lineage trees with their associated cluster shown as a color.
 
-.. toctree:: 
-   :caption: Overview
+.. toctree:: Overview
    :name: overview
    :maxdepth: 1
 
    overview.rst
 
-.. toctree:: 
-   :caption: Installation
+.. toctree:: Installation
    :name: install
    :maxdepth: 1
 
    installation.rst
 
-.. toctree:: 
-   :caption: Syatem Requirements
+.. toctree:: System Requirements
    :name: syst-req
    :maxdepth: 1
 
    system-reqs.rst
 
-.. toctree:: 
-   :caption: Demo
+.. toctree:: Demo
    :name: demo
    :maxdepth: 1
 
    demo.rst
 
-.. toctree:: 
-   :caption: Emissions
+.. toctree:: Emissions
    :name: stateDistribution
    :maxdepth: 1
 
-   stateDistributions.rst
+.. toctree:: API Reference
+   :name: api
+   :maxdepth: 1
