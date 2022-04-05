@@ -221,7 +221,7 @@ the function is located in the lineage/states/stateCommon.py
 Example
 -------
 
-Now that we have a functioning Gaussian StateDistribution, let’s try it
+Now that we have a functioning Gaussian StateDistribution, let's try it
 with the overall model. As in the overview, we first define our initial probability vector and
 the state transition probability matrices.
 
