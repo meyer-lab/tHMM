@@ -28,8 +28,8 @@ This package is supported on *macOS* and *Linux* systems.
 Python dependencies
 ~~~~~~~~~~~~~~~~~~~
 
-``tHMM`` requires virtualenv. All other required packages can then be installed using make venv to establish a virtual environment. 
-The Python packages that will be installed are listed in requirements.txt, and can be directly installed using pip install -r requirements.txt.
+``tHMM`` requires ``virtualenv``. All other required packages can then be installed using ``make venv`` to establish a virtual environment. 
+The Python packages that will be installed are listed in requirements.txt, and can be directly installed using ``pip install -r requirements.txt``.
 
 
 Documentation
