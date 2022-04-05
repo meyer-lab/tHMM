@@ -11,6 +11,27 @@ tHMM
 
 ``tHMM`` is a Python3 package for clustering, visualizing, and analyzing data in the form of lineage trees.
 
+Install
+-------
+
+.. code-block:: console
+
+    $ git clone https://github.com/meyer-lab/tHMM.git
+
+It takes a few seconds to clone the repository.
+
+Software Requirements
+---------------------
+
+This package is supported on *macOS* and *Linux* systems.
+
+Python dependencies
+~~~~~~~~~~~~~~~~~~~
+
+``tHMM`` requires virtualenv. All other required packages can then be installed using make venv to establish a virtual environment. 
+The Python packages that will be installed are listed in requirements.txt, and can be directly installed using pip install -r requirements.txt.
+
+
 Documentation
 -------------
 

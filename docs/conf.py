@@ -12,7 +12,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('..'))
 
 
 # -- Project information -----------------------------------------------------
@@ -32,11 +32,13 @@ release = '1.0'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.napolean',
     'autoapi.extension',
     'sphinx_rtd_theme'
 ]
 
 autoapi_dirs = ['../lineage']
+autoapi_ignore = ["*/test_*.py", "*/figures/*"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -48,7 +50,7 @@ templates_path = ['_templates']
 # Usually you set "language" from the command line for these cases.
 language = 'python'
 
-# autoapi_generate_api_docs = False
+autoapi_generate_api_docs = False
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

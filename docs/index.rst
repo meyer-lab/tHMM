@@ -49,6 +49,4 @@ Outline
 
 .. toctree:: API Reference
    :name: api
-   :maxdepth: 1
-
-   API.rst   
+   :maxdepth: 2
