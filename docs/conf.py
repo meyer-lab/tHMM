@@ -36,9 +36,10 @@ extensions = [
     'autoapi.extension',
     'sphinx_rtd_theme'
 ]
+autodoc_mock_imports = ['bs4', 'requests']
 
 autoapi_dirs = ['../lineage']
-autoapi_ignore = ["*/test_*.py", "*/figures/*"]
+autoapi_ignore = ["*/test_*.py", "*/figure*.py"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -50,7 +51,7 @@ templates_path = ['_templates']
 # Usually you set "language" from the command line for these cases.
 language = 'python'
 
-autoapi_generate_api_docs = True
+autoapi_generate_api_docs = False
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -70,6 +71,6 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-autoapi_root = 'technical/api'
+autoapi_root = 'api'
 
 autodoc_typehints = 'description'

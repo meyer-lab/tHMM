@@ -16,13 +16,20 @@ class DummyExecutor(Executor):
 
 
 def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, int, float]:
-    """ Runs a tHMM and outputs the tHMM object, state assignments, and likelihood. """
+    """ Runs the model and outputs the tHMM object, state assignments, and likelihood.
+    :param X: The list of LineageTree populations.
+    :param num_states: The number of states that we want to run the model for.
+    :return tHMMobj_list: The tHMMobj after fitting corresponding to the given LineageTree population.
+    :return st: The nested list of states assigned to cells, with the order of cells from root to leaf in each lineage, and generation.
+    :return LL: The log-likelihood of the fitted model.
+    """
     tHMMobj_list, st, LL = Analyze_list([X], num_states, **kwargs)
     return tHMMobj_list[0], st[0], LL
 
 
 def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list, list, float]:
-    """ This function runs the analyze for the case when we want to fit the experimental data. (fig 11)"""
+    """ This function runs the analyze for the case when we want to fit multiple conditions at the same time.
+    """
 
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
     _, _, _, _, LL = fit_list(tHMMobj_list)
