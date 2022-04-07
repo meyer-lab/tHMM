@@ -1,6 +1,0 @@
-:py:mod:`lineage.tests`
-=======================
-
-.. py:module:: lineage.tests
-
-
