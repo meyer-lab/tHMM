@@ -1,0 +1,132 @@
+:py:mod:`lineage.BaumWelch`
+===========================
+
+.. py:module:: lineage.BaumWelch
+
+.. autoapi-nested-parse::
+
+   Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch. 
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   lineage.BaumWelch.do_E_step
+   lineage.BaumWelch.calculate_log_likelihood
+   lineage.BaumWelch.calculate_stationary
+   lineage.BaumWelch.do_M_step
+   lineage.BaumWelch.do_M_pi_step
+   lineage.BaumWelch.do_M_T_step
+   lineage.BaumWelch.do_M_E_step
+   lineage.BaumWelch.do_M_E_step_atonce
+   lineage.BaumWelch.get_all_zetas
+
+
+
+.. py:function:: do_E_step(tHMMobj)
+
+   Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
+
+   :param tHMMobj: A tHMM object with properties of the lineages of cells, such as
+   :return MSD: Marginal state distribution
+   :return NF: normalizing factor
+   :return betas: beta values (conditional probability of cell states given cell observations)
+   :return gammas: gamma values (used to calculate the downward reursion)
+
+
+.. py:function:: calculate_log_likelihood(NF)
+
+   Calculates log likelihood of NF for each lineage.
+
+   :param NF: normalizing factor
+   return: the sum of log likelihoods for each lineage
+
+
+.. py:function:: calculate_stationary(T)
+
+   Calculate the stationary distribution of states from T.
+   Note that this does not take into account potential influences of the emissions.
+
+   :param T: transition matrix, a square matrix with probabilities of transitioning from one state to the other
+   :return: The stationary distribution of states which can be obtained by solving w = w * T
+
+
+.. py:function:: do_M_step(tHMMobj, MSD, betas, gammas)
+
+   Calculates the maximization step of the Baum Welch algorithm
+   given output of the expectation step.
+   The individual parameter estimations are performed in
+   separate functions.
+
+   :param tHMMobj: A class object with properties of the lineages of cells
+   :type tHMMobj: object
+   :param MSD: The marginal state distribution P(z_n = k)
+   :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
+   :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
+
+
+.. py:function:: do_M_pi_step(tHMMobj, gammas)
+
+   Calculates the M-step of the Baum Welch algorithm
+   given output of the E step.
+   Does the parameter estimation for the pi
+   initial probability vector.
+
+   :param tHMMobj: A class object with properties of the lineages of cells
+   :type tHMMobj: object
+   :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
+
+
+.. py:function:: do_M_T_step(tHMMobj, MSD, betas, gammas)
+
+   Calculates the M-step of the Baum Welch algorithm
+   given output of the E step.
+   Does the parameter estimation for the T
+   Markov stochastic transition matrix.
+
+   :param tHMMobj: A class object with properties of the lineages of cells
+   :type tHMMobj: object
+   :param MSD: The marginal state distribution P(z_n = k)
+   :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
+   :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
+
+
+.. py:function:: do_M_E_step(tHMMobj, gammas)
+
+   Calculates the M-step of the Baum Welch algorithm
+   given output of the E step.
+   Does the parameter estimation for the E
+   Emissions matrix (state probabilistic distributions).
+
+   :param tHMMobj: A class object with properties of the lineages of cells
+   :type tHMMobj: object
+   :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
+
+
+.. py:function:: do_M_E_step_atonce(all_tHMMobj, all_gammas)
+
+   Performs the maximization step for emission estimation when data for all the concentrations are given at once for all the states.
+   After reshaping, we will have a list of lists for each state.
+   This function is specifically written for the experimental data of G1 and S-G2 cell cycle fates and durations.
+
+
+.. py:function:: get_all_zetas(lineageObj, beta_array, MSD_array, gamma_array, T)
+
+   Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
+   This is an inner component in calculating the overall transition probability matrix.
+
+   :param lineageObj: the lineage tree of cells
+   :param beta_array: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
+   :param MSD_array: marginal state distribution
+   :param gamma_array: gamma values. The conditional probability of states, given the observation of the whole tree
+   :param T: transition probability matrix
+   :return: numerator for calculating the transition probabilities
+
+

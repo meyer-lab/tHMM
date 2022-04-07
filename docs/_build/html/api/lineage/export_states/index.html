@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lineage.export_states &mdash; tHMM 1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> tHMM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Summary</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">Installation</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../system-reqs.html">System Requirements</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../demo.html">Demo and Instructions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../stateDistributions.html">State Distributions - How to create</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">tHMM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">lineage.export_states</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/api/lineage/export_states/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-lineage.export_states">
+<span id="lineage-export-states"></span><h1><a class="reference internal" href="#module-lineage.export_states" title="lineage.export_states"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lineage.export_states</span></code></a><a class="headerlink" href="#module-lineage.export_states" title="Permalink to this headline"></a></h1>
+<p>This file exports excel sheets of lineages of cells with their states assigned to them after fitting.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.export_states.assign_states" title="lineage.export_states.assign_states"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assign_states</span></code></a>(input_X)</p></td>
+<td><p>Given a list of lineages, it returns a 2D array of cell states in the form of a tree that will then be written into excel sheets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.export_states.deintegrate" title="lineage.export_states.deintegrate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deintegrate</span></code></a>(population, len_condition, gem=False)</p></td>
+<td><p>Given the tHMMob.X and the array that holds lengths of excel sheets for a condition, it returns a list including lineages corresponding to each excel sheet.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.export_states.write_onExcel" title="lineage.export_states.write_onExcel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_onExcel</span></code></a>(lapt_tHMMobj_list, len_lp_cntr, len_lp_25, len_lp_50, len_lp_250, conc1, conc2, conc3, gem=False)</p></td>
+<td><p>Write cell states with the pattern of input data (in a binary format) to excel sheets.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.export_states.assign_states">
+<span class="sig-prename descclassname"><span class="pre">lineage.export_states.</span></span><span class="sig-name descname"><span class="pre">assign_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.export_states.assign_states" title="Permalink to this definition"></a></dt>
+<dd><p>Given a list of lineages, it returns a 2D array of cell states in the form of a tree that will then be written into excel sheets.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.export_states.deintegrate">
+<span class="sig-prename descclassname"><span class="pre">lineage.export_states.</span></span><span class="sig-name descname"><span class="pre">deintegrate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">len_condition</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.export_states.deintegrate" title="Permalink to this definition"></a></dt>
+<dd><p>Given the tHMMob.X and the array that holds lengths of excel sheets for a condition, it returns a list including lineages corresponding to each excel sheet.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.export_states.write_onExcel">
+<span class="sig-prename descclassname"><span class="pre">lineage.export_states.</span></span><span class="sig-name descname"><span class="pre">write_onExcel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lapt_tHMMobj_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">len_lp_cntr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">len_lp_25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">len_lp_50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">len_lp_250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conc1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conc2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conc3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.export_states.write_onExcel" title="Permalink to this definition"></a></dt>
+<dd><p>Write cell states with the pattern of input data (in a binary format) to excel sheets.</p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Farnaz Mohammadi, JC Lagarde, Aaron S Meyer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

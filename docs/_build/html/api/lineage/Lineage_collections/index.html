@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lineage.Lineage_collections &mdash; tHMM 1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> tHMM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Summary</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">Installation</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../system-reqs.html">System Requirements</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../demo.html">Demo and Instructions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../stateDistributions.html">State Distributions - How to create</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">tHMM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">lineage.Lineage_collections</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/api/lineage/Lineage_collections/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-lineage.Lineage_collections">
+<span id="lineage-lineage-collections"></span><h1><a class="reference internal" href="#module-lineage.Lineage_collections" title="lineage.Lineage_collections"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lineage.Lineage_collections</span></code></a><a class="headerlink" href="#module-lineage.Lineage_collections" title="Permalink to this headline"></a></h1>
+<p>This file is to collect those lineages that have the same condition, and have 3 or greater number of cells in their lineages.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.popout_single_lineages" title="lineage.Lineage_collections.popout_single_lineages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">popout_single_lineages</span></code></a>(lineages)</p></td>
+<td><p>To remove lineages with cell numbers &lt;= 5.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.desired_num_states" title="lineage.Lineage_collections.desired_num_states"><code class="xref py py-obj docutils literal notranslate"><span class="pre">desired_num_states</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.E" title="lineage.Lineage_collections.E"><code class="xref py py-obj docutils literal notranslate"><span class="pre">E</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.E2" title="lineage.Lineage_collections.E2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">E2</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lap01" title="lineage.Lineage_collections.lap01"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lap01</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lap012" title="lineage.Lineage_collections.lap012"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lap012</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lap02" title="lineage.Lineage_collections.lap02"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lap02</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lap03" title="lineage.Lineage_collections.lap03"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lap03</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.Lapatinib_Control" title="lineage.Lineage_collections.Lapatinib_Control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lapatinib_Control</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.len_lp_cntr" title="lineage.Lineage_collections.len_lp_cntr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">len_lp_cntr</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lpt_cn_reps" title="lineage.Lineage_collections.lpt_cn_reps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lpt_cn_reps</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapb63" title="lineage.Lineage_collections.lapb63"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapb63</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapb632" title="lineage.Lineage_collections.lapb632"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapb632</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapb64" title="lineage.Lineage_collections.lapb64"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapb64</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapb642" title="lineage.Lineage_collections.lapb642"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapb642</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapb65" title="lineage.Lineage_collections.lapb65"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapb65</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapb652" title="lineage.Lineage_collections.lapb652"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapb652</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapb653" title="lineage.Lineage_collections.lapb653"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapb653</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.Lapt25uM" title="lineage.Lineage_collections.Lapt25uM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lapt25uM</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.len_lp_25" title="lineage.Lineage_collections.len_lp_25"><code class="xref py py-obj docutils literal notranslate"><span class="pre">len_lp_25</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lpt_25_reps" title="lineage.Lineage_collections.lpt_25_reps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lpt_25_reps</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapC501" title="lineage.Lineage_collections.lapC501"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapC501</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapC502" title="lineage.Lineage_collections.lapC502"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapC502</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapC503" title="lineage.Lineage_collections.lapC503"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapC503</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapC504" title="lineage.Lineage_collections.lapC504"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapC504</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapC505" title="lineage.Lineage_collections.lapC505"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapC505</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapC506" title="lineage.Lineage_collections.lapC506"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapC506</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapC507" title="lineage.Lineage_collections.lapC507"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapC507</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapC508" title="lineage.Lineage_collections.lapC508"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapC508</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapC509" title="lineage.Lineage_collections.lapC509"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapC509</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapC510" title="lineage.Lineage_collections.lapC510"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapC510</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapC511" title="lineage.Lineage_collections.lapC511"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapC511</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapC512" title="lineage.Lineage_collections.lapC512"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapC512</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapC513" title="lineage.Lineage_collections.lapC513"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapC513</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapC514" title="lineage.Lineage_collections.lapC514"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapC514</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.Lapt50uM" title="lineage.Lineage_collections.Lapt50uM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lapt50uM</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lpt_50_reps" title="lineage.Lineage_collections.lpt_50_reps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lpt_50_reps</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.len_lp_50" title="lineage.Lineage_collections.len_lp_50"><code class="xref py py-obj docutils literal notranslate"><span class="pre">len_lp_50</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapD51" title="lineage.Lineage_collections.lapD51"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapD51</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapD54" title="lineage.Lineage_collections.lapD54"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapD54</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapD57" title="lineage.Lineage_collections.lapD57"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapD57</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapD52" title="lineage.Lineage_collections.lapD52"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapD52</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapD55" title="lineage.Lineage_collections.lapD55"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapD55</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapD53" title="lineage.Lineage_collections.lapD53"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapD53</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapD56" title="lineage.Lineage_collections.lapD56"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapD56</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lapD58" title="lineage.Lineage_collections.lapD58"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lapD58</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.Lap250uM" title="lineage.Lineage_collections.Lap250uM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lap250uM</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.len_lp_250" title="lineage.Lineage_collections.len_lp_250"><code class="xref py py-obj docutils literal notranslate"><span class="pre">len_lp_250</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.lpt_250_reps" title="lineage.Lineage_collections.lpt_250_reps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lpt_250_reps</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gem04" title="lineage.Lineage_collections.gem04"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gem04</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gem042" title="lineage.Lineage_collections.gem042"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gem042</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gem043" title="lineage.Lineage_collections.gem043"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gem043</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gem05" title="lineage.Lineage_collections.gem05"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gem05</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gem052" title="lineage.Lineage_collections.gem052"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gem052</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gem06" title="lineage.Lineage_collections.gem06"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gem06</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gem062" title="lineage.Lineage_collections.gem062"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gem062</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.Gemcitabine_Control" title="lineage.Lineage_collections.Gemcitabine_Control"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gemcitabine_Control</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.len_gm_cntr" title="lineage.Lineage_collections.len_gm_cntr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">len_gm_cntr</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gem_cn_reps" title="lineage.Lineage_collections.gem_cn_reps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gem_cn_reps</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc33" title="lineage.Lineage_collections.gemc33"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc33</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc332" title="lineage.Lineage_collections.gemc332"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc332</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc34" title="lineage.Lineage_collections.gemc34"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc34</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc342" title="lineage.Lineage_collections.gemc342"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc342</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc35" title="lineage.Lineage_collections.gemc35"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc35</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc352" title="lineage.Lineage_collections.gemc352"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc352</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.Gem5uM" title="lineage.Lineage_collections.Gem5uM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gem5uM</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gem5uM" title="lineage.Lineage_collections.gem5uM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gem5uM</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.len_gm_5" title="lineage.Lineage_collections.len_gm_5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">len_gm_5</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gem_5_reps" title="lineage.Lineage_collections.gem_5_reps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gem_5_reps</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc401" title="lineage.Lineage_collections.gemc401"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc401</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc402" title="lineage.Lineage_collections.gemc402"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc402</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc403" title="lineage.Lineage_collections.gemc403"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc403</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc404" title="lineage.Lineage_collections.gemc404"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc404</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc405" title="lineage.Lineage_collections.gemc405"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc405</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc406" title="lineage.Lineage_collections.gemc406"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc406</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc407" title="lineage.Lineage_collections.gemc407"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc407</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc408" title="lineage.Lineage_collections.gemc408"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc408</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc409" title="lineage.Lineage_collections.gemc409"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc409</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc410" title="lineage.Lineage_collections.gemc410"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc410</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc411" title="lineage.Lineage_collections.gemc411"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc411</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc412" title="lineage.Lineage_collections.gemc412"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc412</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc413" title="lineage.Lineage_collections.gemc413"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc413</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc414" title="lineage.Lineage_collections.gemc414"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc414</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemc415" title="lineage.Lineage_collections.gemc415"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemc415</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.Gem10uM" title="lineage.Lineage_collections.Gem10uM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gem10uM</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gem_10_reps" title="lineage.Lineage_collections.gem_10_reps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gem_10_reps</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.len_gm_10" title="lineage.Lineage_collections.len_gm_10"><code class="xref py py-obj docutils literal notranslate"><span class="pre">len_gm_10</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemD31" title="lineage.Lineage_collections.gemD31"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemD31</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemD34" title="lineage.Lineage_collections.gemD34"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemD34</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemD37" title="lineage.Lineage_collections.gemD37"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemD37</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemD32" title="lineage.Lineage_collections.gemD32"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemD32</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemD35" title="lineage.Lineage_collections.gemD35"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemD35</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemD33" title="lineage.Lineage_collections.gemD33"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemD33</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemD36" title="lineage.Lineage_collections.gemD36"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemD36</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gemD38" title="lineage.Lineage_collections.gemD38"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gemD38</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.Gem30uM" title="lineage.Lineage_collections.Gem30uM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gem30uM</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.len_gm_30" title="lineage.Lineage_collections.len_gm_30"><code class="xref py py-obj docutils literal notranslate"><span class="pre">len_gm_30</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.gem_30_reps" title="lineage.Lineage_collections.gem_30_reps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gem_30_reps</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.taxb40" title="lineage.Lineage_collections.taxb40"><code class="xref py py-obj docutils literal notranslate"><span class="pre">taxb40</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.taxb402" title="lineage.Lineage_collections.taxb402"><code class="xref py py-obj docutils literal notranslate"><span class="pre">taxb402</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.taxb41" title="lineage.Lineage_collections.taxb41"><code class="xref py py-obj docutils literal notranslate"><span class="pre">taxb41</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.taxb412" title="lineage.Lineage_collections.taxb412"><code class="xref py py-obj docutils literal notranslate"><span class="pre">taxb412</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.taxb42" title="lineage.Lineage_collections.taxb42"><code class="xref py py-obj docutils literal notranslate"><span class="pre">taxb42</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.taxb422" title="lineage.Lineage_collections.taxb422"><code class="xref py py-obj docutils literal notranslate"><span class="pre">taxb422</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.Tax2uM" title="lineage.Lineage_collections.Tax2uM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Tax2uM</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.taxD301" title="lineage.Lineage_collections.taxD301"><code class="xref py py-obj docutils literal notranslate"><span class="pre">taxD301</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.taxD302" title="lineage.Lineage_collections.taxD302"><code class="xref py py-obj docutils literal notranslate"><span class="pre">taxD302</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.Tax7uM" title="lineage.Lineage_collections.Tax7uM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Tax7uM</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.palbD11" title="lineage.Lineage_collections.palbD11"><code class="xref py py-obj docutils literal notranslate"><span class="pre">palbD11</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.palbD12" title="lineage.Lineage_collections.palbD12"><code class="xref py py-obj docutils literal notranslate"><span class="pre">palbD12</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.palbD13" title="lineage.Lineage_collections.palbD13"><code class="xref py py-obj docutils literal notranslate"><span class="pre">palbD13</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.palbD14" title="lineage.Lineage_collections.palbD14"><code class="xref py py-obj docutils literal notranslate"><span class="pre">palbD14</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.palbD15" title="lineage.Lineage_collections.palbD15"><code class="xref py py-obj docutils literal notranslate"><span class="pre">palbD15</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.palbD16" title="lineage.Lineage_collections.palbD16"><code class="xref py py-obj docutils literal notranslate"><span class="pre">palbD16</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.Palbo250uM" title="lineage.Lineage_collections.Palbo250uM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Palbo250uM</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.pbs" title="lineage.Lineage_collections.pbs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pbs</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.egf" title="lineage.Lineage_collections.egf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">egf</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.Lineage_collections.hgf" title="lineage.Lineage_collections.hgf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hgf</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.Lineage_collections.osm" title="lineage.Lineage_collections.osm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">osm</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.desired_num_states">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">desired_num_states</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#lineage.Lineage_collections.desired_num_states" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.E">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">E</span></span><a class="headerlink" href="#lineage.Lineage_collections.E" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.E2">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">E2</span></span><a class="headerlink" href="#lineage.Lineage_collections.E2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.popout_single_lineages">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">popout_single_lineages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lineages</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.Lineage_collections.popout_single_lineages" title="Permalink to this definition"></a></dt>
+<dd><p>To remove lineages with cell numbers &lt;= 5.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lap01">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lap01</span></span><a class="headerlink" href="#lineage.Lineage_collections.lap01" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lap012">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lap012</span></span><a class="headerlink" href="#lineage.Lineage_collections.lap012" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lap02">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lap02</span></span><a class="headerlink" href="#lineage.Lineage_collections.lap02" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lap03">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lap03</span></span><a class="headerlink" href="#lineage.Lineage_collections.lap03" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.Lapatinib_Control">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">Lapatinib_Control</span></span><a class="headerlink" href="#lineage.Lineage_collections.Lapatinib_Control" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.len_lp_cntr">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">len_lp_cntr</span></span><a class="headerlink" href="#lineage.Lineage_collections.len_lp_cntr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lpt_cn_reps">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lpt_cn_reps</span></span><a class="headerlink" href="#lineage.Lineage_collections.lpt_cn_reps" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapb63">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapb63</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapb63" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapb632">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapb632</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapb632" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapb64">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapb64</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapb64" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapb642">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapb642</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapb642" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapb65">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapb65</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapb65" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapb652">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapb652</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapb652" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapb653">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapb653</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapb653" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.Lapt25uM">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">Lapt25uM</span></span><a class="headerlink" href="#lineage.Lineage_collections.Lapt25uM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.len_lp_25">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">len_lp_25</span></span><a class="headerlink" href="#lineage.Lineage_collections.len_lp_25" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lpt_25_reps">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lpt_25_reps</span></span><a class="headerlink" href="#lineage.Lineage_collections.lpt_25_reps" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapC501">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapC501</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapC501" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapC502">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapC502</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapC502" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapC503">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapC503</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapC503" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapC504">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapC504</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapC504" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapC505">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapC505</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapC505" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapC506">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapC506</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapC506" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapC507">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapC507</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapC507" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapC508">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapC508</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapC508" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapC509">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapC509</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapC509" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapC510">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapC510</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapC510" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapC511">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapC511</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapC511" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapC512">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapC512</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapC512" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapC513">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapC513</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapC513" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapC514">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapC514</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapC514" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.Lapt50uM">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">Lapt50uM</span></span><a class="headerlink" href="#lineage.Lineage_collections.Lapt50uM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lpt_50_reps">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lpt_50_reps</span></span><a class="headerlink" href="#lineage.Lineage_collections.lpt_50_reps" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.len_lp_50">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">len_lp_50</span></span><a class="headerlink" href="#lineage.Lineage_collections.len_lp_50" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapD51">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapD51</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapD51" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapD54">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapD54</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapD54" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapD57">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapD57</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapD57" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapD52">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapD52</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapD52" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapD55">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapD55</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapD55" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapD53">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapD53</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapD53" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapD56">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapD56</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapD56" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lapD58">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lapD58</span></span><a class="headerlink" href="#lineage.Lineage_collections.lapD58" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.Lap250uM">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">Lap250uM</span></span><a class="headerlink" href="#lineage.Lineage_collections.Lap250uM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.len_lp_250">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">len_lp_250</span></span><a class="headerlink" href="#lineage.Lineage_collections.len_lp_250" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.lpt_250_reps">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">lpt_250_reps</span></span><a class="headerlink" href="#lineage.Lineage_collections.lpt_250_reps" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gem04">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gem04</span></span><a class="headerlink" href="#lineage.Lineage_collections.gem04" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gem042">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gem042</span></span><a class="headerlink" href="#lineage.Lineage_collections.gem042" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gem043">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gem043</span></span><a class="headerlink" href="#lineage.Lineage_collections.gem043" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gem05">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gem05</span></span><a class="headerlink" href="#lineage.Lineage_collections.gem05" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gem052">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gem052</span></span><a class="headerlink" href="#lineage.Lineage_collections.gem052" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gem06">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gem06</span></span><a class="headerlink" href="#lineage.Lineage_collections.gem06" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gem062">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gem062</span></span><a class="headerlink" href="#lineage.Lineage_collections.gem062" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.Gemcitabine_Control">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">Gemcitabine_Control</span></span><a class="headerlink" href="#lineage.Lineage_collections.Gemcitabine_Control" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.len_gm_cntr">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">len_gm_cntr</span></span><a class="headerlink" href="#lineage.Lineage_collections.len_gm_cntr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gem_cn_reps">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gem_cn_reps</span></span><a class="headerlink" href="#lineage.Lineage_collections.gem_cn_reps" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc33">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc33</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc33" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc332">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc332</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc332" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc34">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc34</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc34" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc342">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc342</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc342" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc35">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc35</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc35" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc352">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc352</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc352" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.Gem5uM">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">Gem5uM</span></span><a class="headerlink" href="#lineage.Lineage_collections.Gem5uM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gem5uM">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gem5uM</span></span><a class="headerlink" href="#lineage.Lineage_collections.gem5uM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.len_gm_5">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">len_gm_5</span></span><a class="headerlink" href="#lineage.Lineage_collections.len_gm_5" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gem_5_reps">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gem_5_reps</span></span><a class="headerlink" href="#lineage.Lineage_collections.gem_5_reps" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc401">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc401</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc401" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc402">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc402</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc402" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc403">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc403</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc403" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc404">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc404</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc404" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc405">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc405</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc405" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc406">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc406</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc406" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc407">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc407</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc407" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc408">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc408</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc408" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc409">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc409</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc409" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc410">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc410</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc410" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc411">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc411</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc411" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc412">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc412</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc412" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc413">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc413</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc413" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc414">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc414</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc414" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemc415">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemc415</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemc415" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.Gem10uM">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">Gem10uM</span></span><a class="headerlink" href="#lineage.Lineage_collections.Gem10uM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gem_10_reps">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gem_10_reps</span></span><a class="headerlink" href="#lineage.Lineage_collections.gem_10_reps" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.len_gm_10">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">len_gm_10</span></span><a class="headerlink" href="#lineage.Lineage_collections.len_gm_10" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemD31">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemD31</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemD31" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemD34">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemD34</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemD34" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemD37">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemD37</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemD37" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemD32">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemD32</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemD32" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemD35">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemD35</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemD35" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemD33">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemD33</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemD33" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemD36">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemD36</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemD36" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gemD38">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gemD38</span></span><a class="headerlink" href="#lineage.Lineage_collections.gemD38" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.Gem30uM">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">Gem30uM</span></span><a class="headerlink" href="#lineage.Lineage_collections.Gem30uM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.len_gm_30">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">len_gm_30</span></span><a class="headerlink" href="#lineage.Lineage_collections.len_gm_30" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.gem_30_reps">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">gem_30_reps</span></span><a class="headerlink" href="#lineage.Lineage_collections.gem_30_reps" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.taxb40">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">taxb40</span></span><a class="headerlink" href="#lineage.Lineage_collections.taxb40" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.taxb402">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">taxb402</span></span><a class="headerlink" href="#lineage.Lineage_collections.taxb402" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.taxb41">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">taxb41</span></span><a class="headerlink" href="#lineage.Lineage_collections.taxb41" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.taxb412">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">taxb412</span></span><a class="headerlink" href="#lineage.Lineage_collections.taxb412" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.taxb42">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">taxb42</span></span><a class="headerlink" href="#lineage.Lineage_collections.taxb42" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.taxb422">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">taxb422</span></span><a class="headerlink" href="#lineage.Lineage_collections.taxb422" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.Tax2uM">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">Tax2uM</span></span><a class="headerlink" href="#lineage.Lineage_collections.Tax2uM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.taxD301">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">taxD301</span></span><a class="headerlink" href="#lineage.Lineage_collections.taxD301" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.taxD302">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">taxD302</span></span><a class="headerlink" href="#lineage.Lineage_collections.taxD302" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.Tax7uM">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">Tax7uM</span></span><a class="headerlink" href="#lineage.Lineage_collections.Tax7uM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.palbD11">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">palbD11</span></span><a class="headerlink" href="#lineage.Lineage_collections.palbD11" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.palbD12">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">palbD12</span></span><a class="headerlink" href="#lineage.Lineage_collections.palbD12" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.palbD13">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">palbD13</span></span><a class="headerlink" href="#lineage.Lineage_collections.palbD13" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.palbD14">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">palbD14</span></span><a class="headerlink" href="#lineage.Lineage_collections.palbD14" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.palbD15">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">palbD15</span></span><a class="headerlink" href="#lineage.Lineage_collections.palbD15" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.palbD16">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">palbD16</span></span><a class="headerlink" href="#lineage.Lineage_collections.palbD16" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.Palbo250uM">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">Palbo250uM</span></span><a class="headerlink" href="#lineage.Lineage_collections.Palbo250uM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.pbs">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">pbs</span></span><a class="headerlink" href="#lineage.Lineage_collections.pbs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.egf">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">egf</span></span><a class="headerlink" href="#lineage.Lineage_collections.egf" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.hgf">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">hgf</span></span><a class="headerlink" href="#lineage.Lineage_collections.hgf" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.Lineage_collections.osm">
+<span class="sig-prename descclassname"><span class="pre">lineage.Lineage_collections.</span></span><span class="sig-name descname"><span class="pre">osm</span></span><a class="headerlink" href="#lineage.Lineage_collections.osm" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Farnaz Mohammadi, JC Lagarde, Aaron S Meyer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

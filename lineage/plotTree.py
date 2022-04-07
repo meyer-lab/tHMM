@@ -92,6 +92,7 @@ def plotLineage_MCF10A(lineage, axes, censor=True, color=True):
 
     root = lineage.output_lineage[0]
     length = root.obs[1]
+
     assert np.isfinite(length)
     a = [Clade(length)]
 
@@ -106,7 +107,7 @@ def CladeRecursive_MCF10A(cell, a: list, censor: bool, color: bool):
     The width of the lines show the phase of the cells.
     The color of the lines show the state of the cells.
 
-    "a" should be: a = [Clade(lineage1.full_lineage[0].obs[1])] which is the root cell
+    a should be: a = [Clade(lineage1.full_lineage[0].obs[1])] which is the root cell
     """
     if color:
         if np.isfinite(cell.state):

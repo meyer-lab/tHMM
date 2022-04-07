@@ -1,0 +1,82 @@
+:py:mod:`lineage.states.stateCommon`
+====================================
+
+.. py:module:: lineage.states.stateCommon
+
+.. autoapi-nested-parse::
+
+   Common utilities used between states regardless of distribution. 
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   lineage.states.stateCommon.nLL_sep
+   lineage.states.stateCommon.gamma_uncensored
+   lineage.states.stateCommon.gamma_estimator
+   lineage.states.stateCommon.basic_censor
+   lineage.states.stateCommon.nLL_atonce
+   lineage.states.stateCommon.gamma_estimator_atonce
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   lineage.states.stateCommon.GnLL_sep
+   lineage.states.stateCommon.nLL_atonceJ
+
+
+.. py:function:: nLL_sep(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas)
+
+
+.. py:data:: GnLL_sep
+   
+
+   
+
+.. py:function:: gamma_uncensored(gamma_obs, gammas)
+
+   An uncensored gamma estimator. 
+
+
+.. py:function:: gamma_estimator(gamma_obs, time_cen, gammas, x0)
+
+   This is a weighted, closed-form estimator for two parameters
+   of the Gamma distribution.
+
+
+.. py:function:: basic_censor(cell)
+
+   Censors a cell, its daughters, its sister, and
+   it's sister's daughters if the cell's parent is
+   censored.
+
+
+.. py:function:: nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas)
+
+   uses the nLL_atonce and passes the vector of scales and the shared shape parameter. 
+
+
+.. py:data:: nLL_atonceJ
+   
+
+   
+
+.. py:function:: gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None, constr=True)
+
+   This is a weighted, closed-form estimator for two parameters
+   of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
+   In the phase-specific case, we have 3 linear constraints: scale1 > scale2, scale2 > scale3, scale3 > scale 4.
+   In the non-specific case, we have only 1 constraint: scale1 > scale2 ==> A = np.array([1, 3])
+
+

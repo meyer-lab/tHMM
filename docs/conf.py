@@ -32,7 +32,6 @@ release = '1.0'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.napolean',
     'autoapi.extension',
     'sphinx_rtd_theme'
 ]
@@ -51,7 +50,7 @@ templates_path = ['_templates']
 # Usually you set "language" from the command line for these cases.
 language = 'python'
 
-autoapi_generate_api_docs = False
+autoapi_generate_api_docs = True
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

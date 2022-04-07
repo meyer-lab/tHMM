@@ -1,0 +1,17 @@
+:py:mod:`lineage.states`
+========================
+
+.. py:module:: lineage.states
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   StateDistributionGaPhs/index.rst
+   StateDistributionGamma/index.rst
+   stateCommon/index.rst
+
+

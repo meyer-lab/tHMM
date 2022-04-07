@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lineage.CellVar &mdash; tHMM 1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> tHMM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Summary</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">Installation</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../system-reqs.html">System Requirements</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../demo.html">Demo and Instructions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../stateDistributions.html">State Distributions - How to create</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">tHMM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">lineage.CellVar</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/api/lineage/CellVar/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-lineage.CellVar">
+<span id="lineage-cellvar"></span><h1><a class="reference internal" href="#module-lineage.CellVar" title="lineage.CellVar"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lineage.CellVar</span></code></a><a class="headerlink" href="#module-lineage.CellVar" title="Permalink to this headline"></a></h1>
+<p>This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.CellVar.CellVar" title="lineage.CellVar.CellVar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CellVar</span></code></a></p></td>
+<td><p>Cell class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.CellVar.Time" title="lineage.CellVar.Time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Time</span></code></a></p></td>
+<td><p>Class that stores all the time related observations in a neater format.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.CellVar.tree_recursion" title="lineage.CellVar.tree_recursion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tree_recursion</span></code></a>(cell, subtree)</p></td>
+<td><p>A recursive helper function that traverses upwards from the leaf to the root.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.CellVar.get_subtrees" title="lineage.CellVar.get_subtrees"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_subtrees</span></code></a>(node, lineage)</p></td>
+<td><p>Given one cell, return the subtree of that cell,</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.CellVar.find_two_subtrees" title="lineage.CellVar.find_two_subtrees"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_two_subtrees</span></code></a>(cell, lineage)</p></td>
+<td><p>Gets the left and right subtrees from a cell.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="lineage.CellVar.CellVar">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lineage.CellVar.</span></span><span class="sig-name descname"><span class="pre">CellVar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barcode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.CellVar.CellVar" title="Permalink to this definition"></a></dt>
+<dd><p>Cell class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gen</strong> (<em>int</em>) -- </p></li>
+<li><p><strong>state</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) -- </p></li>
+<li><p><strong>barcode</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) -- </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="lineage.CellVar.CellVar.divide">
+<span class="sig-name descname"><span class="pre">divide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.CellVar.CellVar.divide" title="Permalink to this definition"></a></dt>
+<dd><p>Member function that performs division of a cell.
+Equivalent to adding another timestep in a Markov process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>T</strong> (<em>numpy.ndarray</em>) -- </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lineage.CellVar.CellVar.isLeafBecauseTerminal">
+<span class="sig-name descname"><span class="pre">isLeafBecauseTerminal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.CellVar.CellVar.isLeafBecauseTerminal" title="Permalink to this definition"></a></dt>
+<dd><p>Returns true when a cell is a leaf with no children.
+These are cells at the end of the tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lineage.CellVar.CellVar.isLeafBecauseDaughtersAreNotObserved">
+<span class="sig-name descname"><span class="pre">isLeafBecauseDaughtersAreNotObserved</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.CellVar.CellVar.isLeafBecauseDaughtersAreNotObserved" title="Permalink to this definition"></a></dt>
+<dd><p>Returns true when a cell is a leaf because its children are unobserved
+but it itself is observed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lineage.CellVar.CellVar.isLeaf">
+<span class="sig-name descname"><span class="pre">isLeaf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.CellVar.CellVar.isLeaf" title="Permalink to this definition"></a></dt>
+<dd><p>Returns true when a cell is a leaf defined by the two conditions that determine
+whether a cell is a leaf. A cell only has to satisfy one of the conditions
+(an or statement) for it to be a leaf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lineage.CellVar.CellVar.isRootParent">
+<span class="sig-name descname"><span class="pre">isRootParent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.CellVar.CellVar.isRootParent" title="Permalink to this definition"></a></dt>
+<dd><p>Returns true if this cell is the first cell in a lineage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lineage.CellVar.CellVar.get_sister">
+<span class="sig-name descname"><span class="pre">get_sister</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.CellVar.CellVar.get_sister" title="Permalink to this definition"></a></dt>
+<dd><p>Member function that gets the sister of the current cell.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lineage.CellVar.CellVar.get_root_cell">
+<span class="sig-name descname"><span class="pre">get_root_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.CellVar.CellVar.get_root_cell" title="Permalink to this definition"></a></dt>
+<dd><p>Get the first cell in the lineage to which this cell belongs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lineage.CellVar.CellVar.get_daughters">
+<span class="sig-name descname"><span class="pre">get_daughters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.CellVar.CellVar.get_daughters" title="Permalink to this definition"></a></dt>
+<dd><p>Get the left and right daughters of a cell if they exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.CellVar.tree_recursion">
+<span class="sig-prename descclassname"><span class="pre">lineage.CellVar.</span></span><span class="sig-name descname"><span class="pre">tree_recursion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtree</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.CellVar.tree_recursion" title="Permalink to this definition"></a></dt>
+<dd><p>A recursive helper function that traverses upwards from the leaf to the root.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subtree</strong> (<em>list</em>) -- </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.CellVar.get_subtrees">
+<span class="sig-prename descclassname"><span class="pre">lineage.CellVar.</span></span><span class="sig-name descname"><span class="pre">get_subtrees</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lineage</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.CellVar.get_subtrees" title="Permalink to this definition"></a></dt>
+<dd><p>Given one cell, return the subtree of that cell,
+and return all the tree other than that subtree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>lineage</strong> (<em>list</em>) -- </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Tuple[list, list]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.CellVar.find_two_subtrees">
+<span class="sig-prename descclassname"><span class="pre">lineage.CellVar.</span></span><span class="sig-name descname"><span class="pre">find_two_subtrees</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lineage</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.CellVar.find_two_subtrees" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the left and right subtrees from a cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>lineage</strong> (<em>list</em>) -- </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Tuple[Optional[list], Optional[list], list]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lineage.CellVar.Time">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lineage.CellVar.</span></span><span class="sig-name descname"><span class="pre">Time</span></span><a class="headerlink" href="#lineage.CellVar.Time" title="Permalink to this definition"></a></dt>
+<dd><p>Class that stores all the time related observations in a neater format.
+This assists in pruning based on experimental time and obtaining
+attributes of the lineage as a whole like the average growth rate.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lineage.CellVar.Time.startT">
+<span class="sig-name descname"><span class="pre">startT</span></span><em class="property"><span class="w"> </span><span class="pre">:float</span></em><a class="headerlink" href="#lineage.CellVar.Time.startT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lineage.CellVar.Time.endT">
+<span class="sig-name descname"><span class="pre">endT</span></span><em class="property"><span class="w"> </span><span class="pre">:float</span></em><a class="headerlink" href="#lineage.CellVar.Time.endT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lineage.CellVar.Time.transition_time">
+<span class="sig-name descname"><span class="pre">transition_time</span></span><em class="property"><span class="w"> </span><span class="pre">:float</span> <span class="pre">=</span> <span class="pre">0.0</span></em><a class="headerlink" href="#lineage.CellVar.Time.transition_time" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Farnaz Mohammadi, JC Lagarde, Aaron S Meyer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

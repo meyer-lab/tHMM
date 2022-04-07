@@ -1,0 +1,105 @@
+:py:mod:`lineage.Analyze`
+=========================
+
+.. py:module:: lineage.Analyze
+
+.. autoapi-nested-parse::
+
+   Calls the tHMM functions and outputs the parameters needed to generate the Figures. 
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   lineage.Analyze.DummyExecutor
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   lineage.Analyze.Analyze
+   lineage.Analyze.Analyze_list
+   lineage.Analyze.run_Analyze_over
+   lineage.Analyze.Results
+   lineage.Analyze.run_Results_over
+   lineage.Analyze.permute_states
+
+
+
+.. py:class:: DummyExecutor
+
+   Bases: :py:obj:`concurrent.futures.Executor`
+
+   This is an abstract base class for concrete asynchronous executors.
+
+   .. py:method:: submit(self, fn, *args, **kwargs)
+
+      Submits a callable to be executed with the given arguments.
+
+      Schedules the callable to be executed as fn(*args, **kwargs) and returns
+      a Future instance representing the execution of the callable.
+
+      Returns:
+          A Future representing the given call.
+
+
+
+.. py:function:: Analyze(X, num_states, **kwargs)
+
+   Runs the model and outputs the tHMM object, state assignments, and likelihood.
+   :param X: The list of LineageTree populations.
+   :param num_states: The number of states that we want to run the model for.
+   :return tHMMobj_list: The tHMMobj after fitting corresponding to the given LineageTree population.
+   :return st: The nested list of states assigned to cells, with the order of cells from root to leaf in each lineage, and generation.
+   :return LL: The log-likelihood of the fitted model.
+
+
+.. py:function:: Analyze_list(Population_list, num_states, **kwargs)
+
+   This function runs the analyze for the case when we want to fit multiple conditions at the same time.
+       
+
+
+.. py:function:: run_Analyze_over(list_of_populations, num_states, parallel=True, atonce=False, **kwargs)
+
+   A function that can be parallelized to speed up figure creation.
+
+   This function is the outermost for-loop we will end up using
+   when analyzing heterogenous populations or lineages.
+
+   Analyze is the bottleneck in the figure creation process. The
+   rest of the code involved in figure creation deals with collecting
+   and computing certain statistics, most of which can be done in an
+   additional for loop over the results from Analyze.
+
+
+.. py:function:: Results(tHMMobj, pred_states_by_lineage, LL)
+
+   This function calculates several results of fitting a synthetic lineage and stores it in a dictionary.
+   The dictionary contains the total number of lineages, the log likelihood of state assignments, and
+   the total number of cells. It also contains metrics such as the accuracy of state assignment predictions,
+   the distance between two distributions, and the Wasserstein distance between two states.
+
+
+
+.. py:function:: run_Results_over(output, parallel=True)
+
+   A function that can be parallelized to speed up figure creation.
+   Output is a list of tuples from the results of running :func:`run_Analyze_over`
+
+
+.. py:function:: permute_states(tHMMobj, switch_map)
+
+   This function takes the tHMMobj and the predicted states,
+   and finds out whether we need to switch the state identities or not based on the likelihood.
+
+

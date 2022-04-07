@@ -1,0 +1,41 @@
+:py:mod:`lineage.export_states`
+===============================
+
+.. py:module:: lineage.export_states
+
+.. autoapi-nested-parse::
+
+   This file exports excel sheets of lineages of cells with their states assigned to them after fitting. 
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   lineage.export_states.assign_states
+   lineage.export_states.deintegrate
+   lineage.export_states.write_onExcel
+
+
+
+.. py:function:: assign_states(input_X)
+
+   Given a list of lineages, it returns a 2D array of cell states in the form of a tree that will then be written into excel sheets. 
+
+
+.. py:function:: deintegrate(population, len_condition, gem=False)
+
+   Given the tHMMob.X and the array that holds lengths of excel sheets for a condition, it returns a list including lineages corresponding to each excel sheet.
+
+
+.. py:function:: write_onExcel(lapt_tHMMobj_list, len_lp_cntr, len_lp_25, len_lp_50, len_lp_250, conc1, conc2, conc3, gem=False)
+
+   Write cell states with the pattern of input data (in a binary format) to excel sheets. 
+
+

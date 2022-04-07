@@ -1,0 +1,68 @@
+:py:mod:`lineage.Viterbi`
+=========================
+
+.. py:module:: lineage.Viterbi
+
+.. autoapi-nested-parse::
+
+   This file contains the methods for the Viterbi algorithm implemented in an a upward recursion. 
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   lineage.Viterbi.get_leaf_deltas
+   lineage.Viterbi.get_nonleaf_deltas
+   lineage.Viterbi.get_delta_parent_child_prod
+   lineage.Viterbi.Viterbi
+
+
+
+.. py:function:: get_leaf_deltas(tHMMobj)
+
+   Delta matrix and base case at the leaves.
+   Each element in this N by K matrix is the probability for the leaves :math:`P(x_n = x | z_n = k)`.
+
+   :param tHMMobj: the tHMM object
+   :return: a list of N by K matrices for each lineage, initialized from the leaf cells by EL(n,k).
+
+
+.. py:function:: get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+
+   Calculates the delta values for all non-leaf cells by filling out the delta matrix passed to it from the :func:`get_leaf_deltas`.
+
+   :param tHMMobj: the tHMM object
+   :param deltas: a list of N by K matrices for each lineage, initialized from the leaf cells by EL(n,k).
+   :param state_ptrs: a list of N by K matrices that are state pointers, to obtain nonleaf deltas.
+
+
+.. py:function:: get_delta_parent_child_prod(lineage, delta_array, T, node_parent_m_idx)
+
+   Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.
+
+   :param lineage: A list containing cells (which are objects with their own properties).
+   :param delta_array: A N by K matrix containing the delta values that will be used in Viterbi.
+   :param T: The K by K transition matrix.
+   :param node_parent_m_index: The index of the parent to the currently-intended-cell.
+   :return delta_m_n_holder: A list to hold the factors in the product.
+   :return max_state_ptr: A list of tuples of daughter cell indexes and their state pointers.
+
+
+.. py:function:: Viterbi(tHMMobj, deltas, state_ptrs)
+
+   Runs the viterbi algorithm and returns a list of arrays containing the optimal state of each cell.
+   This function returns the most likely sequence of states for each lineage.
+
+   :param tHMMobj: a class object with properties of the lineages of cells
+   :param deltas: a list of N by K matrices containing the delta values for each lineage
+   :param state_ptrs: a list of tuples of daughter cell indexes and their state pointers
+   :return: assigned states to each cell in all lineages
+
+

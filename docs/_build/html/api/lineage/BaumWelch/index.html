@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lineage.BaumWelch &mdash; tHMM 1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> tHMM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Summary</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Installation.html">Installation</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../system-reqs.html">System Requirements</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../demo.html">Demo and Instructions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../stateDistributions.html">State Distributions - How to create</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">tHMM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">lineage.BaumWelch</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/api/lineage/BaumWelch/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-lineage.BaumWelch">
+<span id="lineage-baumwelch"></span><h1><a class="reference internal" href="#module-lineage.BaumWelch" title="lineage.BaumWelch"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lineage.BaumWelch</span></code></a><a class="headerlink" href="#module-lineage.BaumWelch" title="Permalink to this headline"></a></h1>
+<p>Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.BaumWelch.do_E_step" title="lineage.BaumWelch.do_E_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_E_step</span></code></a>(tHMMobj)</p></td>
+<td><p>Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.BaumWelch.calculate_log_likelihood" title="lineage.BaumWelch.calculate_log_likelihood"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_log_likelihood</span></code></a>(NF)</p></td>
+<td><p>Calculates log likelihood of NF for each lineage.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.BaumWelch.calculate_stationary" title="lineage.BaumWelch.calculate_stationary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_stationary</span></code></a>(T)</p></td>
+<td><p>Calculate the stationary distribution of states from T.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.BaumWelch.do_M_step" title="lineage.BaumWelch.do_M_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_M_step</span></code></a>(tHMMobj, MSD, betas, gammas)</p></td>
+<td><p>Calculates the maximization step of the Baum Welch algorithm</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.BaumWelch.do_M_pi_step" title="lineage.BaumWelch.do_M_pi_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_M_pi_step</span></code></a>(tHMMobj, gammas)</p></td>
+<td><p>Calculates the M-step of the Baum Welch algorithm</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.BaumWelch.do_M_T_step" title="lineage.BaumWelch.do_M_T_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_M_T_step</span></code></a>(tHMMobj, MSD, betas, gammas)</p></td>
+<td><p>Calculates the M-step of the Baum Welch algorithm</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.BaumWelch.do_M_E_step" title="lineage.BaumWelch.do_M_E_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_M_E_step</span></code></a>(tHMMobj, gammas)</p></td>
+<td><p>Calculates the M-step of the Baum Welch algorithm</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.BaumWelch.do_M_E_step_atonce" title="lineage.BaumWelch.do_M_E_step_atonce"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_M_E_step_atonce</span></code></a>(all_tHMMobj, all_gammas)</p></td>
+<td><p>Performs the maximization step for emission estimation when data for all the concentrations are given at once for all the states.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.BaumWelch.get_all_zetas" title="lineage.BaumWelch.get_all_zetas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_zetas</span></code></a>(lineageObj, beta_array, MSD_array, gamma_array, T)</p></td>
+<td><p>Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.BaumWelch.do_E_step">
+<span class="sig-prename descclassname"><span class="pre">lineage.BaumWelch.</span></span><span class="sig-name descname"><span class="pre">do_E_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tHMMobj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.BaumWelch.do_E_step" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tHMMobj</strong> -- A tHMM object with properties of the lineages of cells, such as</p>
+</dd>
+<dt class="field-even">Return MSD</dt>
+<dd class="field-even"><p>Marginal state distribution</p>
+</dd>
+<dt class="field-odd">Return NF</dt>
+<dd class="field-odd"><p>normalizing factor</p>
+</dd>
+<dt class="field-even">Return betas</dt>
+<dd class="field-even"><p>beta values (conditional probability of cell states given cell observations)</p>
+</dd>
+<dt class="field-odd">Return gammas</dt>
+<dd class="field-odd"><p>gamma values (used to calculate the downward reursion)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Tuple[list, list, list, list]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.BaumWelch.calculate_log_likelihood">
+<span class="sig-prename descclassname"><span class="pre">lineage.BaumWelch.</span></span><span class="sig-name descname"><span class="pre">calculate_log_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">NF</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.BaumWelch.calculate_log_likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates log likelihood of NF for each lineage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>NF</strong> (<em>Any</em>) -- normalizing factor</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p>return: the sum of log likelihoods for each lineage</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.BaumWelch.calculate_stationary">
+<span class="sig-prename descclassname"><span class="pre">lineage.BaumWelch.</span></span><span class="sig-name descname"><span class="pre">calculate_stationary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.BaumWelch.calculate_stationary" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the stationary distribution of states from T.
+Note that this does not take into account potential influences of the emissions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>T</strong> (<em>numpy.ndarray</em>) -- transition matrix, a square matrix with probabilities of transitioning from one state to the other</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The stationary distribution of states which can be obtained by solving w = w * T</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.BaumWelch.do_M_step">
+<span class="sig-prename descclassname"><span class="pre">lineage.BaumWelch.</span></span><span class="sig-name descname"><span class="pre">do_M_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tHMMobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MSD</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gammas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.BaumWelch.do_M_step" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the maximization step of the Baum Welch algorithm
+given output of the expectation step.
+The individual parameter estimations are performed in
+separate functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tHMMobj</strong> (<em>object</em>) -- A class object with properties of the lineages of cells</p></li>
+<li><p><strong>MSD</strong> (<em>list</em>) -- The marginal state distribution P(z_n = k)</p></li>
+<li><p><strong>betas</strong> (<em>list</em>) -- beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n</p></li>
+<li><p><strong>gammas</strong> (<em>list</em>) -- gamma values. The conditional probability of states, given the observation of the whole tree</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.BaumWelch.do_M_pi_step">
+<span class="sig-prename descclassname"><span class="pre">lineage.BaumWelch.</span></span><span class="sig-name descname"><span class="pre">do_M_pi_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tHMMobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gammas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.BaumWelch.do_M_pi_step" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the M-step of the Baum Welch algorithm
+given output of the E step.
+Does the parameter estimation for the pi
+initial probability vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tHMMobj</strong> (<em>object</em>) -- A class object with properties of the lineages of cells</p></li>
+<li><p><strong>gammas</strong> (<em>list</em>) -- gamma values. The conditional probability of states, given the observation of the whole tree</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.BaumWelch.do_M_T_step">
+<span class="sig-prename descclassname"><span class="pre">lineage.BaumWelch.</span></span><span class="sig-name descname"><span class="pre">do_M_T_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tHMMobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MSD</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gammas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.BaumWelch.do_M_T_step" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the M-step of the Baum Welch algorithm
+given output of the E step.
+Does the parameter estimation for the T
+Markov stochastic transition matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tHMMobj</strong> (<em>object</em>) -- A class object with properties of the lineages of cells</p></li>
+<li><p><strong>MSD</strong> (<em>list</em>) -- The marginal state distribution P(z_n = k)</p></li>
+<li><p><strong>betas</strong> (<em>list</em>) -- beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n</p></li>
+<li><p><strong>gammas</strong> (<em>list</em>) -- gamma values. The conditional probability of states, given the observation of the whole tree</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.BaumWelch.do_M_E_step">
+<span class="sig-prename descclassname"><span class="pre">lineage.BaumWelch.</span></span><span class="sig-name descname"><span class="pre">do_M_E_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tHMMobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gammas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.BaumWelch.do_M_E_step" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the M-step of the Baum Welch algorithm
+given output of the E step.
+Does the parameter estimation for the E
+Emissions matrix (state probabilistic distributions).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tHMMobj</strong> (<em>object</em>) -- A class object with properties of the lineages of cells</p></li>
+<li><p><strong>gammas</strong> (<em>list</em>) -- gamma values. The conditional probability of states, given the observation of the whole tree</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.BaumWelch.do_M_E_step_atonce">
+<span class="sig-prename descclassname"><span class="pre">lineage.BaumWelch.</span></span><span class="sig-name descname"><span class="pre">do_M_E_step_atonce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_tHMMobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_gammas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.BaumWelch.do_M_E_step_atonce" title="Permalink to this definition"></a></dt>
+<dd><p>Performs the maximization step for emission estimation when data for all the concentrations are given at once for all the states.
+After reshaping, we will have a list of lists for each state.
+This function is specifically written for the experimental data of G1 and S-G2 cell cycle fates and durations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>all_tHMMobj</strong> (<em>list</em>) -- </p></li>
+<li><p><strong>all_gammas</strong> (<em>list</em>) -- </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.BaumWelch.get_all_zetas">
+<span class="sig-prename descclassname"><span class="pre">lineage.BaumWelch.</span></span><span class="sig-name descname"><span class="pre">get_all_zetas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lineageObj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MSD_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.BaumWelch.get_all_zetas" title="Permalink to this definition"></a></dt>
+<dd><p>Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
+This is an inner component in calculating the overall transition probability matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lineageObj</strong> -- the lineage tree of cells</p></li>
+<li><p><strong>beta_array</strong> (<em>numpy.ndarray</em>) -- beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n</p></li>
+<li><p><strong>MSD_array</strong> (<em>numpy.ndarray</em>) -- marginal state distribution</p></li>
+<li><p><strong>gamma_array</strong> (<em>numpy.ndarray</em>) -- gamma values. The conditional probability of states, given the observation of the whole tree</p></li>
+<li><p><strong>T</strong> (<em>numpy.ndarray</em>) -- transition probability matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>numerator for calculating the transition probabilities</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Farnaz Mohammadi, JC Lagarde, Aaron S Meyer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
