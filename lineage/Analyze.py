@@ -28,7 +28,9 @@ def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, int, float]:
 
 
 def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list, list, float]:
-    """ This function runs the analyze for the case when we want to fit multiple conditions at the same time.
+    """ This function runs the analyze function for the case when we want to fit multiple conditions at the same time.
+    :param Population_list: The list of cell populations to run the analyze function on.
+    :param num_states: The number of states that we want to run the model for.
     """
 
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
