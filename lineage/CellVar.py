@@ -26,6 +26,7 @@ class CellVar:
         """
         Member function that performs division of a cell.
         Equivalent to adding another timestep in a Markov process.
+        :param T: The array containing the likelihood of a cell switching states.
         """
         # Checking that the inputs are of the right shape
         assert T.shape[0] == T.shape[1]
@@ -63,7 +64,7 @@ class CellVar:
         """
         Returns true when a cell is a leaf defined by the two conditions that determine
         whether a cell is a leaf. A cell only has to satisfy one of the conditions
-        (an or statement) for it to be a leaf.
+        (an or statement) for it to be a leaf. 
         """
         return self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreNotObserved()
 
@@ -100,6 +101,7 @@ class CellVar:
     def get_daughters(self) -> list:
         """
         Get the left and right daughters of a cell if they exist.
+        :return Temp: The list of existing daughter cells.
         """
         temp = []
         if hasattr(self, "left") and hasattr(self, "right"):
