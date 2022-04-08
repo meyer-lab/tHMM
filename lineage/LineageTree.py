@@ -89,6 +89,8 @@ class LineageTree:
         """
         Get the parents's index of a generation in the population list.
         Given the generation level, this function returns the index of parent cells of the cells being in that generation level.
+        :param level: The number of the generation for a particular parent cell.
+        :return parent_holder: The index of parent cells for the cells in a given generation level.
         """
         parent_holder = set()  # set makes sure only one index is put in and no overlap
         for cell in level:
@@ -107,6 +109,10 @@ def generate_lineage_list(pi: np.ndarray, T: np.ndarray, desired_num_cells: int,
     Generates a single lineage tree given Markov variables.
     This only generates the hidden variables (i.e., the states) in a output binary tree manner.
     It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
+    :param pi: An array of the initial probability of a cell being a certain state.
+    :param T: An array of the probability of a cell switching states or remaining in the same state.
+    :param desired_num_cells: The desired number of cells in a lineage.
+    :return full_lineage: A list of the generated cell lineage.
     """
     first_cell_state = np.random.choice(pi.size, size=1, p=pi)[0]  # roll the dice and yield the state for the first cell
     first_cell = CellVar(parent=None, gen=1, state=first_cell_state, barcode=barcode)  # create first cell
@@ -130,6 +136,9 @@ def output_assign_obs(state: int, full_lineage: list, E: list):
     Observation assignment give a state.
     Given the lineageTree object and the intended state, this function assigns the corresponding observations
     coming from specific distributions for that state.
+    :param state: The integer value of the state that is being observed.
+    :param full_lineage: The list of cells within the lineageTree object.
+    :param E: The list of observations assignments.
     """
     cells_in_state = [cell for cell in full_lineage if cell.state == state]
     list_of_tuples_of_obs = E[state].rvs(size=len(cells_in_state))
@@ -148,6 +157,9 @@ def max_gen(lineage: list) -> Tuple[int, list]:
     Finds the maximal generation in the tree, and cells organized by their generations.
     This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
     creates a list of them, appends the lists leading to have a list of the lists of cells in specific generations.
+    :param lineage: The list of cells in a lineageTree object.
+    :return max: The maximal generation in the tree.
+    :return list_of_lists_of_cells_by_gen: The list of lists of cells belonging to the same genereation separated by specific generations.
     """
     gens = sorted({cell.gen for cell in lineage})  # appending the generation of cells in the lineage
     list_of_lists_of_cells_by_gen = [[None]]
@@ -160,6 +172,9 @@ def max_gen(lineage: list) -> Tuple[int, list]:
 def get_leaves(lineage: list) -> Tuple[list, list]:
     """
     A function to find the leaves and their indexes in the lineage list.
+    :param lineage: The list of cells in a lineageTree object.
+    :return leaf_indices: The list of cell indexes.
+    :return leaves: The last cells in the lineage branch.
     """
     leaf_indices = []
     leaves = []

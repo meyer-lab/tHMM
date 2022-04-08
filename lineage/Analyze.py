@@ -28,7 +28,12 @@ def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, int, float]:
 
 
 def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list, list, float]:
-    """ This function runs the analyze for the case when we want to fit multiple conditions at the same time.
+    """ This function runs the analyze function for the case when we want to fit multiple conditions at the same time.
+    :param Population_list: The list of cell populations to run the analyze function on.
+    :param num_states: The number of states that we want to run the model for.
+    :return tHMMobj_list: The tHMMobj after fitting corresponding to the given LineageTree population.
+    :return pred_states_by_lineage_by_conc: The list of cells in each lineage with states assigned to each cell.
+    :return LL: The log-likelihood of the fitted model.
     """
 
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
@@ -58,6 +63,9 @@ def run_Analyze_over(list_of_populations: list, num_states: np.ndarray, parallel
     rest of the code involved in figure creation deals with collecting
     and computing certain statistics, most of which can be done in an
     additional for loop over the results from Analyze.
+    :param list_of_populations: The list of cell populations to run the analyze function on.
+    :param num_states: The number of states that we want to run the model for. 
+    :return output: The list of results from fitting a lineage.
     """
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
@@ -93,7 +101,10 @@ def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict[str, Any]:
     The dictionary contains the total number of lineages, the log likelihood of state assignments, and
     the total number of cells. It also contains metrics such as the accuracy of state assignment predictions,
     the distance between two distributions, and the Wasserstein distance between two states.
-
+    :param tHMMobj: An instantiation of the tHMM class.
+    :param pred_states_by_lineage: The list of cells in each lineage with states assigned to each cell.
+    :param LL: The log-likelihood of the fitted model.
+    :return results_dict: A dictionary containing metrics of accuracy and scoring for the results of fitting a lineage.
     """
     # Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
     results_dict: dict[str, Any]
@@ -150,6 +161,7 @@ def run_Results_over(output: list, parallel=True) -> list:
     """
     A function that can be parallelized to speed up figure creation.
     Output is a list of tuples from the results of running :func:`run_Analyze_over`
+    :param output: The list of results from fitting a lineage.
     """
     exe: Union[ProcessPoolExecutor, DummyExecutor]
     if parallel:
@@ -165,6 +177,10 @@ def permute_states(tHMMobj: Any, switch_map: np.array) -> Tuple[Any, list]:
     """
     This function takes the tHMMobj and the predicted states,
     and finds out whether we need to switch the state identities or not based on the likelihood.
+    :param tHMMobj: An instantiation of the tHMM class.
+    :param switch_map: An array of the likelihood of predicted states.
+    :return tHMMobj: An instantiation of the tHMM class.
+    :return pred_states_switched: A list of lineages with switched states.
     """
     pred_states = tHMMobj.predict()
 
