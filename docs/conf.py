@@ -32,7 +32,6 @@ release = '1.0'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.napolean',
     'autoapi.extension',
     'sphinx_rtd_theme'
 ]
@@ -40,6 +39,7 @@ autodoc_mock_imports = ['bs4', 'requests']
 
 autoapi_dirs = ['../lineage']
 autoapi_ignore = ["*/test_*.py", "*/figure*.py"]
+autoapi_type = 'python'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -51,7 +51,7 @@ templates_path = ['_templates']
 # Usually you set "language" from the command line for these cases.
 language = 'python'
 
-autoapi_generate_api_docs = False
+# autoapi_generate_api_docs = False
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -71,6 +71,37 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-autoapi_root = 'api'
+autoapi_root = 'technical/api'
 
 autodoc_typehints = 'description'
+
+import re
+
+from sphinx import addnodes
+
+event_sig_re = re.compile(r'([a-zA-Z-]+)\s*\((.*)\)')
+
+def parse_event(env, sig, signode):
+    m = event_sig_re.match(sig)
+    if not m:
+        signode += addnodes.desc_name(sig, sig)
+        return sig
+    name, args = m.groups()
+    signode += addnodes.desc_name(name, name)
+    plist = addnodes.desc_parameterlist()
+    for arg in args.split(','):
+        arg = arg.strip()
+        plist += addnodes.desc_parameter(arg, arg)
+    signode += plist
+    return name
+
+
+def setup(app):
+    from sphinx.util.docfields import TypedField
+    app.add_object_type('confval', 'confval',
+                        objname='configuration value',
+                        indextemplate='pair: %s; configuration value')
+    fdesc = TypedField('parameter', label='Parameters',
+                         names=['param'], typenames=['type'], can_collapse=True)
+    app.add_object_type('event', 'event', 'pair: %s; event', parse_event,
+                        doc_field_types=[fdesc])

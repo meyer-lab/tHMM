@@ -10,8 +10,11 @@ from .CellVar import CellVar as c
 # path = "lineage/data/LineageData/AU02101_A3_field_1_RP_50_CSV-Table.csv"
 
 
-def import_AU565(path):
-    """ Importing AU565 file cells. """
+def import_AU565(path: str) -> list:
+    """ Importing AU565 file cells.
+    :param path: the path to the file.
+    :return population: list of cells structured in CellVar objects.
+    """
     df = pd.read_csv(path)
 
     population = []
@@ -64,7 +67,11 @@ def import_AU565(path):
 
 
 def assign_observs_AU565(cell, lineage: list, uniq_id: int):
-    """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
+    """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it.
+    :param cell: a CellVar object to be assigned observations.
+    :param lineage: the lineage list of cells that the given cell is from.
+    :param uniq_id: the id given to the cell from the experiment.
+    """
     # initialize
     cell.obs = [1, 0, 0, 0]
     parent_id = lineage["parentTrackId"].unique()
@@ -101,8 +108,11 @@ def assign_observs_AU565(cell, lineage: list, uniq_id: int):
 # partof_path = "lineage/data/MCF10A/"
 
 
-def import_MCF10A(path):
-    """ Reading the data and extracting lineages and assigning their corresponding observations. """
+def import_MCF10A(path:str):
+    """ Reading the data and extracting lineages and assigning their corresponding observations.
+    :param path: the path to the mcf10a data.
+    :return population: list of cells structured in CellVar objects.
+    """
     df = pd.read_csv(path)
     population = []
     # loop over "lineageId"s
@@ -154,7 +164,11 @@ def import_MCF10A(path):
 
 
 def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
-    """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it."""
+    """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it.
+    :param cell: a CellVar object to be assigned observations.
+    :param lineage: the lineage list of cells that the given cell is from.
+    :param uniq_id: the id given to the cell from the experiment.
+    """
     # initialize
     cell.obs = [1, 0, 1, 0, 0]  # [fate, lifetime, censored?, velocity, mean_distance]
     t_end = 2880
@@ -186,7 +200,9 @@ def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
 
 def MCF10A(condition: str):
     """ Creates the population of lineages for each condition.
-    Conditions include: PBS, EGF-treated, HGF-treated, OSM-treated. """
+    Conditions include: PBS, EGF-treated, HGF-treated, OSM-treated.
+    :param condition: a condition between [PBS, EGF, HGF, OSM]
+    """
     if condition == "PBS":
         data1 = import_MCF10A("lineage/data/MCF10A/PBS_1.csv")
         data2 = import_MCF10A("lineage/data/MCF10A/PBS_2.csv")

@@ -46,3 +46,7 @@ Outline
    :maxdepth: 1
 
    stateDistributions.rst
+
+.. toctree:: API Reference
+   :name: api
+   :maxdepth: 1
