@@ -1,5 +1,5 @@
-**Overview** - A guide to the tree-hidden Markov model for analyzing heterogeneous cell lineages
-===============================================================================================
+Getting Started
+===============
 
 We present a model to analyze populations of cells where we have one or more phenotypic measurements from, such as cell lifetime, cell fates, cell shape, migration, etc.
 The data should be in the form of a lineage binary tree, where each node represents one cell with its measurements.

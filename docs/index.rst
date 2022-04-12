@@ -35,11 +35,11 @@ Outline
 
    system-reqs.rst
 
-.. toctree:: Demo
-   :name: demo
+.. toctree:: getting-started
+   :name: getting-started
    :maxdepth: 1
 
-   demo.rst
+   tHMM-getting-started.rst
 
 .. toctree:: Emissions
    :name: stateDistribution
