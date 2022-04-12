@@ -1,0 +1,50 @@
+:py:mod:`lineage.DownwardRecursion`
+===================================
+
+.. py:module:: lineage.DownwardRecursion
+
+.. autoapi-nested-parse::
+
+   File holds the code for the downward recursion. 
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   lineage.DownwardRecursion.get_gammas
+   lineage.DownwardRecursion.sum_nonleaf_gammas
+
+
+
+.. py:function:: get_gammas(tHMMobj, MSD, betas)
+
+   Get the gammas for all other nodes using recursion from the root nodes.
+   The conditional probability of states, given the observation of the whole tree P(z_n = k | X_bar = x_bar)
+   x_bar is the observations for the whole tree.
+   gamma_1 (k) = P(z_1 = k | X_bar = x_bar)
+   gamma_n (k) = P(z_n = k | X_bar = x_bar)
+
+   :param tHMMobj: A class object with properties of the lineages of cells
+   :param MSD: The marginal state distribution P(z_n = k)
+   :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
+   :type betas: list of ndarray
+
+
+.. py:function:: sum_nonleaf_gammas(lineageObj, gamma_arr)
+
+   Sum of the gammas of the cells that are able to divide, that is,
+   sum the of the gammas of all the nonleaf cells. It is used in estimating the transition probability matrix.
+   This is an inner component in calculating the overall transition probability matrix.
+
+   :param lineageObj: the object of lineage tree
+   :param gamma_arr: the gamma values for each lineage
+   :return: the sum of gamma values for each state for non-leaf cells.
+
+

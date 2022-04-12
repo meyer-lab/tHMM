@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview - A guide to the tree-hidden Markov model for analyzing heterogeneous cell lineages &mdash; tHMM 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> tHMM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Summary</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="system-reqs.html">System Requirements</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="demo.html">Demo and Instructions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="stateDistributions.html">State Distributions - How to create</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="technical/api/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">tHMM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><strong>Overview</strong> - A guide to the tree-hidden Markov model for analyzing heterogeneous cell lineages</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tHMM-getting-started.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="overview-a-guide-to-the-tree-hidden-markov-model-for-analyzing-heterogeneous-cell-lineages">
+<h1><strong>Overview</strong> - A guide to the tree-hidden Markov model for analyzing heterogeneous cell lineages<a class="headerlink" href="#overview-a-guide-to-the-tree-hidden-markov-model-for-analyzing-heterogeneous-cell-lineages" title="Permalink to this headline"></a></h1>
+<p>We present a model to analyze populations of cells where we have one or more phenotypic measurements from, such as cell lifetime, cell fates, cell shape, migration, etc.
+The data should be in the form of a lineage binary tree, where each node represents one cell with its measurements.
+We have provided a way to create synthetic data in the same format to test the performance of our model.
+tHMM uses expectation-maximization (EM) algorithm to cluster the cells based solely on their measurements and their relationship with other cells in a lineage.
+Each cluster, aka state, represents a sub-population of cells that belong to a distribution for their observations.
+For instance, considering cell lifetime as a measurement, cells that belong to state 1 have the lifetime duration that comes from a Gamma(s1, k1), and cells that belong to state2 have the lifetime duration that comes from a Gamma(s2, k2).
+This way, we can quantify phenotypic heterogeneity within a population of cells by revealing each cell's hidden state. Our model, incorporating the cell-cell relationship within each lineage is superior to other clustering methods such as K-means.</p>
+<p>We first introduce how to synthesize these populations by working up from the basic unit; cells. We then introduce how to synthesize lineages, which are just hierarchical lineage tree groupings of cells based on their family history. Our model ultimately analyzes populations which are groups of one or more lineages that share the same states.</p>
+<section id="synthesizing-cells">
+<h2>1. Synthesizing Cells<a class="headerlink" href="#synthesizing-cells" title="Permalink to this headline"></a></h2>
+<p>Users will rarely ever have to create individual cells, but their
+functionality is presented so the user is familiar with them. Users will
+however, create lineages, and as such, they will have to become
+comfortable with creating transition matrices using <code class="docutils literal notranslate"><span class="pre">numpy</span></code>.
+Transition matrices define the probabilities of how cells will divide.
+Cells can only be made (new cells as a result of an existing cell
+dividing) when given a transition matrix. We provide an example below.</p>
+<p>The transition matrix defines the rate at which cells are likely to
+change from one state to another. We use the defintion of a stochastic
+transition rate matrix from Wikipedia, that is, the column index defines
+the state in which we start, and the row defines the state at which we
+end up. That is, if an element at the index of a transition matrix
+<span class="math notranslate nohighlight">\(T\)</span> at row <span class="math notranslate nohighlight">\(i\)</span> and at column <span class="math notranslate nohighlight">\(j\)</span>, is defined as
+<span class="math notranslate nohighlight">\(T_{i,j}\)</span>, then</p>
+<div class="math notranslate nohighlight">
+\[T_{i,j} = \mathbb{P}(z = j | z = i).\]</div>
+<p>Indexing for this matrix and the states starts at <span class="math notranslate nohighlight">\(0\)</span>. Usually
+the number of states is represented as the capital letter <span class="math notranslate nohighlight">\(K\)</span> and
+indexed by the lower-case letter <span class="math notranslate nohighlight">\(k\)</span>. For most of our examples, we
+will deal with two states, i.e., <span class="math notranslate nohighlight">\(K=2\)</span>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="c1"># The capital letter T will represent the state transition probability matrix.</span>
+<span class="c1"># This transition matrix, in particular, is the two-dimensional</span>
+<span class="c1"># identity matrix. Recall that the elements of the transition matrix</span>
+<span class="c1"># represent the probability of transitioning from one state to another.</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+              <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]],</span>  <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float&quot;</span><span class="p">)</span>
+<span class="c1"># This identity matrix implies that there are no transitions between cells of</span>
+<span class="c1"># state 0 to cells of state 1. It also implies that there are no transitions</span>
+<span class="c1"># between cells of state 1 to cells of state 0.</span>
+<span class="c1"># Another transition matrix could be the following:</span>
+<span class="c1">#</span>
+<span class="c1"># T = np.array([[0.75, 0.25],</span>
+<span class="c1">#               [0.15, 0.85]], dtype=&quot;float&quot;)</span>
+<span class="c1">#</span>
+<span class="c1"># Note that the rows of the transition matrix have to sum one, because of the</span>
+<span class="c1"># Law of Total Probability and the Law of Conditional Probability. This will be</span>
+<span class="c1"># expanded on in a later notebook.</span>
+</pre></div>
+</div>
+<p>Cells are defined by their state, their relationships to other cells,
+and collections of observations. Knowing how to create cells, however,
+is not required by the user. It is beneficial to understand how the
+<code class="docutils literal notranslate"><span class="pre">CellVar</span></code> class is designed to create objects that store a <code class="docutils literal notranslate"><span class="pre">state</span></code>,
+its relationships (<code class="docutils literal notranslate"><span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">right</span></code>, <code class="docutils literal notranslate"><span class="pre">parent</span></code>) to other cells, and
+its multivariate observations (<code class="docutils literal notranslate"><span class="pre">obs</span></code>). When cells are created via the
+<code class="docutils literal notranslate"><span class="pre">member</span></code> function, their familiar relationships are automatically
+assigned. The two daughters are assigned to <code class="docutils literal notranslate"><span class="pre">left</span></code> and <code class="docutils literal notranslate"><span class="pre">right</span></code> and
+for the daughters, the parent is assigned to <code class="docutils literal notranslate"><span class="pre">parent</span></code>. Other familiar
+relationships can be accessed through other member variables and
+functions. Note that the first generation is empty (we can see this
+because the <code class="docutils literal notranslate"><span class="pre">parent_cell</span></code> is instantiated with <code class="docutils literal notranslate"><span class="pre">parent=None</span></code> and
+with <code class="docutils literal notranslate"><span class="pre">gen=1</span></code> which means that <code class="docutils literal notranslate"><span class="pre">gen=0</span></code> of the lineage contains
+nothing except <code class="docutils literal notranslate"><span class="pre">None</span></code>). As such, indexing for generations of lineages
+starts at <code class="docutils literal notranslate"><span class="pre">1</span></code>. We will discuss more about the multivariate
+observations that cells store later; for now, the following exercises
+will focus on the transition matrix and the familiar relationships of
+cells.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">lineage.CellVar</span> <span class="kn">import</span> <span class="n">CellVar</span> <span class="k">as</span> <span class="n">c</span>
+
+<span class="n">parent_cell</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gen</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span>
+              <span class="p">[</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.85</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float&quot;</span><span class="p">)</span>
+<span class="n">left_cell</span><span class="p">,</span> <span class="n">right_cell</span> <span class="o">=</span> <span class="n">parent_cell</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">parent_cell</span><span class="p">)</span>
+<span class="c1"># &lt;lineage.CellVar.CellVar object at 0x000001A685C55E10&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">left_cell</span><span class="p">,</span> <span class="n">right_cell</span><span class="p">)</span>
+<span class="c1"># &lt;lineage.CellVar.CellVar object at 0x000001A6961B3EF0&gt; &lt;lineage.CellVar.CellVar object at 0x000001A69609C978&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The value of the element at (0,0) of the transition rate matrix is </span><span class="si">{</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># The value of the element at (0,0) of the transition rate matrix is 0.75</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+<p>The <code class="docutils literal notranslate"><span class="pre">gen</span></code> argument for instantiating cells represents the generation
+of the cell which start at 1.</p>
+<hr class="docutils" />
+<p><code class="docutils literal notranslate"><span class="pre">parent_cell</span></code>, <code class="docutils literal notranslate"><span class="pre">left_cell</span></code>, and <code class="docutils literal notranslate"><span class="pre">right_cell</span></code> define a 3-cell
+lineage, with 2 generations. The first generation has one cell which was
+declared and can be accessed at <code class="docutils literal notranslate"><span class="pre">parent_cell</span></code>. Calling the member
+function <code class="docutils literal notranslate"><span class="pre">divide</span></code> on <code class="docutils literal notranslate"><span class="pre">parent_cell</span></code> created two new cells which can
+be accessed at <code class="docutils literal notranslate"><span class="pre">left_cell</span></code> and <code class="docutils literal notranslate"><span class="pre">right_cell</span></code>. The daughter cells of
+any cell can also be accessed using “dot” notation, using the
+member variables, <code class="docutils literal notranslate"><span class="pre">left</span></code> and <code class="docutils literal notranslate"><span class="pre">right</span></code>. The division process
+utilizes the transition matrix. Our code provides some very basic
+printing methods to print out cells. The following code verifies that the <code class="docutils literal notranslate"><span class="pre">left_cell</span></code> is actually the left daughter of <code class="docutils literal notranslate"><span class="pre">parent_cell</span></code>.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use the `is` keyword to compare Python objects.</span>
+<span class="k">assert</span> <span class="n">left_cell</span> <span class="ow">is</span> <span class="n">parent_cell</span><span class="o">.</span><span class="n">left</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="creating-a-synthetic-lineage">
+<h2>2. Creating a synthetic lineage<a class="headerlink" href="#creating-a-synthetic-lineage" title="Permalink to this headline"></a></h2>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lineage.LineageTree</span> <span class="kn">import</span> <span class="n">LineageTree</span>
+<span class="kn">from</span> <span class="nn">lineage.states.StateDistributionGamma</span> <span class="kn">import</span> <span class="n">StateDistribution</span>
+</pre></div>
+</div>
+</section>
+<section id="defining-the-pi-initial-probability-vector-and-t-stochastic-transition-rate-matrix">
+<h2>2.1. Defining the <span class="math notranslate nohighlight">\(\pi\)</span> initial probability vector and <span class="math notranslate nohighlight">\(T\)</span> stochastic transition rate matrix<a class="headerlink" href="#defining-the-pi-initial-probability-vector-and-t-stochastic-transition-rate-matrix" title="Permalink to this headline"></a></h2>
+<p>Before, we “hard-coded” that the first cell in our lineage should be
+state <span class="math notranslate nohighlight">\(0\)</span>. In a Markov model, this first state (the state of the
+root cell), like the states of the daughter cells, are probabilistically
+expressed. These probabilities are stored in the <span class="math notranslate nohighlight">\(\pi\)</span> initial
+probability vector. In particular, if an element of the initial
+probability vector , <span class="math notranslate nohighlight">\(\pi\)</span>, at index <span class="math notranslate nohighlight">\(i\)</span>, is defined as
+<span class="math notranslate nohighlight">\(\pi_{i}\)</span>, then</p>
+<div class="math notranslate nohighlight">
+\[\pi_{i}=\mathbb{P}(z_{0}=i).\]</div>
+<p>We require for <span class="math notranslate nohighlight">\(\pi\)</span> a <span class="math notranslate nohighlight">\(K\times 1\)</span> list of probabilities.
+These probabilities must add up to <span class="math notranslate nohighlight">\(1\)</span> and they should be either
+in a <span class="math notranslate nohighlight">\(1\)</span>-dimensional list or a <span class="math notranslate nohighlight">\(1\)</span>-dimensional numpy array.
+An example is shown below.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># pi: the initial probability vector</span>
+<span class="n">pi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float&quot;</span><span class="p">)</span>
+<span class="c1"># Recall that this means that the first cell in our lineage in generation 1</span>
+<span class="c1"># has a 60% change of being state 0 and a 40% chance of being state 1.</span>
+<span class="c1"># The values of this vector have to add up to 1 because of the</span>
+<span class="c1"># Law of Total Probability.</span>
+
+<span class="c1"># T: transition probability matrix</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span>
+              <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="defining-the-e-emissions-matrix-using-state-distributions">
+<h2>2.2. Defining the <span class="math notranslate nohighlight">\(E\)</span> emissions matrix using state distributions<a class="headerlink" href="#defining-the-e-emissions-matrix-using-state-distributions" title="Permalink to this headline"></a></h2>
+<p>The emission matrix <span class="math notranslate nohighlight">\(E\)</span> is a little more complicated to define
+because this is where the user has complete freedom in defining what
+type of observation(s) they care about. In particular, the user has to
+first begin with defining what physical observation they will want to
+extract from images of their cells, or test on synthetically created
+lineages. For example, if one is observing kinematics or physics, they
+might want to use the Gaussian distribution parameterized by a mean and
+covariance to model their observations (velocity, acceleration, etc.).
+If one wanted to model lifetimes of cell, one could utilize a Gamma
+distribution with a shape and scale parameter.
+These distributions can then be combined into a multivariate
+distribution.</p>
+<p>Ultimately, the user needs to provide three things based on the
+phenotype they wish to observe, model, and predict:</p>
+<ol class="arabic simple">
+<li><p>a <em>probability distribution function</em>: a function that returns a
+<strong>likelihood</strong> when given a <strong>single random observation</strong> and
+<strong>parameters</strong> describing the distribution</p></li>
+<li><p>a <em>random variable</em>: a function that returns <strong>random observations</strong>
+from the distribution when given <strong>parameters</strong> describing the
+distribution</p></li>
+<li><p>an <em>estimator</em>: a function that returns <strong>parameters</strong> that describe a
+distribution when given <strong>random observations</strong></p></li>
+</ol>
+<p>These three things fundamentally define any probability distribution.
+For more information about how to define these functions by example, please see &quot;2.stateDistribution.rst&quot;.</p>
+<p>An optional boolean function can be provided to “censor”
+cells based on the observation. In our example, cells with a Bernoulli
+observation of <span class="math notranslate nohighlight">\(0\)</span>, which implies that the cell died, are excluded
+from the tree. Another censoring rule we have implemented is removing cells
+that were born after an experimental end time.</p>
+<p>We have already built, as a starting example, a model that resembles
+lineage trees of cancer cells. In our synthetic model, our emissions are
+multivariate. This first emission is a Bernoulli observation, <span class="math notranslate nohighlight">\(0\)</span>
+implying death and <span class="math notranslate nohighlight">\(1\)</span> implying division. The second emission is
+continuous RVs and are gamma distributed. Though these can be thought of
+cell lifetimes or periods in a certain cell phase, we want the user to
+know that these values can really mean anything and they are completely
+free in choosing what the emissions and their values mean.</p>
+<p>Ultimately, <span class="math notranslate nohighlight">\(E\)</span> is defined as a <span class="math notranslate nohighlight">\(K\times 1\)</span> size list of
+<code class="docutils literal notranslate"><span class="pre">stateDistribution</span></code> objects, explained in detail in &quot;2.stateDistribution.rst&quot;</p>
+<p>The following code block is a standard way to define state distrbutions
+and store them in an emissions list. State distributions are
+instantiated via their parameters.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># E: states are defined as StateDistribution objects</span>
+
+<span class="c1"># State 0 parameters corresponding to the &quot;Resistant&quot; cells</span>
+<span class="n">bern_p0</span> <span class="o">=</span> <span class="mf">0.99</span>   <span class="c1"># bernoulli distribution parameter</span>
+<span class="n">gamma_a0</span> <span class="o">=</span> <span class="mi">7</span>     <span class="c1"># gamma distribution shape parameter</span>
+<span class="n">gamma_scale0</span> <span class="o">=</span> <span class="mi">7</span> <span class="c1"># gamma distribution scale parameter</span>
+
+<span class="c1"># State 1 parameters corresponding to the &quot;Susceptible&quot; cells</span>
+<span class="n">bern_p1</span> <span class="o">=</span> <span class="mf">0.88</span>
+<span class="n">gamma_a1</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="n">gamma_scale1</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">state_obj0</span> <span class="o">=</span> <span class="n">StateDistribution</span><span class="p">(</span><span class="n">bern_p0</span><span class="p">,</span> <span class="n">gamma_a0</span><span class="p">,</span> <span class="n">gamma_scale0</span><span class="p">)</span>
+<span class="n">state_obj1</span> <span class="o">=</span> <span class="n">StateDistribution</span><span class="p">(</span><span class="n">bern_p1</span><span class="p">,</span> <span class="n">gamma_a1</span><span class="p">,</span> <span class="n">gamma_scale1</span><span class="p">)</span>
+
+<span class="n">E</span> <span class="o">=</span> <span class="p">[</span><span class="n">state_obj0</span><span class="p">,</span> <span class="n">state_obj1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The final required parameters are more obvious. The first is the
+number of cells one would like in their full uncensored lineage tree. This
+can be any number. Since one of our observations is time-based, we can
+also add a censoring condition based on time as well. Ultimately, these
+design choices are left up to the user to customize based on their state
+distribution type. Without loss of generality, we provide the following
+example of a full lineage tree.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lineage1</span> <span class="o">=</span> <span class="n">LineageTree</span><span class="o">.</span><span class="n">init_from_parameters</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">desired_num_cells</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="mi">5</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="c1"># These are the minimal arguments required to instantiate lineages</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">lineage1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the lineage above, note that the cells now have observations. Also
+note that you did not have to “hard-code” the first cell and its state.
+The first observation in the observation list for each cell is a
+Bernoulli observation which can either be 1 or 0. An observatioon of 1
+implies that the cell lived. An observation of 0 implies that the cell
+died. The second observation in the observation is the gamma observation
+and represents the lifetime of the cell. Note that some cells live for
+far longer than others. This is because one of the states has a
+probability distribution with a gamma distribution that draws longer
+times.</p>
+</section>
+<section id="analyzing-a-full-lineage">
+<h2>3. Analyzing a full lineage<a class="headerlink" href="#analyzing-a-full-lineage" title="Permalink to this headline"></a></h2>
+<p>Our project’s goal is to analyze heterogeneity. We packaged the main
+capability of our codebase into one function <code class="docutils literal notranslate"><span class="pre">Analyze</span></code>, which runs the
+tree-hidden Markov Model on an appropriately formatted dataset. In the
+following example, we analyze the full lineage from above.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lineage.Analyze</span> <span class="kn">import</span> <span class="n">Analyze</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="n">lineage1</span><span class="p">]</span> <span class="c1"># population just contains one lineage</span>
+<span class="n">tHMMobj</span><span class="p">,</span> <span class="n">pred_states_by_lineage</span><span class="p">,</span> <span class="n">LL</span> <span class="o">=</span> <span class="n">Analyze</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># find two states</span>
+</pre></div>
+</div>
+<p>Estimated Markov parameters (<span class="math notranslate nohighlight">\(\pi\)</span>, <span class="math notranslate nohighlight">\(T\)</span>, <span class="math notranslate nohighlight">\(E\)</span>)</p>
+<p>Our model is blind to the true states of the cells
+(unlike the code blocks above where we knew the identity of the cells,
+in terms of their state). This model primarily has to segment or
+partition the tree and its cells into the number of states we think is
+present in our data, and then identify the parameters that describe each
+state’s distributions. We can not only check how well it estimated the
+state parameters, but also the initial probability vector <span class="math notranslate nohighlight">\(\pi\)</span>
+and transition matrix <span class="math notranslate nohighlight">\(T\)</span> vector. Note that estimating these also
+get better as more lineages are added (for the <span class="math notranslate nohighlight">\(\pi\)</span> vector in
+particular) and in general as more cells and more lineages are added.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">tHMMobj</span><span class="o">.</span><span class="n">estimate</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">tHMMobj</span><span class="o">.</span><span class="n">estimate</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lineage1</span><span class="o">.</span><span class="n">num_states</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State </span><span class="si">{}</span><span class="s2">:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;                    estimated state:&quot;</span><span class="p">,</span> <span class="n">tHMMobj</span><span class="o">.</span><span class="n">estimate</span><span class="o">.</span><span class="n">E</span><span class="p">[</span><span class="n">state</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;original parameters given for state:&quot;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="n">state</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-a-population-with-multiple-lineages">
+<h2>4. Creating a population with multiple lineages:<a class="headerlink" href="#creating-a-population-with-multiple-lineages" title="Permalink to this headline"></a></h2>
+<p>The following is an analysis run on a larger set of lineages. We first create 10 lineages and append them to a list to form our cell populations.
+In this case, we are choosing that all lineages should have 35 cells.
+<code class="docutils literal notranslate"><span class="pre">Analyze()</span></code> takes in the list of populations and the number of states,
+and returns the <code class="docutils literal notranslate"><span class="pre">tHMMobject</span></code>, the list of assigned states ,(<code class="docutils literal notranslate"><span class="pre">pred_states_by_lineage</span></code>) and the likelihood (<code class="docutils literal notranslate"><span class="pre">LL</span></code>) after running the EM algoithm.
+The instances of <code class="docutils literal notranslate"><span class="pre">tHMMobj</span></code> include the information about the distributions corresponding to each state and phenotypie.
+In this case, we are running the <code class="docutils literal notranslate"><span class="pre">Analyze</span></code> with 2 states, and we know it is the true number of states,
+because we used <code class="docutils literal notranslate"><span class="pre">E</span></code> as the Emissions which we defined as a list with two <a href="#id1"><span class="problematic" id="id2">``</span></a>StateDistribution``s.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lineage.Analyze</span> <span class="kn">import</span> <span class="n">Analyze_list</span>
+
+<span class="n">Y</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">Y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LineageTree</span><span class="o">.</span><span class="n">init_from_parameters</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">desired_num_cells</span><span class="o">=</span><span class="mi">35</span><span class="p">))</span>
+<span class="n">tHMMobj</span><span class="p">,</span> <span class="n">pred_states_by_lineage</span><span class="p">,</span> <span class="n">LL</span> <span class="o">=</span> <span class="n">Analyze_list</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># find two states</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">tHMMobj</span><span class="o">.</span><span class="n">estimate</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">tHMMobj</span><span class="o">.</span><span class="n">estimate</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">lineage1</span><span class="o">.</span><span class="n">num_states</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State </span><span class="si">{}</span><span class="s2">:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;                    estimated state:&quot;</span><span class="p">,</span> <span class="n">tHMMobj</span><span class="o">.</span><span class="n">estimate</span><span class="o">.</span><span class="n">E</span><span class="p">[</span><span class="n">state</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;original parameters given for state:&quot;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="n">state</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The function <code class="docutils literal notranslate"><span class="pre">Results()</span></code> provides calculated features when analyzing a synthetic data.</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lineage.Analyze</span> <span class="kn">import</span> <span class="n">Results</span>
+
+<span class="n">results_dict</span> <span class="o">=</span> <span class="n">Results</span><span class="p">(</span><span class="n">tHMMobj</span><span class="p">,</span> <span class="n">pred_states_by_lineage</span><span class="p">,</span> <span class="n">LL</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;total number of cells: &quot;</span><span class="p">,</span> <span class="n">results_dict</span><span class="p">[</span><span class="s2">&quot;total_number_of_cells&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> total number of lineages: &quot;</span><span class="p">,</span> <span class="n">results_dict</span><span class="p">[</span><span class="s2">&quot;total_number_of_lineages&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> transition matrix norm: &quot;</span><span class="p">,</span> <span class="n">results_dict</span><span class="p">[</span><span class="s2">&quot;transition_matrix_similarity&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> parameter estimtes: &quot;</span><span class="p">,</span> <span class="n">results_dict</span><span class="p">[</span><span class="s2">&quot;param_estimates&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> accuracy of state assignemnts: &quot;</span><span class="p">,</span> <span class="n">results_dict</span><span class="p">[</span><span class="s2">&quot;state_similarity&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> the distance between state 0 and state 1: &quot;</span><span class="p">,</span> <span class="n">results_dict</span><span class="p">[</span><span class="s2">&quot;wasserstein&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="applications-a-guide-to-use-the-thmm-for-imported-experimental-data">
+<h2>5. Applications - A guide to use the <cite>tHMM</cite> for imported experimental data.<a class="headerlink" href="#applications-a-guide-to-use-the-thmm-for-imported-experimental-data" title="Permalink to this headline"></a></h2>
+<p>As an application, we fit experimental data of cell cycle phase durations (G1 and S/G2) in response to lapatinib and gemcitabine treatments to analyze the phenotypic heterogeneity.
+The data is in the form of binary tree in excel, shown beloow. We have written &quot;lineage/LineageInputOutput.py&quot; to properly import this data and convert it into the format usable for <cite>tHMM</cite>.
+The following shows one lineage in the excel sheets. In each row, the difference between the two values corresponding to each cell shows the duration of G1 cell cycle phase, and
+the difference between the second value and the first value of the daughter cell shows the duration of S/G2 cell cycle phase.</p>
+<a class="reference internal image-reference" href="_images/treeExcel.png"><img alt="Example of a lineage tree from experimental data of G1 and S/G2 cell cycle phase durations." src="_images/treeExcel.png" style="width: 700px;" /></a>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lineage.LineageInputOutput</span> <span class="kn">import</span> <span class="n">import_exp_data</span>
+<span class="kn">from</span> <span class="nn">lineage.states.StateDistributionGaPhs</span> <span class="kn">import</span> <span class="n">StateDistribution</span>
+<span class="kn">from</span> <span class="nn">lineage.LineageTree</span> <span class="kn">import</span> <span class="n">LineageTree</span>
+
+<span class="n">desired_num_states</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># dummy value just to initialize</span>
+<span class="n">E</span> <span class="o">=</span> <span class="p">[</span><span class="n">StateDistribution</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">desired_num_states</span><span class="p">)]</span>
+
+<span class="c1"># control condition:</span>
+<span class="n">c1</span> <span class="o">=</span> <span class="p">[</span><span class="n">LineageTree</span><span class="p">(</span><span class="n">list_of_cells</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span> <span class="k">for</span> <span class="n">list_of_cells</span> <span class="ow">in</span> <span class="n">import_exp_data</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;lineage/data/LineageData/AU00601_A5_1_V5.xlsx&quot;</span><span class="p">)]</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="p">[</span><span class="n">LineageTree</span><span class="p">(</span><span class="n">list_of_cells</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span> <span class="k">for</span> <span class="n">list_of_cells</span> <span class="ow">in</span> <span class="n">import_exp_data</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;lineage/data/LineageData/AU00601_A5_2_V4.xlsx&quot;</span><span class="p">)]</span>
+<span class="n">c3</span> <span class="o">=</span> <span class="p">[</span><span class="n">LineageTree</span><span class="p">(</span><span class="n">list_of_cells</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span> <span class="k">for</span> <span class="n">list_of_cells</span> <span class="ow">in</span> <span class="n">import_exp_data</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;lineage/data/LineageData/AU00701_A5_1_V4.xlsx&quot;</span><span class="p">)]</span>
+<span class="n">c4</span> <span class="o">=</span> <span class="p">[</span><span class="n">LineageTree</span><span class="p">(</span><span class="n">list_of_cells</span><span class="p">,</span> <span class="n">E</span><span class="p">)</span> <span class="k">for</span> <span class="n">list_of_cells</span> <span class="ow">in</span> <span class="n">import_exp_data</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;lineage/data/LineageData/AU00801_A5_1_V4.xlsx&quot;</span><span class="p">)]</span>
+<span class="n">Control</span> <span class="o">=</span> <span class="n">c1</span> <span class="o">+</span> <span class="n">c2</span> <span class="o">+</span> <span class="n">c3</span> <span class="o">+</span> <span class="n">c4</span>
+
+<span class="kn">from</span> <span class="nn">lineage.Analyze</span> <span class="kn">import</span> <span class="n">Analyze_list</span>
+<span class="n">tHMMobj_list</span><span class="p">,</span> <span class="n">pred_states_by_lineage_by_conc</span><span class="p">,</span> <span class="n">LL</span> <span class="o">=</span> <span class="n">Analyze_list</span><span class="p">([</span><span class="n">Control</span><span class="p">],</span> <span class="n">num_states</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="c1"># in this example, we are ran the model with 3 states.</span>
+
+<span class="c1"># finding the number of cells in the lineages:</span>
+<span class="n">total_number_cells</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">lineage</span><span class="o">.</span><span class="n">output_lineage</span><span class="p">)</span> <span class="k">for</span> <span class="n">lineage</span> <span class="ow">in</span> <span class="n">tHMMobj_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">X</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;the likelihood of having 3 states: &quot;</span><span class="p">,</span> <span class="n">LL</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;BIC value for this population: &quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">tHMMobj_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_BIC</span><span class="p">(</span><span class="n">LL</span><span class="p">,</span> <span class="n">total_number_cells</span><span class="p">)][</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The degree of freedom: &quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">tHMMobj_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_BIC</span><span class="p">(</span><span class="n">LL</span><span class="p">,</span> <span class="n">total_number_cells</span><span class="p">)][</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>To find out the likelihood of having different number of states we can use <code class="docutils literal notranslate"><span class="pre">run_Analyze_over()</span></code>
+with which we can run the model in parallel (by setting <cite>atonce=True</cite>) for different state numbers to minimize the run time.</p>
+<p>To do that, we append the population for the number of states we want to analyze.
+The following shows running the model for 1, 2, 3, and 4 states, in parallel, and printing the BIC value for each scenario:</p>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lineage.Analyze</span> <span class="kn">import</span> <span class="n">run_Analyze_over</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">desired_num_states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">dataFull</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">desired_num_states</span><span class="p">:</span>
+    <span class="n">dataFull</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">Control</span><span class="p">])</span>
+
+<span class="c1"># Run fitting</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">run_Analyze_over</span><span class="p">(</span><span class="n">dataFull</span><span class="p">,</span> <span class="n">desired_num_states</span><span class="p">,</span> <span class="n">atonce</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">BICs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">oo</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_BIC</span><span class="p">(</span><span class="n">oo</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">num_cells</span><span class="p">,</span> <span class="n">atonce</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">oo</span> <span class="ow">in</span> <span class="n">output</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Normalized BIC value based on the minimum: &quot;</span><span class="p">,</span> <span class="n">BICs</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">BICs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Farnaz Mohammadi, JC Lagarde, Aaron S Meyer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

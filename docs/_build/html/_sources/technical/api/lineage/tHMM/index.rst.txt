@@ -1,0 +1,122 @@
+:py:mod:`lineage.tHMM`
+======================
+
+.. py:module:: lineage.tHMM
+
+.. autoapi-nested-parse::
+
+   This file holds the parameters of our tHMM in the tHMM class. 
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   lineage.tHMM.estimate
+   lineage.tHMM.tHMM
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   lineage.tHMM.log_T_score
+   lineage.tHMM.log_E_score
+   lineage.tHMM.fit_list
+
+
+
+.. py:class:: estimate(X, nState, fpi=None, fT=None, fE=None)
+
+   Estimation class.
+       
+
+
+.. py:class:: tHMM(X, num_states, fpi=None, fT=None, fE=None)
+
+   Main tHMM class.
+       
+
+   .. py:method:: fit(self, tolerance=1e-09, max_iter=1000)
+
+      Runs the tHMM function through Baum Welch fitting.
+
+      :param tolerance: the tolerance for change of likelihood between two steps
+      :param max_iter: the maximum number of iterations for fitting
+
+
+   .. py:method:: predict(self)
+
+      Given a fit model, the model predicts an optimal
+      state assignment using the Viterbi algorithm.
+
+      :return: assigned states to each cell in each lineage. It is organized in the form of list of arrays, each array shows the state of cells in one lineage.
+
+
+   .. py:method:: get_BIC(self, LL, num_cells, atonce=False, mcf10a=False)
+
+      Gets the BIC values. Akaike Information Criterion, used for model selection and deals with the trade off
+      between over-fitting and under-fitting.
+      :math:`BIC = - 2 * log(LL) + log(number_of_cells) * DoF` in which k is the number of free parameters and LL is the maximum of likelihood function.
+      Minimum of BIC detremines the relatively better model.
+
+
+   .. py:method:: log_score(self, X_state_tree_sequence, pi=None, T=None, E=None)
+
+      This function returns the log-likelihood of a possible state assignment
+      given the estimated model parameters.
+      The user can also provide their own pi, T, or E matrices instead to score
+      a possible state assignment.
+      :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
+      :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
+      :param X_state_tree_sequence: the assigned states to cells at each lineage object
+      :return: the log-likelihood of states assigned to single cells, based on the pi, T, and E, separate for each lineage tree
+
+
+
+.. py:function:: log_T_score(T, state_tree_sequence, lineageObj)
+
+   To calculate the joint probability of state and observations.
+   This function calculates the second term.
+   :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
+   :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
+   :param T: transition probability matrix
+   :type T: ndarray
+   :param state_tree_sequence: the assigned states to cells at each lineage object
+   :param lineageObj: the lineage trees
+   :type lineageObj: object
+   :return: the log-likelihood of the transition probability matrix
+
+
+.. py:function:: log_E_score(EL_array, state_tree_sequence)
+
+   To calculate the joint probability of state and observations.
+   This function calculates the third term.
+   :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
+   :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
+   :param EL_array: emission likelihood for a given lineage tree object
+   :param state_tree_sequence: the assigned states to cells at each lineage object
+   :return: the log-likelihood of emissions
+
+
+.. py:function:: fit_list(tHMMobj_list, tolerance = 1e-09, max_iter = 1000)
+
+   Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
+
+   :param tHMMobj_list: all lineage trees we want to fit at once
+   :param tolerance: the stopping criteria for fitting. when the likelihood does not change more than tolerance from one step to the other, the fitting converges.
+   :param max_iter: the maximum number of iterations for fitting
+   :return MSD_list: marginal state distributions for all populations we fit at once
+   :return NF: normalizing factor
+   :return betas: beta values (conditional probability of cell states given cell observations)
+   :return gammas: gamma values (used to calculate the downward reursion)
+   :return new_LL: the log-likelihood of the optimized solution
+
+

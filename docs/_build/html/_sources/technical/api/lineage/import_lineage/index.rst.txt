@@ -1,0 +1,65 @@
+:py:mod:`lineage.import_lineage`
+================================
+
+.. py:module:: lineage.import_lineage
+
+.. autoapi-nested-parse::
+
+   This file includes functions to import the new lineage data. 
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   lineage.import_lineage.import_AU565
+   lineage.import_lineage.assign_observs_AU565
+   lineage.import_lineage.import_MCF10A
+   lineage.import_lineage.assign_observs_MCF10A
+   lineage.import_lineage.MCF10A
+
+
+
+.. py:function:: import_AU565(path)
+
+   Importing AU565 file cells.
+   :param path: the path to the file.
+   :return population: list of cells structured in CellVar objects.
+
+
+.. py:function:: assign_observs_AU565(cell, lineage, uniq_id)
+
+   Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it.
+   :param cell: a CellVar object to be assigned observations.
+   :param lineage: the lineage list of cells that the given cell is from.
+   :param uniq_id: the id given to the cell from the experiment.
+
+
+.. py:function:: import_MCF10A(path)
+
+   Reading the data and extracting lineages and assigning their corresponding observations.
+   :param path: the path to the mcf10a data.
+   :return population: list of cells structured in CellVar objects.
+
+
+.. py:function:: assign_observs_MCF10A(cell, lineage, uniq_id)
+
+   Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it.
+   :param cell: a CellVar object to be assigned observations.
+   :param lineage: the lineage list of cells that the given cell is from.
+   :param uniq_id: the id given to the cell from the experiment.
+
+
+.. py:function:: MCF10A(condition)
+
+   Creates the population of lineages for each condition.
+   Conditions include: PBS, EGF-treated, HGF-treated, OSM-treated.
+   :param condition: a condition between [PBS, EGF, HGF, OSM]
+
+

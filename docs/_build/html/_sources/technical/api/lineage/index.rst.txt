@@ -1,0 +1,37 @@
+:py:mod:`lineage`
+=================
+
+.. py:module:: lineage
+
+
+Subpackages
+-----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 3
+
+   states/index.rst
+   tests/index.rst
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   Analyze/index.rst
+   BaumWelch/index.rst
+   CellVar/index.rst
+   DownwardRecursion/index.rst
+   LineageInputOutput/index.rst
+   LineageTree/index.rst
+   Lineage_collections/index.rst
+   UpwardRecursion/index.rst
+   Viterbi/index.rst
+   export_states/index.rst
+   import_lineage/index.rst
+   plotTree/index.rst
+   tHMM/index.rst
+
+

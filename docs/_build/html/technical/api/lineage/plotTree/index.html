@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="python" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lineage.plotTree &mdash; tHMM 1.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> tHMM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../overview.html">Summary</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../Installation.html">Installation</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../system-reqs.html">System Requirements</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../demo.html">Demo and Instructions</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../stateDistributions.html">State Distributions - How to create</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">tHMM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">lineage.plotTree</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/technical/api/lineage/plotTree/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-lineage.plotTree">
+<span id="lineage-plottree"></span><h1><a class="reference internal" href="#module-lineage.plotTree" title="lineage.plotTree"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lineage.plotTree</span></code></a><a class="headerlink" href="#module-lineage.plotTree" title="Permalink to this headline"></a></h1>
+<p>This file includes function to plot lineage trees. It relies on the NetworkX and the Bio packages.</p>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.plotTree.CladeRecursive" title="lineage.plotTree.CladeRecursive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CladeRecursive</span></code></a>(cell, a, censor, color)</p></td>
+<td><p>A recurssive function that takes in the root cell and traverses through cells to plot the lineage.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.plotTree.plotLineage" title="lineage.plotTree.plotLineage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plotLineage</span></code></a>(lineage, axes, censor=True, color=True)</p></td>
+<td><p>Given a lineage of cells, uses the <cite>CladeRecursive</cite> function to plot the lineage.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.plotTree.plotLineage_MCF10A" title="lineage.plotTree.plotLineage_MCF10A"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plotLineage_MCF10A</span></code></a>(lineage, axes, censor=True, color=True)</p></td>
+<td><p>Given a lineage of cells, uses the <cite>CladeRecursive</cite> function to plot the lineage.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.plotTree.CladeRecursive_MCF10A" title="lineage.plotTree.CladeRecursive_MCF10A"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CladeRecursive_MCF10A</span></code></a>(cell, a, censor, color)</p></td>
+<td><p>A recurssive function that takes in the root cell and traverses through cells to plot the lineage.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.plotTree.plot_networkx" title="lineage.plotTree.plot_networkx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_networkx</span></code></a>(num_states, T, drug_name)</p></td>
+<td><p>This function plots the Transition network for each drug tratment.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.plotTree.draw" title="lineage.plotTree.draw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">draw</span></code></a>(tree, label_func=str, do_show=True, show_confidence=True, axes=None, branch_labels=None, label_colors=None, *args, **kwargs)</p></td>
+<td><p>Plot the given tree using matplotlib (or pylab).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lineage.plotTree.cs" title="lineage.plotTree.cs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cs</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lineage.plotTree.stateColors" title="lineage.plotTree.stateColors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stateColors</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.plotTree.cs">
+<span class="sig-prename descclassname"><span class="pre">lineage.plotTree.</span></span><span class="sig-name descname"><span class="pre">cs</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">['lightblue',</span> <span class="pre">'orange',</span> <span class="pre">'lightgreen',</span> <span class="pre">'red',</span> <span class="pre">'purple',</span> <span class="pre">'grey']</span></em><a class="headerlink" href="#lineage.plotTree.cs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="lineage.plotTree.stateColors">
+<span class="sig-prename descclassname"><span class="pre">lineage.plotTree.</span></span><span class="sig-name descname"><span class="pre">stateColors</span></span><em class="property"><span class="w"> </span><span class="pre">=</span> <span class="pre">['blue',</span> <span class="pre">'orange',</span> <span class="pre">'green',</span> <span class="pre">'red',</span> <span class="pre">'purple',</span> <span class="pre">'grey']</span></em><a class="headerlink" href="#lineage.plotTree.stateColors" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.plotTree.CladeRecursive">
+<span class="sig-prename descclassname"><span class="pre">lineage.plotTree.</span></span><span class="sig-name descname"><span class="pre">CladeRecursive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">censor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.plotTree.CladeRecursive" title="Permalink to this definition"></a></dt>
+<dd><p>A recurssive function that takes in the root cell and traverses through cells to plot the lineage.
+The width of the lines show the phase of the cells.
+The color of the lines show the state of the cells.</p>
+<p>&quot;a&quot; should be: a = [Clade(lineage1.full_lineage[0].obs[2]+lineage1.full_lineage[0].obs[3])] which is the root cell
+The following is the source code used to create Clades manually:
+<a class="reference external" href="https://github.com/biopython/biopython/blob/fce4b11b4b8e414f1bf093a76e04a3260d782905/Bio/Phylo/BaseTree.py#L801">https://github.com/biopython/biopython/blob/fce4b11b4b8e414f1bf093a76e04a3260d782905/Bio/Phylo/BaseTree.py#L801</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>list</em>) -- </p></li>
+<li><p><strong>censor</strong> (<em>bool</em>) -- </p></li>
+<li><p><strong>color</strong> (<em>bool</em>) -- </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.plotTree.plotLineage">
+<span class="sig-prename descclassname"><span class="pre">lineage.plotTree.</span></span><span class="sig-name descname"><span class="pre">plotLineage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lineage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">censor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.plotTree.plotLineage" title="Permalink to this definition"></a></dt>
+<dd><p>Given a lineage of cells, uses the <cite>CladeRecursive</cite> function to plot the lineage.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.plotTree.plotLineage_MCF10A">
+<span class="sig-prename descclassname"><span class="pre">lineage.plotTree.</span></span><span class="sig-name descname"><span class="pre">plotLineage_MCF10A</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lineage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">censor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.plotTree.plotLineage_MCF10A" title="Permalink to this definition"></a></dt>
+<dd><p>Given a lineage of cells, uses the <cite>CladeRecursive</cite> function to plot the lineage.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.plotTree.CladeRecursive_MCF10A">
+<span class="sig-prename descclassname"><span class="pre">lineage.plotTree.</span></span><span class="sig-name descname"><span class="pre">CladeRecursive_MCF10A</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">censor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.plotTree.CladeRecursive_MCF10A" title="Permalink to this definition"></a></dt>
+<dd><p>A recurssive function that takes in the root cell and traverses through cells to plot the lineage.
+The width of the lines show the phase of the cells.
+The color of the lines show the state of the cells.</p>
+<p>&quot;a&quot; should be: a = [Clade(lineage1.full_lineage[0].obs[1])] which is the root cell</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>list</em>) -- </p></li>
+<li><p><strong>censor</strong> (<em>bool</em>) -- </p></li>
+<li><p><strong>color</strong> (<em>bool</em>) -- </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.plotTree.plot_networkx">
+<span class="sig-prename descclassname"><span class="pre">lineage.plotTree.</span></span><span class="sig-name descname"><span class="pre">plot_networkx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drug_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.plotTree.plot_networkx" title="Permalink to this definition"></a></dt>
+<dd><p>This function plots the Transition network for each drug tratment.
+The nodes show the states and the edges show the transition probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_states</strong> (<em>int</em>) -- </p></li>
+<li><p><strong>T</strong> (<em>numpy.ndarray</em>) -- </p></li>
+<li><p><strong>drug_name</strong> (<em>str</em>) -- </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lineage.plotTree.draw">
+<span class="sig-prename descclassname"><span class="pre">lineage.plotTree.</span></span><span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_confidence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branch_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lineage.plotTree.draw" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the given tree using matplotlib (or pylab).
+The graphic is a rooted tree, drawn with roughly the same algorithm as
+draw_ascii.
+Additional keyword arguments passed into this function are used as pyplot
+options. The input format should be in the form of:
+pyplot_option_name=(tuple), pyplot_option_name=(tuple, dict), or
+pyplot_option_name=(dict).
+Example using the pyplot options 'axhspan' and 'axvline':</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">Bio</span> <span class="kn">import</span> <span class="n">Phylo</span><span class="p">,</span> <span class="n">AlignIO</span>
+<span class="kn">from</span> <span class="nn">Bio.Phylo.TreeConstruction</span> <span class="kn">import</span> <span class="n">DistanceCalculator</span><span class="p">,</span> <span class="n">DistanceTreeConstructor</span>
+<span class="n">constructor</span> <span class="o">=</span> <span class="n">DistanceTreeConstructor</span><span class="p">()</span>
+<span class="n">aln</span> <span class="o">=</span> <span class="n">AlignIO</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;TreeConstruction/msa.phy&#39;</span><span class="p">),</span> <span class="s1">&#39;phylip&#39;</span><span class="p">)</span>
+<span class="n">calculator</span> <span class="o">=</span> <span class="n">DistanceCalculator</span><span class="p">(</span><span class="s1">&#39;identity&#39;</span><span class="p">)</span>
+<span class="n">dm</span> <span class="o">=</span> <span class="n">calculator</span><span class="o">.</span><span class="n">get_distance</span><span class="p">(</span><span class="n">aln</span><span class="p">)</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">constructor</span><span class="o">.</span><span class="n">upgma</span><span class="p">(</span><span class="n">dm</span><span class="p">)</span>
+<span class="n">Phylo</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">axhspan</span><span class="o">=</span><span class="p">((</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">7.75</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;facecolor&#39;</span><span class="p">:</span><span class="s1">&#39;0.5&#39;</span><span class="p">}),</span>
+<span class="o">...</span> <span class="n">axvline</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;ymin&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;ymax&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Visual aspects of the plot can also be modified using pyplot's own functions
+and objects (via pylab or matplotlib). In particular, the pyplot.rcParams
+object can be used to scale the font size (rcParams[&quot;font.size&quot;]) and line
+width (rcParams[&quot;lines.linewidth&quot;]).
+:Parameters:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>label_func<span class="classifier">callable</span></dt><dd><p>A function to extract a label from a node. By default this is str(),
+but you can use a different function to select another string
+associated with each node. If this function returns None for a node,
+no label will be shown for that node.</p>
+</dd>
+<dt>do_show<span class="classifier">bool</span></dt><dd><p>Whether to show() the plot automatically.</p>
+</dd>
+<dt>show_confidence<span class="classifier">bool</span></dt><dd><p>Whether to display confidence values, if present on the tree.</p>
+</dd>
+<dt>axes<span class="classifier">matplotlib/pylab axes</span></dt><dd><p>If a valid matplotlib.axes.Axes instance, the phylogram is plotted
+in that Axes. By default (None), a new figure is created.</p>
+</dd>
+<dt>branch_labels<span class="classifier">dict or callable</span></dt><dd><p>A mapping of each clade to the label that will be shown along the
+branch leading to it. By default this is the confidence value(s) of
+the clade, taken from the <code class="docutils literal notranslate"><span class="pre">confidence</span></code> attribute, and can be
+easily toggled off with this function's <code class="docutils literal notranslate"><span class="pre">show_confidence</span></code> option.
+But if you would like to alter the formatting of confidence values,
+or label the branches with something other than confidence, then use
+this option.</p>
+</dd>
+<dt>label_colors<span class="classifier">dict or callable</span></dt><dd><p>A function or a dictionary specifying the color of the tip label.
+If the tip label can't be found in the dict or label_colors is
+None, the label will be shown in black.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Farnaz Mohammadi, JC Lagarde, Aaron S Meyer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

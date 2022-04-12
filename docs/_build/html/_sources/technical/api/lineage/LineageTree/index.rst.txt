@@ -1,0 +1,157 @@
+:py:mod:`lineage.LineageTree`
+=============================
+
+.. py:module:: lineage.LineageTree
+
+.. autoapi-nested-parse::
+
+   This file contains the LineageTree class. 
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   lineage.LineageTree.LineageTree
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   lineage.LineageTree.generate_lineage_list
+   lineage.LineageTree.output_assign_obs
+   lineage.LineageTree.max_gen
+   lineage.LineageTree.get_leaves
+
+
+
+.. py:class:: LineageTree(list_of_cells, E)
+
+   A class for lineage trees.
+   Every lineage object from this class is a binary tree built based on initial probabilities,
+   transition probabilities, and emissions defined by state distributions given by the user.
+   Lineages are generated in full (no pruning) by creating cells of different states in a
+   binary fashion utilizing the pi and the transtion probabilities. Cells are then filled with
+   observations based on their states by sampling observations from their emission distributions.
+   The lineage tree is then censord based on the censor condition.
+
+   .. py:attribute:: pi
+      :annotation: :numpy.ndarray
+
+      
+
+   .. py:attribute:: T
+      :annotation: :numpy.ndarray
+
+      
+
+   .. py:attribute:: num_states
+      :annotation: :int
+
+      
+
+   .. py:attribute:: full_lineage
+      :annotation: :list
+
+      
+
+   .. py:attribute:: full_max_gen
+      :annotation: :int
+
+      
+
+   .. py:attribute:: full_list_of_gens
+      :annotation: :list
+
+      
+
+   .. py:attribute:: full_leaves_idx
+      :annotation: :list
+
+      
+
+   .. py:attribute:: full_leaves
+      :annotation: :list
+
+      
+
+   .. py:method:: init_from_parameters(cls, pi, T, E, desired_num_cells, barcode = 0, censor_condition=0, **kwargs)
+      :classmethod:
+
+      Constructor method
+
+      :param :math:`\pi`: The initial probability matrix; its shape must be the same as the number of states and all of them must sum up to 1.
+      :param T: The transition probability matrix; every row must sum up to 1.
+      :param E: A list containing state distribution objects, the length of it is the same as the number of states.
+      :param desired_num_cells: The desired number of cells we want the lineage to end up with.
+      :param censor_condition: An integer :math:`\in` \{0, 1, 2, 3\} that decides the type of censoring.
+
+      Censoring guide
+      - 0 means no pruning
+      - 1 means censor based on the fate of the cell
+      - 2 means censor based on the length of the experiment
+      - 3 means censor based on both the 'fate' and 'time' conditions
+
+
+   .. py:method:: get_parents_for_level(self, level)
+
+      Get the parents's index of a generation in the population list.
+      Given the generation level, this function returns the index of parent cells of the cells being in that generation level.
+      :param level: The number of the generation for a particular parent cell.
+      :return parent_holder: The index of parent cells for the cells in a given generation level.
+
+
+   .. py:method:: __len__(self)
+
+      Defines the length of a lineage by returning the number of cells
+      it contains.
+
+
+
+.. py:function:: generate_lineage_list(pi, T, desired_num_cells, barcode)
+
+   Generates a single lineage tree given Markov variables.
+   This only generates the hidden variables (i.e., the states) in a output binary tree manner.
+   It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
+   :param pi: An array of the initial probability of a cell being a certain state.
+   :param T: An array of the probability of a cell switching states or remaining in the same state.
+   :param desired_num_cells: The desired number of cells in a lineage.
+   :return full_lineage: A list of the generated cell lineage.
+
+
+.. py:function:: output_assign_obs(state, full_lineage, E)
+
+   Observation assignment give a state.
+   Given the lineageTree object and the intended state, this function assigns the corresponding observations
+   coming from specific distributions for that state.
+   :param state: The integer value of the state that is being observed.
+   :param full_lineage: The list of cells within the lineageTree object.
+   :param E: The list of observations assignments.
+
+
+.. py:function:: max_gen(lineage)
+
+   Finds the maximal generation in the tree, and cells organized by their generations.
+   This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
+   creates a list of them, appends the lists leading to have a list of the lists of cells in specific generations.
+   :param lineage: The list of cells in a lineageTree object.
+   :return max: The maximal generation in the tree.
+   :return list_of_lists_of_cells_by_gen: The list of lists of cells belonging to the same genereation separated by specific generations.
+
+
+.. py:function:: get_leaves(lineage)
+
+   A function to find the leaves and their indexes in the lineage list.
+   :param lineage: The list of cells in a lineageTree object.
+   :return leaf_indices: The list of cell indexes.
+   :return leaves: The last cells in the lineage branch.
+
+
