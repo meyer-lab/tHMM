@@ -27,10 +27,6 @@ sphinx-autoapi = "^1.8.4"
 pytest = "6.2"
 pytest-cov = "3.0"
 mypy = "^0.910"
-Sphinx = "^4.5.0"
-nbsphinx = "^0.8.8"
-ipykernel = "^6.13.0"
-sphinx-autoapi = "^1.8.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
