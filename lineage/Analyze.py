@@ -162,6 +162,7 @@ def run_Results_over(output: list, parallel=True) -> list:
     A function that can be parallelized to speed up figure creation.
     Output is a list of tuples from the results of running :func:`run_Analyze_over`
     :param output: The list of results from fitting a lineage.
+    :param parallel: True if we have multiple conditions to run at once, False if no parallel fitting.
     """
     exe: Union[ProcessPoolExecutor, DummyExecutor]
     if parallel:

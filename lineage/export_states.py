@@ -4,8 +4,10 @@ import numpy as np
 import pandas as pd
 
 
-def assign_states(input_X):
-    """ Given a list of lineages, it returns a 2D array of cell states in the form of a tree that will then be written into excel sheets. """
+def assign_states(input_X: list):
+    """ Given a list of lineages, it returns a 2D array of cell states in the form of a tree that will then be written into excel sheets.
+    :param input_X: list of lineages.
+    """
     X = []
     for lin in input_X:
         # we will fill this 17 x 12 array in the form of a lineage with the state of cells and this array forms each lineage block in excel
@@ -41,7 +43,7 @@ def assign_states(input_X):
 
 
 def deintegrate(population, len_condition, gem=False):
-    """ Given the tHMMob.X and the array that holds lengths of excel sheets for a condition, it returns a list including lineages corresponding to each excel sheet."""
+    """ Given the tHMMobj.X and the array that holds lengths of excel sheets for a condition, it returns a list including lineages corresponding to each excel sheet."""
     condition = []
     if gem:
         j = 4
