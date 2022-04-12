@@ -10,6 +10,8 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+from sphinx import addnodes
+import re
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
@@ -75,11 +77,9 @@ autoapi_root = 'technical/api'
 
 autodoc_typehints = 'description'
 
-import re
-
-from sphinx import addnodes
 
 event_sig_re = re.compile(r'([a-zA-Z-]+)\s*\((.*)\)')
+
 
 def parse_event(env, sig, signode):
     m = event_sig_re.match(sig)
@@ -102,6 +102,6 @@ def setup(app):
                         objname='configuration value',
                         indextemplate='pair: %s; configuration value')
     fdesc = TypedField('parameter', label='Parameters',
-                         names=['param'], typenames=['type'], can_collapse=True)
+                       names=['param'], typenames=['type'], can_collapse=True)
     app.add_object_type('event', 'event', 'pair: %s; event', parse_event,
                         doc_field_types=[fdesc])

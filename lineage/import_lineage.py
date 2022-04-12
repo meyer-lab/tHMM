@@ -108,7 +108,7 @@ def assign_observs_AU565(cell, lineage: list, uniq_id: int):
 # partof_path = "lineage/data/MCF10A/"
 
 
-def import_MCF10A(path:str):
+def import_MCF10A(path: str):
     """ Reading the data and extracting lineages and assigning their corresponding observations.
     :param path: the path to the mcf10a data.
     :return population: list of cells structured in CellVar objects.

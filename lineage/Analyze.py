@@ -64,7 +64,7 @@ def run_Analyze_over(list_of_populations: list, num_states: np.ndarray, parallel
     and computing certain statistics, most of which can be done in an
     additional for loop over the results from Analyze.
     :param list_of_populations: The list of cell populations to run the analyze function on.
-    :param num_states: The number of states that we want to run the model for. 
+    :param num_states: The number of states that we want to run the model for.
     :return output: The list of results from fitting a lineage.
     """
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
