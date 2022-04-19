@@ -21,19 +21,30 @@ matplotlib.use('AGG')
 
 
 # T: transition probability matrix
-T = np.array([[0.9, 0.1], [0.1, 0.9]], dtype=float)
+T = np.array([[0.9, 0.03, 0.03, 0.03, 0.01],
+              [0.05, 0.8, 0.05, 0.1],
+              [0.03, 0.03, 0.85, 0.05, 0.04],
+              [0.01, 0.05, 0.1, 0.74, 0.1],
+              [0.1, 0.05, 0.01, 0.03, 0.8]], dtype=float)
 
 # pi: the initial probability vector
 pi = calculate_stationary(T)
 
 # bern, gamma_a, gamma_scale
 state0 = StateDistribution(0.99, 8, 6)
-state1 = StateDistribution(0.75, 8, 1)
-E = [state0, state1]
+state1 = StateDistribution(0.75, 16, 1)
+state2 = StateDistribution(0.99, 12, 6)
+state3 = StateDistribution(0.75, 8, 1)
+state4 = StateDistribution(0.8, 16, 3)
+E = [state0, state1, state2, state3, state4]
 
 state20 = phaseStateDist(0.99, 0.95, 8, 7, 4, 2)
 state21 = phaseStateDist(0.95, 0.9, 6, 4, 3, 5)
-E2 = [state20, state21]
+state22 = phaseStateDist(0.9, 0.95, 8, 7, 4, 2)
+state23 = phaseStateDist(0.99, 0.9, 6, 4, 3, 5)
+state24 = phaseStateDist(0.95, 0.9, 6, 4, 3, 5)
+
+E2 = [state20, state21, state22, state23, state24]
 
 min_desired_num_cells = (2 ** 4) - 1
 max_desired_num_cells = (2 ** 7) - 1
