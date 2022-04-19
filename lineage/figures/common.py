@@ -38,11 +38,11 @@ state3 = StateDistribution(0.75, 8, 1)
 state4 = StateDistribution(0.8, 16, 3)
 E = [state0, state1, state2, state3, state4]
 
-state20 = phaseStateDist(0.99, 0.95, 8, 7, 4, 2)
-state21 = phaseStateDist(0.95, 0.9, 6, 4, 3, 5)
-state22 = phaseStateDist(0.9, 0.95, 8, 7, 4, 2)
-state23 = phaseStateDist(0.99, 0.9, 6, 4, 3, 5)
-state24 = phaseStateDist(0.95, 0.9, 6, 4, 3, 5)
+state20 = phaseStateDist(0.99, 0.95, 14, 4, 3, 2)
+state21 = phaseStateDist(0.85, 0.95, 10, 4, 3, 5)
+state22 = phaseStateDist(0.9, 0.9, 10, 7, 4, 2)
+state23 = phaseStateDist(0.99, 0.99, 5, 7, 4, 5)
+state24 = phaseStateDist(0.95, 0.85, 5, 7, 3, 2)
 
 E2 = [state20, state21, state22, state23, state24]
 

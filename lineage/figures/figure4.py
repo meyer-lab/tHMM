@@ -96,13 +96,13 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
     """
     Accuracy_Sim = output_Sim["state_similarity"]
     Accuracy_Cen = output_Cen["state_similarity"]
-    accuracy_sim_df = pd.DataFrame(columns=["Cell number", "Random Index Accuracy"])
+    accuracy_sim_df = pd.DataFrame(columns=["Cell number", "Rand Index Accuracy"])
     accuracy_sim_df["Cell number"] = x_Sim
-    accuracy_sim_df["Random Index Accuracy"] = Accuracy_Sim
+    accuracy_sim_df["Rand Index Accuracy"] = Accuracy_Sim
 
-    accuracy_cen_df = pd.DataFrame(columns=["Cell number", "Random Index Accuracy"])
+    accuracy_cen_df = pd.DataFrame(columns=["Cell number", "Rand Index Accuracy"])
     accuracy_cen_df["Cell number"] = x_Cen
-    accuracy_cen_df["Random Index Accuracy"] = Accuracy_Cen
+    accuracy_cen_df["Rand Index Accuracy"] = Accuracy_Cen
 
     i = 0
     plotLineage(regGen(45), axes=ax[i], censor=False)
@@ -114,16 +114,16 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
 
     i += 1
     ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
-    sns.regplot(x="Cell number", y="Random Index Accuracy", data=accuracy_sim_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
+    sns.regplot(x="Cell number", y="Rand Index Accuracy", data=accuracy_sim_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=0, top=101)
-    ax[i].set_ylabel(r"Random Index Accuracy [%]")
+    ax[i].set_ylabel(r"Rand Index Accuracy [%]")
     ax[i].set_title("Censored data, uncensored model")
 
     i += 1
     ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
-    sns.regplot(x="Cell number", y="Random Index Accuracy", data=accuracy_cen_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
+    sns.regplot(x="Cell number", y="Rand Index Accuracy", data=accuracy_cen_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=0, top=101)
-    ax[i].set_ylabel(r"Random Index Accuracy [%]")
+    ax[i].set_ylabel(r"Rand Index Accuracy [%]")
     ax[i].set_title("Censored data, censored model")
