@@ -29,7 +29,7 @@ Python dependencies
 ~~~~~~~~~~~~~~~~~~~
 
 ``tHMM`` requires ``virtualenv``. All other required packages can then be installed using ``make venv`` to establish a virtual environment. 
-The Python packages that will be installed are listed in requirements.txt, and can be directly installed using ``pip install -r requirements.txt``.
+The Python packages that will be installed are listed in requirements.txt, and can be directly installed using ``poetry install``.
 
 
 Documentation
