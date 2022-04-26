@@ -319,6 +319,7 @@ def genFigure():
         overlayCartoon(fdir + 'figureS14.svg',
                        f'{cartoon_dir}/figure171.svg', 200, 20, scalee=0.8, scale_y=0.5)
 
+
 def commonAnalyze(list_of_populations, num_states, xtype="length", **kwargs):
     """
     The standard way of analyzing a list of populations (a list of list of lineages)
