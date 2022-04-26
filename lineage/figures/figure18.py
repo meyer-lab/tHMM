@@ -8,7 +8,6 @@ import numpy as np
 import pickle
 import pandas as pd
 import seaborn as sns
-from ..BaumWelch import calculate_stationary
 from .common import getSetup, subplotLabel, commonAnalyze
 from ..LineageTree import LineageTree
 
@@ -18,17 +17,17 @@ for i in range(4):
     lapt_tHMMobj_list.append(pickle.load(pik1))
 
 
-min_desired_num_cells = (2 ** 6) - 1
+desired_num_cells = 15
 num_data_points = 100
-min_num_lineages = 3
-max_num_lineages = 40
+min_num_lineages = 25
+max_num_lineages = 200
 
 # T: transition probability matrix
-T = lapt_tHMMobj_list[0].estimate.T
+T = lapt_tHMMobj_list[3].estimate.T
 # pi: the initial probability vector
-pi = calculate_stationary(T)
+pi = lapt_tHMMobj_list[3].estimate.pi
 
-E = lapt_tHMMobj_list[2].estimate.E
+E = lapt_tHMMobj_list[3].estimate.E
 
 # Creating a list of populations to analyze over
 num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
@@ -37,10 +36,13 @@ list_of_populations = []
 for num in num_lineages:
     population = []
 
+    nn = 0
     for _ in range(num):
-        tmp_lineage = LineageTree.init_from_parameters(pi, T, E, min_desired_num_cells, censor_condition=3, desired_experiment_time=96)
+        tmp_lineage = LineageTree.init_from_parameters(pi, T, E, desired_num_cells, censor_condition=3, desired_experiment_time=96)
         population.append(tmp_lineage)
+        nn += len(tmp_lineage.output_lineage)
 
+    print(nn)
     # Adding populations into a holder for analysing
     list_of_populations.append(population)
 
@@ -62,6 +64,7 @@ def makeFigure():
 def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
     """ Plot accuracy of state prediction and parameter estimation. """
 
+    print("param trues", paramTrues.shape)
     accuracies = dictOut["state_similarity"]
     tr = dictOut["transition_matrix_similarity"]
     pii = dictOut["pi_similarity"]
@@ -123,71 +126,72 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
         sns.regplot(x="x", y="bern "+str(j) + " 0", data=accuracy_df, ax=ax[i], lowess=True, marker='+', color="C"+str(j), scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color":"C"+str(j)})
         ax[i].axhline(y=paramTrues[1, j, 0], linestyle="--", c="C" + str(j), label="S "+str(j+1))
     ax[i].set_xlabel("Number of Cells")
-    ax[i].set_ylabel("Bernoulli p G1")
+    ax[i].set_ylabel("Bernoulli p")
+    ax[i].set_title("Bernoulli p G1 Estimation")
     ax[i].set_ylim(bottom=0.5, top=1.05)
     ax[i].legend()
 
-    i += 1  # (b) bernoulli G2
-    for j in range(6):
-        sns.regplot(x="x", y="bern "+str(j) + " 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', color="C"+str(j), scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color":"C"+str(j)})
-        ax[i].axhline(y=paramTrues[1, j, 1], linestyle="--", c="C" + str(j), label="S "+str(j+1))
-    ax[i].set_xlabel("Number of Cells")
-    ax[i].set_ylabel("Bernoulli p G2")
-    ax[i].set_ylim(bottom=0.5, top=1.05)
-
-
     i += 1 # (c) gamma shape G1
     for j in range(6):
-        sns.regplot(x="x", y=str(j) + " 0", data=accuracy_df, ax=ax[i], lowess=True, scatter=False, marker='+', color="C" + str(j), scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color":"C"+str(j)})
+        sns.regplot(x="x", y=str(j) + " 0", data=accuracy_df, ax=ax[i], lowess=True, marker='+', color="C" + str(j), scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color":"C"+str(j)})
         ax[i].axhline(y=paramTrues[1, j, 2], linestyle="--", c="C"+str(j), label="S "+str(j+1))
-    ax[i].set_ylabel(r"Gamma k G1")
-    ax[i].set_title(r"Gamma k Estimation")
-    ax[i].set_ylim([0.0, 40.0])
+    ax[i].set_ylabel(r"Gamma k")
+    ax[i].set_title(r"Gamma k G1 Estimation")
+    ax[i].set_ylim([0.0, 60.0])
     ax[i].set_xlabel("Number of Cells")
 
     i += 1 # (d) gamma scale G1
     for j in range(6):
-        sns.regplot(x="x", y=str(j) + " 1", data=accuracy_df, ax=ax[i], scatter=False,  lowess=True, marker='+', color="C"+str(j), scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color":"C"+str(j)})
+        sns.regplot(x="x", y=str(j) + " 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', color="C"+str(j), scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color":"C"+str(j)})
         ax[i].axhline(y=paramTrues[1, j, 3], linestyle="--", c="C" + str(j), label="S "+str(j+1))
-    ax[i].set_ylabel(r"Gamma $\theta$ G1")
-    ax[i].set_title(r"Gamma $\theta$ Estimation")
-    ax[i].set_ylim([0.0, 10.0])
+    ax[i].set_ylabel(r"Gamma $\theta$")
+    ax[i].set_title(r"Gamma $\theta$ G1 Estimation")
+    ax[i].set_ylim([0.0, 80.0])
     ax[i].set_xlabel("Number of Cells")
     ax[i].legend()
 
-    i += 1 # (c) gamma shape G2
+    i += 1  # (e) bernoulli G2
     for j in range(6):
-        sns.regplot(x="x", y=str(j) + " 2", data=accuracy_df, ax=ax[i], lowess=True, scatter=False, marker='+', color="C" + str(j), scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color":"C"+str(j)})
+        sns.regplot(x="x", y="bern "+str(j) + " 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', color="C"+str(j), scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color":"C"+str(j)})
+        ax[i].axhline(y=paramTrues[1, j, 1], linestyle="--", c="C" + str(j), label="S "+str(j+1))
+    ax[i].set_xlabel("Number of Cells")
+    ax[i].set_ylabel("Bernoulli p")
+    ax[i].set_title("Bernoulli p G2 Estimation")
+    ax[i].set_ylim(bottom=0.5, top=1.05)
+
+    i += 1 # (f) gamma shape G2
+    for j in range(6):
+        sns.regplot(x="x", y=str(j) + " 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', color="C" + str(j), scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color":"C"+str(j)})
         ax[i].axhline(y=paramTrues[1, j, 4], linestyle="--", c="C"+str(j), label="S "+str(j+1))
-    ax[i].set_ylabel(r"Gamma k G2")
-    ax[i].set_title(r"Gamma k Estimation")
-    ax[i].set_ylim([0.0, 85.0])
+    ax[i].set_ylabel(r"Gamma k")
+    ax[i].set_title(r"Gamma k G2 Estimation")
+    # ax[i].set_ylim([0.0, 85.0])
     ax[i].set_xlabel("Number of Cells")
 
-    i += 1 # (d) gamma scale G2
+    i += 1 # (g) gamma scale G2
     for j in range(6):
-        sns.regplot(x="x", y=str(j) + " 3", data=accuracy_df, ax=ax[i], scatter=False,  lowess=True, marker='+', color="C"+str(j), scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color":"C"+str(j)})
+        sns.regplot(x="x", y=str(j) + " 3", data=accuracy_df, ax=ax[i], lowess=True, marker='+', color="C"+str(j), scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color":"C"+str(j)})
         ax[i].axhline(y=paramTrues[1, j, 5], linestyle="--", c="C" + str(j), label="S "+str(j+1))
-    ax[i].set_ylabel(r"Gamma $\theta$ G2")
-    ax[i].set_title(r"Gamma $\theta$ Estimation")
-    ax[i].set_ylim([0.0, 10.0])
+    ax[i].set_ylabel(r"Gamma $\theta$")
+    ax[i].set_title(r"Gamma $\theta$ G2 Estimation")
+    # ax[i].set_ylim([0.0, 10.0])
     ax[i].set_xlabel("Number of Cells")
 
-
-    i += 1 # (e) accuracy
+    i += 1 # (i) accuracy
     ax[i].set_ylim(bottom=0, top=101)
     sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, color="C0", marker='+', scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color":"C"+str(j)})
     ax[i].set_ylabel(r"Rand Index Accuracy [%]")
     ax[i].set_title("State Assignment Accuracy")
     ax[i].set_xlabel("Number of Cells")
 
-    i += 1
+    i += 1 # (j) T estimates
     ax[i].set_ylim(bottom=0, top=3.0)
     sns.regplot(x="x", y="tr", data=accuracy_df, ax=ax[i], lowess=True, color="C0", marker='+', scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color":"C"+str(j)})
     ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
     ax[i].set_title(r"Error in Estimating T")
+    ax[i].set_xlabel("Number of Cells")
 
-    i += 1
+    i += 1 # (i) pi estimates
     ax[i].set_ylim(bottom=0, top=2.0)
     sns.regplot(x="num lineages", y="pii", data=accuracy_df, ax=ax[i], color="C0", lowess=True, marker='+', scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color":"C"+str(j)})
     ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
