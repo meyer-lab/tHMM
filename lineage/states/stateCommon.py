@@ -18,7 +18,7 @@ warnings.filterwarnings('ignore', r'delta_grad == 0.0.')
 def nLL_sep(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
     a, scale = x
     uncens = jnp.dot(uncens_gammas, gamma.logpdf(uncens_obs, a=a, scale=scale))
-    cens = jnp.dot(cens_gammas, jnp.log(gammaincc(a, cens_obs / scale)))
+    cens = jnp.dot(cens_gammas, gammaincc(a, cens_obs / scale))
     return -1 * (uncens + cens)
 
 
