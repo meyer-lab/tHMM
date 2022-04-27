@@ -499,7 +499,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
     else:
         ax[i].set_ylim(bottom=0, top=101)
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-        ax[i].set_ylabel(r"Random Index Accuracy [%]")
+        ax[i].set_ylabel(r"Adjusted Rand Index Accuracy [%]")
         ax[i].set_title("State Assignment Accuracy")
     ax[i].set_xlabel(xlabel)
 
@@ -544,7 +544,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
     if number_of_params == 6 and (not dist_dist):
         i += 1
         ax[i].set_ylim(bottom=0, top=101)
-        ax[i].set_ylabel(r"Random Index Accuracy [%]")
+        ax[i].set_ylabel(r"Adjusted Rand Index Accuracy [%]")
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_title("State Assignment Accuracy")
         ax[i].set_xlabel(xlabel)
