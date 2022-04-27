@@ -328,15 +328,10 @@ def commonAnalyze(list_of_populations, num_states, xtype="length", **kwargs):
     list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
     list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
     list_of_fE = kwargs.get("list_of_fE", [None] * len(list_of_populations))
-    if num_states == 2:
-        predicted_num_states = kwargs.get("predicted_num_states", 2)
-    elif num_states == 3:
-        predicted_num_states = kwargs.get("predicted_num_states", 3)
-    elif num_states == 4:
-        predicted_num_states = kwargs.get("predicted_num_states", 4)
+
     parallel = kwargs.get("parallel", True)
     # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, predicted_num_states, parallel=parallel,
+    output = run_Analyze_over(list_of_populations, num_states, parallel=parallel,
                               list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
 
     # Collecting the results of analyzing the lineages
@@ -504,7 +499,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
     else:
         ax[i].set_ylim(bottom=0, top=101)
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-        ax[i].set_ylabel(r"Random Index Accuracy [%]")
+        ax[i].set_ylabel(r"Adjusted Rand Index Accuracy [%]")
         ax[i].set_title("State Assignment Accuracy")
     ax[i].set_xlabel(xlabel)
 
@@ -549,7 +544,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
     if number_of_params == 6 and (not dist_dist):
         i += 1
         ax[i].set_ylim(bottom=0, top=101)
-        ax[i].set_ylabel(r"Random Index Accuracy [%]")
+        ax[i].set_ylabel(r"Adjusted Rand Index Accuracy [%]")
         sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
         ax[i].set_title("State Assignment Accuracy")
         ax[i].set_xlabel(xlabel)
