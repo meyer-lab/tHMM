@@ -103,6 +103,7 @@ def figureMaker5(ax, distribution_df, wasser_df):
     ax[i].set_ylim(bottom=10.0, top=101)
     ax[i].legend()
 
+
 def classification_threshold(shape, scale1, scale2):
     """ Given the parameters of the gamma distribution, it provides an analytical threshold for classification.
     This function is specific to this figure, as the shape parameter is shared and only the scale varies.
@@ -110,6 +111,6 @@ def classification_threshold(shape, scale1, scale2):
     if scale1 == scale2:
         return shape * scale1
     else:
-        numer = shape * np.log(scale2/scale1)
-        denom = (1/scale1) - (1/scale2)
-        return numer/denom
+        numer = shape * np.log(scale2 / scale1)
+        denom = (1 / scale1) - (1 / scale2)
+        return numer / denom
