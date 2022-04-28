@@ -69,11 +69,12 @@ def gamma_estimator(gamma_obs: np.ndarray, time_cen: np.ndarray, gammas: np.ndar
 
     assert gammas.shape[0] == gamma_obs.shape[0]
     arrgs = (gamma_obs, time_cen, gammas)
-    opt = {'gtol': 1e-12, 'ftol': 1e-12}
     bnd = (0.001, 100.0)
 
-    res = minimize(GnLL_sep, x0, jac=True, bounds=(bnd, bnd), args=arrgs, options=opt)
-    assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
+    res = minimize(GnLL_sep, x0, jac=True, method="trust-constr", bounds=(bnd, bnd), args=arrgs)
+    if res.success is False:
+        print(res)
+    assert res.success
 
     return res.x
 
@@ -118,12 +119,10 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gammas, x0=None, constr=True):
     In the non-specific case, we have only 1 constraint: scale1 > scale2 ==> A = np.array([1, 3])
     """
     # Handle no observations
+    gammas = [np.squeeze(g) for g in gammas]
     gammas = [np.ones_like(g) if np.sum(g) == 0.0 else g for g in gammas]
 
-    print("xxxxx")
-
     arrgs = (gamma_obs, time_cen, gammas)
-    print(arrgs)
 
     if x0 is None:
         x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
@@ -139,10 +138,9 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gammas, x0=None, constr=True):
         linc = ()
 
     bnds = Bounds(lb=np.ones_like(x0) * 0.001, ub=np.ones_like(x0) * 100.0, keep_feasible=True)
-    print(x0)
     HH = BFGS()
 
     res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=linc)
-    assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
+    assert res.success
 
     return res.x
