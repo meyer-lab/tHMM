@@ -19,8 +19,8 @@ def nLL_sep(x, gamma_obs, time_cen, gammas):
     assert gamma_obs.shape == gammas.shape
     assert gamma_obs.shape == time_cen.shape
     a, scale = x
-    uncens = jnp.dot(gammas * (1 - time_cen), gamma.logpdf(gamma_obs, a=a, scale=scale))
-    cens = jnp.dot(gammas * time_cen, gammaincc(a, gamma_obs / scale))
+    uncens = jnp.dot(gammas * time_cen, gamma.logpdf(gamma_obs, a=a, scale=scale))
+    cens = jnp.dot(gammas * (1 - time_cen), gammaincc(a, gamma_obs / scale))
     return -1 * (uncens + cens)
 
 
