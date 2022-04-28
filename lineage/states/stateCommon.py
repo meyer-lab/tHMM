@@ -15,10 +15,10 @@ config.update('jax_platform_name', 'cpu')
 warnings.filterwarnings('ignore', r'delta_grad == 0.0.')
 
 
-def nLL_sep(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
+def nLL_sep(x, gamma_obs, time_cen, gammas):
     a, scale = x
-    uncens = jnp.dot(uncens_gammas, gamma.logpdf(uncens_obs, a=a, scale=scale))
-    cens = jnp.dot(cens_gammas, gammaincc(a, cens_obs / scale))
+    uncens = jnp.dot(gammas * (1 - time_cen), gamma.logpdf(gamma_obs, a=a, scale=scale))
+    cens = jnp.dot(gammas * time_cen, gammaincc(a, gamma_obs / scale))
     return -1 * (uncens + cens)
 
 
@@ -52,9 +52,9 @@ def gamma_uncensored(gamma_obs, gammas):
     return [a_hat0, gammaCor / a_hat0]
 
 
-def gamma_estimator(gamma_obs, time_cen, gammas, x0):
+def gamma_estimator(gamma_obs, time_cen: np.ndarray, gammas, x0):
     """
-    This is a weighted, closed-form estimator for two parameters
+    This is a weighted estimator for two parameters
     of the Gamma distribution.
     """
     # Handle no observations
@@ -66,16 +66,12 @@ def gamma_estimator(gamma_obs, time_cen, gammas, x0):
         return gamma_uncensored(gamma_obs, gammas)
 
     assert gammas.shape[0] == gamma_obs.shape[0]
-    arrgs = (gamma_obs[time_cen == 1], gammas[time_cen == 1], gamma_obs[time_cen == 0], gammas[time_cen == 0])
+    arrgs = (gamma_obs, time_cen, gammas)
     opt = {'gtol': 1e-12, 'ftol': 1e-12}
-    bnd = (1.0, 100.0)
+    bnd = (0.001, 100.0)
 
-    def GnLL(x, *args):
-        val, grad = GnLL_sep(x, *args)
-        return val, np.array(grad)
-
-    res = minimize(GnLL, x0, jac=True, bounds=(bnd, bnd), args=arrgs, options=opt)
-    # assert (res.success is True) or ("maximum number of function evaluations is exceeded" in res.message)
+    res = minimize(GnLL_sep, x0, jac=True, bounds=(bnd, bnd), args=arrgs, options=opt)
+    assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
 
@@ -100,11 +96,11 @@ def basic_censor(cell):
                 cell.get_sister().right.observed = False
 
 
-def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
+def nLL_atonce(x, gamma_obs, time_cen, gammas):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
     outt = 0.0
     for i in range(len(x) - 1):
-        outt += nLL_sep([x[0], x[1 + i]], uncens_obs[i], uncens_gammas[i], cens_obs[i], cens_gammas[i])
+        outt += nLL_sep([x[0], x[1 + i]], gamma_obs[i], time_cen[i], gammas[i])
 
     return outt
 
@@ -112,7 +108,7 @@ def nLL_atonce(x, uncens_obs, uncens_gammas, cens_obs, cens_gammas):
 nLL_atonceJ = jit(value_and_grad(nLL_atonce))
 
 
-def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None, constr=True):
+def gamma_estimator_atonce(gamma_obs, time_cen, gammas, x0=None, constr=True):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
@@ -120,16 +116,12 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None, constr=True):
     In the non-specific case, we have only 1 constraint: scale1 > scale2 ==> A = np.array([1, 3])
     """
     # Handle no observations
-    gammas = [np.ones_like(g) if np.sum(g) == 0.0 else g for g in gamas]
+    gammas = [np.ones_like(g) if np.sum(g) == 0.0 else g for g in gammas]
 
-    for i, gamma in enumerate(gammas):
-        assert gamma.shape[0] == gamma_obs[i].shape[0]
-    arg1 = [np.squeeze(gamma_obs[i][time_cen[i] == 1]) for i in range(len(gamma_obs))]
-    arg2 = [np.squeeze(gammas[i][time_cen[i] == 1]) for i in range(len(gamma_obs))]
-    arg3 = [np.squeeze(gamma_obs[i][time_cen[i] == 0]) for i in range(len(gamma_obs))]
-    arg4 = [np.squeeze(gammas[i][time_cen[i] == 0]) for i in range(len(gamma_obs))]
+    print("xxxxx")
 
-    arrgs = (arg1, arg2, arg3, arg4)
+    arrgs = (gamma_obs, time_cen, gammas)
+    print(arrgs)
 
     if x0 is None:
         x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
@@ -145,6 +137,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gamas, x0=None, constr=True):
         linc = ()
 
     bnds = Bounds(lb=np.ones_like(x0) * 0.001, ub=np.ones_like(x0) * 100.0, keep_feasible=True)
+    print(x0)
     HH = BFGS()
 
     res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=linc)
