@@ -16,6 +16,8 @@ warnings.filterwarnings('ignore', r'delta_grad == 0.0.')
 
 
 def nLL_sep(x, gamma_obs, time_cen, gammas):
+    assert gamma_obs.shape == gammas.shape
+    assert gamma_obs.shape == time_cen.shape
     a, scale = x
     uncens = jnp.dot(gammas * (1 - time_cen), gamma.logpdf(gamma_obs, a=a, scale=scale))
     cens = jnp.dot(gammas * time_cen, gammaincc(a, gamma_obs / scale))
@@ -52,7 +54,7 @@ def gamma_uncensored(gamma_obs, gammas):
     return [a_hat0, gammaCor / a_hat0]
 
 
-def gamma_estimator(gamma_obs, time_cen: np.ndarray, gammas, x0):
+def gamma_estimator(gamma_obs: np.ndarray, time_cen: np.ndarray, gammas: np.ndarray, x0: np.ndarray):
     """
     This is a weighted estimator for two parameters
     of the Gamma distribution.
