@@ -35,7 +35,8 @@ def makeFigure():
     gemBIC = find_BIC(gemcitabine, desired_num_states, num_cells=4537)
 
     # # Lapatinib
-    # lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(lapatinib, 3, fpi=True)
+    # lapt_tHMMobj_list, _ = Analyze_list(lapatinib, 3, fpi=True)
+    # lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
 
     # # assign the predicted states to each cell
     # for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
@@ -50,7 +51,8 @@ def makeFigure():
     # pik1.close()
 
     # # Gemcitabine
-    # gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(gemcitabine, 3, fpi=True)
+    # gemc_tHMMobj_list, _ = Analyze_list(gemcitabine, 3, fpi=True)
+    # gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
 
     # for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
     #     for lin_indx, lin in enumerate(gemc_tHMMobj.X):
