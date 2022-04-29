@@ -2,7 +2,7 @@
 import pytest
 import numpy as np
 from sklearn.metrics import rand_score
-from ..BaumWelch import do_E_step, calculate_log_likelihood
+from ..BaumWelch import do_E_step, do_M_T_step, do_M_pi_step, do_M_E_step, calculate_log_likelihood
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
 from ..figures.common import pi, T, E
@@ -44,6 +44,21 @@ def test_E_step(cens):
 
     assert rand_score(true_states, pred_states[0]) >= 0.95
 
-def test_M_step():
+@pytest.mark.parametrize("cens", [0, 2])
+def test_M_step(cens):
     """ This tests that given the true cell states, can the model estimate parameters correctly. """
-    
+    X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 7) - 1, desired_experimental_time=200, censor_condition=cens)
+
+    tHMMobj = tHMM([X], num_states=2)
+    MSD, _, betas, gammas = do_E_step(tHMMobj)
+
+    T_est = do_M_T_step([tHMMobj], [MSD], [betas], [gammas])
+    pi_est = do_M_pi_step([tHMMobj], [gammas])
+    do_M_E_step(tHMMobj, gammas)
+
+    assert E_est[0].dist(E[0]) < 5.0
+    assert E_est[1].dist(E[1]) < 5.0
+
+    assert np.allclose(pi_est, pi)
+    assert np.allclose(T_est, T)
+
