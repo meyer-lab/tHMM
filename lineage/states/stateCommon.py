@@ -141,6 +141,6 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gammas, x0=None, constr=True):
     HH = BFGS()
 
     res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=linc)
-    assert res.success
+    assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
