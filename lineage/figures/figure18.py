@@ -5,29 +5,28 @@ Figure S03 analyzes heterogeneous (5 state), censored (by both time and fate),
 populations of lineages (more than one lineage per populations).
 """
 import numpy as np
-import pickle
 import pandas as pd
 import seaborn as sns
 from .common import getSetup, subplotLabel, commonAnalyze
 from ..LineageTree import LineageTree
+from ..Analyze import Analyze_list
+from ..Lineage_collections import Gemcitabine_Control, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 
-pik1 = open("lapatinibs.pkl", "rb")
-lapt_tHMMobj_list = []
-for i in range(4):
-    lapt_tHMMobj_list.append(pickle.load(pik1))
-
+lapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
+# Lapatinib
+lapt_tHMMobj_list, _ = Analyze_list(lapatinib, 6, fpi=True)
 
 desired_num_cells = 15
-num_data_points = 100
+num_data_points = 10
 min_num_lineages = 25
 max_num_lineages = 200
 
 # T: transition probability matrix
-T = lapt_tHMMobj_list[3].estimate.T
+T = lapt_tHMMobj_list[2].estimate.T
 # pi: the initial probability vector
-pi = lapt_tHMMobj_list[3].estimate.pi
+pi = lapt_tHMMobj_list[2].estimate.pi
 
-E = lapt_tHMMobj_list[3].estimate.E
+E = lapt_tHMMobj_list[2].estimate.E
 
 # Creating a list of populations to analyze over
 num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)

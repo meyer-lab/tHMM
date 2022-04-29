@@ -30,6 +30,8 @@ hgfBIC = find_BIC(GFs, desired_num_states, num_cells=1306)
 # HGF
 hgf_tHMMobj_list, hgf_states_list, _ = Analyze_list(GFs, list(hgfBIC).index(0) + 1, fpi=True)
 
+hgf_states_list = [tHMMobj.predict() for tHMMobj in hgf_tHMMobj_list]
+
 # assign the predicted states to each cell
 for idx, hgf_tHMMobj in enumerate(hgf_tHMMobj_list):
     for lin_indx, lin in enumerate(hgf_tHMMobj.X):
