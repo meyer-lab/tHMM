@@ -56,9 +56,8 @@ def test_M_step(cens):
     pi_est = do_M_pi_step([tHMMobj], [gammas])
     do_M_E_step(tHMMobj, gammas)
 
-    assert E_est[0].dist(E[0]) < 5.0
-    assert E_est[1].dist(E[1]) < 5.0
+    assert tHMMobj.estimate.E[0].dist(E[0]) < 5.0
+    assert tHMMobj.estimate.E[1].dist(E[1]) < 5.0
 
     assert np.allclose(pi_est, pi)
     assert np.allclose(T_est, T)
-
