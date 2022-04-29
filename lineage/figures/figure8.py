@@ -92,7 +92,7 @@ def run_BIC(E, lineages):
         nums = 0
         for lin in output[idx][0].X:
             nums += len(lin.output_lineage)
-        BIC, _ = output[idx][0].get_BIC(output[idx][2], num_cells=nums)
+        BIC, _ = output[idx][0].get_BIC(output[idx][1], num_cells=nums)
         BICs[idx] = BIC
     # normalize
     return BICs - np.min(BICs)

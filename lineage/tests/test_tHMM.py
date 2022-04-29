@@ -100,7 +100,7 @@ def test_small_lineages(sizze, stateNum):
     # test with 2 state model
     lin = [LineageTree.init_from_parameters(pi, T, E, sizze) for _ in range(2)]
 
-    _, _, LL1 = Analyze(lin, stateNum)
+    _, LL1 = Analyze(lin, stateNum)
     assert np.all(np.isfinite(LL1))
 
 
@@ -126,6 +126,6 @@ def test_BIC():
         output = run_Analyze_over(lin, desired_num_states)
 
         for idx in range(len(desired_num_states)):
-            BIC[idx, j], _ = output[idx][0].get_BIC(output[idx][2], nums)
+            BIC[idx, j], _ = output[idx][0].get_BIC(output[idx][1], nums)
         BIC[:, j] = BIC[:, j] - np.min(BIC[:, j])
     assert np.count_nonzero(BIC[0, :] == 0) > 10
