@@ -71,11 +71,7 @@ def gamma_estimator(gamma_obs: np.ndarray, time_cen: np.ndarray, gammas: np.ndar
     arrgs = (gamma_obs, time_cen, gammas)
     bnd = (0.001, 100.0)
 
-    res = minimize(GnLL_sep, x0, jac=True, method="trust-constr", bounds=(bnd, bnd), args=arrgs)
-    if res.success is False:
-        print(res)
-    assert res.success
-
+    res = minimize(GnLL_sep, x0, jac=True, bounds=(bnd, bnd), args=arrgs)
     return res.x
 
 
