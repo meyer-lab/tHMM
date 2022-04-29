@@ -139,14 +139,14 @@ class tHMM:
 
         log_scores = []
         for idx, lineageObj in enumerate(self.X):
-            log_sc = 0.0
+            log_score = 0.0
             # the first term is the value of pi for the state of the first cell
-            log_sc += np.log(pi[X_state_tree_sequence[idx][0]])
-            log_sc += log_T_score(T, X_state_tree_sequence[idx], lineageObj)
-            log_sc += log_E_score(get_Emission_Likelihoods(self, E)
+            log_score += np.log(pi[X_state_tree_sequence[idx][0]])
+            log_score += log_T_score(T, X_state_tree_sequence[idx], lineageObj)
+            log_score += log_E_score(get_Emission_Likelihoods(self, E)
                                      [idx], X_state_tree_sequence[idx])
-            assert np.all(np.isfinite(log_sc))
-            log_scores.append(log_sc)
+            assert np.all(np.isfinite(log_score))
+            log_scores.append(log_score)
         return log_scores
 
 

@@ -64,7 +64,7 @@ def calculate_stationary(T: np.ndarray) -> np.ndarray:
     return w / np.sum(w)
 
 
-def do_M_step(tHMMobj, MSD: list, betas: list, gammas: list):
+def do_M_step(tHMMobj: list, MSD: list, betas: list, gammas: list):
     """
     Calculates the maximization step of the Baum Welch algorithm
     given output of the expectation step.
@@ -72,7 +72,7 @@ def do_M_step(tHMMobj, MSD: list, betas: list, gammas: list):
     separate functions.
 
     :param tHMMobj: A class object with properties of the lineages of cells
-    :type tHMMobj: objector list
+    :type tHMMobj: list
     :param MSD: The marginal state distribution P(z_n = k)
     :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
