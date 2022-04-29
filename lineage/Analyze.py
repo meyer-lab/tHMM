@@ -23,8 +23,8 @@ def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, int, float]:
     :return st: The nested list of states assigned to cells, with the order of cells from root to leaf in each lineage, and generation.
     :return LL: The log-likelihood of the fitted model.
     """
-    tHMMobj_list, st, LL = Analyze_list([X], num_states, **kwargs)
-    return tHMMobj_list[0], st[0], LL
+    tHMMobj_list, LL = Analyze_list([X], num_states, **kwargs)
+    return tHMMobj_list[0], LL
 
 
 def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list, list, float]:
@@ -47,9 +47,8 @@ def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list
             tHMMobj_list = tHMMobj_list2
             LL = LL2
 
-    pred_states_by_lineage_by_conc = [tHMMobj.predict() for tHMMobj in tHMMobj_list]
 
-    return tHMMobj_list, pred_states_by_lineage_by_conc, LL
+    return tHMMobj_list, LL
 
 
 def run_Analyze_over(list_of_populations: list, num_states: np.ndarray, parallel=True, atonce=False, **kwargs) -> list:
@@ -95,14 +94,13 @@ def run_Analyze_over(list_of_populations: list, num_states: np.ndarray, parallel
     return output
 
 
-def Results(tHMMobj, pred_states_by_lineage: list, LL: float) -> dict[str, Any]:
+def Results(tHMMobj, LL: float) -> dict[str, Any]:
     """
     This function calculates several results of fitting a synthetic lineage and stores it in a dictionary.
     The dictionary contains the total number of lineages, the log likelihood of state assignments, and
     the total number of cells. It also contains metrics such as the accuracy of state assignment predictions,
     the distance between two distributions, and the Wasserstein distance between two states.
     :param tHMMobj: An instantiation of the tHMM class.
-    :param pred_states_by_lineage: The list of cells in each lineage with states assigned to each cell.
     :param LL: The log-likelihood of the fitted model.
     :return results_dict: A dictionary containing metrics of accuracy and scoring for the results of fitting a lineage.
     """
