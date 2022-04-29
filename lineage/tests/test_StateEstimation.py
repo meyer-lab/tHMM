@@ -1,12 +1,10 @@
 """ Unit test file. """
 import pytest
 import numpy as np
-import scipy.stats as sp
 
 from ..BaumWelch import do_E_step
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
-from ..states.stateCommon import gamma_estimator_atonce
 from ..states.StateDistributionGamma import atonce_estimator, StateDistribution as gamma_state
 from ..states.StateDistributionGaPhs import StateDistribution as gamma_statePh
 
