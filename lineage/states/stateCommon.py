@@ -136,7 +136,13 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gammas, x0=None, constr=True):
     bnds = Bounds(lb=np.ones_like(x0) * 0.001, ub=np.ones_like(x0) * 100.0, keep_feasible=True)
     HH = BFGS()
 
-    res = minimize(nLL_atonceJ, x0=x0, jac=True, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=linc)
+    def func(x, *args):
+        a, b = nLL_atonceJ(x, *args)
+        assert np.isfinite(a)
+        assert np.all(np.isfinite(b))
+        return a, b
+
+    res = minimize(func, x0=x0, jac=True, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=linc)
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
