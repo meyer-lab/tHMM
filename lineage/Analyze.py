@@ -47,7 +47,6 @@ def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list
             tHMMobj_list = tHMMobj_list2
             LL = LL2
 
-
     return tHMMobj_list, LL
 
 
