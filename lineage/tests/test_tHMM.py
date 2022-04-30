@@ -5,7 +5,6 @@ import numpy as np
 from ..UpwardRecursion import (
     get_Marginal_State_Distributions,
     get_Emission_Likelihoods,
-    get_leaf_Normalizing_Factors,
 )
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
@@ -35,9 +34,6 @@ class TestModel(unittest.TestCase):
 
         self.MSD = get_Marginal_State_Distributions(self.t)
         self.MSD3 = get_Marginal_State_Distributions(self.t3)
-
-        self.EL = get_Emission_Likelihoods(self.t)
-        self.EL3 = get_Emission_Likelihoods(self.t3)
 
     def test_init_paramlist(self):
         """
@@ -77,11 +73,14 @@ class TestModel(unittest.TestCase):
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         """
-        for ind, ELlin in enumerate(self.EL):
+        EL = get_Emission_Likelihoods(self.t)
+        EL3 = get_Emission_Likelihoods(self.t3)
+
+        for ind, ELlin in enumerate(EL):
             self.assertGreaterEqual(ELlin.shape[0], 0)  # at least zero cells in each lineage
-            self.assertGreaterEqual(self.EL3[ind].shape[0], 0)  # at least zero cells in each lineage
+            self.assertGreaterEqual(EL3[ind].shape[0], 0)  # at least zero cells in each lineage
             self.assertEqual(ELlin.shape[1], 2)  # there are 2 states for each cell
-            self.assertEqual(self.EL3[ind].shape[1], 3)  # there are 3 states for each cell
+            self.assertEqual(EL3[ind].shape[1], 3)  # there are 3 states for each cell
 
 
 def test_fit_performance():
