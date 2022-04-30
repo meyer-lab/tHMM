@@ -7,7 +7,7 @@ import scipy.stats as sp
 
 from .UpwardRecursion import get_Emission_Likelihoods
 from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step, do_M_E_step_atonce
-from .Viterbi import get_leaf_deltas, get_nonleaf_deltas, Viterbi
+from .Viterbi import Viterbi
 
 
 class estimate:
@@ -64,7 +64,6 @@ class tHMM:
         self.num_states = num_states  # number of discrete hidden states, should be integral
         self.estimate = estimate(
             self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
-        self.EL = get_Emission_Likelihoods(self)
 
     def fit(self, tolerance=1e-9, max_iter=1000):
         """
@@ -84,10 +83,7 @@ class tHMM:
 
         :return: assigned states to each cell in each lineage. It is organized in the form of list of arrays, each array shows the state of cells in one lineage.
         """
-        deltas, state_ptrs = get_leaf_deltas(self)
-        get_nonleaf_deltas(self, deltas, state_ptrs)
-        pred_states_by_lineage = Viterbi(self, deltas, state_ptrs)
-        return pred_states_by_lineage
+        return Viterbi(self)
 
     def get_BIC(self, LL: float, num_cells: int, atonce=False, mcf10a=False) -> Tuple[float, float]:
         """
