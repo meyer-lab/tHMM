@@ -137,6 +137,10 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gammas, x0=None, constr=True):
     HH = BFGS()
 
     def func(x, *args):
+        # Make sure optimization doesn't pass in negative numbers
+        if np.any(x <= 0.0):
+            return 1.0e6, np.zeros_like(x)
+
         a, b = nLL_atonceJ(x, *args)
         assert np.isfinite(a)
         assert np.all(np.isfinite(b))
