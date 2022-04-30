@@ -66,7 +66,7 @@ def import_AU565(path: str) -> list:
     return population
 
 
-def assign_observs_AU565(cell, lineage: list, uniq_id: int):
+def assign_observs_AU565(cell, lineage, uniq_id: int):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it.
     :param cell: a CellVar object to be assigned observations.
     :param lineage: the lineage list of cells that the given cell is from.
@@ -163,7 +163,7 @@ def import_MCF10A(path: str):
     return population
 
 
-def assign_observs_MCF10A(cell, lineage: list, uniq_id: int):
+def assign_observs_MCF10A(cell, lineage, uniq_id: int):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it.
     :param cell: a CellVar object to be assigned observations.
     :param lineage: the lineage list of cells that the given cell is from.
