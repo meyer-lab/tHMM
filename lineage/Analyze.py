@@ -171,7 +171,7 @@ def run_Results_over(output: list, parallel=True) -> list:
     return [prom.result() for prom in prom_holder]
 
 
-def permute_states(tHMMobj: Any, switch_map: np.array) -> Tuple[Any, list]:
+def permute_states(tHMMobj: Any, switch_map: np.ndarray) -> Tuple[Any, list]:
     """
     This function takes the tHMMobj and the predicted states,
     and finds out whether we need to switch the state identities or not based on the likelihood.
