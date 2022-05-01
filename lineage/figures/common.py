@@ -225,37 +225,17 @@ def genFigure():
     if sys.argv[1] == '11':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/figure01.svg', 450, 50, scale_x=0.9, scale_y=1.2)
-        overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/lapatinib.svg', 5, 80, scalee=0.8)
-        overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 450, 215, scalee=1.44)
-        overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 645, 215, scalee=1.44)
-        overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 840, 215, scalee=1.44)
-        overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 1040, 215, scalee=1.44)
+                       f'{cartoon_dir}/figure01.svg', 10, 50, scale_x=0.77, scale_y=0.9)
 
     if sys.argv[1] == '12':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/figure02.svg', 450, 50, scale_x=0.9, scale_y=1.2)
-        overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/gemcitabine.svg', 10, 70, scalee=1.05)
-        overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 450, 215, scalee=1.44)
-        overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 645, 215, scalee=1.44)
-        overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 840, 215, scalee=1.44)
-        overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 1040, 215, scalee=1.44)
+                       f'{cartoon_dir}/figure02.svg', 50, 50, scale_x=0.77, scale_y=0.9)
 
     if sys.argv[1] == '91':
         # Overlay Transition block
         overlayCartoon(fdir + 'figure91.svg',
-                       f'{cartoon_dir}/figure03.svg', 430, 30, scale_x=0.9, scale_y=1.5)
+                       f'{cartoon_dir}/figure03.svg', 30, 30, scale_x=0.5, scale_y=0.9)
         overlayCartoon(fdir + 'figure91.svg',
                        f'{cartoon_dir}/HGF.svg', 0, 80, scalee=1.1)
         overlayCartoon(fdir + 'figure91.svg',
@@ -572,38 +552,33 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
 def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(num_states):  # lapatinib that has 3 states
-        ax[10].plot(cons, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7)
+        ax[8].plot(cons, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7)
+        ax[8].set_title("G1 phase")
+        ax[9].plot(cons, lpt_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7)
+        ax[9].set_title("S/G2 phase")
+        ax[10].plot(cons, bern_lpt[:, i, 0], label="state " + str(i + 1), alpha=0.7)
         ax[10].set_title("G1 phase")
-        ax[11].plot(cons, lpt_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7)
+        ax[11].plot(cons, bern_lpt[:, i, 1], label="state " + str(i + 1), alpha=0.7)
         ax[11].set_title("S/G2 phase")
-        ax[12].plot(cons, bern_lpt[:, i, 0], label="state " + str(i + 1), alpha=0.7)
-        ax[12].set_title("G1 phase")
-        ax[13].plot(cons, bern_lpt[:, i, 1], label="state " + str(i + 1), alpha=0.7)
-        ax[13].set_title("S/G2 phase")
+
+    # ylim and ylabel
+    for i in range(8, 10):
+        ax[i].set_ylabel("Log10-Mean Time [hr]")
+        ax[i].set_ylim([0, 4.0])
 
     # ylim and ylabel
     for i in range(10, 12):
-        ax[i].set_ylabel("Mean Time [hr]")
-        ax[i].set_ylim([0, 6.0])
-
-    # ylim and ylabel
-    for i in range(12, 14):
         ax[i].set_ylabel("Division Probability")
         ax[i].set_ylim([0.0, 1.05])
 
     # legend and xlabel
-    for i in range(10, 14):
+    for i in range(8, 12):
         ax[i].legend()
         ax[i].set_xlabel("Concentration [nM]")
         ax[i].set_xticklabels(concsValues, rotation=30)
-        ax[i].text(-0.2, 1.25, ascii_lowercase[i - 5], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
 
 
 def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
-    for i in range(3):
-        ax[i].axis("off")
-        ax[7 + i].axis("off")
-    ax[0].text(-0.2, 1.25, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
 
     # lapatinib
     lpt_avg = np.zeros((4, num_states, 2))  # the avg lifetime: num_conc x num_states x num_phases
@@ -612,8 +587,8 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     print(Dname, "\n the \u03C0: ", tHMMobj_list[0].estimate.pi, "\n the transition matrix: ", tHMMobj_list[0].estimate.T)
     for idx, tHMMobj in enumerate(tHMMobj_list):  # for each concentration data
         for i in range(num_states):
-            lpt_avg[idx, i, 0] = tHMMobj.estimate.E[i].params[2] * tHMMobj.estimate.E[i].params[3]  # G1
-            lpt_avg[idx, i, 1] = tHMMobj.estimate.E[i].params[4] * tHMMobj.estimate.E[i].params[5]  # G2
+            lpt_avg[idx, i, 0] = np.log10(tHMMobj.estimate.E[i].params[2] * tHMMobj.estimate.E[i].params[3])  # G1
+            lpt_avg[idx, i, 1] = np.log10(tHMMobj.estimate.E[i].params[4] * tHMMobj.estimate.E[i].params[5])  # G2
             # bernoullis
             for j in range(2):
                 bern_lpt[idx, i, j] = tHMMobj.estimate.E[i].params[j]
