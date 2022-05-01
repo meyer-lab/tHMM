@@ -25,3 +25,5 @@ def makeFigure():
         ax[i].axis("off")
 
     return f
+
+# plot_networkx(num_states, gemc_tHMMobj_list[0].estimate.T, "Gemcitabine_control")
