@@ -89,8 +89,8 @@ def do_M_step(tHMMobj: list, MSD: list, betas: list, gammas: list):
         T = do_M_T_step(tHMMobj, MSD, betas, gammas)
 
         # each tHMMobj has its own T
-        for jj, t in enumerate(tHMMobj):
-            t.estimate.T = T[jj]
+        for t in tHMMobj:
+            t.estimate.T = T
 
     if tHMMobj[0].estimate.fpi is None:
         assert tHMMobj[0].fpi is None
@@ -149,21 +149,20 @@ def do_M_T_step(tHMMobj, MSD: list, betas: list, gammas: list) -> list:
     """
     n = tHMMobj[0].num_states
 
-    T_estimate = []
-    for i, tt in enumerate(tHMMobj):
-        numer_e = np.full((n, n), 0.1 / n)
-        denom_e = np.ones(n) + 0.1
+    # One pseudocount spread across states
+    numer_e = np.full((n, n), 0.1 / n)
+    denom_e = np.ones(n) + 0.1
 
+    for i, tt in enumerate(tHMMobj):
         for num, lO in enumerate(tt.X):
             # local T estimate
             numer_e += get_all_zetas(lO, betas[i][num], MSD[i][num], gammas[i][num], tt.estimate.T)
             denom_e += sum_nonleaf_gammas(lO, gammas[i][num])
 
-        T_temp = numer_e / denom_e[:, np.newaxis]
-        T_temp /= T_temp.sum(axis=1)[:, np.newaxis]
+    T_estimate = numer_e / denom_e[:, np.newaxis]
+    T_estimate /= T_estimate.sum(axis=1)[:, np.newaxis]
 
-        assert np.all(np.isfinite(T_temp))
-        T_estimate.append(T_temp)
+    assert np.all(np.isfinite(T_estimate))
 
     return T_estimate
 
