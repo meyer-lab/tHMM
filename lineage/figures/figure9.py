@@ -1,7 +1,6 @@
 """ This file plots the BIC for the experimental data. """
 
 import numpy as np
-import pickle
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import run_Analyze_over, Analyze_list
 from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
