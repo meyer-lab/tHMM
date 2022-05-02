@@ -1,9 +1,8 @@
 """ This file plots the BIC for the experimental data. """
 
 import numpy as np
-
 from matplotlib.ticker import MaxNLocator
-from ..Analyze import run_Analyze_over
+from ..Analyze import run_Analyze_over, Analyze_list
 from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .common import getSetup
 
@@ -35,7 +34,8 @@ def makeFigure():
     gemBIC = find_BIC(gemcitabine, desired_num_states, num_cells=4537)
 
     # # Lapatinib
-    # lapt_tHMMobj_list, lapt_states_list, _ = Analyze_list(lapatinib, 3, fpi=True)
+    # lapt_tHMMobj_list, _ = Analyze_list(lapatinib, 6, fpi=True)
+    # lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
 
     # # assign the predicted states to each cell
     # for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
@@ -50,7 +50,8 @@ def makeFigure():
     # pik1.close()
 
     # # Gemcitabine
-    # gemc_tHMMobj_list, gemc_states_list, _ = Analyze_list(gemcitabine, 3, fpi=True)
+    # gemc_tHMMobj_list, _ = Analyze_list(gemcitabine, 5, fpi=True)
+    # gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
 
     # for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
     #     for lin_indx, lin in enumerate(gemc_tHMMobj.X):
