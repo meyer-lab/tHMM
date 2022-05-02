@@ -88,7 +88,7 @@ def do_M_step(tHMMobj: list, MSD: list, betas: list, gammas: list):
         assert tHMMobj[0].fT is None
         T = do_M_T_step(tHMMobj, MSD, betas, gammas)
 
-        # each tHMMobj has its own T
+        # all the objects in the population have the same T
         for t in tHMMobj:
             t.estimate.T = T
 
