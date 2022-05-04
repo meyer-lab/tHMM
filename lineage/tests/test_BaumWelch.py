@@ -28,6 +28,7 @@ def test_BW(cens, nStates):
     assert np.isfinite(new_LL_list_after)
     assert LL_after > LL_before
 
+
 @pytest.mark.parametrize("cens", [0, 2])
 def test_E_step(cens):
     """ This tests that given the true model parameters, can it estimate the states correctly."""
