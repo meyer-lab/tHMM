@@ -5,7 +5,7 @@ from sklearn.metrics import rand_score
 from ..BaumWelch import do_E_step, do_M_E_step, calculate_log_likelihood
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
-from ..figures.common import pi, T, E
+from ..figures.common import pi, T, E, E2
 
 
 @pytest.mark.parametrize("cens", [0, 2])
@@ -28,7 +28,7 @@ def test_BW(cens, nStates):
     assert np.isfinite(new_LL_list_after)
     assert LL_after > LL_before
 
-@pytest.mark.parametrize("cens", [0, 2])
+@pytest.mark.parametrize("cens", [0, 3])
 def test_E_step(cens):
     """ This tests that given the true model parameters, can it estimate the states correctly."""
     X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 7) - 1, desired_experimental_time=200, censor_condition=cens)
@@ -45,9 +45,10 @@ def test_E_step(cens):
     assert rand_score(true_states, pred_states[0]) >= 0.95
 
 @pytest.mark.parametrize("cens", [0, 2])
-def test_M_step(cens):
-    X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 10) - 1, desired_experimental_time=400, censor_condition=cens)
-    tHMMobj = tHMM([X], num_states=2) 
+@pytest.mark.parametrize("Emissions", [E, E2])
+def test_M_step(cens, Emissions):
+    X = LineageTree.init_from_parameters(pi, T, Emissions, desired_num_cells=(2 ** 8) - 1, desired_experimental_time=200, censor_condition=cens)
+    tHMMobj = tHMM([X], num_states=2)
     gammas = [np.zeros((len(lineage.output_lineage), tHMMobj.num_states)) for lineage in tHMMobj.X]
 
     # create the gamma matrix (N x K) that shows the probability of a cell n being in state k from the true state assignments.
@@ -57,6 +58,11 @@ def test_M_step(cens):
 
     do_M_E_step(tHMMobj, gammas)
     # test bernoulli
-    np.testing.assert_allclose(tHMMobj.estimate.E[0].params[0], E[0].params[0], rtol=0.1)
-    # gamma parameters
-    np.testing.assert_allclose(tHMMobj.estimate.E[0].params[1:], E[0].params[1:], rtol=0.5)
+    if len(Emissions[0].params) > 3: # phase-specific case
+        np.testing.assert_allclose(tHMMobj.estimate.E[0].params[0:2], Emissions[0].params[0:2], rtol=0.1)
+        # gamma parameters
+        np.testing.assert_allclose(tHMMobj.estimate.E[0].params[2:], Emissions[0].params[2:], rtol=0.5)
+    else:
+        np.testing.assert_allclose(tHMMobj.estimate.E[0].params[0], Emissions[0].params[0], rtol=0.1)
+        # gamma parameters
+        np.testing.assert_allclose(tHMMobj.estimate.E[0].params[1:], Emissions[0].params[1:], rtol=0.5)
