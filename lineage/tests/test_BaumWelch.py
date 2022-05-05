@@ -44,10 +44,16 @@ def test_E_step(cens):
 
     assert rand_score(true_states, pred_states[0]) >= 0.95
 
-@pytest.mark.parametrize("cens", [0, 2])
+@pytest.mark.parametrize("cens", [0, 3])
 @pytest.mark.parametrize("Emissions", [E, E2])
 def test_M_step(cens, Emissions):
-    X = LineageTree.init_from_parameters(pi, T, Emissions, desired_num_cells=(2 ** 8) - 1, desired_experimental_time=200, censor_condition=cens)
+    """ The M step of the BW. check the emission parameters if the true states are given. """
+
+    # make sure we have enough cells.
+    X = LineageTree.init_from_parameters(pi, T, Emissions, desired_num_cells=(2 ** 8) - 1, desired_experimental_time=300, censor_condition=cens)
+    while len(X.output_lineage) < 30:
+        X = LineageTree.init_from_parameters(pi, T, Emissions, desired_num_cells=(2 ** 8) - 1, desired_experimental_time=300, censor_condition=cens)
+
     tHMMobj = tHMM([X], num_states=2)
     gammas = [np.zeros((len(lineage.output_lineage), tHMMobj.num_states)) for lineage in tHMMobj.X]
 
@@ -56,6 +62,7 @@ def test_M_step(cens, Emissions):
         for i in range(g_lin.shape[0]):
             g_lin[i, tHMMobj.X[idx].output_lineage[i].state] = 1
 
+    print("length of lineage", len(X.output_lineage))
     do_M_E_step(tHMMobj, gammas)
     # test bernoulli
     if len(Emissions[0].params) > 3: # phase-specific case
