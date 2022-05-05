@@ -49,12 +49,15 @@ def test_E_step(cens):
 def test_M_step(cens, Emissions):
     """ The M step of the BW. check the emission parameters if the true states are given. """
 
-    # make sure we have enough cells.
-    X = LineageTree.init_from_parameters(pi, T, Emissions, desired_num_cells=(2 ** 8) - 1, desired_experimental_time=300, censor_condition=cens)
-    while len(X.output_lineage) < 30:
-        X = LineageTree.init_from_parameters(pi, T, Emissions, desired_num_cells=(2 ** 8) - 1, desired_experimental_time=300, censor_condition=cens)
+    population = []
+    for _ in range(10):
+        # make sure we have enough cells in the lineage.
+        X = LineageTree.init_from_parameters(pi, T, Emissions, desired_num_cells=(2 ** 4) - 1, desired_experimental_time=100, censor_condition=cens)
+        while len(X.output_lineage) < 5:
+            X = LineageTree.init_from_parameters(pi, T, Emissions, desired_num_cells=(2 ** 4) - 1, desired_experimental_time=100, censor_condition=cens)
+        population.append(X)
 
-    tHMMobj = tHMM([X], num_states=2)
+    tHMMobj = tHMM(population, num_states=2)
     gammas = [np.zeros((len(lineage.output_lineage), tHMMobj.num_states)) for lineage in tHMMobj.X]
 
     # create the gamma matrix (N x K) that shows the probability of a cell n being in state k from the true state assignments.
