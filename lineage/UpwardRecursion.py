@@ -201,3 +201,4 @@ def get_nonleaf_NF_and_betas(tHMMobj, MSD: list, EL: list, NF: list, betas: list
 
                 NF[num][pii] = sum(fac1)
                 betas[num][pii, :] = fac1 / NF[num][pii]
+    return betas, NF

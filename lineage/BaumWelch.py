@@ -32,10 +32,10 @@ def do_E_step(tHMMobj) -> Tuple[list, list, list, list]:
     EL = get_Emission_Likelihoods(tHMMobj)
     NF = get_leaf_Normalizing_Factors(tHMMobj, MSD, EL)
     betas = get_leaf_betas(tHMMobj, MSD, EL, NF)
-    get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas)
-    gammas = get_gammas(tHMMobj, MSD, betas)
+    betas2, NF2 = get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas)
+    gammas = get_gammas(tHMMobj, MSD, betas2)
 
-    return MSD, NF, betas, gammas
+    return MSD, NF2, betas2, gammas
 
 
 def calculate_log_likelihood(NF: Any) -> np.ndarray:

@@ -2,7 +2,7 @@
 import itertools
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor, Future, Executor
-from sklearn.metrics import rand_score
+from sklearn.metrics import rand_score, confusion_matrix
 from .tHMM import tHMM, fit_list
 from typing import Any, Tuple, Union
 
@@ -147,6 +147,7 @@ def Results(tHMMobj, LL: float) -> dict[str, Any]:
     results_dict["state_proportions"] = [100.0 * i / len(pred_states[0]) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
     results_dict["state_similarity"] = 100.0 * rand_score(list(itertools.chain(*true_states_by_lineage)), list(itertools.chain(*tHMMobj.predict())))
+    results_dict["confusion_matrix"] = confusion_matrix(list(itertools.chain(*true_states_by_lineage)), list(itertools.chain(*tHMMobj.predict())))
 
     # 4. Calculate the Wasserstein distance
     results_dict["wasserstein"] = tHMMobj.X[0].E[0].dist(tHMMobj.X[0].E[1])
@@ -193,5 +194,6 @@ def permute_states(tHMMobj: Any, switch_map: np.ndarray) -> Tuple[Any, list]:
 
     # Rearrange the emissions list
     tHMMobj.estimate.E = [tHMMobj.estimate.E[ii] for ii in switch_map]
+    print(switch_map)
 
     return tHMMobj, pred_states_switched
