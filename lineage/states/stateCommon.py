@@ -63,12 +63,16 @@ def gamma_estimator(gamma_obs: np.ndarray, time_cen: np.ndarray, gammas: np.ndar
     if np.sum(gammas) == 0.0:
         gammas = np.ones_like(gammas)
 
+    # remove negative observations which are representative of test data in cross validation
+    gammas_ = gammas[gamma_obs >= 0]
+    gamma_obs_ = gamma_obs[gamma_obs >= 0]
+
     # If nothing is censored
     if np.all(time_cen == 1):
-        return gamma_uncensored(gamma_obs, gammas)
+        return gamma_uncensored(gamma_obs_, gammas_)
 
-    assert gammas.shape[0] == gamma_obs.shape[0]
-    arrgs = (gamma_obs, time_cen, gammas)
+    assert gammas_.shape[0] == gamma_obs_.shape[0]
+    arrgs = (gamma_obs_, time_cen[gamma_obs >= 0], gammas_)
     bnd = (0.001, 100.0)
 
     res = minimize(GnLL_sep, x0, jac=True, bounds=(bnd, bnd), args=arrgs)

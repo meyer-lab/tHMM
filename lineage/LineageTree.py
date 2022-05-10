@@ -1,5 +1,6 @@
 """ This file contains the LineageTree class. """
 import numpy as np
+import scipy.stats as sp
 import operator
 from typing import Tuple
 from .CellVar import CellVar
@@ -184,3 +185,20 @@ def get_leaves(lineage: list) -> Tuple[list, list]:
             leaves.append(cell)  # appending the leaf cells to a list
             leaf_indices.append(index)  # appending the index of the cells
     return leaf_indices, leaves
+
+def hide_observation(lineage):
+    """This assumes we only have cell lifetime and bernoulli as observations.
+    We mark a random number of cells' lifetime as negative, to be removed from fitting."""
+
+    num_cells = len(lineage.output_lineage)
+    hide_index = sp.multinomial.rvs(n=int(0.15 * num_cells), p=[1 / num_cells]*num_cells, size=1)[0]
+
+    for ix, cell in enumerate(lineage.output_lineage):
+        if hide_index[ix] == 1: # means we hide the cell lifetime
+
+            if len(cell.obs) == 3: # in case of phase non-specific observations
+                cell.obs[1] = -1
+            else: # in the case of phase-specific observation, only do this for G1 lifetime
+                cell.obs[2] = -1
+
+    return lineage
