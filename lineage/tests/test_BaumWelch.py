@@ -28,6 +28,7 @@ def test_BW(cens, nStates):
     assert np.isfinite(new_LL_list_after)
     assert LL_after > LL_before
 
+
 @pytest.mark.parametrize("cens", [0, 3])
 def test_E_step(cens):
     """ This tests that given the true model parameters, can it estimate the states correctly."""
@@ -43,6 +44,7 @@ def test_E_step(cens):
     true_states = [cell.state for cell in tHMMobj.X[0].output_lineage]
 
     assert rand_score(true_states, pred_states[0]) >= 0.95
+
 
 @pytest.mark.parametrize("cens", [0, 3])
 @pytest.mark.parametrize("Emissions", [E, E2])
@@ -68,7 +70,7 @@ def test_M_step(cens, Emissions):
     print("length of lineage", len(X.output_lineage))
     do_M_E_step(tHMMobj, gammas)
     # test bernoulli
-    if len(Emissions[0].params) > 3: # phase-specific case
+    if len(Emissions[0].params) > 3:  # phase-specific case
         np.testing.assert_allclose(tHMMobj.estimate.E[0].params[0:2], Emissions[0].params[0:2], rtol=0.1)
         # gamma parameters
         np.testing.assert_allclose(tHMMobj.estimate.E[0].params[2:], Emissions[0].params[2:], rtol=0.5)
