@@ -1,1 +1,0 @@
-{"buildTargets":["all","clean","docs","mypy","output/figure01.svg","test","testcover","testprofile"],"launchTargets":[],"customConfigurationProvider":{"workspaceBrowse":{"browsePath":[],"compilerArgs":[]},"fileIndex":[]}}
