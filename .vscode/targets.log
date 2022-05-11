@@ -1,0 +1,592 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 4.3
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2020 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+ 
+
+# Make data base, printed on Wed May 11 11:51:39 2022
+
+# Variables
+
+# environment
+LC_ALL = C
+# environment
+VSCODE_CWD = /home/farnazm
+# default
+MAKE_COMMAND := make
+# environment
+VSCODE_HANDLES_SIGPIPE = true
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# default
+.VARIABLES := 
+# environment
+PWD = /home/farnazm/tHMM
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+VSCODE_LOG_STACK = false
+# automatic
+%F = $(notdir $%)
+# environment
+LANG = C
+# default
+.LOADED := 
+# default
+.INCLUDE_DIRS = /usr/local/include /usr/include /usr/include
+# makefile
+MAKEFLAGS = pqrR
+# makefile
+CURDIR := /home/farnazm/tHMM
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+MFLAGS = -pqrR
+# default
+.SHELLFLAGS := -c
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# makefile (from 'makefile', line 1)
+MAKEFILE_LIST := makefile
+# automatic
+@F = $(notdir $@)
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+XDG_SESSION_TYPE = tty
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# automatic
+*F = $(notdir $*)
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1012/bus
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en","availableLanguages":{}}
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# makefile (from 'makefile', line 1)
+SHELL := /bin/bash
+# default
+MAKECMDGOALS := all
+# environment
+SHLVL = 0
+# environment
+MAKELEVEL := 0
+# default
+MAKE = $(MAKE_COMMAND)
+# environment
+PATH = /home/farnazm/.vscode-server/bin/da15b6fd3ef856477bf6f4fb29ba1b7af717770d/bin/remote-cli:/usr/local/sbin:/usr/local/bin:/usr/sbin:/snap/bin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+# default
+MAKEFILES := 
+# environment
+MOTD_SHOWN = pam
+# automatic
+^F = $(notdir $^)
+# environment
+SSH_CLIENT = 76.91.25.147 59546 22
+# environment
+VSCODE_LOG_NATIVE = false
+# automatic
+?F = $(notdir $?)
+# automatic
++F = $(notdir $+)
+# 'override' directive
+GNUMAKEFLAGS := 
+# environment
+BROWSER = /home/farnazm/.vscode-server/bin/da15b6fd3ef856477bf6f4fb29ba1b7af717770d/bin/helpers/browser.sh
+# environment
+LOGNAME = farnazm
+# makefile
+.DEFAULT_GOAL := all
+# environment
+USER = farnazm
+# default
+MAKE_VERSION := 4.3
+# makefile (from 'makefile', line 4)
+flist = $(wildcard lineage/figures/figure*.py)
+# environment
+VSCODE_EXTHOST_WILL_SEND_SOCKET = true
+# environment
+VSCODE_AGENT_FOLDER = /home/farnazm/.vscode-server
+# environment
+_ = /home/farnazm/.vscode-server/bin/da15b6fd3ef856477bf6f4fb29ba1b7af717770d/node
+# environment
+XDG_RUNTIME_DIR = /run/user/1012
+# environment
+LC_CTYPE = en_US.UTF-8
+# environment
+VSCODE_IPC_HOOK_CLI = /run/user/1012/vscode-ipc-76fc0391-cbcd-4d6e-9d5a-c9d0d8cfedc3.sock
+# environment
+XDG_SESSION_CLASS = user
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+HOME = /home/farnazm
+# environment
+XDG_SESSION_ID = 909
+# default
+.RECIPEPREFIX := 
+# automatic
+<F = $(notdir $<)
+# default
+SUFFIXES := 
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync check-symlink load
+# environment
+SSH_CONNECTION = 76.91.25.147 59546 164.67.191.131 22
+# variable set hash-table stats:
+# Load=68/1024=7%, Rehash=0, Collisions=2/103=2%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 27, inode 159755678): 22 files, no impossibilities.
+# lineage/figures (device 27, inode 159755968): 56 files, no impossibilities.
+
+# 78 files, no impossibilities in 2 directories.
+
+# Implicit Rules
+
+output/figure%.svg: lineage/figures/figure%.py
+#  recipe to execute (from 'makefile', line 9):
+	if test -r "$@"; then \
+		touch $@; \
+	else \
+		poetry run fbuild $*; \
+	fi
+
+# 1 implicit rules, 0 (0.0%) terminal.
+# Files
+
+# Not a target:
+output/figure11.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+testprofile:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from 'makefile', line 22):
+	poetry run python3 -m cProfile -o profile -m pytest -s -v -x
+	gprof2dot -f pstats --node-thres=5.0 profile | dot -Tsvg -o profile.svg
+
+# Not a target:
+output/figureS17.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure171.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figureS04.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure5.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figureS09.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figureS15.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure106.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+docs:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+output/figure111.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure103.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure105.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figureS16.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figureS01.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+clean:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from 'makefile', line 26):
+	git clean -fdx output
+
+# Not a target:
+output/figure90.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure152.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure153.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure9.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figureS02.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure151.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure1.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+lineage/figures/figure01.py:
+#  Implicit rule search has been done.
+ 
+#  Last modified 2022-04-30 15:09:27.36900497
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+output/figureS08.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure10.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure91.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figureS06.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure20.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure03.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure101.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+testcover:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figureS13.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figureS14.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+all: output/figure01.svg output/figure02.svg output/figure03.svg output/figure1.svg output/figure10.svg output/figure101.svg output/figure102.svg output/figure103.svg output/figure104.svg output/figure105.svg output/figure106.svg output/figure107.svg output/figure11.svg output/figure111.svg output/figure12.svg output/figure14.svg output/figure15.svg output/figure151.svg output/figure152.svg output/figure153.svg output/figure16.svg output/figure161.svg output/figure17.svg output/figure171.svg output/figure20.svg output/figure4.svg output/figure5.svg output/figure6.svg output/figure8.svg output/figure9.svg output/figure90.svg output/figure91.svg output/figureS01.svg output/figureS02.svg output/figureS03.svg output/figureS04.svg output/figureS05.svg output/figureS06.svg output/figureS07.svg output/figureS08.svg output/figureS09.svg output/figureS10.svg output/figureS11.svg output/figureS12.svg output/figureS13.svg output/figureS14.svg output/figureS15.svg output/figureS16.svg output/figureS17.svg
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/3=0%
+
+# Not a target:
+output/figureS03.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figureS11.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure17.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure4.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure161.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figureS05.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure6.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+test:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from 'makefile', line 16):
+	poetry run pytest -s -v -x
+
+# Not a target:
+output/figureS07.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure16.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure8.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+output/figure01.svg: lineage/figures/figure01.py
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: '01'
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := output/figure01.svg
+# automatic
+# * := 01
+# automatic
+# < := lineage/figures/figure01.py
+# automatic
+# + := lineage/figures/figure01.py
+ 
+# automatic
+# % := 
+# automatic
+# ^ := lineage/figures/figure01.py
+# automatic
+# ? := lineage/figures/figure01.py
+# automatic
+# | := 
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/14=7%
+#  recipe to execute (from 'makefile', line 9):
+	if test -r "$@"; then \
+		touch $@; \
+	else \
+		poetry run fbuild $*; \
+	fi
+
+# Not a target:
+output/figureS12.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure14.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-04-27 13:53:47.075108901
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+output/figure104.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure102.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure107.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure15.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure02.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+.PHONY: clean test testprofile testcover docs
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figure12.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+output/figureS10.svg:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+mypy:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'makefile', line 19):
+	poetry run mypy --install-types --non-interactive --ignore-missing-imports lineage
+
+# files hash-table stats:
+# Load=61/1024=6%, Rehash=0, Collisions=7/132=5%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 141 / storage = 2081 B / avg = 14 B
+# current buf: size = 8162 B / used = 2081 B / count = 141 / avg = 14 B
+
+# strcache performance: lookups = 159 / hit rate = 11%
+# hash-table stats:
+# Load=141/8192=2%, Rehash=0, Collisions=0/159=0%
+# Finished Make data base on Wed May 11 11:51:39 2022
+
+ 
