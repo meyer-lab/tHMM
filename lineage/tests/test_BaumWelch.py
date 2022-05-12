@@ -1,6 +1,7 @@
 """ Unit test file. """
 import pytest
 import numpy as np
+import pickle
 from sklearn.metrics import rand_score
 from ..BaumWelch import do_E_step, do_M_E_step, calculate_log_likelihood
 from ..LineageTree import LineageTree
@@ -47,19 +48,28 @@ def test_E_step(cens):
 
 
 @pytest.mark.parametrize("cens", [0, 3])
-@pytest.mark.parametrize("Emissions", [E, E2])
-def test_M_step(cens, Emissions):
+def test_M_step(cens):
     """ The M step of the BW. check the emission parameters if the true states are given. """
 
+    pik1 = open("lapatinibs.pkl", "rb")
+    lpt = []
+    for i in range(4):
+        lpt.append(pickle.load(pik1))
+
+    # model parameters for lapatinib 25nM
+    E3 = lpt[1].estimate.E
+    T3 = lpt[1].estimate.T
+    pi3 = lpt[1].estimate.pi
+
     population = []
-    for _ in range(10):
+    for _ in range(20):
         # make sure we have enough cells in the lineage.
-        X = LineageTree.init_from_parameters(pi, T, Emissions, desired_num_cells=(2 ** 4) - 1, desired_experimental_time=100, censor_condition=cens)
+        X = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=(2 ** 5) - 1, desired_experimental_time=100, censor_condition=cens)
         while len(X.output_lineage) < 5:
-            X = LineageTree.init_from_parameters(pi, T, Emissions, desired_num_cells=(2 ** 4) - 1, desired_experimental_time=100, censor_condition=cens)
+            X = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=(2 ** 5) - 1, desired_experimental_time=100, censor_condition=cens)
         population.append(X)
 
-    tHMMobj = tHMM(population, num_states=2)
+    tHMMobj = tHMM(population, num_states=lpt[1].num_states)
     gammas = [np.zeros((len(lineage.output_lineage), tHMMobj.num_states)) for lineage in tHMMobj.X]
 
     # create the gamma matrix (N x K) that shows the probability of a cell n being in state k from the true state assignments.
@@ -67,14 +77,15 @@ def test_M_step(cens, Emissions):
         for i in range(g_lin.shape[0]):
             g_lin[i, tHMMobj.X[idx].output_lineage[i].state] = 1
 
-    print("length of lineage", len(X.output_lineage))
     do_M_E_step(tHMMobj, gammas)
     # test bernoulli
-    if len(Emissions[0].params) > 3:  # phase-specific case
-        np.testing.assert_allclose(tHMMobj.estimate.E[0].params[0:2], Emissions[0].params[0:2], rtol=0.1)
-        # gamma parameters
-        np.testing.assert_allclose(tHMMobj.estimate.E[0].params[2:], Emissions[0].params[2:], rtol=0.5)
+    if len(E3[0].params) > 3:  # phase-specific case
+        for i in range(lpt[1].num_states):
+            np.testing.assert_allclose(tHMMobj.estimate.E[i].params[0:2], E3[i].params[0:2], rtol=0.1)
+            # gamma parameters
+            np.testing.assert_allclose(tHMMobj.estimate.E[i].params[2:], E3[i].params[2:], rtol=0.5)
     else:
-        np.testing.assert_allclose(tHMMobj.estimate.E[0].params[0], Emissions[0].params[0], rtol=0.1)
-        # gamma parameters
-        np.testing.assert_allclose(tHMMobj.estimate.E[0].params[1:], Emissions[0].params[1:], rtol=0.5)
+        for i in range(lpt[1].num_states):
+            np.testing.assert_allclose(tHMMobj.estimate.E[i].params[0], E3[i].params[0], rtol=0.1)
+            # gamma parameters
+            np.testing.assert_allclose(tHMMobj.estimate.E[i].params[1:], E3[i].params[1:], rtol=0.5)
