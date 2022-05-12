@@ -29,43 +29,49 @@ def test_BW(cens, nStates):
     assert np.isfinite(new_LL_list_after)
     assert LL_after > LL_before
 
-    
+
+pik1 = open("lapatinibs.pkl", "rb")
+lpt = []
+for i in range(4):
+    lpt.append(pickle.load(pik1))
+
+# model parameters for lapatinib 25nM
+E3 = lpt[1].estimate.E
+T3 = lpt[1].estimate.T
+pi3 = lpt[1].estimate.pi
+
 @pytest.mark.parametrize("cens", [0, 3])
 def test_E_step(cens):
     """ This tests that given the true model parameters, can it estimate the states correctly."""
-    X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 7) - 1, desired_experimental_time=200, censor_condition=cens)
+    population = []
+    for _ in range(100):
+        # make sure we have enough cells in the lineage.
+        X = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=(2 ** 8) - 1, desired_experimental_time=300, censor_condition=cens)
+        while len(X.output_lineage) < 9:
+            X = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=(2 ** 8) - 1, desired_experimental_time=300, censor_condition=cens)
+        population.append(X)
 
-    tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
-    tHMMobj.estimate.pi = pi
-    tHMMobj.estimate.T = T
-    tHMMobj.estimate.E = E
+    tHMMobj = tHMM(population, num_states=lpt[1].num_states)  # build the tHMM class with X
+    tHMMobj.estimate.pi = pi3
+    tHMMobj.estimate.T = T3
+    tHMMobj.estimate.E = E3
 
     do_E_step(tHMMobj)
     pred_states = tHMMobj.predict()
     true_states = [cell.state for cell in tHMMobj.X[0].output_lineage]
 
-    assert rand_score(true_states, pred_states[0]) >= 0.95
+    assert rand_score(true_states, pred_states[0]) >= 0.9
 
 
 @pytest.mark.parametrize("cens", [0, 3])
 def test_M_step(cens):
     """ The M step of the BW. check the emission parameters if the true states are given. """
 
-    pik1 = open("lapatinibs.pkl", "rb")
-    lpt = []
-    for i in range(4):
-        lpt.append(pickle.load(pik1))
-
-    # model parameters for lapatinib 25nM
-    E3 = lpt[1].estimate.E
-    T3 = lpt[1].estimate.T
-    pi3 = lpt[1].estimate.pi
-
     population = []
-    for _ in range(20):
+    for _ in range(50):
         # make sure we have enough cells in the lineage.
         X = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=(2 ** 5) - 1, desired_experimental_time=100, censor_condition=cens)
-        while len(X.output_lineage) < 5:
+        while len(X.output_lineage) < 4:
             X = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=(2 ** 5) - 1, desired_experimental_time=100, censor_condition=cens)
         population.append(X)
 
