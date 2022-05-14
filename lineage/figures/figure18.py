@@ -27,7 +27,7 @@ from ..Lineage_collections import Gem10uM
 # pik1.close()
 
 desired_num_cells = 31
-num_data_points = 10
+num_data_points = 5
 min_num_lineages = 5
 max_num_lineages = 50
 
