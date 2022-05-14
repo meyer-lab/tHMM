@@ -1,60 +1,84 @@
 """ Figure 20 for correlations between cell observations in the lineages. """
 import numpy as np
 import scipy.stats as sp
-# from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
-from .common import getSetup, pi, T, E
+import itertools as it
+import pickle
+from .common import getSetup
 from ..states.StateDistributionGamma import StateDistribution as gamma_state
 from ..LineageTree import LineageTree
+
+num_gens = 5
+num_trials = 400
+pik1 = open("gemcitabines.pkl", "rb")
+gemc = []
+for i in range(4):
+    gemc.append(pickle.load(pik1))
+
+T = gemc[0].estimate.T
+pi = gemc[0].estimate.pi
+E = gemc[2].estimate.E
 
 def makeFigure():
     """ Make figure 20 heatmap of correlation within lineages between lifetimes. """
 
     ax, f = getSetup((4, 4), (1, 1))
 
-    num_gens = 6
-    num_trials = 400
+    corr = np.zeros((3, 100))
+    for i in range(100):
+        corr[:, i] = repeat_corr()
 
-    lineages = [LineageTree.init_from_parameters(pi, T, E, 2 ** num_gens - 1) for _ in range(num_trials)]
-    corr1 = np.zeros((num_gens-1, num_trials))
-    corr2 = np.zeros((num_gens-2, num_trials))
-    corr3 = np.zeros((num_gens-3, num_trials))
-    all_gens = get_lifetime_gens(lineages)
-    for ix1, lins in enumerate(all_gens):
-        for ix2, gens in enumerate(lins[1:]):
-            corr1[ix2, ix1] = expand_and_corr(lins[ix2], gens, 2)
-        for ix3, genns in enumerate(lins[2:]):
-            corr2[ix3, ix1] = expand_and_corr(lins[ix3], genns, 4)
-        for ix4, gns in enumerate(lins[3:]):
-            corr3[ix4, ix1] = expand_and_corr(lins[ix4], gns, 8)
-
-    all_corr = np.zeros((3, num_trials))
-    all_corr[0, :] = np.nanmean(corr1, axis=0)
-    all_corr[1, :] = np.nanmean(corr2, axis=0)
-    all_corr[2, :] = np.nanmean(corr3, axis=0)
-
-    ax[0].boxplot(all_corr.T)
-    ax[0].set_xlabel("generation number")
+    ax[0].boxplot(corr.T)
     ax[0].set_ylabel("spearman correlation coefficient")
     ax[0].set_title("correlations")
     ax[0].set_xticklabels(['daughter', 'grand-daughter', 'great-grand-daughter'], rotation=30)
+    ax[0].set_ylim((-1, 1))
 
     return f
 
 def get_lifetime_gens(population):
-    all_gens = []
+
+    first_gens = []
+    second_gens = []
+    third_gens = []
+    forth_gens = []
+    fifth_gens = []
     for lineage in population:
         gens = sorted({cell.gen for cell in lineage.output_lineage})  # appending the generation of cells in the lineage
-        cells_by_gen = []
         for gen in gens:
             level = [cell.obs[1] for cell in lineage.output_lineage if (cell.gen == gen and cell.observed)]
-            cells_by_gen.append(level)
-        all_gens.append(cells_by_gen)
+            if gen == 1:
+                first_gens.append(level)
+            elif gen == 2:
+                second_gens.append(level)
+            elif gen == 3:
+                third_gens.append(level)
+            elif gen == 4:
+                forth_gens.append(level)
+            else:
+                fifth_gens.append(level)
 
-    return all_gens
+    return list(it.chain(*first_gens)), list(it.chain(*second_gens)), list(it.chain(*third_gens)), list(it.chain(*forth_gens)), list(it.chain(*fifth_gens))
 
-def expand_and_corr(gen1, gen2, rep):
-    """ takes two successive generations and expands the first one to fit the number of second, and calculates the spearman correlation. """
-    gen1_expanded = np.repeat(gen1, rep)
-    assert(len(gen1_expanded) == len(gen2))
+def corr(all_gens, degree):
+    """ To calculate the correlation between mother-daughter cells, it creates the second array with repeated values the same size as the first.
+    degree determines whether it is between mother-daughter cells, or between grandmother-daughter cells, or higher.
+    """
+    array1 = []
+    for ix1, gen in enumerate(all_gens[degree:]):
+        array1.append(np.repeat(all_gens[ix1], 2 ** degree))
 
-    return sp.spearmanr(gen1_expanded, gen2).correlation
+    arr2 = []
+    for i in range(degree, len(all_gens)):
+        arr2 += all_gens[i]
+
+    arr1 = list(it.chain(*array1))
+    assert(len(arr1) == len(arr2))
+
+    return sp.spearmanr(arr1, arr2).correlation
+
+def repeat_corr():
+    lineages = [LineageTree.init_from_parameters(pi, T, E, 2 ** num_gens - 1) for _ in range(num_trials)]
+    
+    all_gens = get_lifetime_gens(lineages)
+
+    return corr(all_gens, 1), corr(all_gens, 2), corr(all_gens, 3)
