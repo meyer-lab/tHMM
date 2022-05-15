@@ -19,3 +19,4 @@ profile.svg
 pylint.log
 spell.txt
 .vscode/settings.json
+.vscode
