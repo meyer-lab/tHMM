@@ -14,28 +14,56 @@ gemc = []
 for i in range(4):
     gemc.append(pickle.load(pik1))
 
-T = gemc[0].estimate.T
-pi = gemc[0].estimate.pi
-E = gemc[2].estimate.E
+pik2 = open("lapatinibs.pkl", "rb")
+lpt = []
+for i in range(4):
+    lpt.append(pickle.load(pik2))
+
+T = lpt[0].estimate.T
+pi = lpt[0].estimate.pi
+E = lpt[0].estimate.E
+
+T2 = lpt[0].estimate.T
+pi2 = lpt[0].estimate.pi
+E2 = lpt[2].estimate.E
+
+T3 = gemc[0].estimate.T
+pi3 = gemc[0].estimate.pi
+E3 = gemc[2].estimate.E
 
 def makeFigure():
     """ Make figure 20 heatmap of correlation within lineages between lifetimes. """
 
-    ax, f = getSetup((4, 4), (1, 1))
+    ax, f = getSetup((6, 8), (2, 2))
 
-    corr = np.zeros((3, 100))
+    corr1 = np.zeros((3, 100))
+    corr2 = np.zeros((3, 100))
+    corr11 = np.zeros((3, 100))
+    corr12 = np.zeros((3, 100))
+
     for i in range(100):
-        corr[:, i] = repeat_corr()
+        corr1[:, i] = repeat_corr(lpt, 2)
+        corr2[:, i] = repeat_corr(gemc, 2)
+        corr11[:, i] = repeat_corr(lpt, 3)
+        corr12[:, i] = repeat_corr(gemc, 3)
 
-    ax[0].boxplot(corr.T)
-    ax[0].set_ylabel("spearman correlation coefficient")
-    ax[0].set_title("correlations")
-    ax[0].set_xticklabels(['daughter', 'grand-daughter', 'great-grand-daughter'], rotation=30)
-    ax[0].set_ylim((-1, 1))
+    ax[0].boxplot(corr1.T)
+    ax[0].set_title("lapatinib, G1 duration")
+    ax[1].boxplot(corr2.T)
+    ax[1].set_title("Gemcitabine, G1 duration")
+    ax[2].boxplot(corr11.T)
+    ax[2].set_title("lapatinib, S-G2 duration")
+    ax[3].boxplot(corr12.T)
+    ax[3].set_title("Gemcitabine, S-G2 duration")
+
+    for i in range(4):
+        ax[i].set_ylabel("spearman correlation coefficient")
+        ax[i].set_xticklabels(['daughter', 'grand-daughter', 'great-grand-daughter'], rotation=30)
+        ax[i].set_ylim((0, 1))
 
     return f
 
-def get_lifetime_gens(population):
+def get_lifetime_gens(population, obs_ix):
 
     first_gens = []
     second_gens = []
@@ -45,7 +73,7 @@ def get_lifetime_gens(population):
     for lineage in population:
         gens = sorted({cell.gen for cell in lineage.output_lineage})  # appending the generation of cells in the lineage
         for gen in gens:
-            level = [cell.obs[1] for cell in lineage.output_lineage if (cell.gen == gen and cell.observed)]
+            level = [cell.obs[obs_ix] for cell in lineage.output_lineage if (cell.gen == gen and cell.observed)]
             if gen == 1:
                 first_gens.append(level)
             elif gen == 2:
@@ -76,9 +104,11 @@ def corr(all_gens, degree):
 
     return sp.spearmanr(arr1, arr2).correlation
 
-def repeat_corr():
-    lineages = [LineageTree.init_from_parameters(pi, T, E, 2 ** num_gens - 1) for _ in range(num_trials)]
-    
-    all_gens = get_lifetime_gens(lineages)
+def repeat_corr(drug, ix):
+    populations = []
+    for i in range(4):
+        populations += [LineageTree.init_from_parameters(drug[i].estimate.pi, drug[i].estimate.T, drug[i].estimate.E, 2 ** num_gens - 1) for _ in range(num_trials)]
+
+    all_gens = get_lifetime_gens(populations, ix)
 
     return corr(all_gens, 1), corr(all_gens, 2), corr(all_gens, 3)
