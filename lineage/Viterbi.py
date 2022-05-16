@@ -62,6 +62,8 @@ def get_nonleaf_deltas(tHMMobj, deltas: list, state_ptrs: list):
                 deltas[num][node_parent_m_idx, :] = fac1 * EL[num][node_parent_m_idx, :]
                 state_ptrs[num][node_parent_m_idx, :] = max_state_ptr
 
+    return deltas
+
 
 def get_delta_parent_child_prod(lineage: list, delta_array: np.ndarray, T: np.ndarray, node_parent_m_idx: int) -> Tuple[np.ndarray, list]:
     """
@@ -111,7 +113,7 @@ def Viterbi(tHMMobj) -> list:
     :return: assigned states to each cell in all lineages
     """
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)
-    get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+    deltas = get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
 
     all_states = []
 
