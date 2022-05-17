@@ -107,23 +107,9 @@ def Results(tHMMobj, LL: float) -> dict[str, Any]:
     results_dict: dict[str, Any]
     results_dict = {}
     # To find the switcher map for states based on log-likelihood
-    permutes = list(itertools.permutations(np.arange(tHMMobj.num_states)))
-    score_permutes = np.empty(len(permutes))
-
-    pi_arg = tHMMobj.X[0].pi if (tHMMobj.fpi is None) else tHMMobj.fpi
-    E_arg = tHMMobj.X[0].E if (tHMMobj.fE is None) else tHMMobj.fE
-    T_arg = tHMMobj.X[0].T if (tHMMobj.fT is None) else tHMMobj.fT
-
-    pred_states = tHMMobj.predict()
-    for i, perm in enumerate(permutes):
-        predState_permute = [[perm[st] for st in st_assgn] for st_assgn in pred_states]
-        score_permutes[i] = np.sum(tHMMobj.log_score(predState_permute, pi=pi_arg, T=T_arg, E=E_arg))
-
-    #Create switcher map based on the max likelihood of different permutations of state assignments
-    switch_map = np.array(permutes[np.argmax(score_permutes)])
     switcher_map = cheat(tHMMobj)
-    print(switch_map, "\n", switcher_map)
     tHMMobj, pred_states = permute_states(tHMMobj, switcher_map)
+
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
     results_dict["total_number_of_cells"] = sum([len(lineage.output_lineage) for lineage in tHMMobj.X])
@@ -218,6 +204,5 @@ def cheat(tHMMobj):
 
         mapp.append(np.argmin(dist))
         est_params[np.argmin(dist), :] = -1000.0
-    #     print(est_params)
-    # print(mapp)
+
     return mapp
