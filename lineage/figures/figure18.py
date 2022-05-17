@@ -8,40 +8,25 @@ import itertools as it
 from .common import getSetup, subplotLabel, commonAnalyze, figureMaker
 from ..LineageTree import LineageTree
 from ..Analyze import Analyze_list
-from ..Lineage_collections import Gem10uM
-
-# # Gem10
-# gem_tHMMobj_list, _ = Analyze_list([Gem10uM], 5, fpi=True)
-# gem_states_list = [tHMMobj.predict() for tHMMobj in gem_tHMMobj_list]
-# # assign the predicted states to each cell
-# for idx, gem_tHMMobj in enumerate(gem_tHMMobj_list):
-#     for lin_indx, lin in enumerate(gem_tHMMobj.X):
-#         for cell_indx, cell in enumerate(lin.output_lineage):
-#             cell.state = gem_states_list[idx][lin_indx][cell_indx]
-
-# # create a pickle file for lapatinib
-# pik1 = open("gem10.pkl", "wb")
-
-# for laps in gem_tHMMobj_list:
-#     pickle.dump(laps, pik1)
-# pik1.close()
+from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
+from ..BaumWelch import calculate_stationary
 
 desired_num_cells = 31
-num_data_points = 5
-min_num_lineages = 5
-max_num_lineages = 50
+num_data_points = 100
+min_num_lineages = 50
+max_num_lineages = 300
 
-pik1 = open("gem10.pkl", "rb")
-gem = []
-for i in range(1):
-    gem.append(pickle.load(pik1))
+T = np.array([[0.6, 0.1, 0.1, 0.1, 0.1], [0.05, 0.8, 0.05, 0.05, 0.05], [0.01, 0.1, 0.7, 0.09, 0.1], [0.1, 0.1, 0.05, 0.7, 0.05], [0.1, 0.1, 0.05, 0.05, 0.7]], dtype=float)
 
-# T: transition probability matrix
-T = gem[0].estimate.T
 # pi: the initial probability vector
-pi = gem[0].estimate.pi
+pi = calculate_stationary(T)
 
-E = gem[0].estimate.E
+state0 = phaseStateDist(0.99, 0.95, 50, 0.2, 100, 0.1)
+state1 = phaseStateDist(0.95, 0.9, 75, 0.2, 150, 0.1)
+state2 = phaseStateDist(0.9, 0.85, 100, 0.2, 200, 0.1)
+state3 = phaseStateDist(0.92, 0.95, 150, 0.2, 250, 0.1)
+state4 = phaseStateDist(0.99, 0.85, 200, 0.2, 300, 0.1)
+E = [state0, state1, state2, state3, state4]
 
 # Creating a list of populations to analyze over
 num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
@@ -70,7 +55,7 @@ def makeFigure():
 #     # Get list of axis objects
     ax, f = getSetup((10, 14), (4, 3))
 
-    figureMaker5(ax, *commonAnalyze(list_of_populations, num_states=5, parallel=False), num_lineages=num_lineages)
+    figureMaker5(ax, *commonAnalyze(list_of_populations, num_states=5, list_of_fpi=len(list_of_populations)*[pi], list_of_fT=len(list_of_populations)*[T], parallel=True), num_lineages=num_lineages)
 
     subplotLabel(ax)
 
@@ -84,18 +69,17 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
     pii = dictOut['pi_similarity']
     num_states = paramTrues.shape[1]
     for iii in dictOut["confusion_matrix"]:
-        print(iii, "\n")
-    print(paramTrues[:, :, 3])
+        print("conf", iii, "\n")
 
     ### plot the distribution of Gamma G1 and SG2
     # create random variables for each state from their distribution using rvs
     obs_g1, obs_g2, g1b, g2b = [], [], [], []
     for s in range(num_states):
-        obs = gem[0].estimate.E[s].rvs(size=100)
+        obs = E[s].rvs(size=100)
         obs_g1.append(obs[2])
         obs_g2.append(obs[3])
-        g1b.append(gem[0].estimate.E[s].params[0])
-        g2b.append(gem[0].estimate.E[s].params[1])
+        g1b.append(E[s].params[0])
+        g2b.append(E[s].params[1])
 
     # create the same-size state vector to use as hue
     sts_g = [100*[i+1] for i in range(num_states)]
@@ -129,7 +113,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
         ax[i].axhline(paramTrues[0, j, 2], linestyle="--", c="C"+str(j), label="S "+str(j+1))
     ax[i].set_ylabel(r"Gamma k")
     ax[i].set_title(r"Gamma k G1 Estimation")
-    ax[i].set_ylim([0.0, max(paramTrues[0, :, 2])+2])
+    # ax[i].set_ylim([0.0, max(paramTrues[0, :, 2])+2])
     ax[i].set_xlabel("Number of Cells")
 
     i += 1 # (d) gamma scale G1
@@ -138,7 +122,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
         ax[i].axhline(paramTrues[0, j, 3], linestyle="--", c="C" + str(j), label="S "+str(j+1))
     ax[i].set_ylabel(r"Gamma $\theta$")
     ax[i].set_title(r"Gamma $\theta$ G1 Estimation")
-    ax[i].set_ylim([0.0, max(paramTrues[0, :, 3]+15)])
+    # ax[i].set_ylim([0.0, max(paramTrues[0, :, 3]+15)])
     ax[i].set_xlabel("Number of Cells")
     ax[i].legend()
 
@@ -157,7 +141,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
         ax[i].axhline(paramTrues[0, j, 4], linestyle="--", c="C"+str(j), label="S "+str(j+1))
     ax[i].set_ylabel(r"Gamma k")
     ax[i].set_title(r"Gamma k G2 Estimation")
-    ax[i].set_ylim([0.0, max(paramTrues[0, :, 4])+2])
+    # ax[i].set_ylim([0.0, max(paramTrues[0, :, 4])+2])
     ax[i].set_xlabel("Number of Cells")
 
     i += 1 # (g) gamma scale G2
@@ -166,7 +150,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
         ax[i].axhline(paramTrues[0, j, 5], linestyle="--", c="C" + str(j), label="S "+str(j+1))
     ax[i].set_ylabel(r"Gamma $\theta$")
     ax[i].set_title(r"Gamma $\theta$ G2 Estimation")
-    ax[i].set_ylim([0.0, max(paramTrues[0, :, 5])+2])
+    # ax[i].set_ylim([0.0, max(paramTrues[0, :, 5])+2])
     ax[i].set_xlabel("Number of Cells")
 
     i += 1 # (i) accuracy
