@@ -31,6 +31,7 @@ T3 = gemc[0].estimate.T
 pi3 = gemc[0].estimate.pi
 E3 = gemc[2].estimate.E
 
+
 def makeFigure():
     """ Make figure 20 heatmap of correlation within lineages between lifetimes. """
 
@@ -63,6 +64,7 @@ def makeFigure():
 
     return f
 
+
 def get_lifetime_gens(population, obs_ix):
 
     first_gens = []
@@ -87,6 +89,7 @@ def get_lifetime_gens(population, obs_ix):
 
     return list(it.chain(*first_gens)), list(it.chain(*second_gens)), list(it.chain(*third_gens)), list(it.chain(*forth_gens)), list(it.chain(*fifth_gens))
 
+
 def corr(all_gens, degree):
     """ To calculate the correlation between mother-daughter cells, it creates the second array with repeated values the same size as the first.
     degree determines whether it is between mother-daughter cells, or between grandmother-daughter cells, or higher.
@@ -103,6 +106,7 @@ def corr(all_gens, degree):
     assert(len(arr1) == len(arr2))
 
     return sp.spearmanr(arr1, arr2).correlation
+
 
 def repeat_corr(drug, ix):
     populations = []
