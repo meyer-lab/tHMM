@@ -106,9 +106,10 @@ def Results(tHMMobj, LL: float) -> dict[str, Any]:
     # Instantiating a dictionary to hold the various metrics of accuracy and scoring for the results of our method
     results_dict: dict[str, Any]
     results_dict = {}
-
+    # To find the switcher map for states based on log-likelihood
     switcher_map = cheat(tHMMobj)
     tHMMobj, pred_states = permute_states(tHMMobj, switcher_map)
+
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
     results_dict["total_number_of_cells"] = sum([len(lineage.output_lineage) for lineage in tHMMobj.X])
