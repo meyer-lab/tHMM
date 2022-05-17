@@ -195,25 +195,3 @@ def permute_states(tHMMobj: Any, switch_map: np.ndarray) -> Tuple[Any, list]:
     tHMMobj.estimate.E = [tHMMobj.estimate.E[ii] for ii in switch_map]
 
     return tHMMobj, pred_states_switched
-
-def cheat(tHMMobj):
-    """
-    Find out the map between the assigned and true states by finding the closest pairs of parameters. 
-    Works for synthetic data that we know the true parameters.
-    """
-
-    true_params = np.array([tHMMobj.X[0].E[i].params for i in range(tHMMobj.num_states)])
-    est_params = np.array([tHMMobj.estimate.E[i].params for i in range(tHMMobj.num_states)])
-    assert(est_params.shape == true_params.shape)
-
-    mapp = []
-    for i, ps in enumerate(true_params):
-
-        dist = [] # find the norm2 distance between pairs of true and estimated parameters
-        for est_p in est_params:
-            dist.append(np.linalg.norm(ps - est_p))
-
-        mapp.append(np.argmin(dist))
-        est_params = np.delete(est_params, np.argmin(dist), 0)
-    print(mapp)
-    return mapp
