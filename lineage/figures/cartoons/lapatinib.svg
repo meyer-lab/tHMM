@@ -1,264 +1,300 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 555 535" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;">
-    <g id="Artboard1" transform="matrix(1.04915,0,0,1.06574,-83.9319,27.7092)">
-        <rect x="80" y="-26" width="529" height="502" style="fill:none;"/>
-        <g transform="matrix(0.953153,0,0,0.938318,-54.3946,493.828)">
-            <ellipse cx="228" cy="-453" rx="34" ry="18" style="fill:rgb(173,216,230);stroke:black;stroke-width:1px;"/>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,145.693,72.242)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">state 1</text>
-        </g>
-        <g transform="matrix(-0.544363,-0.825792,0.852115,-0.544363,253.163,311.601)">
-            <g transform="matrix(0.953153,-1.05821e-16,1.04174e-16,0.938318,32.3423,475.062)">
-                <path d="M258.58,-460.85C270.19,-461.15 279.8,-458.54 279.8,-453C279.8,-448.46 273.34,-445.88 264.6,-445.27" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:3.6px;"/>
-            </g>
-            <g transform="matrix(0.953153,0,0,0.938318,32.3423,475.062)">
-                <path d="M264.62,-443.17L258.58,-445.15L264.54,-447.37L264.62,-443.17Z" style="fill-rule:nonzero;stroke:black;stroke-width:2.58px;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,140.097,34.7094)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.86</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,57.1243,413.133)">
-            <ellipse cx="484" cy="-366" rx="34" ry="18" style="fill:rgb(255,165,0);stroke:black;stroke-width:1px;"/>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,501.219,73.1802)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">state 2</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,-125.881,238.607)">
-            <ellipse cx="319" cy="-18" rx="34" ry="18" style="fill:rgb(144,238,144);stroke:black;stroke-width:1px;"/>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,160.944,225.189)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">state 3</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,188.659,317.425)">
-            <ellipse cx="319" cy="-105" rx="34" ry="18" style="fill:rgb(255,0,0);stroke:black;stroke-width:1px;"/>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,475.484,222.373)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">state 4</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,-167.82,581.092)">
-            <ellipse cx="404" cy="-192" rx="34" ry="18" style="fill:rgb(128,0,128);stroke:black;stroke-width:1px;"/>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,200.023,404.407)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">state 5</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,218.207,661.787)">
-            <ellipse cx="247" cy="-279" rx="34" ry="18" style="fill:rgb(128,128,0);stroke:black;stroke-width:1px;"/>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,436.405,403.468)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">state 6</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,57.1243,413.133)">
-            <path d="M514.58,-373.85C526.19,-374.15 535.8,-371.54 535.8,-366C535.8,-361.46 529.34,-358.88 520.6,-358.27" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:3.8px;"/>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,57.1243,413.133)">
-            <path d="M520.62,-356.17L514.58,-358.15L520.54,-360.37L520.62,-356.17Z" style="fill-rule:nonzero;stroke:black;stroke-width:2.72px;"/>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,572.828,72.2419)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.91</text>
-        </g>
-        <g transform="matrix(-0.99683,-0.0783235,0.0808201,-0.99683,337.946,435.318)">
-            <g transform="matrix(0.953153,0,0,0.938318,-126.834,216.087)">
-                <path d="M349.58,-25.85C361.19,-26.15 370.8,-23.54 370.8,-18C370.8,-13.46 364.34,-10.88 355.6,-10.27" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.58px;"/>
-            </g>
-            <g transform="matrix(0.953153,0,0,0.938318,-126.834,216.087)">
-                <path d="M355.62,-8.17L349.58,-10.15L355.54,-12.37L355.62,-8.17Z" style="fill-rule:nonzero;stroke:black;stroke-width:0.58px;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,111.502,207.361)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.19</text>
-        </g>
-        <g transform="matrix(0.953155,0,0,0.938318,188.658,317.425)">
-            <path d="M349.58,-112.85C361.19,-113.15 370.8,-110.54 370.8,-105C370.8,-100.46 364.34,-97.88 355.6,-97.27" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:2.5px;"/>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,188.659,317.425)">
-            <path d="M355.62,-95.17L349.58,-97.15L355.54,-99.37L355.62,-95.17Z" style="fill-rule:nonzero;stroke:black;stroke-width:2.03px;"/>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,527.077,238.324)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.68</text>
-        </g>
-        <g transform="matrix(-0.698215,0.704744,-0.727209,-0.698215,600.154,572.033)">
-            <g transform="matrix(0.953153,0,0,0.938318,-245.978,580.153)">
-                <path d="M434.58,-199.85C446.19,-200.15 455.8,-197.54 455.8,-192C455.8,-187.46 449.34,-184.88 440.6,-184.27" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:0.8px;"/>
-            </g>
-            <g transform="matrix(0.953153,0,0,0.938318,-245.978,580.153)">
-                <path d="M440.62,-182.17L434.58,-184.15L440.54,-186.37L440.62,-182.17Z" style="fill-rule:nonzero;stroke:black;stroke-width:0.44px;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,151.535,415.666)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.15</text>
-        </g>
-        <g transform="matrix(1.38768,0,0,1.36608,233.457,-4.87367)">
-            <text x="0px" y="0px" style="font-family:'ArialMT', 'Arial', sans-serif;font-size:12px;">State transition diagram</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,148.866,104.614)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.03</text>
-        </g>
-        <g transform="matrix(0.953152,0,0,0.938315,80.0003,-26)">
-            <g>
-                <path d="M68.722,124.255L72.113,118L73.153,125.039L68.722,124.255Z"/>
-                <path d="M82,248C67.37,211.575 63.781,167.581 71.172,123.317" style="fill:none;stroke:black;stroke-width:0.5px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953151,0,0,0.938313,79.9997,-25.9996)">
-            <g>
-                <path d="M432.004,117.288L439.113,117L433.598,121.496L432.004,117.288Z"/>
-                <path d="M149.009,437C141.66,399.999 383.095,144.497 434.063,118.914" style="fill:none;stroke:black;stroke-width:0.5px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953151,0,0,0.938315,79.9997,-26)">
-            <g>
-                <path d="M421.759,93.314L427.113,98L420.018,97.464L421.759,93.314Z"/>
-                <path d="M110.01,246C110.01,223.979 160.108,165.968 225.079,129.175C290.367,92.202 370.529,75.862 422.133,95.911" style="fill:none;stroke:black;stroke-width:0.5px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.95315,3.332e-07,-5.05731e-07,0.938314,80.0006,-25.9999)">
-            <g>
-                <path d="M423.234,434.796L417.467,438.963L419.581,432.169L423.234,434.796Z"/>
-                <path d="M451.799,279.378C463.547,333.792 452.533,388.949 420.619,434.579" style="fill:none;stroke:black;stroke-width:0.5px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953152,0,0,0.938315,79.9998,-26)">
-            <g>
-                <path d="M45.899,113.095L56.113,110L49.798,118.604L45.899,113.095Z"/>
-                <path d="M118,443C86.889,435.033 35.418,360.024 19.145,276.082C6.955,213.2 8.344,147.021 49.501,114.68" style="fill:none;stroke:black;stroke-width:1.5px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938315,79.9999,-26)">
-            <path d="M130.572,108.074L122,103L131.902,101.916L130.572,108.074Z"/>
-            <path d="M410,246C336.903,180.876 244.616,130.13 129.39,104.596" style="fill:none;stroke:black;stroke-width:0.7px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-        </g>
-        <g transform="matrix(0.953152,0,0,0.938314,79.9998,-25.9996)">
-            <g>
-                <path d="M126.423,283.219L119,279L127.47,277.922L126.423,283.219Z"/>
-                <path d="M381,433C309.183,360.219 203.078,296.763 125.357,280.256" style="fill:none;stroke:black;stroke-width:0.6px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953153,1.2554e-08,3.8288e-08,0.938314,80.0004,-25.9999)">
-            <g>
-                <path d="M165.112,438.006L156.591,437.458L163.736,432.784L165.112,438.006Z"/>
-                <path d="M430.409,280.542C373.876,357.943 253.692,411.389 162.858,435.808" style="fill:none;stroke:black;stroke-width:0.6px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953153,3.83968e-07,-2.59377e-07,0.938316,80.0003,-25.9998)">
-            <g>
-                <path d="M143.029,255.265L135.591,259.458L139.025,251.641L143.029,255.265Z"/>
-                <path d="M424.409,106.542C329.935,118.657 206.06,183.197 139.94,254.654" style="fill:none;stroke:black;stroke-width:0.6px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953152,4.46469e-08,-2.33696e-08,0.938318,79.9992,-26.001)">
-            <g>
-                <path d="M358.07,438.495L367.834,442.806L357.436,445.216L358.07,438.495Z"/>
-                <path d="M114.166,282.194C158.118,354.294 286.528,432.696 359.769,442.046" style="fill:none;stroke:black;stroke-width:0.75px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953152,-2.7676e-09,2.63563e-08,0.938312,79.9996,-25.9986)">
-            <g>
-                <path d="M123.458,427.336L130.834,437.806L118.651,433.855L123.458,427.336Z"/>
-                <path d="M73.756,276.188C31.294,283.834 95.55,403.873 123.01,432.038" style="fill:none;stroke:black;stroke-width:0.9px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.95315,-2.34164e-07,-7.91226e-08,0.938314,80.0006,-26.0005)">
-            <g>
-                <path d="M101.671,291.67L95.82,281.794L106.426,286.185L101.671,291.67Z"/>
-                <path d="M140.48,437.39C156.536,417.044 122.732,313.475 102.403,287.501" style="fill:none;stroke:black;stroke-width:1.1px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.95315,-2.2197e-08,9.3403e-07,0.938318,80.0009,-26.0002)">
-            <g>
-                <path d="M477.67,128.491L473.997,118.47L482.948,124.283L477.67,128.491Z"/>
-                <path d="M424.003,461.53C540.206,439.461 541.435,209.054 479.047,124.803" style="fill:none;stroke:black;stroke-width:0.75px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.986756,9.14363e-07,-1.0996e-06,0.938313,75.4033,-26.0002)">
-            <g>
-                <path d="M136.778,270.449C184.457,301.602 333.208,301.727 392.048,274.21" style="fill:none;stroke:black;stroke-width:0.75px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953152,-1.65185e-06,-5.2795e-07,0.938318,80.0008,-26.0009)">
-            <g>
-                <path d="M402.317,426.825L395.052,434.643L396.173,424.029L402.317,426.825Z"/>
-                <path d="M90.948,121.357C310.132,233.526 432.875,340.972 398.407,427.27" style="fill:none;stroke:black;stroke-width:0.75px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953153,3.862e-07,-1.38382e-07,0.938316,79.9997,-25.9994)">
-            <g>
-                <path d="M396.572,242.532L404.11,251.064L392.961,248.761L396.572,242.532Z"/>
-                <path d="M123.788,247.436C215.062,179.799 351.211,222.481 396.635,246.73" style="fill:none;stroke:black;stroke-width:2px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953154,3.03964e-07,-8.3454e-08,0.938313,80.0002,-26.0004)">
-            <g>
-                <path d="M352.707,447.808L359.11,455.064L349.634,453.101L352.707,447.808Z"/>
-                <path d="M176.889,448.03C242.401,409.8 325.247,437.128 352.759,451.376" style="fill:none;stroke:black;stroke-width:1.7px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953151,9.55655e-07,-5.09027e-07,0.938316,79.9996,-26.0008)">
-            <g>
-                <path d="M177.654,480.774L165.576,470.375L181.477,471.447L177.654,480.774Z"/>
-                <path d="M376.794,470.292C301.179,505.573 211.278,487.014 176.768,474.963" style="fill:none;stroke:black;stroke-width:2.8px;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;"/>
-            </g>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,199.382,65.6743)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.09</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,444.342,367.811)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.1</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,204.148,253.807)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.07</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,246.087,239.732)">
-            <g>
-                <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.1</text>
-                <g transform="matrix(1,0,0,1,16.98,0)">
-                    <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">1</text>
-                </g>
-            </g>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,408.123,382.356)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.1</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,428.139,214.398)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.52</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,98.3483,80.2179)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.25</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,483.422,388.455)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.03</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,547.283,105.552)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.15</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,396.685,411.444)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.35</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,227.024,433.963)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.75</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,234.649,375.788)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.08</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,183.179,363.12)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.13</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,160.303,265.536)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.21</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,489.141,102.269)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.03</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,469.125,57.2294)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.03</text>
-        </g>
-        <g transform="matrix(0.953153,0,0,0.938318,219.399,216.744)">
-            <text x="0px" y="0px" style="font-family:'TimesNewRomanPSMT', 'Times New Roman', serif;font-size:14px;">0.08</text>
-        </g>
-        <g transform="matrix(-0.48545,-0.807496,0.820265,-0.477893,181.556,678.697)">
-            <path d="M388.688,272.161L399.222,270.449L391.821,278.139L388.688,272.161Z"/>
-        </g>
-    </g>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Pages: 1 -->
+<svg width="708pt" height="479pt"
+ viewBox="0.00 0.00 708.00 479.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 475)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-475 704,-475 704,4 -4,4"/>
+<!-- 0 -->
+<g id="node1" class="node">
+<title>0</title>
+<ellipse fill="lightblue" stroke="black" cx="224" cy="-453" rx="34" ry="18"/>
+<text text-anchor="middle" x="224" y="-449.3" font-family="Times,serif" font-size="14.00">state 1</text>
+</g>
+<!-- 0&#45;&gt;0 -->
+<g id="edge1" class="edge">
+<title>0&#45;&gt;0</title>
+<path fill="none" stroke="black" stroke-width="2.79" d="M254.58,-460.85C266.19,-461.15 275.8,-458.54 275.8,-453 275.8,-448.46 269.34,-445.88 260.6,-445.27"/>
+<polygon fill="black" stroke="black" stroke-width="2.79" points="260.62,-443.17 254.58,-445.15 260.54,-447.37 260.62,-443.17"/>
+<text text-anchor="middle" x="288.3" y="-449.3" font-family="Times,serif" font-size="14.00">0.93</text>
+</g>
+<!-- 1 -->
+<g id="node2" class="node">
+<title>1</title>
+<ellipse fill="orange" stroke="black" cx="477" cy="-366" rx="34" ry="18"/>
+<text text-anchor="middle" x="477" y="-362.3" font-family="Times,serif" font-size="14.00">state 2</text>
+</g>
+<!-- 0&#45;&gt;1 -->
+<g id="edge2" class="edge">
+<title>0&#45;&gt;1</title>
+<path fill="none" stroke="black" stroke-width="0" d="M257.52,-449.57C310.09,-445.27 409.02,-435.02 439,-417 450.14,-410.3 459.15,-399 465.59,-388.83"/>
+<polygon fill="black" stroke="black" stroke-width="0" points="467.41,-389.87 468.72,-383.65 463.82,-387.7 467.41,-389.87"/>
+<text text-anchor="middle" x="464" y="-405.8" font-family="Times,serif" font-size="14.00">0.0</text>
+</g>
+<!-- 2 -->
+<g id="node3" class="node">
+<title>2</title>
+<ellipse fill="lightgreen" stroke="black" cx="319" cy="-18" rx="34" ry="18"/>
+<text text-anchor="middle" x="319" y="-14.3" font-family="Times,serif" font-size="14.00">state 3</text>
+</g>
+<!-- 0&#45;&gt;2 -->
+<g id="edge3" class="edge">
+<title>0&#45;&gt;2</title>
+<path fill="none" stroke="black" stroke-width="0.16" d="M190.79,-448.98C143.41,-444.15 59.35,-433.54 34,-417 11.49,-402.32 0,-393.87 0,-367 0,-367 0,-367 0,-104 0,-77.13 11.06,-68 34,-54 74.27,-29.42 210.8,-22.06 279.23,-19.89"/>
+<polygon fill="black" stroke="black" stroke-width="0.16" points="279.3,-21.98 285.23,-19.7 279.17,-17.79 279.3,-21.98"/>
+<text text-anchor="middle" x="12.5" y="-231.8" font-family="Times,serif" font-size="14.00">0.05</text>
+</g>
+<!-- 3 -->
+<g id="node4" class="node">
+<title>3</title>
+<ellipse fill="red" stroke="black" cx="319" cy="-105" rx="34" ry="18"/>
+<text text-anchor="middle" x="319" y="-101.3" font-family="Times,serif" font-size="14.00">state 4</text>
+</g>
+<!-- 0&#45;&gt;3 -->
+<g id="edge4" class="edge">
+<title>0&#45;&gt;3</title>
+<path fill="none" stroke="black" stroke-width="0" d="M192.86,-445.95C154.4,-436.45 94,-414.06 94,-367 94,-367 94,-367 94,-191 94,-166.35 98.34,-155.88 118,-141 142.83,-122.21 228.39,-112.72 279.53,-108.62"/>
+<polygon fill="black" stroke="black" stroke-width="0" points="279.77,-110.71 285.59,-108.14 279.44,-106.52 279.77,-110.71"/>
+<text text-anchor="middle" x="103" y="-275.3" font-family="Times,serif" font-size="14.00">0.0</text>
+</g>
+<!-- 4 -->
+<g id="node5" class="node">
+<title>4</title>
+<ellipse fill="purple" stroke="black" cx="407" cy="-192" rx="34" ry="18"/>
+<text text-anchor="middle" x="407" y="-188.3" font-family="Times,serif" font-size="14.00">state 5</text>
+</g>
+<!-- 0&#45;&gt;4 -->
+<g id="edge5" class="edge">
+<title>0&#45;&gt;4</title>
+<path fill="none" stroke="black" stroke-width="0" d="M236.1,-435.94C253.54,-412.72 286.64,-368.35 314,-330 341.28,-291.76 347.73,-281.94 374,-243 380.26,-233.72 387.09,-223.4 392.91,-214.56"/>
+<polygon fill="black" stroke="black" stroke-width="0" points="394.84,-215.44 396.38,-209.27 391.33,-213.14 394.84,-215.44"/>
+<text text-anchor="middle" x="334" y="-318.8" font-family="Times,serif" font-size="14.00">0.0</text>
+</g>
+<!-- 5 -->
+<g id="node6" class="node">
+<title>5</title>
+<ellipse fill="grey" stroke="black" cx="249" cy="-279" rx="34" ry="18"/>
+<text text-anchor="middle" x="249" y="-275.3" font-family="Times,serif" font-size="14.00">state 6</text>
+</g>
+<!-- 0&#45;&gt;5 -->
+<g id="edge6" class="edge">
+<title>0&#45;&gt;5</title>
+<path fill="none" stroke="black" stroke-width="0.05" d="M217.11,-435.17C209.58,-414.39 199.63,-378.1 208,-348 212.79,-330.76 223.26,-313.53 232.42,-300.72"/>
+<polygon fill="black" stroke="black" stroke-width="0.05" points="234.12,-301.95 235.98,-295.87 230.74,-299.46 234.12,-301.95"/>
+<text text-anchor="middle" x="220.5" y="-362.3" font-family="Times,serif" font-size="14.00">0.02</text>
+</g>
+<!-- 1&#45;&gt;0 -->
+<g id="edge7" class="edge">
+<title>1&#45;&gt;0</title>
+<path fill="none" stroke="black" stroke-width="0" d="M455.14,-379.77C429.94,-394.47 391.86,-416.67 391,-417 348.82,-433.19 297.63,-442.51 263.13,-447.4"/>
+<polygon fill="black" stroke="black" stroke-width="0" points="262.54,-445.36 256.89,-448.27 263.12,-449.52 262.54,-445.36"/>
+<text text-anchor="middle" x="426" y="-405.8" font-family="Times,serif" font-size="14.00">0.0</text>
+</g>
+<!-- 1&#45;&gt;1 -->
+<g id="edge8" class="edge">
+<title>1&#45;&gt;1</title>
+<path fill="none" stroke="black" stroke-width="2.66" d="M507.58,-373.85C519.19,-374.15 528.8,-371.54 528.8,-366 528.8,-361.46 522.34,-358.88 513.6,-358.27"/>
+<polygon fill="black" stroke="black" stroke-width="2.66" points="513.62,-356.17 507.58,-358.15 513.54,-360.37 513.62,-356.17"/>
+<text text-anchor="middle" x="541.3" y="-362.3" font-family="Times,serif" font-size="14.00">0.89</text>
+</g>
+<!-- 1&#45;&gt;2 -->
+<g id="edge9" class="edge">
+<title>1&#45;&gt;2</title>
+<path fill="none" stroke="black" stroke-width="0" d="M510.85,-365.56C569.08,-364.57 682,-353.2 682,-280 682,-280 682,-280 682,-104 682,-75.54 666.95,-67.69 642,-54 594.21,-27.77 434.41,-21.2 359.02,-19.55"/>
+<polygon fill="black" stroke="black" stroke-width="0" points="358.9,-17.45 352.86,-19.42 358.82,-21.65 358.9,-17.45"/>
+<text text-anchor="middle" x="691" y="-188.3" font-family="Times,serif" font-size="14.00">0.0</text>
+</g>
+<!-- 1&#45;&gt;3 -->
+<g id="edge10" class="edge">
+<title>1&#45;&gt;3</title>
+<path fill="none" stroke="black" stroke-width="0.17" d="M468.42,-348.32C459.06,-329.98 445.23,-302.37 444,-297 440.42,-281.41 438.03,-275.84 444,-261 455.74,-231.84 481.26,-239.16 493,-210 498.97,-195.16 501.84,-187.34 493,-174 477.27,-150.26 401.24,-127.09 355.04,-114.88"/>
+<polygon fill="black" stroke="black" stroke-width="0.17" points="355.35,-112.79 349.01,-113.3 354.28,-116.85 355.35,-112.79"/>
+<text text-anchor="middle" x="491.5" y="-231.8" font-family="Times,serif" font-size="14.00">0.06</text>
+</g>
+<!-- 1&#45;&gt;4 -->
+<g id="edge11" class="edge">
+<title>1&#45;&gt;4</title>
+<path fill="none" stroke="black" stroke-width="0.13" d="M471.88,-348.19C463.67,-321.98 446.51,-270.03 427,-228 424.97,-223.63 422.58,-219.07 420.18,-214.75"/>
+<polygon fill="black" stroke="black" stroke-width="0.13" points="421.94,-213.6 417.15,-209.43 418.29,-215.68 421.94,-213.6"/>
+<text text-anchor="middle" x="466.5" y="-275.3" font-family="Times,serif" font-size="14.00">0.04</text>
+</g>
+<!-- 1&#45;&gt;5 -->
+<g id="edge12" class="edge">
+<title>1&#45;&gt;5</title>
+<path fill="none" stroke="black" stroke-width="0.04" d="M442.94,-365.61C403.25,-364.83 336.98,-358.76 289,-330 277.63,-323.19 268.18,-311.87 261.32,-301.73"/>
+<polygon fill="black" stroke="black" stroke-width="0.04" points="263,-300.46 257.97,-296.57 259.48,-302.75 263,-300.46"/>
+<text text-anchor="middle" x="301.5" y="-318.8" font-family="Times,serif" font-size="14.00">0.01</text>
+</g>
+<!-- 2&#45;&gt;0 -->
+<g id="edge13" class="edge">
+<title>2&#45;&gt;0</title>
+<path fill="none" stroke="black" stroke-width="0.35" d="M286.04,-22.31C213.82,-30.49 48,-54.63 48,-104 48,-367 48,-367 48,-367 48,-427.16 132.41,-444.76 184.32,-449.9"/>
+<polygon fill="black" stroke="black" stroke-width="0.35" points="184.31,-452.01 190.48,-450.46 184.69,-447.83 184.31,-452.01"/>
+<text text-anchor="middle" x="60.5" y="-231.8" font-family="Times,serif" font-size="14.00">0.12</text>
+</g>
+<!-- 2&#45;&gt;1 -->
+<g id="edge14" class="edge">
+<title>2&#45;&gt;1</title>
+<path fill="none" stroke="black" stroke-width="0.01" d="M352.36,-21.09C432.26,-27.02 628,-47.32 628,-104 628,-280 628,-280 628,-280 628,-331.43 560.66,-352.08 515.92,-360.12"/>
+<polygon fill="black" stroke="black" stroke-width="0.01" points="515.32,-358.09 509.76,-361.17 516.03,-362.23 515.32,-358.09"/>
+<text text-anchor="middle" x="637" y="-188.3" font-family="Times,serif" font-size="14.00">0.0</text>
+</g>
+<!-- 2&#45;&gt;2 -->
+<g id="edge15" class="edge">
+<title>2&#45;&gt;2</title>
+<path fill="none" stroke="black" stroke-width="0.01" d="M349.58,-25.85C361.19,-26.15 370.8,-23.54 370.8,-18 370.8,-13.46 364.34,-10.88 355.6,-10.27"/>
+<polygon fill="black" stroke="black" stroke-width="0.01" points="355.62,-8.17 349.58,-10.15 355.54,-12.37 355.62,-8.17"/>
+<text text-anchor="middle" x="379.8" y="-14.3" font-family="Times,serif" font-size="14.00">0.0</text>
+</g>
+<!-- 2&#45;&gt;3 -->
+<g id="edge16" class="edge">
+<title>2&#45;&gt;3</title>
+<path fill="none" stroke="black" stroke-width="0.12" d="M305.86,-34.74C301.89,-40.44 298.04,-47.17 296,-54 293.05,-63.85 296.65,-74.26 301.81,-83.02"/>
+<polygon fill="black" stroke="black" stroke-width="0.12" points="300.16,-84.33 305.18,-88.23 303.69,-82.05 300.16,-84.33"/>
+<text text-anchor="middle" x="308.5" y="-57.8" font-family="Times,serif" font-size="14.00">0.04</text>
+</g>
+<!-- 2&#45;&gt;4 -->
+<g id="edge17" class="edge">
+<title>2&#45;&gt;4</title>
+<path fill="none" stroke="black" stroke-width="2.51" d="M342.65,-31.28C362.55,-42.9 390.06,-62.22 405,-87 421,-113.54 418.47,-125.21 415,-156 414.56,-159.9 413.85,-164 413.03,-167.97"/>
+<polygon fill="black" stroke="black" stroke-width="2.51" points="410.93,-167.73 411.68,-174.04 415.03,-168.64 410.93,-167.73"/>
+<text text-anchor="middle" x="430.5" y="-101.3" font-family="Times,serif" font-size="14.00">0.84</text>
+</g>
+<!-- 2&#45;&gt;5 -->
+<g id="edge18" class="edge">
+<title>2&#45;&gt;5</title>
+<path fill="none" stroke="black" stroke-width="0" d="M305.09,-34.51C286.53,-56.39 254.66,-98.4 243,-141 231.03,-184.73 235.92,-197.94 241,-243 241.44,-246.9 242.15,-251 242.97,-254.97"/>
+<polygon fill="black" stroke="black" stroke-width="0" points="240.97,-255.64 244.32,-261.04 245.07,-254.73 240.97,-255.64"/>
+<text text-anchor="middle" x="252" y="-144.8" font-family="Times,serif" font-size="14.00">0.0</text>
+</g>
+<!-- 3&#45;&gt;0 -->
+<g id="edge19" class="edge">
+<title>3&#45;&gt;0</title>
+<path fill="none" stroke="black" stroke-width="0.07" d="M285.54,-108.6C261.84,-112.21 230.99,-120.76 212,-141 128.02,-230.48 161.43,-301.9 204,-417 205.67,-421.52 207.89,-426.15 210.25,-430.49"/>
+<polygon fill="black" stroke="black" stroke-width="0.07" points="208.48,-431.63 213.27,-435.81 212.13,-429.56 208.48,-431.63"/>
+<text text-anchor="middle" x="177.5" y="-275.3" font-family="Times,serif" font-size="14.00">0.02</text>
+</g>
+<!-- 3&#45;&gt;1 -->
+<g id="edge20" class="edge">
+<title>3&#45;&gt;1</title>
+<path fill="none" stroke="black" stroke-width="0.08" d="M349.79,-112.47C390.25,-121.08 457.43,-135.84 468,-141 489.02,-151.26 497.71,-153.51 509,-174 511.86,-179.2 526.41,-266.44 519,-297 514.76,-314.5 504.02,-331.73 494.47,-344.47"/>
+<polygon fill="black" stroke="black" stroke-width="0.08" points="492.75,-343.27 490.74,-349.3 496.07,-345.83 492.75,-343.27"/>
+<text text-anchor="middle" x="531.5" y="-231.8" font-family="Times,serif" font-size="14.00">0.03</text>
+</g>
+<!-- 3&#45;&gt;2 -->
+<g id="edge21" class="edge">
+<title>3&#45;&gt;2</title>
+<path fill="none" stroke="black" stroke-width="0.01" d="M320.27,-86.88C320.83,-77.22 321.31,-64.94 321,-54 320.89,-50.17 320.71,-46.1 320.51,-42.15"/>
+<polygon fill="black" stroke="black" stroke-width="0.01" points="322.6,-41.95 320.17,-36.08 318.41,-42.19 322.6,-41.95"/>
+<text text-anchor="middle" x="331" y="-57.8" font-family="Times,serif" font-size="14.00">0.0</text>
+</g>
+<!-- 3&#45;&gt;3 -->
+<g id="edge22" class="edge">
+<title>3&#45;&gt;3</title>
+<path fill="none" stroke="black" stroke-width="2.57" d="M349.58,-112.85C361.19,-113.15 370.8,-110.54 370.8,-105 370.8,-100.46 364.34,-97.88 355.6,-97.27"/>
+<polygon fill="black" stroke="black" stroke-width="2.57" points="355.62,-95.17 349.58,-97.15 355.54,-99.37 355.62,-95.17"/>
+<text text-anchor="middle" x="383.3" y="-101.3" font-family="Times,serif" font-size="14.00">0.86</text>
+</g>
+<!-- 3&#45;&gt;4 -->
+<g id="edge23" class="edge">
+<title>3&#45;&gt;4</title>
+<path fill="none" stroke="black" stroke-width="0.25" d="M342.5,-118.01C352.89,-124.02 364.8,-131.95 374,-141 382.31,-149.17 389.66,-159.76 395.31,-169.09"/>
+<polygon fill="black" stroke="black" stroke-width="0.25" points="393.58,-170.3 398.43,-174.41 397.21,-168.17 393.58,-170.3"/>
+<text text-anchor="middle" x="398.5" y="-144.8" font-family="Times,serif" font-size="14.00">0.08</text>
+</g>
+<!-- 3&#45;&gt;5 -->
+<g id="edge24" class="edge">
+<title>3&#45;&gt;5</title>
+<path fill="none" stroke="black" stroke-width="0.02" d="M313.92,-122.82C307.48,-143.6 295.68,-179.89 283,-210 276.37,-225.75 267.75,-242.97 260.84,-256.14"/>
+<polygon fill="black" stroke="black" stroke-width="0.02" points="258.94,-255.23 258,-261.52 262.66,-257.19 258.94,-255.23"/>
+<text text-anchor="middle" x="309.5" y="-188.3" font-family="Times,serif" font-size="14.00">0.01</text>
+</g>
+<!-- 4&#45;&gt;0 -->
+<g id="edge25" class="edge">
+<title>4&#45;&gt;0</title>
+<path fill="none" stroke="black" stroke-width="0.07" d="M403.21,-209.96C400.78,-219.78 397.28,-232.28 393,-243 365.45,-312.05 352.83,-328.83 303,-384 289.1,-399.39 285.62,-403.36 270,-417 263.24,-422.9 255.6,-428.95 248.51,-434.32"/>
+<polygon fill="black" stroke="black" stroke-width="0.07" points="247.25,-432.64 243.71,-437.92 249.77,-436 247.25,-432.64"/>
+<text text-anchor="middle" x="371.5" y="-318.8" font-family="Times,serif" font-size="14.00">0.02</text>
+</g>
+<!-- 4&#45;&gt;1 -->
+<g id="edge26" class="edge">
+<title>4&#45;&gt;1</title>
+<path fill="none" stroke="black" stroke-width="0.26" d="M429.36,-205.62C447.61,-217.32 472.09,-236.59 483,-261 494.61,-286.96 489.69,-320.26 484.17,-342.09"/>
+<polygon fill="black" stroke="black" stroke-width="0.26" points="482.13,-341.59 482.62,-347.93 486.19,-342.67 482.13,-341.59"/>
+<text text-anchor="middle" x="502.5" y="-275.3" font-family="Times,serif" font-size="14.00">0.09</text>
+</g>
+<!-- 4&#45;&gt;2 -->
+<g id="edge27" class="edge">
+<title>4&#45;&gt;2</title>
+<path fill="none" stroke="black" stroke-width="1.18" d="M421.26,-175.33C438.37,-154.51 462.9,-116.89 447,-87 428.99,-53.16 387.09,-35.51 356.1,-26.77"/>
+<polygon fill="black" stroke="black" stroke-width="1.18" points="356.4,-24.68 350.06,-25.14 355.3,-28.73 356.4,-24.68"/>
+<text text-anchor="middle" x="464.5" y="-101.3" font-family="Times,serif" font-size="14.00">0.39</text>
+</g>
+<!-- 4&#45;&gt;3 -->
+<g id="edge28" class="edge">
+<title>4&#45;&gt;3</title>
+<path fill="none" stroke="black" stroke-width="0.18" d="M380.9,-180.45C368.86,-174.6 355.05,-166.4 345,-156 337.46,-148.19 331.57,-137.76 327.32,-128.44"/>
+<polygon fill="black" stroke="black" stroke-width="0.18" points="329.2,-127.49 324.88,-122.82 325.34,-129.16 329.2,-127.49"/>
+<text text-anchor="middle" x="357.5" y="-144.8" font-family="Times,serif" font-size="14.00">0.06</text>
+</g>
+<!-- 4&#45;&gt;4 -->
+<g id="edge29" class="edge">
+<title>4&#45;&gt;4</title>
+<path fill="none" stroke="black" stroke-width="1.3" d="M437.58,-199.85C449.19,-200.15 458.8,-197.54 458.8,-192 458.8,-187.46 452.34,-184.88 443.6,-184.27"/>
+<polygon fill="black" stroke="black" stroke-width="1.3" points="443.62,-182.17 437.58,-184.15 443.54,-186.37 443.62,-182.17"/>
+<text text-anchor="middle" x="471.3" y="-188.3" font-family="Times,serif" font-size="14.00">0.43</text>
+</g>
+<!-- 4&#45;&gt;5 -->
+<g id="edge30" class="edge">
+<title>4&#45;&gt;5</title>
+<path fill="none" stroke="black" stroke-width="0.02" d="M385.13,-205.95C374.22,-212.47 360.85,-220.56 349,-228 338.66,-234.49 336.7,-237.12 326,-243 311.58,-250.92 295.04,-258.61 281,-264.75"/>
+<polygon fill="black" stroke="black" stroke-width="0.02" points="279.81,-262.98 275.14,-267.29 281.48,-266.83 279.81,-262.98"/>
+<text text-anchor="middle" x="361.5" y="-231.8" font-family="Times,serif" font-size="14.00">0.01</text>
+</g>
+<!-- 5&#45;&gt;0 -->
+<g id="edge31" class="edge">
+<title>5&#45;&gt;0</title>
+<path fill="none" stroke="black" stroke-width="0.01" d="M246.52,-297.05C242.02,-328.04 232.49,-393.61 227.39,-428.7"/>
+<polygon fill="black" stroke="black" stroke-width="0.01" points="225.28,-428.64 226.49,-434.88 229.43,-429.25 225.28,-428.64"/>
+<text text-anchor="middle" x="248" y="-362.3" font-family="Times,serif" font-size="14.00">0.0</text>
+</g>
+<!-- 5&#45;&gt;1 -->
+<g id="edge32" class="edge">
+<title>5&#45;&gt;1</title>
+<path fill="none" stroke="black" stroke-width="0.25" d="M281.65,-283.85C313.59,-288.42 363.12,-297.72 403,-315 405.72,-316.18 431.63,-333.82 452.04,-347.81"/>
+<polygon fill="black" stroke="black" stroke-width="0.25" points="450.96,-349.61 457.09,-351.28 453.33,-346.15 450.96,-349.61"/>
+<text text-anchor="middle" x="436.5" y="-318.8" font-family="Times,serif" font-size="14.00">0.08</text>
+</g>
+<!-- 5&#45;&gt;2 -->
+<g id="edge33" class="edge">
+<title>5&#45;&gt;2</title>
+<path fill="none" stroke="black" stroke-width="0" d="M240.3,-261.51C227.81,-235.73 207.43,-184.36 218,-141 228.92,-96.23 268.82,-57.8 295.08,-36.59"/>
+<polygon fill="black" stroke="black" stroke-width="0" points="296.42,-38.21 299.81,-32.83 293.81,-34.92 296.42,-38.21"/>
+<text text-anchor="middle" x="227" y="-144.8" font-family="Times,serif" font-size="14.00">0.0</text>
+</g>
+<!-- 5&#45;&gt;3 -->
+<g id="edge34" class="edge">
+<title>5&#45;&gt;3</title>
+<path fill="none" stroke="black" stroke-width="0.07" d="M246.3,-260.98C243.7,-239.7 241.74,-202.57 254,-174 262.62,-153.91 280,-136.24 294.62,-123.95"/>
+<polygon fill="black" stroke="black" stroke-width="0.07" points="296.15,-125.41 299.46,-119.99 293.49,-122.16 296.15,-125.41"/>
+<text text-anchor="middle" x="266.5" y="-188.3" font-family="Times,serif" font-size="14.00">0.02</text>
+</g>
+<!-- 5&#45;&gt;4 -->
+<g id="edge35" class="edge">
+<title>5&#45;&gt;4</title>
+<path fill="none" stroke="black" stroke-width="0" d="M264.42,-262.67C277.51,-249.89 295.5,-233.01 304,-228 315.75,-221.07 347.02,-210.82 372.05,-203.2"/>
+<polygon fill="black" stroke="black" stroke-width="0" points="372.8,-205.17 377.94,-201.42 371.59,-201.15 372.8,-205.17"/>
+<text text-anchor="middle" x="313" y="-231.8" font-family="Times,serif" font-size="14.00">0.0</text>
+</g>
+<!-- 5&#45;&gt;5 -->
+<g id="edge36" class="edge">
+<title>5&#45;&gt;5</title>
+<path fill="none" stroke="black" stroke-width="2.67" d="M279.58,-286.85C291.19,-287.15 300.8,-284.54 300.8,-279 300.8,-274.46 294.34,-271.88 285.6,-271.27"/>
+<polygon fill="black" stroke="black" stroke-width="2.67" points="285.62,-269.17 279.58,-271.15 285.54,-273.37 285.62,-269.17"/>
+<text text-anchor="middle" x="313.3" y="-275.3" font-family="Times,serif" font-size="14.00">0.89</text>
+</g>
+</g>
 </svg>

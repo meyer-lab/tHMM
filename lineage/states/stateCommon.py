@@ -69,9 +69,10 @@ def gamma_estimator(gamma_obs: np.ndarray, time_cen: np.ndarray, gammas: np.ndar
 
     assert gammas.shape[0] == gamma_obs.shape[0]
     arrgs = (gamma_obs, time_cen, gammas)
-    bnd = (0.001, 300.0)
+    bnd_shape = (10.0, 500.0)
+    bnd_scale = (0.001, 2.0)
 
-    res = minimize(GnLL_sep, x0, jac=True, bounds=(bnd, bnd), args=arrgs)
+    res = minimize(GnLL_sep, x0, jac=True, bounds=(bnd_shape, bnd_scale), args=arrgs)
     return res.x
 
 
@@ -121,7 +122,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gammas, x0=None, constr=True):
     arrgs = (gamma_obs, time_cen, gammas)
 
     if x0 is None:
-        x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
+        x0 = np.array([200.0, 0.1, 0.2, 0.3, 0.4])
 
     if constr:  # for constrained optimization
         A = np.zeros((3, 5))  # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
@@ -129,11 +130,11 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gammas, x0=None, constr=True):
         np.fill_diagonal(A[:, 2:], 1.0)
         linc = [LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)]
         if np.allclose(np.dot(A, x0), 0.0):
-            x0 = np.array([20.0, 1.0, 2.0, 3.0, 4.0])
+            x0 = np.array([200.0, 0.1, 0.2, 0.3, 0.4])
     else:
         linc = ()
 
-    bnds = Bounds(lb=np.ones_like(x0) * 0.001, ub=np.ones_like(x0) * 100.0, keep_feasible=True)
+    bnds = Bounds(lb=[1.0, 0.001, 0.001, 0.001, 0.001], ub=[500.0, 2.0, 2.0, 2.0, 2.0], keep_feasible=True)
     HH = BFGS()
 
     def func(x, *args):

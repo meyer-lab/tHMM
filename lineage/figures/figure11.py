@@ -1,7 +1,7 @@
 """ This file depicts the distribution of phase lengths versus the states for each concentration of lapatinib. """
 import pickle
 from string import ascii_lowercase
-
+from ..plotTree import plot_networkx
 from .common import getSetup, plot_all
 
 concs = ["Control", "Lapatinib 25 nM", "Lapatinib 50 nM", "Lapatinib 250 nM"]
@@ -27,3 +27,4 @@ def makeFigure():
         ax[i].axis('off')
 
     return f
+plot_networkx(T_lap.shape[0], T_lap, 'lapatinib')
