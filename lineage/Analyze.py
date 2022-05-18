@@ -2,7 +2,7 @@
 import itertools
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor, Future, Executor
-from sklearn.metrics import rand_score
+from sklearn.metrics import rand_score, confusion_matrix
 from .tHMM import tHMM, fit_list
 from typing import Any, Tuple, Union
 
@@ -146,7 +146,8 @@ def Results(tHMMobj, LL: float) -> dict[str, Any]:
     results_dict["state_counter"] = np.bincount(pred_states[0])
     results_dict["state_proportions"] = [100.0 * i / len(pred_states[0]) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
-    results_dict["state_similarity"] = 100.0 * rand_score(list(itertools.chain(*true_states_by_lineage)), list(itertools.chain(*tHMMobj.predict())))
+    results_dict["state_similarity"] = 100.0 * rand_score(list(itertools.chain(*true_states_by_lineage)), list(itertools.chain(*pred_states)))
+    results_dict["confusion_matrix"] = confusion_matrix(list(itertools.chain(*true_states_by_lineage)), list(itertools.chain(*pred_states)))
 
     # 4. Calculate the Wasserstein distance
     results_dict["wasserstein"] = tHMMobj.X[0].E[0].dist(tHMMobj.X[0].E[1])
@@ -196,20 +197,22 @@ def permute_states(tHMMobj: Any, switch_map: np.ndarray) -> Tuple[Any, list]:
 
     return tHMMobj, pred_states_switched
 
-def cv_likelihood(tHMMobj, complete_lineage):
+def cv_likelihood(tHMMobj):
     """ cross validation for a lineage.
     To do so, we mark observation of some cells negative to be removed from estimators.
     """
     pred_states = tHMMobj.predict()
 
+
+    true_states = [[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X]
+
     all_cells = np.array([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]) # observations
 
-    likelihood = []
-    all_LLs = []
+    pred, true = [], []
     for ix1, lineage in enumerate(tHMMobj.X):
-        for ix2, cell in enumerate(linage.output_lineage):
+        for ix2, cell in enumerate(lineage.output_lineage):
             if cell.obs[1] == -1:
-                tmp_l = [tHMMobj.estimate.E[j].pdf(complete_lineage[ix1].output_lineage[ix2]) for j in range(tHMMobj.num_states)]
-                likelihood.append(tHMMobj.estimate.E[cell.state].pdf(complete_lineage[ix1].output_lineage[ix2]))
-                all_LLs.append(tmp_l)
-    return likelihood, all_LLs
+                pred.append(pred_states[ix1][ix2])
+                true.append(true_states[ix1][ix2])
+
+    return pred, true
