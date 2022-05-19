@@ -111,7 +111,7 @@ def Viterbi(tHMMobj) -> list:
     :return: assigned states to each cell in all lineages
     """
     deltas, state_ptrs = get_leaf_deltas(tHMMobj)
-    deltas = get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
+    get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
 
     all_states = []
 
