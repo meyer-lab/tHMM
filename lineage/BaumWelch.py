@@ -88,9 +88,9 @@ def do_M_step(tHMMobj: list, MSD: list, betas: list, gammas: list):
         assert tHMMobj[0].fT is None
         T = do_M_T_step(tHMMobj, MSD, betas, gammas)
 
-        # all the objects in the population have the same T
-        for t in tHMMobj:
-            t.estimate.T = T
+        # each tHMMobj has its own T
+        for jj, t in enumerate(tHMMobj):
+            t.estimate.T = T[jj]
 
     if tHMMobj[0].estimate.fpi is None:
         assert tHMMobj[0].fpi is None
@@ -140,7 +140,6 @@ def do_M_T_step(tHMMobj, MSD: list, betas: list, gammas: list) -> list:
     given output of the E step.
     Does the parameter estimation for the T
     Markov stochastic transition matrix.
-
     :param tHMMobj: A class object with properties of the lineages of cells
     :type tHMMobj: list of tHMMobj s
     :param MSD: The marginal state distribution P(z_n = k)
@@ -149,20 +148,21 @@ def do_M_T_step(tHMMobj, MSD: list, betas: list, gammas: list) -> list:
     """
     n = tHMMobj[0].num_states
 
-    # One pseudocount spread across states
-    numer_e = np.full((n, n), 0.1 / n)
-    denom_e = np.ones(n) + 0.1
-
+    T_estimate = []
     for i, tt in enumerate(tHMMobj):
+        numer_e = np.full((n, n), 0.1 / n)
+        denom_e = np.ones(n) + 0.1
+
         for num, lO in enumerate(tt.X):
             # local T estimate
             numer_e += get_all_zetas(lO, betas[i][num], MSD[i][num], gammas[i][num], tt.estimate.T)
             denom_e += sum_nonleaf_gammas(lO, gammas[i][num])
 
-    T_estimate = numer_e / denom_e[:, np.newaxis]
-    T_estimate /= T_estimate.sum(axis=1)[:, np.newaxis]
+        T_temp = numer_e / denom_e[:, np.newaxis]
+        T_temp /= T_temp.sum(axis=1)[:, np.newaxis]
 
-    assert np.all(np.isfinite(T_estimate))
+        assert np.all(np.isfinite(T_temp))
+        T_estimate.append(T_temp)
 
     return T_estimate
 
