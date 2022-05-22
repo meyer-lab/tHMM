@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import run_Analyze_over, Analyze_list
-from ..Lineage_collections import Gemcitabine_Control, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
+from ..Lineage_collections import Gemcitabine_Control, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM, Gem5uM, Gem10uM, Gem30uM
 from .common import getSetup
 
 desired_num_states = np.arange(1, 8)
@@ -15,6 +15,7 @@ def makeFigure():
     ax, f = getSetup((8, 4), (1, 2))
 
     lapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
+    gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
 
     lapt_tHMMobj_list, _ = Analyze_list(lapatinib, 6, fpi=True)
     lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
