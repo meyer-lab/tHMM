@@ -1,5 +1,6 @@
 """ Figure 20 for correlations between cell observations in the lineages. """
 import numpy as np
+import pandas as pd
 import scipy.stats as sp
 import itertools as it
 import pickle
@@ -23,12 +24,12 @@ T = lpt[0].estimate.T
 pi = lpt[0].estimate.pi
 E = lpt[0].estimate.E
 
-T2 = lpt[0].estimate.T
-pi2 = lpt[0].estimate.pi
+T2 = lpt[2].estimate.T
+pi2 = lpt[2].estimate.pi
 E2 = lpt[2].estimate.E
 
-T3 = gemc[0].estimate.T
-pi3 = gemc[0].estimate.pi
+T3 = gemc[2].estimate.T
+pi3 = gemc[2].estimate.pi
 E3 = gemc[2].estimate.E
 
 
@@ -105,14 +106,45 @@ def corr(all_gens, degree):
     arr1 = list(it.chain(*array1))
     assert(len(arr1) == len(arr2))
 
-    return sp.spearmanr(arr1, arr2).correlation
+    df = pd.DataFrame({"gen1" : arr1, "gen2" : arr2})
+
+    return sp.spearmanr(arr1, arr2).correlation, df
 
 
 def repeat_corr(drug, ix):
+    """ Given which ``drug`` (lapatinib or gemcitabine here), and ``ix`` 
+    which is the index of observations: 2 for G1 lifetime, 3 for S-G2 lifetime, calculates the correlations 
+    between gen 1 & 2, gen 1 & 3, and gen 1 & 4.
+    """
     populations = []
     for i in range(4):
         populations += [LineageTree.init_from_parameters(drug[i].estimate.pi, drug[i].estimate.T, drug[i].estimate.E, 2 ** num_gens - 1) for _ in range(num_trials)]
 
     all_gens = get_lifetime_gens(populations, ix)
 
-    return corr(all_gens, 1), corr(all_gens, 2), corr(all_gens, 3)
+    return corr(all_gens, 1)[0], corr(all_gens, 2)[0], corr(all_gens, 3)[0]
+
+def save_df(drug):
+    """ Save the arrays that are used for calculating the correlation into dataframes, in the form of column1:gen1, column2: gen2. 
+    This functions does this for gen1 & 2, gen 1 & 3, gen 1 & 4, and for both G1 and S-G2 cell lifetimes. """
+    populations = []
+    for i in range(4):
+        populations += [LineageTree.init_from_parameters(drug[i].estimate.pi, drug[i].estimate.T, drug[i].estimate.E, 2 ** num_gens - 1) for _ in range(num_trials)]
+
+    # G1
+    all_gens1 = get_lifetime_gens(populations, 2)
+    df1 = corr(all_gens1, 1)[1]
+    df2 = corr(all_gens1, 2)[1]
+    df3 = corr(all_gens1, 3)[1]
+    df1.to_csv(r'df_g1_gen12.csv', index=False)
+    df2.to_csv(r'df_g1_gen13.csv', index=False)
+    df3.to_csv(r'df_g1_gen14.csv', index=False)
+
+    # S-G2
+    all_gens2 = get_lifetime_gens(populations, 3)
+    df11 = corr(all_gens2, 1)[1]
+    df12 = corr(all_gens2, 2)[1]
+    df13 = corr(all_gens2, 3)[1]
+    df11.to_csv(r'df_g2_gen12.csv', index=False)
+    df12.to_csv(r'df_g2_gen13.csv', index=False)
+    df13.to_csv(r'df_g2_gen14.csv', index=False)
