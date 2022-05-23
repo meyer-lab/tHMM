@@ -13,19 +13,19 @@ from ..BaumWelch import calculate_stationary
 
 desired_num_cells = 31
 num_data_points = 100
-min_num_lineages = 50
-max_num_lineages = 300
+min_num_lineages = 25
+max_num_lineages = 350
 
 T = np.array([[0.6, 0.1, 0.1, 0.1, 0.1], [0.05, 0.8, 0.05, 0.05, 0.05], [0.01, 0.1, 0.7, 0.09, 0.1], [0.1, 0.1, 0.05, 0.7, 0.05], [0.1, 0.1, 0.05, 0.05, 0.7]], dtype=float)
 
 # pi: the initial probability vector
 pi = calculate_stationary(T)
 
-state0 = phaseStateDist(0.99, 0.95, 50, 0.2, 100, 0.1)
-state1 = phaseStateDist(0.95, 0.9, 75, 0.2, 150, 0.1)
-state2 = phaseStateDist(0.9, 0.85, 100, 0.2, 200, 0.1)
-state3 = phaseStateDist(0.92, 0.95, 150, 0.2, 250, 0.1)
-state4 = phaseStateDist(0.99, 0.85, 200, 0.2, 300, 0.1)
+state0 = phaseStateDist(0.7, 0.95, 250, 0.2, 50, 0.1)
+state1 = phaseStateDist(0.95, 0.9, 200, 0.2, 100, 0.1)
+state2 = phaseStateDist(0.9, 0.85, 150, 0.2, 150, 0.1)
+state3 = phaseStateDist(0.99, 0.75, 100, 0.2, 200, 0.1)
+state4 = phaseStateDist(0.99, 0.75, 50, 0.2, 250, 0.1)
 E = [state0, state1, state2, state3, state4]
 
 # Creating a list of populations to analyze over
