@@ -5,7 +5,7 @@ from .common import getSetup, sort_lins
 from ..plotTree import plotLineage
 
 
-pik1 = open("gemcitabines2.pkl", "rb")
+pik1 = open("gemcitabines.pkl", "rb")
 gemc_tHMMobj_list = []
 for _ in range(4):
     gemc_tHMMobj_list.append(pickle.load(pik1))
