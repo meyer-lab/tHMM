@@ -7,7 +7,7 @@ from .common import getSetup, plot_all
 concs = ["Control", "Lapatinib 25 nM", "Lapatinib 50 nM", "Lapatinib 250 nM"]
 concsValues = ["Control", "25 nM", "50 nM", "250 nM"]
 
-pik1 = open("lapatinibs.pkl", "rb")
+pik1 = open("lapatinibs2.pkl", "rb")
 lapt_tHMMobj_list = []
 for i in range(4):
     lapt_tHMMobj_list.append(pickle.load(pik1))

@@ -17,7 +17,10 @@ def makeFigure():
     lapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
     gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
 
-    lapt_tHMMobj_list, _ = Analyze_list(lapatinib, 6, fpi=True)
+    lapBIC = find_BIC(lapatinib, desired_num_states, num_cells=5290)
+    gemBIC = find_BIC(gemcitabine, desired_num_states, num_cells=4537)
+
+    lapt_tHMMobj_list, _ = Analyze_list(lapatinib, list(lapBIC).index(0) + 1, fpi=True)
     lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
 
     # assign the predicted states to each cell
@@ -33,7 +36,7 @@ def makeFigure():
     pik1.close()
 
     # Gemcitabine
-    gemc_tHMMobj_list, _ = Analyze_list(gemcitabine, 5, fpi=True)
+    gemc_tHMMobj_list, _ = Analyze_list(gemcitabine, list(gemBIC).index(0) + 1, fpi=True)
     gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
 
     for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
@@ -66,4 +69,4 @@ def find_BIC(data, desired_num_states, num_cells):
     output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
     BICs = np.array([oo[0][0].get_BIC(oo[1], num_cells, atonce=True)[0] for oo in output])
 
-    return BICs - np.min(BICs, axis=0), output
+    return BICs - np.min(BICs, axis=0)

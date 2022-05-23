@@ -7,7 +7,7 @@ from .common import getSetup
 from ..plotTree import plotLineage
 
 # open lapatinib
-pik1 = open("lapatinibs.pkl", "rb")
+pik1 = open("lapatinibs2.pkl", "rb")
 lapt_tHMMobj_list = []
 for _ in range(4):
     lapt_tHMMobj_list.append(pickle.load(pik1))

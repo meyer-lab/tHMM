@@ -7,7 +7,7 @@ from .common import getSetup, plot_all
 concs = ["Control", "Gemcitabine 5 nM", "Gemcitabine 10 nM", "Gemcitabine 30 nM"]
 concsValues = ["Control", "5 nM", "10 nM", "30 nM"]
 
-pik1 = open("gemcitabines.pkl", "rb")
+pik1 = open("gemcitabines2.pkl", "rb")
 gemc_tHMMobj_list = []
 for i in range(4):
     gemc_tHMMobj_list.append(pickle.load(pik1))

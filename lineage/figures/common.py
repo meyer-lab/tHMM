@@ -226,8 +226,8 @@ def genFigure():
         # Overlay Transition block
         overlayCartoon(fdir + 'figure11.svg',
                        f'{cartoon_dir}/figure01.svg', 450, 50, scale_x=0.9, scale_y=1.2)
-        overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/lapatinib.svg', 5, 80, scalee=0.8)
+        # overlayCartoon(fdir + 'figure11.svg',
+        #                f'{cartoon_dir}/lapatinib.svg', 5, 80, scalee=0.8)
         overlayCartoon(fdir + 'figure11.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 450, 215, scalee=1.44)
         overlayCartoon(fdir + 'figure11.svg',
@@ -241,8 +241,8 @@ def genFigure():
         # Overlay Transition block
         overlayCartoon(fdir + 'figure12.svg',
                        f'{cartoon_dir}/figure02.svg', 450, 50, scale_x=0.9, scale_y=1.2)
-        overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/gemcitabine.svg', 10, 70, scalee=1.05)
+        # overlayCartoon(fdir + 'figure12.svg',
+        #                f'{cartoon_dir}/gemcitabine.svg', 10, 70, scalee=1.05)
         overlayCartoon(fdir + 'figure12.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 450, 215, scalee=1.44)
         overlayCartoon(fdir + 'figure12.svg',
@@ -268,45 +268,26 @@ def genFigure():
                        f'{cartoon_dir}/xaxis-h.svg', 1010, 260, scalee=1.3)
 
     if sys.argv[1] == 'S11':
-        # Overlay Transition block
         overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/figure10.svg', 0, 20, scalee=0.2, scale_x=1.6, scale_y=1.2)
+                       f'{cartoon_dir}/xaxis-h.svg', 40, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
         overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 0, 707, scalee=0.8, scale_x=1.6, scale_y=1.6)
+                       f'{cartoon_dir}/xaxis-h.svg', 320, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
         overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/figure101.svg', 180, 20, scalee=0.2, scale_x=1.6, scale_y=1.2)
+                       f'{cartoon_dir}/xaxis-h.svg', 580, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
         overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 180, 707, scalee=0.8, scale_x=1.6, scale_y=1.6)
-        overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/figure102.svg', 360, 20, scalee=0.2, scale_x=1.6, scale_y=1.2)
-        overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 360, 707, scalee=0.8, scale_x=1.6, scale_y=1.6)
-        overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/figure103.svg', 540, 20, scalee=0.2, scale_x=1.6, scale_y=1.2)
-        overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 540, 707, scalee=0.8, scale_x=1.6, scale_y=1.6)
+                       f'{cartoon_dir}/xaxis-h.svg', 850, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
 
     if sys.argv[1] == 'S12':
-        # Overlay Transition block
         overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/figure15.svg', 0, 20, scalee=0.2, scale_x=1.6, scale_y=1.2)
+                       f'{cartoon_dir}/xaxis-h.svg', 40, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
         overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 0, 707, scalee=0.8, scale_x=1.6, scale_y=1.6)
+                       f'{cartoon_dir}/xaxis-h.svg', 320, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
         overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/figure151.svg', 180, 20, scalee=0.2, scale_x=1.6, scale_y=1.2)
+                       f'{cartoon_dir}/xaxis-h.svg', 580, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
         overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 180, 707, scalee=0.8, scale_x=1.6, scale_y=1.6)
-        overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/figure152.svg', 360, 20, scalee=0.2, scale_x=1.6, scale_y=1.2)
-        overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 360, 707, scalee=0.8, scale_x=1.6, scale_y=1.6)
-        overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/figure153.svg', 540, 20, scalee=0.2, scale_x=1.6, scale_y=1.2)
-        overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 540, 707, scalee=0.8, scale_x=1.6, scale_y=1.6)
+                       f'{cartoon_dir}/xaxis-h.svg', 850, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
 
     if sys.argv[1] == 'S13':
-        # Overlay Transition block
         overlayCartoon(fdir + 'figureS13.svg',
                        f'{cartoon_dir}/figure16.svg', 0, 20, scalee=0.8, scale_y=0.5)
         overlayCartoon(fdir + 'figureS13.svg',
@@ -569,16 +550,17 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
             ax[i].set_ylim([0.0, 1.0])
 
 
+colors = ['blue', 'orange', 'green', 'red', 'purple', 'grey']
 def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(num_states):  # lapatinib that has 3 states
-        ax[10].plot(cons, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7)
+        ax[10].plot(cons, lpt_avg[:, i, 0], label="state " + str(i + 1), color=colors[i], alpha=0.7)
         ax[10].set_title("G1 phase")
-        ax[11].plot(cons, lpt_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7)
+        ax[11].plot(cons, lpt_avg[:, i, 1], label="state " + str(i + 1), color=colors[i], alpha=0.7)
         ax[11].set_title("S/G2 phase")
-        ax[12].plot(cons, bern_lpt[:, i, 0], label="state " + str(i + 1), alpha=0.7)
+        ax[12].plot(cons, bern_lpt[:, i, 0], label="state " + str(i + 1), color=colors[i], alpha=0.7)
         ax[12].set_title("G1 phase")
-        ax[13].plot(cons, bern_lpt[:, i, 1], label="state " + str(i + 1), alpha=0.7)
+        ax[13].plot(cons, bern_lpt[:, i, 1], label="state " + str(i + 1), color=colors[i], alpha=0.7)
         ax[13].set_title("S/G2 phase")
 
     # ylim and ylabel
@@ -632,7 +614,7 @@ def sort_lins(tHMMobj):
     states = []
     for i in range(num_st):
         st_i = [index for index, val in enumerate(st) if val == i]
-        temp = [tHMMobj.X[k] for k in st_i]
+        temp = [tHMMobj.X[k] for k in st_i[0:15]]
 
         states += temp
 
