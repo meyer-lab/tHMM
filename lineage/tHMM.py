@@ -194,7 +194,6 @@ def log_E_score(EL_array: np.ndarray, state_tree_sequence: list) -> float:
 def fit_list(tHMMobj_list: list, tolerance: float = 1e-9, max_iter: int = 1000) -> Tuple[list, list, list, list, float]:
     """
     Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
-
     :param tHMMobj_list: all lineage trees we want to fit at once
     :param tolerance: the stopping criteria for fitting. when the likelihood does not change more than tolerance from one step to the other, the fitting converges.
     :param max_iter: the maximum number of iterations for fitting
@@ -207,33 +206,26 @@ def fit_list(tHMMobj_list: list, tolerance: float = 1e-9, max_iter: int = 1000) 
 
     # Step 0: initialize with random assignments and do an M step
     # when there are no fixed emissions, we need to randomize the start
-    # try starting from 5 random places and pick the best
-    out = []
-    global_ll = []
-    for _ in range(5):
-        init_all_gammas = [[sp.multinomial.rvs(n=1, p=[1. / tHMMobj.num_states] * tHMMobj.num_states, size=len(lineage))
-                            for lineage in tHMMobj.X] for tHMMobj in tHMMobj_list]
+    init_all_gammas = [[sp.multinomial.rvs(n=1, p=[1. / tHMMobj.num_states] * tHMMobj.num_states, size=len(lineage))
+                        for lineage in tHMMobj.X] for tHMMobj in tHMMobj_list]
 
-        if len(tHMMobj_list) > 1:  # it means we are fitting several concentrations at once.
-            do_M_E_step_atonce(tHMMobj_list, init_all_gammas)
-        else:  # means we are fitting one condition at a time.
-            do_M_E_step(tHMMobj_list[0], init_all_gammas[0])
+    if len(tHMMobj_list) > 1:  # it means we are fitting several concentrations at once.
+        do_M_E_step_atonce(tHMMobj_list, init_all_gammas)
+    else:  # means we are fitting one condition at a time.
+        do_M_E_step(tHMMobj_list[0], init_all_gammas[0])
 
-        # Step 1: first E step
+    # Step 1: first E step
+    MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
+    old_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
+
+    # first stopping condition check
+    for _ in range(max_iter):
+        do_M_step(tHMMobj_list, MSD_list, betas_list, gammas_list)
         MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
-        old_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
+        new_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
+        if new_LL - old_LL < tolerance:
+            break
 
-        # first stopping condition check
-        for i in range(max_iter):
-            do_M_step(tHMMobj_list, MSD_list, betas_list, gammas_list)
-            MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
-            new_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
-            if new_LL - old_LL < tolerance:
-                break
+        old_LL = new_LL
 
-            old_LL = new_LL
-        global_ll.append(old_LL)
-        out.append([MSD_list, NF_list, betas_list, gammas_list])
-    MSD_list, NF_list, betas_list, gammas_list = out[global_ll.index(min(global_ll))]
-
-    return MSD_list, NF_list, betas_list, gammas_list, min(global_ll)
+    return MSD_list, NF_list, betas_list, gammas_list, new_LL
