@@ -194,6 +194,7 @@ def log_E_score(EL_array: np.ndarray, state_tree_sequence: list) -> float:
 def fit_list(tHMMobj_list: list, tolerance: float = 1e-9, max_iter: int = 1000) -> Tuple[list, list, list, list, float]:
     """
     Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
+
     :param tHMMobj_list: all lineage trees we want to fit at once
     :param tolerance: the stopping criteria for fitting. when the likelihood does not change more than tolerance from one step to the other, the fitting converges.
     :param max_iter: the maximum number of iterations for fitting
