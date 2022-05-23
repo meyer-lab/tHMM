@@ -39,7 +39,7 @@ def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
     _, _, _, _, LL = fit_list(tHMMobj_list)
 
-    for _ in range(3):
+    for _ in range(5):
         tHMMobj_list2 = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
         _, _, _, _, LL2 = fit_list(tHMMobj_list2)
 
