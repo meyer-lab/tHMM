@@ -69,7 +69,6 @@ class StateDistribution:
         # Update for observed Bernoulli
         ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
 
-        print("LL of negatives ", ll[x[:, 1] == -1])
         return np.exp(ll)
 
     def estimator(self, X: list, gammas: np.ndarray):

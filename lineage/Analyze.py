@@ -196,21 +196,3 @@ def permute_states(tHMMobj: Any, switch_map: np.ndarray) -> Tuple[Any, list]:
     tHMMobj.estimate.E = [tHMMobj.estimate.E[ii] for ii in switch_map]
 
     return tHMMobj, pred_states_switched
-
-def cv_likelihood(tHMMobj, complete_lineage):
-    """ cross validation for a lineage.
-    To do so, we mark observation of some cells negative to be removed from estimators.
-    """
-    pred_states = tHMMobj.predict()
-    true_states = [[cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X]
-
-    all_cells = np.array([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]) # observations
-
-    pred, true = [], []
-    for ix1, lineage in enumerate(tHMMobj.X):
-        for ix2, cell in enumerate(lineage.output_lineage):
-            if cell.obs[1] == -1:
-                pred.append(pred_states[ix1][ix2])
-                true.append(true_states[ix1][ix2])
-
-    return pred, true
