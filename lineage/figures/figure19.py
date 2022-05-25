@@ -18,7 +18,19 @@ state0 = StateDistribution(0.99, 100, 0.1)
 state1 = StateDistribution(0.75, 80, 0.5)
 E = [state0, state1]
 
-def cv():
+
+def all_cv():
+    """ find out the likelihoods for various masking percentages."""
+    percs = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
+    ls, nls = [], []
+    for perc in percs:
+        l, nl = cv(perc)
+        ls.append(l)
+        nls.append(nl)
+
+    return ls, nls
+
+def cv(percentage):
     """Simplest case of cross validation."""
 
     # create a lineage
@@ -26,7 +38,7 @@ def cv():
     true_states_by_lineage = [cell.state for cell in complete_lineage.output_lineage]
 
     # hide some percentage of observations
-    lineage, hide_index = hide_observation(complete_lineage)
+    lineage, hide_index = hide_observation(complete_lineage, percentage)
 
     # fit the not-hidden data from the lineages to the model
     tHMMobj_list, LL = Analyze_list([[lineage]], 2)
@@ -46,14 +58,15 @@ def cv():
     # print the ttotal likelihood of the observations to the assigned compared to the other state
     lls, not_lls = calc_likelihood(tHMMobj_list[0], complete_lineage, hide_index)
     print("Likelihoods ", lls, "Not Likelihoods", not_lls)
+    return lls, not_lls
 
 
-def hide_observation(lineage):
+def hide_observation(lineage, percentage):
     """This assumes we have cell lifetime and bernoulli as observations.
     We mark a random number of cells' lifetime as negative, to be removed from fitting."""
 
     num_cells = len(lineage.output_lineage)
-    hide_index = sp.multinomial.rvs(n=int(0.15 * num_cells), p=[1 / num_cells]*num_cells, size=1)[0]
+    hide_index = sp.multinomial.rvs(n=int(percentage * num_cells), p=[1 / num_cells]*num_cells, size=1)[0]
 
     for ix, cell in enumerate(lineage.output_lineage):
         if hide_index[ix] == 1: # means we hide the cell lifetime
