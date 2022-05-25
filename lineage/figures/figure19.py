@@ -3,6 +3,7 @@ import numpy as np
 import scipy.stats as sp
 import itertools as it
 from ..LineageTree import LineageTree
+from .common import getSetup
 from ..Analyze import Analyze_list, Results
 from ..tHMM import tHMM, fit_list
 from ..BaumWelch import calculate_stationary
@@ -18,6 +19,18 @@ state0 = StateDistribution(0.99, 100, 0.1)
 state1 = StateDistribution(0.75, 80, 0.5)
 E = [state0, state1]
 
+def makeFigure():
+    """
+    Makes figure 19.
+    """
+    ax, f = getSetup((4, 4), (1, 1))
+
+    ls, nls = all_cv()
+    percs = np.arange(1, 8)
+    ax[0].bar(percs - 0.1, list(it.chain(*ls)), width=0.2, label="pred state")
+    ax[0].bar(percs + 0.1, list(it.chain(*nls)), width=0.2, label="not pred state")
+
+    return f
 
 def all_cv():
     """ find out the likelihoods for various masking percentages."""
