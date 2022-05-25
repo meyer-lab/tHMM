@@ -14,7 +14,7 @@ from ..BaumWelch import calculate_stationary
 desired_num_cells = 31
 num_data_points = 100
 min_num_lineages = 25
-max_num_lineages = 350
+max_num_lineages = 500
 
 T = np.array([[0.6, 0.1, 0.1, 0.1, 0.1], [0.05, 0.8, 0.05, 0.05, 0.05], [0.01, 0.1, 0.7, 0.09, 0.1], [0.1, 0.1, 0.05, 0.7, 0.05], [0.1, 0.1, 0.05, 0.05, 0.7]], dtype=float)
 
@@ -69,7 +69,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
     pii = dictOut['pi_similarity']
     num_states = paramTrues.shape[1]
     for iii in dictOut["confusion_matrix"]:
-        print("conf", iii, "\n")
+        print("conf \n", iii, "\n")
 
     ### plot the distribution of Gamma G1 and SG2
     # create random variables for each state from their distribution using rvs
