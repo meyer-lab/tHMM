@@ -1,5 +1,5 @@
 """ This file plots the BIC for the experimental data. """
-
+import pickle
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import run_Analyze_over, Analyze_list
