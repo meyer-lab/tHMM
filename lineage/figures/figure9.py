@@ -30,39 +30,39 @@ def makeFigure():
 
         return BICs - np.min(BICs, axis=0)
 
-    lapBIC = find_BIC(lapatinib, desired_num_states, num_cells=5290)
-    gemBIC = find_BIC(gemcitabine, desired_num_states, num_cells=4537)
+    # lapBIC = find_BIC(lapatinib, desired_num_states, num_cells=5290)
+    # gemBIC = find_BIC(gemcitabine, desired_num_states, num_cells=4537)
 
-    # # Lapatinib
-    # lapt_tHMMobj_list, _ = Analyze_list(lapatinib, 6, fpi=True)
-    # lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
+    # Lapatinib
+    lapt_tHMMobj_list, _ = Analyze_list(lapatinib, 6, fpi=True)
+    lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
 
-    # # assign the predicted states to each cell
-    # for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
-    #     for lin_indx, lin in enumerate(lapt_tHMMobj.X):
-    #         for cell_indx, cell in enumerate(lin.output_lineage):
-    #             cell.state = lapt_states_list[idx][lin_indx][cell_indx]
+    # assign the predicted states to each cell
+    for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
+        for lin_indx, lin in enumerate(lapt_tHMMobj.X):
+            for cell_indx, cell in enumerate(lin.output_lineage):
+                cell.state = lapt_states_list[idx][lin_indx][cell_indx]
 
-    # # create a pickle file for lapatinib
-    # pik1 = open("lapatinibs.pkl", "wb")
-    # for laps in lapt_tHMMobj_list:
-    #     pickle.dump(laps, pik1)
-    # pik1.close()
+    # create a pickle file for lapatinib
+    pik1 = open("lapatinibs1.pkl", "wb")
+    for laps in lapt_tHMMobj_list:
+        pickle.dump(laps, pik1)
+    pik1.close()
 
-    # # Gemcitabine
-    # gemc_tHMMobj_list, _ = Analyze_list(gemcitabine, 5, fpi=True)
-    # gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
+    # Gemcitabine
+    gemc_tHMMobj_list, _ = Analyze_list(gemcitabine, 5, fpi=True)
+    gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
 
-    # for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
-    #     for lin_indx, lin in enumerate(gemc_tHMMobj.X):
-    #         for cell_indx, cell in enumerate(lin.output_lineage):
-    #             cell.state = gemc_states_list[idx][lin_indx][cell_indx]
+    for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
+        for lin_indx, lin in enumerate(gemc_tHMMobj.X):
+            for cell_indx, cell in enumerate(lin.output_lineage):
+                cell.state = gemc_states_list[idx][lin_indx][cell_indx]
 
-    # # create a pickle file for gemcitabine
-    # pik2 = open("gemcitabines.pkl", "wb")
-    # for gemc in gemc_tHMMobj_list:
-    #     pickle.dump(gemc, pik2)
-    # pik2.close()
+    # create a pickle file for gemcitabine
+    pik2 = open("gemcitabines1.pkl", "wb")
+    for gemc in gemc_tHMMobj_list:
+        pickle.dump(gemc, pik2)
+    pik2.close()
 
     # Plotting BICs
     ax[0].plot(desired_num_states, lapBIC)
