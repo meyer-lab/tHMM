@@ -13,30 +13,20 @@ from ..BaumWelch import calculate_stationary
 
 desired_num_cells = 31
 num_data_points = 100
-min_num_lineages = 50
-max_num_lineages = 300
+min_num_lineages = 25
+max_num_lineages = 500
 
+T = np.array([[0.6, 0.1, 0.1, 0.1, 0.1], [0.05, 0.8, 0.05, 0.05, 0.05], [0.01, 0.1, 0.7, 0.09, 0.1], [0.1, 0.1, 0.05, 0.7, 0.05], [0.1, 0.1, 0.05, 0.05, 0.7]], dtype=float)
 
-pik1 = open("gemcitabines2.pkl", "rb")
-lapt_tHMMobj_list = []
-for i in range(4):
-    lapt_tHMMobj_list.append(pickle.load(pik1))
+# pi: the initial probability vector
+pi = calculate_stationary(T)
 
-pi = lapt_tHMMobj_list[3].estimate.pi
-T = lapt_tHMMobj_list[3].estimate.T
-E = lapt_tHMMobj_list[3].estimate.E
-
-# T = np.array([[0.6, 0.1, 0.1, 0.1, 0.1], [0.05, 0.8, 0.05, 0.05, 0.05], [0.01, 0.1, 0.7, 0.09, 0.1], [0.1, 0.1, 0.05, 0.7, 0.05], [0.1, 0.1, 0.05, 0.05, 0.7]], dtype=float)
-
-# # pi: the initial probability vector
-# pi = calculate_stationary(T)
-
-# state0 = phaseStateDist(0.99, 0.95, 50, 0.2, 100, 0.1)
-# state1 = phaseStateDist(0.95, 0.9, 75, 0.2, 150, 0.1)
-# state2 = phaseStateDist(0.9, 0.85, 100, 0.2, 200, 0.1)
-# state3 = phaseStateDist(0.92, 0.95, 150, 0.2, 250, 0.1)
-# state4 = phaseStateDist(0.99, 0.85, 200, 0.2, 300, 0.1)
-# E = [state0, state1, state2, state3, state4]
+state0 = phaseStateDist(0.7, 0.95, 250, 0.2, 50, 0.1)
+state1 = phaseStateDist(0.95, 0.9, 200, 0.2, 100, 0.1)
+state2 = phaseStateDist(0.9, 0.85, 150, 0.2, 150, 0.1)
+state3 = phaseStateDist(0.99, 0.75, 100, 0.2, 200, 0.1)
+state4 = phaseStateDist(0.99, 0.75, 50, 0.2, 250, 0.1)
+E = [state0, state1, state2, state3, state4]
 
 # Creating a list of populations to analyze over
 num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
@@ -78,8 +68,6 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
     tr = dictOut['transition_matrix_similarity']
     pii = dictOut['pi_similarity']
     num_states = paramTrues.shape[1]
-    for iii in dictOut["confusion_matrix"]:
-        print("conf", iii, "\n")
 
     ### plot the distribution of Gamma G1 and SG2
     # create random variables for each state from their distribution using rvs
@@ -114,7 +102,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
     ax[i].set_xlabel("Number of Cells")
     ax[i].set_ylabel("Bernoulli p")
     ax[i].set_title("Bernoulli p G1 Estimation")
-    ax[i].set_ylim(bottom=0.0, top=1.05)
+    ax[i].set_ylim(bottom=0.5, top=1.05)
     ax[i].legend()
 
     i += 1 # (c) gamma shape G1
@@ -143,7 +131,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
     ax[i].set_xlabel("Number of Cells")
     ax[i].set_ylabel("Bernoulli p")
     ax[i].set_title("Bernoulli p G2 Estimation")
-    ax[i].set_ylim(bottom=0.0, top=1.05)
+    ax[i].set_ylim(bottom=0.5, top=1.05)
 
     i += 1 # (f) gamma shape G2
     for j in range(num_states):

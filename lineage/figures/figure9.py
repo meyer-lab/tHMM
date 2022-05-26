@@ -30,13 +30,13 @@ def makeFigure():
                 cell.state = lapt_states_list[idx][lin_indx][cell_indx]
 
     # create a pickle file for lapatinib
-    pik1 = open("lapatinibs2.pkl", "wb")
+    pik1 = open("lapatinibs1.pkl", "wb")
     for laps in lapt_tHMMobj_list:
         pickle.dump(laps, pik1)
     pik1.close()
 
     # Gemcitabine
-    gemc_tHMMobj_list, _ = Analyze_list(gemcitabine, list(gemBIC).index(0) + 1, fpi=True)
+    gemc_tHMMobj_list, _ = Analyze_list(gemcitabine, 5, fpi=True)
     gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
 
     for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
@@ -45,7 +45,7 @@ def makeFigure():
                 cell.state = gemc_states_list[idx][lin_indx][cell_indx]
 
     # create a pickle file for gemcitabine
-    pik2 = open("gemcitabines2.pkl", "wb")
+    pik2 = open("gemcitabines1.pkl", "wb")
     for gemc in gemc_tHMMobj_list:
         pickle.dump(gemc, pik2)
     pik2.close()
