@@ -1,6 +1,5 @@
 """ This file contains figures related to how far the states need to be,
 which is shown by Wasserestein distance. """
-from sklearn.cluster import KMeans
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -16,7 +15,6 @@ from .common import (
     max_desired_num_cells,
     num_data_points,
 )
-from ..tHMM import tHMM
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGaPhs import StateDistribution
 
