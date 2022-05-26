@@ -8,7 +8,7 @@ import jax.numpy as jnp
 from jax.scipy.special import gammaincc
 from jax.scipy.stats import gamma
 from jax.config import config
-from scipy.optimize import toms748, minimize, Bounds, LinearConstraint, BFGS
+from scipy.optimize import toms748, minimize, Bounds, LinearConstraint
 
 config.update("jax_enable_x64", True)
 config.update('jax_platform_name', 'cpu')
@@ -133,8 +133,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gammas, x0=None, constr=True):
     else:
         linc = ()
 
-    bnds = Bounds(lb=np.ones_like(x0) * 0.001, ub=np.ones_like(x0) * 100.0, keep_feasible=True)
-    HH = BFGS()
+    bnds = Bounds(lb=np.ones_like(x0) * 0.0001, ub=np.ones_like(x0) * 1000.0, keep_feasible=True)
 
     def func(x, *args):
         # Make sure optimization doesn't pass in negative numbers
@@ -146,7 +145,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gammas, x0=None, constr=True):
         assert np.all(np.isfinite(b))
         return a, b
 
-    res = minimize(func, x0=x0, jac=True, hess=HH, args=arrgs, method="trust-constr", bounds=bnds, constraints=linc)
+    res = minimize(func, x0=x0, jac=True, hess="2-point", args=arrgs, method="trust-constr", bounds=bnds, constraints=linc)
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
 
     return res.x
