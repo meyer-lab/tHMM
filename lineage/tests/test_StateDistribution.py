@@ -21,7 +21,7 @@ class TestModel(unittest.TestCase):
 
         # Emissions
         self.E = [StateDistribution(0.99, 20, 5), StateDistribution(0.80, 10, 1)]
-        self.E2 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.8, 0.75, 10, 2, 15, 4)]
+        self.E2 = [StateDistPhase(0.99, 0.9, 100, 1, 20, 1.5), StateDistPhase(0.8, 0.75, 100, 0.2, 60, 1)]
 
         # creating two lineages, one with False for pruning, one with True.
         self.lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
@@ -85,4 +85,5 @@ class TestModel(unittest.TestCase):
 def test_self_dist_zero(dist):
     """ Test that the distance from a distribution to itself is zero. """
     dd = dist()
+    print(dd.dist(dd))
     assert dd.dist(dd) == 0.0

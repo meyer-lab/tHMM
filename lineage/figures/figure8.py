@@ -26,10 +26,10 @@ def makeFigure():
     ax, f = getSetup((12, 6), (2, 4))
 
     # Setting up state distributions and E
-    Sone = StateDistribution(0.99, 0.9, 10, 2, 10, 2)
-    Stwo = StateDistribution(0.9, 0.9, 20, 3, 20, 3)
-    Sthree = StateDistribution(0.85, 0.9, 30, 4, 30, 4)
-    Sfour = StateDistribution(0.8, 0.9, 40, 5, 40, 5)
+    Sone = StateDistribution(0.99, 0.9, 50, 0.1, 50, 0.1)
+    Stwo = StateDistribution(0.9, 0.9, 100, 0.3, 100, 0.3)
+    Sthree = StateDistribution(0.85, 0.9, 150, 0.7, 150, 0.7)
+    Sfour = StateDistribution(0.8, 0.9, 200, 1.0, 200, 1.0)
     Eone = [Sone, Sone]
     Etwo = [Sone, Stwo]
     Ethree = [Sone, Stwo, Sthree]
