@@ -41,6 +41,7 @@ E3 = gmc[1].estimate.E
 T3 = gmc[1].estimate.T
 pi3 = gmc[1].estimate.pi
 
+
 @pytest.mark.parametrize("cens", [0, 3])
 def test_E_step(cens):
     """ This tests that given the true model parameters, can it estimate the states correctly."""
