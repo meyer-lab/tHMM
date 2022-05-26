@@ -68,8 +68,6 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
     tr = dictOut['transition_matrix_similarity']
     pii = dictOut['pi_similarity']
     num_states = paramTrues.shape[1]
-    for iii in dictOut["confusion_matrix"]:
-        print("conf \n", iii, "\n")
 
     ### plot the distribution of Gamma G1 and SG2
     # create random variables for each state from their distribution using rvs
