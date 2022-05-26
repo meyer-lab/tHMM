@@ -2,7 +2,7 @@
 import itertools
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor, Future, Executor
-from sklearn.metrics import rand_score
+from sklearn.metrics import rand_score, confusion_matrix
 from .tHMM import tHMM, fit_list
 from typing import Any, Tuple, Union
 
@@ -39,7 +39,7 @@ def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
     _, _, _, _, LL = fit_list(tHMMobj_list)
 
-    for _ in range(2):
+    for _ in range(5):
         tHMMobj_list2 = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
         _, _, _, _, LL2 = fit_list(tHMMobj_list2)
 
@@ -107,21 +107,9 @@ def Results(tHMMobj, LL: float) -> dict[str, Any]:
     results_dict: dict[str, Any]
     results_dict = {}
     # To find the switcher map for states based on log-likelihood
-    permutes = list(itertools.permutations(np.arange(tHMMobj.num_states)))
-    score_permutes = np.empty(len(permutes))
+    switcher_map = cheat(tHMMobj)
+    tHMMobj, pred_states = permute_states(tHMMobj, switcher_map)
 
-    pi_arg = tHMMobj.X[0].pi if (tHMMobj.fpi is None) else tHMMobj.fpi
-    E_arg = tHMMobj.X[0].E if (tHMMobj.fE is None) else tHMMobj.fE
-    T_arg = tHMMobj.X[0].T if (tHMMobj.fT is None) else tHMMobj.fT
-
-    pred_states = tHMMobj.predict()
-    for i, perm in enumerate(permutes):
-        predState_permute = [[perm[st] for st in st_assgn] for st_assgn in pred_states]
-        score_permutes[i] = np.sum(tHMMobj.log_score(predState_permute, pi=pi_arg, T=T_arg, E=E_arg))
-
-    # Create switcher map based on the max likelihood of different permutations of state assignments
-    switch_map = np.array(permutes[np.argmax(score_permutes)])
-    tHMMobj, pred_states = permute_states(tHMMobj, switch_map)
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
     results_dict["total_number_of_cells"] = sum([len(lineage.output_lineage) for lineage in tHMMobj.X])
@@ -146,7 +134,8 @@ def Results(tHMMobj, LL: float) -> dict[str, Any]:
     results_dict["state_counter"] = np.bincount(pred_states[0])
     results_dict["state_proportions"] = [100.0 * i / len(pred_states[0]) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
-    results_dict["state_similarity"] = 100.0 * rand_score(list(itertools.chain(*true_states_by_lineage)), list(itertools.chain(*tHMMobj.predict())))
+    results_dict["state_similarity"] = 100.0 * rand_score(list(itertools.chain(*true_states_by_lineage)), list(itertools.chain(*pred_states)))
+    results_dict["confusion_matrix"] = confusion_matrix(list(itertools.chain(*true_states_by_lineage)), list(itertools.chain(*pred_states)))
 
     # 4. Calculate the Wasserstein distance
     results_dict["wasserstein"] = tHMMobj.X[0].E[0].dist(tHMMobj.X[0].E[1])
@@ -195,3 +184,26 @@ def permute_states(tHMMobj: Any, switch_map: np.ndarray) -> Tuple[Any, list]:
     tHMMobj.estimate.E = [tHMMobj.estimate.E[ii] for ii in switch_map]
 
     return tHMMobj, pred_states_switched
+
+
+def cheat(tHMMobj):
+    """
+    Find out the map between the assigned and true states by finding the closest pairs of parameters.
+    Works for synthetic data that we know the true parameters.
+    """
+
+    true_params = np.array([tHMMobj.X[0].E[i].params for i in range(tHMMobj.num_states)])
+    est_params = np.array([tHMMobj.estimate.E[i].params for i in range(tHMMobj.num_states)])
+    assert(est_params.shape == true_params.shape)
+
+    mapp = []
+    for i, ps in enumerate(true_params):
+
+        dist = []  # find the norm2 distance between pairs of true and estimated parameters
+        for est_p in est_params:
+            dist.append(np.linalg.norm(ps - est_p))
+
+        mapp.append(np.argmin(dist))
+        est_params[np.argmin(dist), :] = -1000.0
+
+    return mapp
