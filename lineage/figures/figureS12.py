@@ -13,6 +13,7 @@ for _ in range(4):
 for i in range(4):
     gemc_tHMMobj_list[i].X = sort_lins(gemc_tHMMobj_list[i])
 
+
 def makeFigure():
     """
     Makes figure 150.
@@ -22,14 +23,14 @@ def makeFigure():
     ax, f = getSetup((15, 18), (45, 4))
 
     for i in range(45):
-        ax[4*i].axis('off')
-        ax[4*i+1].axis('off')
-        ax[4*i+2].axis('off')
-        ax[4*i+3].axis('off')
-        plotLineage(gemc_tHMMobj_list[0].X[i], ax[4*i])
-        plotLineage(gemc_tHMMobj_list[1].X[i], ax[4*i+1])
-        plotLineage(gemc_tHMMobj_list[2].X[i], ax[4*i+2])
-        plotLineage(gemc_tHMMobj_list[3].X[i], ax[4*i+3])
+        ax[4 * i].axis('off')
+        ax[4 * i + 1].axis('off')
+        ax[4 * i + 2].axis('off')
+        ax[4 * i + 3].axis('off')
+        plotLineage(gemc_tHMMobj_list[0].X[i], ax[4 * i])
+        plotLineage(gemc_tHMMobj_list[1].X[i], ax[4 * i + 1])
+        plotLineage(gemc_tHMMobj_list[2].X[i], ax[4 * i + 2])
+        plotLineage(gemc_tHMMobj_list[3].X[i], ax[4 * i + 3])
 
     for i in range(4):
         ax[i].axis('off')
