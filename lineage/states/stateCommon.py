@@ -1,6 +1,5 @@
 """ Common utilities used between states regardless of distribution. """
 
-import warnings
 import numpy as np
 import scipy.special as sc
 from jax import jit, value_and_grad
@@ -12,7 +11,6 @@ from scipy.optimize import toms748, minimize, Bounds, LinearConstraint
 
 config.update("jax_enable_x64", True)
 config.update('jax_platform_name', 'cpu')
-warnings.filterwarnings('ignore', r'delta_grad == 0.0.')
 
 
 def nLL_sep(x, gamma_obs, time_cen, gammas):
