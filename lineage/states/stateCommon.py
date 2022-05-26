@@ -39,17 +39,17 @@ def gamma_uncensored(gamma_obs, gammas):
     def f(k):
         return np.log(k) - sc.polygamma(0, k) - s
 
-    flow = f(1.0)
-    fhigh = f(100.0)
+    flow = f(10.0)
+    fhigh = f(800.0)
     if flow * fhigh > 0.0:
         if np.absolute(flow) < np.absolute(fhigh):
-            a_hat0 = 1.0
+            a_hat0 = 10.0
         elif np.absolute(flow) > np.absolute(fhigh):
-            a_hat0 = 100.0
+            a_hat0 = 800.0
         else:
             a_hat0 = 10.0
     else:
-        a_hat0 = toms748(f, 1.0, 100.0)
+        a_hat0 = toms748(f, 10.0, 800.0)
 
     return [a_hat0, gammaCor / a_hat0]
 
@@ -69,9 +69,10 @@ def gamma_estimator(gamma_obs: np.ndarray, time_cen: np.ndarray, gammas: np.ndar
 
     assert gammas.shape[0] == gamma_obs.shape[0]
     arrgs = (gamma_obs, time_cen, gammas)
-    bnd = (0.001, 100.0)
+    bnd_shape = (10.0, 800.0)
+    bnd_scale = (0.001, 3.0)
 
-    res = minimize(GnLL_sep, x0, jac=True, bounds=(bnd, bnd), args=arrgs)
+    res = minimize(GnLL_sep, x0, jac=True, bounds=(bnd_shape, bnd_scale), args=arrgs)
     return res.x
 
 
@@ -121,7 +122,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gammas, x0=None, constr=True):
     arrgs = (gamma_obs, time_cen, gammas)
 
     if x0 is None:
-        x0 = np.array([20.0, 2.0, 3.0, 4.0, 5.0])
+        x0 = np.array([200.0, 0.2, 0.4, 0.6, 0.8])
 
     if constr:  # for constrained optimization
         A = np.zeros((3, 5))  # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
@@ -129,7 +130,7 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gammas, x0=None, constr=True):
         np.fill_diagonal(A[:, 2:], 1.0)
         linc = [LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)]
         if np.allclose(np.dot(A, x0), 0.0):
-            x0 = np.array([20.0, 1.0, 2.0, 3.0, 4.0])
+            x0 = np.array([200.0, 0.2, 0.4, 0.6, 0.8])
     else:
         linc = ()
 

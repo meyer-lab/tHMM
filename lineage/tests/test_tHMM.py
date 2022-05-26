@@ -111,7 +111,7 @@ def test_BIC():
     # create 1-state lineages
     pi1 = np.array([1.0, 0.0])
     T1 = np.array([[1.0, 0.0], [0.0, 1.0]])
-    E1 = [StateDistPhase(0.99, 0.9, 20, 5, 10, 6), StateDistPhase(0.99, 0.9, 20, 5, 10, 6)]
+    E1 = [StateDistPhase(0.99, 0.9, 200, 0.5, 100, 0.6), StateDistPhase(0.99, 0.9, 200, 0.5, 100, 0.6)]
     lin = [[LineageTree.init_from_parameters(pi1, T1, E1, 1)] for _ in range(3)]
     desired_num_states = np.arange(1, 4)
 
