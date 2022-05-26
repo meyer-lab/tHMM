@@ -26,7 +26,7 @@ def makeFigure():
     ax, f = getSetup((4, 4), (1, 1))
 
     ls, nls = all_cv()
-    percs = np.arange(1, 8)
+    percs = np.arange(1, 6)
     ax[0].bar(percs - 0.1, list(it.chain(*ls)), width=0.2, label="pred state")
     ax[0].bar(percs + 0.1, list(it.chain(*nls)), width=0.2, label="not pred state")
 
@@ -34,7 +34,7 @@ def makeFigure():
 
 def all_cv():
     """ find out the likelihoods for various masking percentages."""
-    percs = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
+    percs = [0.1, 0.2, 0.3, 0.4, 0.5]
     ls, nls = [], []
     for perc in percs:
         l, nl = cv(perc)
@@ -83,11 +83,7 @@ def hide_observation(lineage, percentage):
 
     for ix, cell in enumerate(lineage.output_lineage):
         if hide_index[ix] == 1: # means we hide the cell lifetime
-
-            if len(cell.obs) == 3: # in case of phase non-specific observations
-                cell.obs[1] = -1
-            else: # in the case of phase-specific observation, only do this for G1 lifetime
-                cell.obs[2] = -1
+            cell.obs = -1 * np.ones(len(cell.obs))
 
     return lineage, hide_index
 

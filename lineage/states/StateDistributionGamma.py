@@ -62,12 +62,13 @@ class StateDistribution:
         # Update censored Gamma
         ll[x[:, 2] == 0] += sp.gamma.logsf(x[x[:, 2] == 0, 1], a=self.params[1], scale=self.params[2])
 
-        ll[x[:, 1] == -1] = np.log(1/num_states)
         # Remove dead cells
         ll[x[:, 0] == 0] = 0.0
 
         # Update for observed Bernoulli
         ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
+
+        ll[x[:, 0] == -1] = np.log(1/num_states)
 
         return np.exp(ll)
 
@@ -77,13 +78,13 @@ class StateDistribution:
         # getting the observations as individual lists
         # {
         x = np.array(X)
-        bern_obs = x[:, 0].astype('bool')
+        bern_obs = x[:, 0]
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
 
         b_mask = np.isfinite(bern_obs)
         # Both unoberved and dead cells should be removed from gamma
-        g_mask = np.logical_and(np.isfinite(γ_obs), bern_obs)
+        g_mask = np.logical_and(np.isfinite(γ_obs), bern_obs.astype('bool'))
         assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
         # Handle an empty state
