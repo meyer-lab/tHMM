@@ -27,12 +27,12 @@ T = np.array([[0.9, 0.1], [0.1, 0.9]], dtype=float)
 pi = calculate_stationary(T)
 
 # bern, gamma_a, gamma_scale
-state0 = StateDistribution(0.99, 96, 0.5)
-state1 = StateDistribution(0.75, 80, 0.1)
+state0 = StateDistribution(0.99, 8, 6)
+state1 = StateDistribution(0.75, 8, 1)
 E = [state0, state1]
 
-state20 = phaseStateDist(0.99, 0.95, 100, 0.5, 80, 0.1)
-state21 = phaseStateDist(0.95, 0.9, 75, 0.3, 50, 0.2)
+state20 = phaseStateDist(0.99, 0.95, 8, 7, 4, 2)
+state21 = phaseStateDist(0.95, 0.9, 6, 4, 3, 5)
 E2 = [state20, state21]
 
 min_desired_num_cells = (2 ** 4) - 1
