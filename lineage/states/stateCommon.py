@@ -37,17 +37,17 @@ def gamma_uncensored(gamma_obs, gammas):
     def f(k):
         return np.log(k) - sc.polygamma(0, k) - s
 
-    flow = f(10.0)
+    flow = f(1.0)
     fhigh = f(800.0)
     if flow * fhigh > 0.0:
         if np.absolute(flow) < np.absolute(fhigh):
-            a_hat0 = 10.0
+            a_hat0 = 1.0
         elif np.absolute(flow) > np.absolute(fhigh):
             a_hat0 = 800.0
         else:
-            a_hat0 = 10.0
+            a_hat0 = 1.0
     else:
-        a_hat0 = toms748(f, 10.0, 800.0)
+        a_hat0 = toms748(f, 1.0, 800.0)
 
     return [a_hat0, gammaCor / a_hat0]
 
@@ -71,7 +71,7 @@ def gamma_estimator(gamma_obs: np.ndarray, time_cen: np.ndarray, gammas: np.ndar
     assert gammas.shape[0] == gamma_obs.shape[0]
     arrgs = (gamma_obs, time_cen, gammas)
     bnd_shape = (10.0, 800.0)
-    bnd_scale = (0.001, 3.0)
+    bnd_scale = (0.001, 100.0)
 
     res = minimize(GnLL_sep, x0, jac=True, bounds=(bnd_shape, bnd_scale), args=arrgs)
     return res.x
