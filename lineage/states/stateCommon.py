@@ -98,7 +98,6 @@ def gamma_estimator_atonce(gamma_obs: list[np.ndarray], time_cen: list[np.ndarra
         linc = list()
 
     res = minimize(nLL_atonceJ, x0=np.log(x0), jac=True, args=arrgs, method="trust-constr", constraints=linc)
-    print(res)
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
 
     return np.exp(res.x)
