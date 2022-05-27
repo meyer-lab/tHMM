@@ -216,7 +216,7 @@ def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: 
             bern_params[i] = np.average(bern_obs[i][b_mask], weights=gammas_list[i][b_mask])
 
     # Both unoberved and dead cells should be removed from gamma
-    g_masks = [np.logical_and(np.isfinite(γ_o), berns) for γ_o, berns in zip(γ_obs, bern_obs)]
+    g_masks = [np.logical_and(np.isfinite(γ_o), berns.astype('bool')) for γ_o, berns in zip(γ_obs, bern_obs)]
     for g_mask in g_masks:
         assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
