@@ -85,5 +85,4 @@ class TestModel(unittest.TestCase):
 def test_self_dist_zero(dist):
     """ Test that the distance from a distribution to itself is zero. """
     dd = dist()
-    print(dd.dist(dd))
     assert dd.dist(dd) == 0.0

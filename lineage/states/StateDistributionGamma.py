@@ -202,7 +202,7 @@ def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: 
     x_data = [np.array(x) for x in x_list]
 
     # getting the observations as individual lists
-    bern_obs = [x[:, 0].astype('bool') for x in x_data]
+    bern_obs = [x[:, 0] for x in x_data]
     γ_obs = [x[:, 1] for x in x_data]
     gamma_obs_censor = [x[:, 2] for x in x_data]
 
