@@ -1,6 +1,5 @@
 """ This file contains the LineageTree class. """
 import numpy as np
-import scipy.stats as sp
 import operator
 from typing import Tuple
 from .CellVar import CellVar
