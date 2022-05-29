@@ -5,7 +5,7 @@ from ..figures.figure19 import crossval, hide_observation
 
 
 def test_cv():
-    complete_lineages = [LineageTree.init_from_parameters(pi, T, E, 15) for _ in range(5)]
+    complete_lineages = [LineageTree.init_from_parameters(pi, T, E, 31) for _ in range(5)]
     train_lineages, hidden_indexes, hidden_obs = [], [], []
     for complete_lin in complete_lineages:
         lineage, hide_index, hide_obs = hide_observation(complete_lin, 0.2)

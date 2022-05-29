@@ -33,7 +33,7 @@ class StateDistribution():
         """ Return the degrees of freedom. """
         return self.G1.dof() + self.G2.dof()
 
-    def pdf(self, x: np.ndarray):
+    def pdf(self, x: np.ndarray, num_states=2):
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
         # In the case of a univariate observation, the user still has to define how the likelihood is calculated,
         # but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
@@ -41,8 +41,8 @@ class StateDistribution():
         # In our example, we assume the observation's are uncorrelated across the dimensions (across the different
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
-        G1_LL = self.G1.pdf(x[:, np.array([0, 2, 4])])
-        G2_LL = self.G2.pdf(x[:, np.array([1, 3, 5])])
+        G1_LL = self.G1.pdf(x[:, np.array([0, 2, 4])], num_states)
+        G2_LL = self.G2.pdf(x[:, np.array([1, 3, 5])], num_states)
 
         return G1_LL * G2_LL
 
