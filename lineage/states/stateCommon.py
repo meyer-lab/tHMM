@@ -64,13 +64,14 @@ def gamma_estimator(gamma_obs: np.ndarray, time_cen: np.ndarray, gammas: np.ndar
     # remove negative observations which are representative of test data in cross validation
     gammas_ = gammas[gamma_obs >= 0]
     gamma_obs_ = gamma_obs[gamma_obs >= 0]
+    time_cen_ = time_cen[gamma_obs >= 0]
 
     # If nothing is censored
-    if np.all(time_cen == 1):
+    if np.all(time_cen_ == 1):
         return gamma_uncensored(gamma_obs_, gammas_)
     assert gammas.shape[0] == gamma_obs.shape[0]
-    arrgs = (gamma_obs, time_cen, gammas)
-    bnd_shape = (10.0, 800.0)
+    arrgs = (gamma_obs_, time_cen_, gammas_)
+    bnd_shape = (1.0, 800.0)
     bnd_scale = (0.001, 100.0)
 
     res = minimize(GnLL_sep, x0, jac=True, bounds=(bnd_shape, bnd_scale), args=arrgs)

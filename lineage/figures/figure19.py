@@ -1,12 +1,10 @@
 """ To plot a summary of cross validation. """
 import numpy as np
 from copy import deepcopy
-import scipy.stats as sp
 import itertools as it
 from ..LineageTree import LineageTree
 from .common import getSetup
-from ..Analyze import Analyze_list, Results
-from ..tHMM import tHMM, fit_list
+from ..Analyze import Analyze_list
 from ..BaumWelch import calculate_stationary
 from ..states.StateDistributionGamma import StateDistribution
 
@@ -18,8 +16,8 @@ T = np.array([[0.9, 0.1], [0.1, 0.9]], dtype=float)
 pi = calculate_stationary(T)
 
 # bern, gamma_a, gamma_scale
-state0 = StateDistribution(0.99, 100, 0.1)
-state1 = StateDistribution(0.99, 80, 0.5)
+state0 = StateDistribution(0.99, 40, 1)
+state1 = StateDistribution(0.99, 40, 2)
 E = [state0, state1]
 
 def makeFigure():
@@ -29,7 +27,7 @@ def makeFigure():
     ax, f = getSetup((4, 4), (1, 1))
 
     # create a population
-    complete_lineages = [LineageTree.init_from_parameters(pi, T, E, 127) for _ in range(50)]
+    complete_lineages = [LineageTree.init_from_parameters(pi, T, E, 63) for _ in range(50)]
 
     # create training data by hiding 20% of cells in each lineage
     train_lineages, hidden_indexes, hidden_obs = [], [], []
