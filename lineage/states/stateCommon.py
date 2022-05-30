@@ -1,5 +1,6 @@
 """ Common utilities used between states regardless of distribution. """
 
+import warnings
 import numpy as np
 from jax import jit, value_and_grad
 from jax.nn import softplus
@@ -11,6 +12,8 @@ from scipy.optimize import minimize, LinearConstraint
 
 config.update("jax_enable_x64", True)
 config.update('jax_platform_name', 'cpu')
+
+warnings.filterwarnings("ignore", message="UserWarning: delta_grad == 0.0")
 
 
 def basic_censor(cell):
