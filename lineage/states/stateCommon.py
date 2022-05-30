@@ -2,7 +2,7 @@
 
 import warnings
 import numpy as np
-from jax import jit, value_and_grad
+from jax import value_and_grad
 from jax.nn import softplus
 import jax.numpy as jnp
 from jax.scipy.special import gammaincc
@@ -47,9 +47,6 @@ def nLL_atonce(x: jnp.ndarray, gamma_obs: list, time_cen: list, gammas: list):
     return outt
 
 
-nLL_atonceJ = jit(value_and_grad(nLL_atonce))
-
-
 def softplus_inv(x):
     x = np.clip(x, -np.inf, 1000.0)
     x = x.astype(np.float128)
@@ -88,6 +85,7 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
     else:
         linc = list()
 
+    nLL_atonceJ = value_and_grad(nLL_atonce)
     res = minimize(nLL_atonceJ, x0=softplus_inv(x0), jac=True, args=arrgs, method="trust-constr", constraints=linc)
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
 
