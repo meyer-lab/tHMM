@@ -1,6 +1,5 @@
 """ Common utilities used between states regardless of distribution. """
 
-import warnings
 import numpy as np
 from jax import value_and_grad
 from jax.nn import softplus
@@ -8,12 +7,10 @@ import jax.numpy as jnp
 from jax.scipy.special import gammaincc
 from jax.scipy.stats import gamma
 from jax.config import config
-from scipy.optimize import minimize, LinearConstraint
+from scipy.optimize import minimize, LinearConstraint, SR1
 
 config.update("jax_enable_x64", True)
 config.update('jax_platform_name', 'cpu')
-
-warnings.filterwarnings("ignore", message="UserWarning: delta_grad == 0.0")
 
 
 def basic_censor(cell):
@@ -86,7 +83,7 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
         linc = list()
 
     nLL_atonceJ = value_and_grad(nLL_atonce)
-    res = minimize(nLL_atonceJ, x0=softplus_inv(x0), jac=True, args=arrgs, method="trust-constr", constraints=linc)
+    res = minimize(nLL_atonceJ, x0=softplus_inv(x0), hess=SR1(), jac=True, args=arrgs, method="trust-constr", constraints=linc)
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
 
     return softplus(res.x)
