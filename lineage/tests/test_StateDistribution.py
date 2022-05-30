@@ -3,7 +3,6 @@ import unittest
 import pytest
 from copy import deepcopy
 import numpy as np
-import scipy.stats as sp
 from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
 from ..LineageTree import LineageTree

@@ -1,7 +1,5 @@
 """ Unit test for the new AU565 data. """
 import unittest
-import math
-import pandas as pd
 import numpy as np
 
 from ..CellVar import CellVar as c
@@ -66,10 +64,7 @@ class TestModel(unittest.TestCase):
         np.testing.assert_allclose(lin1[2].obs, [np.nan, 17.5, 0, 2.96, 1.48], rtol=1e-2)
 
     def test_bic(self):
-
-        desired_num_states = np.arange(1, 9)
+        desired_num_states = np.arange(1, 3)
         data = [E]
-        dataFull = []
-        for _ in desired_num_states:
-            dataFull.append(data)
+        dataFull = [data] * len(desired_num_states)
         output = run_Analyze_over(dataFull, desired_num_states, atonce=True)

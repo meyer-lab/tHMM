@@ -3,7 +3,7 @@ import numpy as np
 import scipy.stats as sp
 from typing import Union
 
-from .stateCommon import gamma_estimator, gamma_estimator_atonce, basic_censor
+from .stateCommon import gamma_estimator, basic_censor
 from ..CellVar import Time
 
 
@@ -94,7 +94,7 @@ class StateDistribution:
         # Don't allow Bernoulli to hit extremes
         self.params[0] = np.clip(self.params[0], 0.00001, 0.99999)
 
-        self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], self.params[1:3])
+        self.params[1], self.params[2] = gamma_estimator([γ_obs[g_mask]], [gamma_obs_censor[g_mask]], [gammas[g_mask]], self.params[1:3])
 
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
@@ -223,10 +223,11 @@ def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: 
     γ_obs_total = [g_obs[g_masks[i]] for i, g_obs in enumerate(γ_obs)]
     γ_obs_total_censored = [g_obs_cen[g_masks[i]] for i, g_obs_cen in enumerate(gamma_obs_censor)]
     gammas_total = [np.vstack(gamma_tot)[g_masks[i]] for i, gamma_tot in enumerate(gammas_list)]
+    gammas_total = [np.squeeze(g) for g in gammas_total]
 
     if phase == "G1":
         x0 = np.array([all_tHMMobj[0].estimate.E[state_j].params[2]] + [tHMMobj.estimate.E[state_j].params[3] for tHMMobj in all_tHMMobj])
-        output = gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total, x0)
+        output = gamma_estimator(γ_obs_total, γ_obs_total_censored, gammas_total, x0)
         for i, tHMMobj in enumerate(all_tHMMobj):
             tHMMobj.estimate.E[state_j].params[0] = bern_params[i]
             tHMMobj.estimate.E[state_j].G1.params[0] = bern_params[i]
@@ -237,7 +238,7 @@ def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: 
 
     elif phase == "G2":
         x0 = np.array([all_tHMMobj[0].estimate.E[state_j].params[4]] + [tHMMobj.estimate.E[state_j].params[5] for tHMMobj in all_tHMMobj])
-        output = gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total, x0)
+        output = gamma_estimator(γ_obs_total, γ_obs_total_censored, gammas_total, x0)
         for i, tHMMobj in enumerate(all_tHMMobj):
             tHMMobj.estimate.E[state_j].params[1] = bern_params[i]
             tHMMobj.estimate.E[state_j].G2.params[0] = bern_params[i]
@@ -248,7 +249,7 @@ def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: 
 
     elif phase == "all":
         x0 = np.array([all_tHMMobj[0].estimate.E[state_j].params[1]] + [tHMMobj.estimate.E[state_j].params[2] for tHMMobj in all_tHMMobj])
-        output = gamma_estimator_atonce(γ_obs_total, γ_obs_total_censored, gammas_total, x0, constr=False)
+        output = gamma_estimator(γ_obs_total, γ_obs_total_censored, gammas_total, x0)
         for i, tHMMobj in enumerate(all_tHMMobj):
             tHMMobj.estimate.E[state_j].params[0] = bern_params[i]
             tHMMobj.estimate.E[state_j].params[1] = output[0]
