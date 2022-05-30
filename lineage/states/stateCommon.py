@@ -2,6 +2,7 @@
 
 import numpy as np
 from jax import jit, value_and_grad
+from jax.nn import softplus
 import jax.numpy as jnp
 from jax.scipy.special import gammaincc
 from jax.scipy.stats import gamma
@@ -15,7 +16,7 @@ config.update('jax_platform_name', 'cpu')
 def nLL_sep(x: jnp.ndarray, gamma_obs: np.ndarray, time_cen: np.ndarray, gammas: np.ndarray):
     assert gamma_obs.shape == gammas.shape
     assert gamma_obs.shape == time_cen.shape
-    a, scale = jnp.exp(x)
+    a, scale = softplus(x)
     uncens = jnp.dot(gammas * time_cen, gamma.logpdf(gamma_obs, a=a, scale=scale))
     cens = jnp.dot(gammas * (1 - time_cen), gammaincc(a, gamma_obs / scale))
     return -1 * (uncens + cens)
@@ -36,8 +37,8 @@ def gamma_estimator(gamma_obs: np.ndarray, time_cen: np.ndarray, gammas: np.ndar
     assert gammas.shape[0] == gamma_obs.shape[0]
     arrgs = (gamma_obs, time_cen, gammas)
 
-    res = minimize(GnLL_sep, np.log(x0), jac=True, args=arrgs)
-    return np.exp(res.x)
+    res = minimize(GnLL_sep, x0, jac=True, args=arrgs)
+    return softplus(res.x)
 
 
 def basic_censor(cell):
@@ -97,7 +98,7 @@ def gamma_estimator_atonce(gamma_obs: list[np.ndarray], time_cen: list[np.ndarra
     else:
         linc = list()
 
-    res = minimize(nLL_atonceJ, x0=np.log(x0), jac=True, args=arrgs, method="trust-constr", constraints=linc)
+    res = minimize(nLL_atonceJ, x0=x0, jac=True, args=arrgs, method="trust-constr", constraints=linc)
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
 
-    return np.exp(res.x)
+    return softplus(res.x)
