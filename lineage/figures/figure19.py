@@ -14,7 +14,7 @@ def makeFigure():
     """
     ax, f = getSetup((4, 4), (1, 1))
 
-    complete_lineages = Gemcitabine_Control
+    complete_lineages = Gemcitabine_Control + Lapatinib_Control
 
     # create training data by hiding 20% of cells in each lineage
     train_lineages, hidden_indexes, hidden_obs = [], [], []
@@ -27,7 +27,6 @@ def makeFigure():
     ll = []
     for i in desired_num_states:
         ll.append(crossval(train_lineages, hidden_indexes, hidden_obs, i))
-    print(ll)
 
     ax[0].plot(desired_num_states, ll)
     return f
