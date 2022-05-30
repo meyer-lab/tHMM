@@ -1,16 +1,15 @@
 """ Common utilities used between states regardless of distribution. """
 
+from numba import jit
 import numpy as np
-from jax import value_and_grad
-from jax.nn import softplus
-import jax.numpy as jnp
-from jax.scipy.special import gammaincc
-from jax.scipy.stats import gamma
-from jax.config import config
+from scipy.special import gammaincc
+from scipy.stats import gamma
 from scipy.optimize import minimize, LinearConstraint, SR1
 
-config.update("jax_enable_x64", True)
-config.update('jax_platform_name', 'cpu')
+
+@jit(nopython=True, cache=True)
+def softplus(x):
+    return np.log1p(np.exp(-np.abs(x))) + np.maximum(x, 0)
 
 
 def basic_censor(cell):
@@ -33,13 +32,14 @@ def basic_censor(cell):
                 cell.get_sister().right.observed = False
 
 
-def nLL_atonce(x: jnp.ndarray, gamma_obs: list, time_cen: list, gammas: list):
+@jit
+def nLL_atonce(x: np.ndarray, gamma_obs: list, time_cen: list, gammas: list):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
     xx = softplus(x)
     outt = 0.0
     for i in range(len(x) - 1):
-        outt -= jnp.dot(gammas[i] * time_cen[i], gamma.logpdf(gamma_obs[i], a=xx[0], scale=xx[i + 1]))
-        outt -= jnp.dot(gammas[i] * (1 - time_cen[i]), gammaincc(xx[0], gamma_obs[i] / xx[i + 1]))
+        outt -= np.dot(gammas[i] * time_cen[i], gamma.logpdf(gamma_obs[i], a=xx[0], scale=xx[i + 1]))
+        outt -= np.dot(gammas[i] * (1 - time_cen[i]), gammaincc(xx[0], gamma_obs[i] / xx[i + 1]))
 
     return outt
 
@@ -82,8 +82,7 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
     else:
         linc = list()
 
-    nLL_atonceJ = value_and_grad(nLL_atonce)
-    res = minimize(nLL_atonceJ, x0=softplus_inv(x0), hess=SR1(), jac=True, args=arrgs, method="trust-constr", constraints=linc)
+    res = minimize(nLL_atonce, x0=softplus_inv(x0), hess=SR1(), jac="3-point", args=arrgs, method="trust-constr", constraints=linc)
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
 
     return softplus(res.x)
