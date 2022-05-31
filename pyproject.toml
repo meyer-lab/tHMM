@@ -20,7 +20,6 @@ pygraphviz = "^1.7"
 Sphinx = "^4.5.0"
 sphinx-autoapi = "^1.8.4"
 statsmodels = "^0.13.2"
-numba = "^0.55.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

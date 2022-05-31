@@ -1,13 +1,11 @@
 """ Common utilities used between states regardless of distribution. """
 
-from numba import jit
 import numpy as np
 from scipy.special import gammaincc
 from scipy.stats import gamma
-from scipy.optimize import minimize, LinearConstraint, SR1
+from scipy.optimize import minimize, LinearConstraint
 
 
-@jit(nopython=True, cache=True)
 def softplus(x):
     return np.log1p(np.exp(-np.abs(x))) + np.maximum(x, 0)
 
@@ -32,8 +30,7 @@ def basic_censor(cell):
                 cell.get_sister().right.observed = False
 
 
-@jit
-def nLL_atonce(x: np.ndarray, gamma_obs: list, time_cen: list, gammas: list):
+def nLL_atonce(x: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray]):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
     xx = softplus(x)
     outt = 0.0
@@ -82,7 +79,6 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
     else:
         linc = list()
 
-    res = minimize(nLL_atonce, x0=softplus_inv(x0), hess=SR1(), jac="3-point", args=arrgs, method="trust-constr", constraints=linc)
+    res = minimize(nLL_atonce, x0=softplus_inv(x0), args=arrgs, method="trust-constr", constraints=linc)
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
-
     return softplus(res.x)
