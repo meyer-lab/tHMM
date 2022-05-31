@@ -1,82 +1,13 @@
 """ Common utilities used between states regardless of distribution. """
 
 import numpy as np
-import scipy.special as sc
-from jax import jit, value_and_grad
-import jax.numpy as jnp
-from jax.scipy.special import gammaincc
-from jax.scipy.stats import gamma
-from jax.config import config
-from scipy.optimize import toms748, minimize, Bounds, LinearConstraint
-
-config.update("jax_enable_x64", True)
-config.update('jax_platform_name', 'cpu')
+from scipy.special import gammaincc
+from scipy.stats import gamma
+from scipy.optimize import minimize, LinearConstraint
 
 
-def nLL_sep(x, gamma_obs, time_cen, gammas):
-    assert gamma_obs.shape == gammas.shape
-    assert gamma_obs.shape == time_cen.shape
-    a, scale = x
-    uncens = jnp.dot(gammas * time_cen, gamma.logpdf(gamma_obs, a=a, scale=scale))
-    cens = jnp.dot(gammas * (1 - time_cen), gammaincc(a, gamma_obs / scale))
-    return -1 * (uncens + cens)
-
-
-GnLL_sep = jit(value_and_grad(nLL_sep))
-
-
-def gamma_uncensored(gamma_obs, gammas):
-    """ An uncensored gamma estimator. """
-    # Handle no observations
-    if np.sum(gammas) == 0.0:
-        gammas = np.ones_like(gammas)
-
-    gammaCor = np.average(gamma_obs, weights=gammas)
-    s = np.log(gammaCor) - np.average(np.log(gamma_obs), weights=gammas)
-
-    def f(k):
-        return np.log(k) - sc.polygamma(0, k) - s
-
-    flow = f(1.0)
-    fhigh = f(800.0)
-    if flow * fhigh > 0.0:
-        if np.absolute(flow) < np.absolute(fhigh):
-            a_hat0 = 1.0
-        elif np.absolute(flow) > np.absolute(fhigh):
-            a_hat0 = 800.0
-        else:
-            a_hat0 = 1.0
-    else:
-        a_hat0 = toms748(f, 1.0, 800.0)
-
-    return [a_hat0, gammaCor / a_hat0]
-
-
-def gamma_estimator(gamma_obs: np.ndarray, time_cen: np.ndarray, gammas: np.ndarray, x0: np.ndarray):
-    """
-    This is a weighted estimator for two parameters
-    of the Gamma distribution.
-    """
-    # Handle no observations
-    if np.sum(gammas) == 0.0:
-        gammas = np.ones_like(gammas)
-
-    # remove negative observations which are representative of test data in cross validation
-    gammas_ = gammas[gamma_obs >= 0]
-    gamma_obs_ = gamma_obs[gamma_obs >= 0]
-    time_cen_ = time_cen[gamma_obs >= 0]
-
-    # If nothing is censored
-    if np.all(time_cen_ == 1):
-        return gamma_uncensored(gamma_obs_, gammas_)
-    assert gammas.shape[0] == gamma_obs.shape[0]
-    arrgs = (gamma_obs_, time_cen_, gammas_)
-    bnd_shape = (1.0, 800.0)
-    bnd_scale = (0.001, 100.0)
-
-    res = minimize(GnLL_sep, x0, jac=True, bounds=(bnd_shape, bnd_scale), args=arrgs)
-    return res.x
-
+def softplus(x):
+    return np.log1p(np.exp(-np.abs(x))) + np.maximum(x, 0)
 
 def basic_censor(cell):
     """
@@ -98,19 +29,25 @@ def basic_censor(cell):
                 cell.get_sister().right.observed = False
 
 
-def nLL_atonce(x, gamma_obs, time_cen, gammas):
+def nLL_atonce(x: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray]):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
+    xx = softplus(x)
     outt = 0.0
     for i in range(len(x) - 1):
-        outt += nLL_sep([x[0], x[1 + i]], gamma_obs[i], time_cen[i], gammas[i])
+        outt -= np.dot(gammas[i] * time_cen[i], gamma.logpdf(gamma_obs[i], a=xx[0], scale=xx[i + 1]))
+        outt -= np.dot(gammas[i] * (1 - time_cen[i]), gammaincc(xx[0], gamma_obs[i] / xx[i + 1]))
 
     return outt
 
 
-nLL_atonceJ = jit(value_and_grad(nLL_atonce))
+def softplus_inv(x):
+    x = np.clip(x, -np.inf, 1000.0)
+    x = x.astype(np.float128)
+    x = np.log(np.exp(x) - 1.0)
+    return x.astype(float)
 
 
-def gamma_estimator_atonce(gamma_obs, time_cen, gammas, x0=None, constr=True):
+def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray], x0=None):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
@@ -118,37 +55,29 @@ def gamma_estimator_atonce(gamma_obs, time_cen, gammas, x0=None, constr=True):
     In the non-specific case, we have only 1 constraint: scale1 > scale2 ==> A = np.array([1, 3])
     """
     # Handle no observations
-    gammas = [np.squeeze(g) for g in gammas]
-    gammas = [np.ones_like(g) if np.sum(g) == 0.0 else g for g in gammas]
+    if np.sum([np.sum(g) for g in gammas]) < 0.1:
+        gammas = [np.ones(g.size) for g in gammas]
+
+    # Check shapes
+    for i in range(len(gamma_obs)):
+        assert gamma_obs[i].shape == time_cen[i].shape
+        assert gamma_obs[i].shape == gammas[i].shape
 
     arrgs = (gamma_obs, time_cen, gammas)
 
     if x0 is None:
         x0 = np.array([200.0, 0.2, 0.4, 0.6, 0.8])
 
-    if constr:  # for constrained optimization
+    if len(gamma_obs) == 4:  # for constrained optimization
         A = np.zeros((3, 5))  # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)
-        linc = [LinearConstraint(A, lb=np.zeros(3), ub=np.ones(3) * 100.0)]
+        linc = [LinearConstraint(A, lb=np.zeros(3), ub=np.full(3, np.inf))]
         if np.allclose(np.dot(A, x0), 0.0):
             x0 = np.array([200.0, 0.2, 0.4, 0.6, 0.8])
     else:
-        linc = ()
+        linc = list()
 
-    bnds = Bounds(lb=np.ones_like(x0) * 0.0001, ub=np.ones_like(x0) * 1000.0, keep_feasible=True)
-
-    def func(x, *args):
-        # Make sure optimization doesn't pass in negative numbers
-        if np.any(x <= 0.0):
-            return 1.0e6, np.zeros_like(x)
-
-        a, b = nLL_atonceJ(x, *args)
-        assert np.isfinite(a)
-        assert np.all(np.isfinite(b))
-        return a, b
-
-    res = minimize(func, x0=x0, jac=True, hess="2-point", args=arrgs, method="trust-constr", bounds=bnds, constraints=linc)
+    res = minimize(nLL_atonce, x0=softplus_inv(x0), args=arrgs, method="trust-constr", constraints=linc)
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
-
-    return res.x
+    return softplus(res.x)

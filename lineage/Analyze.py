@@ -15,7 +15,7 @@ class DummyExecutor(Executor):
         return f
 
 
-def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, int, float]:
+def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, float]:
     """ Runs the model and outputs the tHMM object, state assignments, and likelihood.
     :param X: The list of LineageTree populations.
     :param num_states: The number of states that we want to run the model for.
@@ -27,7 +27,7 @@ def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, int, float]:
     return tHMMobj_list[0], LL
 
 
-def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list, list, float]:
+def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list, float]:
     """ This function runs the analyze function for the case when we want to fit multiple conditions at the same time.
     :param Population_list: The list of cell populations to run the analyze function on.
     :param num_states: The number of states that we want to run the model for.
