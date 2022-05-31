@@ -1,7 +1,6 @@
 """ Common utilities used between states regardless of distribution. """
 
 import numpy as np
-from scipy.special import gammaincc
 from scipy.stats import gamma
 from scipy.optimize import minimize, LinearConstraint
 
@@ -36,7 +35,7 @@ def nLL_atonce(x: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.nda
     outt = 0.0
     for i in range(len(x) - 1):
         outt -= np.dot(gammas[i] * time_cen[i], gamma.logpdf(gamma_obs[i], a=xx[0], scale=xx[i + 1]))
-        outt -= np.dot(gammas[i] * (1 - time_cen[i]), gammaincc(xx[0], gamma_obs[i] / xx[i + 1]))
+        outt -= np.dot(gammas[i] * (1 - time_cen[i]), gamma.logsf(gamma_obs[i], a=xx[0], scale=xx[i + 1]))
 
     return outt
 
