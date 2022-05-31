@@ -3,7 +3,7 @@ import numpy as np
 import itertools
 from copy import deepcopy
 import itertools as it
-from .Analyze import Analyze_list
+from .Analyze import run_Analyze_over
 
 def hide_observation(lineage, percentage):
     """This assumes we have cell lifetime and bernoulli as observations.
@@ -28,29 +28,52 @@ def hide_observation(lineage, percentage):
     return new_lineage, hide_index, obss
 
 
-def crossval(train_lineages: list, hidden_indexes: list, hidden_obs: list, num_states: int):
-    """ Perform cross validation for a population of lineages.
-    train_lineages: the lineages after applying hide_observation.
-    hidden_indexes: is a list of np.arrays for each lineage, 
+def hide_for_population(complete_population):
+    """ Use the hide_obsrvation function for a population of cells. """
+
+    train_population, hidden_indexes, hidden_obs = [], [], []
+    for complete_lineages in complete_population:
+        t_population, h_indexes, h_obs = [], [], []
+        for complete_lin in complete_lineages:
+            lineage, hide_index, hide_obs = hide_observation(complete_lin, 0.25)
+            t_population.append(lineage)
+            h_indexes.append(hide_index)
+            h_obs.append(hide_obs)
+        train_population.append(t_population)
+        hidden_indexes.append(h_indexes)
+        hidden_obs.append(h_obs)
+    return train_population, hidden_indexes, hidden_obs
+
+
+def crossval(train_populations: list, hidden_indexes: list, hidden_obs: list, num_states: int):
+    """ Perform cross validation for a drug treated population.
+    train_populations: the populations after applying hide_observation.
+    hidden_indexes: is a list of list of np.arrays for each lineage, 
     filled with zeros and ones. ones refer to the index of those cells that have been hidden.
-    hidden_obs: list of tuples of observations that have been masked in the train_lineage.
+    hidden_obs: list of list of tuples of observations that have been masked in the train_lineage.
     """
 
     # fit training data
-    tHMMobj_list, LL = Analyze_list([train_lineages], num_states)
+    output = run_Analyze_over(train_populations, num_states)
+    tHMMobj_list = []
+    for out in output:
+        tHMMobj_list.append(out[0])
 
     # predict states of hidden cells
-    states_list = tHMMobj_list[0].predict()
+    states_list = [tHMMobj.predict() for tHMMobj in tHMMobj_list]
 
     # hidden states
     hidden_states = []
     for i, lineage_st in enumerate(states_list):
-        hidden_states.append(lineage_st[hidden_indexes[i] == 1])
-
+        tmp = []
+        for j, lin_st in enumerate(lineage_st):
+            tmp.append(lin_st[hidden_indexes[i][j] == 1])
+        hidden_states.append(tmp)
 
     Ls = 0
-    for i, obs_lin in enumerate(hidden_obs):
-        if obs_lin:
-            for i2, obs_cell in enumerate(obs_lin): 
-                Ls += tHMMobj_list[0].estimate.E[hidden_states[i][i2]].pdf(np.array(obs_cell)[np.newaxis, :])
+    for i, obs_lins in enumerate(hidden_obs):
+        for j, obs_lin in enumerate(obs_lins):
+            if obs_lin:
+                for i2, obs_cell in enumerate(obs_lin): 
+                    Ls += tHMMobj_list[i].estimate.E[hidden_states[i][j][i2]].pdf(np.array(obs_cell)[np.newaxis, :])
     return Ls
