@@ -43,6 +43,7 @@ def test_data():
         np.testing.assert_allclose(cells.obs, lin2[j].obs, rtol=1e-2)
         assert cells.lineageID == 3
 
+
 def test_MCF10A():
     pbs = MCF10A("PBS")
     egf = MCF10A("EGF")
@@ -54,6 +55,7 @@ def test_MCF10A():
     np.testing.assert_allclose(lin1[0].obs, [1, 30.0, 0, 8.70, 4.35], rtol=1e-2)
     np.testing.assert_allclose(lin1[1].obs, [np.nan, 17.5, 0, 2.85, 1.42], rtol=1e-2)
     np.testing.assert_allclose(lin1[2].obs, [np.nan, 17.5, 0, 2.96, 1.48], rtol=1e-2)
+
 
 def test_bic():
     desired_num_states = np.arange(1, 3)
