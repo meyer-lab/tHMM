@@ -109,22 +109,20 @@ def test_BIC():
     We run it 20 times and make sure it got the right answer for more than half the times.
     """
     # create 1-state lineages
-    pi1 = np.array([1.0, 0.0])
-    T1 = np.array([[1.0, 0.0], [0.0, 1.0]])
-    E1 = [StateDistPhase(0.99, 0.9, 200, 0.5, 100, 0.6), StateDistPhase(0.99, 0.9, 200, 0.5, 100, 0.6)]
-    lin = [[LineageTree.init_from_parameters(pi1, T1, E1, 1)] for _ in range(3)]
+    pi1 = np.array([1.0])
+    T1 = np.atleast_2d(np.array([1.0]))
+    E1 = [StateDistPhase(0.99, 0.9, 200, 0.5, 100, 0.6)]
+    lin = [[LineageTree.init_from_parameters(pi1, T1, E1, 10)] for _ in range(3)]
     desired_num_states = np.arange(1, 4)
 
     nums = 0
     for lins in lin:
-        for _ in lins[0].output_lineage:
-            nums += 1
-    # run a few times and make sure it gives one state as the answer more than half the time.
-    BIC = np.empty((len(desired_num_states), 20))
-    for j in range(20):
+        nums += len(lins[0].output_lineage)
+
+    # run a few times and make sure it gives one state as the answer
+    for j in range(10):
         output = run_Analyze_over(lin, desired_num_states)
 
         for idx in range(len(desired_num_states)):
-            BIC[idx, j], _ = output[idx][0].get_BIC(output[idx][1], nums)
-        BIC[:, j] = BIC[:, j] - np.min(BIC[:, j])
-    assert np.count_nonzero(BIC[0, :] == 0) > 10
+            BIC, _ = output[idx][0].get_BIC(output[idx][1], nums)
+            assert np.argmin(BIC) == 0
