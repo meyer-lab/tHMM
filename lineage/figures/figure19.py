@@ -16,7 +16,7 @@ def makeFigure():
 
     complete_population = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
     # create training data by hiding 20% of cells in each lineage
-    train_population, hidden_indexes, hidden_obs = hide_for_population(complete_population)
+    train_population, hidden_indexes, hidden_obs = hide_for_population(complete_population, 0.2)
 
     ll = []
     for i in desired_num_states:
@@ -24,7 +24,7 @@ def makeFigure():
 
     complete_population = [Gemcitabine_Control + Lapatinib_Control, Gem5uM, Gem10uM, Gem30uM]
     # create training data by hiding 20% of cells in each lineage
-    train_population, hidden_indexes, hidden_obs = hide_for_population(complete_population)
+    train_population, hidden_indexes, hidden_obs = hide_for_population(complete_population, 0.2)
 
     ll2 = []
     for i in desired_num_states:
