@@ -45,7 +45,7 @@ class StateDistribution:
         """
         return 3
 
-    def pdf(self, x: np.ndarray):
+    def pdf(self, x: np.ndarray, num_states=2):
         """ User-defined way of calculating the likelihood of the observation stored in a cell.
         In the case of a univariate observation, the user still has to define how the likelihood is calculated,
         but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
@@ -68,6 +68,8 @@ class StateDistribution:
         # Update for observed Bernoulli
         ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
 
+        ll[x[:, 0] == -1] = np.log(1/num_states)
+
         return np.exp(ll)
 
     def estimator(self, X: list, gammas: np.ndarray):
@@ -76,13 +78,13 @@ class StateDistribution:
         # getting the observations as individual lists
         # {
         x = np.array(X)
-        bern_obs = x[:, 0]
+        bern_obs = x[:, 0].astype('bool')
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
 
         b_mask = np.isfinite(bern_obs)
         # Both unoberved and dead cells should be removed from gamma
-        g_mask = np.logical_and(np.isfinite(γ_obs), bern_obs.astype('bool'))
+        g_mask = np.logical_and(np.isfinite(γ_obs), bern_obs)
         assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
         # Handle an empty state

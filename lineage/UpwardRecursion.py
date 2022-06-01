@@ -68,7 +68,8 @@ def get_Emission_Likelihoods(tHMMobj, E: list = None) -> list:
     ELstack = np.zeros((len(all_cells), tHMMobj.num_states))
 
     for k in range(tHMMobj.num_states):  # for each state
-        ELstack[:, k] = E[k].pdf(all_cells)
+        ELstack[:, k] = E[k].pdf(all_cells, tHMMobj.num_states)
+        # equal likelihood for cells with negative lifetimes
         assert np.all(np.isfinite(ELstack[:, k]))
     EL = []
     ii = 0
