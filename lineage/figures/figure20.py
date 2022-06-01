@@ -7,6 +7,36 @@ import pickle
 from .common import getSetup
 from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 
+def makeFigure():
+    """
+    Makes figure 9.
+    """
+    ax, f = getSetup((9, 4), (1, 2))
+
+    labels = ["G1", "SG2"]
+    x = np.arange(len(labels))  # the label locations
+    width = 0.35
+    G1s = [0.515, 0.467]
+    G2s = [0.368, 0.166]
+    ax[0].bar(x - width/2, G1s, width, label="mother")
+    ax[0].bar(x + width/2, G2s, width, label="grandmother")
+    ax[0].set_title("lapatinib")
+    ax[0].set_ylabel("surv. Spearman corr.")
+    ax[0].set_xticks(x, labels)
+    ax[0].legend()
+    ax[0].set_ylim((0, 1))
+
+    G1sg = [0.238, 0.697]
+    G2sg = [0.143, 0.026]
+    ax[1].bar(x - width/2, G1sg, width, label="mother")
+    ax[1].bar(x + width/2, G2sg, width, label="grandmother")
+    ax[1].set_title("gemcitabine")
+    ax[1].set_ylabel("surv. Spearman corr.")
+    ax[1].set_xticks(x, labels)
+    ax[1].legend()
+    ax[1].set_ylim((0, 1))
+
+    return f
 
 def save_df():
     """ Save the arrays that are used for calculating the correlation into dataframes, in the form of column1:gen1, column2: gen2. 
@@ -60,3 +90,20 @@ def get_obs_population(population, i):
         mothers_censored += ms_censored
 
     return cells, mothers, cells_censored, mothers_censored
+
+# R code to calculate the survSpearman:
+# library(survSpearman)
+# data <- read.csv("data.csv")
+# dt <- na.omit(data)
+# corr <- survSpearman(dt[,1], dt[,2], dt[,3], dt[,4])$Correlation[1] # this gives the highest rank correlation
+
+# correlations: 
+# gem_g1: 0.2382719
+# gem_g2: 0.6971354
+# gem_g1_grand: 0.1431158
+# gem_g2_grand: 0.0263866
+
+# lap_g1: 0.5153418
+# lap_g2: 0.4675189
+# lap_g1_grand: 0.368836
+# lap_g2_grand: 0.1661138
