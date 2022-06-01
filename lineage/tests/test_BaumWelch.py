@@ -7,7 +7,7 @@ from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 from ..BaumWelch import do_E_step, do_M_E_step, calculate_log_likelihood, calculate_stationary
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
-from ..figures.common import pi, T, E, E2
+from ..figures.common import pi, T, E
 
 
 @pytest.mark.parametrize("cens", [0, 2])
@@ -97,14 +97,6 @@ def test_M_step(cens):
             g_lin[i, tHMMobj.X[idx].output_lineage[i].state] = 1
 
     do_M_E_step(tHMMobj, gammas)
-    # test bernoulli
-    if len(E3[0].params) > 3:  # phase-specific case
-        for i in range(gmc[1].num_states):
-            np.testing.assert_allclose(tHMMobj.estimate.E[i].params[0:2], E3[i].params[0:2], rtol=0.1)
-            # gamma parameters
-            np.testing.assert_allclose(tHMMobj.estimate.E[i].params[2:], E3[i].params[2:], rtol=0.5)
-    else:
-        for i in range(gmc[1].num_states):
-            np.testing.assert_allclose(tHMMobj.estimate.E[i].params[0], E3[i].params[0], rtol=0.1)
-            # gamma parameters
-            np.testing.assert_allclose(tHMMobj.estimate.E[i].params[1:], E3[i].params[1:], rtol=0.5)
+    # Test that parameter values match our input
+    for i in range(gmc[1].num_states):
+        np.testing.assert_allclose(tHMMobj.estimate.E[i].params, E3[i].params, rtol=0.1)
