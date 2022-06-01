@@ -27,7 +27,7 @@ def basic_censor(cell):
 
 def nLL_atonce(x: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray]):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
-    assert np.all(x >= 0.0)
+    x = np.exp(x)
     outt = 0.0
     for i in range(len(x) - 1):
         outt -= np.dot(gammas[i] * time_cen[i], gamma.logpdf(gamma_obs[i], a=x[0], scale=x[i + 1]))
@@ -68,11 +68,11 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
     else:
         linc = list()
 
-    bnd = Bounds(np.full_like(x0, 0.01), np.full_like(x0, 400.0), keep_feasible=True)
-    opt = {"xtol": 1e-9}
+    bnd = Bounds(np.full_like(x0, -np.inf), np.full_like(x0, 7.0), keep_feasible=True)
+    opt = {"xtol": 1e-8}
 
     with np.errstate(all='raise'):
-        res = minimize(nLL_atonce, x0=x0, args=arrgs, bounds=bnd, method="trust-constr", constraints=linc, options=opt)
+        res = minimize(nLL_atonce, x0=np.log(x0), args=arrgs, bounds=bnd, method="trust-constr", constraints=linc, options=opt)
 
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
-    return res.x
+    return np.exp(res.x)
