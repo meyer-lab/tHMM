@@ -50,15 +50,18 @@ def nLL_atonce(x: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.nda
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
     x = np.exp(x)
     outt = 0.0
-    for i in range(len(x) - 1):
+    for i in prange(len(x) - 1):
         gobs = gamma_obs[i] / x[i + 1]
 
-        for j in prange(len(time_cen[i])):
+        for j in range(len(time_cen[i])):
             if time_cen[i][j] == 1.0:
                 outt -= gammas[i][j] * (xlogy(x[0] - 1.0, gobs[j]) - gobs[j] - gammaln(x[0]) - np.log(x[i + 1]))
             else:
                 assert time_cen[i][j] == 0.0
                 outt -= gammas[i][j] * np.log(gammaincc(x[0], gobs[j]))
+
+    if np.isinf(outt):
+        print(x)
 
     assert np.isfinite(outt)
     return outt
@@ -92,7 +95,7 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
     else:
         linc = list()
 
-    bnd = Bounds(np.full_like(x0, -np.inf), np.full_like(x0, 7.0), keep_feasible=True)
+    bnd = Bounds(np.full_like(x0, -3.0), np.full_like(x0, 6.0), keep_feasible=True)
     opt = {"xtol": 1e-8}
 
     with np.errstate(all='raise'):

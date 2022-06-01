@@ -2,12 +2,10 @@
 
 import numpy as np
 import pandas as pd
-import pickle
 import seaborn as sns
 import itertools as it
-from .common import getSetup, subplotLabel, commonAnalyze, figureMaker
+from .common import getSetup, subplotLabel, commonAnalyze
 from ..LineageTree import LineageTree
-from ..Analyze import Analyze_list
 from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 from ..BaumWelch import calculate_stationary
 
@@ -65,7 +63,7 @@ def makeFigure():
             [pi],
             list_of_fT=len(list_of_populations) *
             [T],
-            parallel=True),
+            parallel=False),
         num_lineages=num_lineages)
 
     subplotLabel(ax)
