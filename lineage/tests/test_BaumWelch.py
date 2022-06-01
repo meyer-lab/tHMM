@@ -99,4 +99,4 @@ def test_M_step(cens):
     do_M_E_step(tHMMobj, gammas)
     # Test that parameter values match our input
     for i in range(gmc[1].num_states):
-        np.testing.assert_allclose(tHMMobj.estimate.E[i].params, E3[i].params, rtol=0.5)
+        np.testing.assert_allclose(tHMMobj.estimate.E[i].params, E3[i].params, rtol=0.1)
