@@ -120,7 +120,7 @@ def test_BIC():
         nums += len(lins[0].output_lineage)
 
     # run a few times and make sure it gives one state as the answer
-    for j in range(10):
+    for _ in range(5):
         output = run_Analyze_over(lin, desired_num_states)
 
         for idx in range(len(desired_num_states)):
