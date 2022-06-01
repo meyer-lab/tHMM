@@ -96,10 +96,9 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
         linc = list()
 
     bnd = Bounds(np.full_like(x0, -3.0), np.full_like(x0, 6.0), keep_feasible=True)
-    opt = {"xtol": 1e-8}
 
     with np.errstate(all='raise'):
-        res = minimize(nLL_atonce, x0=np.log(x0), args=arrgs, bounds=bnd, method="trust-constr", constraints=linc, options=opt)
+        res = minimize(nLL_atonce, x0=np.log(x0), args=arrgs, bounds=bnd, method="trust-constr", constraints=linc)
 
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
     return np.exp(res.x)

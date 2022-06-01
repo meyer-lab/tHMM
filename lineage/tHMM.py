@@ -191,7 +191,7 @@ def log_E_score(EL_array: np.ndarray, state_tree_sequence: list) -> float:
     return log_E_score_holder
 
 
-def fit_list(tHMMobj_list: list, tolerance: float = 1e-9, max_iter: int = 1000) -> Tuple[list, list, list, list, float]:
+def fit_list(tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100) -> Tuple[list, list, list, list, float]:
     """
     Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
 
@@ -220,7 +220,7 @@ def fit_list(tHMMobj_list: list, tolerance: float = 1e-9, max_iter: int = 1000) 
     old_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
 
     # first stopping condition check
-    for ii in range(max_iter):
+    for _ in range(max_iter):
         do_M_step(tHMMobj_list, MSD_list, betas_list, gammas_list)
         MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
         new_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
@@ -228,6 +228,5 @@ def fit_list(tHMMobj_list: list, tolerance: float = 1e-9, max_iter: int = 1000) 
             break
 
         old_LL = new_LL
-        print(f"ii: {ii} LL: {new_LL}")
 
     return MSD_list, NF_list, betas_list, gammas_list, new_LL
