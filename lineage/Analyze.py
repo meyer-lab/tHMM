@@ -50,7 +50,7 @@ def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list
     return tHMMobj_list, LL
 
 
-def run_Analyze_over(list_of_populations: list, num_states: np.ndarray, parallel=False, atonce=False, **kwargs) -> list:
+def run_Analyze_over(list_of_populations: list, num_states: np.ndarray, parallel=True, atonce=False, **kwargs) -> list:
     """
     A function that can be parallelized to speed up figure creation.
 
