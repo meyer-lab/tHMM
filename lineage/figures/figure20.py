@@ -4,7 +4,6 @@ import scipy.stats as sp
 import itertools as it
 import pickle
 from .common import getSetup
-from ..states.StateDistributionGamma import StateDistribution as gamma_state
 from ..LineageTree import LineageTree
 
 num_gens = 5

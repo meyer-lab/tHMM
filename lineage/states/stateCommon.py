@@ -1,9 +1,9 @@
 """ Common utilities used between states regardless of distribution. """
 
 import numpy as np
-import ctypes
+from ctypes import CFUNCTYPE, c_double
 from numba.extending import get_cython_function_address
-from numba import jit, prange
+from numba import jit
 from numba.typed import List
 from scipy.optimize import minimize, LinearConstraint, Bounds
 
@@ -29,12 +29,10 @@ def basic_censor(cell):
 
 
 addr = get_cython_function_address("scipy.special.cython_special", "gammaincc")
-functype = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double, ctypes.c_double)
-gammaincc = functype(addr)
+gammaincc = CFUNCTYPE(c_double, c_double, c_double)(addr)
 
 addr = get_cython_function_address("scipy.special.cython_special", "gammaln")
-functype = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
-gammaln = functype(addr)
+gammaln = CFUNCTYPE(c_double, c_double)(addr)
 
 
 @jit(nopython=True)
@@ -45,12 +43,12 @@ def xlogy(x, y):
         return x * np.log(y)
 
 
-@jit(nopython=True, parallel=True, fastmath=True)
+@jit(nopython=True)
 def nLL_atonce(x: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray]):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
     x = np.exp(x)
     outt = 0.0
-    for i in prange(len(x) - 1):
+    for i in range(len(x) - 1):
         gobs = gamma_obs[i] / x[i + 1]
 
         for j in range(len(time_cen[i])):
@@ -98,7 +96,10 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
     bnd = Bounds(np.full_like(x0, -3.0), np.full_like(x0, 6.0), keep_feasible=True)
 
     with np.errstate(all='raise'):
-        res = minimize(nLL_atonce, x0=np.log(x0), args=arrgs, bounds=bnd, method="trust-constr", constraints=linc)
+        if len(linc) > 0:
+            res = minimize(nLL_atonce, x0=np.log(x0), args=arrgs, bounds=bnd, method="trust-constr", constraints=linc)
+        else:
+            res = minimize(nLL_atonce, x0=np.log(x0), args=arrgs, bounds=bnd, method='Nelder-Mead')
 
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
     return np.exp(res.x)

@@ -86,7 +86,7 @@ def run_BIC(E, lineages):
 
     # Storing BICs into array
     BICs = np.empty((len(desired_num_states)))
-    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, parallel=False)
+    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, parallel=True)
 
     for idx in range(len(desired_num_states)):
         nums = 0
