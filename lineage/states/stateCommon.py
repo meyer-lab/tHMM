@@ -36,24 +36,21 @@ gammaln = CFUNCTYPE(c_double, c_double)(addr)
 
 
 @jit(nopython=True)
-def xlogy(x, y):
-    if x == 0 and not np.isnan(y):
-        return 0
-    else:
-        return x * np.log(y)
-
-
-@jit(nopython=True)
-def nLL_atonce(x: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray]):
+def nLL_atonce(logX: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray]):
     """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
-    x = np.exp(x)
+    x = np.exp(logX)
+    glnA = gammaln(x[0])
     outt = 0.0
     for i in range(len(x) - 1):
         gobs = gamma_obs[i] / x[i + 1]
 
         for j in range(len(time_cen[i])):
             if time_cen[i][j] == 1.0:
-                outt -= gammas[i][j] * (xlogy(x[0] - 1.0, gobs[j]) - gobs[j] - gammaln(x[0]) - np.log(x[i + 1]))
+                # Handle xlogy edge case
+                if (x[0] - 1.0) == 0:
+                    outt -= gammas[i][j] * (0.0 - gobs[j] - glnA - logX[i + 1])
+                else:
+                    outt -= gammas[i][j] * ((x[0] - 1.0) * np.log(gobs[j]) - gobs[j] - glnA - logX[i + 1])
             else:
                 assert time_cen[i][j] == 0.0
                 outt -= gammas[i][j] * np.log(gammaincc(x[0], gobs[j]))
