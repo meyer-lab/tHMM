@@ -55,10 +55,3 @@ def test_MCF10A():
     np.testing.assert_allclose(lin1[0].obs, [1, 30.0, 0, 8.70, 4.35], rtol=1e-2)
     np.testing.assert_allclose(lin1[1].obs, [np.nan, 17.5, 0, 2.85, 1.42], rtol=1e-2)
     np.testing.assert_allclose(lin1[2].obs, [np.nan, 17.5, 0, 2.96, 1.48], rtol=1e-2)
-
-
-def test_bic():
-    desired_num_states = np.arange(1, 3)
-    data = [E]
-    dataFull = [data] * len(desired_num_states)
-    output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
