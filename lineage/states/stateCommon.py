@@ -43,16 +43,10 @@ def nLL_atonce(logX: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.
     outt = 0.0
     for i in range(len(x) - 1):
         gobs = gamma_obs[i] / x[i + 1]
+        outt -= np.dot(gammas[i] * time_cen[i], (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[i + 1])
 
         for j in range(len(time_cen[i])):
-            if time_cen[i][j] == 1.0:
-                # Handle xlogy edge case
-                if (x[0] - 1.0) == 0:
-                    outt -= gammas[i][j] * (0.0 - gobs[j] - glnA - logX[i + 1])
-                else:
-                    outt -= gammas[i][j] * ((x[0] - 1.0) * np.log(gobs[j]) - gobs[j] - glnA - logX[i + 1])
-            else:
-                assert time_cen[i][j] == 0.0
+            if time_cen[i][j] == 0.0:
                 outt -= gammas[i][j] * np.log(gammaincc(x[0], gobs[j]))
 
     if np.isinf(outt):
