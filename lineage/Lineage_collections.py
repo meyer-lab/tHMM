@@ -8,7 +8,7 @@ from .LineageTree import LineageTree
 
 #----------------------- Control conditions from both old and new versions -----------------------#
 desired_num_states = 2
-E = [StateDistribution() for _ in range(desired_num_states)]
+E = [StateDistribution(bern_p1=0.9, bern_p2=0.75, gamma_a1=30.0, gamma_scale1=1.0, gamma_a2=100.0, gamma_scale2=0.6) for _ in range(desired_num_states)]
 E2 = [StDist() for _ in range(desired_num_states)]
 
 

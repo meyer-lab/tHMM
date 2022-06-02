@@ -82,21 +82,27 @@ class StateDistribution:
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
 
-        b_mask = np.isfinite(bern_obs)
+        bern_obs_ = bern_obs[γ_obs >= 0]
+        γ_obs_ = γ_obs[γ_obs >= 0]
+        gamma_obs_censor_ = [γ_obs >= 0]
+        gammas_ = gammas[γ_obs >= 0]
+
+        # remove 
+        b_mask = np.isfinite(bern_obs_)
         # Both unoberved and dead cells should be removed from gamma
-        g_mask = np.logical_and(np.isfinite(γ_obs), bern_obs.astype("bool"))
+        g_mask = np.logical_and(np.isfinite(γ_obs_), bern_obs_.astype("bool"))
         assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
         # Handle an empty state
         if np.sum(gammas[b_mask]) == 0.0:
-            self.params[0] = np.average(bern_obs[b_mask])
+            self.params[0] = np.average(bern_obs_[b_mask])
         else:
-            self.params[0] = np.average(bern_obs[b_mask], weights=gammas[b_mask])
+            self.params[0] = np.average(bern_obs_[b_mask], weights=gammas_[b_mask])
 
         # Don't allow Bernoulli to hit extremes
         self.params[0] = np.clip(self.params[0], 0.00001, 0.99999)
 
-        self.params[1], self.params[2] = gamma_estimator([γ_obs[g_mask]], [gamma_obs_censor[g_mask]], [gammas[g_mask]], self.params[1:3])
+        self.params[1], self.params[2] = gamma_estimator([γ_obs_[g_mask]], [gamma_obs_censor_[g_mask]], [gammas_[g_mask]], self.params[1:3])
 
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
@@ -208,23 +214,32 @@ def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: 
     γ_obs = [x[:, 1] for x in x_data]
     gamma_obs_censor = [x[:, 2] for x in x_data]
 
-    b_masks = [np.isfinite(bern_) for bern_ in bern_obs]
+    # remove negative observations from being used for fitting
+    bern_obs_ = [b[γ_obs[i] >= 0] for i, b in enumerate(bern_obs)]
+    γ_obs_ = [g[g >= 0] for i, g in enumerate(γ_obs)]
+    gamma_obs_censor_ = [gc[γ_obs[i] >= 0] for i, gc in enumerate(gamma_obs_censor)]
+    gamma_list_ = [gc[γ_obs[i] >= 0] for i, gc in enumerate(gammas_list)]
+
+    for i, item in enumerate(bern_obs_):
+        assert item.shape == γ_obs_[i].shape == gamma_obs_censor_[i].shape
+
+    b_masks = [np.isfinite(bern_) for bern_ in bern_obs_]
     bern_params = np.zeros(4)
     for i, b_mask in enumerate(b_masks):
         # Handle an empty state
-        if np.sum(gammas_list[i][b_mask]) == 0.0:
-            bern_params[i] = np.average(bern_obs[i][b_mask])
+        if np.sum(gamma_list_[i][b_mask]) == 0.0:
+            bern_params[i] = np.average(bern_obs_[i][b_mask])
         else:
-            bern_params[i] = np.average(bern_obs[i][b_mask], weights=gammas_list[i][b_mask])
+            bern_params[i] = np.average(bern_obs_[i][b_mask], weights=gamma_list_[i][b_mask])
 
     # Both unoberved and dead cells should be removed from gamma
-    g_masks = [np.logical_and(np.isfinite(γ_o), berns.astype('bool')) for γ_o, berns in zip(γ_obs, bern_obs)]
+    g_masks = [np.logical_and(np.isfinite(γ_o), berns.astype('bool')) for γ_o, berns in zip(γ_obs_, bern_obs_)]
     for g_mask in g_masks:
         assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
-    γ_obs_total = [g_obs[g_masks[i]] for i, g_obs in enumerate(γ_obs)]
-    γ_obs_total_censored = [g_obs_cen[g_masks[i]] for i, g_obs_cen in enumerate(gamma_obs_censor)]
-    gammas_total = [np.vstack(gamma_tot)[g_masks[i]] for i, gamma_tot in enumerate(gammas_list)]
+    γ_obs_total = [g_obs[g_masks[i]] for i, g_obs in enumerate(γ_obs_)]
+    γ_obs_total_censored = [g_obs_cen[g_masks[i]] for i, g_obs_cen in enumerate(gamma_obs_censor_)]
+    gammas_total = [np.vstack(gamma_tot)[g_masks[i]] for i, gamma_tot in enumerate(gamma_list_)]
     gammas_total = [np.squeeze(g) for g in gammas_total]
 
     if phase == "G1":

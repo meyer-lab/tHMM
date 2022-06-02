@@ -67,33 +67,38 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
-    In the phase-specific case, we have 3 linear constraints: scale1 > scale2, scale2 > scale3, scale3 > scale 4.
+    In the phase-specific case, we have 3 linear constraints: scale1 < scale2, scale2 < scale3, scale3 < scale 4, scale4 < shape.
     In the non-specific case, we have only 1 constraint: scale1 > scale2 ==> A = np.array([1, 3])
     """
     # Handle no observations
     if np.sum([np.sum(g) for g in gammas]) < 0.1:
         gammas = [np.ones(g.size) for g in gammas]
 
-    # Remove negative observations from fitting
-
-    gammas_ = [gam[gamma_obs[i] >= 0] for i, gam in enumerate(gammas)]
-    gamma_obs_ = [gam_obs[gamma_obs[i] >= 0] for i, gam_obs in enumerate(gamma_obs)]
-    time_cen_ = [t_cen[gamma_obs[i] >= 0] for i, t_cen in enumerate(time_cen)]
+    # make sure all negative observations are removed
+    for i in gamma_obs:
+        assert np.all(i >= 0)
 
     # Check shapes
-    for i in range(len(gamma_obs_)):
-        assert gamma_obs_[i].shape == time_cen_[i].shape
-        assert gamma_obs_[i].shape == gammas_[i].shape
+    for i in range(len(gamma_obs)):
+        assert gamma_obs[i].shape == time_cen[i].shape
+        assert gamma_obs[i].shape == gammas[i].shape
 
-    arrgs = (List(gamma_obs_), List(time_cen_), List(gammas_))
+    arrgs = (List(gamma_obs), List(time_cen), List(gammas))
 
-    if len(gamma_obs_) == 4:  # for constrained optimization
-        A = np.zeros((3, 5))  # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
-        np.fill_diagonal(A[:, 1:], -1.0)
-        np.fill_diagonal(A[:, 2:], 1.0)
-        linc = [LinearConstraint(A, lb=np.zeros(3), ub=np.full(3, np.inf))]
+    if len(gamma_obs) == 4:  # for constrained optimization
+        A = np.zeros((4, 5))  # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
+        np.fill_diagonal(A[1:, 1:], -1.0)
+        np.fill_diagonal(A[1:, 2:], 1.0)
+        A[0, 0] = 1.0
+        A[0, 4] = -1.0
+        linc = [LinearConstraint(A, lb=np.zeros(4), ub=np.full(4, np.inf))]
         if np.allclose(np.dot(A, x0), 0.0):
-            x0 = np.array([100.0, 0.4, 0.8, 1.2, 1.6])
+            x0 = np.array([50.0, 0.5, 1.0, 1.5, 2.0])
+
+        if all(x==x0[0] for x in x0):
+            print("all equal", x0)
+            x0 = np.array([50.0, 0.5, 1.0, 1.5, 2.0])
+
     else:
         linc = list()
 

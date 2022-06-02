@@ -66,15 +66,15 @@ def crossval(train_populations: list, hidden_indexes: list, hidden_obs: list, nu
     """
 
     # fit training data
-    output = run_Analyze_over(train_populations, num_states)
+    output = run_Analyze_over(train_populations, num_states, atonce=True)
     tHMMobj_list = []
     for out in output:
-        tHMMobj_list.append(out[0])
+        tHMMobj_list.append(out[0][0])
 
     # predict states of hidden cells
     states_list = [tHMMobj.predict() for tHMMobj in tHMMobj_list]
 
-    # hidden states
+    # find the states of masked cells
     hidden_states = []
     for i, lineage_st in enumerate(states_list):
         tmp = []
@@ -82,6 +82,7 @@ def crossval(train_populations: list, hidden_indexes: list, hidden_obs: list, nu
             tmp.append(lin_st[hidden_indexes[i][j] == 1])
         hidden_states.append(tmp)
 
+    # calculate the likelihood of observations of masked cells to their assigned state
     Ls = 0
     for i, obs_lins in enumerate(hidden_obs):
         for j, obs_lin in enumerate(obs_lins):
