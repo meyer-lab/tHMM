@@ -63,7 +63,7 @@ def makeFigure():
             [pi],
             list_of_fT=len(list_of_populations) *
             [T],
-            parallel=False),
+            parallel=True),
         num_lineages=num_lineages)
 
     subplotLabel(ax)
