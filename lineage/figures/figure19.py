@@ -14,8 +14,8 @@ def makeFigure():
     """
     ax, f = getSetup((8, 4), (1, 2))
 
-    lapatinib = [Lapatinib_Control[:10] + Gemcitabine_Control[:10], Lapt25uM[:10], Lapt50uM[:10], Lap250uM[:10]]
-    gemcitabine = [Gemcitabine_Control[:10] + Lapatinib_Control[:10], Gem5uM[:10], Gem10uM[:10], Gem30uM[:10]]
+    lapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
+    gemcitabine = [Gemcitabine_Control + Lapatinib_Control, Gem5uM, Gem10uM, Gem30uM]
 
     output1 = output_LL(lapatinib)
     output2 = output_LL(gemcitabine)
