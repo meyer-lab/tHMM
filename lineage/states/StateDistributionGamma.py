@@ -78,13 +78,13 @@ class StateDistribution:
         # getting the observations as individual lists
         # {
         x = np.array(X)
-        bern_obs = x[:, 0].astype('bool')
+        bern_obs = x[:, 0]
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
 
         b_mask = np.isfinite(bern_obs)
         # Both unoberved and dead cells should be removed from gamma
-        g_mask = np.logical_and(np.isfinite(γ_obs), bern_obs)
+        g_mask = np.logical_and(np.isfinite(γ_obs), bern_obs.astype("bool"))
         assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
         # Handle an empty state

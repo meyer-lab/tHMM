@@ -7,7 +7,7 @@ from ..figures.common import pi, T, E
 from ..CrossVal import hide_for_population, crossval
 from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 
-desired_num_states = np.arange(1, 5)
+desired_num_states = np.arange(1, 10)
 
 exe = ProcessPoolExecutor()
 

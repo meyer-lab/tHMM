@@ -121,7 +121,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
         ax[i].axhline(paramTrues[0, j, 2], linestyle="--", c="C" + str(j), label="S " + str(j + 1))
     ax[i].set_ylabel(r"Gamma k")
     ax[i].set_title(r"Gamma k G1 Estimation")
-    # ax[i].set_ylim([0.0, max(paramTrues[0, :, 2])+2])
+    ax[i].set_ylim([0.0, 300.0])
     ax[i].set_xlabel("Number of Cells")
 
     i += 1  # (d) gamma scale G1
@@ -130,7 +130,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
         ax[i].axhline(paramTrues[0, j, 3], linestyle="--", c="C" + str(j), label="S " + str(j + 1))
     ax[i].set_ylabel(r"Gamma $\theta$")
     ax[i].set_title(r"Gamma $\theta$ G1 Estimation")
-    # ax[i].set_ylim([0.0, max(paramTrues[0, :, 3]+15)])
+    ax[i].set_ylim([0.0, 0.4])
     ax[i].set_xlabel("Number of Cells")
     ax[i].legend()
 
@@ -149,7 +149,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
         ax[i].axhline(paramTrues[0, j, 4], linestyle="--", c="C" + str(j), label="S " + str(j + 1))
     ax[i].set_ylabel(r"Gamma k")
     ax[i].set_title(r"Gamma k G2 Estimation")
-    # ax[i].set_ylim([0.0, max(paramTrues[0, :, 4])+2])
+    ax[i].set_ylim([0.0, 400.0])
     ax[i].set_xlabel("Number of Cells")
 
     i += 1  # (g) gamma scale G2
@@ -158,7 +158,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
         ax[i].axhline(paramTrues[0, j, 5], linestyle="--", c="C" + str(j), label="S " + str(j + 1))
     ax[i].set_ylabel(r"Gamma $\theta$")
     ax[i].set_title(r"Gamma $\theta$ G2 Estimation")
-    # ax[i].set_ylim([0.0, max(paramTrues[0, :, 5])+2])
+    ax[i].set_ylim([0.0, 0.4])
     ax[i].set_xlabel("Number of Cells")
 
     i += 1  # (i) accuracy
