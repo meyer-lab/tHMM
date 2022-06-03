@@ -1,5 +1,6 @@
 """ Unit tests for crossvalidation. """
 import pytest
+import numpy as np
 from ..LineageTree import LineageTree
 from ..figures.common import pi, T, E
 from ..CrossVal import crossval, hide_for_population
@@ -11,7 +12,9 @@ def test_cv(censored, num_cells):
 
     train_lineages, hidden_indexes, hidden_obs = hide_for_population(complete_lineages, 0.25)
 
-    ll = []
-    for i in range(1, 3):
-        ll.append(crossval(train_lineages, hidden_indexes, hidden_obs, i))
+    dataFull = []
+    for _ in range(1, 3):
+        dataFull.append(train_lineages)
+
+    ll = crossval(dataFull, hidden_indexes, hidden_obs, np.arange(1, 3))
     assert ll[0] < ll[1]

@@ -57,7 +57,7 @@ def hide_for_population(complete_lineages, perc):
     return train_population, hidden_indexes, hidden_obs
 
 
-def crossval(train_populations: list, hidden_indexes: list, hidden_obs: list, num_states: int):
+def crossval(train_populations: list, hidden_indexes: list, hidden_obs: list, num_states: np.array):
     """ Perform cross validation for a drug treated population.
     train_populations: the populations after applying hide_observation.
     hidden_indexes: is a list of list of np.arrays for each lineage, 
@@ -67,25 +67,33 @@ def crossval(train_populations: list, hidden_indexes: list, hidden_obs: list, nu
 
     # fit training data
     output = run_Analyze_over(train_populations, num_states, atonce=True)
-    tHMMobj_list = []
+    tHMMobj_list_states = []
     for out in output:
-        print("out: ", len(out), len(out[0]), len(out[0][0]))
-        tHMMobj_list.append(out[0][0])
+        tHMMobj_list_states.append(out[0])
 
-
-    # find the states of masked cells
-    hidden_states = []
-    for i, lineage_st in enumerate(states_list):
-        tmp = []
-        for j, lin_st in enumerate(lineage_st):
-            tmp.append(lin_st[hidden_indexes[i][j] == 1])
-        hidden_states.append(tmp)
+    # predict states of hidden cells
+    # states_list: len(states_list) = num_states, len(each states_list[i]) = 
+    states_list = [[tHMMobj.predict() for tHMMobj in tHMMobj_list] for tHMMobj_list in tHMMobj_list_states]
 
     # calculate the likelihood of observations of masked cells to their assigned state
-    Ls = 0
-    for i, obs_lins in enumerate(hidden_obs):
-        for j, obs_lin in enumerate(obs_lins):
-            if obs_lin:
-                for i2, obs_cell in enumerate(obs_lin): 
-                    Ls += tHMMobj_list[i].estimate.E[hidden_states[i][j][i2]].pdf(np.array(obs_cell)[np.newaxis, :])
-    return Ls
+    LLs = []
+    for k in range(len(num_states)):
+        Ls = 0
+        tHMMobj_list = output[k][0]
+
+        # find the states of masked cells
+        hidden_states = []
+        for i, lineage_st in enumerate(states_list[k]):
+            tmp = []
+            for j, lin_st in enumerate(lineage_st):
+                tmp.append(lin_st[hidden_indexes[i][j] == 1])
+            hidden_states.append(tmp)
+
+
+        for i, obs_lins in enumerate(hidden_obs):
+            for j, obs_lin in enumerate(obs_lins):
+                if obs_lin:
+                    for i2, obs_cell in enumerate(obs_lin): 
+                        Ls += tHMMobj_list[i].estimate.E[hidden_states[i][j][i2]].pdf(np.array(obs_cell)[np.newaxis, :])
+        LLs.append(Ls)
+    return LLs

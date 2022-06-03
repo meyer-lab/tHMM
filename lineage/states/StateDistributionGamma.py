@@ -82,27 +82,22 @@ class StateDistribution:
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
 
-        bern_obs_ = bern_obs[γ_obs >= 0]
-        γ_obs_ = γ_obs[γ_obs >= 0]
-        gamma_obs_censor_ = [γ_obs >= 0]
-        gammas_ = gammas[γ_obs >= 0]
-
         # remove 
-        b_mask = np.isfinite(bern_obs_)
+        b_mask = np.isfinite(bern_obs)
         # Both unoberved and dead cells should be removed from gamma
-        g_mask = np.logical_and(np.isfinite(γ_obs_), bern_obs_.astype("bool"))
+        g_mask = np.logical_and(np.isfinite(γ_obs), bern_obs.astype("bool"))
         assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
         # Handle an empty state
         if np.sum(gammas[b_mask]) == 0.0:
-            self.params[0] = np.average(bern_obs_[b_mask])
+            self.params[0] = np.average(bern_obs[b_mask])
         else:
-            self.params[0] = np.average(bern_obs_[b_mask], weights=gammas_[b_mask])
+            self.params[0] = np.average(bern_obs[b_mask], weights=gammas[b_mask])
 
         # Don't allow Bernoulli to hit extremes
         self.params[0] = np.clip(self.params[0], 0.00001, 0.99999)
 
-        self.params[1], self.params[2] = gamma_estimator([γ_obs_[g_mask]], [gamma_obs_censor_[g_mask]], [gammas_[g_mask]], self.params[1:3])
+        self.params[1], self.params[2] = gamma_estimator([γ_obs[g_mask]], [gamma_obs_censor[g_mask]], [gammas[g_mask]], self.params[1:3])
 
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
