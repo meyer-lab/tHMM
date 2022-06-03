@@ -69,10 +69,9 @@ def crossval(train_populations: list, hidden_indexes: list, hidden_obs: list, nu
     output = run_Analyze_over(train_populations, num_states, atonce=True)
     tHMMobj_list = []
     for out in output:
+        print("out: ", len(out), len(out[0]), len(out[0][0]))
         tHMMobj_list.append(out[0][0])
 
-    # predict states of hidden cells
-    states_list = [tHMMobj.predict() for tHMMobj in tHMMobj_list]
 
     # find the states of masked cells
     hidden_states = []
