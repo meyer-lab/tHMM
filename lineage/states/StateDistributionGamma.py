@@ -45,7 +45,7 @@ class StateDistribution:
         """
         return 3
 
-    def pdf(self, x: np.ndarray):
+    def pdf(self, x: np.ndarray, num_states=2):
         """ User-defined way of calculating the likelihood of the observation stored in a cell.
         In the case of a univariate observation, the user still has to define how the likelihood is calculated,
         but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
@@ -67,6 +67,8 @@ class StateDistribution:
 
         # Update for observed Bernoulli
         ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
+
+        ll[x[:, 0] == -1] = np.log(1/num_states)
 
         return np.exp(ll)
 
@@ -206,23 +208,33 @@ def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: 
     γ_obs = [x[:, 1] for x in x_data]
     gamma_obs_censor = [x[:, 2] for x in x_data]
 
-    b_masks = [np.isfinite(bern_) for bern_ in bern_obs]
+    # remove negative observations from being used for fitting
+    bern_obs_ = [b[γ_obs[i] >= 0] for i, b in enumerate(bern_obs)]
+    γ_obs_ = [g[g >= 0] for i, g in enumerate(γ_obs)]
+    gamma_obs_censor_ = [gc[γ_obs[i] >= 0] for i, gc in enumerate(gamma_obs_censor)]
+    gamma_list_ = [gc[γ_obs[i] >= 0] for i, gc in enumerate(gammas_list)]
+
+    for i, item in enumerate(bern_obs_):
+        assert item.shape == γ_obs_[i].shape == gamma_obs_censor_[i].shape
+
+    b_masks = [np.isfinite(bern_) for bern_ in bern_obs_]
+
     bern_params = np.zeros(4)
     for i, b_mask in enumerate(b_masks):
         # Handle an empty state
-        if np.sum(gammas_list[i][b_mask]) == 0.0:
-            bern_params[i] = np.average(bern_obs[i][b_mask])
+        if np.sum(gammas_list_[i][b_mask]) == 0.0:
+            bern_params[i] = np.average(bern_obs_[i][b_mask])
         else:
-            bern_params[i] = np.average(bern_obs[i][b_mask], weights=gammas_list[i][b_mask])
+            bern_params[i] = np.average(bern_obs_[i][b_mask], weights=gammas_list_[i][b_mask])
 
     # Both unoberved and dead cells should be removed from gamma
-    g_masks = [np.logical_and(np.isfinite(γ_o), berns.astype('bool')) for γ_o, berns in zip(γ_obs, bern_obs)]
+    g_masks = [np.logical_and(np.isfinite(γ_o), berns.astype('bool')) for γ_o, berns in zip(γ_obs_, bern_obs_)]
     for g_mask in g_masks:
         assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
-    γ_obs_total = [g_obs[g_masks[i]] for i, g_obs in enumerate(γ_obs)]
-    γ_obs_total_censored = [g_obs_cen[g_masks[i]] for i, g_obs_cen in enumerate(gamma_obs_censor)]
-    gammas_total = [np.vstack(gamma_tot)[g_masks[i]] for i, gamma_tot in enumerate(gammas_list)]
+    γ_obs_total = [g_obs[g_masks[i]] for i, g_obs in enumerate(γ_obs_)]
+    γ_obs_total_censored = [g_obs_cen[g_masks[i]] for i, g_obs_cen in enumerate(gamma_obs_censor_)]
+    gammas_total = [np.vstack(gamma_tot)[g_masks[i]] for i, gamma_tot in enumerate(gammas_list_)]
     gammas_total = [np.squeeze(g) for g in gammas_total]
 
     if phase == "G1":

@@ -67,12 +67,17 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
     if np.sum([np.sum(g) for g in gammas]) < 0.1:
         gammas = [np.ones(g.size) for g in gammas]
 
-    # Check shapes
-    for i in range(len(gamma_obs)):
-        assert gamma_obs[i].shape == time_cen[i].shape
-        assert gamma_obs[i].shape == gammas[i].shape
+    # make sure all negative observations are removed
+    gamma_obs_ = [gm[gamma_obs[i] >= 0] for i, gm in enumerate(gamma_obs)]
+    time_cen_ = [tm[gamma_obs[i] >= 0] for i, tm in enumerate(time_cen)]
+    gammas_ = [gs[gamma_obs[i] >= 0] for i, gs in enumerate(gammas)]
 
-    arrgs = (List(gamma_obs), List(time_cen), List(gammas))
+    # Check shapes
+    for i in range(len(gamma_obs_)):
+        assert gamma_obs_[i].shape == time_cen_[i].shape
+        assert gamma_obs_[i].shape == gammas_[i].shape
+
+    arrgs = (List(gamma_obs_), List(time_cen_), List(gammas_))
 
     if len(gamma_obs) == 4:  # for constrained optimization
         A = np.zeros((3, 5))  # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
