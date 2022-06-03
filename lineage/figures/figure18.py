@@ -19,11 +19,11 @@ T = np.array([[0.6, 0.1, 0.1, 0.1, 0.1], [0.05, 0.8, 0.05, 0.05, 0.05], [0.01, 0
 # pi: the initial probability vector
 pi = calculate_stationary(T)
 
-state0 = phaseStateDist(0.7, 0.95, 250, 0.2, 50, 0.1)
-state1 = phaseStateDist(0.95, 0.9, 200, 0.2, 100, 0.1)
-state2 = phaseStateDist(0.9, 0.85, 150, 0.2, 150, 0.1)
-state3 = phaseStateDist(0.99, 0.75, 100, 0.2, 200, 0.1)
-state4 = phaseStateDist(0.99, 0.75, 50, 0.2, 250, 0.1)
+state0 = phaseStateDist(0.7, 0.95, 100, 0.2, 15, 0.4)
+state1 = phaseStateDist(0.95, 0.9, 60, 0.2, 20, 0.4)
+state2 = phaseStateDist(0.9, 0.85, 40, 0.2, 40, 0.4)
+state3 = phaseStateDist(0.99, 0.75, 20, 0.2, 60, 0.4)
+state4 = phaseStateDist(0.99, 0.75, 15, 0.2, 100, 0.4)
 E = [state0, state1, state2, state3, state4]
 
 # Creating a list of populations to analyze over

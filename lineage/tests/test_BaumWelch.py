@@ -50,11 +50,11 @@ def test_E_step(cens):
     # pi: the initial probability vector
     pi = calculate_stationary(T)
 
-    state0 = phaseStateDist(0.99, 0.95, 50, 0.5, 20, 2)
-    state1 = phaseStateDist(0.95, 0.9, 75, 0.5, 25, 2)
-    state2 = phaseStateDist(0.9, 0.85, 100, 0.5, 30, 2)
-    state3 = phaseStateDist(0.92, 0.95, 150, 0.5, 35, 2)
-    state4 = phaseStateDist(0.99, 0.85, 200, 0.5, 40, 2)
+    state0 = phaseStateDist(0.7, 0.95, 100, 0.2, 15, 0.4)
+    state1 = phaseStateDist(0.95, 0.9, 60, 0.2, 20, 0.4)
+    state2 = phaseStateDist(0.9, 0.85, 40, 0.2, 40, 0.4)
+    state3 = phaseStateDist(0.99, 0.75, 20, 0.2, 60, 0.4)
+    state4 = phaseStateDist(0.99, 0.75, 15, 0.2, 100, 0.4)
     E = [state0, state1, state2, state3, state4]
     population = []
     for _ in range(200):
@@ -64,7 +64,7 @@ def test_E_step(cens):
             X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 6) - 1, desired_experimental_time=150, censor_condition=cens)
         population.append(X)
 
-    tHMMobj = tHMM(population, num_states=gmc[1].num_states)  # build the tHMM class with X
+    tHMMobj = tHMM(population, num_states=len(E))  # build the tHMM class with X
     tHMMobj.estimate.pi = pi
     tHMMobj.estimate.T = T
     tHMMobj.estimate.E = E
