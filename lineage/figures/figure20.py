@@ -18,23 +18,27 @@ def makeFigure():
     width = 0.35
     G1s = [0.515, 0.467]
     G2s = [0.368, 0.166]
-    ax[0].bar(x - width/2, G1s, width, label="mother")
-    ax[0].bar(x + width/2, G2s, width, label="grandmother")
+    G3s = [1e-10, 3e-16]
+    ax[0].bar(x - width/2, G1s, width/2, label="mother")
+    ax[0].bar(x, G2s, width/2, label="grandmother")
+    ax[0].bar(x + width/2, G3s, width/2, label="great-grandmother")
     ax[0].set_title("lapatinib")
     ax[0].set_ylabel("surv. Spearman corr.")
     ax[0].set_xticks(x, labels)
     ax[0].legend()
-    ax[0].set_ylim((0, 1))
+    ax[0].set_ylim((-1, 1))
 
     G1sg = [0.238, 0.697]
     G2sg = [0.143, 0.026]
-    ax[1].bar(x - width/2, G1sg, width, label="mother")
-    ax[1].bar(x + width/2, G2sg, width, label="grandmother")
+    G3sg = [-0.228, 6e-16]
+    ax[1].bar(x - width/2, G1sg, width/2, label="mother")
+    ax[1].bar(x, G2sg, width/2, label="grandmother")
+    ax[1].bar(x + width/2, G3sg, width/2, label="great-grandmother")
     ax[1].set_title("gemcitabine")
     ax[1].set_ylabel("surv. Spearman corr.")
     ax[1].set_xticks(x, labels)
     ax[1].legend()
-    ax[1].set_ylim((0, 1))
+    ax[1].set_ylim((-1, 1))
 
     return f
 
@@ -47,7 +51,7 @@ def save_df():
 
     cells_l, mothers_l, cells_censored_l, mothers_censored_l = [], [], [], []
     for population in lapatinib:
-        cs, ms, cs_censored, ms_censored = get_obs_population(population, 2)
+        cs, ms, cs_censored, ms_censored = get_obs_population(population, 3)
         cells_l += cs
         mothers_l += ms
         cells_censored_l += cs_censored
@@ -56,7 +60,7 @@ def save_df():
 
     cells_g, mothers_g, cells_censored_g, mothers_censored_g = [], [], [], []
     for population in gemcitabine:
-        cs, ms, cs_censored, ms_censored = get_obs_population(population, 2)
+        cs, ms, cs_censored, ms_censored = get_obs_population(population, 3)
         cells_g += cs
         mothers_g += ms
         cells_censored_g += cs_censored
@@ -65,17 +69,18 @@ def save_df():
     df1 = pd.DataFrame({"cells": cells_l, "mothers": mothers_l, "cells_censor": cells_censored_l, "mother_censor": mothers_censored_l})
     df2 = pd.DataFrame({"cells": cells_g, "mothers": mothers_g, "cells_censor": cells_censored_g, "mother_censor": mothers_censored_g})
 
-    df1.to_csv(r'lap_g1.csv', index=False)
-    df2.to_csv(r'gem_g1.csv', index=False)
+    df1.to_csv(r'lap_g2.csv', index=False)
+    df2.to_csv(r'gem_g2.csv', index=False)
 
 def get_obs_lineage(lineage, G1sG2: int):
     """ G1sG2 is either 2: G1, or 3: SG2. We start from second cells to avoid appending root cells in cells. """
     cells, mothers, cells_censored, mothers_censored = [], [], [], []
-    for cell in lineage.output_lineage[2:]:
-        cells.append(cell.obs[G1sG2])
-        mothers.append(cell.parent.obs[G1sG2])
-        cells_censored.append(cell.obs[G1sG2+2])
-        mothers_censored.append(cell.parent.obs[G1sG2+2])
+    for cell in lineage.output_lineage[3:]:
+        if cell.parent.parent.parent:
+            cells.append(cell.obs[G1sG2])
+            mothers.append(cell.parent.parent.parent.obs[G1sG2])
+            cells_censored.append(cell.obs[G1sG2+2])
+            mothers_censored.append(cell.parent.parent.parent.obs[G1sG2+2])
 
     return cells, mothers, cells_censored, mothers_censored
 

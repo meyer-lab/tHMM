@@ -86,7 +86,7 @@ class TestModel(unittest.TestCase):
 def test_fit_performance():
     """ Really defined states should get an accuracy >95%.
     Lineages used should be large and distinct. """
-    X = [LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 9) - 1)]
+    X = [LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 8) - 1)]
     first = Results(*Analyze(X, 2, fpi=pi))["state_similarity"]
     second = Results(*Analyze(X, 2, fpi=pi))["state_similarity"]
     assert max(first, second) > 95.0
@@ -120,7 +120,7 @@ def test_BIC():
         nums += len(lins[0].output_lineage)
 
     # run a few times and make sure it gives one state as the answer
-    for j in range(10):
+    for _ in range(3):
         output = run_Analyze_over(lin, desired_num_states)
 
         for idx in range(len(desired_num_states)):

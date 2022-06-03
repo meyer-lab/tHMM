@@ -51,5 +51,4 @@ def test_atonce_estimator():
     atonce_estimator(solver_gamma_list, g1phase_cells, gammas_1st, "G1", 0)
     xout = np.array([solver_gamma_list[0].estimate.E[0].params[2]] + [tHMMobj.estimate.E[0].params[3] for tHMMobj in solver_gamma_list])
     assert [xout[i + 1] <= xout[i] for i in range(1, 4)]  # check the constraint's condition
-    np.testing.assert_allclose(xout, np.insert(scales1, 0, 70.0), rtol=0.2)  # check for the right solution
-    # TODO: I feel like we should be able to have a lower tolerance here
+    np.testing.assert_allclose(xout, np.insert(scales1, 0, 70.0), rtol=0.1)  # check for the right solution

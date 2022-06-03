@@ -1,13 +1,11 @@
 """ Common utilities used between states regardless of distribution. """
 
 import numpy as np
-from scipy.special import gammaincc
-from scipy.stats import gamma
-from scipy.optimize import minimize, LinearConstraint
-
-
-def softplus(x):
-    return np.log1p(np.exp(-np.abs(x))) + np.maximum(x, 0)
+from ctypes import CFUNCTYPE, c_double
+from numba.extending import get_cython_function_address
+from numba import jit
+from numba.typed import List
+from scipy.optimize import minimize, LinearConstraint, Bounds
 
 
 def basic_censor(cell):
@@ -30,25 +28,35 @@ def basic_censor(cell):
                 cell.get_sister().right.observed = False
 
 
-def nLL_atonce(x: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray]):
-    """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
-    xx = softplus(x)
+addr = get_cython_function_address("scipy.special.cython_special", "gammaincc")
+gammaincc = CFUNCTYPE(c_double, c_double, c_double)(addr)
+
+addr = get_cython_function_address("scipy.special.cython_special", "gammaln")
+gammaln = CFUNCTYPE(c_double, c_double)(addr)
+
+
+@jit(nopython=True)
+def gamma_LL(logX: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray]):
+    """ Log-likelihood for the optionally censored Gamma distribution. """
+    x = np.exp(logX)
+    glnA = gammaln(x[0])
     outt = 0.0
     for i in range(len(x) - 1):
-        outt -= np.dot(gammas[i] * time_cen[i], gamma.logpdf(gamma_obs[i], a=xx[0], scale=xx[i + 1]))
-        outt -= np.dot(gammas[i] * (1 - time_cen[i]), gammaincc(xx[0], gamma_obs[i] / xx[i + 1]))
+        gobs = gamma_obs[i] / x[i + 1]
+        outt -= np.dot(gammas[i] * time_cen[i], (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[i + 1])
 
+        for j in range(len(time_cen[i])):
+            if time_cen[i][j] == 0.0:
+                outt -= gammas[i][j] * np.log(gammaincc(x[0], gobs[j]))
+
+    if np.isinf(outt):
+        print(x)
+
+    assert np.isfinite(outt)
     return outt
 
 
-def softplus_inv(x):
-    x = np.clip(x, -np.inf, 1000.0)
-    x = x.astype(np.float128)
-    x = np.log(np.exp(x) - 1.0)
-    return x.astype(float)
-
-
-def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray], x0=None):
+def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray], x0: np.ndarray):
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
@@ -64,10 +72,7 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
         assert gamma_obs[i].shape == time_cen[i].shape
         assert gamma_obs[i].shape == gammas[i].shape
 
-    arrgs = (gamma_obs, time_cen, gammas)
-
-    if x0 is None:
-        x0 = np.array([200.0, 0.2, 0.4, 0.6, 0.8])
+    arrgs = (List(gamma_obs), List(time_cen), List(gammas))
 
     if len(gamma_obs) == 4:  # for constrained optimization
         A = np.zeros((3, 5))  # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
@@ -79,6 +84,14 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
     else:
         linc = list()
 
-    res = minimize(nLL_atonce, x0=softplus_inv(x0), args=arrgs, method="trust-constr", constraints=linc)
+    bnd = Bounds(np.full_like(x0, -3.0), np.full_like(x0, 6.0), keep_feasible=True)
+
+    with np.errstate(all='raise'):
+        if len(linc) > 0:
+            res = minimize(gamma_LL, x0=np.log(x0), args=arrgs, bounds=bnd, method="trust-constr", constraints=linc)
+        else:
+            opts = {"maxfev": 1e6, "maxiter": 1e6, "xatol": 1e-7, "fatol": 1e-7}
+            res = minimize(gamma_LL, x0=np.log(x0), args=arrgs, bounds=bnd, method='Nelder-Mead', options=opts)
+
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
-    return softplus(res.x)
+    return np.exp(res.x)
