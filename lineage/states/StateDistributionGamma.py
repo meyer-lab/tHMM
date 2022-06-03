@@ -212,7 +212,7 @@ def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: 
     bern_obs_ = [b[γ_obs[i] >= 0] for i, b in enumerate(bern_obs)]
     γ_obs_ = [g[g >= 0] for i, g in enumerate(γ_obs)]
     gamma_obs_censor_ = [gc[γ_obs[i] >= 0] for i, gc in enumerate(gamma_obs_censor)]
-    gamma_list_ = [gc[γ_obs[i] >= 0] for i, gc in enumerate(gammas_list)]
+    gammas_list_ = [gc[γ_obs[i] >= 0] for i, gc in enumerate(gammas_list)]
 
     for i, item in enumerate(bern_obs_):
         assert item.shape == γ_obs_[i].shape == gamma_obs_censor_[i].shape

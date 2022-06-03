@@ -79,7 +79,7 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
 
     arrgs = (List(gamma_obs_), List(time_cen_), List(gammas_))
 
-    if len(gamma_obs) == 4:  # for constrained optimization
+    if len(gamma_obs_) == 4:  # for constrained optimization
         A = np.zeros((3, 5))  # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)
@@ -89,7 +89,7 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
     else:
         linc = list()
 
-    bnd = Bounds(np.full_like(x0, -2.5), np.full_like(x0, np.log(300)), keep_feasible=True)
+    bnd = Bounds(np.full_like(x0, -3.5), np.full_like(x0, np.log(300)), keep_feasible=True)
 
     with np.errstate(all='raise'):
         if len(linc) > 0:
