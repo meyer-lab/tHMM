@@ -35,23 +35,17 @@ gammaln = CFUNCTYPE(c_double, c_double)(addr)
 
 
 @jit(nopython=True)
-def nLL_atonce(logX: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray]):
-    """ uses the nLL_atonce and passes the vector of scales and the shared shape parameter. """
+def gamma_LL(logX: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray]):
+    """ Log-likelihood for the optionally censored Gamma distribution. """
     x = np.exp(logX)
     glnA = gammaln(x[0])
     outt = 0.0
     for i in range(len(x) - 1):
         gobs = gamma_obs[i] / x[i + 1]
+        outt -= np.dot(gammas[i] * time_cen[i], (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[i + 1])
 
         for j in range(len(time_cen[i])):
-            if time_cen[i][j] == 1.0:
-                # Handle xlogy edge case
-                if (x[0] - 1.0) == 0:
-                    outt -= gammas[i][j] * (0.0 - gobs[j] - glnA - logX[i + 1])
-                else:
-                    outt -= gammas[i][j] * ((x[0] - 1.0) * np.log(gobs[j]) - gobs[j] - glnA - logX[i + 1])
-            else:
-                assert time_cen[i][j] == 0.0
+            if time_cen[i][j] == 0.0:
                 outt -= gammas[i][j] * np.log(gammaincc(x[0], gobs[j]))
 
     if np.isinf(outt):
@@ -104,10 +98,10 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
 
     with np.errstate(all='raise'):
         if len(linc) > 0:
-            res = minimize(nLL_atonce, x0=np.log(x0), args=arrgs, bounds=bnd, method="trust-constr", constraints=linc)
+            res = minimize(gamma_LL, x0=np.log(x0), args=arrgs, bounds=bnd, method="trust-constr", constraints=linc)
         else:
-            opts = {"maxfev": 1e6, "maxiter": 1e6, "xatol": 1e-6, "fatol": 1e-6}
-            res = minimize(nLL_atonce, x0=np.log(x0), args=arrgs, bounds=bnd, method='Nelder-Mead', options=opts)
+            opts = {"maxfev": 1e6, "maxiter": 1e6, "xatol": 1e-7, "fatol": 1e-7}
+            res = minimize(gamma_LL, x0=np.log(x0), args=arrgs, bounds=bnd, method='Nelder-Mead', options=opts)
 
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
     return np.exp(res.x)
