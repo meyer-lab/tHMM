@@ -20,9 +20,9 @@ def makeFigure():
     """
 
     titles = ["Control", "Gemcitabine 5 nM", "Gemcitabine 10 nM", "Gemcitabine 30 nM"]
-    ax, f = getSetup((15, 18), (45, 4))
+    ax, f = getSetup((15, 18), (40, 4))
 
-    for i in range(45):
+    for i in range(40):
         ax[4 * i].axis('off')
         ax[4 * i + 1].axis('off')
         ax[4 * i + 2].axis('off')

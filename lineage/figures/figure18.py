@@ -19,11 +19,11 @@ T = np.array([[0.6, 0.1, 0.1, 0.1, 0.1], [0.05, 0.8, 0.05, 0.05, 0.05], [0.01, 0
 # pi: the initial probability vector
 pi = calculate_stationary(T)
 
-state0 = phaseStateDist(0.7, 0.95, 150, 0.5, 30, 1)
-state1 = phaseStateDist(0.95, 0.9, 120, 0.5, 60, 1)
-state2 = phaseStateDist(0.9, 0.85, 90, 0.5, 90, 1)
-state3 = phaseStateDist(0.99, 0.75, 60, 0.5, 120, 1)
-state4 = phaseStateDist(0.99, 0.75, 30, 0.5, 150, 1)
+state0 = phaseStateDist(0.7, 0.95, 250, 0.2, 50, 0.1)
+state1 = phaseStateDist(0.95, 0.9, 200, 0.2, 100, 0.1)
+state2 = phaseStateDist(0.9, 0.85, 150, 0.2, 150, 0.1)
+state3 = phaseStateDist(0.99, 0.75, 100, 0.2, 200, 0.1)
+state4 = phaseStateDist(0.99, 0.75, 50, 0.2, 250, 0.1)
 E = [state0, state1, state2, state3, state4]
 
 # Creating a list of populations to analyze over
@@ -121,7 +121,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
         ax[i].axhline(paramTrues[0, j, 2], linestyle="--", c="C" + str(j), label="S " + str(j + 1))
     ax[i].set_ylabel(r"Gamma k")
     ax[i].set_title(r"Gamma k G1 Estimation")
-    ax[i].set_ylim([0.0, 180.0])
+    ax[i].set_ylim([0.0, 300.0])
     ax[i].set_xlabel("Number of Cells")
 
     i += 1  # (d) gamma scale G1
@@ -149,7 +149,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
         ax[i].axhline(paramTrues[0, j, 4], linestyle="--", c="C" + str(j), label="S " + str(j + 1))
     ax[i].set_ylabel(r"Gamma k")
     ax[i].set_title(r"Gamma k G2 Estimation")
-    ax[i].set_ylim([0.0, 180.0])
+    ax[i].set_ylim([0.0, 400.0])
     ax[i].set_xlabel("Number of Cells")
 
     i += 1  # (g) gamma scale G2

@@ -554,19 +554,20 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
 def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(num_states):  # lapatinib that has 3 states
-        ax[10].plot(cons, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7)
+        ax[10].plot(cons, lpt_avg[:, i, 0], label="state " + str(i + 1), lw=3, alpha=0.7)
         ax[10].set_title("G1 phase")
-        ax[11].plot(cons, lpt_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7)
+        ax[11].plot(cons, lpt_avg[:, i, 1], label="state " + str(i + 1), lw=3, alpha=0.7)
         ax[11].set_title("S/G2 phase")
-        ax[12].plot(cons, bern_lpt[:, i, 0], label="state " + str(i + 1), alpha=0.7)
+        ax[12].plot(cons, bern_lpt[:, i, 0], label="state " + str(i + 1), lw=3, alpha=0.7)
         ax[12].set_title("G1 phase")
-        ax[13].plot(cons, bern_lpt[:, i, 1], label="state " + str(i + 1), alpha=0.7)
+        ax[13].plot(cons, bern_lpt[:, i, 1], label="state " + str(i + 1), lw=3, alpha=0.7)
         ax[13].set_title("S/G2 phase")
 
     # ylim and ylabel
     for i in range(10, 12):
         ax[i].set_ylabel("Mean Time [hr]")
-        ax[i].set_ylim([0, 6.0])
+    # ax[10].set_ylim([0, 150.0])
+    # ax[11].set_ylim([0, 380.0])
 
     # ylim and ylabel
     for i in range(12, 14):
@@ -594,8 +595,8 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     print(Dname, "\n the \u03C0: ", tHMMobj_list[0].estimate.pi, "\n the transition matrix: ", tHMMobj_list[0].estimate.T)
     for idx, tHMMobj in enumerate(tHMMobj_list):  # for each concentration data
         for i in range(num_states):
-            lpt_avg[idx, i, 0] = np.log10(tHMMobj.estimate.E[i].params[2] * tHMMobj.estimate.E[i].params[3])  # G1
-            lpt_avg[idx, i, 1] = np.log10(tHMMobj.estimate.E[i].params[4] * tHMMobj.estimate.E[i].params[5])  # G2
+            lpt_avg[idx, i, 0] = tHMMobj.estimate.E[i].params[2] * tHMMobj.estimate.E[i].params[3]  # G1
+            lpt_avg[idx, i, 1] = tHMMobj.estimate.E[i].params[4] * tHMMobj.estimate.E[i].params[5]  # G2
             # bernoullis
             for j in range(2):
                 bern_lpt[idx, i, j] = tHMMobj.estimate.E[i].params[j]
@@ -614,7 +615,7 @@ def sort_lins(tHMMobj):
     states = []
     for i in range(num_st):
         st_i = [index for index, val in enumerate(st) if val == i]
-        temp = [tHMMobj.X[k] for k in st_i]
+        temp = [tHMMobj.X[k] for k in st_i[0:15]]
 
         states += temp
 
