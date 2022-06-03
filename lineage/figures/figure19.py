@@ -21,15 +21,13 @@ def makeFigure():
 
     ax[0].plot(desired_num_states, output1)
     ax[0].set_title("lapatinib")
-    # ax[0].set_ylim((0, 500))
     ax[1].plot(desired_num_states, output2)
     ax[1].set_title("gemcitabine")
-    # ax[1].set_ylim((0, 500))
     return f
 
 def output_LL(complete_population):
     # create training data by hiding 20% of cells in each lineage
-    train_population, hidden_indexes, hidden_obs = hide_for_population(complete_population, 0.25)
+    train_population, hidden_indexes, hidden_obs = hide_for_population(complete_population, 0.2)
     # Copy out data to full set
     dataFull = []
     for _ in desired_num_states:
