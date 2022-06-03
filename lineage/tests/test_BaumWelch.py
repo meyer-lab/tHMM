@@ -50,11 +50,11 @@ def test_E_step(cens):
     # pi: the initial probability vector
     pi = calculate_stationary(T)
 
-    state0 = phaseStateDist(0.99, 0.95, 50, 0.2, 100, 0.1)
-    state1 = phaseStateDist(0.95, 0.9, 75, 0.2, 150, 0.1)
-    state2 = phaseStateDist(0.9, 0.85, 100, 0.2, 200, 0.1)
-    state3 = phaseStateDist(0.92, 0.95, 150, 0.2, 250, 0.1)
-    state4 = phaseStateDist(0.99, 0.85, 200, 0.2, 300, 0.1)
+    state0 = phaseStateDist(0.99, 0.95, 50, 0.5, 20, 2)
+    state1 = phaseStateDist(0.95, 0.9, 75, 0.5, 25, 2)
+    state2 = phaseStateDist(0.9, 0.85, 100, 0.5, 30, 2)
+    state3 = phaseStateDist(0.92, 0.95, 150, 0.5, 35, 2)
+    state4 = phaseStateDist(0.99, 0.85, 200, 0.5, 40, 2)
     E = [state0, state1, state2, state3, state4]
     population = []
     for _ in range(200):
@@ -81,7 +81,7 @@ def test_M_step(cens):
     """ The M step of the BW. check the emission parameters if the true states are given. """
 
     population = []
-    for _ in range(100):
+    for _ in range(500):
         # make sure we have enough cells in the lineage.
         X = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=(2 ** 5) - 1, desired_experimental_time=100, censor_condition=cens)
         while len(X.output_lineage) < 4:
