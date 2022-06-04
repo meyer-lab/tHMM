@@ -3,7 +3,7 @@ import numpy as np
 import scipy.stats as sp
 from typing import Union
 
-from .stateCommon import gamma_estimator, basic_censor
+from .stateCommon import gamma_estimator, basic_censor, bern_estimator
 from ..CellVar import Time
 
 
@@ -82,20 +82,11 @@ class StateDistribution:
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
 
-        b_mask = np.isfinite(bern_obs)
         # Both unoberved and dead cells should be removed from gamma
         g_mask = np.logical_and(np.isfinite(γ_obs), bern_obs.astype('bool'))
         assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
-        # Handle an empty state
-        if np.sum(gammas[b_mask]) == 0.0:
-            self.params[0] = np.average(bern_obs[b_mask])
-        else:
-            self.params[0] = np.average(bern_obs[b_mask], weights=gammas[b_mask])
-
-        # Don't allow Bernoulli to hit extremes
-        self.params[0] = np.clip(self.params[0], 0.00001, 0.99999)
-
+        self.params[0] = bern_estimator(bern_obs, gammas)
         self.params[1], self.params[2] = gamma_estimator([γ_obs[g_mask]], [gamma_obs_censor[g_mask]], [gammas[g_mask]], self.params[1:3])
 
         # } requires the user's attention.
@@ -217,15 +208,7 @@ def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: 
     for i, item in enumerate(bern_obs_):
         assert item.shape == γ_obs_[i].shape == gamma_obs_censor_[i].shape
 
-    b_masks = [np.isfinite(bern_) for bern_ in bern_obs_]
-
-    bern_params = np.zeros(4)
-    for i, b_mask in enumerate(b_masks):
-        # Handle an empty state
-        if np.sum(gammas_list_[i][b_mask]) == 0.0:
-            bern_params[i] = np.average(bern_obs_[i][b_mask])
-        else:
-            bern_params[i] = np.average(bern_obs_[i][b_mask], weights=gammas_list_[i][b_mask])
+    bern_params = [bern_estimator(bern_obs_[i], gammas_list_[i]) for i in range(len(gammas_list_))]
 
     # Both unoberved and dead cells should be removed from gamma
     g_masks = [np.logical_and(np.isfinite(γ_o), berns.astype('bool')) for γ_o, berns in zip(γ_obs_, bern_obs_)]

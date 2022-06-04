@@ -28,6 +28,18 @@ def basic_censor(cell):
                 cell.get_sister().right.observed = False
 
 
+def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
+    """A weighted estimator for a Bernoulli distribution."""
+    assert bern_obs.shape == gammas.shape
+    assert bern_obs.dtype == float
+    assert gammas.dtype == float
+
+    # Add a pseudocount
+    numerator = np.sum(gammas[bern_obs == 1.0]) + 1.0
+    denominator = np.sum(gammas[np.isfinite(bern_obs)]) + 2.0
+    return numerator / denominator
+
+
 addr = get_cython_function_address("scipy.special.cython_special", "gammaincc")
 gammaincc = CFUNCTYPE(c_double, c_double, c_double)(addr)
 
