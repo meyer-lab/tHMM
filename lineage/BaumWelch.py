@@ -88,7 +88,7 @@ def do_M_step(tHMMobj: list, MSD: list, betas: list, gammas: list):
         assert tHMMobj[0].fT is None
         T = do_M_T_step(tHMMobj, MSD, betas, gammas)
 
-        # all the objects in the population have the same T
+        # Transition matrix
         for jj, t in enumerate(tHMMobj):
             t.estimate.T = T[jj]
 
@@ -98,13 +98,15 @@ def do_M_step(tHMMobj: list, MSD: list, betas: list, gammas: list):
     elif tHMMobj[0].estimate.fpi is True:
         # True indicates that pi should be set based on the stationary distribution of T
         assert tHMMobj[0].fpi is True
-        pi = calculate_stationary(tHMMobj[0].estimate.T)
+        pi = []
+        for tt in tHMMobj:
+            pi.append(calculate_stationary(tt.estimate.T))
     else:
-        pi = tHMMobj[0].fpi
+        pi = [tHMMobj[0].fpi]
 
     # all the objects in the population have the same pi
-    for t in tHMMobj:
-        t.estimate.pi = pi
+    for i, t in enumerate(tHMMobj):
+        t.estimate.pi = pi[i]
 
     if tHMMobj[0].estimate.fE is None:
         assert tHMMobj[0].fE is None
@@ -125,13 +127,16 @@ def do_M_pi_step(tHMMobj, gammas: list) -> np.ndarray:
     :type tHMMobj: object
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
     """
-    pi_e = np.zeros(tHMMobj[0].num_states, dtype=float)
+    pi_all = []
     for i, tt in enumerate(tHMMobj):
+        pi_e = np.zeros(tt.num_states, dtype=float)
         for num in range(len(tt.X)):
             # local pi estimate
             pi_e += gammas[i][num][0, :]
+        pi_e /= np.sum(pi_e)
+        pi_all.append(pi_e)
 
-    return pi_e / np.sum(pi_e)
+    return pi_all
 
 
 def do_M_T_step(tHMMobj, MSD: list, betas: list, gammas: list) -> list:

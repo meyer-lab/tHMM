@@ -8,9 +8,10 @@ from ..UpwardRecursion import (
 )
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
+from ..BaumWelch import calculate_stationary
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
-from ..figures.common import pi, T, E
-from ..Analyze import Analyze, Results, run_Analyze_over
+from ..figures.common import pi, T, E, E2
+from ..Analyze import Analyze, Results, run_Analyze_over, Analyze_list
 
 
 class TestModel(unittest.TestCase):
@@ -126,3 +127,21 @@ def test_BIC():
         for idx in range(len(desired_num_states)):
             BIC, _ = output[idx][0].get_BIC(output[idx][1], nums)
             assert np.argmin(BIC) == 0
+
+def test_multiT():
+    """ Test the model runs successfully with atonce fitting with each condition having its own transition matrix. """
+    T1 = np.array([[0.99, 0.01], [0.01, 0.99]])
+    T2 = np.array([[0.8, 0.2], [0.2, 0.8]])
+    T3 = np.array([[0.5, 0.5], [0.5, 0.5]])
+    T4 = np.array([[0.6, 0.4], [0.1, 0.9]])
+    T = [T1, T2, T3, T4]
+    pi = []
+    for t in T:
+        pi.append(calculate_stationary(t))
+    
+    lins = [[LineageTree.init_from_parameters(pi[i], T[i], E2, desired_num_cells=(2 ** 6) - 1, desired_experimental_time=150, censor_condition=3) for _ in range(60)] for i in range(4)]
+    tHMMobj, _ = Analyze_list(lins, num_states=2)
+
+    for i in range(4):
+        np.testing.assert_allclose(T[i], tHMMobj[i].estimate.T, atol=0.2)
+        np.testing.assert_allclose(pi[i], tHMMobj[i].estimate.pi, atol=0.2)
