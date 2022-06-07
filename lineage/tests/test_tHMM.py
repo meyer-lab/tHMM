@@ -11,7 +11,7 @@ from ..tHMM import tHMM
 from ..BaumWelch import calculate_stationary
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
 from ..figures.common import pi, T, E, E2
-from ..Analyze import Analyze, Results, run_Analyze_over, Analyze_list
+from ..Analyze import Analyze, Results, run_Analyze_over, Analyze_list, cheat, permute_states
 
 
 class TestModel(unittest.TestCase):
@@ -142,6 +142,9 @@ def test_multiT():
     lins = [[LineageTree.init_from_parameters(pi[i], T[i], E2, desired_num_cells=(2 ** 6) - 1, desired_experimental_time=150, censor_condition=3) for _ in range(60)] for i in range(4)]
     tHMMobj, _ = Analyze_list(lins, num_states=2)
 
-    for i in range(4):
-        np.testing.assert_allclose(T[i], tHMMobj[i].estimate.T, atol=0.2)
-        np.testing.assert_allclose(pi[i], tHMMobj[i].estimate.pi, atol=0.2)
+    for i, th in enumerate(tHMMobj):
+        switcher_map = cheat(th)
+        th, _ = permute_states(th, switcher_map)
+
+        np.testing.assert_allclose(T[i], th.estimate.T, rtol=1.0, atol=0.2)
+        np.testing.assert_allclose(pi[i], th.estimate.pi, rtol=1.0, atol=0.2)
