@@ -101,7 +101,7 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
 #     else:
 #         linc = list()
 
-    bnd = Bounds(np.full_like(x0, -3.5), np.full_like(x0, np.log(300)), keep_feasible=True)
+    bnd = Bounds(np.full_like(x0, -3.5), np.full_like(x0, 6.0), keep_feasible=False)
 
 #     with np.errstate(all='raise'):
 #         if len(linc) > 0:
