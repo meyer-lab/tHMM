@@ -86,27 +86,24 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
 
     arrgs = (List(gamma_obs), List(time_cen), List(gammas))
 
-    # if len(gamma_obs) == 4:  # for constrained optimization
-    #     A = np.zeros((3, 5))  # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
-    #     np.fill_diagonal(A[:, 1:], -1.0)
-    #     np.fill_diagonal(A[:, 2:], 1.0)
-    #     linc = [LinearConstraint(A, lb=np.zeros(3), ub=np.full(3, np.inf))]
-    #     if np.allclose(np.dot(A, x0), 0.0):
-    #         x0 = np.array([200.0, 0.2, 0.4, 0.6, 0.8])
-    # else:
-    #     linc = list()
-
-    if len(gamma_obs) == 4:
-        bnd = Bounds(np.log(np.array([1.0, 0.001, 0.001, 0.001, 0.001])), np.log(np.array([300.0, 10.0, 10.0, 10.0, 10.0])), keep_feasible=True)
+    if len(gamma_obs) == 4:  # for constrained optimization
+        A = np.zeros((3, 5))  # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
+        np.fill_diagonal(A[:, 1:], -1.0)
+        np.fill_diagonal(A[:, 2:], 1.0)
+        linc = [LinearConstraint(A, lb=np.zeros(3), ub=np.full(3, np.inf))]
+        if np.allclose(np.dot(A, x0), 0.0):
+            x0 = np.array([200.0, 0.2, 0.4, 0.6, 0.8])
     else:
-        bnd = Bounds(np.full_like(x0, -3.5), np.full_like(x0, np.log(300)), keep_feasible=True)
+        linc = list()
+
+    bnd = Bounds(np.full_like(x0, -2.5), np.full_like(x0, 10.0), keep_feasible=False)
 
     with np.errstate(all='raise'):
-        # if len(linc) > 0:
-        #     res = minimize(gamma_LL, x0=np.log(x0), args=arrgs, bounds=bnd, method="trust-constr", constraints=linc)
-        # else:
-        opts = {"maxfev": 1e6, "maxiter": 1e6, "xatol": 1e-7, "fatol": 1e-7}
-        res = minimize(gamma_LL, x0=np.log(x0), args=arrgs, bounds=bnd, method='Nelder-Mead', options=opts)
+        if len(linc) > 0:
+            res = minimize(gamma_LL, x0=np.log(x0), args=arrgs, bounds=bnd, method="trust-constr", constraints=linc)
+        else:
+            opts = {"maxfev": 1e6, "maxiter": 1e6, "xatol": 1e-7, "fatol": 1e-7}
+            res = minimize(gamma_LL, x0=np.log(x0), args=arrgs, bounds=bnd, method='Nelder-Mead', options=opts)
 
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
     return np.exp(res.x)
