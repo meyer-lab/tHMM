@@ -9,7 +9,12 @@ from .Analyze import run_Analyze_over
 
 def hide_observation(lineages: list, percentage: float) -> Tuple[list, list, list]:
     """ Taking a list of lineages and the percentage of cells want to be masked, it marks those x% as -1.
-    We mark a random number of cells' observations as negative, to be removed from fitting."""
+    This x% is selected from all cells and all lineages together such that we create a list of all cells in a population, hide x% and then regroup to their lineages.
+    We mark a random number of cells' observations as negative, to be removed from fitting.
+    :return new_lineages: list of lineages in which x% of cells were randomly masked. This forms our train lineages.
+    :return new_hide_index: list of arrays, each array corresponding to indexes of masked cells in each lineage.
+    :return obss: Those observations that have been masked, which are technically the test data.
+    """
 
     new_lineages = deepcopy(lineages)
     num_cells = 0
@@ -24,7 +29,7 @@ def hide_observation(lineages: list, percentage: float) -> Tuple[list, list, lis
     hide_index = shuffle(hide_index)
 
     # to partition the hide_index (which is an array that has all cells in all lineages together) 
-    # for each lineage as a list of arrays, each array for each lineage
+    # each array for each lineage
     prev = 0
     new_hide_index = []
     for i in len_lineage:
@@ -45,8 +50,9 @@ def hide_observation(lineages: list, percentage: float) -> Tuple[list, list, lis
 
     return new_lineages, new_hide_index, obss
 
-def hide_for_population(complete_lineages, perc):
-    """ Use the hide_obsrvation function for a population of cells. """
+def hide_for_population(complete_lineages: list, perc: float) -> Tuple[list, list, list]:
+    """ Use the hide_obsrvation function for a population of cells. 
+    This is used for running the cross validation for parallel fitting that we create list of list of lineages."""
 
     train_population, hidden_indexes, hidden_obs = [], [], []
     for complete_lin in complete_lineages:
@@ -58,11 +64,12 @@ def hide_for_population(complete_lineages, perc):
 
 
 def crossval(train_populations: list, hidden_indexes: list, hidden_obs: list, num_states: np.array):
-    """ Perform cross validation for a drug treated population.
-    train_populations: the populations after applying hide_observation.
-    hidden_indexes: is a list of list of np.arrays for each lineage, 
+    """ Perform cross validation for the experimental data which runs in parallel for all states.
+    :param train_populations: the populations after applying hide_observation. This includes the list of list of lineages.
+    :param hidden_indexes: is a list of list of np.arrays for each lineage, 
     filled with zeros and ones. ones refer to the index of those cells that have been hidden.
-    hidden_obs: list of list of tuples of observations that have been masked in the train_lineage.
+    :param hidden_obs: list of list of tuples of observations that have been masked in the train_lineage.
+    :param num_states: is a range of states we want to run the cross validation for.
     """
 
     # fit training data
@@ -72,7 +79,7 @@ def crossval(train_populations: list, hidden_indexes: list, hidden_obs: list, nu
         tHMMobj_list_states.append(out[0])
 
     # predict states of hidden cells
-    # states_list: len(states_list) = num_states, len(each states_list[i]) = 
+    # states_list: len(states_list) = num_states
     states_list = [[tHMMobj.predict() for tHMMobj in tHMMobj_list] for tHMMobj_list in tHMMobj_list_states]
 
     # calculate the likelihood of observations of masked cells to their assigned state
