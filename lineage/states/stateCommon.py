@@ -97,7 +97,7 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
         np.fill_diagonal(A[:, 2:], 1.0)
         linc = [LinearConstraint(A, lb=np.zeros(3), ub=np.full(3, np.inf))]
         if np.allclose(np.dot(A, x0), 0.0):
-            x0 = np.array([50.0, 0.5, 1.0, 1.5, 2.0])
+            x0 = np.array([200.0, 0.5, 0.2, 0.4, 0.6, 0.8])
     else:
         linc = list()
 
