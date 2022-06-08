@@ -66,6 +66,10 @@ def get_nonleaf_deltas(tHMMobj, deltas: list, state_ptrs: list):
 def get_delta_parent_child_prod(lineage: list, delta_array: np.ndarray, T: np.ndarray, node_parent_m_idx: int) -> Tuple[np.ndarray, list]:
     """
     Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.
+    In these set of functions
+    state pointer is an array of size K, that holds the state number with the highest probability in each row of the max_holder.
+    max_holder is a matrix of size K x K that initially starts from T, and gets updated.
+    delta_m_n_holder is a vector of size K that has the highest of those probabilities.
 
     :param lineage: A list containing cells (which are objects with their own properties).
     :param delta_array: A N by K matrix containing the delta values that will be used in Viterbi.
