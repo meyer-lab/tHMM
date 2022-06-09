@@ -1,14 +1,13 @@
 """ Test cross validation. """
 import numpy as np
 import pytest
-from ..LineageTree import LineageTree
-from ..figures.common import pi, T, E2
 from ..crossval import hide_observation, crossval
+from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 
 
 def test_hide_obs():
     """Test that we are correctly hiding observations."""
-    complete_lineages = [LineageTree.init_from_parameters(pi, T, E2, 31) for _ in range(10)]
+    complete_lineages = Lapatinib_Control[:5] + Gemcitabine_Control[:5] + Lapt25uM[:10] + Lapt50uM[:10] + Lap250uM[:10]
 
     train_lineages = hide_observation(complete_lineages, 0.25)
 
@@ -21,10 +20,9 @@ def test_hide_obs():
 
     assert 0.2 <= negatives / total <= 0.3
 
-@pytest.mark.parametrize("cen", [0, 3])
-def test_cv(cen):
-    complete_lineages = [[LineageTree.init_from_parameters(pi, T, E2, 31, censored_condition=cen, desired_experiment_time=150) for _ in range(50)] for _ in range(4)]
+def test_cv():
 
+    complete_lineages = [Lapatinib_Control[:5] + Gemcitabine_Control[:5], Lapt25uM[:10], Lapt50uM[:10], Lap250uM[:10]]
     train_lineages = [hide_observation(complete_lin, 0.25) for complete_lin in complete_lineages]
 
     dataFull = []
