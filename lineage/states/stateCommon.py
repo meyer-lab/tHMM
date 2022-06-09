@@ -57,9 +57,21 @@ def gamma_LL(logX: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.nd
         gobs = gamma_obs[i] / x[i + 1]
         outt -= np.dot(gammas[i] * time_cen[i], (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[i + 1])
 
+        if np.isinf(outt):
+            print(x)
+
+        assert np.isfinite(outt)
+
         for j in range(len(time_cen[i])):
             if time_cen[i][j] == 0.0:
                 outt -= gammas[i][j] * np.log(gammaincc(x[0], gobs[j]))
+
+                if np.isinf(outt):
+                    print("gammaincc")
+                    print(x[0])
+                    print(gobs[j])
+
+        # TODO: Eventually remove the extra output here.
 
     if np.isinf(outt):
         print(x)
