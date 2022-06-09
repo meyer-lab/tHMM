@@ -1,7 +1,7 @@
 """ To plot a summary of cross validation. """
 from .common import getSetup
 import numpy as np
-from ..CrossVal import hide_for_population, crossval
+from ..crossval import hide_observation, crossval
 from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 
 desired_num_states = np.arange(1, 8)
@@ -27,10 +27,10 @@ def makeFigure():
 
 def output_LL(complete_population):
     # create training data by hiding 20% of cells in each lineage
-    train_population, hidden_indexes, hidden_obs = hide_for_population(complete_population, 0.2)
+    train_population = [hide_observation(complete_pop, 0.2) for complete_pop in complete_population]
     # Copy out data to full set
     dataFull = []
     for _ in desired_num_states:
         dataFull.append(train_population)
 
-    return crossval(dataFull, hidden_indexes, hidden_obs, desired_num_states)
+    return crossval(dataFull, desired_num_states)
