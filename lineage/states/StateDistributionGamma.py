@@ -68,7 +68,8 @@ class StateDistribution:
         # Update for observed Bernoulli
         ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
 
-        ll[x[:, 0] < 0] = 0.0
+        # Make sure censored values are censored
+        ll[x[:, 1] < 0] = 0.0
 
         return np.exp(ll)
 
@@ -82,12 +83,18 @@ class StateDistribution:
         γ_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
 
+        # remove negative observations from fitting
+        bern_obs_ = bern_obs[γ_obs >= 0]
+        γ_obs_ = γ_obs[γ_obs >= 0]
+        gamma_obs_censor_ = gamma_obs_censor[γ_obs >= 0]
+        gammas_ = gammas[γ_obs >= 0]
+
         # Both unoberved and dead cells should be removed from gamma
-        g_mask = np.logical_and(np.isfinite(γ_obs), bern_obs.astype('bool'))
+        g_mask = np.logical_and(np.isfinite(γ_obs_), bern_obs_.astype('bool'))
         assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
         self.params[0] = bern_estimator(bern_obs, gammas)
-        self.params[1], self.params[2] = gamma_estimator([γ_obs[g_mask]], [gamma_obs_censor[g_mask]], [gammas[g_mask]], self.params[1:3])
+        self.params[1], self.params[2] = gamma_estimator([γ_obs_[g_mask]], [gamma_obs_censor_[g_mask]], [gammas_[g_mask]], self.params[1:3])
 
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
