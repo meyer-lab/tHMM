@@ -64,7 +64,9 @@ def gamma_LL(logX: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.nd
 
         for j in range(len(time_cen[i])):
             if time_cen[i][j] == 0.0:
-                outt -= gammas[i][j] * np.log(gammaincc(x[0], gobs[j]))
+                gamP = gammaincc(x[0], gobs[j])
+                gamP = np.clip(gamP, 1e-60, np.inf) # Clip if the probability hits exactly 0
+                outt -= gammas[i][j] * np.log(gamP)
 
                 if np.isinf(outt):
                     print("gammaincc")
