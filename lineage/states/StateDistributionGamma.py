@@ -45,7 +45,7 @@ class StateDistribution:
         """
         return 3
 
-    def pdf(self, x: np.ndarray, num_states):
+    def pdf(self, x: np.ndarray):
         """ User-defined way of calculating the likelihood of the observation stored in a cell.
         In the case of a univariate observation, the user still has to define how the likelihood is calculated,
         but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
