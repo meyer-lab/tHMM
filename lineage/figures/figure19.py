@@ -4,7 +4,7 @@ import numpy as np
 from ..crossval import hide_observation, crossval
 from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 
-desired_num_states = np.arange(1, 8)
+desired_num_states = np.arange(1, 5)
 
 def makeFigure():
     """
@@ -27,10 +27,10 @@ def makeFigure():
 
 def output_LL(complete_population):
     # create training data by hiding 20% of cells in each lineage
-    # train_population = [hide_observation(complete_pop, 0.25) for complete_pop in complete_population]
+    train_population = [hide_observation(complete_pop, 0.25) for complete_pop in complete_population]
     # Copy out data to full set
     dataFull = []
     for _ in desired_num_states:
-        dataFull.append(complete_population)
+        dataFull.append(train_population)
 
     return crossval(dataFull, desired_num_states)
