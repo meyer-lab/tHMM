@@ -48,7 +48,7 @@ gammaln = CFUNCTYPE(c_double, c_double)(addr)
 
 
 @jit(nopython=True)
-def gamma_LL(logX: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray]):
+def gamma_LL(logX: np.ndarray, gamma_obs: List[np.ndarray], time_cen: List[np.ndarray], gammas: List[np.ndarray]):
     """ Log-likelihood for the optionally censored Gamma distribution. """
     x = np.exp(logX)
     glnA = gammaln(x[0])
@@ -68,7 +68,7 @@ def gamma_LL(logX: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.nd
 
 
 @jit(nopython=True)
-def gamma_LL_diff(x0: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray]):
+def gamma_LL_diff(x0: np.ndarray, gamma_obs: List[np.ndarray], time_cen: List[np.ndarray], gammas: List[np.ndarray]):
     """ Finite differencing of objective function. """
     f0 = gamma_LL(x0, gamma_obs, time_cen, gammas)
     grad = np.empty(x0.size)
@@ -77,8 +77,8 @@ def gamma_LL_diff(x0: np.ndarray, gamma_obs: list[np.ndarray], time_cen: list[np
     for i in range(x0.size):
         x = np.copy(x0)
         x[i] += dx
-        df = gamma_LL(x, gamma_obs, time_cen, gammas) - f0
-        grad[i] = df / dx
+        fdx = gamma_LL(x, gamma_obs, time_cen, gammas)
+        grad[i] = (fdx - f0) / dx
 
     return f0, grad
 
