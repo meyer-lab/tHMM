@@ -1,8 +1,6 @@
 """ Cross validation. """
-import numpy as np
-from sklearn.utils import shuffle
+from scipy.stats import bernoulli
 from copy import deepcopy
-import itertools as it
 
 def hide_observation(lineages: list, percentage: float) -> list:
     """ Taking a list of lineages and the percentage of cells want to be masked, it marks those x% as -1.
@@ -14,32 +12,13 @@ def hide_observation(lineages: list, percentage: float) -> list:
     """
 
     new_lineages = deepcopy(lineages)
-    num_cells = 0
-    len_lineage = [] # remember the length of each lineage
-    for lin in lineages:
-        num_cells += len(lin.output_lineage)
-        len_lineage.append(len(lin.output_lineage))
-
-    # create the indexes for hidden observations
-    hide_index = np.zeros(num_cells)
-    hide_index[:int(num_cells*percentage)] = 1
-    hide_index = shuffle(hide_index)
-
-    # to partition the hide_index (which is an array that has all cells in all lineages together) 
-    # each array for each lineage
-    prev = 0
-    new_hide_index = []
-    for i in len_lineage:
-        new_hide_index.append(hide_index[prev:prev+i])
-        prev += i
 
     for i, new_lineage in enumerate(new_lineages):
-        tmp1 = []
         for ix, cell in enumerate(new_lineage.output_lineage):
-            if new_hide_index[i][ix] == 1: # means we hide the cell lifetime
-                tmp1.append(cell.obs)
+
+            bern = bernoulli.rvs(p=0.25, size=1)
+            if bern == 1:
                 # negate the cell observations at those specific indexes
                 cell.obs = [-1 * o for o in cell.obs]
-
 
     return new_lineages
