@@ -34,16 +34,13 @@ def hide_observation(lineages: list, percentage: float) -> Tuple[list, list, lis
         new_hide_index.append(hide_index[prev:prev+i])
         prev += i
 
-    obss = [] # save those observations that will be masked
     for i, new_lineage in enumerate(new_lineages):
         tmp1 = []
         for ix, cell in enumerate(new_lineage.output_lineage):
             if new_hide_index[i][ix] == 1: # means we hide the cell lifetime
                 tmp1.append(cell.obs)
-                cell.obs = -1 * np.ones(len(cell.obs))
-        obss.append(tmp1)
+                # negate the cell observations at those specific indexes
+                cell.obs = [-1 * o for o in cell.obs]
 
-    for i, ob in enumerate(obss):
-        assert np.sum(new_hide_index[i]) == len(ob)
 
-    return new_lineages, new_hide_index, obss
+    return new_lineages
