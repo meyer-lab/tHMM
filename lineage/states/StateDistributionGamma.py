@@ -45,7 +45,7 @@ class StateDistribution:
         """
         return 3
 
-    def pdf(self, x: np.ndarray, num_states=2):
+    def pdf(self, x: np.ndarray):
         """ User-defined way of calculating the likelihood of the observation stored in a cell.
         In the case of a univariate observation, the user still has to define how the likelihood is calculated,
         but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
@@ -68,7 +68,7 @@ class StateDistribution:
         # Update for observed Bernoulli
         ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
 
-        ll[x[:, 0] == -1] = np.log(1/num_states)
+        ll[x[:, 0] < 0] = 0.0
 
         return np.exp(ll)
 
