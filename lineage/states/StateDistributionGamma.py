@@ -68,7 +68,7 @@ class StateDistribution:
         # Update for observed Bernoulli
         ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
 
-        ll[x[:, 0] < 0] = 0.0
+        ll[x[:, 1] < 0] = 0.0
 
         return np.exp(ll)
 
