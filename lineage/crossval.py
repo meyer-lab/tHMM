@@ -3,9 +3,8 @@ import numpy as np
 from sklearn.utils import shuffle
 from copy import deepcopy
 import itertools as it
-from typing import Tuple
 
-def hide_observation(lineages: list, percentage: float) -> Tuple[list, list, list]:
+def hide_observation(lineages: list, percentage: float) -> list:
     """ Taking a list of lineages and the percentage of cells want to be masked, it marks those x% as -1.
     This x% is selected from all cells and all lineages together such that we create a list of all cells in a population, hide x% and then regroup to their lineages.
     We mark a random number of cells' observations as negative, to be removed from fitting.
