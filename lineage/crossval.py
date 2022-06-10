@@ -25,7 +25,6 @@ def crossval(train_populations: list, num_states: np.array):
     :param hidden_obs: list of list of tuples of observations that have been masked in the train_lineage.
     :param num_states: is a range of states we want to run the cross validation for.
     """
-
     # fit training data by parallel.
     output = run_Analyze_over(train_populations, num_states, atonce=True)
     # save the tHMMobj for each number of states that is being run

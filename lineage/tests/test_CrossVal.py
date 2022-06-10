@@ -4,7 +4,6 @@ import pytest
 from ..LineageTree import LineageTree
 from ..figures.common import pi, T, E2
 from ..crossval import hide_observation, crossval
-from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 
 
 def test_hide_obs():

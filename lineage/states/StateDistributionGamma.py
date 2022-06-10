@@ -75,7 +75,6 @@ class StateDistribution:
 
     def pdf(self, x: np.ndarray):
         """calculates the likelihood of observations to their states."""
-
         return np.exp(self.logpdf(x))
 
     def estimator(self, X: list, gammas: np.ndarray):
