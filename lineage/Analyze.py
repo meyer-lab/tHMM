@@ -23,7 +23,7 @@ def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, float]:
     :return st: The nested list of states assigned to cells, with the order of cells from root to leaf in each lineage, and generation.
     :return LL: The log-likelihood of the fitted model.
     """
-    tHMMobj_list, LL = Analyze_list([X], num_states, **kwargs)
+    tHMMobj_list, LL, _ = Analyze_list([X], num_states, **kwargs)
     return tHMMobj_list[0], LL
 
 
@@ -37,17 +37,18 @@ def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list
     """
 
     tHMMobj_list = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
-    _, _, _, _, LL = fit_list(tHMMobj_list)
+    _, _, _, gammas, LL = fit_list(tHMMobj_list)
 
     for _ in range(5):
         tHMMobj_list2 = [tHMM(X, num_states=num_states, **kwargs) for X in Population_list]  # build the tHMM class with X
-        _, _, _, _, LL2 = fit_list(tHMMobj_list2)
+        _, _, _, gammas2, LL2 = fit_list(tHMMobj_list2)
 
         if LL2 > LL:
             tHMMobj_list = tHMMobj_list2
             LL = LL2
+            gammas = gammas2
 
-    return tHMMobj_list, LL
+    return tHMMobj_list, LL, gammas
 
 
 def run_Analyze_over(list_of_populations: list, num_states: np.ndarray, parallel=True, atonce=False, **kwargs) -> list:
