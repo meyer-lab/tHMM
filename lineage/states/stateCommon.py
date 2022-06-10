@@ -60,7 +60,7 @@ def gamma_LL(logX: np.ndarray, gamma_obs: List[np.ndarray], time_cen: List[np.nd
         for j in range(len(time_cen[i])):
             if time_cen[i][j] == 0.0:
                 gamP = gammaincc(x[0], gobs[j])
-                gamP = np.maximum(gamP, 1e-60) # Clip if the probability hits exactly 0
+                gamP = np.maximum(gamP, 1e-60)  # Clip if the probability hits exactly 0
                 outt -= gammas[i][j] * np.log(gamP)
 
     assert np.isfinite(outt)
