@@ -13,7 +13,7 @@ class StateDistribution:
     """
 
     def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=4.5):
-        """ Initialization function should take in just in the parameters
+        """Initialization function should take in just in the parameters
         for the observations that comprise the multivariate random variable emission they expect their data to have.
         In this case, we used Gamma distribution for cell lifetime, which has 2 parameters; shape and scale.
         And we used bernoulli distribution for cell lifetime, which has 1 parameter.
@@ -21,7 +21,7 @@ class StateDistribution:
         self.params = np.array([bern_p, gamma_a, gamma_scale])
 
     def rvs(self, size: int):  # user has to identify what the multivariate (or univariate) random variable looks like
-        """ User-defined way of calculating a random variable given the parameters of the state stored in their object. """
+        """User-defined way of calculating a random variable given the parameters of the state stored in their object."""
         # {
         bern_obs = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
         gamma_obs = sp.gamma.rvs(a=self.params[1], scale=self.params[2], size=size)  # gamma observations
@@ -31,7 +31,7 @@ class StateDistribution:
         return bern_obs, gamma_obs, gamma_obs_censor
 
     def dist(self, other):
-        """ Calculate the Wasserstein distance between two gamma distributions that each correspond to a state.
+        """Calculate the Wasserstein distance between two gamma distributions that each correspond to a state.
         This is our way of calculating the distance between two state, when their bernoulli distribution is kept the same.
         For more information about wasserstein distance, please see https://en.wikipedia.org/wiki/Wasserstein_metric.
         """
@@ -40,19 +40,19 @@ class StateDistribution:
         return dist
 
     def dof(self):
-        """ Return the degrees of freedom.
+        """Return the degrees of freedom.
         In this case, each state has 1 bernoulli distribution parameter, and 2 gamma distribution parameters.
         """
         return 3
 
-    def pdf(self, x: np.ndarray):
-        """ User-defined way of calculating the likelihood of the observation stored in a cell.
+    def logpdf(self, x: np.ndarray):
+        """User-defined way of calculating the log likelihood of the observation stored in a cell.
         In the case of a univariate observation, the user still has to define how the likelihood is calculated,
         but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
         In the case of a multivariate observation, the user has to decide how the likelihood is calculated.
         In our example, we assume the observation's are uncorrelated across the dimensions (across the different
-        distribution observations), so the likelihood of observing the multivariate observation is just the product of
-        the individual observation likelihoods.
+        distribution observations), so the total log likelihood of observing the multivariate observation is just the sum of
+        the individual observation log likelihoods.
         """
         ll = np.zeros(x.shape[0])
 
@@ -68,13 +68,13 @@ class StateDistribution:
         # Update for observed Bernoulli
         ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
 
-        # Make sure censored values are censored
+        # Log likelihood of negative values should be zero
         ll[x[:, 1] < 0] = 0.0
 
-        return np.exp(ll)
+        return ll
 
     def estimator(self, X: list, gammas: np.ndarray):
-        """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
+        """User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells."""
 
         # getting the observations as individual lists
         # {
@@ -90,7 +90,7 @@ class StateDistribution:
         gammas_ = gammas[γ_obs >= 0]
 
         # Both unoberved and dead cells should be removed from gamma
-        g_mask = np.logical_and(np.isfinite(γ_obs_), bern_obs_.astype('bool'))
+        g_mask = np.logical_and(np.isfinite(γ_obs_), bern_obs_.astype("bool"))
         assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
         self.params[0] = bern_estimator(bern_obs, gammas)
@@ -185,7 +185,7 @@ def time_censor(cell, desired_experiment_time: Union[int, float]):
     """
     if cell.time.endT > desired_experiment_time:
         cell.time.endT = desired_experiment_time
-        cell.obs[0] = float('nan')
+        cell.obs[0] = float("nan")
         cell.obs[1] = desired_experiment_time - cell.time.startT
         cell.obs[2] = 0  # censored
         if not cell.isLeafBecauseTerminal():
@@ -195,9 +195,9 @@ def time_censor(cell, desired_experiment_time: Union[int, float]):
 
 
 def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: str, state_j: int):
-    """ Estimating the parameters for one state, in this case bernoulli nad gamma distirbution parameters,
+    """Estimating the parameters for one state, in this case bernoulli nad gamma distirbution parameters,
     given a list of the tuples of observations from a group of cells.
-    gammas_list is only for one state. """
+    gammas_list is only for one state."""
     # unzipping the list of tuples
     x_data = [np.array(x) for x in x_list]
 
@@ -218,7 +218,7 @@ def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: 
     bern_params = [bern_estimator(bern_obs_[i], gammas_list_[i]) for i in range(len(gammas_list_))]
 
     # Both unoberved and dead cells should be removed from gamma
-    g_masks = [np.logical_and(np.isfinite(γ_o), berns.astype('bool')) for γ_o, berns in zip(γ_obs_, bern_obs_)]
+    g_masks = [np.logical_and(np.isfinite(γ_o), berns.astype("bool")) for γ_o, berns in zip(γ_obs_, bern_obs_)]
     for g_mask in g_masks:
         assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
