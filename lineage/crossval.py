@@ -29,23 +29,16 @@ def crossval(train_populations: list, num_states: np.array):
     output = run_Analyze_over(train_populations, num_states, atonce=True)
     # save the tHMMobj for each number of states that is being run
     tHMMobj_list_states = []
+    gamma_lists = []
     for out in output:
         tHMMobj_list_states.append(out[0])
+        gamma_lists.append(out[2])
 
-    # predict states of hidden cells
-    # states_list: len(states_list) = num_states. states_list[0] for the 1-state model, etc.
-    states_list = [[tHMMobj.predict() for tHMMobj in tHMMobj_list] for tHMMobj_list in tHMMobj_list_states]
-
-    # calculate the log likelihood of observations of masked cells to their assigned state
+    # calculate the log likelihood of observations of masked cells to each state based on the soft assignement
     LLs = []
     for k in range(len(num_states)):
         tHMMobj_list = output[k][0]
-
-        # assign the predicted states to each cell
-        for idx, tHMMobj in enumerate(tHMMobj_list):
-            for lin_indx, lin in enumerate(tHMMobj.X):
-                for cell_indx, cell in enumerate(lin.output_lineage):
-                    cell.state = states_list[k][idx][lin_indx][cell_indx]
+        gamma_list = output[k][2]
 
         Logls = 0
         # calculate the log likelihood of hidden observations
@@ -54,7 +47,10 @@ def crossval(train_populations: list, num_states: np.array):
                 for cell_indx, cell in enumerate(lin.output_lineage):
                     if cell.obs[2] < 0:
                         positive_obs = [-1 * o for o in cell.obs]
-                        Logls += tHMMobj.estimate.E[cell.state].logpdf(np.array(positive_obs)[np.newaxis, :])
+                        tmp = 0
+                        for i in range(k+1):
+                            tmp += np.exp(tHMMobj.estimate.E[i].logpdf(np.array(positive_obs)[np.newaxis, :])) * gamma_list[idx][lin_indx][cell_indx][i]
 
+                        Logls += np.log(tmp)
         LLs.append(Logls)
     return LLs

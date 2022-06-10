@@ -39,9 +39,8 @@ def makeFigure():
 
     for i in range(4):
         ax[i].plot(desired_num_states, output[i])
-        ax[i].set_title(str(i + 2) + " state model")
-        ax[i].set_ylim(bottom=0, top=max(list(it.chain(*output))) + 2)
-        ax[i].set_ylabel("Likelihood")
+        ax[i].set_title(str(i + 2) + " state population")
+        ax[i].set_ylabel("Log-likelihood")
         ax[i].set_xlabel("Number of States")
 
     return f
