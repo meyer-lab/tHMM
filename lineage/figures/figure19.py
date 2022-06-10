@@ -1,7 +1,6 @@
 """ To plot a summary of cross validation. """
 from .common import getSetup
 import numpy as np
-import itertools as it
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGaPhs import StateDistribution
 from ..crossval import hide_observation, crossval
