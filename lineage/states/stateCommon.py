@@ -70,7 +70,6 @@ def gamma_LL(logX: np.ndarray, gamma_obs: List[np.ndarray], time_cen: List[np.nd
 @jit(nopython=True)
 def gamma_LL_diff(x0: np.ndarray, gamma_obs: List[np.ndarray], time_cen: List[np.ndarray], gammas: List[np.ndarray]):
     """ Finite differencing of objective function. """
-    f0 = gamma_LL(x0, gamma_obs, time_cen, gammas)
     grad = np.empty(x0.size)
     dx = 2e-8
 
@@ -78,9 +77,11 @@ def gamma_LL_diff(x0: np.ndarray, gamma_obs: List[np.ndarray], time_cen: List[np
         x = np.copy(x0)
         x[i] += dx
         fdx = gamma_LL(x, gamma_obs, time_cen, gammas)
-        grad[i] = (fdx - f0) / dx
+        x[i] -= 2 * dx
+        fmdx = gamma_LL(x, gamma_obs, time_cen, gammas)
+        grad[i] = (fdx - fmdx) / dx / 2.0
 
-    return f0, grad
+    return grad
 
 
 def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray], x0: np.ndarray):
@@ -112,13 +113,6 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
         linc = list()
 
     bnd = Bounds(np.full_like(x0, -3.5), np.full_like(x0, 6.0), keep_feasible=False)
-
-    with np.errstate(all='raise'):
-        if len(linc) > 0:
-            res = minimize(gamma_LL_diff, jac=True, x0=np.log(x0), args=arrgs, bounds=bnd, method="trust-constr", constraints=linc)
-        else:
-            opts = {"maxfun": 1e6, "maxiter": 1e6, "maxls": 100}
-            res = minimize(gamma_LL_diff, jac=True, x0=np.log(x0), args=arrgs, bounds=bnd, method='L-BFGS-B', options=opts)
-
+    res = minimize(gamma_LL, jac=gamma_LL_diff, x0=np.log(x0), args=arrgs, bounds=bnd, method="SLSQP", constraints=linc, options={"ftol": 1e-9})
     assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
     return np.exp(res.x)
