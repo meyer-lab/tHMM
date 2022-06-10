@@ -45,14 +45,14 @@ class StateDistribution:
         """
         return 3
 
-    def pdf(self, x: np.ndarray):
-        """ User-defined way of calculating the likelihood of the observation stored in a cell.
+    def logpdf(self, x: np.ndarray):
+        """ User-defined way of calculating the log likelihood of the observation stored in a cell.
         In the case of a univariate observation, the user still has to define how the likelihood is calculated,
         but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
         In the case of a multivariate observation, the user has to decide how the likelihood is calculated.
         In our example, we assume the observation's are uncorrelated across the dimensions (across the different
-        distribution observations), so the likelihood of observing the multivariate observation is just the product of
-        the individual observation likelihoods.
+        distribution observations), so the total log likelihood of observing the multivariate observation is just the sum of
+        the individual observation log likelihoods.
         """
         ll = np.zeros(x.shape[0])
 
@@ -68,10 +68,15 @@ class StateDistribution:
         # Update for observed Bernoulli
         ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
 
-        # likelihood of negative values should be zero
+        # Log likelihood of negative values should be zero
         ll[x[:, 1] < 0] = 0.0
 
-        return np.exp(ll)
+        return ll
+
+    def pdf(self, x:np.ndarray):
+        """ calculates the likelihood of observations to their states. """
+
+        return np.exp(self.logpdf(x))
 
     def estimator(self, X: list, gammas: np.ndarray):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """

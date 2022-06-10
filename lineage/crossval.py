@@ -9,13 +9,10 @@ def hide_observation(lineages: list, percentage: float) -> list:
     """ Taking a list of lineages and the percentage of cells want to be masked, it marks those x% negative."""
     new_lineages = deepcopy(lineages)
     for new_lineage in new_lineages:
-        if len(new_lineage.output_lineage) < 2:
-            continue
-        else:
-            for cell in new_lineage.output_lineage:
-                if bernoulli.rvs(p=percentage, size=1):
-                    # negate the cell observations to mask them
-                    cell.obs = np.array([-1 * o for o in cell.obs])
+        for cell in new_lineage.output_lineage:
+            if bernoulli.rvs(p=percentage, size=1):
+                # negate the cell observations to mask them
+                cell.obs = [-1 * o for o in cell.obs]
 
     return new_lineages
 
@@ -40,10 +37,9 @@ def crossval(train_populations: list, num_states: np.array):
     # states_list: len(states_list) = num_states. states_list[0] for the 1-state model, etc.
     states_list = [[tHMMobj.predict() for tHMMobj in tHMMobj_list] for tHMMobj_list in tHMMobj_list_states]
 
-    # calculate the likelihood of observations of masked cells to their assigned state
+    # calculate the log likelihood of observations of masked cells to their assigned state
     LLs = []
     for k in range(len(num_states)):
-        Ls = 0
         tHMMobj_list = output[k][0]
 
         # assign the predicted states to each cell
@@ -52,13 +48,14 @@ def crossval(train_populations: list, num_states: np.array):
                 for cell_indx, cell in enumerate(lin.output_lineage):
                     cell.state = states_list[k][idx][lin_indx][cell_indx]
 
-        # calculate the likelihood of hidden observations to their predicted state
+        Logls = 0
+        # calculate the log likelihood of hidden observations
         for idx, tHMMobj in enumerate(tHMMobj_list):
             for lin_indx, lin in enumerate(tHMMobj.X):
                 for cell_indx, cell in enumerate(lin.output_lineage):
                     if cell.obs[2] < 0:
                         positive_obs = [-1 * o for o in cell.obs]
-                        Ls += tHMMobj.estimate.E[cell.state].pdf(np.array(positive_obs)[np.newaxis, :])
+                        Logls += tHMMobj.estimate.E[cell.state].logpdf(np.array(positive_obs)[np.newaxis, :])
 
-        LLs.append(Ls)
+        LLs.append(Logls)
     return LLs

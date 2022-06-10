@@ -33,6 +33,14 @@ class StateDistribution():
         """ Return the degrees of freedom. """
         return self.G1.dof() + self.G2.dof()
 
+    def logpdf(self, x: np.ndarray):
+        """ To calculate the log-likelihood of observations to states. """
+
+        G1_LL = self.G1.logpdf(x[:, np.array([0, 2, 4])])
+        G2_LL = self.G2.logpdf(x[:, np.array([1, 3, 5])])
+
+        return G1_LL + G2_LL
+
     def pdf(self, x: np.ndarray):
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
         # In the case of a univariate observation, the user still has to define how the likelihood is calculated,
@@ -41,10 +49,8 @@ class StateDistribution():
         # In our example, we assume the observation's are uncorrelated across the dimensions (across the different
         # distribution observations), so the likelihood of observing the multivariate observation is just the product of
         # the individual observation likelihoods.
-        G1_LL = self.G1.pdf(x[:, np.array([0, 2, 4])])
-        G2_LL = self.G2.pdf(x[:, np.array([1, 3, 5])])
 
-        return G1_LL * G2_LL
+        return np.exp(self.logpdf(x))
 
     def estimator(self, x: np.ndarray, gammas):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
