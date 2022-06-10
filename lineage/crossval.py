@@ -6,7 +6,7 @@ from .Analyze import run_Analyze_over
 
 
 def hide_observation(lineages: list, percentage: float) -> list:
-    """ Taking a list of lineages and the percentage of cells want to be masked, it marks those x% negative."""
+    """Taking a list of lineages and the percentage of cells want to be masked, it marks those x% negative."""
     new_lineages = deepcopy(lineages)
     for new_lineage in new_lineages:
         for cell in new_lineage.output_lineage:
@@ -18,9 +18,9 @@ def hide_observation(lineages: list, percentage: float) -> list:
 
 
 def crossval(train_populations: list, num_states: np.array):
-    """ Perform cross validation for the experimental data which runs in parallel for all states.
+    """Perform cross validation for the experimental data which runs in parallel for all states.
     :param train_populations: the populations after applying hide_observation. This includes the list of list of lineages.
-    :param hidden_indexes: is a list of list of np.arrays for each lineage, 
+    :param hidden_indexes: is a list of list of np.arrays for each lineage,
     filled with zeros and ones. ones refer to the index of those cells that have been hidden.
     :param hidden_obs: list of list of tuples of observations that have been masked in the train_lineage.
     :param num_states: is a range of states we want to run the cross validation for.

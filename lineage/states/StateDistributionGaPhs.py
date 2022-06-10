@@ -6,17 +6,19 @@ from .StateDistributionGamma import StateDistribution as GammaSD
 from ..CellVar import Time
 
 
-class StateDistribution():
-    """ For G1 and G2 separated as observations. """
+class StateDistribution:
+    """For G1 and G2 separated as observations."""
 
-    def __init__(self, bern_p1=0.9, bern_p2=0.75, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6):  # user has to identify what parameters to use for each state
-        """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
+    def __init__(
+        self, bern_p1=0.9, bern_p2=0.75, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6
+    ):  # user has to identify what parameters to use for each state
+        """Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have."""
         self.params = np.array([bern_p1, bern_p2, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2])
         self.G1 = GammaSD(bern_p=bern_p1, gamma_a=gamma_a1, gamma_scale=gamma_scale1)
         self.G2 = GammaSD(bern_p=bern_p2, gamma_a=gamma_a2, gamma_scale=gamma_scale2)
 
     def rvs(self, size: int):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
-        """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
+        """User-defined way of calculating a random variable given the parameters of the state stored in that observation's object."""
         # {
         bern_obsG1, gamma_obsG1, gamma_censor_obsG1 = self.G1.rvs(size)
         bern_obsG2, gamma_obsG2, gamma_censor_obsG2 = self.G2.rvs(size)
@@ -25,16 +27,16 @@ class StateDistribution():
         return bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, gamma_censor_obsG1, gamma_censor_obsG2
 
     def dist(self, other):
-        """ Calculate the Wasserstein distance between this state emissions and the given. """
+        """Calculate the Wasserstein distance between this state emissions and the given."""
         assert isinstance(self, type(other))
         return self.G1.dist(other.G1) + self.G2.dist(other.G2)
 
     def dof(self):
-        """ Return the degrees of freedom. """
+        """Return the degrees of freedom."""
         return self.G1.dof() + self.G2.dof()
 
     def logpdf(self, x: np.ndarray):
-        """ To calculate the log-likelihood of observations to states. """
+        """To calculate the log-likelihood of observations to states."""
 
         G1_LL = self.G1.logpdf(x[:, np.array([0, 2, 4])])
         G2_LL = self.G2.logpdf(x[:, np.array([1, 3, 5])])
@@ -42,7 +44,7 @@ class StateDistribution():
         return G1_LL + G2_LL
 
     def pdf(self, x: np.ndarray):
-        """ User-defined way of calculating the likelihood of the observation stored in a cell. """
+        """User-defined way of calculating the likelihood of the observation stored in a cell."""
         # In the case of a univariate observation, the user still has to define how the likelihood is calculated,
         # but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
         # In the case of a multivariate observation, the user has to decide how the likelihood is calculated.
@@ -53,7 +55,7 @@ class StateDistribution():
         return np.exp(self.logpdf(x))
 
     def estimator(self, x: np.ndarray, gammas):
-        """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
+        """User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells."""
         x = np.array(x)
 
         self.G1.estimator(x[:, np.array([0, 2, 4])], gammas)
@@ -147,9 +149,9 @@ def fate_censor(cell):
             cell.left.observed = False
             cell.right.observed = False
         if cell.obs[0] == 0:  # dies in G1
-            cell.obs[1] = float('nan')  # unobserved
-            cell.obs[3] = float('nan')  # unobserved
-            cell.obs[5] = float('nan')  # unobserved
+            cell.obs[1] = float("nan")  # unobserved
+            cell.obs[3] = float("nan")  # unobserved
+            cell.obs[5] = float("nan")  # unobserved
             cell.time.endT = cell.time.startT + cell.obs[2]
             cell.time.transition_time = cell.time.endT
         if cell.obs[1] == 0:  # dies in G2
@@ -166,7 +168,7 @@ def time_censor(cell, desired_experiment_time):
     """
     if cell.time.endT > desired_experiment_time:
         cell.time.endT = desired_experiment_time
-        cell.obs[1] = float('nan')  # unobserved
+        cell.obs[1] = float("nan")  # unobserved
         cell.obs[3] = desired_experiment_time - cell.time.transition_time
         cell.obs[5] = 0  # censored
         if not cell.isLeafBecauseTerminal():
@@ -176,12 +178,12 @@ def time_censor(cell, desired_experiment_time):
     if cell.time.transition_time > desired_experiment_time:
         cell.time.endT = desired_experiment_time
         cell.time.transition_time = desired_experiment_time
-        cell.obs[0] = float('nan')  # unobserved
-        cell.obs[1] = float('nan')  # unobserved
+        cell.obs[0] = float("nan")  # unobserved
+        cell.obs[1] = float("nan")  # unobserved
         cell.obs[2] = desired_experiment_time - cell.time.startT
-        cell.obs[3] = float('nan')  # unobserved
+        cell.obs[3] = float("nan")  # unobserved
         cell.obs[4] = 0  # censored
-        cell.obs[5] = float('nan')  # unobserved
+        cell.obs[5] = float("nan")  # unobserved
         if not cell.isLeafBecauseTerminal():
             cell.left.observed = False
             cell.right.observed = False

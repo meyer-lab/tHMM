@@ -19,6 +19,7 @@ Efour = [Sone, Stwo, Sthree, Sfour]
 Efive = [Sone, Stwo, Sthree, Sfour, Sfive]
 Es = [Etwo, Ethree, Efour, Efive]
 
+
 def makeFigure():
     """
     Makes figure 19.
@@ -28,20 +29,23 @@ def makeFigure():
     output = []
     for e in Es:
         pi = np.ones(len(e)) / len(e)
-        T = (np.eye(len(e)) + 0.1)
+        T = np.eye(len(e)) + 0.1
         T = T / np.sum(T, axis=1)[:, np.newaxis]
-        complete_population = [[LineageTree.init_from_parameters(pi, T, e, 7, censored_condition=3, desired_experiment_time=200) for _ in range(100)] for _ in range(4)]
+        complete_population = [
+            [LineageTree.init_from_parameters(pi, T, e, 7, censored_condition=3, desired_experiment_time=200) for _ in range(100)] for _ in range(4)
+        ]
 
         output.append(output_LL(complete_population))
 
     for i in range(4):
         ax[i].plot(desired_num_states, output[i])
-        ax[i].set_title(str(i+2) + " state model")
+        ax[i].set_title(str(i + 2) + " state model")
         ax[i].set_ylim(bottom=0, top=max(list(it.chain(*output))) + 2)
         ax[i].set_ylabel("Likelihood")
         ax[i].set_xlabel("Number of States")
 
     return f
+
 
 def output_LL(complete_population):
     # create training data by hiding 20% of cells in each lineage
