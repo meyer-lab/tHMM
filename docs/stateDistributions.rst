@@ -119,7 +119,7 @@ Those cells that died are then removed in the first example that cell's fate mat
 
 .. code:: ipython3
     # Bernoulli/Gamma
-    def pdf(self, x: np.ndarray):
+    def logpdf(self, x: np.ndarray):
         """ User-defined way of calculating the likelihood of the observation stored in a cell.
         """
         ll = np.zeros(x.shape[0])
@@ -136,16 +136,16 @@ Those cells that died are then removed in the first example that cell's fate mat
         # Update for observed Bernoulli
         ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
 
-        return np.exp(ll)
+        return ll
 
 .. code:: ipython3
     # Normal
-    def pdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
+    def logpdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
         
         ll = np.zeros(x.shape[0])
 
-        ll += sp.norm.pdf(tuple_of_obs[0], self.norm_loc, self.norm_scale)
+        ll += sp.norm.logpdf(tuple_of_obs[0], self.norm_loc, self.norm_scale)
 
         return ll
 

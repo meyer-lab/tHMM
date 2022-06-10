@@ -43,17 +43,6 @@ class StateDistribution:
 
         return G1_LL + G2_LL
 
-    def pdf(self, x: np.ndarray):
-        """User-defined way of calculating the likelihood of the observation stored in a cell."""
-        # In the case of a univariate observation, the user still has to define how the likelihood is calculated,
-        # but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.
-        # In the case of a multivariate observation, the user has to decide how the likelihood is calculated.
-        # In our example, we assume the observation's are uncorrelated across the dimensions (across the different
-        # distribution observations), so the likelihood of observing the multivariate observation is just the product of
-        # the individual observation likelihoods.
-
-        return np.exp(self.logpdf(x))
-
     def estimator(self, x: np.ndarray, gammas):
         """User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells."""
         x = np.array(x)
