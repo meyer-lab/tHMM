@@ -5,7 +5,7 @@ from ..LineageTree import LineageTree
 from ..states.StateDistributionGaPhs import StateDistribution
 from ..crossval import hide_observation, crossval
 
-desired_num_states = np.arange(1, 7)
+desired_num_states = np.arange(1, 8)
 Sone = StateDistribution(0.99, 0.9, 100, 0.1, 50, 0.2)
 Stwo = StateDistribution(0.9, 0.7, 100, 0.2, 50, 0.4)
 Sthree = StateDistribution(0.85, 0.9, 100, 0.3, 50, 0.6)

@@ -4,7 +4,7 @@ import numpy as np
 from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from .figure19 import output_LL
 
-desired_num_states = np.arange(1, 7)
+desired_num_states = np.arange(1, 8)
 
 def makeFigure():
     """
