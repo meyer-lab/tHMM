@@ -70,6 +70,7 @@ class StateDistribution:
 
         # Log likelihood of negative values should be zero
         ll[x[:, 1] < 0] = 0.0
+        ll[x[:, 0] < 0] = 0.0
 
         return ll
 
