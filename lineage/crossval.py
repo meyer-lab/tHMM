@@ -48,7 +48,7 @@ def crossval(train_populations: list, num_states: np.array):
                     if cell.obs[2] < 0:
                         positive_obs = [-1 * o for o in cell.obs]
                         tmp = 0
-                        for i in range(k+1):
+                        for i in range(k + 1):
                             tmp += np.exp(tHMMobj.estimate.E[i].logpdf(np.array(positive_obs)[np.newaxis, :])) * gamma_list[idx][lin_indx][cell_indx][i]
 
                         Logls += np.log(tmp)
