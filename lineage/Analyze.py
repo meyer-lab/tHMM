@@ -90,6 +90,7 @@ def run_Analyze_over(list_of_populations: list, num_states: np.ndarray, parallel
             prom_holder.append(exe.submit(Analyze, population, num_states[idx], fpi=list_of_fpi[idx], fT=list_of_fT[idx], fE=list_of_fE[idx]))
 
     output = [prom.result() for prom in prom_holder]
+    exe.shutdown()
 
     return output
 
@@ -158,7 +159,9 @@ def run_Results_over(output: list, parallel=True) -> list:
         exe = DummyExecutor()
 
     prom_holder = [exe.submit(Results, *x) for x in output]
-    return [prom.result() for prom in prom_holder]
+    output = [prom.result() for prom in prom_holder]
+    exe.shutdown()
+    return output
 
 
 def permute_states(tHMMobj: Any, switch_map: np.ndarray) -> Tuple[Any, list]:
