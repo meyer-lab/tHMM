@@ -5,11 +5,17 @@ import pickle
 from .common import getSetup
 from ..plotTree import plotLineage
 
-# open lapatinib
+# open gemcitabine
 pik1 = open("gemcitabines.pkl", "rb")
-gemc_tHMMobj_list = []
-for _ in range(4):
-    gemc_tHMMobj_list.append(pickle.load(pik1))
+alls = []
+for i in range(7):
+    gemc_tHMMobj_list = []
+    for i in range(4):
+        gemc_tHMMobj_list.append(pickle.load(pik1))
+    alls.append(gemc_tHMMobj_list)
+
+# selected for gemcitabine is 5 states which is index 4.
+gemc_tHMMobj_list = alls[4]
 
 only_lapatinib_control_1 = gemc_tHMMobj_list[0].X[0:100]
 
