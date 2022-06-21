@@ -1,16 +1,22 @@
 """ This file depicts the distribution of phase lengths versus the states for each concentration of gemcitabine. """
 import pickle
 from string import ascii_lowercase
-
+from ..plotTree import plot_networkx
 from .common import getSetup, plot_all
 
 concs = ["Control", "Gemcitabine 5 nM", "Gemcitabine 10 nM", "Gemcitabine 30 nM"]
 concsValues = ["Control", "5 nM", "10 nM", "30 nM"]
 
 pik1 = open("gemcitabines.pkl", "rb")
-gemc_tHMMobj_list = []
-for i in range(4):
-    gemc_tHMMobj_list.append(pickle.load(pik1))
+alls = []
+for i in range(7):
+    gemc_tHMMobj_list = []
+    for i in range(4):
+        gemc_tHMMobj_list.append(pickle.load(pik1))
+    alls.append(gemc_tHMMobj_list)
+
+# selected for lapatinib is 5 states which is index 4.
+gemc_tHMMobj_list = alls[4]
 
 T_gem = gemc_tHMMobj_list[0].estimate.T
 num_states = gemc_tHMMobj_list[0].num_states
@@ -27,4 +33,4 @@ def makeFigure():
 
     return f
 
-# plot_networkx(T_gem.shape[0], T_gem, 'gemcitabine')
+plot_networkx(T_gem.shape[0], T_gem, 'gemcitabine')

@@ -14,10 +14,17 @@ HGF = [pbs, egf, hgf, osm]
 concs = ["PBS", "EGF", "HGF", "OSM"]
 
 pik1 = open("gf.pkl", "rb")
-hgf_tHMMobj_list = []
-for i in range(4):
-    hgf_tHMMobj_list.append(pickle.load(pik1))
+alls = []
+for i in range(7):
+    hgf_tHMMobj_list = []
+    for i in range(4):
+        hgf_tHMMobj_list.append(pickle.load(pik1))
+    alls.append(hgf_tHMMobj_list)
 
+# selected for lapatinib is 2 states which is index 1.
+hgf_tHMMobj_list = alls[2]
+
+print("parameters: \n ", [(th.estimate.E[0].params, th.estimate.E[1].params) for th in hgf_tHMMobj_list], "\n")
 
 T_hgf = hgf_tHMMobj_list[0].estimate.T
 
@@ -88,7 +95,7 @@ def plot1(ax, df1, df2):
     df2[['Growth Factors', 'State1', 'State2', 'State3']].plot(x='Growth Factors', kind='bar', ax=ax[9], color=['lightblue', 'orange', 'lightgreen'], rot=0)
     ax[8].set_title("Lifetime")
     ax[8].set_ylabel("Mean Time [hr]")
-    ax[8].set_ylim((0.0, 5.0))
+    # ax[8].set_ylim((0.0, 5.0))
     ax[9].set_title("Fate")
     ax[9].set_ylabel("Division Probability")
     ax[9].set_ylim((0.0, 1.1))
@@ -115,6 +122,7 @@ def plot2(ax, num_states, tHMMobj_list):
             # bernoullis
             bern_lpt[idx, i] = tHMMobj.estimate.E[i].params[0]
 
+    print(lpt_avg)
     df1 = pd.DataFrame({'Growth Factors': ['PBS', 'EGF', 'HGF', 'OSM'],
                         'State1': lpt_avg[:, 0],
                         'State2': lpt_avg[:, 1],

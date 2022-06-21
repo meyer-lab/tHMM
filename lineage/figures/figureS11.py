@@ -7,9 +7,23 @@ from ..plotTree import plotLineage
 
 
 pik1 = open("lapatinibs.pkl", "rb")
-lapt_tHMMobj_list = []
-for _ in range(4):
-    lapt_tHMMobj_list.append(pickle.load(pik1))
+alls = []
+for i in range(7):
+    lapt_tHMMobj_list = []
+    for i in range(4):
+        lapt_tHMMobj_list.append(pickle.load(pik1))
+    alls.append(lapt_tHMMobj_list)
+
+lapt_tHMMobj_list = alls[3]
+assert len(lapt_tHMMobj_list) == 4
+
+lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
+
+# assign the predicted states to each cell
+for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
+    for lin_indx, lin in enumerate(lapt_tHMMobj.X):
+        for cell_indx, cell in enumerate(lin.output_lineage):
+            cell.state = lapt_states_list[idx][lin_indx][cell_indx]
 
 for i in range(4):
     lapt_tHMMobj_list[i].X = sort_lins(lapt_tHMMobj_list[i])
@@ -20,9 +34,9 @@ def makeFigure():
     Makes figure 100.
     """
     titles = ["Control", "Lapatinib 25 nM", "Lapatinib 50 nM", "Lapatinib 250 nM"]
-    ax, f = getSetup((15, 25), (75, 4))
+    ax, f = getSetup((15, 45), (170, 4))
 
-    for i in range(75):
+    for i in range(170):
         ax[4 * i].axis('off')
         ax[4 * i + 1].axis('off')
         ax[4 * i + 2].axis('off')

@@ -8,10 +8,23 @@ from ..plotTree import plotLineage
 
 # open lapatinib
 pik1 = open("lapatinibs.pkl", "rb")
-lapt_tHMMobj_list = []
-for _ in range(4):
-    lapt_tHMMobj_list.append(pickle.load(pik1))
+alls = []
+for i in range(7):
+    lapt_tHMMobj_list = []
+    for i in range(4):
+        lapt_tHMMobj_list.append(pickle.load(pik1))
+    alls.append(lapt_tHMMobj_list)
 
+# selected for lapatinib is 4 states which is index 3.
+lapt_tHMMobj_list = alls[3]
+
+lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
+
+# assign the predicted states to each cell
+for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
+    for lin_indx, lin in enumerate(lapt_tHMMobj.X):
+        for cell_indx, cell in enumerate(lin.output_lineage):
+            cell.state = lapt_states_list[idx][lin_indx][cell_indx]
 
 def makeFigure():
     """

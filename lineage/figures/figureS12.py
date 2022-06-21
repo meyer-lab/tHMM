@@ -6,9 +6,22 @@ from ..plotTree import plotLineage
 
 
 pik1 = open("gemcitabines.pkl", "rb")
-gemc_tHMMobj_list = []
-for _ in range(4):
-    gemc_tHMMobj_list.append(pickle.load(pik1))
+alls = []
+for i in range(7):
+    gemc_tHMMobj_list = []
+    for i in range(4):
+        gemc_tHMMobj_list.append(pickle.load(pik1))
+    alls.append(gemc_tHMMobj_list)
+
+# selected for gemcitabine is 5 states which is index 4.
+gemc_tHMMobj_list = alls[4]
+
+gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
+
+for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
+    for lin_indx, lin in enumerate(gemc_tHMMobj.X):
+        for cell_indx, cell in enumerate(lin.output_lineage):
+            cell.state = gemc_states_list[idx][lin_indx][cell_indx]
 
 for i in range(4):
     gemc_tHMMobj_list[i].X = sort_lins(gemc_tHMMobj_list[i])
@@ -20,9 +33,9 @@ def makeFigure():
     """
 
     titles = ["Control", "Gemcitabine 5 nM", "Gemcitabine 10 nM", "Gemcitabine 30 nM"]
-    ax, f = getSetup((15, 18), (45, 4))
+    ax, f = getSetup((15, 35), (150, 4))
 
-    for i in range(45):
+    for i in range(150):
         ax[4 * i].axis('off')
         ax[4 * i + 1].axis('off')
         ax[4 * i + 2].axis('off')
