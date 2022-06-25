@@ -64,7 +64,7 @@ def test_E_step(cens):
             X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 6) - 1, desired_experimental_time=150, censor_condition=cens)
         population.append(X)
 
-    tHMMobj = tHMM(population, num_states=gmc[1].num_states)  # build the tHMM class with X
+    tHMMobj = tHMM(population, num_states=5)  # build the tHMM class with X
     tHMMobj.estimate.pi = pi
     tHMMobj.estimate.T = T
     tHMMobj.estimate.E = E

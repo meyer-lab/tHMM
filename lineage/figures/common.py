@@ -252,19 +252,19 @@ def genFigure():
         overlayCartoon(fdir + 'figure12.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 1040, 215, scalee=1.44)
 
-    if sys.argv[1] == '91':
+    if sys.argv[1] == '13':
         # Overlay Transition block
-        overlayCartoon(fdir + 'figure91.svg',
+        overlayCartoon(fdir + 'figure13.svg',
                        f'{cartoon_dir}/figure03.svg', 430, 30, scale_x=0.9, scale_y=1.5)
-        overlayCartoon(fdir + 'figure91.svg',
+        overlayCartoon(fdir + 'figure13.svg',
                        f'{cartoon_dir}/HGF.svg', 0, 80, scalee=1.1)
-        overlayCartoon(fdir + 'figure91.svg',
+        overlayCartoon(fdir + 'figure13.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 430, 260, scalee=1.44)
-        overlayCartoon(fdir + 'figure91.svg',
+        overlayCartoon(fdir + 'figure13.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 625, 260, scalee=1.44)
-        overlayCartoon(fdir + 'figure91.svg',
+        overlayCartoon(fdir + 'figure13.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 820, 260, scalee=1.4)
-        overlayCartoon(fdir + 'figure91.svg',
+        overlayCartoon(fdir + 'figure13.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 1010, 260, scalee=1.3)
 
     if sys.argv[1] == 'S11':
@@ -554,18 +554,18 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
 def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
     for i in range(num_states):  # lapatinib that has 3 states
-        ax[10].plot(cons, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7)
+        ax[10].plot(cons, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7, lw=3)
         ax[10].set_title("G1 phase")
-        ax[11].plot(cons, lpt_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7)
+        ax[11].plot(cons, lpt_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7, lw=3)
         ax[11].set_title("S/G2 phase")
-        ax[12].plot(cons, bern_lpt[:, i, 0], label="state " + str(i + 1), alpha=0.7)
+        ax[12].plot(cons, bern_lpt[:, i, 0], label="state " + str(i + 1), alpha=0.7, lw=3)
         ax[12].set_title("G1 phase")
-        ax[13].plot(cons, bern_lpt[:, i, 1], label="state " + str(i + 1), alpha=0.7)
+        ax[13].plot(cons, bern_lpt[:, i, 1], label="state " + str(i + 1), alpha=0.7, lw=3)
         ax[13].set_title("S/G2 phase")
 
     # ylim and ylabel
     for i in range(10, 12):
-        ax[i].set_ylabel("Mean Time [hr]")
+        ax[i].set_ylabel("Log10-Mean Time [hr]")
         ax[i].set_ylim([0, 6.0])
 
     # ylim and ylabel
