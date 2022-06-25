@@ -9,7 +9,7 @@ import seaborn as sns
 import numpy as np
 import pandas as pd
 from ..Lineage_collections import pbs, egf, hgf, osm
-from ..plotTree import plot_networkx
+from ..plotTree import plot_networkx, plot_lineage_samples
 HGF = [pbs, egf, hgf, osm]
 concs = ["PBS", "EGF", "HGF", "OSM"]
 
@@ -24,7 +24,13 @@ for i in range(7):
 # selected for lapatinib is 2 states which is index 1.
 hgf_tHMMobj_list = alls[2]
 
-print("parameters: \n ", [(th.estimate.E[0].params, th.estimate.E[1].params) for th in hgf_tHMMobj_list], "\n")
+hgf_states_list = [tHMMobj.predict() for tHMMobj in hgf_tHMMobj_list]
+
+# assign the predicted states to each cell
+for idx, hgf_tHMMobj in enumerate(hgf_tHMMobj_list):
+    for lin_indx, lin in enumerate(hgf_tHMMobj.X):
+        for cell_indx, cell in enumerate(lin.output_lineage):
+            cell.state = hgf_states_list[idx][lin_indx][cell_indx]
 
 T_hgf = hgf_tHMMobj_list[0].estimate.T
 
@@ -74,6 +80,12 @@ def getSetup(figsize, gridd):
     return ax, f
 
 
+# plot transition block
+plot_networkx(T_hgf.shape[0], T_hgf, 'HGF')
+
+# plot sample of lineages
+plot_lineage_samples(hgf_tHMMobj_list, 'figure03')
+
 def makeFigure():
     """ Makes figure 91. """
 
@@ -83,8 +95,6 @@ def makeFigure():
         ax[i].set_title(concs[i - 2], fontsize=16)
         ax[i].text(-0.2, 1.25, ascii_lowercase[i - 1], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
         ax[i].axis('off')
-
-    plot_networkx(T_hgf.shape[0], T_hgf, 'HGF')
 
     return f
 
@@ -122,7 +132,6 @@ def plot2(ax, num_states, tHMMobj_list):
             # bernoullis
             bern_lpt[idx, i] = tHMMobj.estimate.E[i].params[0]
 
-    print(lpt_avg)
     df1 = pd.DataFrame({'Growth Factors': ['PBS', 'EGF', 'HGF', 'OSM'],
                         'State1': lpt_avg[:, 0],
                         'State2': lpt_avg[:, 1],

@@ -252,19 +252,19 @@ def genFigure():
         overlayCartoon(fdir + 'figure12.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 1040, 215, scalee=1.44)
 
-    if sys.argv[1] == '91':
+    if sys.argv[1] == '13':
         # Overlay Transition block
-        overlayCartoon(fdir + 'figure91.svg',
+        overlayCartoon(fdir + 'figure13.svg',
                        f'{cartoon_dir}/figure03.svg', 430, 30, scale_x=0.9, scale_y=1.5)
-        overlayCartoon(fdir + 'figure91.svg',
+        overlayCartoon(fdir + 'figure13.svg',
                        f'{cartoon_dir}/HGF.svg', 0, 80, scalee=1.1)
-        overlayCartoon(fdir + 'figure91.svg',
+        overlayCartoon(fdir + 'figure13.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 430, 260, scalee=1.44)
-        overlayCartoon(fdir + 'figure91.svg',
+        overlayCartoon(fdir + 'figure13.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 625, 260, scalee=1.44)
-        overlayCartoon(fdir + 'figure91.svg',
+        overlayCartoon(fdir + 'figure13.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 820, 260, scalee=1.4)
-        overlayCartoon(fdir + 'figure91.svg',
+        overlayCartoon(fdir + 'figure13.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 1010, 260, scalee=1.3)
 
     if sys.argv[1] == 'S11':
