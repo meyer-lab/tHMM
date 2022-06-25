@@ -37,15 +37,6 @@ def makeFigure():
     hgfBIC, hgfObj = find_BIC(GFs, desired_num_states, num_cells=1306, mc=True)
 
     # # Lapatinib
-    # lapt_tHMMobj_list = lapObj[list(lapBIC).index(0)]
-    # lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
-
-    # # assign the predicted states to each cell
-    # for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
-    #     for lin_indx, lin in enumerate(lapt_tHMMobj.X):
-    #         for cell_indx, cell in enumerate(lin.output_lineage):
-    #             cell.state = lapt_states_list[idx][lin_indx][cell_indx]
-
     # # create a pickle file for lapatinib
     # pik1 = open("lapatinibs.pkl", "wb")
     # for lapt_tHMMobj_list in lapObj:
@@ -54,15 +45,6 @@ def makeFigure():
     # pik1.close()
 
     # # Gemcitabine
-    # gemc_tHMMobj_list = gemObj[list(gemBIC).index(0)]
-    # gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
-
-    # for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
-    #     for lin_indx, lin in enumerate(gemc_tHMMobj.X):
-    #         for cell_indx, cell in enumerate(lin.output_lineage):
-    #             cell.state = gemc_states_list[idx][lin_indx][cell_indx]
-
-    # # create a pickle file for gemcitabine
     # pik2 = open("gemcitabines.pkl", "wb")
     # for gemc_tHMMobj_list in gemObj:
     #     for gemc in gemc_tHMMobj_list:
@@ -70,21 +52,11 @@ def makeFigure():
     # pik2.close()
 
     # # Growth factors
-    # hgf_tHMMobj_list = hgfObj[list(hgfBIC).index(0)]
-    # hgf_states_list = [tHMMobj.predict() for tHMMobj in hgf_tHMMobj_list]
-
-    # # assign the predicted states to each cell
-    # for idx, hgf_tHMMobj in enumerate(hgf_tHMMobj_list):
-    #     for lin_indx, lin in enumerate(hgf_tHMMobj.X):
-    #         for cell_indx, cell in enumerate(lin.output_lineage):
-    #             cell.state = hgf_states_list[idx][lin_indx][cell_indx]
-
-    # # create a pickle file for osm
-    # pik1 = open("gf.pkl", "wb")
+    # pik3 = open("gf.pkl", "wb")
     # for hgf_tHMMobj_list in hgfObj:
     #     for hgfd in hgf_tHMMobj_list:
-    #         pickle.dump(hgfd, pik1)
-    # pik1.close()
+    #         pickle.dump(hgfd, pik3)
+    # pik3.close()
 
     # Plotting BICs
     ax[0].plot(desired_num_states, lapBIC)

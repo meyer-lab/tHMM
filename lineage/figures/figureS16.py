@@ -27,10 +27,23 @@ def makeFigure():
 
 def plot_barcode_vs_state(ax, drug_name):
     """ Plots the histogram of barcode vs states after clustering, using the parameters from lapatinib and gemcitabine fits. """
-    pik = open(str(drug_name) + ".pkl", "rb")
-    tHMMobj_list = []
-    for i in range(4):
-        tHMMobj_list.append(pickle.load(pik))
+    pik1 = open(str(drug_name) + ".pkl", "rb")
+    alls = []
+    for i in range(7):
+        tHMMobj_list = []
+        for i in range(4):
+            tHMMobj_list.append(pickle.load(pik1))
+        alls.append(tHMMobj_list)
+
+    # selected for gemcitabine is 5 states which is index 4.
+    tHMMobj_list = alls[4]
+
+    states_list = [tHMMobj.predict() for tHMMobj in tHMMobj_list]
+
+    for idx, tHMMobj in enumerate(tHMMobj_list):
+        for lin_indx, lin in enumerate(tHMMobj.X):
+            for cell_indx, cell in enumerate(lin.output_lineage):
+                cell.state = states_list[idx][lin_indx][cell_indx]
 
     num_states = tHMMobj_list[0].num_states
 
