@@ -17,6 +17,14 @@ for i in range(7):
 # selected for gemcitabine is 5 states which is index 4.
 gemc_tHMMobj_list = alls[4]
 
+gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
+
+# assign the predicted states to each cell
+for idx, lapt_tHMMobj in enumerate(gemc_tHMMobj_list):
+    for lin_indx, lin in enumerate(lapt_tHMMobj.X):
+        for cell_indx, cell in enumerate(lin.output_lineage):
+            cell.state = gemc_states_list[idx][lin_indx][cell_indx]
+
 only_gemcitabine_control_1 = gemc_tHMMobj_list[0].X[100:200]
 
 
