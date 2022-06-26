@@ -86,6 +86,7 @@ plot_networkx(T_hgf.shape[0], T_hgf, 'HGF')
 # plot sample of lineages
 plot_lineage_samples(hgf_tHMMobj_list, 'figure03')
 
+
 def makeFigure():
     """ Makes figure 91. """
 

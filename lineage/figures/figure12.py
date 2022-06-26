@@ -34,6 +34,7 @@ plot_networkx(T_gem.shape[0], T_gem, 'gemcitabine')
 # plot sample of lineages
 plot_lineage_samples(gemc_tHMMobj_list, 'figure02')
 
+
 def makeFigure():
     """ Makes figure 12. """
     ax, f = getSetup((17, 7.5), (2, 7))
