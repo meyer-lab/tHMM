@@ -35,6 +35,7 @@ plot_networkx(T_lap.shape[0], T_lap, 'lapatinib')
 # plot the sample of lineage trees
 plot_lineage_samples(lapt_tHMMobj_list, 'figure01')
 
+
 def makeFigure():
     """ Makes figure 11. """
 
