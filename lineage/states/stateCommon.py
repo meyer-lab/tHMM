@@ -50,6 +50,14 @@ gammaln = CFUNCTYPE(c_double, c_double)(addr)
 @jit(nopython=True)
 def gamma_LL(logX: np.ndarray, gamma_obs: List[np.ndarray], time_cen: List[np.ndarray], gammas: List[np.ndarray]):
     """ Log-likelihood for the optionally censored Gamma distribution. """
+    logX = np.copy(logX)
+
+    if len(logX) > 2:
+        assert len(logX) == 5
+        logX[2] += logX[1]
+        logX[3] += logX[2]
+        logX[4] += logX[3]
+
     x = np.exp(logX)
     glnA = gammaln(x[0])
     outt = 0.0
@@ -90,6 +98,8 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
     In the phase-specific case, we have 3 linear constraints: scale1 > scale2, scale2 > scale3, scale3 > scale 4.
     In the non-specific case, we have only 1 constraint: scale1 > scale2 ==> A = np.array([1, 3])
     """
+    x0 = np.log(x0)
+
     # Handle no observations
     if np.sum([np.sum(g) for g in gammas]) < 0.1:
         gammas = [np.ones(g.size) for g in gammas]
@@ -101,24 +111,21 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
 
     arrgs = (List(gamma_obs), List(time_cen), List(gammas))
 
-    if len(gamma_obs) == 4:  # for constrained optimization
-        A = np.zeros((3, 5))  # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
-        np.fill_diagonal(A[:, 1:], -1.0)
-        np.fill_diagonal(A[:, 2:], 1.0)
-        linc = [LinearConstraint(A, lb=np.zeros(3), ub=np.full(3, np.inf))]
-        if np.allclose(np.dot(A, x0), 0.0):
-            x0 = np.array([200.0, 0.2, 0.4, 0.6, 0.8])
-    else:
-        linc = list()
-
     bnd = Bounds(np.full_like(x0, -3.5), np.full_like(x0, 6.0), keep_feasible=False)
+    if x0.size > 2:
+        bnd.lb[2:] = 0
+        x0[2] -= x0[1]
+        x0[3] -= x0[2]
+        x0[4] -= x0[3]
 
     with np.errstate(all='raise'):
-        if len(linc) > 0:
-            res = minimize(gamma_LL_diff, jac=True, x0=np.log(x0), args=arrgs, bounds=bnd, method="trust-constr", constraints=linc)
-        else:
-            opts = {"maxfun": 1e6, "maxiter": 1e6, "maxls": 100}
-            res = minimize(gamma_LL_diff, jac=True, x0=np.log(x0), args=arrgs, bounds=bnd, method='L-BFGS-B', options=opts)
+        opts = {"maxfun": 1e6, "maxiter": 1e6, "maxls": 100, "ftol": 0}
+        res = minimize(gamma_LL_diff, jac=True, x0=x0, args=arrgs, bounds=bnd, method='L-BFGS-B', options=opts)
 
-    assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
+    if len(res.x) > 2:
+        res.x[2] += res.x[1]
+        res.x[3] += res.x[2]
+        res.x[4] += res.x[3]
+
+    assert res.success
     return np.exp(res.x)
