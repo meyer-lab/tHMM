@@ -14,8 +14,8 @@ for i in range(7):
         hgf_tHMMobj_list.append(pickle.load(pik1))
     alls.append(hgf_tHMMobj_list)
 
-# selected for gf treatments is 3 states which is index 2.
-hgf_tHMMobj_list = alls[2]
+# selected for gf treatments is 2 states which is index 1.
+hgf_tHMMobj_list = alls[1]
 
 hgf_states_list = [tHMMobj.predict() for tHMMobj in hgf_tHMMobj_list]
 

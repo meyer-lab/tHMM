@@ -93,8 +93,7 @@ def do_M_step(tHMMobj: list, MSD: list, betas: list, gammas: list):
             t.estimate.T = T
 
     if tHMMobj[0].estimate.fpi is None:
-        assert tHMMobj[0].fpi is None
-        pi = do_M_pi_step(tHMMobj, gammas)
+        pi = calculate_stationary(tHMMobj[0].estimate.T)
     elif tHMMobj[0].estimate.fpi is True:
         # True indicates that pi should be set based on the stationary distribution of T
         assert tHMMobj[0].fpi is True
