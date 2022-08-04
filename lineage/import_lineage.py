@@ -93,7 +93,9 @@ def assign_observs_AU565(cell, lineage, uniq_id: int):
     diam = np.array(lineage.loc[lineage['trackId'] == uniq_id]['Diameter_0'])
     if np.count_nonzero(diam == 0.0) != 0:
         diam[diam == 0.0] = np.nan
-        if diam.size == 0:  # if all are nan
+        if diam.size == 0:  # if empty
+            cell.obs[2] = np.nan
+        elif np.sum(np.isfinite(diam)) == 0:  # if all are nan
             cell.obs[2] = np.nan
         else:
             cell.obs[2] = np.nanmean(diam)
