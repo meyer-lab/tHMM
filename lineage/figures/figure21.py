@@ -1,6 +1,5 @@
 """ Figure 21 to perform cross validation on experimental data. """
 from .common import getSetup
-import pickle
 import numpy as np
 from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
 from ..crossval import output_LL
