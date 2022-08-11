@@ -34,7 +34,7 @@ def makeFigure():
             [LineageTree.init_from_parameters(pi, T, e, 7, censored_condition=3, desired_experiment_time=200) for _ in range(100)] for _ in range(4)
         ]
 
-        output.append(output_LL(complete_population))
+        output.append(output_LL(complete_population, desired_num_states))
 
     for i in range(4):
         ax[i].plot(desired_num_states, output[i])

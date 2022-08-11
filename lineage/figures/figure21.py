@@ -16,8 +16,8 @@ def makeFigure():
     lapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
     gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
 
-    lap_out = output_LL(lapatinib)
-    gem_out = output_LL(gemcitabine)
+    lap_out = output_LL(lapatinib, desired_num_states)
+    gem_out = output_LL(gemcitabine, desired_num_states)
 
     ax[0].plot(desired_num_states, lap_out)
     ax[0].set_title("Lapatinib-treated")

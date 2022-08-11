@@ -55,7 +55,7 @@ def crossval(train_populations: list, num_states: np.array):
         LLs.append(Logls)
     return LLs
 
-def output_LL(complete_population):
+def output_LL(complete_population, desired_num_states):
     """ Given the complete population, it masks 25% of cells and prepares the data for parallel fitting using crossval function."""
     # create training data by hiding 25% of cells in each lineage
     train_population = [hide_observation(complete_pop, 0.25) for complete_pop in complete_population]
