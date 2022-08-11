@@ -17,7 +17,7 @@ def plot_lineage_samples(tHMMobj_list, name):
     for i in range(6):
         for objs in tHMMobj_list:
             ax[k].axis('off')
-            plotLineage(objs.X[i+3], ax[k])
+            plotLineage(objs.X[i + 3], ax[k])
             k += 1
 
     f.savefig('lineage/figures/cartoons/' + name + '.svg')

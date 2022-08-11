@@ -18,7 +18,7 @@ def hide_observation(lineages: list, percentage: float) -> list:
     return new_lineages
 
 
-def crossval(train_populations: list, num_states: np.array):
+def crossval(train_populations: list, num_states: np.ndarray):
     """Perform cross validation for the experimental data which runs in parallel for all states.
     :param train_populations: the populations after applying hide_observation. This includes the list of list of lineages.
     :param hidden_indexes: is a list of list of np.arrays for each lineage,
