@@ -1,6 +1,7 @@
 """ Cross validation. """
 import numpy as np
 from scipy.stats import bernoulli
+from scipy.special import logsumexp
 from copy import deepcopy
 from .Analyze import run_Analyze_over
 
@@ -27,18 +28,11 @@ def crossval(train_populations: list, num_states: np.array):
     """
     # fit training data by parallel.
     output = run_Analyze_over(train_populations, num_states, atonce=True)
-    # save the tHMMobj for each number of states that is being run
-    tHMMobj_list_states = []
-    gamma_lists = []
-    for out in output:
-        tHMMobj_list_states.append(out[0])
-        gamma_lists.append(out[2])
 
     # calculate the log likelihood of observations of masked cells to each state based on the soft assignement
     LLs = []
     for k in range(len(num_states)):
-        tHMMobj_list = output[k][0]
-        gamma_list = output[k][2]
+        tHMMobj_list, _, gamma_list = output[k]
 
         Logls = 0
         # calculate the log likelihood of hidden observations
@@ -46,19 +40,22 @@ def crossval(train_populations: list, num_states: np.array):
             for lin_indx, lin in enumerate(tHMMobj.X):
                 for cell_indx, cell in enumerate(lin.output_lineage):
                     if cell.obs[2] < 0:
-                        positive_obs = [-1 * o for o in cell.obs]
-                        tmp = 0
-                        for i in range(k + 1):
-                            tmp += np.exp(tHMMobj.estimate.E[i].logpdf(np.array(positive_obs)[np.newaxis, :])) * gamma_list[idx][lin_indx][cell_indx][i]
+                        positive_obs = np.array([-1 * o for o in cell.obs])[np.newaxis, :]
 
-                        Logls += np.log(tmp)
+                        tmp = np.array([tHMMobj.estimate.E[i].logpdf(positive_obs)[0] for i in range(k + 1)])
+                        tmp += np.log(gamma_list[idx][lin_indx][cell_indx])
+
+                        Logls += logsumexp(tmp)
         LLs.append(Logls)
     return LLs
 
+
 def output_LL(complete_population, desired_num_states):
-    """ Given the complete population, it masks 25% of cells and prepares the data for parallel fitting using crossval function."""
+    """Given the complete population, it masks 25% of cells and prepares the data for parallel fitting using crossval function."""
     # create training data by hiding 25% of cells in each lineage
-    train_population = [hide_observation(complete_pop, 0.25) for complete_pop in complete_population]
+    train_population = [
+        hide_observation(complete_pop, 0.25) for complete_pop in complete_population
+    ]
     # Copy out data to full set
     dataFull = []
     for _ in desired_num_states:
