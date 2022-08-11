@@ -9,15 +9,15 @@ cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'grey']
 stateColors = ['blue', 'orange', 'green', 'red', 'purple', 'grey']
 
 
-def plot_lineage_samples(lapt_tHMMobj_list, name):
+def plot_lineage_samples(tHMMobj_list, name):
     """ This function plots a sample of lineages for lapatinib and gemcitabine analysis figures."""
 
     ax, f = getSetup((12, 2), (6, 4))
     k = 0
     for i in range(6):
-        for objs in lapt_tHMMobj_list:
+        for objs in tHMMobj_list:
             ax[k].axis('off')
-            plotLineage(objs.X[i], ax[k])
+            plotLineage(objs.X[i+3], ax[k])
             k += 1
 
     f.savefig('lineage/figures/cartoons/' + name + '.svg')
