@@ -30,7 +30,7 @@ class StateDistribution:
         # These tuples of observations will go into the cells in the lineage tree.
         return bern_obs, gamma_obs, gamma_obs_censor
 
-    def dist(self, other):
+    def dist(self, other) -> float:
         """Calculate the Wasserstein distance between two gamma distributions that each correspond to a state.
         This is our way of calculating the distance between two state, when their bernoulli distribution is kept the same.
         For more information about wasserstein distance, please see https://en.wikipedia.org/wiki/Wasserstein_metric.
@@ -39,13 +39,13 @@ class StateDistribution:
         dist = np.absolute(self.params[1] * self.params[2] - other.params[1] * other.params[2])
         return dist
 
-    def dof(self):
+    def dof(self) -> int:
         """Return the degrees of freedom.
         In this case, each state has 1 bernoulli distribution parameter, and 2 gamma distribution parameters.
         """
         return 3
 
-    def logpdf(self, x: np.ndarray):
+    def logpdf(self, x: np.ndarray) -> np.ndarray:
         """User-defined way of calculating the log likelihood of the observation stored in a cell.
         In the case of a univariate observation, the user still has to define how the likelihood is calculated,
         but has the ability to just return the output of a known scipy.stats.<distribution>.<{pdf,pmf}> function.

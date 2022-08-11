@@ -5,7 +5,7 @@ from ctypes import CFUNCTYPE, c_double
 from numba.extending import get_cython_function_address
 from numba import jit
 from numba.typed import List
-from scipy.optimize import minimize, LinearConstraint, Bounds
+from scipy.optimize import minimize, Bounds
 
 
 def basic_censor(cell):
@@ -48,14 +48,22 @@ gammaln = CFUNCTYPE(c_double, c_double)(addr)
 
 
 @jit(nopython=True)
-def gamma_LL(logX: np.ndarray, gamma_obs: List[np.ndarray], time_cen: List[np.ndarray], gammas: List[np.ndarray]):
-    """ Log-likelihood for the optionally censored Gamma distribution. """
+def gamma_LL(
+    logX: np.ndarray,
+    gamma_obs: List[np.ndarray],
+    time_cen: List[np.ndarray],
+    gammas: List[np.ndarray],
+):
+    """Log-likelihood for the optionally censored Gamma distribution."""
     x = np.exp(logX)
     glnA = gammaln(x[0])
     outt = 0.0
     for i in range(len(x) - 1):
         gobs = gamma_obs[i] / x[i + 1]
-        outt -= np.dot(gammas[i] * time_cen[i], (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[i + 1])
+        outt -= np.dot(
+            gammas[i] * time_cen[i],
+            (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[i + 1],
+        )
 
         for j in range(len(time_cen[i])):
             if time_cen[i][j] == 0.0:
@@ -68,8 +76,13 @@ def gamma_LL(logX: np.ndarray, gamma_obs: List[np.ndarray], time_cen: List[np.nd
 
 
 @jit(nopython=True)
-def gamma_LL_diff(x0: np.ndarray, gamma_obs: List[np.ndarray], time_cen: List[np.ndarray], gammas: List[np.ndarray]):
-    """ Finite differencing of objective function. """
+def gamma_LL_diff(
+    x0: np.ndarray,
+    gamma_obs: List[np.ndarray],
+    time_cen: List[np.ndarray],
+    gammas: List[np.ndarray],
+):
+    """Finite differencing of objective function."""
     f0 = gamma_LL(x0, gamma_obs, time_cen, gammas)
     grad = np.empty(x0.size)
     dx = 2e-8
@@ -83,7 +96,12 @@ def gamma_LL_diff(x0: np.ndarray, gamma_obs: List[np.ndarray], time_cen: List[np
     return f0, grad
 
 
-def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gammas: list[np.ndarray], x0: np.ndarray):
+def gamma_estimator(
+    gamma_obs: list[np.ndarray],
+    time_cen: list[np.ndarray],
+    gammas: list[np.ndarray],
+    x0: np.ndarray,
+) -> np.ndarray:
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
@@ -102,23 +120,33 @@ def gamma_estimator(gamma_obs: list[np.ndarray], time_cen: list[np.ndarray], gam
     arrgs = (List(gamma_obs), List(time_cen), List(gammas))
 
     if len(gamma_obs) == 4:  # for constrained optimization
-        A = np.zeros((3, 5))  # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
+        A = np.zeros((3, 5))  # constraint Jacobian
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)
-        linc = [LinearConstraint(A, lb=np.zeros(3), ub=np.full(3, np.inf))]
-        if np.allclose(np.dot(A, x0), 0.0):
-            x0 = np.array([200.0, 0.2, 0.4, 0.6, 0.8])
+
+        linc = {
+            "type": "ineq",
+            "fun": lambda x: np.diff(x)[1:],
+            "jac": lambda x: A,
+        }
+
+        if np.any(np.dot(A, x0) < 0.0):
+            x0 = np.array([x0[0], x0[1], x0[1], x0[1], x0[1]])
     else:
-        linc = list()
+        linc = ()
 
-    bnd = Bounds(np.full_like(x0, -3.5), np.full_like(x0, 6.0), keep_feasible=False)
+    bnd = Bounds(np.full_like(x0, -3.5), np.full_like(x0, 6.0), keep_feasible=True)
 
-    with np.errstate(all='raise'):
-        if len(linc) > 0:
-            res = minimize(gamma_LL_diff, jac=True, x0=np.log(x0), args=arrgs, bounds=bnd, method="trust-constr", constraints=linc)
-        else:
-            opts = {"maxfun": 1e6, "maxiter": 1e6, "maxls": 100}
-            res = minimize(gamma_LL_diff, jac=True, x0=np.log(x0), args=arrgs, bounds=bnd, method='L-BFGS-B', options=opts)
+    with np.errstate(all="raise"):
+        res = minimize(
+            gamma_LL_diff,
+            jac=True,
+            x0=np.log(x0),
+            args=arrgs,
+            bounds=bnd,
+            method="SLSQP",
+            constraints=linc,
+        )
 
-    assert res.success or ("maximum number of function evaluations is exceeded" in res.message)
+    assert res.success or ("maximum number of function evaluations" in res.message)
     return np.exp(res.x)
