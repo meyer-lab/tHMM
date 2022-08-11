@@ -6,13 +6,18 @@ from typing import Tuple
 import scipy.stats as sp
 
 from .UpwardRecursion import get_Emission_Likelihoods
-from .BaumWelch import do_E_step, calculate_log_likelihood, do_M_step, do_M_E_step, do_M_E_step_atonce
+from .BaumWelch import (
+    do_E_step,
+    calculate_log_likelihood,
+    do_M_step,
+    do_M_E_step,
+    do_M_E_step_atonce,
+)
 from .Viterbi import Viterbi
 
 
 class estimate:
-    """Estimation class.
-    """
+    """Estimation class."""
 
     def __init__(self, X: list, nState: int, fpi=None, fT=None, fE=None):
         """
@@ -46,8 +51,7 @@ class estimate:
 
 
 class tHMM:
-    """Main tHMM class.
-    """
+    """Main tHMM class."""
 
     def __init__(self, X: list, num_states: int, fpi=None, fT=None, fE=None):
         """Instantiates a tHMM.
@@ -61,9 +65,12 @@ class tHMM:
         self.fT = fT
         self.fE = fE
         self.X = X  # list containing lineages
-        self.num_states = num_states  # number of discrete hidden states, should be integral
+        self.num_states = (
+            num_states  # number of discrete hidden states, should be integral
+        )
         self.estimate = estimate(
-            self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE)
+            self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE
+        )
 
     def fit(self, tolerance=1e-9, max_iter=1000):
         """
@@ -72,7 +79,9 @@ class tHMM:
         :param tolerance: the tolerance for change of likelihood between two steps
         :param max_iter: the maximum number of iterations for fitting
         """
-        MSD_list, NF_list, betas_list, gammas_list, new_LL = fit_list([self], tolerance=tolerance, max_iter=max_iter)
+        MSD_list, NF_list, betas_list, gammas_list, new_LL = fit_list(
+            [self], tolerance=tolerance, max_iter=max_iter
+        )
 
         return self, MSD_list[0], NF_list[0], betas_list[0], gammas_list[0], new_LL
 
@@ -85,7 +94,9 @@ class tHMM:
         """
         return Viterbi(self)
 
-    def get_BIC(self, LL: float, num_cells: int, atonce=False, mcf10a=False) -> Tuple[float, float]:
+    def get_BIC(
+        self, LL: float, num_cells: int, atonce=False, mcf10a=False
+    ) -> Tuple[float, float]:
         """
         Gets the BIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.
@@ -101,7 +112,9 @@ class tHMM:
         if self.fT is None:
             degrees_of_freedom += self.num_states * (self.num_states - 1)
 
-        if atonce:  # assuming we are fitting all 4 concentrations at once and we have cell cycle phase specific distributions.
+        if (
+            atonce
+        ):  # assuming we are fitting all 4 concentrations at once and we have cell cycle phase specific distributions.
             if mcf10a:
                 degrees_of_freedom += self.num_states * 2.25
             else:
@@ -139,8 +152,9 @@ class tHMM:
             # the first term is the value of pi for the state of the first cell
             log_score += np.log(pi[X_state_tree_sequence[idx][0]])
             log_score += log_T_score(T, X_state_tree_sequence[idx], lineageObj)
-            log_score += log_E_score(get_Emission_Likelihoods(self, E)
-                                     [idx], X_state_tree_sequence[idx])
+            log_score += log_E_score(
+                get_Emission_Likelihoods(self, E)[idx], X_state_tree_sequence[idx]
+            )
             assert np.all(np.isfinite(log_score))
             log_scores.append(log_score)
         return log_scores
@@ -191,7 +205,9 @@ def log_E_score(EL_array: np.ndarray, state_tree_sequence: list) -> float:
     return log_E_score_holder
 
 
-def fit_list(tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100) -> Tuple[list, list, list, list, float]:
+def fit_list(
+    tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100
+) -> Tuple[list, list, list, list, float]:
     """
     Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
 
@@ -207,7 +223,10 @@ def fit_list(tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100) -
 
     # Step 0: initialize with random assignments and do an M step
     # when there are no fixed emissions, we need to randomize the start
-    init_gam = [[sp.dirichlet.rvs(np.ones(tO.num_states), size=len(lin)) for lin in tO.X] for tO in tHMMobj_list]
+    init_gam = [
+        [sp.dirichlet.rvs(np.ones(tO.num_states), size=len(lin)) for lin in tO.X]
+        for tO in tHMMobj_list
+    ]
 
     if len(tHMMobj_list) > 1:  # it means we are fitting several concentrations at once.
         do_M_E_step_atonce(tHMMobj_list, init_gam)
@@ -215,13 +234,17 @@ def fit_list(tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100) -
         do_M_E_step(tHMMobj_list[0], init_gam[0])
 
     # Step 1: first E step
-    MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
+    MSD_list, NF_list, betas_list, gammas_list = map(
+        list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list])
+    )
     old_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
 
     # first stopping condition check
     for _ in range(max_iter):
         do_M_step(tHMMobj_list, MSD_list, betas_list, gammas_list)
-        MSD_list, NF_list, betas_list, gammas_list = map(list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list]))
+        MSD_list, NF_list, betas_list, gammas_list = map(
+            list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list])
+        )
         new_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
         if new_LL - old_LL < tolerance:
             break
