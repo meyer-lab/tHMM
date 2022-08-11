@@ -3,7 +3,7 @@ from .common import getSetup
 import numpy as np
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGaPhs import StateDistribution
-from ..crossval import hide_observation, crossval
+from ..crossval import hide_observation, crossval, output_LL
 
 desired_num_states = np.arange(1, 8)
 Sone = StateDistribution(0.99, 0.9, 100, 0.1, 50, 0.2)
@@ -43,14 +43,3 @@ def makeFigure():
         ax[i].set_xlabel("Number of States")
 
     return f
-
-
-def output_LL(complete_population):
-    # create training data by hiding 20% of cells in each lineage
-    train_population = [hide_observation(complete_pop, 0.25) for complete_pop in complete_population]
-    # Copy out data to full set
-    dataFull = []
-    for _ in desired_num_states:
-        dataFull.append(train_population)
-
-    return crossval(dataFull, desired_num_states)

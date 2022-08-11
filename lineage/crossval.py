@@ -54,3 +54,13 @@ def crossval(train_populations: list, num_states: np.array):
                         Logls += np.log(tmp)
         LLs.append(Logls)
     return LLs
+
+def output_LL(complete_population):
+    # create training data by hiding 25% of cells in each lineage
+    train_population = [hide_observation(complete_pop, 0.25) for complete_pop in complete_population]
+    # Copy out data to full set
+    dataFull = []
+    for _ in desired_num_states:
+        dataFull.append(train_population)
+
+    return crossval(dataFull, desired_num_states)
