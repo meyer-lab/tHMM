@@ -101,7 +101,7 @@ def gamma_estimator(
     time_cen: list[np.ndarray],
     gammas: list[np.ndarray],
     x0: np.ndarray,
-):
+) -> np.ndarray:
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
@@ -120,9 +120,7 @@ def gamma_estimator(
     arrgs = (List(gamma_obs), List(time_cen), List(gammas))
 
     if len(gamma_obs) == 4:  # for constrained optimization
-        A = np.zeros(
-            (3, 5)
-        )  # is a matrix that contains the constraints. the number of rows shows the number of linear constraints.
+        A = np.zeros((3, 5))  # constraint Jacobian
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)
 
@@ -140,7 +138,6 @@ def gamma_estimator(
     bnd = Bounds(np.full_like(x0, -3.5), np.full_like(x0, 6.0), keep_feasible=True)
 
     with np.errstate(all="raise"):
-        opts = {}
         res = minimize(
             gamma_LL_diff,
             jac=True,
@@ -149,10 +146,7 @@ def gamma_estimator(
             bounds=bnd,
             method="SLSQP",
             constraints=linc,
-            options=opts,
         )
 
-    assert res.success or (
-        "maximum number of function evaluations is exceeded" in res.message
-    )
+    assert res.success or ("maximum number of function evaluations" in res.message)
     return np.exp(res.x)
