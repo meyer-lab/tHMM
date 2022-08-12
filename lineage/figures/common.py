@@ -317,7 +317,7 @@ def commonAnalyze(list_of_populations, num_states, xtype="length", **kwargs):
                               list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
 
     # Collecting the results of analyzing the lineages
-    results_holder = [Results(o) for o in output]
+    results_holder = [Results(o[0], o[1]) for o in output]
 
     dictOut = {}
 

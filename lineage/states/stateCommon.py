@@ -1,11 +1,15 @@
 """ Common utilities used between states regardless of distribution. """
 
+import warnings
 import numpy as np
 from ctypes import CFUNCTYPE, c_double
 from numba.extending import get_cython_function_address
 from numba import jit
 from numba.typed import List
 from scipy.optimize import minimize, Bounds
+
+
+warnings.filterwarnings("ignore", message="Values in x were outside bounds")
 
 
 def basic_censor(cell):
