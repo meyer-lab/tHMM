@@ -75,27 +75,6 @@ def gamma_LL(
     return outt
 
 
-@jit(nopython=True)
-def gamma_LL_diff(
-    x0: np.ndarray,
-    gamma_obs: List[np.ndarray],
-    time_cen: List[np.ndarray],
-    gammas: List[np.ndarray],
-):
-    """Finite differencing of objective function."""
-    f0 = gamma_LL(x0, gamma_obs, time_cen, gammas)
-    grad = np.empty(x0.size)
-    dx = 2e-8
-
-    for i in range(x0.size):
-        x = np.copy(x0)
-        x[i] += dx
-        fdx = gamma_LL(x, gamma_obs, time_cen, gammas)
-        grad[i] = (fdx - f0) / dx
-
-    return f0, grad
-
-
 def gamma_estimator(
     gamma_obs: list[np.ndarray],
     time_cen: list[np.ndarray],
@@ -118,29 +97,27 @@ def gamma_estimator(
         assert gamma_obs[i].shape == gammas[i].shape
 
     arrgs = (List(gamma_obs), List(time_cen), List(gammas))
+    linc = list()
 
     if len(gamma_obs) == 4:  # for constrained optimization
         A = np.zeros((3, 5))  # constraint Jacobian
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)
 
-        linc = {
+        linc.append({
             "type": "ineq",
             "fun": lambda x: np.diff(x)[1:],
-            "jac": lambda x: A,
-        }
+            "jac": lambda _: A,
+        })
 
         if np.any(np.dot(A, x0) < 0.0):
             x0 = np.array([x0[0], x0[1], x0[1], x0[1], x0[1]])
-    else:
-        linc = ()
 
     bnd = Bounds(np.full_like(x0, -3.5), np.full_like(x0, 6.0), keep_feasible=True)
 
     with np.errstate(all="raise"):
         res = minimize(
-            gamma_LL_diff,
-            jac=True,
+            gamma_LL,
             x0=np.log(x0),
             args=arrgs,
             bounds=bnd,
