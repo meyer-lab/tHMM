@@ -4,6 +4,7 @@ import numpy as np
 
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
+from ..Analyze import fit_list
 from ..states.StateDistributionGamma import atonce_estimator, StateDistribution as gamma_state
 from ..states.StateDistributionGaPhs import StateDistribution as gamma_statePh
 
@@ -21,7 +22,7 @@ def test_estimationEvaluationGamma(censored):
     def gen(): return LineageTree.init_from_parameters(pi, T, E_gamma, 2**8, censor_condition=censored, desired_experiment_time=100)
     lineage_gamma = [gen() for _ in range(50)]
     solver_gamma = tHMM(lineage_gamma, 1)  # evaluating for one state
-    solver_gamma.fit()
+    fit_list([solver_gamma])
 
     assert solver_gamma.estimate.E[0].dist(E_gamma[0]) < 4.0
 

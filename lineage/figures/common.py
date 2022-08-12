@@ -14,7 +14,7 @@ import pandas as pd
 from matplotlib import gridspec, rcParams, pyplot as plt
 import seaborn as sns
 import svgutils.transform as st
-from ..Analyze import run_Results_over, run_Analyze_over
+from ..Analyze import Results, run_Analyze_over
 from ..BaumWelch import calculate_stationary
 
 matplotlib.use('AGG')
@@ -317,7 +317,7 @@ def commonAnalyze(list_of_populations, num_states, xtype="length", **kwargs):
                               list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
 
     # Collecting the results of analyzing the lineages
-    results_holder = run_Results_over(output)
+    results_holder = [Results(o) for o in output]
 
     dictOut = {}
 
