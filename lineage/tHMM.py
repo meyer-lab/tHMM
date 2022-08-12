@@ -148,15 +148,19 @@ class tHMM:
 
         log_scores = []
         for idx, lineageObj in enumerate(self.X):
-            log_score = 0.0
+            state_tree_sequence = X_state_tree_sequence[idx]
+
             # the first term is the value of pi for the state of the first cell
-            log_score += np.log(pi[X_state_tree_sequence[idx][0]])
-            log_score += log_T_score(T, X_state_tree_sequence[idx], lineageObj)
-            log_score += log_E_score(
-                get_Emission_Likelihoods(self, E)[idx], X_state_tree_sequence[idx]
-            )
+            log_score = np.log(pi[state_tree_sequence[0]])
+            log_score += log_T_score(T, state_tree_sequence, lineageObj)
+
+            # Calculate the joint probability of state and observations
+            log_EL_array = np.log(get_Emission_Likelihoods(self, E)[idx])
+            log_score += np.sum(log_EL_array[np.arange(log_EL_array.shape[0]), state_tree_sequence])
+
             assert np.all(np.isfinite(log_score))
             log_scores.append(log_score)
+
         return log_scores
 
 
@@ -178,31 +182,14 @@ def log_T_score(T, state_tree_sequence: list, lineageObj) -> float:
     # we start with the first transition, from the root cell
     for level in lineageObj.output_list_of_gens[1:]:
         for cell in level:
-            cell_idx = lineageObj.output_lineage.index(cell)
-            cell_state = state_tree_sequence[cell_idx]
             if not cell.isLeaf():
+                cell_idx = lineageObj.output_lineage.index(cell)
+                cell_state = state_tree_sequence[cell_idx]
                 for daughter in cell.get_daughters():
                     child_idx = lineageObj.output_lineage.index(daughter)
                     daughter_state = state_tree_sequence[child_idx]
                     log_T_score_holder += log_T[cell_state, daughter_state]
     return log_T_score_holder
-
-
-def log_E_score(EL_array: np.ndarray, state_tree_sequence: list) -> float:
-    """
-    To calculate the joint probability of state and observations.
-    This function calculates the third term.
-    :math:`P(x_1,...,x_N,z_1,...,z_N) = P(z_1) * prod_{n=2:N}(P(z_n | z_pn)) * prod_{n=1:N}(P(x_n|z_n))`
-    :math:`log{P(x_1,...,x_N,z_1,...,z_N)} = log{P(z_1)} + sum_{n=2:N}(log{P(z_n | z_pn)}) + sum_{n=1:N}(log{P(x_n|z_n)})`
-    :param EL_array: emission likelihood for a given lineage tree object
-    :param state_tree_sequence: the assigned states to cells at each lineage object
-    :return: the log-likelihood of emissions
-    """
-    log_EL_array = np.log(EL_array)
-    log_E_score_holder = 0
-    for idx, row in enumerate(log_EL_array):
-        log_E_score_holder += row[state_tree_sequence[idx]]
-    return log_E_score_holder
 
 
 def fit_list(
