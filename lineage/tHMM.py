@@ -4,6 +4,7 @@ from copy import deepcopy
 import numpy as np
 from typing import Tuple
 from .Viterbi import Viterbi
+from .LineageTree import LineageTree
 
 
 class estimate:
@@ -146,7 +147,7 @@ class tHMM:
         return log_scores
 
 
-def log_T_score(T, state_tree_sequence: list, lineageObj) -> float:
+def log_T_score(T: np.ndarray, state_tree_sequence: list, lineageObj: LineageTree) -> float:
     """
     To calculate the joint probability of state and observations.
     This function calculates the second term.
@@ -174,7 +175,7 @@ def log_T_score(T, state_tree_sequence: list, lineageObj) -> float:
     return log_T_score_holder
 
 
-def get_Emission_Likelihoods(tHMMobj, E: list = None) -> list:
+def get_Emission_Likelihoods(tHMMobj: tHMM, E: list = None) -> list:
     """
     Emission Likelihood (EL) matrix.
 

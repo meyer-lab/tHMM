@@ -58,10 +58,6 @@ def import_AU565(path: str) -> list:
             if (cell.obs[1] == 0 and cell.obs[2] == 0):
                 lineage_list.pop(n)
 
-        # give all cells of the same lineage a track id
-        for cell in lineage_list:
-            cell.lineageID = i
-
         population.append(lineage_list)
     return population
 
@@ -156,10 +152,6 @@ def import_MCF10A(path: str):
                 for cells in lineage_list:
                     if cells.gen == ii:
                         ordered_list.append(cells)
-
-            # give all cells of the same lineage a track id
-            for cell in ordered_list:
-                cell.lineageID = i
 
             population.append(ordered_list)
     return population

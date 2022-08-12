@@ -4,7 +4,7 @@ import warnings
 import numpy as np
 from ctypes import CFUNCTYPE, c_double
 from numba.extending import get_cython_function_address
-from numba import jit
+from numba import jit  # type: ignore
 from numba.typed import List
 from scipy.optimize import minimize, Bounds
 
@@ -108,11 +108,13 @@ def gamma_estimator(
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)
 
-        linc.append({
-            "type": "ineq",
-            "fun": lambda x: np.diff(x)[1:],
-            "jac": lambda _: A,
-        })
+        linc.append(
+            {
+                "type": "ineq",
+                "fun": lambda x: np.diff(x)[1:],
+                "jac": lambda _: A,
+            }
+        )
 
         if np.any(np.dot(A, x0) < 0.0):
             x0 = np.array([x0[0], x0[1], x0[1], x0[1], x0[1]])
