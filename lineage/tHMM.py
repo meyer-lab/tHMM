@@ -3,16 +3,6 @@
 from copy import deepcopy
 import numpy as np
 from typing import Tuple
-import scipy.stats as sp
-
-from .UpwardRecursion import get_Emission_Likelihoods
-from .BaumWelch import (
-    do_E_step,
-    calculate_log_likelihood,
-    do_M_step,
-    do_M_E_step,
-    do_M_E_step_atonce,
-)
 from .Viterbi import Viterbi
 
 
@@ -72,19 +62,6 @@ class tHMM:
             self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE
         )
 
-    def fit(self, tolerance=1e-9, max_iter=1000):
-        """
-        Runs the tHMM function through Baum Welch fitting.
-
-        :param tolerance: the tolerance for change of likelihood between two steps
-        :param max_iter: the maximum number of iterations for fitting
-        """
-        MSD_list, NF_list, betas_list, gammas_list, new_LL = fit_list(
-            [self], tolerance=tolerance, max_iter=max_iter
-        )
-
-        return self, MSD_list[0], NF_list[0], betas_list[0], gammas_list[0], new_LL
-
     def predict(self) -> list:
         """
         Given a fit model, the model predicts an optimal
@@ -128,6 +105,9 @@ class tHMM:
 
         return BIC_value, degrees_of_freedom
 
+    def get_Emission_Likelihoods(self):
+        return get_Emission_Likelihoods(self)
+
     def log_score(self, X_state_tree_sequence: list, pi=None, T=None, E=None) -> list:
         """
         This function returns the log-likelihood of a possible state assignment
@@ -156,7 +136,9 @@ class tHMM:
 
             # Calculate the joint probability of state and observations
             log_EL_array = np.log(get_Emission_Likelihoods(self, E)[idx])
-            log_score += np.sum(log_EL_array[np.arange(log_EL_array.shape[0]), state_tree_sequence])
+            log_score += np.sum(
+                log_EL_array[np.arange(log_EL_array.shape[0]), state_tree_sequence]
+            )
 
             assert np.all(np.isfinite(log_score))
             log_scores.append(log_score)
@@ -192,50 +174,35 @@ def log_T_score(T, state_tree_sequence: list, lineageObj) -> float:
     return log_T_score_holder
 
 
-def fit_list(
-    tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100
-) -> Tuple[list, list, list, list, float]:
+def get_Emission_Likelihoods(tHMMobj, E: list = None) -> list:
     """
-    Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
+    Emission Likelihood (EL) matrix.
 
-    :param tHMMobj_list: all lineage trees we want to fit at once
-    :param tolerance: the stopping criteria for fitting. when the likelihood does not change more than tolerance from one step to the other, the fitting converges.
-    :param max_iter: the maximum number of iterations for fitting
-    :return MSD_list: marginal state distributions for all populations we fit at once
-    :return NF: normalizing factor
-    :return betas: beta values (conditional probability of cell states given cell observations)
-    :return gammas: gamma values (used to calculate the downward reursion)
-    :return new_LL: the log-likelihood of the optimized solution
+    Each element in this N by K matrix represents the probability
+
+    :math:`P(x_n = x | z_n = k)`,
+
+    for all :math:`x_n` and :math:`z_n` in our observed and hidden state tree
+    and for all possible discrete states k.
+    :param tHMMobj: A class object with properties of the lineages of cells
+    :param E: The emissions likelihood
+    :return: The marginal state distribution
     """
+    if E is None:
+        E = tHMMobj.estimate.E
 
-    # Step 0: initialize with random assignments and do an M step
-    # when there are no fixed emissions, we need to randomize the start
-    init_gam = [
-        [sp.dirichlet.rvs(np.ones(tO.num_states), size=len(lin)) for lin in tO.X]
-        for tO in tHMMobj_list
-    ]
+    all_cells = np.array([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
+    ELstack = np.zeros((len(all_cells), tHMMobj.num_states))
 
-    if len(tHMMobj_list) > 1:  # it means we are fitting several concentrations at once.
-        do_M_E_step_atonce(tHMMobj_list, init_gam)
-    else:  # means we are fitting one condition at a time.
-        do_M_E_step(tHMMobj_list[0], init_gam[0])
+    for k in range(tHMMobj.num_states):  # for each state
+        ELstack[:, k] = np.exp(E[k].logpdf(all_cells))
+        assert np.all(np.isfinite(ELstack[:, k]))
+    EL = []
+    ii = 0
+    for lineageObj in tHMMobj.X:  # for each lineage in our Population
+        nl = len(lineageObj.output_lineage)  # getting the lineage length
+        EL.append(ELstack[ii:(ii + nl), :])  # append the EL_array for each lineage
 
-    # Step 1: first E step
-    MSD_list, NF_list, betas_list, gammas_list = map(
-        list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list])
-    )
-    old_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
+        ii += nl
 
-    # first stopping condition check
-    for _ in range(max_iter):
-        do_M_step(tHMMobj_list, MSD_list, betas_list, gammas_list)
-        MSD_list, NF_list, betas_list, gammas_list = map(
-            list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list])
-        )
-        new_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
-        if new_LL - old_LL < tolerance:
-            break
-
-        old_LL = new_LL
-
-    return MSD_list, NF_list, betas_list, gammas_list, new_LL
+    return EL

@@ -4,7 +4,6 @@ from typing import Tuple, Any
 
 from .UpwardRecursion import (
     get_Marginal_State_Distributions,
-    get_Emission_Likelihoods,
     get_leaf_Normalizing_Factors,
     get_leaf_betas,
     get_nonleaf_NF_and_betas,
@@ -14,6 +13,8 @@ from .DownwardRecursion import (
     get_gammas,
     sum_nonleaf_gammas,
 )
+
+from .tHMM import get_Emission_Likelihoods
 
 from .states.StateDistributionGamma import atonce_estimator
 

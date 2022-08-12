@@ -1,9 +1,10 @@
 """This file contains the methods that completes the downward recursion and evaulates the beta values."""
 
 import numpy as np
+from .tHMM import tHMM
 
 
-def get_Marginal_State_Distributions(tHMMobj):
+def get_Marginal_State_Distributions(tHMMobj: tHMM):
     r"""Marginal State Distribution (MSD) matrix and recursion.
     This is the probability that a hidden state variable :math:`z_n` is of
     state k, that is, each value in the N by K MSD array for each lineage is
@@ -47,41 +48,7 @@ def get_Marginal_State_Distributions(tHMMobj):
     return MSD
 
 
-def get_Emission_Likelihoods(tHMMobj, E: list = None) -> list:
-    """
-    Emission Likelihood (EL) matrix.
-
-    Each element in this N by K matrix represents the probability
-
-    :math:`P(x_n = x | z_n = k)`,
-
-    for all :math:`x_n` and :math:`z_n` in our observed and hidden state tree
-    and for all possible discrete states k.
-    :param tHMMobj: A class object with properties of the lineages of cells
-    :param E: The emissions likelihood
-    :return: The marginal state distribution
-    """
-    if E is None:
-        E = tHMMobj.estimate.E
-
-    all_cells = np.array([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
-    ELstack = np.zeros((len(all_cells), tHMMobj.num_states))
-
-    for k in range(tHMMobj.num_states):  # for each state
-        ELstack[:, k] = np.exp(E[k].logpdf(all_cells))
-        assert np.all(np.isfinite(ELstack[:, k]))
-    EL = []
-    ii = 0
-    for lineageObj in tHMMobj.X:  # for each lineage in our Population
-        nl = len(lineageObj.output_lineage)  # getting the lineage length
-        EL.append(ELstack[ii:(ii + nl), :])  # append the EL_array for each lineage
-
-        ii += nl
-
-    return EL
-
-
-def get_leaf_Normalizing_Factors(tHMMobj, MSD: list, EL: list) -> list:
+def get_leaf_Normalizing_Factors(tHMMobj: tHMM, MSD: list, EL: list) -> list:
     """
     Normalizing factor (NF) matrix and base case at the leaves.
 
@@ -131,7 +98,7 @@ def get_leaf_Normalizing_Factors(tHMMobj, MSD: list, EL: list) -> list:
     return NF
 
 
-def get_leaf_betas(tHMMobj, MSD: list, EL: list, NF: list):
+def get_leaf_betas(tHMMobj: tHMM, MSD: list, EL: list, NF: list):
     r"""Beta matrix and base case at the leaves.
 
     Each element in this N by K matrix is the beta value
@@ -171,7 +138,7 @@ def get_leaf_betas(tHMMobj, MSD: list, EL: list, NF: list):
     return betas
 
 
-def get_nonleaf_NF_and_betas(tHMMobj, MSD: list, EL: list, NF: list, betas: list):
+def get_nonleaf_NF_and_betas(tHMMobj: tHMM, MSD: list, EL: list, NF: list, betas: list):
     """
     Traverses through each tree and calculates the
     beta value for each non-leaf cell. The normalizing factors (NFs)

@@ -2,12 +2,9 @@
 import unittest
 import pytest
 import numpy as np
-from ..UpwardRecursion import (
-    get_Marginal_State_Distributions,
-    get_Emission_Likelihoods,
-)
+from ..UpwardRecursion import get_Marginal_State_Distributions
 from ..LineageTree import LineageTree
-from ..tHMM import tHMM
+from ..tHMM import tHMM, get_Emission_Likelihoods
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
 from ..figures.common import pi, T, E
 from ..Analyze import Analyze, Results, run_Analyze_over

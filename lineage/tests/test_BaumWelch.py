@@ -7,6 +7,7 @@ from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 from ..BaumWelch import do_E_step, do_M_E_step, calculate_log_likelihood, calculate_stationary
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
+from ..Analyze import fit_list
 from ..figures.common import pi, T, E
 
 
@@ -24,8 +25,9 @@ def test_BW(cens, nStates):
     assert np.isfinite(LL_before)
 
     # Get the likelihoods after fitting
-    _, _, NF_after, _, _, new_LL_list_after = tHMMobj.fit(max_iter=3)
-    LL_after = calculate_log_likelihood(NF_after)
+    _, NF_after, _, _, new_LL_list_after = fit_list([tHMMobj], max_iter=3)
+
+    LL_after = calculate_log_likelihood(NF_after[0])
     assert np.isfinite(LL_after)
     assert np.isfinite(new_LL_list_after)
     assert LL_after > LL_before
