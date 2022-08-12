@@ -3,7 +3,6 @@
 from copy import deepcopy
 import numpy as np
 from typing import Tuple
-from .UpwardRecursion import get_Emission_Likelihoods
 from .Viterbi import Viterbi
 
 
@@ -106,6 +105,9 @@ class tHMM:
 
         return BIC_value, degrees_of_freedom
 
+    def get_Emission_Likelihoods(self):
+        return get_Emission_Likelihoods(self)
+
     def log_score(self, X_state_tree_sequence: list, pi=None, T=None, E=None) -> list:
         """
         This function returns the log-likelihood of a possible state assignment
@@ -170,3 +172,37 @@ def log_T_score(T, state_tree_sequence: list, lineageObj) -> float:
                     daughter_state = state_tree_sequence[child_idx]
                     log_T_score_holder += log_T[cell_state, daughter_state]
     return log_T_score_holder
+
+
+def get_Emission_Likelihoods(tHMMobj, E: list = None) -> list:
+    """
+    Emission Likelihood (EL) matrix.
+
+    Each element in this N by K matrix represents the probability
+
+    :math:`P(x_n = x | z_n = k)`,
+
+    for all :math:`x_n` and :math:`z_n` in our observed and hidden state tree
+    and for all possible discrete states k.
+    :param tHMMobj: A class object with properties of the lineages of cells
+    :param E: The emissions likelihood
+    :return: The marginal state distribution
+    """
+    if E is None:
+        E = tHMMobj.estimate.E
+
+    all_cells = np.array([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
+    ELstack = np.zeros((len(all_cells), tHMMobj.num_states))
+
+    for k in range(tHMMobj.num_states):  # for each state
+        ELstack[:, k] = np.exp(E[k].logpdf(all_cells))
+        assert np.all(np.isfinite(ELstack[:, k]))
+    EL = []
+    ii = 0
+    for lineageObj in tHMMobj.X:  # for each lineage in our Population
+        nl = len(lineageObj.output_lineage)  # getting the lineage length
+        EL.append(ELstack[ii:(ii + nl), :])  # append the EL_array for each lineage
+
+        ii += nl
+
+    return EL

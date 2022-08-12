@@ -1,7 +1,6 @@
 """ This file contains the methods for the Viterbi algorithm implemented in an a upward recursion. """
 import numpy as np
 from typing import Tuple
-from .UpwardRecursion import get_Emission_Likelihoods
 
 
 # pylint: disable=too-many-nested-blocks
@@ -16,7 +15,7 @@ def get_leaf_deltas(tHMMobj) -> Tuple[list, list]:
     :return: a list of N by K matrices for each lineage, initialized from the leaf cells by EL(n,k).
     """
     num_states = tHMMobj.num_states
-    EL = get_Emission_Likelihoods(tHMMobj)
+    EL = tHMMobj.get_Emission_Likelihoods()
 
     deltas = []
     state_ptrs = []
@@ -45,7 +44,7 @@ def get_nonleaf_deltas(tHMMobj, deltas: list, state_ptrs: list):
     :param deltas: a list of N by K matrices for each lineage, initialized from the leaf cells by EL(n,k).
     :param state_ptrs: a list of N by K matrices that are state pointers, to obtain nonleaf deltas.
     """
-    EL = get_Emission_Likelihoods(tHMMobj)
+    EL = tHMMobj.get_Emission_Likelihoods()
 
     for num, linObj in enumerate(tHMMobj.X):
         lineage = linObj.output_lineage  # getting the lineage in the Population by index

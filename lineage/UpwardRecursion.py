@@ -48,40 +48,6 @@ def get_Marginal_State_Distributions(tHMMobj: tHMM):
     return MSD
 
 
-def get_Emission_Likelihoods(tHMMobj: tHMM, E: list = None) -> list:
-    """
-    Emission Likelihood (EL) matrix.
-
-    Each element in this N by K matrix represents the probability
-
-    :math:`P(x_n = x | z_n = k)`,
-
-    for all :math:`x_n` and :math:`z_n` in our observed and hidden state tree
-    and for all possible discrete states k.
-    :param tHMMobj: A class object with properties of the lineages of cells
-    :param E: The emissions likelihood
-    :return: The marginal state distribution
-    """
-    if E is None:
-        E = tHMMobj.estimate.E
-
-    all_cells = np.array([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
-    ELstack = np.zeros((len(all_cells), tHMMobj.num_states))
-
-    for k in range(tHMMobj.num_states):  # for each state
-        ELstack[:, k] = np.exp(E[k].logpdf(all_cells))
-        assert np.all(np.isfinite(ELstack[:, k]))
-    EL = []
-    ii = 0
-    for lineageObj in tHMMobj.X:  # for each lineage in our Population
-        nl = len(lineageObj.output_lineage)  # getting the lineage length
-        EL.append(ELstack[ii:(ii + nl), :])  # append the EL_array for each lineage
-
-        ii += nl
-
-    return EL
-
-
 def get_leaf_Normalizing_Factors(tHMMobj: tHMM, MSD: list, EL: list) -> list:
     """
     Normalizing factor (NF) matrix and base case at the leaves.
