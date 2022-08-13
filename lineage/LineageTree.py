@@ -175,6 +175,65 @@ class LineageTree:
         assert np.all(np.isfinite(NF_array))
         return NF_array
 
+    def sum_nonleaf_gammas(self, gamma_arr: np.ndarray) -> np.ndarray:
+        """
+        Sum of the gammas of the cells that are able to divide, that is,
+        sum the of the gammas of all the nonleaf cells. It is used in estimating the transition probability matrix.
+        This is an inner component in calculating the overall transition probability matrix.
+
+        This is downward recursion.
+
+        :param lO: the object of lineage tree
+        :param gamma_arr: the gamma values for each lineage
+        :return: the sum of gamma values for each state for non-leaf cells.
+        """
+        sum_wo_leaf = np.zeros(gamma_arr.shape[1])
+        for level in self.output_list_of_gens[
+            1:
+        ]:  # sum the gammas for cells that are transitioning
+            for cell in level:
+                if not cell.isLeaf():
+                    cell_idx = self.output_lineage.index(cell)
+                    sum_wo_leaf += gamma_arr[cell_idx, :]
+        assert np.all(np.isfinite(sum_wo_leaf))
+
+        return sum_wo_leaf
+
+    def get_gamma(self, T: np.ndarray, MSD: np.ndarray, beta: np.ndarray) -> np.ndarray:
+        """
+        Get the gammas for all other nodes using recursion (downward) from the root nodes.
+        The conditional probability of states, given the observation of the whole tree P(z_n = k | X_bar = x_bar)
+        x_bar is the observations for the whole tree.
+        gamma_1 (k) = P(z_1 = k | X_bar = x_bar)
+        gamma_n (k) = P(z_n = k | X_bar = x_bar)
+
+        :param tHMMobj: A class object with properties of the lineages of cells
+        :param MSD: The marginal state distribution P(z_n = k)
+        :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
+        :type betas: list of ndarray
+        """
+        gamma = np.zeros((len(self.output_lineage), T.shape[0]))
+        gamma[0, :] = beta[0, :]
+
+        lineage = self.output_lineage
+        coeffs = beta / np.clip(MSD, np.finfo(float).eps, np.inf)
+        coeffs = np.clip(coeffs, np.finfo(float).eps, np.inf)
+        beta_parents = np.einsum("ij,kj->ik", T, coeffs)
+
+        for level in self.output_list_of_gens[1:]:
+            for cell in level:
+                parent_idx = lineage.index(cell)
+                gam = gamma[parent_idx, :]
+
+                for d in cell.get_daughters():
+                    ci = lineage.index(d)
+                    gamma[ci, :] = coeffs[ci, :] * np.matmul(
+                        gam / beta_parents[:, ci], T
+                    )
+
+        assert np.all(np.isfinite(gamma))
+        return gamma
+
     def __len__(self):
         """Defines the length of a lineage by returning the number of cells
         it contains.

@@ -7,11 +7,6 @@ from .UpwardRecursion import (
     get_nonleaf_NF_and_betas,
 )
 
-from .DownwardRecursion import (
-    get_gammas,
-    sum_nonleaf_gammas,
-)
-
 from .tHMM import tHMM
 from .states.StateDistributionGamma import atonce_estimator
 
@@ -31,7 +26,7 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     NF = [lO.get_leaf_Normalizing_Factors(MSD[ii], EL[ii]) for ii, lO in enumerate(tHMMobj.X)]
     betas = get_leaf_betas(tHMMobj, MSD, EL, NF)
     get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas)
-    gammas = get_gammas(tHMMobj, MSD, betas)
+    gammas = [lO.get_gamma(tHMMobj.estimate.T, MSD[ii], betas[ii]) for ii, lO in enumerate(tHMMobj.X)]
 
     return MSD, NF, betas, gammas
 
@@ -154,7 +149,7 @@ def do_M_T_step(tHMMobj: list[tHMM], MSD: list[np.ndarray], betas: list, gammas:
         for num, lO in enumerate(tt.X):
             # local T estimate
             numer_e += get_all_zetas(lO, betas[i][num], MSD[i][num], gammas[i][num], tt.estimate.T)
-            denom_e += sum_nonleaf_gammas(lO, gammas[i][num])
+            denom_e += lO.sum_nonleaf_gammas(gammas[i][num])
 
     T_estimate = numer_e / denom_e[:, np.newaxis]
     T_estimate /= T_estimate.sum(axis=1)[:, np.newaxis]
