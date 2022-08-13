@@ -159,7 +159,7 @@ def max_gen(lineage: list) -> Tuple[int, list]:
     creates a list of them, appends the lists leading to have a list of the lists of cells in specific generations.
     :param lineage: The list of cells in a lineageTree object.
     :return max: The maximal generation in the tree.
-    :return list_of_lists_of_cells_by_gen: The list of lists of cells belonging to the same genereation separated by specific generations.
+    :return list_of_lists_of_cells_by_gen: The list of lists of cells belonging to the same generation separated by specific generations.
     """
     gens = sorted({cell.gen for cell in lineage})  # appending the generation of cells in the lineage
     list_of_lists_of_cells_by_gen = [[None]]

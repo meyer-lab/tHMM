@@ -1,10 +1,18 @@
 """ Calls the tHMM functions and outputs the parameters needed to generate the Figures. """
 import itertools
+from typing import Any, Tuple, Union
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor, Future, Executor
 from sklearn.metrics import rand_score, confusion_matrix
-from .tHMM import tHMM, fit_list
-from typing import Any, Tuple, Union
+from .tHMM import tHMM
+import scipy.stats as sp
+from .BaumWelch import (
+    do_E_step,
+    calculate_log_likelihood,
+    do_M_step,
+    do_M_E_step,
+    do_M_E_step_atonce,
+)
 
 
 class DummyExecutor(Executor):
@@ -25,6 +33,55 @@ def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, float]:
     """
     tHMMobj_list, LL, _ = Analyze_list([X], num_states, **kwargs)
     return tHMMobj_list[0], LL
+
+
+def fit_list(
+    tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100
+) -> Tuple[list, list, list, list, float]:
+    """
+    Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
+
+    :param tHMMobj_list: all lineage trees we want to fit at once
+    :param tolerance: the stopping criteria for fitting. when the likelihood does not change more than tolerance from one step to the other, the fitting converges.
+    :param max_iter: the maximum number of iterations for fitting
+    :return MSD_list: marginal state distributions for all populations we fit at once
+    :return NF: normalizing factor
+    :return betas: beta values (conditional probability of cell states given cell observations)
+    :return gammas: gamma values (used to calculate the downward reursion)
+    :return new_LL: the log-likelihood of the optimized solution
+    """
+
+    # Step 0: initialize with random assignments and do an M step
+    # when there are no fixed emissions, we need to randomize the start
+    init_gam = [
+        [sp.dirichlet.rvs(np.ones(tO.num_states), size=len(lin)) for lin in tO.X]
+        for tO in tHMMobj_list
+    ]
+
+    if len(tHMMobj_list) > 1:  # it means we are fitting several concentrations at once.
+        do_M_E_step_atonce(tHMMobj_list, init_gam)
+    else:  # means we are fitting one condition at a time.
+        do_M_E_step(tHMMobj_list[0], init_gam[0])
+
+    # Step 1: first E step
+    MSD_list, NF_list, betas_list, gammas_list = map(
+        list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list])
+    )
+    old_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
+
+    # first stopping condition check
+    for _ in range(max_iter):
+        do_M_step(tHMMobj_list, MSD_list, betas_list, gammas_list)
+        MSD_list, NF_list, betas_list, gammas_list = map(
+            list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list])
+        )
+        new_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
+        if new_LL - old_LL < tolerance:
+            break
+
+        old_LL = new_LL
+
+    return MSD_list, NF_list, betas_list, gammas_list, new_LL
 
 
 def Analyze_list(Population_list: list, num_states: int, **kwargs) -> Tuple[list[tHMM], float, list]:
@@ -145,26 +202,7 @@ def Results(tHMMobj, LL: float) -> dict[str, Any]:
     return results_dict
 
 
-def run_Results_over(output: list, parallel=True) -> list:
-    """
-    A function that can be parallelized to speed up figure creation.
-    Output is a list of tuples from the results of running :func:`run_Analyze_over`
-    :param output: The list of results from fitting a lineage.
-    :param parallel: True if we have multiple conditions to run at once, False if no parallel fitting.
-    """
-    exe: Union[ProcessPoolExecutor, DummyExecutor]
-    if parallel:
-        exe = ProcessPoolExecutor()
-    else:
-        exe = DummyExecutor()
-
-    prom_holder = [exe.submit(Results, *x) for x in output]
-    output = [prom.result() for prom in prom_holder]
-    exe.shutdown()
-    return output
-
-
-def permute_states(tHMMobj: Any, switch_map: np.ndarray) -> Tuple[Any, list]:
+def permute_states(tHMMobj: tHMM, switch_map: np.ndarray) -> Tuple[Any, list]:
     """
     This function takes the tHMMobj and the predicted states,
     and finds out whether we need to switch the state identities or not based on the likelihood.
