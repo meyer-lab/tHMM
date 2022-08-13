@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from ..CellVar import CellVar as c, get_subtrees, find_two_subtrees
-from ..LineageTree import LineageTree, max_gen, get_leaves
+from ..LineageTree import LineageTree, max_gen, get_leaves_idx
 from ..states.StateDistributionGamma import StateDistribution
 
 
@@ -102,15 +102,14 @@ class TestModel(unittest.TestCase):
         for 3 generations ==> total of 7 cells in the setup function.
         """
 
-        max_generation, list_by_gen = max_gen(self.test_lineage)
-        self.assertTrue(max_generation == 3)
+        list_by_gen = max_gen(self.test_lineage)
         self.assertTrue(list_by_gen[1] == self.level1)
         self.assertTrue(list_by_gen[2] == self.level2)
         self.assertTrue(list_by_gen[3] == self.level3)
 
     def test_get_parent_for_level(self):
         """ A unittest for get_parent_for_level. """
-        _, list_by_gen = max_gen(self.lineage1.output_lineage)
+        list_by_gen = max_gen(self.lineage1.output_lineage)
         parent_ind_holder = self.lineage1.get_parents_for_level(list_by_gen[3])
 
         # making a list of parent cells using the indexes that
@@ -126,12 +125,7 @@ class TestModel(unittest.TestCase):
         A unittest fot get_leaves function.
         """
         # getting the leaves and their indexes for lineage1
-        leaf_index, leaf_cells = get_leaves(self.lineage1.output_lineage)
-
-        # to check the leaf cells do not have daughters
-        for cells in leaf_cells:
-            self.assertTrue(cells.isLeaf())
-            self.assertTrue(cells.isLeaf())
+        leaf_index = get_leaves_idx(self.lineage1.output_lineage)
 
         # to check the indexes for leaf cells are true
         for i in leaf_index:

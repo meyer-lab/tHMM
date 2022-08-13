@@ -3,8 +3,6 @@ import numpy as np
 from typing import Tuple, Any
 
 from .UpwardRecursion import (
-    get_Marginal_State_Distributions,
-    get_leaf_Normalizing_Factors,
     get_leaf_betas,
     get_nonleaf_NF_and_betas,
 )
@@ -28,9 +26,9 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     :return betas: beta values (conditional probability of cell states given cell observations)
     :return gammas: gamma values (used to calculate the downward reursion)
     """
-    MSD = get_Marginal_State_Distributions(tHMMobj)
+    MSD = [lO.get_Marginal_State_Distributions(tHMMobj.estimate.pi, tHMMobj.estimate.T) for lO in tHMMobj.X]
     EL = tHMMobj.get_Emission_Likelihoods()
-    NF = get_leaf_Normalizing_Factors(tHMMobj, MSD, EL)
+    NF = [lO.get_leaf_Normalizing_Factors(MSD[ii], EL[ii]) for ii, lO in enumerate(tHMMobj.X)]
     betas = get_leaf_betas(tHMMobj, MSD, EL, NF)
     get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas)
     gammas = get_gammas(tHMMobj, MSD, betas)

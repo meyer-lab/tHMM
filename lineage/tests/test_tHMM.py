@@ -2,7 +2,6 @@
 import unittest
 import pytest
 import numpy as np
-from ..UpwardRecursion import get_Marginal_State_Distributions
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM, get_Emission_Likelihoods
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
@@ -29,9 +28,6 @@ class TestModel(unittest.TestCase):
         self.t = tHMM(self.X, num_states=2)  # build the tHMM class with X
         self.t3 = tHMM(self.X3, num_states=3)  # build the tHMM class for 3 states
 
-        self.MSD = get_Marginal_State_Distributions(self.t)
-        self.MSD3 = get_Marginal_State_Distributions(self.t3)
-
     def test_init_paramlist(self):
         """
         Make sure paramlist has proper
@@ -48,22 +44,6 @@ class TestModel(unittest.TestCase):
         self.assertEqual(t3.estimate.T.shape[0], 3)  # make sure shape is num_states
         self.assertEqual(t3.estimate.T.shape[1], 3)  # make sure shape is num_states
         self.assertEqual(len(t3.estimate.E), 3)  # make sure shape is num_states
-
-    def test_get_MSD(self):
-        """
-        Calls get_Marginal_State_Distributions and
-        ensures the output is of correct data type and
-        structure.
-        """
-        MSD = self.MSD
-        MSD3 = self.MSD3
-        for ind, MSDlin in enumerate(MSD):
-            self.assertGreaterEqual(MSDlin.shape[0], 0)  # at least zero cells in each lineage
-            self.assertGreaterEqual(MSD3[ind].shape[0], 0)  # at least zero cells in each lineage
-            self.assertEqual(MSDlin.shape[1], 2)  # there are 2 states for each cell
-            self.assertEqual(MSD3[ind].shape[1], 3)  # there are 3 states for each cell
-            for node_n in range(MSDlin.shape[0]):
-                self.assertTrue(np.isclose(sum(MSDlin[node_n, :]), 1))  # the rows should sum to 1
 
     def test_get_EL(self):
         """

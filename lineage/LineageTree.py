@@ -1,7 +1,6 @@
 """ This file contains the LineageTree class. """
 import numpy as np
 import operator
-from typing import Tuple
 from .CellVar import CellVar
 
 
@@ -14,25 +13,31 @@ class LineageTree:
     observations based on their states by sampling observations from their emission distributions.
     The lineage tree is then censord based on the censor condition.
     """
+
     pi: np.ndarray
     T: np.ndarray
-    num_states: int
-    full_lineage: list
-    full_max_gen: int
-    full_list_of_gens: list
-    full_leaves_idx: list
-    full_leaves: list
+    leaves_idx: np.ndarray
+    output_list_of_gens: list
 
     def __init__(self, list_of_cells: list, E: list):
         self.E = E
         self.output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
-        self.output_max_gen, self.output_list_of_gens = max_gen(self.output_lineage)
+        self.output_list_of_gens = max_gen(self.output_lineage)
         # assign times using the state distribution specific time model
         E[0].assign_times(self.output_list_of_gens)
-        self.output_leaves_idx, self.output_leaves = get_leaves(self.output_lineage)
+        self.leaves_idx = get_leaves_idx(self.output_lineage)
 
     @classmethod
-    def init_from_parameters(cls, pi: np.ndarray, T: np.ndarray, E: list, desired_num_cells: int, barcode: int = 0, censor_condition=0, **kwargs):
+    def init_from_parameters(
+        cls,
+        pi: np.ndarray,
+        T: np.ndarray,
+        E: list,
+        desired_num_cells: int,
+        barcode: int = 0,
+        censor_condition=0,
+        **kwargs,
+    ):
         r"""
         Constructor method
 
@@ -48,41 +53,27 @@ class LineageTree:
         - 2 means censor based on the length of the experiment
         - 3 means censor based on both the 'fate' and 'time' conditions
         """
-        pi_num_states = len(pi)
-        T_shape = T.shape
-        assert T_shape[0] == T_shape[1], "Transition numpy array is not square. Ensure that your transition numpy array has the same number of rows and columns."
-        T_num_states = T.shape[0]
-        E_num_states = len(E)
-        assert (
-            pi_num_states == T_num_states == E_num_states
-        ), f"The number of states in your input Markov probability parameters are mistmatched. \
-        \nPlease check that the dimensions and states match. \npi {pi} \nT {T} \nE {E}"
+        assert pi.size == T.shape[0]
+        assert T.shape[0] == T.shape[1]
 
-        num_states = pi_num_states
-
-        full_lineage = generate_lineage_list(pi=pi, T=T, desired_num_cells=desired_num_cells, barcode=barcode)
-        for i_state in range(num_states):
+        full_lineage = generate_lineage_list(
+            pi=pi, T=T, desired_num_cells=desired_num_cells, barcode=barcode
+        )
+        for i_state in range(pi.size):
             output_assign_obs(i_state, full_lineage, E)
 
-        full_max_gen, full_list_of_gens = max_gen(full_lineage)
-        full_leaves_idx, full_leaves = get_leaves(full_lineage)
+        full_list_of_gens = max_gen(full_lineage)
 
         # assign times using the state distribution specific time model
         E[0].assign_times(full_list_of_gens)
 
-        output_lineage = E[0].censor_lineage(censor_condition, full_list_of_gens, full_lineage, **kwargs)
+        output_lineage = E[0].censor_lineage(
+            censor_condition, full_list_of_gens, full_lineage, **kwargs
+        )
 
         lineageObj = cls(output_lineage, E)
-
         lineageObj.pi = pi
         lineageObj.T = T
-        lineageObj.num_states = num_states
-        lineageObj.full_lineage = full_lineage
-        lineageObj.full_max_gen = full_max_gen
-        lineageObj.full_list_of_gens = full_list_of_gens
-        lineageObj.full_leaves_idx = full_leaves_idx
-        lineageObj.full_leaves = full_leaves
-
         return lineageObj
 
     def get_parents_for_level(self, level: list) -> set:
@@ -97,6 +88,93 @@ class LineageTree:
             parent_holder.add(self.output_lineage.index(cell.parent))
         return parent_holder
 
+    def get_Marginal_State_Distributions(
+        self, pi: np.ndarray, T: np.ndarray
+    ) -> np.ndarray:
+        r"""Marginal State Distribution (MSD) matrix and recursion.
+        This is the probability that a hidden state variable :math:`z_n` is of
+        state k, that is, each value in the N by K MSD array for each lineage is
+        the probability
+
+        :math:`P(z_n = k)`,
+
+        for all :math:`z_n` in the hidden state tree
+        and for all k in the total number of discrete states. Each MSD array is
+        an N by K array (an entry for each cell and an entry for each state),
+        and each lineage has its own MSD array.
+
+        Every element in MSD matrix is essentially sum over all transitions from any state to
+        state j (from parent to daughter):
+
+        :math:`P(z_u = k) = \sum_j(Transition(j -> k) * P(parent_{cell_u}) = j)`
+
+        This is part of upward recursion.
+
+        :param pi: Initial probabilities vector
+        :param T: State transitions matrix
+        :return: The marginal state distribution
+        """
+        m = np.zeros((len(self.output_lineage), pi.size))
+        m[0, :] = pi
+
+        for level in self.output_list_of_gens[2:]:
+            for cell in level:
+                pCellIDX = self.output_lineage.index(
+                    cell.parent
+                )  # get the index of the parent cell
+                cCellIDX = self.output_lineage.index(cell)
+
+                # recursion based on parent cell
+                m[cCellIDX, :] = m[pCellIDX, :] @ T
+
+        np.testing.assert_allclose(np.sum(m, axis=1), 1.0)
+        return m
+
+    def get_leaf_Normalizing_Factors(
+        self, MSD: np.ndarray, EL: np.ndarray
+    ) -> np.ndarray:
+        """
+        Normalizing factor (NF) matrix and base case at the leaves.
+
+        Each element in this N by 1 matrix is the normalizing
+        factor for each beta value calculation for each node.
+        This normalizing factor is essentially the marginal
+        observation distribution for a node.
+
+        This function gets the normalizing factor for
+        the upward recursion only for the leaves.
+        We first calculate the joint probability
+        using the definition of conditional probability:
+
+        :math:`P(x_n = x | z_n = k) * P(z_n = k) = P(x_n = x , z_n = k)`,
+        where n are the leaf nodes.
+
+        We can then sum this joint probability over k,
+        which are the possible states z_n can be,
+        and through the law of total probability,
+        obtain the marginal observation distribution
+        :math:`P(x_n = x) = sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x)`.
+
+        This is part of upward recursion.
+
+        :param EL: The emissions likelihood
+        :param MSD: The marginal state distribution P(z_n = k)
+        :return: normalizing factor. The marginal observation distribution P(x_n = x)
+        """
+        MSD_array = MSD[
+            self.leaves_idx, :
+        ]  # getting the MSD of the lineage leaves
+        EL_array = EL[self.leaves_idx, :]  # geting the EL of the lineage leaves
+        NF_array = np.zeros(MSD.shape[0], dtype=float)  # instantiating N by 1 array
+
+        # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
+        # this product is the joint probability
+        # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
+        # the sum of the joint probabilities is the marginal probability
+        NF_array[self.leaves_idx] = np.einsum("ij,ij->i", MSD_array, EL_array)
+        assert np.all(np.isfinite(NF_array))
+        return NF_array
+
     def __len__(self):
         """Defines the length of a lineage by returning the number of cells
         it contains.
@@ -104,7 +182,9 @@ class LineageTree:
         return len(self.output_lineage)
 
 
-def generate_lineage_list(pi: np.ndarray, T: np.ndarray, desired_num_cells: int, barcode: int) -> list:
+def generate_lineage_list(
+    pi: np.ndarray, T: np.ndarray, desired_num_cells: int, barcode: int
+) -> list:
     """
     Generates a single lineage tree given Markov variables.
     This only generates the hidden variables (i.e., the states) in a output binary tree manner.
@@ -114,8 +194,12 @@ def generate_lineage_list(pi: np.ndarray, T: np.ndarray, desired_num_cells: int,
     :param desired_num_cells: The desired number of cells in a lineage.
     :return full_lineage: A list of the generated cell lineage.
     """
-    first_cell_state = np.random.choice(pi.size, size=1, p=pi)[0]  # roll the dice and yield the state for the first cell
-    first_cell = CellVar(parent=None, gen=1, state=first_cell_state, barcode=barcode)  # create first cell
+    first_cell_state = np.random.choice(pi.size, size=1, p=pi)[
+        0
+    ]  # roll the dice and yield the state for the first cell
+    first_cell = CellVar(
+        parent=None, gen=1, state=first_cell_state, barcode=barcode
+    )  # create first cell
     full_lineage = [first_cell]  # instantiate lineage with first cell
 
     for cell in full_lineage:  # letting the first cell proliferate
@@ -152,7 +236,7 @@ def output_assign_obs(state: int, full_lineage: list, E: list):
 # tools for analyzing trees
 
 
-def max_gen(lineage: list) -> Tuple[int, list]:
+def max_gen(lineage: list) -> list:
     """
     Finds the maximal generation in the tree, and cells organized by their generations.
     This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
@@ -161,15 +245,17 @@ def max_gen(lineage: list) -> Tuple[int, list]:
     :return max: The maximal generation in the tree.
     :return list_of_lists_of_cells_by_gen: The list of lists of cells belonging to the same generation separated by specific generations.
     """
-    gens = sorted({cell.gen for cell in lineage})  # appending the generation of cells in the lineage
+    gens = sorted(
+        {cell.gen for cell in lineage}
+    )  # appending the generation of cells in the lineage
     list_of_lists_of_cells_by_gen = [[None]]
     for gen in gens:
         level = [cell for cell in lineage if (cell.gen == gen and cell.observed)]
         list_of_lists_of_cells_by_gen.append(level)
-    return max(gens), list_of_lists_of_cells_by_gen
+    return list_of_lists_of_cells_by_gen
 
 
-def get_leaves(lineage: list) -> Tuple[list, list]:
+def get_leaves_idx(lineage: list) -> np.ndarray:
     """
     A function to find the leaves and their indexes in the lineage list.
     :param lineage: The list of cells in a lineageTree object.
@@ -177,10 +263,8 @@ def get_leaves(lineage: list) -> Tuple[list, list]:
     :return leaves: The last cells in the lineage branch.
     """
     leaf_indices = []
-    leaves = []
     for index, cell in enumerate(lineage):
         if cell.isLeaf():
             assert cell.observed
-            leaves.append(cell)  # appending the leaf cells to a list
             leaf_indices.append(index)  # appending the index of the cells
-    return leaf_indices, leaves
+    return np.array(leaf_indices)
