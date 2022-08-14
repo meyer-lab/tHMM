@@ -4,9 +4,9 @@ import numpy as np
 from .tHMM import tHMM
 
 
-def get_leaf_betas(
-    tHMMobj: tHMM, MSD: list[np.ndarray], EL: list[np.ndarray], NF: list
-):
+def get_betas(
+    tHMMobj: tHMM, MSD: list[np.ndarray], EL: list[np.ndarray], NF: list[np.ndarray]
+) -> list[np.ndarray]:
     r"""Beta matrix and base case at the leaves.
 
     Each element in this N by K matrix is the beta value
@@ -24,10 +24,19 @@ def get_leaf_betas(
     denominator = :math:`P(x_n = x)`
     :math:`beta[n,k] = numerator / denominator`
 
-    The first value in the numerator is the Emission
+    For non-leaf cells, the first value in the numerator is the Emission
     Likelihoods. The second value in the numerator is
     the Marginal State Distributions. The value in the
     denominator is the Normalizing Factor.
+
+    Traverses through each tree and calculates the
+    beta value for each non-leaf cell. The normalizing factors (NFs)
+    are also calculated as an intermediate for determining each
+    beta term. Helper functions are called to determine one of
+    the terms in the NF equation. This term is also used in the calculation
+    of the betas. The recursion is upwards from the leaves to
+    the roots.
+
     :param tHMMobj: A class object with properties of the lineages of cells
     :param MSD: The marginal state distribution P(z_n = k)
     :param EL: The emissions likelihood
@@ -45,27 +54,6 @@ def get_leaf_betas(
         b_arr[ii, :] = EL[num][ii, :] * MSD[num][ii, :] / NF[num][ii, np.newaxis]
         assert np.isclose(np.sum(b_arr[-1]), 1.0)
 
-    return betas
-
-
-def get_nonleaf_NF_and_betas(
-    tHMMobj: tHMM, MSD: list[np.ndarray], EL: list[np.ndarray], NF: list, betas: list
-):
-    """
-    Traverses through each tree and calculates the
-    beta value for each non-leaf cell. The normalizing factors (NFs)
-    are also calculated as an intermediate for determining each
-    beta term. Helper functions are called to determine one of
-    the terms in the NF equation. This term is also used in the calculation
-    of the betas. The recursion is upwards from the leaves to
-    the roots.
-
-    :param tHMMobj: A class object with properties of the lineages of cells
-    :param MSD: The marginal state distribution P(z_n = k)
-    :param EL: The emissions likelihood
-    :param NF: normalizing factor. The marginal observation distribution P(x_n = x)
-    :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
-    """
     for num, lO in enumerate(tHMMobj.X):  # for each lineage in our Population
         lineage = lO.output_lineage  # lineage in the population
         MSD_array = np.clip(
@@ -82,3 +70,5 @@ def get_nonleaf_NF_and_betas(
 
                 NF[num][pii] = sum(fac1)
                 betas[num][pii, :] = fac1 / NF[num][pii]
+    
+    return betas

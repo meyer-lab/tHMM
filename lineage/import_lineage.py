@@ -118,11 +118,11 @@ def import_MCF10A(path: str):
         # select all the cells that belong to that lineage
         lineage = df.loc[df['lineage'] == i]
 
-        unique_cell_ids = list(lineage["TID"].unique())  # the length of this shows the number of cells in this lineage
+        lin_code = list(lineage["TID"].unique())[0]  # lineage code to process
         unique_parent_trackIDs = lineage["motherID"].unique()
 
-        parent_cell = c(parent=None, gen=1, barcode=unique_cell_ids[0])
-        parent_cell = assign_observs_MCF10A(parent_cell, lineage, unique_cell_ids[0])
+        parent_cell = c(parent=None, gen=1)
+        parent_cell = assign_observs_MCF10A(parent_cell, lineage, lin_code)
 
         # create a list to store cells belonging to a lineage
         lineage_list = [parent_cell]
@@ -133,12 +133,12 @@ def import_MCF10A(path: str):
                 break
                 lineage_list = []
             for cells in lineage_list:
-                if cells.barcode == val:
+                if lin_code == val:
                     cell = cells
 
-            cell.left = c(parent=cell, gen=cell.gen + 1, barcode=child_id[0])
+            cell.left = c(parent=cell, gen=cell.gen + 1)
             cell.left = assign_observs_MCF10A(cell.left, lineage, child_id[0])
-            cell.right = c(parent=cell, gen=cell.gen + 1, barcode=child_id[1])
+            cell.right = c(parent=cell, gen=cell.gen + 1)
             cell.right = assign_observs_MCF10A(cell.right, lineage, child_id[1])
 
             lineage_list.append(cell.left)

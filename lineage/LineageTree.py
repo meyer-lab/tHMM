@@ -34,7 +34,6 @@ class LineageTree:
         T: np.ndarray,
         E: list,
         desired_num_cells: int,
-        barcode: int = 0,
         censor_condition=0,
         **kwargs,
     ):
@@ -57,7 +56,7 @@ class LineageTree:
         assert T.shape[0] == T.shape[1]
 
         full_lineage = generate_lineage_list(
-            pi=pi, T=T, desired_num_cells=desired_num_cells, barcode=barcode
+            pi=pi, T=T, desired_num_cells=desired_num_cells
         )
         for i_state in range(pi.size):
             output_assign_obs(i_state, full_lineage, E)
@@ -161,9 +160,7 @@ class LineageTree:
         :param MSD: The marginal state distribution P(z_n = k)
         :return: normalizing factor. The marginal observation distribution P(x_n = x)
         """
-        MSD_array = MSD[
-            self.leaves_idx, :
-        ]  # getting the MSD of the lineage leaves
+        MSD_array = MSD[self.leaves_idx, :]  # getting the MSD of the lineage leaves
         EL_array = EL[self.leaves_idx, :]  # geting the EL of the lineage leaves
         NF_array = np.zeros(MSD.shape[0], dtype=float)  # instantiating N by 1 array
 
@@ -242,7 +239,7 @@ class LineageTree:
 
 
 def generate_lineage_list(
-    pi: np.ndarray, T: np.ndarray, desired_num_cells: int, barcode: int
+    pi: np.ndarray, T: np.ndarray, desired_num_cells: int
 ) -> list:
     """
     Generates a single lineage tree given Markov variables.
@@ -253,21 +250,18 @@ def generate_lineage_list(
     :param desired_num_cells: The desired number of cells in a lineage.
     :return full_lineage: A list of the generated cell lineage.
     """
-    first_cell_state = np.random.choice(pi.size, size=1, p=pi)[
-        0
-    ]  # roll the dice and yield the state for the first cell
+    first_state = np.random.choice(
+        pi.size, p=pi
+    )  # roll the dice and yield the state for the first cell
     first_cell = CellVar(
-        parent=None, gen=1, state=first_cell_state, barcode=barcode
+        parent=None, gen=1, state=first_state
     )  # create first cell
     full_lineage = [first_cell]  # instantiate lineage with first cell
 
     for cell in full_lineage:  # letting the first cell proliferate
         if cell.isLeaf():  # if the cell has no daughters...
             # make daughters by dividing and assigning states
-            left_cell, right_cell = cell.divide(T)
-            # add daughters to the list of cells
-            full_lineage.append(left_cell)
-            full_lineage.append(right_cell)
+            full_lineage.extend(cell.divide(T))
 
         if len(full_lineage) >= desired_num_cells:
             break

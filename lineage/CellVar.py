@@ -9,7 +9,7 @@ class CellVar:
     Cell class.
     """
 
-    def __init__(self, parent, gen: int, state: Optional[int] = None, barcode: Optional[int] = None, left=None, right=None):
+    def __init__(self, parent, gen: int, state: Optional[int] = None, left=None, right=None):
         """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
@@ -18,7 +18,6 @@ class CellVar:
         self.gen = gen
         self.observed = True
         self.state = state
-        self.barcode = barcode
         self.left = left
         self.right = right
 
@@ -33,8 +32,8 @@ class CellVar:
 
         # roll a loaded die according to the row in the transtion matrix
         left_state, right_state = np.random.choice(T.shape[0], size=2, p=T[self.state, :])
-        self.left = CellVar(state=left_state, parent=self, gen=self.gen + 1, barcode=self.barcode)
-        self.right = CellVar(state=right_state, parent=self, gen=self.gen + 1, barcode=self.barcode)
+        self.left = CellVar(state=left_state, parent=self, gen=self.gen + 1)
+        self.right = CellVar(state=right_state, parent=self, gen=self.gen + 1)
 
         return self.left, self.right
 

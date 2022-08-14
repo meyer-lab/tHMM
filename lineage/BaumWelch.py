@@ -3,8 +3,7 @@ import numpy as np
 from typing import Tuple, Any
 
 from .UpwardRecursion import (
-    get_leaf_betas,
-    get_nonleaf_NF_and_betas,
+    get_betas,
 )
 
 from .tHMM import tHMM
@@ -24,10 +23,8 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     MSD = [lO.get_Marginal_State_Distributions(tHMMobj.estimate.pi, tHMMobj.estimate.T) for lO in tHMMobj.X]
     EL = tHMMobj.get_Emission_Likelihoods()
     NF = [lO.get_leaf_Normalizing_Factors(MSD[ii], EL[ii]) for ii, lO in enumerate(tHMMobj.X)]
-    betas = get_leaf_betas(tHMMobj, MSD, EL, NF)
-    get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas)
+    betas = get_betas(tHMMobj, MSD, EL, NF)
     gammas = [lO.get_gamma(tHMMobj.estimate.T, MSD[ii], betas[ii]) for ii, lO in enumerate(tHMMobj.X)]
-
     return MSD, NF, betas, gammas
 
 
