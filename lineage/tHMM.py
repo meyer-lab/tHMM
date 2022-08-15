@@ -10,7 +10,7 @@ from .LineageTree import LineageTree
 class estimate:
     """Estimation class."""
 
-    def __init__(self, X: list, nState: int, fpi=None, fT=None, fE=None):
+    def __init__(self, X: list[LineageTree], nState: int, fpi=None, fT=None, fE=None):
         """
         Instantiating the estimation class.
         The initial probability array (pi), transition probability matrix (T), and the emission likelihood (E) are initialized.
@@ -44,7 +44,7 @@ class estimate:
 class tHMM:
     """Main tHMM class."""
 
-    def __init__(self, X: list, num_states: int, fpi=None, fT=None, fE=None):
+    def __init__(self, X: list[LineageTree], num_states: int, fpi=None, fT=None, fE=None):
         """Instantiates a tHMM.
         This function uses the following functions and assings them to the cells
         (objects) in the lineage.

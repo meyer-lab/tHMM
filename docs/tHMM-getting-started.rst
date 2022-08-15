@@ -85,7 +85,7 @@ cells.
     import numpy as np
     from lineage.CellVar import CellVar as c
 
-    parent_cell = c(state=0, parent=None, gen=1)
+    parent_cell = c(state=0, parent=None)
     T = np.array([[0.75, 0.25],
                   [0.15, 0.85]], dtype="float")
     left_cell, right_cell = parent_cell.divide(T)

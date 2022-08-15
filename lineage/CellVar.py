@@ -1,4 +1,5 @@
 """ This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
+from __future__ import annotations
 import numpy as np
 from typing import Tuple, Optional
 from dataclasses import dataclass
@@ -8,19 +9,31 @@ class CellVar:
     """
     Cell class.
     """
+    parent: Optional['CellVar']
+    gen: int
+    observed: bool
+    state: Optional[int]
+    obs: Optional[np.ndarray]
+    left: Optional['CellVar']
+    right: Optional['CellVar']
 
-    def __init__(self, parent, gen: int, state: Optional[int] = None, barcode: Optional[int] = None, left=None, right=None):
+    def __init__(self, parent: Optional['CellVar'], state: Optional[int] = None):
         """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
         """
         self.parent = parent
-        self.gen = gen
+
+        if parent is None:
+            self.gen = 1
+        else:
+            self.gen = parent.gen + 1
+
         self.observed = True
         self.state = state
-        self.barcode = barcode
-        self.left = left
-        self.right = right
+        self.left = None
+        self.right = None
+        self.obs = None
 
     def divide(self, T: np.ndarray):
         """
@@ -33,8 +46,8 @@ class CellVar:
 
         # roll a loaded die according to the row in the transtion matrix
         left_state, right_state = np.random.choice(T.shape[0], size=2, p=T[self.state, :])
-        self.left = CellVar(state=left_state, parent=self, gen=self.gen + 1, barcode=self.barcode)
-        self.right = CellVar(state=right_state, parent=self, gen=self.gen + 1, barcode=self.barcode)
+        self.left = CellVar(state=left_state, parent=self)
+        self.right = CellVar(state=right_state, parent=self)
 
         return self.left, self.right
 
@@ -43,22 +56,7 @@ class CellVar:
         Returns true when a cell is a leaf with no children.
         These are cells at the end of the tree.
         """
-        # if it has a left and right attribute able to be checked
-        if hasattr(self, "left") and hasattr(self, "right"):
-            # then check that they both DO not exist
-            return self.left is None and self.right is None
-        # otherwise, it has no left and right daughters
-        return True
-
-    def isLeafBecauseDaughtersAreNotObserved(self) -> bool:
-        """
-        Returns true when a cell is a leaf because its children are unobserved
-        but it itself is observed.
-        """
-        if not self.left.observed and not self.right.observed and self.observed:
-            return True
-        # otherwise, it itself is observed and at least one of its daughters is observed
-        return False
+        return self.left is None and self.right is None
 
     def isLeaf(self) -> bool:
         """
@@ -66,16 +64,22 @@ class CellVar:
         whether a cell is a leaf. A cell only has to satisfy one of the conditions
         (an or statement) for it to be a leaf.
         """
-        return self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreNotObserved()
+        if self.isLeafBecauseTerminal():
+            return True
+
+        # Returns true when a cell is a leaf because its children are unobserved
+        # but it itself is observed.
+        if not self.left.observed and not self.right.observed and self.observed:  # type: ignore
+            return True
+
+        # otherwise, it itself is observed and at least one of its daughters is observed
+        return False
 
     def isRootParent(self) -> bool:
         """
         Returns true if this cell is the first cell in a lineage.
         """
-        if not self.parent and self.gen == 1:
-            return True
-
-        return False
+        return self.parent is None
 
     def get_sister(self):
         """
@@ -103,12 +107,11 @@ class CellVar:
         Get the left and right daughters of a cell if they exist.
         :return Temp: The list of existing daughter cells.
         """
-        temp = []
-        if hasattr(self, "left") and hasattr(self, "right"):
-            if self.left is not None and self.left.observed:
-                temp.append(self.left)
-            if self.right is not None and self.right.observed:
-                temp.append(self.right)
+        temp: list[CellVar] = list()
+        if self.left is not None and self.left.observed:
+            temp.append(self.left)
+        if self.right is not None and self.right.observed:
+            temp.append(self.right)
         return temp
 
 

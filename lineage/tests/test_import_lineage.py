@@ -7,9 +7,9 @@ from ..import_lineage import import_AU565, MCF10A
 
 def test_data():
     """ Manually setting up the first two lineages from the new AU565 data. """
-    cell1 = CellVar(parent=None, gen=1)
-    cell1.left = CellVar(parent=cell1, gen=2)
-    cell1.right = CellVar(parent=cell1, gen=2)
+    cell1 = CellVar(parent=None)
+    cell1.left = CellVar(parent=cell1)
+    cell1.right = CellVar(parent=cell1)
 
     cell1.obs = [1, 3.0, 11.32, 1]
     cell1.left.obs = [0, 6.0, 11.83, 0]
@@ -19,11 +19,11 @@ def test_data():
 
     lin1 = [cell1, cell2, cell3]
 
-    cell4 = CellVar(parent=None, gen=1)
+    cell4 = CellVar(parent=None)
     cell4.obs = [1, 14.5, 13.21, 1]
-    cell4.left = CellVar(parent=cell4, gen=2)
+    cell4.left = CellVar(parent=cell4)
     cell4.left.obs = [np.nan, 9.5, 11.15, 1]
-    cell4.right = CellVar(parent=cell4, gen=2)
+    cell4.right = CellVar(parent=cell4)
     cell4.right.obs = [np.nan, 9.5, 11.02, 1]
     lin2 = [cell4, cell4.left, cell4.right]
 

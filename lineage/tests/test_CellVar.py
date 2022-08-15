@@ -19,8 +19,8 @@ class TestModel(unittest.TestCase):
         left_state = 0
         right_state = 1
 
-        cell_left = c(state=left_state, parent=None, gen=1)
-        cell_right = c(state=right_state, parent=None, gen=1)
+        cell_left = c(state=left_state, parent=None)
+        cell_right = c(state=right_state, parent=None)
 
         self.assertTrue(cell_left.state == 0)
         self.assertTrue(cell_right.state == 1)
@@ -32,7 +32,7 @@ class TestModel(unittest.TestCase):
         T = np.array([[1.0, 0.0], [0.0, 1.0]])
 
         parent_state = 1
-        cell = c(state=parent_state, parent=None, gen=1)
+        cell = c(state=parent_state, parent=None)
         left_cell, right_cell = cell.divide(T)
         # the probability of switching states is 0
         self.assertTrue(left_cell.state == 1)
@@ -44,7 +44,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(left_cell.gen == 2 and right_cell.gen == 2)
 
         parent_state = 0
-        cell = c(state=parent_state, parent=None, gen=1)
+        cell = c(state=parent_state, parent=None)
         left_cell, right_cell = cell.divide(T)
         # the probability of switching states is 0
         self.assertTrue(left_cell.state == 0)
@@ -62,7 +62,7 @@ class TestModel(unittest.TestCase):
         T = np.array([[1.0, 0.0], [0.0, 1.0]])
 
         parent_state = 1
-        cell = c(state=parent_state, parent=None, gen=1)
+        cell = c(state=parent_state, parent=None)
         left_cell, right_cell = cell.divide(T)
         self.assertTrue(cell.isRootParent())
         self.assertFalse(left_cell.isRootParent() and right_cell.isRootParent())
@@ -74,7 +74,7 @@ class TestModel(unittest.TestCase):
         T = np.array([[1.0, 0.0], [0.0, 1.0]])
 
         parent_state = 1
-        cell = c(state=parent_state, parent=None, gen=1)
+        cell = c(state=parent_state, parent=None)
         self.assertTrue(cell.isLeafBecauseTerminal())
         left_cell, right_cell = cell.divide(T)
         self.assertFalse(cell.isLeafBecauseTerminal())
@@ -87,7 +87,7 @@ class TestModel(unittest.TestCase):
         T = np.array([[1.0, 0.0], [0.0, 1.0]])
 
         parent_state = 1
-        cell = c(state=parent_state, parent=None, gen=1)
+        cell = c(state=parent_state, parent=None)
         left_cell, right_cell = cell.divide(T)
         self.assertTrue(left_cell.get_sister() is right_cell and right_cell.get_sister() is left_cell)
 
@@ -98,7 +98,7 @@ class TestModel(unittest.TestCase):
         T = np.array([[1.0, 0.0], [0.0, 1.0]])
 
         parent_state = 1
-        cell = c(state=parent_state, parent=None, gen=1)
+        cell = c(state=parent_state, parent=None)
         self.assertTrue(cell.get_root_cell() is cell)
         left_cell, right_cell = cell.divide(T)
         self.assertTrue(left_cell.get_root_cell() is cell and right_cell.get_root_cell() is cell)
