@@ -49,13 +49,13 @@ class TestModel(unittest.TestCase):
         )
 
         # creating 7 cells for 3 generations manually
-        cell_1 = c(state=self.state0, parent=None, gen=1)
-        cell_2 = c(state=self.state0, parent=cell_1, gen=2)
-        cell_3 = c(state=self.state0, parent=cell_1, gen=2)
-        cell_4 = c(state=self.state0, parent=cell_2, gen=3)
-        cell_5 = c(state=self.state0, parent=cell_2, gen=3)
-        cell_6 = c(state=self.state0, parent=cell_3, gen=3)
-        cell_7 = c(state=self.state0, parent=cell_3, gen=3)
+        cell_1 = c(state=self.state0, parent=None)
+        cell_2 = c(state=self.state0, parent=cell_1)
+        cell_3 = c(state=self.state0, parent=cell_1)
+        cell_4 = c(state=self.state0, parent=cell_2)
+        cell_5 = c(state=self.state0, parent=cell_2)
+        cell_6 = c(state=self.state0, parent=cell_3)
+        cell_7 = c(state=self.state0, parent=cell_3)
         cell_1.left = cell_2
         cell_1.right = cell_3
         cell_2.left = cell_4

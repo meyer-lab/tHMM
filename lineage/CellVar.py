@@ -8,18 +8,25 @@ class CellVar:
     """
     Cell class.
     """
+    gen: int
+    state: Optional[int]
 
-    def __init__(self, parent, gen: int, state: Optional[int] = None, left=None, right=None):
+    def __init__(self, parent, state: Optional[int] = None):
         """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
         """
         self.parent = parent
-        self.gen = gen
+
+        if parent is None:
+            self.gen = 1
+        else:
+            self.gen = parent.gen + 1
+
         self.observed = True
         self.state = state
-        self.left = left
-        self.right = right
+        self.left = None
+        self.right = None
 
     def divide(self, T: np.ndarray):
         """
@@ -32,8 +39,8 @@ class CellVar:
 
         # roll a loaded die according to the row in the transtion matrix
         left_state, right_state = np.random.choice(T.shape[0], size=2, p=T[self.state, :])
-        self.left = CellVar(state=left_state, parent=self, gen=self.gen + 1)
-        self.right = CellVar(state=right_state, parent=self, gen=self.gen + 1)
+        self.left = CellVar(state=left_state, parent=self)
+        self.right = CellVar(state=right_state, parent=self)
 
         return self.left, self.right
 
