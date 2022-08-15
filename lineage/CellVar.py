@@ -9,6 +9,7 @@ class CellVar:
     """
     Cell class.
     """
+    parent: Optional['CellVar']
     gen: int
     observed: bool
     state: Optional[int]
@@ -16,7 +17,7 @@ class CellVar:
     left: Optional['CellVar']
     right: Optional['CellVar']
 
-    def __init__(self, parent, state: Optional[int] = None):
+    def __init__(self, parent: Optional['CellVar'], state: Optional[int] = None):
         """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
@@ -68,7 +69,7 @@ class CellVar:
 
         # Returns true when a cell is a leaf because its children are unobserved
         # but it itself is observed.
-        if not self.left.observed and not self.right.observed and self.observed:
+        if not self.left.observed and not self.right.observed and self.observed:  # type: ignore
             return True
 
         # otherwise, it itself is observed and at least one of its daughters is observed

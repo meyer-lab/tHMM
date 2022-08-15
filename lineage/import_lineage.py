@@ -69,7 +69,7 @@ def assign_observs_AU565(cell: CellVar, lineage, uniq_id: int) -> CellVar:
     :param uniq_id: the id given to the cell from the experiment.
     """
     # initialize
-    cell.obs = [1, 0, 0, 0]
+    cell.obs = np.array([1, 0, 0, 0], dtype=float)
     parent_id = lineage["parentTrackId"].unique()
     # cell fate: die = 0, divide = 1
     if not(uniq_id in parent_id):  # if the cell has not divided, means either died or reached experiment end time
