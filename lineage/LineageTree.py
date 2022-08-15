@@ -129,6 +129,106 @@ class LineageTree:
         np.testing.assert_allclose(np.sum(m, axis=1), 1.0)
         return m
 
+    def get_beta(
+        self, T: np.ndarray, MSD: np.ndarray, EL: np.ndarray, NF: np.ndarray
+    ) -> np.ndarray:
+        r"""Beta matrix and base case at the leaves.
+
+        Each element in this N by K matrix is the beta value
+        for each cell and at each state. In particular, this
+        value is derived from the Marginal State Distributions
+        (MSD), the Emission Likelihoods (EL), and the
+        Normalizing Factors (NF). Each beta value
+        for the leaves is exactly the probability
+
+        :math:`beta[n,k] = P(z_n = k | x_n = x)`.
+
+        Using Bayes Theorem, we see that the above equals
+
+        numerator = :math:`P(x_n = x | z_n = k) * P(z_n = k)`
+        denominator = :math:`P(x_n = x)`
+        :math:`beta[n,k] = numerator / denominator`
+
+        For non-leaf cells, the first value in the numerator is the Emission
+        Likelihoods. The second value in the numerator is
+        the Marginal State Distributions. The value in the
+        denominator is the Normalizing Factor.
+
+        Traverses through each tree and calculates the
+        beta value for each non-leaf cell. The normalizing factors (NFs)
+        are also calculated as an intermediate for determining each
+        beta term. Helper functions are called to determine one of
+        the terms in the NF equation. This term is also used in the calculation
+        of the betas. The recursion is upwards from the leaves to
+        the roots.
+
+        :param tHMMobj: A class object with properties of the lineages of cells
+        :param MSD: The marginal state distribution P(z_n = k)
+        :param EL: The emissions likelihood
+        :param NF: normalizing factor. The marginal observation distribution P(x_n = x)
+        :return: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
+        """
+        beta = np.zeros((len(self.output_lineage), MSD.shape[1]))
+
+        # Emission Likelihood, Marginal State Distribution, Normalizing Factor (same regardless of state)
+        # P(x_n = x | z_n = k), P(z_n = k), P(x_n = x)
+        ii = self.leaves_idx
+        beta[ii, :] = EL[ii, :] * MSD[ii, :] / NF[ii, np.newaxis]
+        assert np.isclose(np.sum(beta[-1]), 1.0)
+
+        lineage = self.output_lineage  # lineage in the population
+        MSD_array = np.clip(
+            MSD, np.finfo(float).eps, np.inf
+        )  # MSD of the respective lineage
+        ELMSD = EL * MSD
+
+        for level in self.output_list_of_gens[2:][
+            ::-1
+        ]:  # a reversed list of generations
+            for pii in self.get_parents_for_level(level):
+                ch_ii = [lineage.index(d) for d in lineage[pii].get_daughters()]
+                ratt = beta[ch_ii, :] / MSD_array[ch_ii, :]
+                fac1 = np.prod(ratt @ T.T, axis=0) * ELMSD[pii, :]
+
+                NF[pii] = sum(fac1)
+                beta[pii, :] = fac1 / NF[pii]
+
+        return beta
+
+    def get_all_zetas(
+        self,
+        beta_array: np.ndarray,
+        MSD_array: np.ndarray,
+        gamma_array: np.ndarray,
+        T: np.ndarray,
+    ) -> np.ndarray:
+        """
+        Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
+        This is an inner component in calculating the overall transition probability matrix.
+
+        :param lineageObj: the lineage tree of cells
+        :param beta_array: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
+        :param MSD_array: marginal state distribution
+        :param gamma_array: gamma values. The conditional probability of states, given the observation of the whole tree
+        :param T: transition probability matrix
+        :return: numerator for calculating the transition probabilities
+        """
+        betaMSD = beta_array / np.clip(MSD_array, np.finfo(float).eps, np.inf)
+        TbetaMSD = np.clip(betaMSD @ T.T, np.finfo(float).eps, np.inf)
+        lineage = self.output_lineage
+        holder = np.zeros(T.shape)
+
+        for level in self.output_list_of_gens[1:]:
+            for cell in level:  # get lineage for the generation
+                gamma_parent = gamma_array[lineage.index(cell), :]  # x by j
+
+                if not cell.isLeaf():
+                    for daughter_idx in cell.get_daughters():
+                        d_idx = lineage.index(daughter_idx)
+                        js = gamma_parent / TbetaMSD[d_idx, :]
+                        holder += np.outer(js, betaMSD[d_idx, :])
+        return holder * T
+
     def get_leaf_Normalizing_Factors(
         self, MSD: np.ndarray, EL: np.ndarray
     ) -> np.ndarray:
@@ -198,16 +298,14 @@ class LineageTree:
 
     def get_gamma(self, T: np.ndarray, MSD: np.ndarray, beta: np.ndarray) -> np.ndarray:
         """
-        Get the gammas for all other nodes using recursion (downward) from the root nodes.
-        The conditional probability of states, given the observation of the whole tree P(z_n = k | X_bar = x_bar)
+        Get the gammas using downward recursion from the root nodes.
+        The conditional probability of states, given observation of the whole tree P(z_n = k | X_bar = x_bar)
         x_bar is the observations for the whole tree.
         gamma_1 (k) = P(z_1 = k | X_bar = x_bar)
         gamma_n (k) = P(z_n = k | X_bar = x_bar)
 
-        :param tHMMobj: A class object with properties of the lineages of cells
         :param MSD: The marginal state distribution P(z_n = k)
         :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
-        :type betas: list of ndarray
         """
         gamma = np.zeros((len(self.output_lineage), T.shape[0]))
         gamma[0, :] = beta[0, :]
@@ -253,9 +351,7 @@ def generate_lineage_list(
     first_state = np.random.choice(
         pi.size, p=pi
     )  # roll the dice and yield the state for the first cell
-    first_cell = CellVar(
-        parent=None, gen=1, state=first_state
-    )  # create first cell
+    first_cell = CellVar(parent=None, state=first_state)  # create first cell
     full_lineage = [first_cell]  # instantiate lineage with first cell
 
     for cell in full_lineage:  # letting the first cell proliferate

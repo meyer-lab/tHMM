@@ -1,4 +1,5 @@
 """ This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
+from __future__ import annotations
 import numpy as np
 from typing import Tuple, Optional
 from dataclasses import dataclass
@@ -9,7 +10,11 @@ class CellVar:
     Cell class.
     """
     gen: int
+    observed: bool
     state: Optional[int]
+    obs: Optional[np.ndarray]
+    left: Optional['CellVar']
+    right: Optional['CellVar']
 
     def __init__(self, parent, state: Optional[int] = None):
         """Instantiates the cell object.
@@ -27,6 +32,7 @@ class CellVar:
         self.state = state
         self.left = None
         self.right = None
+        self.obs = None
 
     def divide(self, T: np.ndarray):
         """
@@ -49,22 +55,7 @@ class CellVar:
         Returns true when a cell is a leaf with no children.
         These are cells at the end of the tree.
         """
-        # if it has a left and right attribute able to be checked
-        if hasattr(self, "left") and hasattr(self, "right"):
-            # then check that they both DO not exist
-            return self.left is None and self.right is None
-        # otherwise, it has no left and right daughters
-        return True
-
-    def isLeafBecauseDaughtersAreNotObserved(self) -> bool:
-        """
-        Returns true when a cell is a leaf because its children are unobserved
-        but it itself is observed.
-        """
-        if not self.left.observed and not self.right.observed and self.observed:
-            return True
-        # otherwise, it itself is observed and at least one of its daughters is observed
-        return False
+        return self.left is None and self.right is None
 
     def isLeaf(self) -> bool:
         """
@@ -72,16 +63,22 @@ class CellVar:
         whether a cell is a leaf. A cell only has to satisfy one of the conditions
         (an or statement) for it to be a leaf.
         """
-        return self.isLeafBecauseTerminal() or self.isLeafBecauseDaughtersAreNotObserved()
+        if self.isLeafBecauseTerminal():
+            return True
+
+        # Returns true when a cell is a leaf because its children are unobserved
+        # but it itself is observed.
+        if not self.left.observed and not self.right.observed and self.observed:
+            return True
+
+        # otherwise, it itself is observed and at least one of its daughters is observed
+        return False
 
     def isRootParent(self) -> bool:
         """
         Returns true if this cell is the first cell in a lineage.
         """
-        if not self.parent and self.gen == 1:
-            return True
-
-        return False
+        return self.parent is None
 
     def get_sister(self):
         """
@@ -109,12 +106,11 @@ class CellVar:
         Get the left and right daughters of a cell if they exist.
         :return Temp: The list of existing daughter cells.
         """
-        temp = []
-        if hasattr(self, "left") and hasattr(self, "right"):
-            if self.left is not None and self.left.observed:
-                temp.append(self.left)
-            if self.right is not None and self.right.observed:
-                temp.append(self.right)
+        temp: list[CellVar] = list()
+        if self.left is not None and self.left.observed:
+            temp.append(self.left)
+        if self.right is not None and self.right.observed:
+            temp.append(self.right)
         return temp
 
 

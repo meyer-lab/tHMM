@@ -76,7 +76,7 @@ def fit_list(
         MSD_list, NF_list, betas_list, gammas_list = map(
             list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list])
         )
-        new_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
+        new_LL: float = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
         if new_LL - old_LL < tolerance:
             break
 
