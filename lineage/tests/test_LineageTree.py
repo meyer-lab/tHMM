@@ -110,7 +110,7 @@ class TestModel(unittest.TestCase):
     def test_get_parent_for_level(self):
         """ A unittest for get_parent_for_level. """
         list_by_gen = max_gen(self.lineage1.output_lineage)
-        parent_ind_holder = self.lineage1.get_parents_for_level(list_by_gen[3])
+        parent_ind_holder = self.lineage1.get_parent_idxs(list_by_gen[3])
 
         # making a list of parent cells using the indexes that
         # _get_parent_for_level returns

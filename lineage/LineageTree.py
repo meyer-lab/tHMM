@@ -6,13 +6,8 @@ from .CellVar import CellVar
 
 
 class LineageTree:
-    """A class for lineage trees.
-    Every lineage object from this class is a binary tree built based on initial probabilities,
-    transition probabilities, and emissions defined by state distributions given by the user.
-    Lineages are generated in full (no pruning) by creating cells of different states in a
-    binary fashion utilizing the pi and the transtion probabilities. Cells are then filled with
-    observations based on their states by sampling observations from their emission distributions.
-    The lineage tree is then censord based on the censor condition.
+    """A class for lineage trees. This class also handles algorithms for walking
+    the tree to calculate various properties.
     """
 
     pi: np.ndarray
@@ -76,12 +71,11 @@ class LineageTree:
         lineageObj.T = T
         return lineageObj
 
-    def get_parents_for_level(self, level: list) -> set:
+    def get_parent_idxs(self, level: list) -> set[int]:
         """
-        Get the parents's index of a generation in the population list.
-        Given the generation level, this function returns the index of parent cells of the cells being in that generation level.
-        :param level: The number of the generation for a particular parent cell.
-        :return parent_holder: The index of parent cells for the cells in a given generation level.
+        Given a list of cells, return the indices of the parents.
+        :param level: The list of cells.
+        :return parent_holder: Indices of the parents.
         """
         parent_holder = set()  # set makes sure only one index is put in and no overlap
         for cell in level:
@@ -91,7 +85,7 @@ class LineageTree:
     def get_Marginal_State_Distributions(
         self, pi: np.ndarray, T: np.ndarray
     ) -> np.ndarray:
-        r"""Marginal State Distribution (MSD) matrix and recursion.
+        r"""Marginal State Distribution (MSD) matrix by upward recursion.
         This is the probability that a hidden state variable :math:`z_n` is of
         state k, that is, each value in the N by K MSD array for each lineage is
         the probability
@@ -107,8 +101,6 @@ class LineageTree:
         state j (from parent to daughter):
 
         :math:`P(z_u = k) = \sum_j(Transition(j -> k) * P(parent_{cell_u}) = j)`
-
-        This is part of upward recursion.
 
         :param pi: Initial probabilities vector
         :param T: State transitions matrix
@@ -155,13 +147,12 @@ class LineageTree:
         the Marginal State Distributions. The value in the
         denominator is the Normalizing Factor.
 
-        Traverses through each tree and calculates the
+        Traverses upward through each tree and calculates the
         beta value for each non-leaf cell. The normalizing factors (NFs)
         are also calculated as an intermediate for determining each
         beta term. Helper functions are called to determine one of
         the terms in the NF equation. This term is also used in the calculation
-        of the betas. The recursion is upwards from the leaves to
-        the roots.
+        of the betas.
 
         :param tHMMobj: A class object with properties of the lineages of cells
         :param MSD: The marginal state distribution P(z_n = k)
@@ -186,7 +177,7 @@ class LineageTree:
         for level in self.output_list_of_gens[2:][
             ::-1
         ]:  # a reversed list of generations
-            for pii in self.get_parents_for_level(level):
+            for pii in self.get_parent_idxs(level):
                 ch_ii = [lineage.index(d) for d in lineage[pii].get_daughters()]
                 ratt = beta[ch_ii, :] / MSD_array[ch_ii, :]
                 fac1 = np.prod(ratt @ T.T, axis=0) * ELMSD[pii, :]
@@ -255,21 +246,17 @@ class LineageTree:
         obtain the marginal observation distribution
         :math:`P(x_n = x) = sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x)`.
 
-        This is part of upward recursion.
-
         :param EL: The emissions likelihood
         :param MSD: The marginal state distribution P(z_n = k)
         :return: normalizing factor. The marginal observation distribution P(x_n = x)
         """
-        MSD_array = MSD[self.leaves_idx, :]  # getting the MSD of the lineage leaves
-        EL_array = EL[self.leaves_idx, :]  # geting the EL of the lineage leaves
         NF_array = np.zeros(MSD.shape[0], dtype=float)  # instantiating N by 1 array
 
         # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
         # this product is the joint probability
         # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
         # the sum of the joint probabilities is the marginal probability
-        NF_array[self.leaves_idx] = np.einsum("ij,ij->i", MSD_array, EL_array)
+        NF_array[self.leaves_idx] = np.einsum("ij,ij->i", MSD[self.leaves_idx, :], EL[self.leaves_idx, :])
         assert np.all(np.isfinite(NF_array))
         return NF_array
 
@@ -365,7 +352,7 @@ def generate_lineage_list(
     return full_lineage
 
 
-def output_assign_obs(state: int, full_lineage: list, E: list):
+def output_assign_obs(state: int, full_lineage: list[CellVar], E: list):
     """
     Observation assignment give a state.
     Given the lineageTree object and the intended state, this function assigns the corresponding observations
@@ -383,29 +370,26 @@ def output_assign_obs(state: int, full_lineage: list, E: list):
         cell.obs = list_of_tuples_of_obs[i]
 
 
-# tools for analyzing trees
-
-
-def max_gen(lineage: list) -> list:
+def max_gen(lineage: list[CellVar]) -> list[list[CellVar]]:
     """
     Finds the maximal generation in the tree, and cells organized by their generations.
     This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
     creates a list of them, appends the lists leading to have a list of the lists of cells in specific generations.
     :param lineage: The list of cells in a lineageTree object.
     :return max: The maximal generation in the tree.
-    :return list_of_lists_of_cells_by_gen: The list of lists of cells belonging to the same generation separated by specific generations.
+    :return cells_by_gen: The list of lists of cells belonging to the same generation separated by specific generations.
     """
     gens = sorted(
         {cell.gen for cell in lineage}
     )  # appending the generation of cells in the lineage
-    list_of_lists_of_cells_by_gen = [[None]]
+    cells_by_gen: list[list[CellVar]] = [[]]
     for gen in gens:
         level = [cell for cell in lineage if (cell.gen == gen and cell.observed)]
-        list_of_lists_of_cells_by_gen.append(level)
-    return list_of_lists_of_cells_by_gen
+        cells_by_gen.append(level)
+    return cells_by_gen
 
 
-def get_leaves_idx(lineage: list) -> np.ndarray:
+def get_leaves_idx(lineage: list[CellVar]) -> np.ndarray:
     """
     A function to find the leaves and their indexes in the lineage list.
     :param lineage: The list of cells in a lineageTree object.
