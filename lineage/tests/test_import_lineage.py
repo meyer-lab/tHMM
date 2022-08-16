@@ -31,9 +31,6 @@ def test_data():
     lin1 = lineages[0]  # lineage ID = 2
     lin2 = lineages[2]  # lineage ID = 3
 
-    assert len(lin1) == 3
-    assert len(lin2) == 3
-
     for i, cell in enumerate(lin1):
         np.testing.assert_allclose(cell.obs, lin1[i].obs, rtol=1e-2)
 

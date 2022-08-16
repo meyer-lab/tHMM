@@ -13,7 +13,8 @@ class LineageTree:
     pi: np.ndarray
     T: np.ndarray
     leaves_idx: np.ndarray
-    output_list_of_gens: list
+    output_list_of_gens: list[list[CellVar]]
+    output_lineage: list[CellVar]
 
     def __init__(self, list_of_cells: list, E: list):
         self.E = E
@@ -63,7 +64,7 @@ class LineageTree:
         E[0].assign_times(full_list_of_gens)
 
         output_lineage = E[0].censor_lineage(
-            censor_condition, full_list_of_gens, full_lineage, **kwargs
+            full_list_of_gens, full_lineage, censor_condition=censor_condition, **kwargs
         )
 
         lineageObj = cls(output_lineage, E)
@@ -112,7 +113,7 @@ class LineageTree:
         for level in self.output_list_of_gens[2:]:
             for cell in level:
                 pCellIDX = self.output_lineage.index(
-                    cell.parent
+                    cell.parent  # type: ignore
                 )  # get the index of the parent cell
                 cCellIDX = self.output_lineage.index(cell)
 

@@ -1,6 +1,7 @@
 """ This file includes functions to import the new lineage data. """
 import pandas as pd
-import itertools
+from collections import OrderedDict
+from operator import itemgetter
 import numpy as np
 from .CellVar import CellVar
 
@@ -10,7 +11,7 @@ from .CellVar import CellVar
 # path = "lineage/data/LineageData/AU02101_A3_field_1_RP_50_CSV-Table.csv"
 
 
-def import_AU565(path: str) -> list:
+def import_AU565(path: str) -> list[list[CellVar]]:
     """ Importing AU565 file cells.
     :param path: the path to the file.
     :return population: list of cells structured in CellVar objects.
@@ -19,56 +20,48 @@ def import_AU565(path: str) -> list:
 
     population = []
     # loop over "lineageId"s
-    for i in df["lineageId"].unique():
-        # select all the cells that belong to that lineage
-        lineage = df.loc[df['lineageId'] == i]
+    df = df.sort_values(by=['lineageId'])
+    for _, lineage in df.groupby('lineageId'):
+        # Setup a track -> parent dict where the first entry is the root
+        linRel = lineage[["trackId", "parentTrackId"]].drop_duplicates()
+        linRel = linRel.sort_values(by=['parentTrackId', 'trackId'])
+        linRel = OrderedDict(zip(linRel.trackId, linRel.parentTrackId))
+        linRel = OrderedDict(sorted(linRel.items(), key=itemgetter(1))) # sort by parent
 
-        # if the lineage Id exists, do the rest, if not, pass
-        if not(lineage.empty):
-            unique_cell_ids = list(lineage["trackId"].unique())  # the length of this shows the number of cells in this lineage
-            unique_parent_trackIDs = lineage["parentTrackId"].unique()
+        # create the root parent cell and assign obsrvations
+        lineage_list: list[CellVar] = list()
 
-            pid = [[0]]  # root parent's parent id
-            for j in unique_parent_trackIDs:
-                if j != 0:
-                    pid.append(np.count_nonzero(lineage["parentTrackId"] == j) * [j])
-            parent_ids = list(itertools.chain(*pid))
+        for cellID, parentID in linRel.items():
+            if parentID == 0:
+                lineage_list.append(assign_observs_AU565(None, lineage, cellID))
+            else:
+                parentIDX = list(linRel.keys()).index(parentID)
+                a = assign_observs_AU565(lineage_list[parentIDX], lineage, cellID)
+                lineage_list.append(a)
+                if lineage_list[parentIDX].left is None:
+                    lineage_list[parentIDX].left = a
+                else:
+                    assert lineage_list[parentIDX].right is None
+                    lineage_list[parentIDX].right = a
 
-            # create the root parent cell and assign obsrvations
-            parent_cell = CellVar(parent=None)
-            parent_cell = assign_observs_AU565(parent_cell, lineage, unique_cell_ids[0])
-
-            # create a list to store cells belonging to a lineage
-            lineage_list: list[CellVar] = [parent_cell]
-            for k, val in enumerate(unique_cell_ids):
-                if val in parent_ids:  # if the id of a cell exists in the parent ids, it means the cell divides
-                    parent_index = [indx for indx, value in enumerate(parent_ids) if value == val]  # find whose mother it is
-                    assert len(parent_index) == 2  # make sure has two children
-                    a = assign_observs_AU565(CellVar(parent=lineage_list[k]), lineage, unique_cell_ids[parent_index[0]])
-                    b = assign_observs_AU565(CellVar(parent=lineage_list[k]), lineage, unique_cell_ids[parent_index[1]])
-                    lineage_list[k].left = a
-                    lineage_list[k].right = b
-
-                    lineage_list.append(a)
-                    lineage_list.append(b)
-
-        assert len(lineage_list) == len(unique_cell_ids)
+        assert len(lineage_list) == len(linRel)
         # if both observations are zero, remove the cell
         for n, cell in enumerate(lineage_list):
-            if (cell.obs[1] == 0 and cell.obs[2] == 0):
+            if (cell.obs[1] == 0 and cell.obs[2] == 0):  # type: ignore
                 lineage_list.pop(n)
 
         population.append(lineage_list)
     return population
 
 
-def assign_observs_AU565(cell: CellVar, lineage, uniq_id: int) -> CellVar:
+def assign_observs_AU565(parent, lineage: pd.DataFrame, uniq_id: int) -> CellVar:
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it.
     :param cell: a CellVar object to be assigned observations.
     :param lineage: the lineage list of cells that the given cell is from.
     :param uniq_id: the id given to the cell from the experiment.
     """
     # initialize
+    cell = CellVar(parent=parent)
     cell.obs = np.array([1, 0, 0, 0], dtype=float)
     parent_id = lineage["parentTrackId"].unique()
     # cell fate: die = 0, divide = 1
@@ -106,7 +99,7 @@ def assign_observs_AU565(cell: CellVar, lineage, uniq_id: int) -> CellVar:
 # partof_path = "lineage/data/MCF10A/"
 
 
-def import_MCF10A(path: str):
+def import_MCF10A(path: str) -> list[list[CellVar]]:
     """ Reading the data and extracting lineages and assigning their corresponding observations.
     :param path: the path to the mcf10a data.
     :return population: list of cells structured in CellVar objects.
@@ -121,8 +114,7 @@ def import_MCF10A(path: str):
         lin_code = list(lineage["TID"].unique())[0]  # lineage code to process
         unique_parent_trackIDs = lineage["motherID"].unique()
 
-        parent_cell = CellVar(parent=None)
-        parent_cell = assign_observs_MCF10A(parent_cell, lineage, lin_code)
+        parent_cell = assign_observs_MCF10A(None, lineage, lin_code)
 
         # create a list to store cells belonging to a lineage
         lineage_list = [parent_cell]
@@ -136,8 +128,8 @@ def import_MCF10A(path: str):
                 if lin_code == val:
                     cell = cells
 
-            a = assign_observs_MCF10A(CellVar(parent=cell), lineage, child_id[0])
-            b = assign_observs_MCF10A(CellVar(parent=cell), lineage, child_id[1])
+            a = assign_observs_MCF10A(cell, lineage, child_id[0])
+            b = assign_observs_MCF10A(cell, lineage, child_id[1])
             cell.left = a
             cell.right = b
 
@@ -157,13 +149,14 @@ def import_MCF10A(path: str):
     return population
 
 
-def assign_observs_MCF10A(cell, lineage, uniq_id: int):
+def assign_observs_MCF10A(parent, lineage, uniq_id: int):
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it.
     :param cell: a CellVar object to be assigned observations.
     :param lineage: the lineage list of cells that the given cell is from.
     :param uniq_id: the id given to the cell from the experiment.
     """
     # initialize
+    cell = CellVar(parent=parent)
     cell.obs = [1, 0, 1, 0, 0]  # [fate, lifetime, censored?, velocity, mean_distance]
     t_end = 2880
     # check if cell's lifetime is zero
@@ -192,7 +185,7 @@ def assign_observs_MCF10A(cell, lineage, uniq_id: int):
     return cell
 
 
-def MCF10A(condition: str):
+def MCF10A(condition: str) -> list[list[CellVar]]:
     """ Creates the population of lineages for each condition.
     Conditions include: PBS, EGF-treated, HGF-treated, OSM-treated.
     :param condition: a condition between [PBS, EGF, HGF, OSM]

@@ -4,7 +4,7 @@ import scipy.stats as sp
 from typing import Union
 
 from .stateCommon import gamma_estimator, basic_censor, bern_estimator
-from ..CellVar import Time
+from ..CellVar import CellVar, Time
 
 
 class StateDistribution:
@@ -74,7 +74,7 @@ class StateDistribution:
 
         return ll
 
-    def estimator(self, X: list, gammas: np.ndarray):
+    def estimator(self, X: list[np.ndarray], gammas: np.ndarray):
         """User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells."""
 
         # getting the observations as individual lists
@@ -120,7 +120,7 @@ class StateDistribution:
                 for cell in level:
                     cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
 
-    def censor_lineage(self, censor_condition: int, full_list_of_gens: list, full_lineage: list, **kwargs):
+    def censor_lineage(self, full_list_of_gens: list, full_lineage: list, censor_condition: int, **kwargs):
         """
         This function removes those cells that are intended to be removed.
         These cells include the descendants of a cell that has died, or has lived beyonf the experimental end time.
@@ -166,36 +166,36 @@ class StateDistribution:
         return output_lineage
 
 
-def fate_censor(cell):
+def fate_censor(cell: CellVar):
     """
     Checks whether a cell has died based on its fate, and if so, it will remove its subtree.
     Our example is based on the standard requirement that the first observation
     (index 0) is a measure of the cell's fate (1 being alive, 0 being dead).
     """
-    if cell.obs[0] == 0:
+    if cell.obs[0] == 0:  # type: ignore
         if not cell.isLeafBecauseTerminal():
-            cell.left.observed = False
-            cell.right.observed = False
+            cell.left.observed = False  # type: ignore
+            cell.right.observed = False  # type: ignore
 
 
-def time_censor(cell, desired_experiment_time: Union[int, float]):
+def time_censor(cell: CellVar, expt_time: float):
     """
     Checks whether a cell has lived beyond the experiment end time and if so, it will remove its subtree.
     Our example is based on the standard requirement that the second observation
     (index 1) is a measure of the cell's lifetime.
     """
-    if cell.time.endT > desired_experiment_time:
-        cell.time.endT = desired_experiment_time
-        cell.obs[0] = float("nan")
-        cell.obs[1] = desired_experiment_time - cell.time.startT
+    if cell.time.endT > expt_time:  # type: ignore
+        cell.time.endT = expt_time  # type: ignore
+        cell.obs[0] = float("nan")  # type: ignore
+        cell.obs[1] = expt_time - cell.time.startT  # type: ignore
         cell.obs[2] = 0  # censored
         if not cell.isLeafBecauseTerminal():
             # the daughters are no longer observed
-            cell.left.observed = False
-            cell.right.observed = False
+            cell.left.observed = False  # type: ignore
+            cell.right.observed = False  # type: ignore
 
 
-def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: str, state_j: int):
+def atonce_estimator(all_tHMMobj: list, x_list: list[np.ndarray], gammas_list: list[np.ndarray], phase: str, state_j: int):
     """Estimating the parameters for one state, in this case bernoulli nad gamma distirbution parameters,
     given a list of the tuples of observations from a group of cells.
     gammas_list is only for one state."""

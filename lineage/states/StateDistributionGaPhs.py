@@ -3,7 +3,7 @@ import numpy as np
 
 from .stateCommon import basic_censor
 from .StateDistributionGamma import StateDistribution as GammaSD
-from ..CellVar import Time
+from ..CellVar import CellVar, Time
 
 
 class StateDistribution:
@@ -43,7 +43,7 @@ class StateDistribution:
 
         return G1_LL + G2_LL
 
-    def estimator(self, x: np.ndarray, gammas):
+    def estimator(self, x: np.ndarray, gammas: np.ndarray):
         """User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells."""
         x = np.array(x)
 
@@ -80,7 +80,7 @@ class StateDistribution:
                     cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[2] + cell.obs[3])
                     cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
 
-    def censor_lineage(self, censor_condition: int, full_list_of_gens: list, full_lineage, **kwargs):
+    def censor_lineage(self, full_list_of_gens: list[list[CellVar]], full_lineage, censor_condition: int, **kwargs):
         """
         This function removes those cells that are intended to be remove
         from the output binary tree based on emissions.
