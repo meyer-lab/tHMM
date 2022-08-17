@@ -2,67 +2,54 @@
 import numpy as np
 from typing import Tuple
 
+from .LineageTree import LineageTree
 
-# pylint: disable=too-many-nested-blocks
 
-
-def get_leaf_deltas(tHMMobj) -> Tuple[list, list]:
+def get_deltas(tHMMobj) -> Tuple[list[np.ndarray], list]:
     """
     Delta matrix and base case at the leaves.
     Each element in this N by K matrix is the probability for the leaves :math:`P(x_n = x | z_n = k)`.
 
+    Then calculates delta values for non-leaf cells by filling out the delta matrix.
+
     :param tHMMobj: the tHMM object
     :return: a list of N by K matrices for each lineage, initialized from the leaf cells by EL(n,k).
     """
-    num_states = tHMMobj.num_states
     EL = tHMMobj.get_Emission_Likelihoods()
+    T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
 
     deltas = []
     state_ptrs = []
 
-    for num, lineageObj in enumerate(tHMMobj.X):  # getting the lineage in the Population by index
-        lineage = lineageObj.output_lineage
-        delta_array = np.zeros((len(lineage), num_states))  # instantiating N by K array
-        state_ptrs_array = np.empty((len(lineage), 2), dtype=object)
-
-        for cell in lineage:
-            if cell.isLeaf():
-                # get the index of the leaf
-                leaf_cell_idx = lineage.index(cell)
-                delta_array[leaf_cell_idx, :] = EL[num][leaf_cell_idx, :]
-
-        deltas.append(delta_array)
-        state_ptrs.append(state_ptrs_array)
-    return deltas, state_ptrs
-
-
-def get_nonleaf_deltas(tHMMobj, deltas: list, state_ptrs: list):
-    """
-    Calculates the delta values for all non-leaf cells by filling out the delta matrix passed to it from the :func:`get_leaf_deltas`.
-
-    :param tHMMobj: the tHMM object
-    :param deltas: a list of N by K matrices for each lineage, initialized from the leaf cells by EL(n,k).
-    :param state_ptrs: a list of N by K matrices that are state pointers, to obtain nonleaf deltas.
-    """
-    EL = tHMMobj.get_Emission_Likelihoods()
-
-    for num, linObj in enumerate(tHMMobj.X):
-        lineage = linObj.output_lineage  # getting the lineage in the Population by index
-        T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
+    for num, linObj in enumerate(
+        tHMMobj.X
+    ):  # getting the lineage in the Population by index
+        delta_array = np.zeros(
+            (len(linObj), tHMMobj.num_states)
+        )  # instantiating N by K array
+        state_ptrs_array = np.empty((len(linObj), 2), dtype=object)
+        delta_array[linObj.leaves_idx, :] = EL[num][linObj.leaves_idx, :]
 
         # move up one generation until the 2nd generation is the children
         # and the root nodes are the parents
         for level in linObj.idx_by_gen[1:][::-1]:
-            parent_holder = np.unique(linObj.cell_to_parent[level])
+            for pIDX in np.unique(linObj.cell_to_parent[level]):
+                fac1, max_state_ptr = get_delta_parent_child_prod(
+                    linObj, delta_array, T, pIDX
+                )
 
-            for node_parent_m_idx in parent_holder:
-                fac1, max_state_ptr = get_delta_parent_child_prod(lineage=lineage, delta_array=deltas[num], T=T, node_parent_m_idx=node_parent_m_idx)
+                delta_array[pIDX, :] = fac1 * EL[num][pIDX, :]
+                state_ptrs_array[pIDX, :] = max_state_ptr
 
-                deltas[num][node_parent_m_idx, :] = fac1 * EL[num][node_parent_m_idx, :]
-                state_ptrs[num][node_parent_m_idx, :] = max_state_ptr
+        deltas.append(delta_array)
+        state_ptrs.append(state_ptrs_array)
+
+    return deltas, state_ptrs
 
 
-def get_delta_parent_child_prod(lineage: list, delta_array: np.ndarray, T: np.ndarray, node_parent_m_idx: int) -> Tuple[np.ndarray, list]:
+def get_delta_parent_child_prod(
+    linObj: LineageTree, delta_array: np.ndarray, T: np.ndarray, node_parent_m_idx: int
+) -> Tuple[np.ndarray, list]:
     """
     Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.
     In these set of functions
@@ -79,31 +66,25 @@ def get_delta_parent_child_prod(lineage: list, delta_array: np.ndarray, T: np.nd
     """
     delta_m_n_holder = np.ones(T.shape[0])  # list to hold the factors in the product
     max_state_ptr = []
-    # get the index of the parent
-    node_parent_m = lineage[node_parent_m_idx]
-    children_idx_list = []  # list to hold the children
+    children_idx_list = linObj.cell_to_daughters[
+        node_parent_m_idx, :
+    ]  # list to hold the children
+    assert np.all(children_idx_list != -1)  # Make sure we found cells
 
-    if node_parent_m.left:
-        children_idx_list.append(lineage.index(node_parent_m.left))
-
-    if node_parent_m.right:
-        children_idx_list.append(lineage.index(node_parent_m.right))
-
-    for node_child_n_idx in children_idx_list:
+    for cIDX in children_idx_list:
         # get the already calculated delta at node n for state k
         # get the transition rate for going from state j to state k
         # P( z_n = k | z_m = j)
-        max_holder = T * delta_array[node_child_n_idx, :]
+        max_holder = T * delta_array[cIDX, :]
 
         state_ptr = np.argmax(max_holder, axis=1)
-
         delta_m_n_holder *= np.max(max_holder, axis=1)
-        max_state_ptr.append((node_child_n_idx, state_ptr))
+        max_state_ptr.append((cIDX, state_ptr))
 
     return delta_m_n_holder, max_state_ptr
 
 
-def Viterbi(tHMMobj) -> list:
+def Viterbi(tHMMobj) -> list[np.ndarray]:
     """
     Runs the viterbi algorithm and returns a list of arrays containing the optimal state of each cell.
     This function returns the most likely sequence of states for each lineage.
@@ -113,29 +94,28 @@ def Viterbi(tHMMobj) -> list:
     :param state_ptrs: a list of tuples of daughter cell indexes and their state pointers
     :return: assigned states to each cell in all lineages
     """
-    deltas, state_ptrs = get_leaf_deltas(tHMMobj)
-    get_nonleaf_deltas(tHMMobj, deltas, state_ptrs)
-
+    deltas, state_ptrs = get_deltas(tHMMobj)
     all_states = []
 
     for num, lineageObj in enumerate(tHMMobj.X):
-        lineage = lineageObj.output_lineage
-
-        opt_state_tree = np.zeros(len(lineage), dtype=int)
+        opt_state_tree = np.zeros(len(lineageObj), dtype=int)
         possible_first_states = np.multiply(deltas[num][0, :], tHMMobj.estimate.pi)
         opt_state_tree[0] = np.argmax(possible_first_states)
         for level in lineageObj.idx_by_gen:
-            for parent_idx in level:
-                cell = lineage[parent_idx]
-                for n in cell.get_daughters():
-                    child_idx = lineage.index(n)
-                    parent_state = opt_state_tree[parent_idx]
+            for pIDX in level:
+                for child_idx in lineageObj.cell_to_daughters[pIDX, :]:
+                    if child_idx == -1:  # If a daughter does not exist
+                        continue
+
+                    parent_state = opt_state_tree[pIDX]
 
                     for ii in range(state_ptrs[num].shape[1]):
-                        child_state_tuple = state_ptrs[num][parent_idx, ii]
+                        child_state_tuple = state_ptrs[num][pIDX, ii]
 
                         if child_state_tuple[0] == child_idx:
-                            opt_state_tree[child_idx] = child_state_tuple[1][parent_state]
+                            opt_state_tree[child_idx] = child_state_tuple[1][
+                                parent_state
+                            ]
                             break
 
         all_states.append(opt_state_tree)

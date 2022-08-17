@@ -15,6 +15,8 @@ class LineageTree:
     leaves_idx: np.ndarray
     idx_by_gen: list[np.ndarray]
     output_lineage: list[CellVar]
+    cell_to_parent: np.ndarray
+    cell_to_daughters: np.ndarray
 
     def __init__(self, list_of_cells: list, E: list):
         self.E = E
@@ -24,6 +26,7 @@ class LineageTree:
         E[0].assign_times(self.output_lineage, self.idx_by_gen)
         self.leaves_idx = get_leaves_idx(self.output_lineage)
         self.cell_to_parent = cell_to_parent(self.output_lineage)
+        self.cell_to_daughters = cell_to_daughters(self.output_lineage)
 
     @classmethod
     def init_from_parameters(
@@ -154,17 +157,14 @@ class LineageTree:
         beta[ii, :] = EL[ii, :] * MSD[ii, :] / NF[ii, np.newaxis]
         assert np.isclose(np.sum(beta[-1]), 1.0)
 
-        lineage = self.output_lineage  # lineage in the population
         MSD_array = np.clip(
             MSD, np.finfo(float).eps, np.inf
         )  # MSD of the respective lineage
         ELMSD = EL * MSD
 
-        for level in self.idx_by_gen[1:][
-            ::-1
-        ]:  # a reversed list of generations
+        for level in self.idx_by_gen[1:][::-1]:  # a reversed list of generations
             for pii in np.unique(self.cell_to_parent[level]):
-                ch_ii = [lineage.index(d) for d in lineage[pii].get_daughters()]
+                ch_ii = self.cell_to_daughters[pii, :]
                 ratt = beta[ch_ii, :] / MSD_array[ch_ii, :]
                 fac1 = np.prod(ratt @ T.T, axis=0) * ELMSD[pii, :]
 
@@ -201,8 +201,7 @@ class LineageTree:
                 gamma_parent = gamma_array[cIDX, :]  # x by j
 
                 if not lineage[cIDX].isLeaf():
-                    for daughter_idx in lineage[cIDX].get_daughters():
-                        d_idx = lineage.index(daughter_idx)
+                    for d_idx in self.cell_to_daughters[cIDX, :]:
                         js = gamma_parent / TbetaMSD[d_idx, :]
                         holder += np.outer(js, betaMSD[d_idx, :])
         return holder * T
@@ -242,11 +241,15 @@ class LineageTree:
         # this product is the joint probability
         # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
         # the sum of the joint probabilities is the marginal probability
-        NF_array[self.leaves_idx] = np.einsum("ij,ij->i", MSD[self.leaves_idx, :], EL[self.leaves_idx, :])
+        NF_array[self.leaves_idx] = np.einsum(
+            "ij,ij->i", MSD[self.leaves_idx, :], EL[self.leaves_idx, :]
+        )
         assert np.all(np.isfinite(NF_array))
         return NF_array
 
-    def sum_nonleaf_gammas(self, gamma_arr: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    def sum_nonleaf_gammas(
+        self, gamma_arr: npt.NDArray[np.float64]
+    ) -> npt.NDArray[np.float64]:
         """
         Sum of the gammas of the cells that are able to divide, that is,
         sum the of the gammas of all the nonleaf cells. It is used in estimating the transition probability matrix.
@@ -268,7 +271,12 @@ class LineageTree:
 
         return sum_wo_leaf
 
-    def get_gamma(self, T: npt.NDArray[np.float64], MSD: npt.NDArray[np.float64], beta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    def get_gamma(
+        self,
+        T: npt.NDArray[np.float64],
+        MSD: npt.NDArray[np.float64],
+        beta: npt.NDArray[np.float64],
+    ) -> npt.NDArray[np.float64]:
         """
         Get the gammas using downward recursion from the root nodes.
         The conditional probability of states, given observation of the whole tree P(z_n = k | X_bar = x_bar)
@@ -282,7 +290,6 @@ class LineageTree:
         gamma = np.zeros((len(self.output_lineage), T.shape[0]))
         gamma[0, :] = beta[0, :]
 
-        lineage = self.output_lineage
         coeffs = beta / np.clip(MSD, np.finfo(float).eps, np.inf)
         coeffs = np.clip(coeffs, np.finfo(float).eps, np.inf)
         beta_parents = np.einsum("ij,kj->ik", T, coeffs)
@@ -291,8 +298,7 @@ class LineageTree:
             for parent_idx in level:
                 gam = gamma[parent_idx, :]
 
-                for d in lineage[parent_idx].get_daughters():
-                    ci = lineage.index(d)
+                for ci in self.cell_to_daughters[parent_idx, :]:
                     gamma[ci, :] = coeffs[ci, :] * np.matmul(
                         gam / beta_parents[:, ci], T
                     )
@@ -367,7 +373,14 @@ def max_gen(lineage: list[CellVar]) -> list[np.ndarray]:
     )  # appending the generation of cells in the lineage
     cells_by_gen: list[np.ndarray] = []
     for gen in gens:
-        level = np.array([lineage.index(cell) for cell in lineage if (cell.gen == gen and cell.observed)], dtype=int)
+        level = np.array(
+            [
+                lineage.index(cell)
+                for cell in lineage
+                if (cell.gen == gen and cell.observed)
+            ],
+            dtype=int,
+        )
         cells_by_gen.append(level)
     return cells_by_gen
 
@@ -378,6 +391,18 @@ def cell_to_parent(lineage: list[CellVar]) -> np.ndarray:
         parent = cell.parent
         if parent is not None:
             output[ii] = lineage.index(parent)
+
+    return output
+
+
+def cell_to_daughters(lineage: list[CellVar]) -> np.ndarray:
+    output = np.full((len(lineage), 2), -1, dtype=int)
+    for ii, cell in enumerate(lineage):
+        if cell.left is not None and cell.left in lineage:
+            output[ii, 0] = lineage.index(cell.left)
+
+        if cell.right is not None and cell.right in lineage:
+            output[ii, 1] = lineage.index(cell.right)
 
     return output
 
