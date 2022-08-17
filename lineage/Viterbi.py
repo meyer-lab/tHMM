@@ -125,9 +125,8 @@ def Viterbi(tHMMobj) -> list:
         possible_first_states = np.multiply(deltas[num][0, :], tHMMobj.estimate.pi)
         opt_state_tree[0] = np.argmax(possible_first_states)
         for level in lineageObj.idx_by_gen:
-            for cIDX in level:
-                cell = lineage[cIDX]
-                parent_idx = lineage.index(cell)
+            for parent_idx in level:
+                cell = lineage[parent_idx]
                 for n in cell.get_daughters():
                     child_idx = lineage.index(n)
                     parent_state = opt_state_tree[parent_idx]

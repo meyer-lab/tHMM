@@ -14,7 +14,7 @@ class LineageTree:
     T: np.ndarray
     leaves_idx: np.ndarray
     idx_by_gen: list[np.ndarray]
-    lineage: list[CellVar]
+    output_lineage: list[CellVar]
 
     def __init__(self, list_of_cells: list, E: list):
         self.E = E
