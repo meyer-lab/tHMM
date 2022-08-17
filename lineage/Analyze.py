@@ -118,7 +118,7 @@ def Analyze_list(
 def run_Analyze_over(
     list_of_populations: list,
     num_states: np.ndarray,
-    parallel=False,
+    parallel=True,
     atonce=False,
     **kwargs
 ) -> list:
