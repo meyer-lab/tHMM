@@ -13,14 +13,15 @@ class LineageTree:
     pi: np.ndarray
     T: np.ndarray
     leaves_idx: np.ndarray
-    output_list_of_gens: list
+    idx_by_gen: list[np.ndarray]
+    lineage: list[CellVar]
 
     def __init__(self, list_of_cells: list, E: list):
         self.E = E
         self.output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
-        self.output_list_of_gens = max_gen(self.output_lineage)
+        self.idx_by_gen = max_gen(self.output_lineage)
         # assign times using the state distribution specific time model
-        E[0].assign_times(self.output_list_of_gens)
+        E[0].assign_times(self.output_lineage, self.idx_by_gen)
         self.leaves_idx = get_leaves_idx(self.output_lineage)
 
     @classmethod
@@ -60,7 +61,7 @@ class LineageTree:
         full_list_of_gens = max_gen(full_lineage)
 
         # assign times using the state distribution specific time model
-        E[0].assign_times(full_list_of_gens)
+        E[0].assign_times(full_lineage, full_list_of_gens)
 
         output_lineage = E[0].censor_lineage(
             censor_condition, full_list_of_gens, full_lineage, **kwargs
@@ -71,16 +72,17 @@ class LineageTree:
         lineageObj.T = T
         return lineageObj
 
-    def get_parent_idxs(self, level: list) -> set[int]:
+    def get_parent_idxs(self, level: np.ndarray) -> np.ndarray:
         """
         Given a list of cells, return the indices of the parents.
         :param level: The list of cells.
         :return parent_holder: Indices of the parents.
         """
-        parent_holder = set()  # set makes sure only one index is put in and no overlap
-        for cell in level:
-            parent_holder.add(self.output_lineage.index(cell.parent))
-        return parent_holder
+        parent_holder = list()
+        for cIDX in level:
+            parent = self.output_lineage[cIDX].parent
+            parent_holder.append(self.output_lineage.index(parent))
+        return np.unique(parent_holder)
 
     def get_Marginal_State_Distributions(
         self, pi: np.ndarray, T: np.ndarray
@@ -109,15 +111,13 @@ class LineageTree:
         m = np.zeros((len(self.output_lineage), pi.size))
         m[0, :] = pi
 
-        for level in self.output_list_of_gens[2:]:
-            for cell in level:
-                pCellIDX = self.output_lineage.index(
-                    cell.parent
-                )  # get the index of the parent cell
-                cCellIDX = self.output_lineage.index(cell)
+        for level in self.idx_by_gen[1:]:
+            for cIDX in level:
+                parent = self.output_lineage[cIDX].parent  # get the index of the parent cell
+                pCellIDX = self.output_lineage.index(parent)  # get the index of the parent cell
 
                 # recursion based on parent cell
-                m[cCellIDX, :] = m[pCellIDX, :] @ T
+                m[cIDX, :] = m[pCellIDX, :] @ T
 
         np.testing.assert_allclose(np.sum(m, axis=1), 1.0)
         return m
@@ -174,7 +174,7 @@ class LineageTree:
         )  # MSD of the respective lineage
         ELMSD = EL * MSD
 
-        for level in self.output_list_of_gens[2:][
+        for level in self.idx_by_gen[1:][
             ::-1
         ]:  # a reversed list of generations
             for pii in self.get_parent_idxs(level):
@@ -210,12 +210,12 @@ class LineageTree:
         lineage = self.output_lineage
         holder = np.zeros(T.shape)
 
-        for level in self.output_list_of_gens[1:]:
-            for cell in level:  # get lineage for the generation
-                gamma_parent = gamma_array[lineage.index(cell), :]  # x by j
+        for level in self.idx_by_gen:
+            for cIDX in level:  # get lineage for the generation
+                gamma_parent = gamma_array[cIDX, :]  # x by j
 
-                if not cell.isLeaf():
-                    for daughter_idx in cell.get_daughters():
+                if not lineage[cIDX].isLeaf():
+                    for daughter_idx in lineage[cIDX].get_daughters():
                         d_idx = lineage.index(daughter_idx)
                         js = gamma_parent / TbetaMSD[d_idx, :]
                         holder += np.outer(js, betaMSD[d_idx, :])
@@ -273,13 +273,11 @@ class LineageTree:
         :return: the sum of gamma values for each state for non-leaf cells.
         """
         sum_wo_leaf = np.zeros(gamma_arr.shape[1])
-        for level in self.output_list_of_gens[
-            1:
-        ]:  # sum the gammas for cells that are transitioning
-            for cell in level:
+        for level in self.idx_by_gen:  # sum the gammas for cells that are transitioning
+            for cIDX in level:
+                cell = self.output_lineage[cIDX]
                 if not cell.isLeaf():
-                    cell_idx = self.output_lineage.index(cell)
-                    sum_wo_leaf += gamma_arr[cell_idx, :]
+                    sum_wo_leaf += gamma_arr[cIDX, :]
         assert np.all(np.isfinite(sum_wo_leaf))
 
         return sum_wo_leaf
@@ -303,12 +301,11 @@ class LineageTree:
         coeffs = np.clip(coeffs, np.finfo(float).eps, np.inf)
         beta_parents = np.einsum("ij,kj->ik", T, coeffs)
 
-        for level in self.output_list_of_gens[1:]:
-            for cell in level:
-                parent_idx = lineage.index(cell)
+        for level in self.idx_by_gen:
+            for parent_idx in level:
                 gam = gamma[parent_idx, :]
 
-                for d in cell.get_daughters():
+                for d in lineage[parent_idx].get_daughters():
                     ci = lineage.index(d)
                     gamma[ci, :] = coeffs[ci, :] * np.matmul(
                         gam / beta_parents[:, ci], T
@@ -370,7 +367,7 @@ def output_assign_obs(state: int, full_lineage: list[CellVar], E: list):
         cell.obs = list_of_tuples_of_obs[i]
 
 
-def max_gen(lineage: list[CellVar]) -> list[list[CellVar]]:
+def max_gen(lineage: list[CellVar]) -> list[np.ndarray]:
     """
     Finds the maximal generation in the tree, and cells organized by their generations.
     This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
@@ -382,9 +379,9 @@ def max_gen(lineage: list[CellVar]) -> list[list[CellVar]]:
     gens = sorted(
         {cell.gen for cell in lineage}
     )  # appending the generation of cells in the lineage
-    cells_by_gen: list[list[CellVar]] = [[]]
+    cells_by_gen: list[np.ndarray] = []
     for gen in gens:
-        level = [cell for cell in lineage if (cell.gen == gen and cell.observed)]
+        level = np.array([lineage.index(cell) for cell in lineage if (cell.gen == gen and cell.observed)], dtype=int)
         cells_by_gen.append(level)
     return cells_by_gen
 

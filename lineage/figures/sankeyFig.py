@@ -43,8 +43,9 @@ def Transitioned_cellCounts(tHMM_list):
         T_counts = np.zeros((4, num_states, num_states))
         for lineage in tHMM.X:
             # for each lineage, count how many cells are in each state in each generation
-            for i, cells_ls in enumerate(lineage.output_list_of_gens[2:]):
-                for cell in cells_ls:
+            for i, cells_ls in enumerate(lineage.idx_by_gen[1:]):
+                for cIDX in cells_ls:
+                    cell = lineage.output_lineage[cIDX]
                     T_counts[i, cell.parent.state, cell.state] += 1
         all_conditions.append(T_counts)
     return all_conditions

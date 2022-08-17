@@ -1,9 +1,10 @@
 """ State distribution class for separated G1 and G2 phase durations as observation. """
+from audioop import lin2adpcm
 import numpy as np
 
 from .stateCommon import basic_censor
 from .StateDistributionGamma import StateDistribution as GammaSD
-from ..CellVar import Time
+from ..CellVar import CellVar, Time
 
 
 class StateDistribution:
@@ -60,7 +61,7 @@ class StateDistribution:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
 
-    def assign_times(self, list_of_gens: list):
+    def assign_times(self, lineage: list[CellVar], list_of_gens: list[np.ndarray]):
         """
         Assigns the start and end time for each cell in the lineage.
         The time observation will be stored in the cell's observation parameter list
@@ -68,19 +69,19 @@ class StateDistribution:
         This is used in the creation of LineageTrees
         """
         # traversing the cells by generation
-        for gen_minus_1, level in enumerate(list_of_gens[1:]):
-            true_gen = gen_minus_1 + 1  # generations are 1-indexed
-            if true_gen == 1:
-                for cell in level:
+        for generation, level in enumerate(list_of_gens):
+            for cIDX in level:
+                cell = lineage[cIDX]
+
+                if generation == 0:
                     assert cell.isRootParent()
                     cell.time = Time(0, cell.obs[2] + cell.obs[3])
                     cell.time.transition_time = 0 + cell.obs[2]
-            else:
-                for cell in level:
+                else:
                     cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[2] + cell.obs[3])
                     cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
 
-    def censor_lineage(self, censor_condition: int, full_list_of_gens: list, full_lineage, **kwargs):
+    def censor_lineage(self, censor_condition: int, full_list_of_gens: list[np.ndarray], full_lineage: list[CellVar], **kwargs):
         """
         This function removes those cells that are intended to be remove
         from the output binary tree based on emissions.
@@ -96,10 +97,10 @@ class StateDistribution:
             return output_lineage
 
         output_lineage = []
-        for gen_minus_1, level in enumerate(full_list_of_gens[1:]):
-            true_gen = gen_minus_1 + 1  # generations are 1-indexed
-            if true_gen == 1:
-                for cell in level:
+        for generation, level in enumerate(full_list_of_gens):
+            for cIDX in level:
+                cell = full_lineage[cIDX]
+                if generation == 0:
                     assert cell.isRootParent()
                     basic_censor(cell)
                     if censor_condition == 1:
@@ -111,8 +112,7 @@ class StateDistribution:
                         time_censor(cell, desired_experiment_time)
                     if cell.observed:
                         output_lineage.append(cell)
-            else:
-                for cell in level:
+                else:
                     basic_censor(cell)
                     if censor_condition == 1:
                         fate_censor(cell)

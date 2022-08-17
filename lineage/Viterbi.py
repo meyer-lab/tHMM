@@ -52,7 +52,7 @@ def get_nonleaf_deltas(tHMMobj, deltas: list, state_ptrs: list):
 
         # move up one generation until the 2nd generation is the children
         # and the root nodes are the parents
-        for level in linObj.output_list_of_gens[2:][::-1]:
+        for level in linObj.idx_by_gen[1:][::-1]:
             parent_holder = linObj.get_parent_idxs(level)
 
             for node_parent_m_idx in parent_holder:
@@ -124,8 +124,9 @@ def Viterbi(tHMMobj) -> list:
         opt_state_tree = np.zeros(len(lineage), dtype=int)
         possible_first_states = np.multiply(deltas[num][0, :], tHMMobj.estimate.pi)
         opt_state_tree[0] = np.argmax(possible_first_states)
-        for level in lineageObj.output_list_of_gens[1:]:
-            for cell in level:
+        for level in lineageObj.idx_by_gen:
+            for cIDX in level:
+                cell = lineage[cIDX]
                 parent_idx = lineage.index(cell)
                 for n in cell.get_daughters():
                     child_idx = lineage.index(n)

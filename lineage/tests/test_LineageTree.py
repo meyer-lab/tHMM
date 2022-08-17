@@ -64,9 +64,9 @@ class TestModel(unittest.TestCase):
         cell_3.right = cell_7
 
         self.test_lineage = [cell_1, cell_2, cell_3, cell_4, cell_5, cell_6, cell_7]
-        self.level1 = [cell_1]
-        self.level2 = [cell_2, cell_3]
-        self.level3 = [cell_4, cell_5, cell_6, cell_7]
+        self.level1 = [0]
+        self.level2 = [1, 2]
+        self.level3 = [3, 4, 5, 6]
         # for test_get_subtrees
         self.cell_2 = cell_2
         self.subtree1 = [cell_2, cell_4, cell_5]
@@ -101,24 +101,16 @@ class TestModel(unittest.TestCase):
         A unittest for testing max_gen function by creating the lineage manually
         for 3 generations ==> total of 7 cells in the setup function.
         """
-
         list_by_gen = max_gen(self.test_lineage)
-        self.assertTrue(list_by_gen[1] == self.level1)
-        self.assertTrue(list_by_gen[2] == self.level2)
-        self.assertTrue(list_by_gen[3] == self.level3)
+        np.testing.assert_array_equal(list_by_gen[0], self.level1)
+        np.testing.assert_array_equal(list_by_gen[1], self.level2)
+        np.testing.assert_array_equal(list_by_gen[2], self.level3)
 
     def test_get_parent_for_level(self):
         """ A unittest for get_parent_for_level. """
         list_by_gen = max_gen(self.lineage1.output_lineage)
         parent_ind_holder = self.lineage1.get_parent_idxs(list_by_gen[3])
-
-        # making a list of parent cells using the indexes that
-        # _get_parent_for_level returns
-        parent_holder = []
-        for ind in parent_ind_holder:
-            parent_holder.append(self.lineage1.output_lineage[ind])
-
-        self.assertTrue(parent_holder == list_by_gen[2])
+        np.testing.assert_array_equal(parent_ind_holder, list_by_gen[2])
 
     def test_get_leaves(self):
         """

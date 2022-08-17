@@ -163,10 +163,10 @@ def log_T_score(T: np.ndarray, state_tree_sequence: list, lineageObj: LineageTre
     log_T_score_holder = 0
     log_T = np.log(T)
     # we start with the first transition, from the root cell
-    for level in lineageObj.output_list_of_gens[1:]:
-        for cell in level:
+    for level in lineageObj.idx_by_gen:
+        for cell_idx in level:
+            cell = lineageObj.output_lineage[cell_idx]
             if not cell.isLeaf():
-                cell_idx = lineageObj.output_lineage.index(cell)
                 cell_state = state_tree_sequence[cell_idx]
                 for daughter in cell.get_daughters():
                     child_idx = lineageObj.output_lineage.index(daughter)
