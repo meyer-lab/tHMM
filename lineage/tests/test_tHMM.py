@@ -6,7 +6,7 @@ from ..LineageTree import LineageTree
 from ..tHMM import tHMM, get_Emission_Likelihoods
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
 from ..figures.common import pi, T, E
-from ..Analyze import Analyze, Results, run_Analyze_over
+from ..Analyze import Analyze_list, Results, run_Analyze_over
 
 
 class TestModel(unittest.TestCase):
@@ -64,9 +64,8 @@ def test_fit_performance():
     """ Really defined states should get an accuracy >95%.
     Lineages used should be large and distinct. """
     X = [LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 8) - 1)]
-    first = Results(*Analyze(X, 2, fpi=pi))["state_similarity"]
-    second = Results(*Analyze(X, 2, fpi=pi))["state_similarity"]
-    assert max(first, second) > 95.0
+    tHMM, LL, _ = Analyze_list([X], 2, fpi=pi)
+    assert Results(tHMM, LL)["state_similarity"] > 95.0
 
 
 @pytest.mark.parametrize("sizze", [1, 3])
@@ -76,7 +75,7 @@ def test_small_lineages(sizze, stateNum):
     # test with 2 state model
     lin = [LineageTree.init_from_parameters(pi, T, E, sizze) for _ in range(2)]
 
-    _, LL1 = Analyze(lin, stateNum)
+    _, LL1, _ = Analyze_list([lin], stateNum)
     assert np.all(np.isfinite(LL1))
 
 

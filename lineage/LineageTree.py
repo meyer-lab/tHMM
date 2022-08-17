@@ -149,7 +149,7 @@ class LineageTree:
         :param NF: normalizing factor. The marginal observation distribution P(x_n = x)
         :return: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
         """
-        beta = np.zeros((len(self.output_lineage), MSD.shape[1]))
+        beta = np.zeros((len(self), MSD.shape[1]))
 
         # Emission Likelihood, Marginal State Distribution, Normalizing Factor (same regardless of state)
         # P(x_n = x | z_n = k), P(z_n = k), P(x_n = x)
