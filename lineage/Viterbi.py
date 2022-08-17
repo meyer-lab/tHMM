@@ -53,7 +53,7 @@ def get_nonleaf_deltas(tHMMobj, deltas: list, state_ptrs: list):
         # move up one generation until the 2nd generation is the children
         # and the root nodes are the parents
         for level in linObj.idx_by_gen[1:][::-1]:
-            parent_holder = linObj.get_parent_idxs(level)
+            parent_holder = np.unique(linObj.cell_to_parent[level])
 
             for node_parent_m_idx in parent_holder:
                 fac1, max_state_ptr = get_delta_parent_child_prod(lineage=lineage, delta_array=deltas[num], T=T, node_parent_m_idx=node_parent_m_idx)

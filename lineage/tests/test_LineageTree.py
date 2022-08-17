@@ -109,7 +109,7 @@ class TestModel(unittest.TestCase):
     def test_get_parent_for_level(self):
         """ A unittest for get_parent_for_level. """
         list_by_gen = max_gen(self.lineage1.output_lineage)
-        parent_ind_holder = self.lineage1.get_parent_idxs(list_by_gen[3])
+        parent_ind_holder = np.unique(self.lineage1.cell_to_parent[list_by_gen[3]])
         np.testing.assert_array_equal(parent_ind_holder, list_by_gen[2])
 
     def test_get_leaves(self):

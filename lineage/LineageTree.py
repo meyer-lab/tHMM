@@ -23,6 +23,7 @@ class LineageTree:
         # assign times using the state distribution specific time model
         E[0].assign_times(self.output_lineage, self.idx_by_gen)
         self.leaves_idx = get_leaves_idx(self.output_lineage)
+        self.cell_to_parent = cell_to_parent(self.output_lineage)
 
     @classmethod
     def init_from_parameters(
@@ -72,18 +73,6 @@ class LineageTree:
         lineageObj.T = T
         return lineageObj
 
-    def get_parent_idxs(self, level: np.ndarray) -> np.ndarray:
-        """
-        Given a list of cells, return the indices of the parents.
-        :param level: The list of cells.
-        :return parent_holder: Indices of the parents.
-        """
-        parent_holder = list()
-        for cIDX in level:
-            parent = self.output_lineage[cIDX].parent
-            parent_holder.append(self.output_lineage.index(parent))
-        return np.unique(parent_holder)
-
     def get_Marginal_State_Distributions(
         self, pi: np.ndarray, T: np.ndarray
     ) -> np.ndarray:
@@ -111,13 +100,10 @@ class LineageTree:
         m = np.zeros((len(self.output_lineage), pi.size))
         m[0, :] = pi
 
-        for level in self.idx_by_gen[1:]:
-            for cIDX in level:
-                parent = self.output_lineage[cIDX].parent  # get the index of the parent cell
-                pCellIDX = self.output_lineage.index(parent)  # get the index of the parent cell
-
-                # recursion based on parent cell
-                m[cIDX, :] = m[pCellIDX, :] @ T
+        # recursion based on parent cell
+        for cIDXs in self.idx_by_gen[1:]:
+            pIDXs = self.cell_to_parent[cIDXs]
+            m[cIDXs, :] = m[pIDXs, :] @ T
 
         np.testing.assert_allclose(np.sum(m, axis=1), 1.0)
         return m
@@ -177,7 +163,7 @@ class LineageTree:
         for level in self.idx_by_gen[1:][
             ::-1
         ]:  # a reversed list of generations
-            for pii in self.get_parent_idxs(level):
+            for pii in np.unique(self.cell_to_parent[level]):
                 ch_ii = [lineage.index(d) for d in lineage[pii].get_daughters()]
                 ratt = beta[ch_ii, :] / MSD_array[ch_ii, :]
                 fac1 = np.prod(ratt @ T.T, axis=0) * ELMSD[pii, :]
@@ -384,6 +370,16 @@ def max_gen(lineage: list[CellVar]) -> list[np.ndarray]:
         level = np.array([lineage.index(cell) for cell in lineage if (cell.gen == gen and cell.observed)], dtype=int)
         cells_by_gen.append(level)
     return cells_by_gen
+
+
+def cell_to_parent(lineage: list[CellVar]) -> np.ndarray:
+    output = np.full(len(lineage), -1, dtype=int)
+    for ii, cell in enumerate(lineage):
+        parent = cell.parent
+        if parent is not None:
+            output[ii] = lineage.index(parent)
+
+    return output
 
 
 def get_leaves_idx(lineage: list[CellVar]) -> np.ndarray:
