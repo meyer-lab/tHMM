@@ -51,11 +51,11 @@ def makeFigure():
             T = T / np.sum(T, axis=1)[:, np.newaxis]
             if idx < 3:
                 # uncensored lineage generation
-                lineages = [LineageTree.init_from_parameters(
+                lineages = [LineageTree.rand_init(
                     pi, T, e, 2**6 - 1) for _ in range(10)]
             else:
                 # censored lineage creation
-                lineages = [LineageTree.init_from_parameters(
+                lineages = [LineageTree.rand_init(
                     pi, T, e, 2**6 - 1, censor_condition=3, experiment_time=1200) for _ in range(10)]
             tmp.append(exe.submit(run_BIC, e, lineages))
         BICprom.append(tmp)

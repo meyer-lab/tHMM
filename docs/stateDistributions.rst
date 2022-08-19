@@ -257,7 +257,7 @@ Creating the lineage tree:
 
 .. code:: ipython3
 
-    lineage1 = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=2**5 - 1)
+    lineage1 = LineageTree.rand_init(pi, T, E, desired_num_cells=2**5 - 1)
     # These are the minimal arguments required to instantiate lineages
     print(lineage1)
     print("\n")
