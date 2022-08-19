@@ -37,7 +37,7 @@ def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, float]:
 
 
 def fit_list(
-    tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100
+    tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100, rng=None
 ) -> Tuple[list, list, list, list, float]:
     """
     Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
@@ -51,11 +51,12 @@ def fit_list(
     :return gammas: gamma values (used to calculate the downward reursion)
     :return new_LL: the log-likelihood of the optimized solution
     """
+    rng = np.random.default_rng(rng)
 
     # Step 0: initialize with random assignments and do an M step
     # when there are no fixed emissions, we need to randomize the start
     init_gam = [
-        [sp.dirichlet.rvs(np.ones(tO.num_states), size=len(lin)) for lin in tO.X]
+        [sp.dirichlet.rvs(np.ones(tO.num_states), size=len(lin), random_state=rng) for lin in tO.X]
         for tO in tHMMobj_list
     ]
 
@@ -68,7 +69,7 @@ def fit_list(
     MSD_list, NF_list, betas_list, gammas_list = map(
         list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list])
     )
-    old_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
+    old_LL = calculate_log_likelihood(NF_list)
 
     # first stopping condition check
     for _ in range(max_iter):
@@ -76,7 +77,7 @@ def fit_list(
         MSD_list, NF_list, betas_list, gammas_list = map(
             list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list])
         )
-        new_LL: float = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
+        new_LL = calculate_log_likelihood(NF_list)
         if new_LL - old_LL < tolerance:
             break
 

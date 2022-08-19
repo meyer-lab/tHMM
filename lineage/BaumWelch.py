@@ -30,15 +30,14 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     return MSD, NF, betas, gammas
 
 
-def calculate_log_likelihood(NF: Any) -> np.ndarray:
+def calculate_log_likelihood(NF: list) -> float:
     """
     Calculates log likelihood of NF for each lineage.
 
-    :param NF: normalizing factor
+    :param NF: list of normalizing factors
     return: the sum of log likelihoods for each lineage
     """
-    # NF is a list of arrays, an array for each lineage in the population
-    return np.array([sum(np.log(arr)) for arr in NF])
+    return np.sum(np.log(NF))
 
 
 def calculate_stationary(T: np.ndarray) -> np.ndarray:

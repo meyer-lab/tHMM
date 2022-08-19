@@ -1,4 +1,5 @@
 """ Unit test file. """
+from copy import deepcopy
 import pytest
 import numpy as np
 import pickle
@@ -31,6 +32,22 @@ def test_BW(cens, nStates):
     assert np.isfinite(LL_after)
     assert np.isfinite(new_LL_list_after)
     assert LL_after > LL_before
+
+
+def test_fit_seed():
+    """ Test that we can set the seed to provide reproducible results. """
+    X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 7) - 1, desired_experimental_time=200)
+    tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
+
+    # Get the likelihoods after fitting
+    _, NFone, _, _, LLone = fit_list([deepcopy(tHMMobj)], max_iter=3, rng=1)
+    _, NFtwo, _, _, LLtwo = fit_list([deepcopy(tHMMobj)], max_iter=3, rng=1)
+    assert LLone == LLtwo
+    np.testing.assert_allclose(NFone, NFtwo)
+
+    _, _, _, _, LLone = fit_list([deepcopy(tHMMobj)], max_iter=3)
+    _, _, _, _, LLtwo = fit_list([deepcopy(tHMMobj)], max_iter=3)
+    assert LLone != LLtwo
 
 
 pik1 = open("gemcitabines.pkl", "rb")
