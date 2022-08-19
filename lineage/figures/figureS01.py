@@ -25,7 +25,7 @@ cells = np.linspace(min_desired_num_cells, max_desired_num_cells, num_data_point
 list_of_fpi = [pi] * cells.size
 
 # Generate populations
-list_of_populations = [[LineageTree.init_from_parameters(pi, T, E, cell_num)] for cell_num in cells]
+list_of_populations = [[LineageTree.rand_init(pi, T, E, cell_num)] for cell_num in cells]
 
 
 def makeFigure():

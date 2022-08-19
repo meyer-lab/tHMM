@@ -16,7 +16,7 @@ from ..figures.common import pi, T, E
 @pytest.mark.parametrize("nStates", [1, 2, 3])
 def test_BW(cens, nStates):
     """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
-    X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 7) - 1, desired_experimental_time=200, censor_condition=cens)
+    X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 7) - 1, desired_experimental_time=200, censor_condition=cens)
     tHMMobj = tHMM([X], num_states=nStates)  # build the tHMM class with X
 
     # Test cases below
@@ -36,7 +36,7 @@ def test_BW(cens, nStates):
 
 def test_fit_seed():
     """ Test that we can set the seed to provide reproducible results. """
-    X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 7) - 1, desired_experimental_time=200)
+    X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 7) - 1, desired_experimental_time=200)
     tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
     # Get the likelihoods after fitting
@@ -78,9 +78,9 @@ def test_E_step(cens):
     population = []
     for _ in range(200):
         # make sure we have enough cells in the lineage.
-        X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 6) - 1, desired_experimental_time=150, censor_condition=cens)
+        X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 6) - 1, desired_experimental_time=150, censor_condition=cens)
         while len(X.output_lineage) < 5:
-            X = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 6) - 1, desired_experimental_time=150, censor_condition=cens)
+            X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 6) - 1, desired_experimental_time=150, censor_condition=cens)
         population.append(X)
 
     tHMMobj = tHMM(population, num_states=5)  # build the tHMM class with X
@@ -102,9 +102,9 @@ def test_M_step(cens):
     population = []
     for _ in range(500):
         # make sure we have enough cells in the lineage.
-        X = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=(2 ** 5) - 1, desired_experimental_time=100, censor_condition=cens)
+        X = LineageTree.rand_init(pi3, T3, E3, desired_num_cells=(2 ** 5) - 1, desired_experimental_time=100, censor_condition=cens)
         while len(X.output_lineage) < 4:
-            X = LineageTree.init_from_parameters(pi3, T3, E3, desired_num_cells=(2 ** 5) - 1, desired_experimental_time=100, censor_condition=cens)
+            X = LineageTree.rand_init(pi3, T3, E3, desired_num_cells=(2 ** 5) - 1, desired_experimental_time=100, censor_condition=cens)
         population.append(X)
 
     tHMMobj = tHMM(population, num_states=gmc[1].num_states)

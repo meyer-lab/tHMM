@@ -248,7 +248,7 @@ example of a full lineage tree.
 
 .. code:: ipython3
 
-    lineage1 = LineageTree.init_from_parameters(pi, T, E, desired_num_cells=2**5 - 1)
+    lineage1 = LineageTree.rand_init(pi, T, E, desired_num_cells=2**5 - 1)
     # These are the minimal arguments required to instantiate lineages
     print(lineage1)
     print("\n")
@@ -328,7 +328,7 @@ because we used ``E`` as the Emissions which we defined as a list with two ``Sta
 
     Y = []
     for _ in range(10):
-        Y.append(LineageTree.init_from_parameters(pi, T, E, desired_num_cells=35))
+        Y.append(LineageTree.rand_init(pi, T, E, desired_num_cells=35))
     tHMMobj, pred_states_by_lineage, LL = Analyze_list(Y, 2) # find two states
 
 .. code:: ipython3

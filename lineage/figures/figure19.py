@@ -31,7 +31,7 @@ def makeFigure():
         T = np.eye(len(e)) + 0.1
         T = T / np.sum(T, axis=1)[:, np.newaxis]
         complete_population = [
-            [LineageTree.init_from_parameters(pi, T, e, 7, censored_condition=3, desired_experiment_time=200) for _ in range(100)] for _ in range(4)
+            [LineageTree.rand_init(pi, T, e, 7, censored_condition=3, desired_experiment_time=200) for _ in range(100)] for _ in range(4)
         ]
 
         output.append(output_LL(complete_population))

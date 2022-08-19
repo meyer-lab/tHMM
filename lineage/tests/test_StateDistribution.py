@@ -23,10 +23,10 @@ class TestModel(unittest.TestCase):
         self.E2 = [StateDistPhase(0.99, 0.9, 100, 1, 20, 1.5), StateDistPhase(0.8, 0.75, 100, 0.2, 60, 1)]
 
         # creating two lineages, one with False for pruning, one with True.
-        self.lineage = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
-        self.lineage2 = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 5.5) - 1, censor_condition=2, desired_experiment_time=50)
-        self.lineage3 = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800)
-        self.population = [LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800) for i in range(50)]
+        self.lineage = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
+        self.lineage2 = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 5.5) - 1, censor_condition=2, desired_experiment_time=50)
+        self.lineage3 = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800)
+        self.population = [LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800) for i in range(50)]
 
     def test_rvs(self):
         """
