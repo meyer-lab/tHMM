@@ -213,3 +213,7 @@ pbs = [LineageTree(cells, E2) for cells in MCF10A("PBS")]
 egf = [LineageTree(cells, E2) for cells in MCF10A("EGF")]
 hgf = [LineageTree(cells, E2) for cells in MCF10A("HGF")]
 osm = [LineageTree(cells, E2) for cells in MCF10A("OSM")]
+
+AllLapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
+AllGemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
+GFs = [pbs, egf, hgf, osm]

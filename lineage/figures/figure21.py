@@ -1,7 +1,7 @@
 """ Figure 21 to perform cross validation on experimental data. """
 from .common import getSetup
 import numpy as np
-from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
+from ..Lineage_collections import AllLapatinib, AllGemcitabine
 from .figure19 import output_LL
 
 desired_num_states = np.arange(1, 8)
@@ -13,11 +13,8 @@ def makeFigure():
     """
     ax, f = getSetup((9, 4), (1, 2))
 
-    lapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
-    gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
-
-    lap_out = output_LL(lapatinib)
-    gem_out = output_LL(gemcitabine)
+    lap_out = output_LL(AllLapatinib)
+    gem_out = output_LL(AllGemcitabine)
 
     ax[0].plot(desired_num_states, lap_out)
     ax[0].set_title("Lapatinib-treated")
