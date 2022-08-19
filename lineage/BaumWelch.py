@@ -37,7 +37,14 @@ def calculate_log_likelihood(NF: list) -> float:
     :param NF: list of normalizing factors
     return: the sum of log likelihoods for each lineage
     """
-    return np.sum(np.log(NF))
+    summ = 0.0
+    for N in NF:
+        if isinstance(N, np.ndarray):
+            summ += np.sum(np.log(N))
+        else:
+            summ += np.sum([np.sum(np.log(a)) for a in N]) 
+
+    return summ
 
 
 def calculate_stationary(T: np.ndarray) -> np.ndarray:
