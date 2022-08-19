@@ -42,7 +42,7 @@ def calculate_log_likelihood(NF: list) -> float:
         if isinstance(N, np.ndarray):
             summ += np.sum(np.log(N))
         else:
-            summ += np.sum([np.sum(np.log(a)) for a in N]) 
+            summ += np.sum([np.sum(np.log(a)) for a in N])
 
     return summ
 
