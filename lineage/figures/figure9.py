@@ -14,7 +14,6 @@ def makeFigure():
     Makes figure 9.
     """
     ax, f = getSetup((14, 4), (1, 3))
-    
 
     def find_BIC(data, desired_num_states, num_cells, mc=False):
         # Copy out data to full set
