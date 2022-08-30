@@ -1,0 +1,22 @@
+*.sublime-workspace
+**/.ipynb_checkpoints
+**/.hypothesis
+**/.pytest_cache
+**/__pycache__/
+nosetests.xml
+**/.mypy_cache
+
+# Notebooks
+**.ipynb
+# Exception to the rule
+!/notebooks/*.ipynb
+
+
+venv/
+profile
+profile.svg
+.DS_Store
+pylint.log
+spell.txt
+.vscode/settings.json
+.vscode
