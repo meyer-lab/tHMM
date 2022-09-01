@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 from scipy.stats import bernoulli
+from scipy.special import logsumexp
 from copy import deepcopy
 from concurrent.futures import ProcessPoolExecutor
 from .Analyze import Analyze_list
@@ -20,7 +21,7 @@ def hide_observation(lineages: list, percentage: float) -> list:
     return new_lineages
 
 
-def crossval(train_populations: list, num_states: np.array):
+def crossval(train_populations: list, num_states: np.ndarray):
     """Perform cross validation for the experimental data which runs in parallel for all states.
     :param train_populations: the populations after applying hide_observation. This includes the list of list of lineages.
     :param hidden_indexes: is a list of list of np.arrays for each lineage,
@@ -43,22 +44,27 @@ def crossval(train_populations: list, num_states: np.array):
             for lin_indx, lin in enumerate(tHMMobj.X):
                 for cell_indx, cell in enumerate(lin.output_lineage):
                     if cell.obs[2] < 0:
-                        positive_obs = [-1 * o for o in cell.obs]
-                        tmp = 0
-                        for i in range(k):
-                            tmp += np.exp(tHMMobj.estimate.E[i].logpdf(np.array(positive_obs)[np.newaxis, :])) * gamma_list[idx][lin_indx][cell_indx][i]
 
-                        Logls += np.log(tmp)
+                        positive_obs = np.array([-1 * o for o in cell.obs])[np.newaxis, :]
+
+                        tmp = np.array([tHMMobj.estimate.E[i].logpdf(positive_obs)[0] for i in range(k + 1)])
+                        tmp += np.log(gamma_list[idx][lin_indx][cell_indx])
+
+                        Logls += logsumexp(tmp)
         LLs.append(Logls)
     return LLs
 
-def output_LL(complete_population, desired_num_states, name):
-    """ Given the complete population, it masks 25% of cells and prepares the data for parallel fitting using crossval function."""
+
+def output_LL(complete_population, desired_num_states):
+    """Given the complete population, it masks 25% of cells and prepares the data for parallel fitting using crossval function."""
     # create training data by hiding 25% of cells in each lineage
-    output, promholder = [], []
-    for i in range(10):
-        train_population = [hide_observation(complete_pop, 0.25) for complete_pop in complete_population]
-        promholder.append(exe.submit(crossval, train_population, desired_num_states))
+    train_population = [
+        hide_observation(complete_pop, 0.25) for complete_pop in complete_population
+    ]
+    # Copy out data to full set
+    dataFull = []
+    for _ in desired_num_states:
+        dataFull.append(train_population)
 
     output = [p.result() for p in promholder]
     lls = np.asarray(output)

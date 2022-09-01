@@ -4,7 +4,6 @@ from typing import Tuple, Any
 
 from .UpwardRecursion import (
     get_Marginal_State_Distributions,
-    get_Emission_Likelihoods,
     get_leaf_Normalizing_Factors,
     get_leaf_betas,
     get_nonleaf_NF_and_betas,
@@ -15,10 +14,11 @@ from .DownwardRecursion import (
     sum_nonleaf_gammas,
 )
 
+from .tHMM import tHMM
 from .states.StateDistributionGamma import atonce_estimator
 
 
-def do_E_step(tHMMobj) -> Tuple[list, list, list, list]:
+def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     """
     Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
 
@@ -29,7 +29,7 @@ def do_E_step(tHMMobj) -> Tuple[list, list, list, list]:
     :return gammas: gamma values (used to calculate the downward reursion)
     """
     MSD = get_Marginal_State_Distributions(tHMMobj)
-    EL = get_Emission_Likelihoods(tHMMobj)
+    EL = tHMMobj.get_Emission_Likelihoods()
     NF = get_leaf_Normalizing_Factors(tHMMobj, MSD, EL)
     betas = get_leaf_betas(tHMMobj, MSD, EL, NF)
     get_nonleaf_NF_and_betas(tHMMobj, MSD, EL, NF, betas)
@@ -63,7 +63,7 @@ def calculate_stationary(T: np.ndarray) -> np.ndarray:
     return w / np.sum(w)
 
 
-def do_M_step(tHMMobj: list, MSD: list, betas: list, gammas: list):
+def do_M_step(tHMMobj, MSD: list, betas: list, gammas: list):
     """
     Calculates the maximization step of the Baum Welch algorithm
     given output of the expectation step.
@@ -115,7 +115,7 @@ def do_M_step(tHMMobj: list, MSD: list, betas: list, gammas: list):
             do_M_E_step_atonce(tHMMobj, gammas)
 
 
-def do_M_pi_step(tHMMobj, gammas: list) -> np.ndarray:
+def do_M_pi_step(tHMMobj: list[tHMM], gammas: list) -> np.ndarray:
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -135,7 +135,7 @@ def do_M_pi_step(tHMMobj, gammas: list) -> np.ndarray:
     return pi_e / np.sum(pi_e)
 
 
-def do_M_T_step(tHMMobj, MSD: list, betas: list, gammas: list) -> list:
+def do_M_T_step(tHMMobj: list[tHMM], MSD: list[np.ndarray], betas: list, gammas: list) -> list:
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -168,7 +168,7 @@ def do_M_T_step(tHMMobj, MSD: list, betas: list, gammas: list) -> list:
     return T_estimate
 
 
-def do_M_E_step(tHMMobj, gammas: list):
+def do_M_E_step(tHMMobj: tHMM, gammas: list):
     """
     Calculates the M-step of the Baum Welch algorithm
     given output of the E step.
@@ -185,7 +185,7 @@ def do_M_E_step(tHMMobj, gammas: list):
         tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
 
 
-def do_M_E_step_atonce(all_tHMMobj: list, all_gammas: list):
+def do_M_E_step_atonce(all_tHMMobj: list[tHMM], all_gammas: list):
     """
     Performs the maximization step for emission estimation when data for all the concentrations are given at once for all the states.
     After reshaping, we will have a list of lists for each state.

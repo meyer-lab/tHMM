@@ -1,6 +1,7 @@
 """ File holds the code for the downward recursion. """
 
 import numpy as np
+from .LineageTree import LineageTree
 
 
 def get_gammas(tHMMobj, MSD: list, betas: list) -> list:
@@ -37,7 +38,9 @@ def get_gammas(tHMMobj, MSD: list, betas: list) -> list:
 
                 for d in cell.get_daughters():
                     ci = lineage.index(d)
-                    gammas[num][ci, :] = coeffs[ci, :] * np.matmul(gam / beta_parents[:, ci], T)
+                    gammas[num][ci, :] = coeffs[ci, :] * np.matmul(
+                        gam / beta_parents[:, ci], T
+                    )
 
     for gamm in gammas:
         assert np.all(np.isfinite(gamm))
@@ -45,22 +48,24 @@ def get_gammas(tHMMobj, MSD: list, betas: list) -> list:
     return gammas
 
 
-def sum_nonleaf_gammas(lineageObj, gamma_arr: np.ndarray) -> np.ndarray:
+def sum_nonleaf_gammas(lO: LineageTree, gamma_arr: np.ndarray) -> np.ndarray:
     """
     Sum of the gammas of the cells that are able to divide, that is,
     sum the of the gammas of all the nonleaf cells. It is used in estimating the transition probability matrix.
     This is an inner component in calculating the overall transition probability matrix.
 
-    :param lineageObj: the object of lineage tree
+    :param lO: the object of lineage tree
     :param gamma_arr: the gamma values for each lineage
     :return: the sum of gamma values for each state for non-leaf cells.
     """
-    holder_wo_leaves = np.zeros(gamma_arr.shape[1])
-    for level in lineageObj.output_list_of_gens[1:]:  # sum the gammas for cells that are transitioning
+    sum_wo_leaf = np.zeros(gamma_arr.shape[1])
+    for level in lO.output_list_of_gens[
+        1:
+    ]:  # sum the gammas for cells that are transitioning
         for cell in level:
             if not cell.isLeaf():
-                cell_idx = lineageObj.output_lineage.index(cell)
-                holder_wo_leaves += gamma_arr[cell_idx, :]
-    assert np.all(np.isfinite(holder_wo_leaves))
+                cell_idx = lO.output_lineage.index(cell)
+                sum_wo_leaf += gamma_arr[cell_idx, :]
+    assert np.all(np.isfinite(sum_wo_leaf))
 
-    return holder_wo_leaves
+    return sum_wo_leaf

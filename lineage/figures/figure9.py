@@ -8,6 +8,18 @@ from .common import getSetup
 
 desired_num_states = np.arange(1, 8)
 
+def find_BIC(data, desired_num_states, num_cells, mc=False):
+    # Copy out data to full set
+    dataFull = []
+    for _ in desired_num_states:
+        dataFull.append(data)
+
+    # Run fitting
+    output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
+    BICs = np.array([oo[0][0].get_BIC(oo[1], num_cells, atonce=True, mcf10a=mc)[0] for oo in output])
+    thobj = [oo[0] for oo in output]
+
+    return BICs - np.min(BICs, axis=0), thobj
 
 def makeFigure():
     """
@@ -19,24 +31,11 @@ def makeFigure():
     gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
     GFs = [pbs, egf, hgf, osm]
 
-    def find_BIC(data, desired_num_states, num_cells, mc=False):
-        # Copy out data to full set
-        dataFull = []
-        for _ in desired_num_states:
-            dataFull.append(data)
-
-        # Run fitting
-        output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
-        BICs = np.array([oo[0][0].get_BIC(oo[1], num_cells, atonce=True, mcf10a=mc)[0] for oo in output])
-        thobj = [oo[0] for oo in output]
-
-        return BICs - np.min(BICs, axis=0), thobj
-
-    lapBIC, lapObj = find_BIC(lapatinib, desired_num_states, num_cells=5290)
-    gemBIC, gemObj = find_BIC(gemcitabine, desired_num_states, num_cells=4537)
+    # lapBIC, lapObj = find_BIC(lapatinib, desired_num_states, num_cells=5290)
+    # gemBIC, gemObj = find_BIC(gemcitabine, desired_num_states, num_cells=4537)
     hgfBIC, hgfObj = find_BIC(GFs, desired_num_states, num_cells=1306, mc=True)
 
-    # # Lapatinib
+    # Lapatinib
     # # create a pickle file for lapatinib
     # pik1 = open("lapatinibs.pkl", "wb")
     # for lapt_tHMMobj_list in lapObj:
@@ -51,16 +50,16 @@ def makeFigure():
     #         pickle.dump(gemc, pik2)
     # pik2.close()
 
-    # # Growth factors
-    # pik3 = open("gf.pkl", "wb")
-    # for hgf_tHMMobj_list in hgfObj:
-    #     for hgfd in hgf_tHMMobj_list:
-    #         pickle.dump(hgfd, pik3)
-    # pik3.close()
+    # Growth factors
+    pik3 = open("gf.pkl", "wb")
+    for hgf_tHMMobj_list in hgfObj:
+        for hgfd in hgf_tHMMobj_list:
+            pickle.dump(hgfd, pik3)
+    pik3.close()
 
     # Plotting BICs
-    ax[0].plot(desired_num_states, lapBIC)
-    ax[1].plot(desired_num_states, gemBIC)
+    # ax[0].plot(desired_num_states, lapBIC)
+    # ax[1].plot(desired_num_states, gemBIC)
     ax[2].plot(desired_num_states, hgfBIC)
 
     for i in range(3):
