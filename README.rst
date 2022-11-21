@@ -9,7 +9,8 @@ tHMM
         :target: https://lineage-growth.readthedocs.io/
 
 
-``tHMM`` is a Python3 package for clustering, visualizing, and analyzing data in the form of lineage trees.
+``tHMM`` is a Python3 package for clustering, visualizing, and analyzing data in the form of lineage trees. This work is now published in Communications Biology https://www.nature.com/articles/s42003-022-04208-9
+
 
 Install
 -------
