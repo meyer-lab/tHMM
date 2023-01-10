@@ -1,6 +1,6 @@
 """ This file includes functions to import the new lineage data. """
 import pandas as pd
-import itertools
+import itertools as it
 import numpy as np
 from .CellVar import CellVar
 
@@ -32,7 +32,7 @@ def import_AU565(path: str) -> list:
             for j in unique_parent_trackIDs:
                 if j != 0:
                     pid.append(np.count_nonzero(lineage["parentTrackId"] == j) * [j])
-            parent_ids = list(itertools.chain(*pid))
+            parent_ids = list(it.chain(*pid))
 
             # create the root parent cell and assign obsrvations
             parent_cell = CellVar(parent=None)
@@ -295,45 +295,6 @@ def assign_observs_Taxol(cell, cell_lineage, label: int):
 
     return cell
 
-def import_taxol(filename="HC00801_A1_field_1_level_1.csv"):
-    """To import the new Taxol data"""
-
-    data = pd.read_csv("lineage/data/taxol/"+filename)
-    labels = list(data["label"].unique())
-    all_parent_ids = list(data["parent"].unique())
-
-    lineage_codes = sep_lineages(data)
-    lineages = []
-    for i, lin in enumerate(lineage_codes):
-        num_gens = len(lin) # number of generations
-        parent_cell = CellVar(parent=None)
-        parent_cell = assign_observs_Taxol(parent_cell, data, lin[0][0])
-        if num_gens == 1:
-            lineages.append([[parent_cell]])
-        else:
-            temp = [[parent_cell]]
-            for gen in lin[1:]:
-                parent_cell.left = assign_observs_Taxol(parent_cell, data, gen[0])
-                parent_cell.right = assign_observs_Taxol(parent_cell, data, gen[1])
-                temp.append([parent_cell.left, parent_cell.right])
-
-                cell = data.loc[data["label"] == lab]
-                cell_lineage = cell[["label", "parent", "elapsed_minutes", "Drug1", "Drug1Concentration", "Cell_CC_mean_intensity_ratio"]]
-
-        temp = []
-        if np.all(cell_lineage["parent"] == 0):
-            parent_cell = CellVar(parent=None)
-            parent_cell = assign_observs_Taxol(parent_cell, cell_lineage, label)
-            if not(label in all_parent_ids): # singlton lineages
-                lineages.append([parent_cell])
-            else:
-                while label in all_parent_ids: # while the cell is dividing...
-                    childs = data.loc[data["parent"] == label]
-                    child_ids = childs["label"].unique()
-                    assert len(child_id) == 2
-                    parent_cell.left = assign_observs_Taxol(parent_cell, cell_lineage, chil_ids[0])
-                    parent_cell.right = assign_observs_Taxol(parent_cell, cell_lineage, chil_ids[1])
-
 
 ### The following two functions are used to make a list from labels that belong to the same lineage
 def sep_lineages(data):
@@ -345,7 +306,8 @@ def sep_lineages(data):
         if np.all(df["is_parent"] == True):
             df_parent = data.loc[data["parent"] == val] # cell's parent
             assert val in all_parent_ids
-            a.append([[val]] + [list(df_parent["label"].unique())])
+            if len(df_parent["label"].unique()) == 2:
+                a.append([[val]] + [list(df_parent["label"].unique())])
         else:
             a.append([[val]])
 
@@ -368,7 +330,10 @@ def separate_lineages(data, all_parent_ids, ls, k):
                     temp += [np.nan, np.nan]
                 else:
                     if i in all_parent_ids:
-                        temp += list(data.loc[data["parent"]==i]["label"].unique())
+                        if len(data.loc[data["parent"]==i]["label"].unique()) == 2:
+                            temp += list(data.loc[data["parent"]==i]["label"].unique())
+                        else:
+                            temp += [np.nan, np.nan]
                     else:
                         temp += [np.nan, np.nan]
         else:
@@ -380,4 +345,85 @@ def separate_lineages(data, all_parent_ids, ls, k):
     return lss
 
 
+def import_taxol_file(filename="HC00801_A1_field_1_level_1.csv"):
+    """To import the new Taxol data"""
 
+    data = pd.read_csv("lineage/data/taxol/"+filename)
+
+    lineage_codes = sep_lineages(data)
+    lineages = []
+    for i, lin in enumerate(lineage_codes):
+        num_gens = len(lin) # number of generations
+        parent_cell = CellVar(parent=None)
+        parent_cell = assign_observs_Taxol(parent_cell, data, lin[0][0])
+        lin_temp = [[parent_cell]]
+
+        if num_gens >= 2:
+            for kk in range(1, num_gens):
+                tmp = []
+                for ix, l in enumerate(lin[kk]):
+                    if ix % 2 == 1: # only iterate through one of two daughter cells
+                        pass
+                    else:
+                        if not np.isnan(l):
+                            cell = lin_temp[kk-1][int(ix/2)]
+                            cell.left = assign_observs_Taxol(cell, data, l)
+                            cell.right = assign_observs_Taxol(cell, data, lin[kk][ix+1])
+                            tmp.append([cell.left, cell.right])
+                        else:
+                            tmp.append([np.nan, np.nan])
+                lin_temp.append(list(it.chain(*tmp)))
+        lineages.append(lin_temp)
+    return lineages
+
+def import_taxol():
+    """Import taxol data by condition"""
+    print("untreated")
+    untreated = [import_taxol_file("HC00801_A1_field_1_level_1.csv") +
+    import_taxol_file("HC00801_A1_field_2_level_1.csv") +
+    import_taxol_file("HC00801_A1_field_3_level_1.csv") +
+    import_taxol_file("HC00801_A1_field_4_level_1.csv")]
+
+    print("taxol 0.5")
+    taxol_05 = [import_taxol_file("HC00801_A2_field_1_level_1.csv") +
+    import_taxol_file("HC00801_A2_field_2_level_1.csv") +
+    import_taxol_file("HC00801_A2_field_3_level_1.csv") +
+    import_taxol_file("HC00801_A2_field_4_level_1.csv")]
+
+    print("taxol 1")
+    taxol_1 = [import_taxol_file("HC00801_B1_field_1_level_1.csv") +
+    import_taxol_file("HC00801_B1_field_2_level_1.csv") +
+    import_taxol_file("HC00801_B1_field_3_level_1.csv") +
+    import_taxol_file("HC00801_B1_field_4_level_1.csv")]
+
+    print("taxol 1.5")
+    taxol_15 = [import_taxol_file("HC00801_B2_field_1_level_1.csv") +
+    import_taxol_file("HC00801_B2_field_2_level_1.csv") +
+    import_taxol_file("HC00801_B2_field_3_level_1.csv") +
+    import_taxol_file("HC00801_B2_field_4_level_1.csv")]
+
+    print("taxol 2")
+    taxol_2 = [import_taxol_file("HC00801_C1_field_1_level_1.csv") +
+    import_taxol_file("HC00801_C1_field_2_level_1.csv") +
+    import_taxol_file("HC00801_C1_field_3_level_1.csv") +
+    import_taxol_file("HC00801_C1_field_4_level_1.csv")]
+
+    print("taxol 2.5")
+    taxol_25 = [import_taxol_file("HC00801_C2_field_1_level_1.csv") +
+    import_taxol_file("HC00801_C2_field_2_level_1.csv") +
+    import_taxol_file("HC00801_C2_field_3_level_1.csv") +
+    import_taxol_file("HC00801_C2_field_4_level_1.csv")]
+
+    print("taxol 3")
+    taxol_3 = [import_taxol_file("HC00801_D1_field_1_level_1.csv") +
+    import_taxol_file("HC00801_D1_field_2_level_1.csv") +
+    import_taxol_file("HC00801_D1_field_3_level_1.csv") +
+    import_taxol_file("HC00801_D1_field_4_level_1.csv")]
+
+    print("taxol 4")
+    taxol_4 = [import_taxol_file("HC00801_D2_field_1_level_1.csv") +
+    import_taxol_file("HC00801_D2_field_2_level_1.csv") +
+    import_taxol_file("HC00801_D2_field_3_level_1.csv") +
+    import_taxol_file("HC00801_D2_field_4_level_1.csv")]
+
+    return untreated, taxol_05, taxol_1, taxol_15, taxol_2, taxol_25, taxol_3, taxol_4
