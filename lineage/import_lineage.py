@@ -227,3 +227,157 @@ def MCF10A(condition: str):
 
     else:
         raise ValueError("condition does not exist. choose between [PBS, EGF, HGF, OSM]")
+
+
+def assign_observs_Taxol(cell, cell_lineage, label: int):
+    """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it.
+    :param cell: a CellVar object to be assigned observations.
+    :param cell_lineage: the dataframe of cells in a file.
+    :param label: the id given to the cell from the experiment.
+    """
+    # initialize
+    cell.obs = [1, 1, 0, 0, 1, 1]  # [G1_fate, S_G2_fate, G1_length, SG2_length, G1_censored?, SG2_censored?]
+    t_end = 5760
+
+    all_parent_ids = cell_lineage["parent"].unique()
+    cell_df = cell_lineage.loc[cell_lineage["label"] == label]
+    parent_id = cell_df["parent"].unique()[0]
+    if parent_id == 0:
+        cell.gen = 1
+
+    threshold = 0.7 # greater than this ==> SG2
+    G1_df = cell_df.loc[cell_df['Cell_CC_mean_intensity_ratio'] <= threshold]
+    SG2_df = cell_df.loc[cell_df['Cell_CC_mean_intensity_ratio'] > threshold]
+
+    ## G1 calculations:
+    if G1_df.empty:
+        # means the cell has no G1 component
+        cell.obs[0] = 1.0 # if no G1, then there is SG2, so it has definitely transitioned from G1 to SG2
+        cell.obs[2] = np.nan
+        cell.obs[4] = np.nan
+    else:
+        # G1 length
+        cell.obs[2] = (np.nanmax(G1_df["elapsed_minutes"]) - np.nanmin(G1_df["elapsed_minutes"])) / 60 # G1 duration
+        if np.nanmin(G1_df["elapsed_minutes"]) == 0: # means left censored
+            cell.obs[4] = 0
+            if not(SG2_df.empty): # has transitioned from G1 -> SG2
+                cell.obs[0] = 1
+
+        if np.nanmax(G1_df["elapsed_minutes"]) == t_end: # cell existed and the experiment ended
+            cell.obs[4] = 0
+            assert not(label in all_parent_ids) # definitely is not a parent because we reached end of exp
+            cell.obs[0] = np.nan
+
+        if np.nanmax(G1_df["elapsed_minutes"]) < t_end and SG2_df.empty: # cell died in G1
+            cell.obs[0] = 0
+
+    ## SG2 calculations:
+    if SG2_df.empty:
+        # means the cell has no SG2 component
+        cell.obs[1] = np.nan
+        cell.obs[3] = np.nan
+        cell.obs[5] = np.nan
+    else:
+        # SG2 length
+        cell.obs[3] = (np.nanmax(SG2_df["elapsed_minutes"]) - np.nanmin(SG2_df["elapsed_minutes"])) / 60 # SG2
+        if np.nanmin(SG2_df["elapsed_minutes"]) == 0: # cell existed when the experiment started
+            cell.obs[5] = 0
+            if label in all_parent_ids:
+                cell.obs[1] = 1
+
+        if np.nanmax(SG2_df["elapsed_minutes"]) == t_end: # cell existed and the experiment ended
+            cell.obs[5] = 0
+            assert not(label in all_parent_ids) # definitely is not a parent because we reached end of exp
+            cell.obs[1] = np.nan
+
+        if np.nanmax(SG2_df["elapsed_minutes"]) < t_end and not(label in all_parent_ids): # cell died in SG2
+            cell.obs[1] = 0
+
+    return cell
+
+def import_taxol(filename="HC00801_A1_field_1_level_1.csv"):
+    """To import the new Taxol data"""
+
+    data = pd.read_csv("lineage/data/taxol/"+filename)
+    labels = list(data["label"].unique())
+    all_parent_ids = list(data["parent"].unique())
+
+    lineage_codes = sep_lineages(data)
+    lineages = []
+    for i, lin in enumerate(lineage_codes):
+        num_gens = len(lin) # number of generations
+        parent_cell = CellVar(parent=None)
+        parent_cell = assign_observs_Taxol(parent_cell, data, lin[0][0])
+        if num_gens == 1:
+            lineages.append([[parent_cell]])
+        else:
+            temp = [[parent_cell]]
+            for gen in lin[1:]:
+                parent_cell.left = assign_observs_Taxol(parent_cell, data, gen[0])
+                parent_cell.right = assign_observs_Taxol(parent_cell, data, gen[1])
+                temp.append([parent_cell.left, parent_cell.right])
+
+                cell = data.loc[data["label"] == lab]
+                cell_lineage = cell[["label", "parent", "elapsed_minutes", "Drug1", "Drug1Concentration", "Cell_CC_mean_intensity_ratio"]]
+
+        temp = []
+        if np.all(cell_lineage["parent"] == 0):
+            parent_cell = CellVar(parent=None)
+            parent_cell = assign_observs_Taxol(parent_cell, cell_lineage, label)
+            if not(label in all_parent_ids): # singlton lineages
+                lineages.append([parent_cell])
+            else:
+                while label in all_parent_ids: # while the cell is dividing...
+                    childs = data.loc[data["parent"] == label]
+                    child_ids = childs["label"].unique()
+                    assert len(child_id) == 2
+                    parent_cell.left = assign_observs_Taxol(parent_cell, cell_lineage, chil_ids[0])
+                    parent_cell.right = assign_observs_Taxol(parent_cell, cell_lineage, chil_ids[1])
+
+
+### The following two functions are used to make a list from labels that belong to the same lineage
+def sep_lineages(data):
+    labels = list(data["label"].unique())
+    all_parent_ids = list(data["parent"].unique())
+    a = []
+    for i, val in enumerate(labels):
+        df = data.loc[data["label"]==val] # cell itself
+        if np.all(df["is_parent"] == True):
+            df_parent = data.loc[data["parent"] == val] # cell's parent
+            assert val in all_parent_ids
+            a.append([[val]] + [list(df_parent["label"].unique())])
+        else:
+            a.append([[val]])
+
+    out1 = separate_lineages(data, all_parent_ids, a, 2)
+    out2 = separate_lineages(data, all_parent_ids, out1, 3)
+    out3 = separate_lineages(data, all_parent_ids, out2, 4)
+    out4 = separate_lineages(data, all_parent_ids, out3, 5)
+    out5 = separate_lineages(data, all_parent_ids, out4, 6)
+
+    return out5
+
+def separate_lineages(data, all_parent_ids, ls, k):
+    lss = ls.copy()
+    for j, val in enumerate(ls):
+        if len(val) == k:
+            temp = []
+            k_th = val[k-1]
+            for i in k_th:
+                if np.isnan(i):
+                    temp += [np.nan, np.nan]
+                else:
+                    if i in all_parent_ids:
+                        temp += list(data.loc[data["parent"]==i]["label"].unique())
+                    else:
+                        temp += [np.nan, np.nan]
+        else:
+            continue
+        if np.all(np.isnan(temp)):
+            pass
+        else:
+            lss[j].append(temp)
+    return lss
+
+
+
