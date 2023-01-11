@@ -89,9 +89,11 @@ def plotLineage(lineage, axes, censor=True, color=True):
         else:
             length = root.obs[2]
         assert np.isfinite(length)
-    else:  # the lineage starts from S/G2 phase
+    elif np.isfinite(root.obs[5]):  # the lineage starts from S/G2 phase
         length = root.obs[3]
         assert np.isfinite(length)
+    else:
+        length=0.01
     a = [Clade(length)]
 
     # input the root cell

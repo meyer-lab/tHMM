@@ -367,14 +367,21 @@ def import_taxol_file(filename="HC00801_A1_field_1_level_1.csv"):
                     else:
                         if not np.isnan(l):
                             cell = lin_temp[kk-1][int(ix/2)]
-                            cell.left = assign_observs_Taxol(cell, data, l)
-                            cell.right = assign_observs_Taxol(cell, data, lin[kk][ix+1])
+                            a = assign_observs_Taxol(CellVar(parent=cell), data, l)
+                            b = assign_observs_Taxol(CellVar(parent=cell), data, lin[kk][ix+1])
+                            cell.left = a
+                            cell.right = b
                             tmp.append([cell.left, cell.right])
                         else:
                             tmp.append([np.nan, np.nan])
+
                 lin_temp.append(list(it.chain(*tmp)))
-        lineages.append(lin_temp)
-    return lineages
+        lineages.append(list(it.chain(*lin_temp)))
+    new_lins = []
+    for lin in lineages:
+        n = [x for x in lin if str(x) != 'nan']
+        new_lins.append(n)
+    return new_lins
 
 def import_taxol():
     """Import taxol data by condition"""
@@ -426,4 +433,4 @@ def import_taxol():
     import_taxol_file("HC00801_D2_field_3_level_1.csv") +
     import_taxol_file("HC00801_D2_field_4_level_1.csv")]
 
-    return untreated, taxol_05, taxol_1, taxol_15, taxol_2, taxol_25, taxol_3, taxol_4
+    return untreated[0], taxol_05[0], taxol_1[0], taxol_15[0], taxol_2[0], taxol_25[0], taxol_3[0], taxol_4[0]

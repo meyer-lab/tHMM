@@ -1,7 +1,7 @@
 """ This file is to collect those lineages that have the same condition, and have 3 or greater number of cells in their lineages. """
 
 from .LineageInputOutput import import_exp_data
-from .import_lineage import MCF10A
+from .import_lineage import MCF10A, import_taxol
 from .states.StateDistributionGaPhs import StateDistribution
 from .states.StateDistributionGamma import StateDistribution as StDist
 from .LineageTree import LineageTree
@@ -217,3 +217,15 @@ osm = [LineageTree(cells, E2) for cells in MCF10A("OSM")]
 AllLapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
 AllGemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
 GFs = [pbs, egf, hgf, osm]
+
+##########################################################
+# NEW PACLITAXEL DATA
+untreated_t, taxol_05, taxol_1, taxol_15, taxol_2, taxol_25, taxol_3, taxol_4 = import_taxol()
+
+untreated_taxol = [LineageTree(list_cells, E) for list_cells in untreated_t] # 11427 cells
+Taxol_1 = [LineageTree(list_cells, E) for list_cells in taxol_1] # 8895 cells
+Taxol_2 = [LineageTree(list_cells, E) for list_cells in taxol_2] # 7782 cells
+Taxol_3 = [LineageTree(list_cells, E) for list_cells in taxol_3] # 8024 cells
+Taxol_4 = [LineageTree(list_cells, E) for list_cells in taxol_4] # 8024 cells
+
+taxols = [untreated_taxol, Taxol_1, Taxol_2, Taxol_3, Taxol_4]
