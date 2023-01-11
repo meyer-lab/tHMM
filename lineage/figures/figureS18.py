@@ -1,5 +1,5 @@
 """ In this file we plot the raw data before fitting from paclitaxel treated HCC1143 cells """
-from ..Lineage_collections import taxols as Taxol_lin_list
+from ..Lineage_collections import untreated_taxol as Taxol_lin_list
 from ..plotTree import plotLineage
 from .common import getSetup
 from string import ascii_lowercase
@@ -13,15 +13,15 @@ def makeFigure():
 
     for i in range(170):
         ax[5 * i].axis('off')
-        ax[5 * i + 1].axis('off')
-        ax[5 * i + 2].axis('off')
-        ax[5 * i + 3].axis('off')
-        ax[5 * i + 4].axis('off')
-        plotLineage(Taxol_lin_list[0][i], ax[5 * i], color=False)
-        plotLineage(Taxol_lin_list[1][i], ax[5 * i + 1], color=False)
-        plotLineage(Taxol_lin_list[2][i], ax[5 * i + 2], color=False)
-        plotLineage(Taxol_lin_list[3][i], ax[5 * i + 3], color=False)
-        plotLineage(Taxol_lin_list[4][i], ax[5 * i + 4], color=False)
+        # ax[5 * i + 1].axis('off')
+        # ax[5 * i + 2].axis('off')
+        # ax[5 * i + 3].axis('off')
+        # ax[5 * i + 4].axis('off')
+        plotLineage(Taxol_lin_list[i], ax[5 * i], color=False)
+        # plotLineage(Taxol_lin_list[1][i], ax[5 * i + 1], color=False)
+        # plotLineage(Taxol_lin_list[2][i], ax[5 * i + 2], color=False)
+        # plotLineage(Taxol_lin_list[3][i], ax[5 * i + 3], color=False)
+        # plotLineage(Taxol_lin_list[4][i], ax[5 * i + 4], color=False)
 
     for i in range(5):
         ax[i].axis('off')

@@ -252,7 +252,7 @@ def assign_observs_Taxol(cell, cell_lineage, label: int):
     ## G1 calculations:
     if G1_df.empty:
         # means the cell has no G1 component
-        cell.obs[0] = 1.0 # if no G1, then there is SG2, so it has definitely transitioned from G1 to SG2
+        cell.obs[0] = np.nan # if no G1, then there is SG2, so it has definitely transitioned from G1 to SG2
         cell.obs[2] = np.nan
         cell.obs[4] = np.nan
     else:
@@ -380,7 +380,8 @@ def import_taxol_file(filename="HC00801_A1_field_1_level_1.csv"):
     new_lins = []
     for lin in lineages:
         n = [x for x in lin if str(x) != 'nan']
-        new_lins.append(n)
+        m = [x for x in n if (not(np.isnan(x.obs[2])) or not(np.isnan(x.obs[3])))]
+        new_lins.append(m)
     return new_lins
 
 def import_taxol():
