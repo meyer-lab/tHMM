@@ -435,53 +435,45 @@ def trim_taxol(lineages):
     return [x for x in trimed_lineages if x]
 
 
-def import_taxol():
+def import_taxol(HC="HC00801"):
     """Import taxol data by condition"""
-    print("untreated")
-    untreated = [trim_taxol(import_taxol_file("HC00801_A1_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_A1_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_A1_field_4_level_1.csv"))]
+    untreated = [trim_taxol(import_taxol_file(HC + "_A1_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_A1_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_A1_field_4_level_1.csv"))]
 
-    print("taxol 0.5")
-    taxol_05 = [trim_taxol(import_taxol_file("HC00801_A2_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_A2_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_A2_field_3_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_A2_field_4_level_1.csv"))]
+    taxol_05 = [trim_taxol(import_taxol_file(HC + "_A2_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_A2_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_A2_field_3_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_A2_field_4_level_1.csv"))]
 
-    print("taxol 1")
-    taxol_1 = [trim_taxol(import_taxol_file("HC00801_B1_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_B1_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_B1_field_3_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_B1_field_4_level_1.csv"))]
+    taxol_1 = [trim_taxol(import_taxol_file(HC + "_B1_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_B1_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_B1_field_3_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_B1_field_4_level_1.csv"))]
 
-    print("taxol 1.5")
-    taxol_15 = [trim_taxol(import_taxol_file("HC00801_B2_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_B2_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_B2_field_3_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_B2_field_4_level_1.csv"))]
+    taxol_15 = [trim_taxol(import_taxol_file(HC + "_B2_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_B2_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_B2_field_3_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_B2_field_4_level_1.csv"))]
 
-    print("taxol 2")
-    taxol_2 = [trim_taxol(import_taxol_file("HC00801_C1_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_C1_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_C1_field_3_level_1.csv")) +
+    taxol_2 = [trim_taxol(import_taxol_file(HC + "_C1_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_C1_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_C1_field_3_level_1.csv")) +
     trim_taxol(import_taxol_file("HC00801_C1_field_4_level_1.csv"))]
 
-    print("taxol 2.5")
-    taxol_25 = [trim_taxol(import_taxol_file("HC00801_C2_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_C2_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_C2_field_3_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_C2_field_4_level_1.csv"))]
+    taxol_25 = [trim_taxol(import_taxol_file(HC + "_C2_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_C2_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_C2_field_3_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_C2_field_4_level_1.csv"))]
 
-    print("taxol 3")
-    taxol_3 = [trim_taxol(import_taxol_file("HC00801_D1_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_D1_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_D1_field_3_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_D1_field_4_level_1.csv"))]
+    taxol_3 = [trim_taxol(import_taxol_file(HC + "_D1_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_D1_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_D1_field_3_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_D1_field_4_level_1.csv"))]
 
-    print("taxol 4")
-    taxol_4 = [trim_taxol(import_taxol_file("HC00801_D2_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_D2_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_D2_field_3_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_D2_field_4_level_1.csv"))]
+    taxol_4 = [trim_taxol(import_taxol_file(HC + "_D2_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_D2_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_D2_field_3_level_1.csv")) +
+    trim_taxol(import_taxol_file(HC + "_D2_field_4_level_1.csv"))]
 
     return untreated[0], taxol_05[0], taxol_1[0], taxol_15[0], taxol_2[0], taxol_25[0], taxol_3[0], taxol_4[0]
