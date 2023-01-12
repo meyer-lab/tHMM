@@ -1,8 +1,9 @@
 """ This file includes functions to import the new lineage data. """
 import pandas as pd
+from copy import copy
 import itertools as it
 import numpy as np
-from .CellVar import CellVar
+from .CellVar import CellVar, find_two_subtrees
 
 ############################
 # importing AU565 data (new)
@@ -255,6 +256,11 @@ def assign_observs_Taxol(cell, cell_lineage, label: int):
         cell.obs[0] = np.nan # if no G1, then there is SG2, so it has definitely transitioned from G1 to SG2
         cell.obs[2] = np.nan
         cell.obs[4] = np.nan
+        # if cell.gen > 1:
+        #     cell.obs[1] = np.nan
+        #     cell.obs[3] = np.nan
+        #     cell.obs[5] = np.nan
+        #     return cell
     else:
         # G1 length
         cell.obs[2] = (np.nanmax(G1_df["elapsed_minutes"]) - np.nanmin(G1_df["elapsed_minutes"])) / 60 # G1 duration
@@ -295,21 +301,25 @@ def assign_observs_Taxol(cell, cell_lineage, label: int):
 
     return cell
 
-
 ### The following two functions are used to make a list from labels that belong to the same lineage
 def sep_lineages(data):
     labels = list(data["label"].unique())
     all_parent_ids = list(data["parent"].unique())
+
     a = []
     for i, val in enumerate(labels):
         df = data.loc[data["label"]==val] # cell itself
-        if np.all(df["is_parent"] == True):
-            df_parent = data.loc[data["parent"] == val] # cell's parent
-            assert val in all_parent_ids
-            if len(df_parent["label"].unique()) == 2:
-                a.append([[val]] + [list(df_parent["label"].unique())])
+        if len(df) == 1:
+            continue
         else:
-            a.append([[val]])
+            if np.all(df["is_parent"] == True):
+                df_parent = data.loc[data["parent"] == val] # cell's parent
+                assert val in all_parent_ids
+                if len(df_parent["label"].unique()) == 2:
+                    a.append([[val]] + [list(df_parent["label"].unique())])
+            else:
+                # a.append([[val]])
+                continue
 
     out1 = separate_lineages(data, all_parent_ids, a, 2)
     out2 = separate_lineages(data, all_parent_ids, out1, 3)
@@ -353,25 +363,31 @@ def import_taxol_file(filename="HC00801_A1_field_1_level_1.csv"):
     lineage_codes = sep_lineages(data)
     lineages = []
     for i, lin in enumerate(lineage_codes):
-        num_gens = len(lin) # number of generations
+
         parent_cell = CellVar(parent=None)
         parent_cell = assign_observs_Taxol(parent_cell, data, lin[0][0])
         lin_temp = [[parent_cell]]
 
-        if num_gens >= 2:
-            for kk in range(1, num_gens):
-                tmp = []
+        if len(lin) >= 2:
+            for kk in range(1, len(lin)):
+                tmp = [] # for each lineage
                 for ix, l in enumerate(lin[kk]):
                     if ix % 2 == 1: # only iterate through one of two daughter cells
                         pass
                     else:
                         if not np.isnan(l):
                             cell = lin_temp[kk-1][int(ix/2)]
-                            a = assign_observs_Taxol(CellVar(parent=cell), data, l)
-                            b = assign_observs_Taxol(CellVar(parent=cell), data, lin[kk][ix+1])
-                            cell.left = a
-                            cell.right = b
-                            tmp.append([cell.left, cell.right])
+                            if type(cell) == CellVar:
+                                a = assign_observs_Taxol(CellVar(parent=cell), data, l)
+                                b = assign_observs_Taxol(CellVar(parent=cell), data, lin[kk][ix+1])
+                                cell.left = a
+                                cell.right = b
+                                if np.all(np.isnan(a.obs[2:4])) or np.all(np.isnan(b.obs[2:4])):
+                                    tmp.append([np.nan, np.nan])
+                                else:
+                                    tmp.append([cell.left, cell.right])
+                            else:
+                                tmp.append([np.nan, np.nan])
                         else:
                             tmp.append([np.nan, np.nan])
 
@@ -380,58 +396,92 @@ def import_taxol_file(filename="HC00801_A1_field_1_level_1.csv"):
     new_lins = []
     for lin in lineages:
         n = [x for x in lin if str(x) != 'nan']
-        m = [x for x in n if (not(np.isnan(x.obs[2])) or not(np.isnan(x.obs[3])))]
+
+        for kk, cells in enumerate(n):
+            if np.all(np.isnan(cells.obs[2:4])):
+                m = n[:kk]
+            else:
+                m = n
+
         new_lins.append(m)
+
     return new_lins
+
+def trim_taxol(lineages):
+    """removed messed up lineages. e.g., those that divided but either didn't have G1 or SG2 although were in middle generations.. """
+
+    trimed_lineages = copy(lineages)
+    for lin in lineages:
+        rm = 0
+        for cell in lin:
+
+            # if it divided
+            if cell.left or cell.right:
+                # but also died in either phase
+                if cell.obs[0] == 0 or cell.obs[1] == 0:
+                    # discrepancy... get rid of the lineage
+                    rm += 1
+
+            # if it didn't start the lineage, and doesn't have a G1, remove lineage
+            if cell.gen > 1:
+                if (np.isnan(cell.obs[2]) or cell.obs[2] == 0.0) and cell.obs[3] > 0.0:
+                    rm += 1
+
+            if (cell.obs[2] == 0.0 and cell.obs[4] == 1) or (cell.obs[3] == 0.0 and cell.obs[5] == 1):
+                rm += 1
+
+        if rm > 0:
+            trimed_lineages.remove(lin)
+    return [x for x in trimed_lineages if x]
+
 
 def import_taxol():
     """Import taxol data by condition"""
     print("untreated")
-    untreated = [import_taxol_file("HC00801_A1_field_1_level_1.csv") +
-    import_taxol_file("HC00801_A1_field_2_level_1.csv") +
-    import_taxol_file("HC00801_A1_field_3_level_1.csv") +
-    import_taxol_file("HC00801_A1_field_4_level_1.csv")]
+    untreated = [trim_taxol(import_taxol_file("HC00801_A1_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_A1_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_A1_field_4_level_1.csv"))]
 
     print("taxol 0.5")
-    taxol_05 = [import_taxol_file("HC00801_A2_field_1_level_1.csv") +
-    import_taxol_file("HC00801_A2_field_2_level_1.csv") +
-    import_taxol_file("HC00801_A2_field_3_level_1.csv") +
-    import_taxol_file("HC00801_A2_field_4_level_1.csv")]
+    taxol_05 = [trim_taxol(import_taxol_file("HC00801_A2_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_A2_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_A2_field_3_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_A2_field_4_level_1.csv"))]
 
     print("taxol 1")
-    taxol_1 = [import_taxol_file("HC00801_B1_field_1_level_1.csv") +
-    import_taxol_file("HC00801_B1_field_2_level_1.csv") +
-    import_taxol_file("HC00801_B1_field_3_level_1.csv") +
-    import_taxol_file("HC00801_B1_field_4_level_1.csv")]
+    taxol_1 = [trim_taxol(import_taxol_file("HC00801_B1_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_B1_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_B1_field_3_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_B1_field_4_level_1.csv"))]
 
     print("taxol 1.5")
-    taxol_15 = [import_taxol_file("HC00801_B2_field_1_level_1.csv") +
-    import_taxol_file("HC00801_B2_field_2_level_1.csv") +
-    import_taxol_file("HC00801_B2_field_3_level_1.csv") +
-    import_taxol_file("HC00801_B2_field_4_level_1.csv")]
+    taxol_15 = [trim_taxol(import_taxol_file("HC00801_B2_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_B2_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_B2_field_3_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_B2_field_4_level_1.csv"))]
 
     print("taxol 2")
-    taxol_2 = [import_taxol_file("HC00801_C1_field_1_level_1.csv") +
-    import_taxol_file("HC00801_C1_field_2_level_1.csv") +
-    import_taxol_file("HC00801_C1_field_3_level_1.csv") +
-    import_taxol_file("HC00801_C1_field_4_level_1.csv")]
+    taxol_2 = [trim_taxol(import_taxol_file("HC00801_C1_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_C1_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_C1_field_3_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_C1_field_4_level_1.csv"))]
 
     print("taxol 2.5")
-    taxol_25 = [import_taxol_file("HC00801_C2_field_1_level_1.csv") +
-    import_taxol_file("HC00801_C2_field_2_level_1.csv") +
-    import_taxol_file("HC00801_C2_field_3_level_1.csv") +
-    import_taxol_file("HC00801_C2_field_4_level_1.csv")]
+    taxol_25 = [trim_taxol(import_taxol_file("HC00801_C2_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_C2_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_C2_field_3_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_C2_field_4_level_1.csv"))]
 
     print("taxol 3")
-    taxol_3 = [import_taxol_file("HC00801_D1_field_1_level_1.csv") +
-    import_taxol_file("HC00801_D1_field_2_level_1.csv") +
-    import_taxol_file("HC00801_D1_field_3_level_1.csv") +
-    import_taxol_file("HC00801_D1_field_4_level_1.csv")]
+    taxol_3 = [trim_taxol(import_taxol_file("HC00801_D1_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_D1_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_D1_field_3_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_D1_field_4_level_1.csv"))]
 
     print("taxol 4")
-    taxol_4 = [import_taxol_file("HC00801_D2_field_1_level_1.csv") +
-    import_taxol_file("HC00801_D2_field_2_level_1.csv") +
-    import_taxol_file("HC00801_D2_field_3_level_1.csv") +
-    import_taxol_file("HC00801_D2_field_4_level_1.csv")]
+    taxol_4 = [trim_taxol(import_taxol_file("HC00801_D2_field_1_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_D2_field_2_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_D2_field_3_level_1.csv")) +
+    trim_taxol(import_taxol_file("HC00801_D2_field_4_level_1.csv"))]
 
     return untreated[0], taxol_05[0], taxol_1[0], taxol_15[0], taxol_2[0], taxol_25[0], taxol_3[0], taxol_4[0]
