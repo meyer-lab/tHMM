@@ -35,9 +35,9 @@ for num in num_lineages:
 
     nn = 0
     for _ in range(num):
-        tmp_lineage = LineageTree.init_from_parameters(pi, T, E, desired_num_cells, censor_condition=3, desired_experiment_time=96)
+        tmp_lineage = LineageTree.rand_init(pi, T, E, desired_num_cells, censor_condition=3, desired_experiment_time=96)
         while len(tmp_lineage.output_lineage) < 3:
-            tmp_lineage = LineageTree.init_from_parameters(pi, T, E, desired_num_cells, censor_condition=3, desired_experiment_time=96)
+            tmp_lineage = LineageTree.rand_init(pi, T, E, desired_num_cells, censor_condition=3, desired_experiment_time=96)
         population.append(tmp_lineage)
         nn += len(tmp_lineage.output_lineage)
 

@@ -8,7 +8,7 @@ from ..crossval import hide_observation, crossval
 
 def test_hide_obs():
     """Test that we are correctly hiding observations."""
-    complete_lineages = [LineageTree.init_from_parameters(pi, T, E2, 31) for _ in range(10)]
+    complete_lineages = [LineageTree.rand_init(pi, T, E2, 31) for _ in range(10)]
 
     train_lineages = hide_observation(complete_lineages, 0.25)
 
@@ -27,7 +27,7 @@ def test_cv(cen):
     """For censored and uncensored 2-state synthetic data,
     it checks that the log-likelihood of a 2 state model is higher than a 1 state model."""
     complete_lineages = [
-        [LineageTree.init_from_parameters(pi, T, E2, 7, censored_condition=cen, desired_experiment_time=100) for _ in range(50)] for _ in range(4)
+        [LineageTree.rand_init(pi, T, E2, 7, censored_condition=cen, desired_experiment_time=100) for _ in range(50)] for _ in range(4)
     ]
 
     train_lineages = [hide_observation(complete_lin, 0.25) for complete_lin in complete_lineages]

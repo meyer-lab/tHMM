@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import run_Analyze_over, Analyze_list
-from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM, pbs, egf, hgf, osm
+from ..Lineage_collections import AllLapatinib, AllGemcitabine, GFs
 from .common import getSetup
 
 desired_num_states = np.arange(1, 8)
@@ -14,10 +14,6 @@ def makeFigure():
     Makes figure 9.
     """
     ax, f = getSetup((14, 4), (1, 3))
-
-    lapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
-    gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
-    GFs = [pbs, egf, hgf, osm]
 
     def find_BIC(data, desired_num_states, num_cells, mc=False):
         # Copy out data to full set
@@ -32,8 +28,8 @@ def makeFigure():
 
         return BICs - np.min(BICs, axis=0), thobj
 
-    lapBIC, lapObj = find_BIC(lapatinib, desired_num_states, num_cells=5290)
-    gemBIC, gemObj = find_BIC(gemcitabine, desired_num_states, num_cells=4537)
+    lapBIC, lapObj = find_BIC(AllLapatinib, desired_num_states, num_cells=5290)
+    gemBIC, gemObj = find_BIC(AllGemcitabine, desired_num_states, num_cells=4537)
     hgfBIC, hgfObj = find_BIC(GFs, desired_num_states, num_cells=1306, mc=True)
 
     # # Lapatinib

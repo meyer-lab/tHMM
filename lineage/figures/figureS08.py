@@ -50,10 +50,8 @@ def accuracy():
     list_of_populations = []
     list_of_fpi = []
     for cell_num in cells:
-        population = LineageTree.init_from_parameters(pi, T, E2, cell_num)
-
         # Adding populations into a holder for analysing
-        list_of_populations.append([population])
+        list_of_populations.append([LineageTree.rand_init(pi, T, E2, cell_num)])
         list_of_fpi.append(pi)
 
     return commonAnalyze(list_of_populations, 2, list_of_fpi=list_of_fpi)

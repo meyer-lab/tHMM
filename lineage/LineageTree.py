@@ -25,7 +25,7 @@ class LineageTree:
         self.leaves_idx = get_leaves_idx(self.output_lineage)
 
     @classmethod
-    def init_from_parameters(
+    def rand_init(
         cls,
         pi: np.ndarray,
         T: np.ndarray,

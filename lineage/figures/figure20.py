@@ -5,7 +5,7 @@ import scipy.stats as sp
 import itertools as it
 import pickle
 from .common import getSetup
-from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
+from ..Lineage_collections import AllLapatinib, AllGemcitabine
 
 
 def makeFigure():
@@ -48,11 +48,8 @@ def save_df():
     """ Save the arrays that are used for calculating the correlation into dataframes, in the form of column1:gen1, column2: gen2.
     This functions does this for gen1 & 2, gen 1 & 3, gen 1 & 4, and for both G1 and S-G2 cell lifetimes. """
 
-    lapatinib = [Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM]
-    gemcitabine = [Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
-
     cells_l, mothers_l, cells_censored_l, mothers_censored_l = [], [], [], []
-    for population in lapatinib:
+    for population in AllLapatinib:
         cs, ms, cs_censored, ms_censored = get_obs_population(population, 3)
         cells_l += cs
         mothers_l += ms
@@ -60,7 +57,7 @@ def save_df():
         mothers_censored_l += ms_censored
 
     cells_g, mothers_g, cells_censored_g, mothers_censored_g = [], [], [], []
-    for population in gemcitabine:
+    for population in AllGemcitabine:
         cs, ms, cs_censored, ms_censored = get_obs_population(population, 3)
         cells_g += cs
         mothers_g += ms
