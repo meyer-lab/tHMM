@@ -4,7 +4,7 @@ from typing import Any, Tuple, Union
 import numpy as np
 from scipy.optimize import linear_sum_assignment
 from concurrent.futures import ProcessPoolExecutor, Future, Executor
-from sklearn.metrics import rand_score, confusion_matrix
+from sklearn.metrics import rand_score
 from .tHMM import tHMM
 import scipy.stats as sp
 from .BaumWelch import (
@@ -246,10 +246,6 @@ def Results(tHMMobj: tHMM, LL: float) -> dict[str, Any]:
     ]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
     results_dict["state_similarity"] = 100.0 * rand_score(
-        list(itertools.chain(*true_states_by_lineage)),
-        list(itertools.chain(*pred_states)),
-    )
-    results_dict["confusion_matrix"] = confusion_matrix(
         list(itertools.chain(*true_states_by_lineage)),
         list(itertools.chain(*pred_states)),
     )

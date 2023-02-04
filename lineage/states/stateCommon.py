@@ -2,11 +2,8 @@
 
 import warnings
 import numpy as np
-from ctypes import CFUNCTYPE, c_double
-from numba.extending import get_cython_function_address
-from numba import jit, prange  # type: ignore
-from numba.typed import List
 from scipy.optimize import minimize, Bounds
+from scipy.special import gammaincc, gammaln
 
 
 warnings.filterwarnings("ignore", message="Values in x were outside bounds")
@@ -44,25 +41,17 @@ def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
     return numerator / denominator
 
 
-addr = get_cython_function_address("scipy.special.cython_special", "gammaincc")
-gammaincc = CFUNCTYPE(c_double, c_double, c_double)(addr)
-
-addr = get_cython_function_address("scipy.special.cython_special", "gammaln")
-gammaln = CFUNCTYPE(c_double, c_double)(addr)
-
-
-@jit(nopython=True, parallel=True)
 def gamma_LL(
     logX: np.ndarray,
-    gamma_obs: List[np.ndarray],
-    time_cen: List[np.ndarray],
-    gammas: List[np.ndarray],
+    gamma_obs: list[np.ndarray],
+    time_cen: list[np.ndarray],
+    gammas: list[np.ndarray],
 ):
     """Log-likelihood for the optionally censored Gamma distribution."""
     x = np.exp(logX)
     glnA = gammaln(x[0])
     outt = 0.0
-    for i in prange(len(x) - 1):
+    for i in range(len(x) - 1):
         gobs = gamma_obs[i] / x[i + 1]
         outt -= np.dot(
             gammas[i] * time_cen[i],
@@ -101,7 +90,7 @@ def gamma_estimator(
         assert gamma_obs[i].shape == time_cen[i].shape
         assert gamma_obs[i].shape == gammas[i].shape
 
-    arrgs = (List(gamma_obs), List(time_cen), List(gammas))
+    arrgs = (gamma_obs, time_cen, gammas)
     linc = list()
 
     if phase != 'all':  # for constrained optimization
