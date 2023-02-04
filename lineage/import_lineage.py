@@ -242,6 +242,7 @@ def assign_observs_Taxol(cell, cell_lineage, label: int):
 
     all_parent_ids = cell_lineage["parent"].unique()
     cell_df = cell_lineage.loc[cell_lineage["label"] == label]
+
     parent_id = cell_df["parent"].unique()[0]
     if parent_id == 0:
         cell.gen = 1
@@ -256,11 +257,7 @@ def assign_observs_Taxol(cell, cell_lineage, label: int):
         cell.obs[0] = np.nan # if no G1, then there is SG2, so it has definitely transitioned from G1 to SG2
         cell.obs[2] = np.nan
         cell.obs[4] = np.nan
-        # if cell.gen > 1:
-        #     cell.obs[1] = np.nan
-        #     cell.obs[3] = np.nan
-        #     cell.obs[5] = np.nan
-        #     return cell
+
     else:
         # G1 length
         cell.obs[2] = (np.nanmax(G1_df["elapsed_minutes"]) - np.nanmin(G1_df["elapsed_minutes"])) / 60 # G1 duration
@@ -305,23 +302,42 @@ def assign_observs_Taxol(cell, cell_lineage, label: int):
 def sep_lineages(data):
     labels = list(data["label"].unique())
     all_parent_ids = list(data["parent"].unique())
+    root_parent_labels = data.loc[data["parent"] == 0]["label"].unique()
+    lin = [[[item]] for item in root_parent_labels]
 
-    a = []
-    for i, val in enumerate(labels):
+    # remove singleton lineages that only existed in 1 frame
+    xxx = 0
+    remains = []
+    for value in root_parent_labels:
+        dff = data.loc[data["label"]==value]
+        if len(dff) == 1:
+            # print(dff[["label", "well", "field", "time_slice", "row", "column", "plateID"]])
+            xxx += 1
+            lin.remove([[value]])
+        elif len(dff) > 1:
+            remains.append(value)
+
+    for i, val in enumerate(remains):
         df = data.loc[data["label"]==val] # cell itself
-        if len(df) == 1:
-            continue
-        else:
-            if np.all(df["is_parent"] == True):
-                df_parent = data.loc[data["parent"] == val] # cell's parent
-                assert val in all_parent_ids
-                if len(df_parent["label"].unique()) == 2:
-                    a.append([[val]] + [list(df_parent["label"].unique())])
-            else:
-                # a.append([[val]])
-                continue
+        # if it only appeard in one frame, discard
+        assert len(df) > 1
 
-    out1 = separate_lineages(data, all_parent_ids, a, 2)
+        # if it has divided
+        if np.all(df["is_parent"] == True):
+            assert val in all_parent_ids
+            df_children = data.loc[data["parent"] == val] # cell's children
+            # if the cell has two children
+            child_labels = list(df_children["label"].unique())
+            if len(child_labels) == 2:
+                lin[i] += [child_labels]
+            else:
+                print("not two children. cell label: ", val, "child label: ", child_labels)
+        else:
+            # singleton lineage
+            continue
+    print("number of cells that only appear in 1 frame: ", xxx)
+
+    out1 = separate_lineages(data, all_parent_ids, lin, 2)
     out2 = separate_lineages(data, all_parent_ids, out1, 3)
     out3 = separate_lineages(data, all_parent_ids, out2, 4)
     out4 = separate_lineages(data, all_parent_ids, out3, 5)
@@ -330,6 +346,7 @@ def sep_lineages(data):
     return out5
 
 def separate_lineages(data, all_parent_ids, ls, k):
+    """Given the lineages that only includes up to k generations of cells, add the k+1 generation to those lineages that have it."""
     lss = ls.copy()
     for j, val in enumerate(ls):
         if len(val) == k:
@@ -382,10 +399,7 @@ def import_taxol_file(filename="HC00801_A1_field_1_level_1.csv"):
                                 b = assign_observs_Taxol(CellVar(parent=cell), data, lin[kk][ix+1])
                                 cell.left = a
                                 cell.right = b
-                                if np.all(np.isnan(a.obs[2:4])) or np.all(np.isnan(b.obs[2:4])):
-                                    tmp.append([np.nan, np.nan])
-                                else:
-                                    tmp.append([cell.left, cell.right])
+                                tmp.append([cell.left, cell.right])
                             else:
                                 tmp.append([np.nan, np.nan])
                         else:
@@ -394,44 +408,62 @@ def import_taxol_file(filename="HC00801_A1_field_1_level_1.csv"):
                 lin_temp.append(list(it.chain(*tmp)))
         lineages.append(list(it.chain(*lin_temp)))
     new_lins = []
-    for lin in lineages:
+    counts_ = 0
+    # remove nans
+    for jj, lin in enumerate(lineages):
         n = [x for x in lin if str(x) != 'nan']
 
         for kk, cells in enumerate(n):
+            # remove those lineages with cells that have NaN intensity ratio
             if np.all(np.isnan(cells.obs[2:4])):
-                m = n[:kk]
+                counts_ += 1
+                n = []
+                break
             else:
-                m = n
+                pass
 
-        new_lins.append(m)
+        new_lins.append(n)
+    print("this is counts of NaN ratio lineages", counts_)
 
-    return new_lins
+    # remove empty lineages and return
+    return [s for s in new_lins if s]
 
 def trim_taxol(lineages):
     """removed messed up lineages. e.g., those that divided but either didn't have G1 or SG2 although were in middle generations.. """
 
     trimed_lineages = copy(lineages)
-    for lin in lineages:
+    counts, countsG1, countsG2 = 0, 0, 0
+    for ix, lin in enumerate(lineages):
         rm = 0
         for cell in lin:
+            # cells with only one daughter
+            if not(cell.left and cell.right) and not(cell.isLeaf()):
+                rm += 1
+                counts += 1
 
             # if it divided
-            if cell.left or cell.right:
+            if cell.left:
+                assert cell.right
                 # but also died in either phase
-                if cell.obs[0] == 0 or cell.obs[1] == 0:
+                if cell.obs[0] == 0:
                     # discrepancy... get rid of the lineage
                     rm += 1
+                    countsG1 += 1
+                elif cell.obs[1] == 0:
+                    countsG2 += 1
 
-            # if it didn't start the lineage, and doesn't have a G1, remove lineage
+            # # if it didn't start the lineage, and doesn't have a G1, remove lineage
             if cell.gen > 1:
                 if (np.isnan(cell.obs[2]) or cell.obs[2] == 0.0) and cell.obs[3] > 0.0:
                     rm += 1
-
-            if (cell.obs[2] == 0.0 and cell.obs[4] == 1) or (cell.obs[3] == 0.0 and cell.obs[5] == 1):
-                rm += 1
+                    counts += 1
+                    print("lineage index: ", ix)
+                    break
 
         if rm > 0:
             trimed_lineages.remove(lin)
+    # print("number of cells that divided but also died G1: ", countsG1, "For G2: ", countsG2)
+    # print("number of cells that started their cycle with SG2: ", counts)
     return [x for x in trimed_lineages if x]
 
 
@@ -476,4 +508,4 @@ def import_taxol(HC="HC00801"):
     trim_taxol(import_taxol_file(HC + "_D2_field_3_level_1.csv")) +
     trim_taxol(import_taxol_file(HC + "_D2_field_4_level_1.csv"))]
 
-    return untreated[0], taxol_05[0], taxol_1[0], taxol_15[0], taxol_2[0], taxol_25[0], taxol_3[0], taxol_4[0]
+    return untreated[0], taxol_1[0], taxol_2[0], taxol_4[0]

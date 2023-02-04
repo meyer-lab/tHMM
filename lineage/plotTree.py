@@ -484,8 +484,10 @@ def draw(
     axes.set_ylabel("taxa")
     # Add margins around the tree to prevent overlapping the axes
     xmax = max(x_posns.values())
-    if not(np.isfinite(xmax)):
+    if xmax <= 1.0:
         xmax = 1.0
+    else:
+        pass
     axes.set_xlim(-0.05 * xmax, 1.25 * xmax)
     # Also invert the y-axis (origin at the top)
     # Add a small vertical margin, but avoid including 0 and N+1 on the y axis

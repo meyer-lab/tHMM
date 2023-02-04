@@ -615,7 +615,8 @@ def sort_lins(tHMMobj):
     for i in range(num_st):
         st_i = [index for index, val in enumerate(st) if val == i]
         temp = [tHMMobj.X[k] for k in st_i]
+        to_append = temp if len(temp) <= 40 else temp[:40]
 
-        states += temp
+        states += to_append
 
     return states

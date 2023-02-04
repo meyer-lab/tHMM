@@ -220,12 +220,12 @@ GFs = [pbs, egf, hgf, osm]
 
 ##########################################################
 # NEW PACLITAXEL DATA
-untreated_t, taxol_05, taxol_1, taxol_15, taxol_2, taxol_25, taxol_3, taxol_4 = import_taxol()
+untreated_t, taxol_1, taxol_2, taxol_4 = import_taxol()
 # 555, 1119, 486, 382, 272, 365, 246, 266
 untreated_taxol = [LineageTree(list_cells, E) for list_cells in untreated_t] # 555 cells
 Taxol_1 = [LineageTree(list_cells, E) for list_cells in taxol_1] # 486 cells
 Taxol_2 = [LineageTree(list_cells, E) for list_cells in taxol_2] # 272 cells
-Taxol_3 = [LineageTree(list_cells, E) for list_cells in taxol_3] # 246 cells
+# Taxol_3 = [LineageTree(list_cells, E) for list_cells in taxol_3] # 246 cells
 Taxol_4 = [LineageTree(list_cells, E) for list_cells in taxol_4] # 266 cells
 
-taxols = [untreated_taxol, Taxol_1, Taxol_2, Taxol_3, Taxol_4]
+taxols = [untreated_taxol, Taxol_1, Taxol_2, Taxol_4]
