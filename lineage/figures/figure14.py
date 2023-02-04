@@ -1,6 +1,5 @@
 """ To draw transition matrix """
 import networkx as nx
-from networkx.drawing.nx_agraph import to_agraph
 
 from .figure11 import lapt_tHMMobj_list
 from .figure12 import gemc_tHMMobj_list

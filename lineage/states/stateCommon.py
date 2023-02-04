@@ -58,11 +58,11 @@ def gamma_LL(
             (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[i + 1],
         )
 
-        for j in range(len(time_cen[i])):
-            if time_cen[i][j] == 0.0:
-                gamP = gammaincc(x[0], gobs[j])
-                gamP = np.maximum(gamP, 1e-60)  # Clip if the probability hits exactly 0
-                outt -= gammas[i][j] * np.log(gamP)
+        jidx = np.argwhere(time_cen[i] == 0.0)
+        if jidx.size > 0:
+            gamP = gammaincc(x[0], gobs[jidx])
+            gamP = np.maximum(gamP, 1e-60)  # Clip if the probability hits exactly 0
+            outt -= np.sum(gammas[i][jidx] * np.log(gamP))
 
     assert np.isfinite(outt)
     return outt
