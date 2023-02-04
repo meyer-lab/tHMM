@@ -9,15 +9,16 @@ class CellVar:
     """
     Cell class.
     """
-    parent: Optional['CellVar']
+
+    parent: Optional["CellVar"]
     gen: int
     observed: bool
     state: Optional[int]
     obs: Optional[np.ndarray]
-    left: Optional['CellVar']
-    right: Optional['CellVar']
+    left: Optional["CellVar"]
+    right: Optional["CellVar"]
 
-    def __init__(self, parent: Optional['CellVar'], state: Optional[int] = None):
+    def __init__(self, parent: Optional["CellVar"], state: Optional[int] = None):
         """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
@@ -45,7 +46,9 @@ class CellVar:
         assert T.shape[0] == T.shape[1]
 
         # roll a loaded die according to the row in the transtion matrix
-        left_state, right_state = np.random.choice(T.shape[0], size=2, p=T[self.state, :])
+        left_state, right_state = np.random.choice(
+            T.shape[0], size=2, p=T[self.state, :]
+        )
         self.left = CellVar(state=left_state, parent=self)
         self.right = CellVar(state=right_state, parent=self)
 
@@ -145,7 +148,9 @@ def get_subtrees(node, lineage: list) -> Tuple[list, list]:
     return subtree, not_subtree
 
 
-def find_two_subtrees(cell, lineage: list) -> Tuple[Optional[list], Optional[list], list]:
+def find_two_subtrees(
+    cell, lineage: list
+) -> Tuple[Optional[list], Optional[list], list]:
     """
     Gets the left and right subtrees from a cell.
     :param cell: An instantiation of the Cell class.
@@ -158,7 +163,9 @@ def find_two_subtrees(cell, lineage: list) -> Tuple[Optional[list], Optional[lis
         return None, None, lineage
     left_sub, _ = get_subtrees(cell.left, lineage)
     right_sub, _ = get_subtrees(cell.right, lineage)
-    neither_subtree = [node for node in lineage if node not in left_sub and node not in right_sub]
+    neither_subtree = [
+        node for node in lineage if node not in left_sub and node not in right_sub
+    ]
     return left_sub, right_sub, neither_subtree
 
 
@@ -169,6 +176,7 @@ class Time:
     This assists in pruning based on experimental time and obtaining
     attributes of the lineage as a whole like the average growth rate.
     """
+
     startT: float
     endT: float
     transition_time: float = 0.0

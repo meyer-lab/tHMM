@@ -30,7 +30,7 @@ T_lap = lapt_tHMMobj_list[0].estimate.T
 num_states = lapt_tHMMobj_list[0].num_states
 
 # plot transition block
-plot_networkx(T_lap.shape[0], T_lap, 'lapatinib')
+plot_networkx(T_lap, 'lapatinib')
 
 # plot the sample of lineage trees
 plot_lineage_samples(lapt_tHMMobj_list, 'figure01')
