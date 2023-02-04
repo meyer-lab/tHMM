@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 import numpy as np
-from typing import Tuple
+from typing import Tuple, Optional
 from .Viterbi import Viterbi
 from .LineageTree import LineageTree
 
@@ -175,7 +175,7 @@ def log_T_score(T: np.ndarray, state_tree_sequence: list, lineageObj: LineageTre
     return log_T_score_holder
 
 
-def get_Emission_Likelihoods(tHMMobj: tHMM, E: list = None) -> list:
+def get_Emission_Likelihoods(tHMMobj: tHMM, E: Optional[list] = None) -> list:
     """
     Emission Likelihood (EL) matrix.
 
