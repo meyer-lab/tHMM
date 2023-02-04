@@ -56,7 +56,10 @@ def fit_list(
     # Step 0: initialize with random assignments and do an M step
     # when there are no fixed emissions, we need to randomize the start
     init_gam = [
-        [sp.dirichlet.rvs(np.ones(tO.num_states), size=len(lin), random_state=rng) for lin in tO.X]
+        [
+            sp.dirichlet.rvs(np.ones(tO.num_states), size=len(lin), random_state=rng)
+            for lin in tO.X
+        ]
         for tO in tHMMobj_list
     ]
 

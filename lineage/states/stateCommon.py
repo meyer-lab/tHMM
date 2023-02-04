@@ -73,7 +73,7 @@ def gamma_estimator(
     time_cen: list[np.ndarray],
     gammas: list[np.ndarray],
     x0: np.ndarray,
-    phase: str = 'all',
+    phase: str = "all",
 ) -> np.ndarray:
     """
     This is a weighted, closed-form estimator for two parameters
@@ -93,7 +93,7 @@ def gamma_estimator(
     arrgs = (gamma_obs, time_cen, gammas)
     linc = list()
 
-    if phase != 'all':  # for constrained optimization
+    if phase != "all":  # for constrained optimization
         A = np.zeros((3, 5))  # constraint Jacobian
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)

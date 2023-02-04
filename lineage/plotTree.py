@@ -5,26 +5,26 @@ from Bio.Phylo.BaseTree import Clade
 import networkx as nx
 from .figures.common import getSetup
 
-cs = ['lightblue', 'orange', 'lightgreen', 'red', 'purple', 'grey']
-stateColors = ['blue', 'orange', 'green', 'red', 'purple', 'grey']
+cs = ["lightblue", "orange", "lightgreen", "red", "purple", "grey"]
+stateColors = ["blue", "orange", "green", "red", "purple", "grey"]
 
 
 def plot_lineage_samples(tHMMobj_list, name):
-    """ This function plots a sample of lineages for lapatinib and gemcitabine analysis figures."""
+    """This function plots a sample of lineages for lapatinib and gemcitabine analysis figures."""
 
     ax, f = getSetup((12, 2), (6, 4))
     k = 0
     for i in range(6):
         for objs in tHMMobj_list:
-            ax[k].axis('off')
+            ax[k].axis("off")
             plotLineage(objs.X[i + 3], ax[k])
             k += 1
 
-    f.savefig('lineage/figures/cartoons/' + name + '.svg')
+    f.savefig("lineage/figures/cartoons/" + name + ".svg")
 
 
 def CladeRecursive(cell, a: list, censor: bool, color: bool):
-    """ A recurssive function that takes in the root cell and traverses through cells to plot the lineage.
+    """A recurssive function that takes in the root cell and traverses through cells to plot the lineage.
     The width of the lines show the phase of the cells.
     The color of the lines show the state of the cells.
 
@@ -117,7 +117,7 @@ def plotLineage_MCF10A(lineage, axes, censor=True, color=True):
 
 
 def CladeRecursive_MCF10A(cell, a: list, censor: bool, color: bool):
-    """ A recurssive function that takes in the root cell and traverses through cells to plot the lineage.
+    """A recurssive function that takes in the root cell and traverses through cells to plot the lineage.
     The width of the lines show the phase of the cells.
     The color of the lines show the state of the cells.
 
@@ -172,25 +172,27 @@ def plot_networkx(T: np.ndarray, drug_name: str):
 
     # add nodes
     for i in range(num_states):
-        G.add_node(i, pos=(-2, -2), label=labels[i], style='filled', fillcolor=cs[i])
+        G.add_node(i, pos=(-2, -2), label=labels[i], style="filled", fillcolor=cs[i])
 
     # add edges
     for i in range(num_states):
         for j in range(num_states):
-            G.add_edge(i, j, penwidth=3 * T[i, j], minlen=1, label=str(np.round(T[i, j], 2)))
+            G.add_edge(
+                i, j, penwidth=3 * T[i, j], minlen=1, label=str(np.round(T[i, j], 2))
+            )
 
     # add graphviz layout options (see https://stackoverflow.com/a/39662097)
-    G.graph['edge'] = {'arrowsize': '0.6', 'splines': 'curved'}
-    G.graph['graph'] = {'scale': '1'}
+    G.graph["edge"] = {"arrowsize": "0.6", "splines": "curved"}
+    G.graph["graph"] = {"scale": "1"}
 
     # adding attributes to edges in multigraphs is more complicated but see
     # https://stackoverflow.com/a/26694158
     for i in range(num_states):
-        G[i][i][0]['color'] = 'black'
+        G[i][i][0]["color"] = "black"
 
     A = nx.drawing.nx_agraph.to_agraph(G)
-    A.layout('dot')
-    A.draw('lineage/figures/cartoons/' + str(drug_name) + '.svg')
+    A.layout("dot")
+    A.draw("lineage/figures/cartoons/" + str(drug_name) + ".svg")
 
 
 def draw(
