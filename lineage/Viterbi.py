@@ -14,7 +14,6 @@ def get_leaf_deltas(tHMMobj) -> Tuple[list, list]:
     :param tHMMobj: the tHMM object
     :return: a list of N by K matrices for each lineage, initialized from the leaf cells by EL(n,k).
     """
-    num_states = tHMMobj.num_states
     EL = tHMMobj.get_Emission_Likelihoods()
 
     deltas = []
@@ -22,7 +21,7 @@ def get_leaf_deltas(tHMMobj) -> Tuple[list, list]:
 
     for num, lineageObj in enumerate(tHMMobj.X):  # getting the lineage in the Population by index
         lineage = lineageObj.output_lineage
-        delta_array = np.zeros((len(lineage), num_states))  # instantiating N by K array
+        delta_array = np.zeros((len(lineage), tHMMobj.num_states))  # instantiating N by K array
         state_ptrs_array = np.empty((len(lineage), 2), dtype=object)
 
         for cell in lineage:

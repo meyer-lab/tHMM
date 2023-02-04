@@ -157,7 +157,7 @@ def CladeRecursive_MCF10A(cell, a: list, censor: bool, color: bool):
         return my_clade
 
 
-def plot_networkx(num_states: int, T: np.ndarray, drug_name: str):
+def plot_networkx(T: np.ndarray, drug_name: str):
     """
     This function plots the Transition network for each drug tratment.
     The nodes show the states and the edges show the transition probabilities.
