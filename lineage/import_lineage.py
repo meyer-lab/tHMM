@@ -405,8 +405,8 @@ def import_taxol_file(filename="HC00801_A1_field_1_level_1.csv"):
                         else:
                             tmp.append([np.nan, np.nan])
 
-                lin_temp.append(list(it.chain(*tmp)))
-        lineages.append(list(it.chain(*lin_temp)))
+                lin_temp.append(list(itertools.chain(*tmp)))
+        lineages.append(list(itertools.chain(*lin_temp)))
     new_lins = []
     counts_ = 0
     # remove nans
@@ -457,7 +457,6 @@ def trim_taxol(lineages):
                 if (np.isnan(cell.obs[2]) or cell.obs[2] == 0.0) and cell.obs[3] > 0.0:
                     rm += 1
                     counts += 1
-                    print("lineage index: ", ix)
                     break
 
         if rm > 0:
