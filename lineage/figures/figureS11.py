@@ -27,7 +27,6 @@ for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
 
 for i in range(4):
     lapt_tHMMobj_list[i].X = sort_lins(lapt_tHMMobj_list[i])
-    print(len(lapt_tHMMobj_list[i].X))
 
 
 def makeFigure():
