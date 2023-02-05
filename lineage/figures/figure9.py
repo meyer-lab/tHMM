@@ -31,8 +31,8 @@ def makeFigure():
     gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
     GFs = [pbs, egf, hgf, osm]
 
-    # lapBIC, lapObj = find_BIC(lapatinib, desired_num_states, num_cells=5290)
-    # gemBIC, gemObj = find_BIC(gemcitabine, desired_num_states, num_cells=4537)
+    lapBIC, lapObj = find_BIC(lapatinib, desired_num_states, num_cells=5290)
+    gemBIC, gemObj = find_BIC(gemcitabine, desired_num_states, num_cells=4537)
     hgfBIC, hgfObj = find_BIC(GFs, desired_num_states, num_cells=1306, mc=True)
 
     # Lapatinib
@@ -43,7 +43,7 @@ def makeFigure():
     #         pickle.dump(laps, pik1)
     # pik1.close()
 
-    # # Gemcitabine
+    # Gemcitabine
     # pik2 = open("gemcitabines.pkl", "wb")
     # for gemc_tHMMobj_list in gemObj:
     #     for gemc in gemc_tHMMobj_list:
@@ -58,8 +58,8 @@ def makeFigure():
     # pik3.close()
 
     # Plotting BICs
-    # ax[0].plot(desired_num_states, lapBIC)
-    # ax[1].plot(desired_num_states, gemBIC)
+    ax[0].plot(desired_num_states, lapBIC)
+    ax[1].plot(desired_num_states, gemBIC)
     ax[2].plot(desired_num_states, hgfBIC)
 
     for i in range(3):

@@ -3,7 +3,7 @@ from .common import getSetup
 import pickle
 import pandas as pd
 import numpy as np
-from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM
+from ..Lineage_collections import AllLapatinib, AllGemcitabine
 from ..crossval import output_LL
 
 desired_num_states = np.arange(1, 8)
@@ -14,11 +14,8 @@ def makeFigure():
     """
     ax, f = getSetup((9, 4), (1, 2))
 
-    lapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
-    gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
-
-    lap_out = output_LL(lapatinib, desired_num_states)
-    gem_out = output_LL(gemcitabine, desired_num_states)
+    lap_out = output_LL(AllLapatinib, desired_num_states)
+    gem_out = output_LL(AllGemcitabine, desired_num_states)
 
     ax[0].plot(desired_num_states, np.mean(np.asarray(lap_eqT), axis=0), label='equal T')
     ax[0].plot(desired_num_states, np.mean(np.asarray(lap_estT), axis=0), label='estimate T')
