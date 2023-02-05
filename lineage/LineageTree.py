@@ -256,11 +256,15 @@ class LineageTree:
         # this product is the joint probability
         # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
         # the sum of the joint probabilities is the marginal probability
-        NF_array[self.leaves_idx] = np.einsum("ij,ij->i", MSD[self.leaves_idx, :], EL[self.leaves_idx, :])
+        NF_array[self.leaves_idx] = np.einsum(
+            "ij,ij->i", MSD[self.leaves_idx, :], EL[self.leaves_idx, :]
+        )
         assert np.all(np.isfinite(NF_array))
         return NF_array
 
-    def sum_nonleaf_gammas(self, gamma_arr: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    def sum_nonleaf_gammas(
+        self, gamma_arr: npt.NDArray[np.float64]
+    ) -> npt.NDArray[np.float64]:
         """
         Sum of the gammas of the cells that are able to divide, that is,
         sum the of the gammas of all the nonleaf cells. It is used in estimating the transition probability matrix.
@@ -284,7 +288,12 @@ class LineageTree:
 
         return sum_wo_leaf
 
-    def get_gamma(self, T: npt.NDArray[np.float64], MSD: npt.NDArray[np.float64], beta: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    def get_gamma(
+        self,
+        T: npt.NDArray[np.float64],
+        MSD: npt.NDArray[np.float64],
+        beta: npt.NDArray[np.float64],
+    ) -> npt.NDArray[np.float64]:
         """
         Get the gammas using downward recursion from the root nodes.
         The conditional probability of states, given observation of the whole tree P(z_n = k | X_bar = x_bar)

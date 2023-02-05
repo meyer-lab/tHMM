@@ -1,7 +1,7 @@
 """ Unit test file. """
 import unittest
 import numpy as np
-from ..CellVar import CellVar as c, get_subtrees, find_two_subtrees
+from ..CellVar import CellVar as c
 from ..LineageTree import LineageTree, max_gen, get_leaves_idx
 from ..states.StateDistributionGamma import StateDistribution
 
@@ -130,23 +130,3 @@ class TestModel(unittest.TestCase):
         # to check the indexes for leaf cells are true
         for i in leaf_index:
             self.assertTrue(self.lineage1.output_lineage[i].isLeaf())
-
-    def test_get_subtrees(self):
-        """
-        A unittest to get the subtrees and the remaining lineage except for that subtree.
-        Here we use the manually-built-7-cell lineage in the setup function.
-        """
-        subtree1, _ = get_subtrees(self.cell_2, self.test_lineage)
-        self.assertTrue(subtree1 == self.subtree1)
-
-        subtree2, _ = get_subtrees(self.cell_3, self.test_lineage)
-        self.assertTrue(subtree2 == self.subtree2)
-
-    def test_find_two_subtrees(self):
-        """
-        A unittest for find_two_subtrees, using the built-in-7-cell lineage in the setup function.
-        """
-        left_sub, right_sub, neither_subtree = find_two_subtrees(self.cell_1, self.test_lineage)
-        self.assertTrue(left_sub == self.subtree1)
-        self.assertTrue(right_sub == self.subtree2)
-        self.assertTrue(neither_subtree == [self.cell_1])

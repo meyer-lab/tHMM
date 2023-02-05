@@ -1,7 +1,7 @@
 """ This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
 from __future__ import annotations
 import numpy as np
-from typing import Tuple, Optional
+from typing import Optional
 from dataclasses import dataclass
 
 
@@ -116,57 +116,6 @@ class CellVar:
         if self.right is not None and self.right.observed:
             temp.append(self.right)
         return temp
-
-
-def tree_recursion(cell, subtree: list) -> None:
-    """
-    A recursive helper function that traverses upwards from the leaf to the root.
-    :param cell: An instantiation of the Cell class.
-    :param subtree: A list of previous cells in the branch of a given cell.
-    """
-    if cell.isLeaf():
-        return
-    subtree.append(cell.left)
-    subtree.append(cell.right)
-    tree_recursion(cell.left, subtree)
-    tree_recursion(cell.right, subtree)
-    return
-
-
-def get_subtrees(node, lineage: list) -> Tuple[list, list]:
-    """
-    Given one cell, return the subtree of that cell,
-    and return all the tree other than that subtree.
-    :param node: The location of the cell whose subtree will be returned.
-    :param lineage: The list of cells originating from a specific daughter cell.
-    :return subtree: A list of previous cells in the branch of a given cell.
-    :return not_subtree: The list of cells that do not contain the subtree.
-    """
-    subtree = [node]
-    tree_recursion(node, subtree)
-    not_subtree = [cell for cell in lineage if cell not in subtree]
-    return subtree, not_subtree
-
-
-def find_two_subtrees(
-    cell, lineage: list
-) -> Tuple[Optional[list], Optional[list], list]:
-    """
-    Gets the left and right subtrees from a cell.
-    :param cell: An instantiation of the Cell class.
-    :param lineage: The list of cells originating from a specific daughter cell.
-    :return left_sub: The left subtree branching from a given cell.
-    :param right_sub: The right subtree branching from a given cell.
-    :param neither_subtree: The subtrees that are not branching from the given cell.
-    """
-    if cell.isLeaf():
-        return None, None, lineage
-    left_sub, _ = get_subtrees(cell.left, lineage)
-    right_sub, _ = get_subtrees(cell.right, lineage)
-    neither_subtree = [
-        node for node in lineage if node not in left_sub and node not in right_sub
-    ]
-    return left_sub, right_sub, neither_subtree
 
 
 @dataclass(init=True, repr=True, eq=True, order=True)
