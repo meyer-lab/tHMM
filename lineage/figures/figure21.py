@@ -20,11 +20,6 @@ def makeFigure():
     lap_out = output_LL(lapatinib, desired_num_states)
     gem_out = output_LL(gemcitabine, desired_num_states)
 
-    # lap_eqT = pd.read_csv('lap_all_LLs.csv', index_col=[0])
-    # lap_estT = pd.read_csv('lap_all_LLs_estimateT.csv', index_col=[0])
-    # gem_eqT = pd.read_csv('gem_all_LLs.csv', index_col=[0])
-    # gem_estT = pd.read_csv('gem_all_LLs_estimateT.csv', index_col=[0])
-
     ax[0].plot(desired_num_states, np.mean(np.asarray(lap_eqT), axis=0), label='equal T')
     ax[0].plot(desired_num_states, np.mean(np.asarray(lap_estT), axis=0), label='estimate T')
     ax[0].set_title("Lapatinib-treated")

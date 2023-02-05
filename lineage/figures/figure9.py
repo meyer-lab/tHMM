@@ -51,11 +51,11 @@ def makeFigure():
     # pik2.close()
 
     # Growth factors
-    pik3 = open("gf.pkl", "wb")
-    for hgf_tHMMobj_list in hgfObj:
-        for hgfd in hgf_tHMMobj_list:
-            pickle.dump(hgfd, pik3)
-    pik3.close()
+    # pik3 = open("gf.pkl", "wb")
+    # for hgf_tHMMobj_list in hgfObj:
+    #     for hgfd in hgf_tHMMobj_list:
+    #         pickle.dump(hgfd, pik3)
+    # pik3.close()
 
     # Plotting BICs
     # ax[0].plot(desired_num_states, lapBIC)
