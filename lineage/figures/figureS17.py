@@ -5,7 +5,7 @@ import numpy as np
 from .common import getSetup, sort_lins
 from ..plotTree import plotLineage_MCF10A
 
-# open lapatinib
+# open growth factors
 pik1 = open("gf.pkl", "rb")
 alls = []
 for i in range(7):

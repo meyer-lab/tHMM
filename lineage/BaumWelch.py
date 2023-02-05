@@ -81,6 +81,8 @@ def do_M_step(tHMMobj: list[tHMM], MSD: list, betas: list, gammas: list):
     if tHMMobj[0].estimate.fT is None:
         assert tHMMobj[0].fT is None
         T = do_M_T_step(tHMMobj, MSD, betas, gammas)
+        ##### the following line will replace line 89 in case we want to have equal transitions between all states.
+        # T = np.ones((gammas[0][0].shape[1], gammas[0][0].shape[1])) / gammas[0][0].shape[1]
 
         # all the objects in the population have the same T
         for t in tHMMobj:

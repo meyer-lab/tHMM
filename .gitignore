@@ -20,3 +20,4 @@ pylint.log
 spell.txt
 .vscode/settings.json
 .vscode
+lineage/data/taxol

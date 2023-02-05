@@ -61,8 +61,8 @@ def gamma_LL(
         jidx = np.argwhere(time_cen[i] == 0.0)
         if jidx.size > 0:
             gamP = gammaincc(x[0], gobs[jidx])
-            gamP = np.maximum(gamP, 1e-60)  # Clip if the probability hits exactly 0
-            outt -= np.sum(gammas[i][jidx] * np.log(gamP))
+            gamP = np.maximum(gamP, 1e-35)  # Clip if the probability hits exactly 0
+            outt -= np.dot(gammas[i][jidx].T, np.log(gamP))
 
     assert np.isfinite(outt)
     return outt

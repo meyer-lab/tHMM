@@ -8,6 +8,18 @@ from .common import getSetup
 
 desired_num_states = np.arange(1, 8)
 
+def find_BIC(data, desired_num_states, num_cells, mc=False):
+    # Copy out data to full set
+    dataFull = []
+    for _ in desired_num_states:
+        dataFull.append(data)
+
+    # Run fitting
+    output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
+    BICs = np.array([oo[0][0].get_BIC(oo[1], num_cells, atonce=True, mcf10a=mc)[0] for oo in output])
+    thobj = [oo[0] for oo in output]
+
+    return BICs - np.min(BICs, axis=0), thobj
 
 def makeFigure():
     """
@@ -15,21 +27,12 @@ def makeFigure():
     """
     ax, f = getSetup((14, 4), (1, 3))
 
-    def find_BIC(data, desired_num_states, num_cells, mc=False):
-        # Copy out data to full set
-        dataFull = []
-        for _ in desired_num_states:
-            dataFull.append(data)
+    lapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
+    gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
+    GFs = [pbs, egf, hgf, osm]
 
-        # Run fitting
-        output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
-        BICs = np.array([oo[0][0].get_BIC(oo[1], num_cells, atonce=True, mcf10a=mc)[0] for oo in output])
-        thobj = [oo[0] for oo in output]
-
-        return BICs - np.min(BICs, axis=0), thobj
-
-    lapBIC, lapObj = find_BIC(AllLapatinib, desired_num_states, num_cells=5290)
-    gemBIC, gemObj = find_BIC(AllGemcitabine, desired_num_states, num_cells=4537)
+    lapBIC, lapObj = find_BIC(lapatinib, desired_num_states, num_cells=5290)
+    gemBIC, gemObj = find_BIC(gemcitabine, desired_num_states, num_cells=4537)
     hgfBIC, hgfObj = find_BIC(GFs, desired_num_states, num_cells=1306, mc=True)
 
     # # Lapatinib
