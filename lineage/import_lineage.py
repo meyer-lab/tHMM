@@ -25,7 +25,7 @@ def import_AU565(path: str) -> list:
         lineage = df.loc[df['lineageId'] == i]
 
         # if the lineage Id exists, do the rest, if not, pass
-        if not(lineage.empty):
+        if not (lineage.empty):
             unique_cell_ids = list(lineage["trackId"].unique())  # the length of this shows the number of cells in this lineage
             unique_parent_trackIDs = lineage["parentTrackId"].unique()
 
@@ -73,7 +73,7 @@ def assign_observs_AU565(cell: CellVar, lineage, uniq_id: int) -> CellVar:
     cell.obs = np.array([1, 0, 0, 0], dtype=float)
     parent_id = lineage["parentTrackId"].unique()
     # cell fate: die = 0, divide = 1
-    if not(uniq_id in parent_id):  # if the cell has not divided, means either died or reached experiment end time
+    if not (uniq_id in parent_id):  # if the cell has not divided, means either died or reached experiment end time
         if np.max(lineage.loc[lineage["trackId"] == uniq_id]["frame"]) == 49:  # means reached end of experiment
             cell.obs[0] = np.nan  # don't know
             cell.obs[3] = 1  # censored
@@ -174,7 +174,7 @@ def assign_observs_MCF10A(cell, lineage, uniq_id: int):
     parent_id = lineage["motherID"].unique()
 
     # cell fate: die = 0, divide = 1
-    if not(uniq_id in parent_id):  # if the cell has not divided, means either died or reached experiment end time
+    if not (uniq_id in parent_id):  # if the cell has not divided, means either died or reached experiment end time
         if np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"]) == t_end:  # means reached end of experiment
             cell.obs[0] = np.nan  # don't know
             cell.obs[2] = 0  # censored

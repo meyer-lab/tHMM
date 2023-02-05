@@ -29,7 +29,7 @@ T_gem = gemc_tHMMobj_list[0].estimate.T
 num_states = gemc_tHMMobj_list[0].num_states
 
 # plot transition block
-plot_networkx(T_gem.shape[0], T_gem, 'gemcitabine')
+plot_networkx(T_gem, 'gemcitabine')
 
 # plot sample of lineages
 plot_lineage_samples(gemc_tHMMobj_list, 'figure02')

@@ -6,7 +6,7 @@ from .states.StateDistributionGaPhs import StateDistribution
 from .states.StateDistributionGamma import StateDistribution as StDist
 from .LineageTree import LineageTree
 
-#----------------------- Control conditions from both old and new versions -----------------------#
+# ----------------------- Control conditions from both old and new versions -----------------------#
 desired_num_states = 2
 E = [StateDistribution() for _ in range(desired_num_states)]
 E2 = [StDist() for _ in range(desired_num_states)]

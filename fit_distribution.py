@@ -5,7 +5,7 @@ from lineage.fitting_distribution import check_dist
 # read data into DataFrame
 df = pd.read_excel(r'./lineage/data/G1_G2_duration_control.xlsx')
 
-##----------------------- Preprocessing the data ------------------------##
+## ----------------------- Preprocessing the data ------------------------##
 
 # dataFrmae into numpy array
 a = df.values

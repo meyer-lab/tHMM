@@ -2,11 +2,8 @@
 
 import warnings
 import numpy as np
-from ctypes import CFUNCTYPE, c_double
-from numba.extending import get_cython_function_address
-from numba import jit  # type: ignore
-from numba.typed import List
 from scipy.optimize import minimize, Bounds
+from scipy.special import gammaincc, gammaln
 
 
 warnings.filterwarnings("ignore", message="Values in x were outside bounds")
@@ -44,19 +41,11 @@ def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
     return numerator / denominator
 
 
-addr = get_cython_function_address("scipy.special.cython_special", "gammaincc")
-gammaincc = CFUNCTYPE(c_double, c_double, c_double)(addr)
-
-addr = get_cython_function_address("scipy.special.cython_special", "gammaln")
-gammaln = CFUNCTYPE(c_double, c_double)(addr)
-
-
-@jit(nopython=True)
 def gamma_LL(
     logX: np.ndarray,
-    gamma_obs: List[np.ndarray],
-    time_cen: List[np.ndarray],
-    gammas: List[np.ndarray],
+    gamma_obs: list[np.ndarray],
+    time_cen: list[np.ndarray],
+    gammas: list[np.ndarray],
 ):
     """Log-likelihood for the optionally censored Gamma distribution."""
     x = np.exp(logX)
@@ -69,11 +58,11 @@ def gamma_LL(
             (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[i + 1],
         )
 
-        for j in range(len(time_cen[i])):
-            if time_cen[i][j] == 0.0:
-                gamP = gammaincc(x[0], gobs[j])
-                gamP = np.maximum(gamP, 1e-60)  # Clip if the probability hits exactly 0
-                outt -= gammas[i][j] * np.log(gamP)
+        jidx = np.argwhere(time_cen[i] == 0.0)
+        if jidx.size > 0:
+            gamP = gammaincc(x[0], gobs[jidx])
+            gamP = np.maximum(gamP, 1e-35)  # Clip if the probability hits exactly 0
+            outt -= np.dot(gammas[i][jidx].T, np.log(gamP))
 
     assert np.isfinite(outt)
     return outt
@@ -84,7 +73,7 @@ def gamma_estimator(
     time_cen: list[np.ndarray],
     gammas: list[np.ndarray],
     x0: np.ndarray,
-    phase: str = 'all',
+    phase: str = "all",
 ) -> np.ndarray:
     """
     This is a weighted, closed-form estimator for two parameters
@@ -101,10 +90,10 @@ def gamma_estimator(
         assert gamma_obs[i].shape == time_cen[i].shape
         assert gamma_obs[i].shape == gammas[i].shape
 
-    arrgs = (List(gamma_obs), List(time_cen), List(gammas))
+    arrgs = (gamma_obs, time_cen, gammas)
     linc = list()
 
-    if phase != 'all':  # for constrained optimization
+    if phase != "all":  # for constrained optimization
         A = np.zeros((3, 5))  # constraint Jacobian
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)
