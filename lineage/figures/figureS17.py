@@ -15,7 +15,7 @@ for i in range(7):
     alls.append(hgf_tHMMobj_list)
 
 # selected for gf treatments is 2 states which is index 1.
-hgf_tHMMobj_list = alls[1]
+hgf_tHMMobj_list = alls[2]
 
 hgf_states_list = [tHMMobj.predict() for tHMMobj in hgf_tHMMobj_list]
 
