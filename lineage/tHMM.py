@@ -208,7 +208,7 @@ def get_Emission_Likelihoods(tHMMobj: tHMM, E: Optional[list] = None) -> list:
     ii = 0
     for lineageObj in tHMMobj.X:  # for each lineage in our Population
         nl = len(lineageObj.output_lineage)  # getting the lineage length
-        EL.append(ELstack[ii : (ii + nl), :])  # append the EL_array for each lineage
+        EL.append(ELstack[ii: (ii + nl), :])  # append the EL_array for each lineage
 
         ii += nl
 
