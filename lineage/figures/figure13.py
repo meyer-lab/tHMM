@@ -81,7 +81,7 @@ def getSetup(figsize, gridd):
 
 
 # plot transition block
-plot_networkx(T_hgf.shape[0], T_hgf, 'HGF')
+plot_networkx(T_hgf, 'HGF')
 
 # plot sample of lineages
 plot_lineage_samples(hgf_tHMMobj_list, 'figure03')

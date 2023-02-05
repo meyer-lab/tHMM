@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import run_Analyze_over, Analyze_list
-from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM, pbs, egf, hgf, osm
+from ..Lineage_collections import AllLapatinib, AllGemcitabine, GFs
 from .common import getSetup
 
 desired_num_states = np.arange(1, 8)

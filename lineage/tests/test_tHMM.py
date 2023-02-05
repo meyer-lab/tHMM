@@ -2,7 +2,6 @@
 import unittest
 import pytest
 import numpy as np
-from ..UpwardRecursion import get_Marginal_State_Distributions
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM, get_Emission_Likelihoods
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
@@ -18,19 +17,16 @@ class TestModel(unittest.TestCase):
     def setUp(self):
         """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
         # Using an unpruned lineage to avoid unforseen issues
-        self.X = [LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 11) - 1)]
+        self.X = [LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 11) - 1)]
         self.pi = np.array([0.55, 0.35, 0.10])
         self.T = np.array([[0.75, 0.20, 0.05], [0.1, 0.85, 0.05], [0.1, 0.1, 0.8]])
 
         # Emissions
         self.E = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
-        self.X3 = [LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)]
+        self.X3 = [LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)]
 
         self.t = tHMM(self.X, num_states=2)  # build the tHMM class with X
         self.t3 = tHMM(self.X3, num_states=3)  # build the tHMM class for 3 states
-
-        self.MSD = get_Marginal_State_Distributions(self.t)
-        self.MSD3 = get_Marginal_State_Distributions(self.t3)
 
     def test_init_paramlist(self):
         """
@@ -48,22 +44,6 @@ class TestModel(unittest.TestCase):
         self.assertEqual(t3.estimate.T.shape[0], 3)  # make sure shape is num_states
         self.assertEqual(t3.estimate.T.shape[1], 3)  # make sure shape is num_states
         self.assertEqual(len(t3.estimate.E), 3)  # make sure shape is num_states
-
-    def test_get_MSD(self):
-        """
-        Calls get_Marginal_State_Distributions and
-        ensures the output is of correct data type and
-        structure.
-        """
-        MSD = self.MSD
-        MSD3 = self.MSD3
-        for ind, MSDlin in enumerate(MSD):
-            self.assertGreaterEqual(MSDlin.shape[0], 0)  # at least zero cells in each lineage
-            self.assertGreaterEqual(MSD3[ind].shape[0], 0)  # at least zero cells in each lineage
-            self.assertEqual(MSDlin.shape[1], 2)  # there are 2 states for each cell
-            self.assertEqual(MSD3[ind].shape[1], 3)  # there are 3 states for each cell
-            for node_n in range(MSDlin.shape[0]):
-                self.assertTrue(np.isclose(sum(MSDlin[node_n, :]), 1))  # the rows should sum to 1
 
     def test_get_EL(self):
         """
@@ -83,7 +63,7 @@ class TestModel(unittest.TestCase):
 def test_fit_performance():
     """ Really defined states should get an accuracy >95%.
     Lineages used should be large and distinct. """
-    X = [LineageTree.init_from_parameters(pi, T, E, desired_num_cells=(2 ** 8) - 1)]
+    X = [LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 8) - 1)]
     first = Results(*Analyze(X, 2, fpi=pi))["state_similarity"]
     second = Results(*Analyze(X, 2, fpi=pi))["state_similarity"]
     assert max(first, second) > 95.0
@@ -94,7 +74,7 @@ def test_fit_performance():
 def test_small_lineages(sizze, stateNum):
     """ To test lineages with 3 cells in them for simple gamma. """
     # test with 2 state model
-    lin = [LineageTree.init_from_parameters(pi, T, E, sizze) for _ in range(2)]
+    lin = [LineageTree.rand_init(pi, T, E, sizze) for _ in range(2)]
 
     _, LL1 = Analyze(lin, stateNum)
     assert np.all(np.isfinite(LL1))
@@ -109,7 +89,7 @@ def test_BIC():
     pi1 = np.array([1.0])
     T1 = np.atleast_2d(np.array([1.0]))
     E1 = [StateDistPhase(0.99, 0.9, 200, 0.5, 100, 0.6)]
-    lin = [[LineageTree.init_from_parameters(pi1, T1, E1, 10)] for _ in range(3)]
+    lin = [[LineageTree.rand_init(pi1, T1, E1, 10)] for _ in range(3)]
     desired_num_states = np.arange(1, 4)
 
     nums = 0

@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from ..CellVar import CellVar as c, get_subtrees, find_two_subtrees
-from ..LineageTree import LineageTree, max_gen, get_leaves
+from ..LineageTree import LineageTree, max_gen, get_leaves_idx
 from ..states.StateDistributionGamma import StateDistribution
 
 
@@ -39,23 +39,23 @@ class TestModel(unittest.TestCase):
         self.E = [state_obj0, state_obj1]
 
         # creating lineages with the various censor conditions
-        self.lineage1 = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
-        self.lineage2_fate_censored = LineageTree.init_from_parameters(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=1)
-        self.lineage3_time_censored = LineageTree.init_from_parameters(
+        self.lineage1 = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
+        self.lineage2_fate_censored = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=1)
+        self.lineage3_time_censored = LineageTree.rand_init(
             self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=2, desired_experiment_time=500
         )
-        self.lineage4_both_censored = LineageTree.init_from_parameters(
+        self.lineage4_both_censored = LineageTree.rand_init(
             self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=500
         )
 
         # creating 7 cells for 3 generations manually
-        cell_1 = c(state=self.state0, parent=None, gen=1)
-        cell_2 = c(state=self.state0, parent=cell_1, gen=2)
-        cell_3 = c(state=self.state0, parent=cell_1, gen=2)
-        cell_4 = c(state=self.state0, parent=cell_2, gen=3)
-        cell_5 = c(state=self.state0, parent=cell_2, gen=3)
-        cell_6 = c(state=self.state0, parent=cell_3, gen=3)
-        cell_7 = c(state=self.state0, parent=cell_3, gen=3)
+        cell_1 = c(state=self.state0, parent=None)
+        cell_2 = c(state=self.state0, parent=cell_1)
+        cell_3 = c(state=self.state0, parent=cell_1)
+        cell_4 = c(state=self.state0, parent=cell_2)
+        cell_5 = c(state=self.state0, parent=cell_2)
+        cell_6 = c(state=self.state0, parent=cell_3)
+        cell_7 = c(state=self.state0, parent=cell_3)
         cell_1.left = cell_2
         cell_1.right = cell_3
         cell_2.left = cell_4
@@ -102,16 +102,15 @@ class TestModel(unittest.TestCase):
         for 3 generations ==> total of 7 cells in the setup function.
         """
 
-        max_generation, list_by_gen = max_gen(self.test_lineage)
-        self.assertTrue(max_generation == 3)
+        list_by_gen = max_gen(self.test_lineage)
         self.assertTrue(list_by_gen[1] == self.level1)
         self.assertTrue(list_by_gen[2] == self.level2)
         self.assertTrue(list_by_gen[3] == self.level3)
 
     def test_get_parent_for_level(self):
         """ A unittest for get_parent_for_level. """
-        _, list_by_gen = max_gen(self.lineage1.output_lineage)
-        parent_ind_holder = self.lineage1.get_parents_for_level(list_by_gen[3])
+        list_by_gen = max_gen(self.lineage1.output_lineage)
+        parent_ind_holder = self.lineage1.get_parent_idxs(list_by_gen[3])
 
         # making a list of parent cells using the indexes that
         # _get_parent_for_level returns
@@ -126,12 +125,7 @@ class TestModel(unittest.TestCase):
         A unittest fot get_leaves function.
         """
         # getting the leaves and their indexes for lineage1
-        leaf_index, leaf_cells = get_leaves(self.lineage1.output_lineage)
-
-        # to check the leaf cells do not have daughters
-        for cells in leaf_cells:
-            self.assertTrue(cells.isLeaf())
-            self.assertTrue(cells.isLeaf())
+        leaf_index = get_leaves_idx(self.lineage1.output_lineage)
 
         # to check the indexes for leaf cells are true
         for i in leaf_index:

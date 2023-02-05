@@ -30,7 +30,7 @@ for num in num_lineages:
     population = []
 
     for _ in range(num):
-        tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, min_desired_num_cells, censor_condition=3, desired_experiment_time=2 * max_experiment_time)
+        tmp_lineage = LineageTree.rand_init(pi, T, E2, min_desired_num_cells, censor_condition=3, desired_experiment_time=2 * max_experiment_time)
         if len(tmp_lineage.output_lineage) < 3:
             pass
         else:
