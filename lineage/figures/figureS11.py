@@ -35,20 +35,16 @@ def makeFigure():
     Makes figure 100.
     """
     titles = ["Control", "Lapatinib 25 nM", "Lapatinib 50 nM", "Lapatinib 250 nM"]
-    ax, f = getSetup((15, 65), (160, 4))
+    ax, f = getSetup((15, 45), (170, 4))
 
-    for i in range(160):
+    for i in range(170):
         ax[4 * i].axis('off')
         ax[4 * i + 1].axis('off')
         ax[4 * i + 2].axis('off')
         ax[4 * i + 3].axis('off')
-    for i in range(len(lapt_tHMMobj_list[0].X)):
         plotLineage(lapt_tHMMobj_list[0].X[i], ax[4 * i])
-    for i in range(len(lapt_tHMMobj_list[1].X)):
         plotLineage(lapt_tHMMobj_list[1].X[i], ax[4 * i + 1])
-    for i in range(len(lapt_tHMMobj_list[2].X)):
         plotLineage(lapt_tHMMobj_list[2].X[i], ax[4 * i + 2])
-    for i in range(len(lapt_tHMMobj_list[3].X)):
         plotLineage(lapt_tHMMobj_list[3].X[i], ax[4 * i + 3])
 
     for i in range(4):

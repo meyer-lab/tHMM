@@ -1,9 +1,9 @@
 """ This file includes functions to import the new lineage data. """
 import pandas as pd
+import itertools
 from copy import copy
-import itertools as it
 import numpy as np
-from .CellVar import CellVar, find_two_subtrees
+from .CellVar import CellVar
 
 ############################
 # importing AU565 data (new)
@@ -33,7 +33,7 @@ def import_AU565(path: str) -> list:
             for j in unique_parent_trackIDs:
                 if j != 0:
                     pid.append(np.count_nonzero(lineage["parentTrackId"] == j) * [j])
-            parent_ids = list(it.chain(*pid))
+            parent_ids = list(itertools.chain(*pid))
 
             # create the root parent cell and assign obsrvations
             parent_cell = CellVar(parent=None)
@@ -491,7 +491,7 @@ def import_taxol(HC="HC00801"):
     taxol_2 = [trim_taxol(import_taxol_file(HC + "_C1_field_1_level_1.csv")) +
     trim_taxol(import_taxol_file(HC + "_C1_field_2_level_1.csv")) +
     trim_taxol(import_taxol_file(HC + "_C1_field_3_level_1.csv")) +
-    trim_taxol(import_taxol_file("HC00801_C1_field_4_level_1.csv"))]
+    trim_taxol(import_taxol_file(HC + "_C1_field_4_level_1.csv"))]
 
     taxol_25 = [trim_taxol(import_taxol_file(HC + "_C2_field_1_level_1.csv")) +
     trim_taxol(import_taxol_file(HC + "_C2_field_2_level_1.csv")) +
@@ -508,4 +508,4 @@ def import_taxol(HC="HC00801"):
     trim_taxol(import_taxol_file(HC + "_D2_field_3_level_1.csv")) +
     trim_taxol(import_taxol_file(HC + "_D2_field_4_level_1.csv"))]
 
-    return untreated[0], taxol_1[0], taxol_2[0], taxol_4[0]
+    return untreated, taxol_05, taxol_1, taxol_15, taxol_2, taxol_25, taxol_3, taxol_4
