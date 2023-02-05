@@ -47,7 +47,7 @@ def crossval(train_populations: list, num_states: np.ndarray):
 
                         positive_obs = np.array([-1 * o for o in cell.obs])[np.newaxis, :]
 
-                        tmp = np.array([tHMMobj.estimate.E[i].logpdf(positive_obs)[0] for i in range(k + 1)])
+                        tmp = np.array([tHMMobj.estimate.E[i].logpdf(positive_obs)[0] for i in range(k)])
                         tmp += np.log(gamma_list[idx][lin_indx][cell_indx])
 
                         Logls += logsumexp(tmp)
@@ -58,18 +58,12 @@ def crossval(train_populations: list, num_states: np.ndarray):
 def output_LL(complete_population, desired_num_states):
     """Given the complete population, it masks 25% of cells and prepares the data for parallel fitting using crossval function."""
     # create training data by hiding 25% of cells in each lineage
-    train_population = [
-        hide_observation(complete_pop, 0.25) for complete_pop in complete_population
-    ]
-    # Copy out data to full set
-    dataFull = []
-    for _ in desired_num_states:
-        dataFull.append(train_population)
+    promholder = []
+    for i in range(10):
+        train_population = [hide_observation(complete_pop, 0.25) for complete_pop in complete_population]
+        promholder.append(exe.submit(crossval, train_population, desired_num_states))
 
     output = [p.result() for p in promholder]
     lls = np.asarray(output)
-
-    df = pd.DataFrame(lls[:, :, 0])
-    df.to_csv(name + '_all_LLs_estimateT.csv')
 
     return np.mean(lls, axis=0)

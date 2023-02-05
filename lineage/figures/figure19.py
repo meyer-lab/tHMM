@@ -18,7 +18,6 @@ Efour = [Sone, Stwo, Sthree, Sfour]
 Efive = [Sone, Stwo, Sthree, Sfour, Sfive]
 Es = [Etwo, Ethree, Efour, Efive]
 
-
 def makeFigure():
     """
     Makes figure 19.

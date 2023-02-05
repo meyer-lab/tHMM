@@ -17,8 +17,8 @@ def makeFigure():
     lapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
     gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
 
-    lap_out = output_LL(lapatinib, desired_num_states, 'lap')
-    gem_out = output_LL(gemcitabine, desired_num_states, 'gem')
+    lap_out = output_LL(lapatinib, desired_num_states)
+    gem_out = output_LL(gemcitabine, desired_num_states)
 
     # lap_eqT = pd.read_csv('lap_all_LLs.csv', index_col=[0])
     # lap_estT = pd.read_csv('lap_all_LLs_estimateT.csv', index_col=[0])
