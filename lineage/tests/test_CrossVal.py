@@ -32,9 +32,5 @@ def test_cv(cen):
 
     train_lineages = [hide_observation(complete_lin, 0.25) for complete_lin in complete_lineages]
 
-    dataFull = []
-    for _ in range(1, 3):
-        dataFull.append(train_lineages)
-
-    ll = crossval(dataFull, np.arange(1, 3))
+    ll = crossval(train_lineages, np.arange(1, 3))
     assert ll[0] < ll[1]
