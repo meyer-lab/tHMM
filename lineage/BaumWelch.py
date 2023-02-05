@@ -1,6 +1,6 @@
 """ Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch. """
 import numpy as np
-from typing import Tuple, Any
+from typing import Tuple
 from .tHMM import tHMM
 from .states.StateDistributionGamma import atonce_estimator
 
@@ -22,7 +22,9 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     EL = tHMMobj.get_Emission_Likelihoods()
 
     for ii, lO in enumerate(tHMMobj.X):
-        MSD.append(lO.get_Marginal_State_Distributions(tHMMobj.estimate.pi, tHMMobj.estimate.T))
+        MSD.append(
+            lO.get_Marginal_State_Distributions(tHMMobj.estimate.pi, tHMMobj.estimate.T)
+        )
         NF.append(lO.get_leaf_Normalizing_Factors(MSD[ii], EL[ii]))
         betas.append(lO.get_beta(tHMMobj.estimate.T, MSD[ii], EL[ii], NF[ii]))
         gammas.append(lO.get_gamma(tHMMobj.estimate.T, MSD[ii], betas[ii]))
@@ -128,7 +130,10 @@ def do_M_pi_step(tHMMobj: list[tHMM], gammas: list[np.ndarray]) -> np.ndarray:
 
 
 def do_M_T_step(
-    tHMMobj: list[tHMM], MSD: list[list[np.ndarray]], betas: list[list[np.ndarray]], gammas: list[list[np.ndarray]]
+    tHMMobj: list[tHMM],
+    MSD: list[list[np.ndarray]],
+    betas: list[list[np.ndarray]],
+    gammas: list[list[np.ndarray]],
 ) -> np.ndarray:
     """
     Calculates the M-step of the Baum Welch algorithm
