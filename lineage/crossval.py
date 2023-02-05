@@ -1,6 +1,5 @@
 """ Cross validation. """
 import numpy as np
-import pandas as pd
 from scipy.stats import bernoulli
 from scipy.special import logsumexp
 from copy import deepcopy
@@ -32,7 +31,7 @@ def crossval(train_populations: list, num_states: np.ndarray):
     # fit training data by parallel.
 
     # save the tHMMobj for each number of states that is being run
-    tHMMobj_list_states, gamma_lists, LLs = [], [], []
+    LLs = []
     for k in num_states:
         out = Analyze_list(train_populations, k)
         tHMMobj_list = out[0]
@@ -44,7 +43,6 @@ def crossval(train_populations: list, num_states: np.ndarray):
             for lin_indx, lin in enumerate(tHMMobj.X):
                 for cell_indx, cell in enumerate(lin.output_lineage):
                     if cell.obs[2] < 0:
-
                         positive_obs = np.array([-1 * o for o in cell.obs])[np.newaxis, :]
 
                         tmp = np.array([tHMMobj.estimate.E[i].logpdf(positive_obs)[0] for i in range(k)])
