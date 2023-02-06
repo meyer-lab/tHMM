@@ -8,6 +8,7 @@ from ..crossval import output_LL
 
 desired_num_states = np.arange(1, 8)
 
+
 def makeFigure():
     """
     Makes figure 21.
