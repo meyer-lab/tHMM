@@ -52,7 +52,7 @@ def accuracy():
     list_of_fpi = [calculate_stationary(a) for a in list_of_Ts]
 
     # generate lineages
-    def genF(x): return LineageTree.init_from_parameters(calculate_stationary(x), x, E, max_desired_num_cells)
+    def genF(x): return LineageTree.rand_init(calculate_stationary(x), x, E, max_desired_num_cells)
     list_of_populations = [[genF(T) for _ in range(10)] for T in list_of_Ts]
 
     return commonAnalyze(list_of_populations, 2, xtype="prop", list_of_fpi=list_of_fpi, list_of_fT=list_of_Ts)

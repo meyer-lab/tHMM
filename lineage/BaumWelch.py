@@ -1,6 +1,6 @@
 """ Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch. """
 import numpy as np
-from typing import Tuple, Any
+from typing import Tuple
 from .tHMM import tHMM
 from .states.StateDistributionGamma import atonce_estimator
 
@@ -22,7 +22,9 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     EL = tHMMobj.get_Emission_Likelihoods()
 
     for ii, lO in enumerate(tHMMobj.X):
-        MSD.append(lO.get_Marginal_State_Distributions(tHMMobj.estimate.pi, tHMMobj.estimate.T))
+        MSD.append(
+            lO.get_Marginal_State_Distributions(tHMMobj.estimate.pi, tHMMobj.estimate.T)
+        )
         NF.append(lO.get_leaf_Normalizing_Factors(MSD[ii], EL[ii]))
         betas.append(lO.get_beta(tHMMobj.estimate.T, MSD[ii], EL[ii], NF[ii]))
         gammas.append(lO.get_gamma(tHMMobj.estimate.T, MSD[ii], betas[ii]))
@@ -30,15 +32,21 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     return MSD, NF, betas, gammas
 
 
-def calculate_log_likelihood(NF: Any) -> np.ndarray:
+def calculate_log_likelihood(NF: list) -> float:
     """
     Calculates log likelihood of NF for each lineage.
 
-    :param NF: normalizing factor
+    :param NF: list of normalizing factors
     return: the sum of log likelihoods for each lineage
     """
-    # NF is a list of arrays, an array for each lineage in the population
-    return np.array([sum(np.log(arr)) for arr in NF])
+    summ = 0.0
+    for N in NF:
+        if isinstance(N, np.ndarray):
+            summ += np.sum(np.log(N))
+        else:
+            summ += np.sum([np.sum(np.log(a)) for a in N])
+
+    return summ
 
 
 def calculate_stationary(T: np.ndarray) -> np.ndarray:
@@ -73,6 +81,8 @@ def do_M_step(tHMMobj: list[tHMM], MSD: list, betas: list, gammas: list):
     if tHMMobj[0].estimate.fT is None:
         assert tHMMobj[0].fT is None
         T = do_M_T_step(tHMMobj, MSD, betas, gammas)
+        ##### the following line will replace line 89 in case we want to have equal transitions between all states.
+        # T = np.ones((gammas[0][0].shape[1], gammas[0][0].shape[1])) / gammas[0][0].shape[1]
 
         # all the objects in the population have the same T
         for t in tHMMobj:
@@ -122,7 +132,10 @@ def do_M_pi_step(tHMMobj: list[tHMM], gammas: list[np.ndarray]) -> np.ndarray:
 
 
 def do_M_T_step(
-    tHMMobj: list[tHMM], MSD: list[list[np.ndarray]], betas: list[list[np.ndarray]], gammas: list[list[np.ndarray]]
+    tHMMobj: list[tHMM],
+    MSD: list[list[np.ndarray]],
+    betas: list[list[np.ndarray]],
+    gammas: list[list[np.ndarray]],
 ) -> np.ndarray:
     """
     Calculates the M-step of the Baum Welch algorithm

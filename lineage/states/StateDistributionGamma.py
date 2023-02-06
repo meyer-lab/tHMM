@@ -95,7 +95,7 @@ class StateDistribution:
         assert np.sum(g_mask) > 0, f"All the cells are eliminated from the Gamma estimator."
 
         self.params[0] = bern_estimator(bern_obs, gammas)
-        self.params[1], self.params[2] = gamma_estimator([γ_obs_[g_mask]], [gamma_obs_censor_[g_mask]], [gammas_[g_mask]], self.params[1:3])
+        self.params[1], self.params[2] = gamma_estimator([γ_obs_[g_mask]], [gamma_obs_censor_[g_mask]], [gammas_[g_mask]], self.params[1:3], phase='all')
 
         # } requires the user's attention.
         # Note that we return an instance of the state distribution class, but now instantiated with the parameters
@@ -228,7 +228,7 @@ def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: 
 
     if phase == "G1":
         x0 = np.array([all_tHMMobj[0].estimate.E[state_j].params[2]] + [tHMMobj.estimate.E[state_j].params[3] for tHMMobj in all_tHMMobj])
-        output = gamma_estimator(γ_obs_total, γ_obs_total_censored, gammas_total, x0)
+        output = gamma_estimator(γ_obs_total, γ_obs_total_censored, gammas_total, x0, phase=phase)
         for i, tHMMobj in enumerate(all_tHMMobj):
             tHMMobj.estimate.E[state_j].params[0] = bern_params[i]
             tHMMobj.estimate.E[state_j].G1.params[0] = bern_params[i]
@@ -239,7 +239,7 @@ def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: 
 
     elif phase == "G2":
         x0 = np.array([all_tHMMobj[0].estimate.E[state_j].params[4]] + [tHMMobj.estimate.E[state_j].params[5] for tHMMobj in all_tHMMobj])
-        output = gamma_estimator(γ_obs_total, γ_obs_total_censored, gammas_total, x0)
+        output = gamma_estimator(γ_obs_total, γ_obs_total_censored, gammas_total, x0, phase=phase)
         for i, tHMMobj in enumerate(all_tHMMobj):
             tHMMobj.estimate.E[state_j].params[1] = bern_params[i]
             tHMMobj.estimate.E[state_j].G2.params[0] = bern_params[i]
@@ -250,7 +250,7 @@ def atonce_estimator(all_tHMMobj: list, x_list: list, gammas_list: list, phase: 
 
     elif phase == "all":
         x0 = np.array([all_tHMMobj[0].estimate.E[state_j].params[1]] + [tHMMobj.estimate.E[state_j].params[2] for tHMMobj in all_tHMMobj])
-        output = gamma_estimator(γ_obs_total, γ_obs_total_censored, gammas_total, x0)
+        output = gamma_estimator(γ_obs_total, γ_obs_total_censored, gammas_total, x0, phase=phase)
         for i, tHMMobj in enumerate(all_tHMMobj):
             tHMMobj.estimate.E[state_j].params[0] = bern_params[i]
             tHMMobj.estimate.E[state_j].params[1] = output[0]

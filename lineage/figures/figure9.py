@@ -3,11 +3,23 @@ import pickle
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 from ..Analyze import run_Analyze_over, Analyze_list
-from ..Lineage_collections import Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM, Lapatinib_Control, Lapt25uM, Lapt50uM, Lap250uM, pbs, egf, hgf, osm
+from ..Lineage_collections import AllLapatinib, AllGemcitabine, GFs
 from .common import getSetup
 
 desired_num_states = np.arange(1, 8)
 
+def find_BIC(data, desired_num_states, num_cells, mc=False):
+    # Copy out data to full set
+    dataFull = []
+    for _ in desired_num_states:
+        dataFull.append(data)
+
+    # Run fitting
+    output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
+    BICs = np.array([oo[0][0].get_BIC(oo[1], num_cells, atonce=True, mcf10a=mc)[0] for oo in output])
+    thobj = [oo[0] for oo in output]
+
+    return BICs - np.min(BICs, axis=0), thobj
 
 def makeFigure():
     """
@@ -18,19 +30,6 @@ def makeFigure():
     lapatinib = [Lapatinib_Control + Gemcitabine_Control, Lapt25uM, Lapt50uM, Lap250uM]
     gemcitabine = [Lapatinib_Control + Gemcitabine_Control, Gem5uM, Gem10uM, Gem30uM]
     GFs = [pbs, egf, hgf, osm]
-
-    def find_BIC(data, desired_num_states, num_cells, mc=False):
-        # Copy out data to full set
-        dataFull = []
-        for _ in desired_num_states:
-            dataFull.append(data)
-
-        # Run fitting
-        output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
-        BICs = np.array([oo[0][0].get_BIC(oo[1], num_cells, atonce=True, mcf10a=mc)[0] for oo in output])
-        thobj = [oo[0] for oo in output]
-
-        return BICs - np.min(BICs, axis=0), thobj
 
     lapBIC, lapObj = find_BIC(lapatinib, desired_num_states, num_cells=5290)
     gemBIC, gemObj = find_BIC(gemcitabine, desired_num_states, num_cells=4537)

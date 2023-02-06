@@ -30,7 +30,7 @@ for num in num_lineages:
     population = []
 
     for _ in range(num):
-        tmp_lineage = LineageTree.init_from_parameters(pi, T, E, min_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time)
+        tmp_lineage = LineageTree.rand_init(pi, T, E, min_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time)
         population.append(tmp_lineage)
 
     # Adding populations into a holder for analysing

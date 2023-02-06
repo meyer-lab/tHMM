@@ -29,7 +29,7 @@ class LineageTree:
         self.cell_to_daughters = cell_to_daughters(self.output_lineage)
 
     @classmethod
-    def init_from_parameters(
+    def rand_init(
         cls,
         pi: np.ndarray,
         T: np.ndarray,

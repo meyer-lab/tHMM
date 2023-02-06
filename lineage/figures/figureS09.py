@@ -23,29 +23,17 @@ from ..LineageTree import LineageTree
 
 # Creating a list of populations to analyze over
 num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
-list_of_populations = []
-
-for num in num_lineages:
-    population = []
-
-    for _ in range(num):
-        tmp_lineage = LineageTree.init_from_parameters(pi, T, E2, min_desired_num_cells)
-        population.append(tmp_lineage)
-
-    # Adding populations into a holder for analysing
-    list_of_populations.append(population)
+list_of_populations = [[LineageTree.rand_init(pi, T, E2, min_desired_num_cells) for _ in range(num)] for num in num_lineages]
 
 
 def makeFigure():
     """
     Makes figure 4.
     """
-
     # Get list of axis objects
     ax, f = getSetup((10, 10), (4, 3))
 
     figureMaker(ax, *commonAnalyze(list_of_populations, 2), num_lineages=num_lineages)
 
     subplotLabel(ax)
-
     return f

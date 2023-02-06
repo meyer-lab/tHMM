@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 import numpy as np
-from typing import Tuple
+from typing import Tuple, Optional
 from .Viterbi import Viterbi
 from .LineageTree import LineageTree
 
@@ -44,7 +44,9 @@ class estimate:
 class tHMM:
     """Main tHMM class."""
 
-    def __init__(self, X: list[LineageTree], num_states: int, fpi=None, fT=None, fE=None):
+    def __init__(
+        self, X: list[LineageTree], num_states: int, fpi=None, fT=None, fE=None
+    ):
         """Instantiates a tHMM.
         This function uses the following functions and assings them to the cells
         (objects) in the lineage.
@@ -147,7 +149,9 @@ class tHMM:
         return log_scores
 
 
-def log_T_score(T: np.ndarray, state_tree_sequence: list, lineageObj: LineageTree) -> float:
+def log_T_score(
+    T: np.ndarray, state_tree_sequence: list, lineageObj: LineageTree
+) -> float:
     """
     To calculate the joint probability of state and observations.
     This function calculates the second term.
@@ -174,7 +178,7 @@ def log_T_score(T: np.ndarray, state_tree_sequence: list, lineageObj: LineageTre
     return log_T_score_holder
 
 
-def get_Emission_Likelihoods(tHMMobj: tHMM, E: list = None) -> list:
+def get_Emission_Likelihoods(tHMMobj: tHMM, E: Optional[list] = None) -> list:
     """
     Emission Likelihood (EL) matrix.
 
@@ -191,7 +195,9 @@ def get_Emission_Likelihoods(tHMMobj: tHMM, E: list = None) -> list:
     if E is None:
         E = tHMMobj.estimate.E
 
-    all_cells = np.array([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
+    all_cells = np.array(
+        [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+    )
     ELstack = np.zeros((len(all_cells), tHMMobj.num_states))
 
     for k in range(tHMMobj.num_states):  # for each state
@@ -201,7 +207,7 @@ def get_Emission_Likelihoods(tHMMobj: tHMM, E: list = None) -> list:
     ii = 0
     for lineageObj in tHMMobj.X:  # for each lineage in our Population
         nl = len(lineageObj.output_lineage)  # getting the lineage length
-        EL.append(ELstack[ii:(ii + nl), :])  # append the EL_array for each lineage
+        EL.append(ELstack[ii: (ii + nl), :])  # append the EL_array for each lineage
 
         ii += nl
 

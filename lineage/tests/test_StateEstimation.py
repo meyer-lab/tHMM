@@ -19,7 +19,7 @@ def test_estimationEvaluationGamma(censored):
     T = np.array([[1]])
     E_gamma = [gamma_state(bern_p=1., gamma_a=7, gamma_scale=4.5)]
 
-    def gen(): return LineageTree.init_from_parameters(pi, T, E_gamma, 2**8, censor_condition=censored, desired_experiment_time=100)
+    def gen(): return LineageTree.rand_init(pi, T, E_gamma, 2**8, censor_condition=censored, desired_experiment_time=100)
     lineage_gamma = [gen() for _ in range(50)]
     solver_gamma = tHMM(lineage_gamma, 1)  # evaluating for one state
     fit_list([solver_gamma])
@@ -36,7 +36,7 @@ def test_atonce_estimator():
     scales1 = [0.2, 0.5, 1.0, 1.5]
     E_gamma = [[gamma_statePh(bern_p1=0.99, bern_p2=0.95, gamma_a1=70.0, gamma_scale1=sc1, gamma_a2=140.0, gamma_scale2=1.)] for sc1 in scales1]
 
-    def gen(i): return LineageTree.init_from_parameters(pi, T, E_gamma[i], 2**8, censor_condition=3, desired_experiment_time=250)
+    def gen(i): return LineageTree.rand_init(pi, T, E_gamma[i], 2**8, censor_condition=3, desired_experiment_time=250)
     lineage_gamma_list = [[gen(i) for _ in range(100)] for i in range(4)]
     solver_gamma_list = [tHMM(lineage_gamma, 1) for lineage_gamma in lineage_gamma_list]
 

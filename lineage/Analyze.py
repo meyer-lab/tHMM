@@ -4,7 +4,7 @@ from typing import Any, Tuple, Union
 import numpy as np
 from scipy.optimize import linear_sum_assignment
 from concurrent.futures import ProcessPoolExecutor, Future, Executor
-from sklearn.metrics import rand_score, confusion_matrix
+from sklearn.metrics import rand_score
 from .tHMM import tHMM
 import scipy.stats as sp
 from .BaumWelch import (
@@ -25,7 +25,7 @@ class DummyExecutor(Executor):
 
 
 def fit_list(
-    tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100
+    tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100, rng=None
 ) -> Tuple[list, list, list, list, float]:
     """
     Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
@@ -39,11 +39,15 @@ def fit_list(
     :return gammas: gamma values (used to calculate the downward reursion)
     :return new_LL: the log-likelihood of the optimized solution
     """
+    rng = np.random.default_rng(rng)
 
     # Step 0: initialize with random assignments and do an M step
     # when there are no fixed emissions, we need to randomize the start
     init_gam = [
-        [sp.dirichlet.rvs(np.ones(tO.num_states), size=len(lin)) for lin in tO.X]
+        [
+            sp.dirichlet.rvs(np.ones(tO.num_states), size=len(lin), random_state=rng)
+            for lin in tO.X
+        ]
         for tO in tHMMobj_list
     ]
 
@@ -56,7 +60,7 @@ def fit_list(
     MSD_list, NF_list, betas_list, gammas_list = map(
         list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list])
     )
-    old_LL = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
+    old_LL = calculate_log_likelihood(NF_list)
 
     # first stopping condition check
     for _ in range(max_iter):
@@ -64,7 +68,7 @@ def fit_list(
         MSD_list, NF_list, betas_list, gammas_list = map(
             list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list])
         )
-        new_LL: float = np.sum([np.sum(calculate_log_likelihood(NF)) for NF in NF_list])
+        new_LL = calculate_log_likelihood(NF_list)
         if new_LL - old_LL < tolerance:
             break
 
@@ -233,10 +237,6 @@ def Results(tHMMobj: tHMM, LL: float) -> dict[str, Any]:
     ]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
     results_dict["state_similarity"] = 100.0 * rand_score(
-        list(itertools.chain(*true_states_by_lineage)),
-        list(itertools.chain(*pred_states)),
-    )
-    results_dict["confusion_matrix"] = confusion_matrix(
         list(itertools.chain(*true_states_by_lineage)),
         list(itertools.chain(*pred_states)),
     )
