@@ -24,6 +24,18 @@ class DummyExecutor(Executor):
         return f
 
 
+def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, float]:
+    """Runs the model and outputs the tHMM object, state assignments, and likelihood.
+    :param X: The list of LineageTree populations.
+    :param num_states: The number of states that we want to run the model for.
+    :return tHMMobj_list: The tHMMobj after fitting corresponding to the given LineageTree population.
+    :return st: The nested list of states assigned to cells, with the order of cells from root to leaf in each lineage, and generation.
+    :return LL: The log-likelihood of the fitted model.
+    """
+    tHMMobj_list, LL, _ = Analyze_list([X], num_states, **kwargs)
+    return tHMMobj_list[0], LL
+
+
 def fit_list(
     tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100, rng=None
 ) -> Tuple[list, list, list, list, float]:
@@ -93,7 +105,7 @@ def Analyze_list(
     ]  # build the tHMM class with X
     _, _, _, gammas, LL = fit_list(tHMMobj_list)
 
-    for _ in range(10):
+    for _ in range(5):
         tHMMobj_list2 = [
             tHMM(X, num_states=num_states, **kwargs) for X in pop_list
         ]  # build the tHMM class with X
