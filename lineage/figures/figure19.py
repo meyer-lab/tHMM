@@ -14,6 +14,7 @@ Efour = [state0, state1, state2, state3]
 Efive = [state0, state1, state2, state3, state4]
 Es = [Etwo, Ethree, Efour, Efive]
 
+
 def makeFigure():
     """
     Makes figure 19.

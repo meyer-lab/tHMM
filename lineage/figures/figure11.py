@@ -1,22 +1,16 @@
 """ This file depicts the distribution of phase lengths versus the states for each concentration of lapatinib. """
-import pickle
+
 from string import ascii_lowercase
 from ..plotTree import plot_networkx, plot_lineage_samples
+from ..Analyze import Analyze_list
+from ..Lineage_collections import AllLapatinib
 from .common import getSetup, plot_all
 
 concs = ["Control", "Lapatinib 25 nM", "Lapatinib 50 nM", "Lapatinib 250 nM"]
 concsValues = ["Control", "25 nM", "50 nM", "250 nM"]
 
-pik1 = open("lapatinibs.pkl", "rb")
-alls = []
-for i in range(7):
-    lapt_tHMMobj_list = []
-    for i in range(4):
-        lapt_tHMMobj_list.append(pickle.load(pik1))
-    alls.append(lapt_tHMMobj_list)
-
-# selected for lapatinib is 4 states which is index 3.
-lapt_tHMMobj_list = alls[3]
+num_states = 4
+lapt_tHMMobj_list, _,_ = Analyze_list(AllLapatinib, num_states)
 
 lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
 
