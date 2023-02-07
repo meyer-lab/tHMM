@@ -1,6 +1,7 @@
 """ This file contains the methods for the Viterbi algorithm implemented in an a upward recursion. """
 import numpy as np
 from typing import Tuple
+from .LineageTree import max_gen
 
 
 # pylint: disable=too-many-nested-blocks
@@ -59,7 +60,9 @@ def get_nonleaf_deltas(tHMMobj, deltas: list, state_ptrs: list):
 
         # move up one generation until the 2nd generation is the children
         # and the root nodes are the parents
-        for level in linObj.output_list_of_gens[2:][::-1]:
+        output_list_of_gens = max_gen(linObj.output_lineage)
+
+        for level in output_list_of_gens[2:][::-1]:
             parent_holder = linObj.get_parent_idxs(level)
 
             for node_parent_m_idx in parent_holder:
@@ -138,21 +141,23 @@ def Viterbi(tHMMobj) -> list:
         opt_state_tree = np.zeros(len(lineage), dtype=int)
         possible_first_states = np.multiply(deltas[num][0, :], tHMMobj.estimate.pi)
         opt_state_tree[0] = np.argmax(possible_first_states)
-        for level in lineageObj.output_list_of_gens[1:]:
-            for cell in level:
-                parent_idx = lineage.index(cell)
-                for n in cell.get_daughters():
-                    child_idx = lineage.index(n)
-                    parent_state = opt_state_tree[parent_idx]
 
-                    for ii in range(state_ptrs[num].shape[1]):
-                        child_state_tuple = state_ptrs[num][parent_idx, ii]
+        for parent_idx, cell in enumerate(lineage):
+            if cell.gen == 0:
+                continue
 
-                        if child_state_tuple[0] == child_idx:
-                            opt_state_tree[child_idx] = child_state_tuple[1][
-                                parent_state
-                            ]
-                            break
+            for n in cell.get_daughters():
+                child_idx = lineage.index(n)
+                parent_state = opt_state_tree[parent_idx]
+
+                for ii in range(state_ptrs[num].shape[1]):
+                    child_state_tuple = state_ptrs[num][parent_idx, ii]
+
+                    if child_state_tuple[0] == child_idx:
+                        opt_state_tree[child_idx] = child_state_tuple[1][
+                            parent_state
+                        ]
+                        break
 
         all_states.append(opt_state_tree)
 

@@ -50,10 +50,10 @@ def gamma_LL(
     """Log-likelihood for the optionally censored Gamma distribution."""
     x = np.exp(logX)
     glnA = gammaln(x[0])
-    outt = 0.0
+    outt = np.zeros(len(x) - 1)
     for i in range(len(x) - 1):
         gobs = gamma_obs[i] / x[i + 1]
-        outt -= np.dot(
+        outt[i] -= np.dot(
             gammas[i] * time_cen[i],
             (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[i + 1],
         )
@@ -62,10 +62,35 @@ def gamma_LL(
         if jidx.size > 0:
             gamP = gammaincc(x[0], gobs[jidx])
             gamP = np.maximum(gamP, 1e-35)  # Clip if the probability hits exactly 0
-            outt -= np.dot(gammas[i][jidx].T, np.log(gamP))
+            outt[i] -= np.dot(gammas[i][jidx].T, np.log(gamP))
 
-    assert np.isfinite(outt)
+    assert np.all(np.isfinite(outt))
     return outt
+
+
+
+def gamma_LL_diff(logX: np.ndarray,
+    gamma_obs: list[np.ndarray],
+    time_cen: list[np.ndarray],
+    gammas: list[np.ndarray],
+):
+    base = gamma_LL(logX, gamma_obs, time_cen, gammas)
+
+    logXshape = np.copy(logX)
+    logXshape[0] += 1e-6
+    
+    shape_dx = gamma_LL(logXshape, gamma_obs, time_cen, gammas)
+
+    logXscale = np.copy(logX)
+    logXscale[1:] += 1e-6
+
+    scale_dx = gamma_LL(logXscale, gamma_obs, time_cen, gammas)
+
+    deriv = np.zeros_like(logX)
+    deriv[0] = (np.sum(shape_dx) - np.sum(base)) / 1e-6
+    deriv[1:] = (scale_dx - base) / 1e-6
+
+    return np.sum(base), deriv
 
 
 def gamma_estimator(
@@ -113,7 +138,8 @@ def gamma_estimator(
 
     with np.errstate(all="raise"):
         res = minimize(
-            gamma_LL,
+            gamma_LL_diff,
+            jac=True,
             x0=np.log(x0),
             args=arrgs,
             bounds=bnd,

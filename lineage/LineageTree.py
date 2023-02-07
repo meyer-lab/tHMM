@@ -10,17 +10,17 @@ class LineageTree:
     the tree to calculate various properties.
     """
 
-    pi: np.ndarray
-    T: np.ndarray
-    leaves_idx: np.ndarray
-    output_list_of_gens: list
+    pi: npt.NDArray[np.float64]
+    T: npt.NDArray[np.float64]
+    leaves_idx: npt.NDArray[np.uintp]
+    output_lineage: list[CellVar]
 
     def __init__(self, list_of_cells: list, E: list):
         self.E = E
+        # output_lineage must be sorted according to generation
         self.output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
-        self.output_list_of_gens = max_gen(self.output_lineage)
         # assign times using the state distribution specific time model
-        E[0].assign_times(self.output_list_of_gens)
+        E[0].assign_times(self.output_lineage)
         self.leaves_idx = get_leaves_idx(self.output_lineage)
 
     @classmethod
@@ -31,7 +31,7 @@ class LineageTree:
         E: list,
         desired_num_cells: int,
         censor_condition=0,
-        **kwargs,
+        desired_experiment_time=2e12,
     ):
         r"""
         Constructor method
@@ -57,13 +57,11 @@ class LineageTree:
         for i_state in range(pi.size):
             output_assign_obs(i_state, full_lineage, E)
 
-        full_list_of_gens = max_gen(full_lineage)
-
         # assign times using the state distribution specific time model
-        E[0].assign_times(full_list_of_gens)
+        E[0].assign_times(full_lineage)
 
         output_lineage = E[0].censor_lineage(
-            censor_condition, full_list_of_gens, full_lineage, **kwargs
+            censor_condition, full_lineage, desired_experiment_time
         )
 
         lineageObj = cls(output_lineage, E)
@@ -84,7 +82,7 @@ class LineageTree:
 
     def get_Marginal_State_Distributions(
         self, pi: np.ndarray, T: np.ndarray
-    ) -> np.ndarray:
+    ) -> npt.NDArray[np.float64]:
         r"""Marginal State Distribution (MSD) matrix by upward recursion.
         This is the probability that a hidden state variable :math:`z_n` is of
         state k, that is, each value in the N by K MSD array for each lineage is
@@ -109,22 +107,24 @@ class LineageTree:
         m = np.zeros((len(self.output_lineage), pi.size))
         m[0, :] = pi
 
-        for level in self.output_list_of_gens[2:]:
-            for cell in level:
-                pCellIDX = self.output_lineage.index(
-                    cell.parent
-                )  # get the index of the parent cell
-                cCellIDX = self.output_lineage.index(cell)
+        # Getting lineage by generation, but it is sorted this way
+        for cCellIDX, cell in enumerate(self.output_lineage):
+            if cell.gen <= 1:
+                continue
 
-                # recursion based on parent cell
-                m[cCellIDX, :] = m[pCellIDX, :] @ T
+            pCellIDX = self.output_lineage.index(
+                cell.parent
+            )  # get the index of the parent cell
+
+            # recursion based on parent cell
+            m[cCellIDX, :] = m[pCellIDX, :] @ T
 
         np.testing.assert_allclose(np.sum(m, axis=1), 1.0)
         return m
 
     def get_beta(
-        self, T: np.ndarray, MSD: np.ndarray, EL: np.ndarray, NF: np.ndarray
-    ) -> np.ndarray:
+        self, T: npt.NDArray[np.float64], MSD: npt.NDArray[np.float64], EL: npt.NDArray[np.float64], NF: npt.NDArray[np.float64]
+    ) -> npt.NDArray[np.float64]:
         r"""Beta matrix and base case at the leaves.
 
         Each element in this N by K matrix is the beta value
@@ -174,7 +174,9 @@ class LineageTree:
         )  # MSD of the respective lineage
         ELMSD = EL * MSD
 
-        for level in self.output_list_of_gens[2:][
+        output_list_of_gens = max_gen(self.output_lineage)
+
+        for level in output_list_of_gens[2:][
             ::-1
         ]:  # a reversed list of generations
             for pii in self.get_parent_idxs(level):
@@ -189,11 +191,11 @@ class LineageTree:
 
     def get_all_zetas(
         self,
-        beta_array: np.ndarray,
-        MSD_array: np.ndarray,
-        gamma_array: np.ndarray,
-        T: np.ndarray,
-    ) -> np.ndarray:
+        beta_array: npt.NDArray[np.float64],
+        MSD_array: npt.NDArray[np.float64],
+        gamma_array: npt.NDArray[np.float64],
+        T: npt.NDArray[np.float64],
+    ) -> npt.NDArray[np.float64]:
         """
         Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
         This is an inner component in calculating the overall transition probability matrix.
@@ -210,15 +212,16 @@ class LineageTree:
         lineage = self.output_lineage
         holder = np.zeros(T.shape)
 
-        for level in self.output_list_of_gens[1:]:
-            for cell in level:  # get lineage for the generation
-                gamma_parent = gamma_array[lineage.index(cell), :]  # x by j
+        # Getting lineage by generation, but it is sorted this way
+        for cidx, cell in enumerate(self.output_lineage):
+            if cell.gen == 0:
+                continue
 
-                if not cell.isLeaf():
-                    for daughter_idx in cell.get_daughters():
-                        d_idx = lineage.index(daughter_idx)
-                        js = gamma_parent / TbetaMSD[d_idx, :]
-                        holder += np.outer(js, betaMSD[d_idx, :])
+            if not cell.isLeaf():
+                for daughter_idx in cell.get_daughters():
+                    d_idx = lineage.index(daughter_idx)
+                    js = gamma_array[cidx, :] / TbetaMSD[d_idx, :]
+                    holder += np.outer(js, betaMSD[d_idx, :])
         return holder * T
 
     def get_leaf_Normalizing_Factors(
@@ -277,13 +280,16 @@ class LineageTree:
         :return: the sum of gamma values for each state for non-leaf cells.
         """
         sum_wo_leaf = np.zeros(gamma_arr.shape[1])
-        for level in self.output_list_of_gens[
-            1:
-        ]:  # sum the gammas for cells that are transitioning
-            for cell in level:
-                if not cell.isLeaf():
-                    cell_idx = self.output_lineage.index(cell)
-                    sum_wo_leaf += gamma_arr[cell_idx, :]
+
+        # sum the gammas for cells that are transitioning
+        # Getting lineage by generation, but it is sorted this way
+        for cell_idx, cell in enumerate(self.output_lineage):
+            if cell.gen == 0:
+                continue
+
+            if not cell.isLeaf():
+                sum_wo_leaf += gamma_arr[cell_idx, :]
+
         assert np.all(np.isfinite(sum_wo_leaf))
 
         return sum_wo_leaf
@@ -312,16 +318,18 @@ class LineageTree:
         coeffs = np.clip(coeffs, np.finfo(float).eps, np.inf)
         beta_parents = np.einsum("ij,kj->ik", T, coeffs)
 
-        for level in self.output_list_of_gens[1:]:
-            for cell in level:
-                parent_idx = lineage.index(cell)
-                gam = gamma[parent_idx, :]
+        # Getting lineage by generation, but it is sorted this way
+        for parent_idx, cell in enumerate(self.output_lineage):
+            if cell.gen == 0:
+                continue
 
-                for d in cell.get_daughters():
-                    ci = lineage.index(d)
-                    gamma[ci, :] = coeffs[ci, :] * np.matmul(
-                        gam / beta_parents[:, ci], T
-                    )
+            gam = gamma[parent_idx, :]
+
+            for d in cell.get_daughters():
+                ci = lineage.index(d)
+                gamma[ci, :] = coeffs[ci, :] * np.matmul(
+                    gam / beta_parents[:, ci], T
+                )
 
         assert np.all(np.isfinite(gamma))
         return gamma
@@ -334,7 +342,7 @@ class LineageTree:
 
 
 def generate_lineage_list(
-    pi: np.ndarray, T: np.ndarray, desired_num_cells: int
+    pi: npt.NDArray[np.float64], T: npt.NDArray[np.float64], desired_num_cells: int
 ) -> list:
     """
     Generates a single lineage tree given Markov variables.
@@ -388,13 +396,14 @@ def max_gen(lineage: list[CellVar]) -> list[list[CellVar]]:
     :return max: The maximal generation in the tree.
     :return cells_by_gen: The list of lists of cells belonging to the same generation separated by specific generations.
     """
-    gens = sorted(
-        {cell.gen for cell in lineage}
-    )  # appending the generation of cells in the lineage
     cells_by_gen: list[list[CellVar]] = [[]]
-    for gen in gens:
-        level = [cell for cell in lineage if (cell.gen == gen and cell.observed)]
-        cells_by_gen.append(level)
+    for cell in lineage:
+        if cell.observed:
+            if cell.gen >= len(cells_by_gen):
+                cells_by_gen.append([])
+
+            cells_by_gen[cell.gen].append(cell)
+
     return cells_by_gen
 
 
