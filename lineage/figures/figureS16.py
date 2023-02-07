@@ -1,14 +1,13 @@
 """ Barcoding computational experinece. """
 import numpy as np
-import pickle
 from .common import (
     getSetup,
     subplotLabel
 )
-
+from ..Analyze import Analyze_list
+from ..Lineage_collections import AllLapatinib, AllGemcitabine
 
 num_lineages = 10
-
 
 def makeFigure():
     """
@@ -27,16 +26,11 @@ def makeFigure():
 
 def plot_barcode_vs_state(ax, drug_name):
     """ Plots the histogram of barcode vs states after clustering, using the parameters from lapatinib and gemcitabine fits. """
-    pik1 = open(str(drug_name) + ".pkl", "rb")
-    alls = []
-    for i in range(7):
-        tHMMobj_list = []
-        for i in range(4):
-            tHMMobj_list.append(pickle.load(pik1))
-        alls.append(tHMMobj_list)
 
-    # selected for gemcitabine is 5 states which is index 4.
-    tHMMobj_list = alls[4]
+    if drug_name == "lapatinib":
+        tHMMobj_list, _,_ = Analyze_list(AllLapatinib, 4)
+    elif drug_name == "gemcitabine":
+        tHMMobj_list, _,_ = Analyze_list(AllGemcitabine, 5)
 
     states_list = [tHMMobj.predict() for tHMMobj in tHMMobj_list]
 
