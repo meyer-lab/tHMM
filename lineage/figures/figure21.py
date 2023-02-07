@@ -1,13 +1,11 @@
 """ Figure 21 to perform cross validation on experimental data. """
 from .common import getSetup
-import pickle
 import pandas as pd
 import numpy as np
 from ..Lineage_collections import AllLapatinib, AllGemcitabine
 from ..crossval import output_LL
 
 desired_num_states = np.arange(1, 8)
-
 
 def makeFigure():
     """
