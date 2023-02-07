@@ -8,6 +8,7 @@ from .Analyze import Analyze_list
 
 exe = ProcessPoolExecutor()
 
+
 def hide_observation(lineages: list, percentage: float) -> list:
     """Taking a list of lineages and the percentage of cells want to be masked, it marks those x% negative."""
     new_lineages = deepcopy(lineages)

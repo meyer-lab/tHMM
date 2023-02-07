@@ -8,6 +8,7 @@ from .common import getSetup
 
 desired_num_states = np.arange(1, 8)
 
+
 def find_BIC(data, desired_num_states, num_cells, mc=False):
     # Copy out data to full set
     dataFull = []
@@ -20,6 +21,7 @@ def find_BIC(data, desired_num_states, num_cells, mc=False):
     thobj = [oo[0] for oo in output]
 
     return BICs - np.min(BICs, axis=0), thobj
+
 
 def makeFigure():
     """
