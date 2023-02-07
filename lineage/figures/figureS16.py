@@ -27,9 +27,9 @@ def makeFigure():
 def plot_barcode_vs_state(ax, drug_name):
     """ Plots the histogram of barcode vs states after clustering, using the parameters from lapatinib and gemcitabine fits. """
 
-    if drug_name == "lapatinib":
+    if drug_name == "lapatinibs":
         tHMMobj_list, _,_ = Analyze_list(AllLapatinib, 4)
-    elif drug_name == "gemcitabine":
+    elif drug_name == "gemcitabines":
         tHMMobj_list, _,_ = Analyze_list(AllGemcitabine, 5)
 
     states_list = [tHMMobj.predict() for tHMMobj in tHMMobj_list]
