@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import scipy.stats as sp
 import itertools as it
-import pickle
 from .common import getSetup
 from ..Lineage_collections import AllLapatinib, AllGemcitabine
 

@@ -2,14 +2,14 @@
 from copy import deepcopy
 import pytest
 import numpy as np
-import pickle
 from sklearn.metrics import rand_score
 from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 from ..BaumWelch import do_E_step, do_M_E_step, calculate_log_likelihood, calculate_stationary
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
-from ..Analyze import fit_list
+from ..Analyze import fit_list, Analyze_list
 from ..figures.common import pi, T, E
+from ..Lineage_collections import AllGemcitabine
 
 
 @pytest.mark.parametrize("cens", [0, 2])
@@ -50,12 +50,8 @@ def test_fit_seed():
     assert LLone != LLtwo
 
 
-pik1 = open("gemcitabines.pkl", "rb")
-gmc = []
-for i in range(4):
-    gmc.append(pickle.load(pik1))
-
-# model parameters for lapatinib 25nM
+gmc, _,_ = Analyze_list(AllGemcitabine, 5)
+# model parameters for gemcitabine 5 nM
 E3 = gmc[1].estimate.E
 T3 = gmc[1].estimate.T
 pi3 = gmc[1].estimate.pi
