@@ -166,13 +166,13 @@ def log_T_score(
     """
     log_T_score_holder = 0
     log_T = np.log(T)
+
     # we start with the first transition, from the root cell
-    for cell_idx, cell in enumerate(lineageObj.output_lineage):
+    for cIDX, cell in enumerate(lineageObj.output_lineage):
         if cell.gen > 0 and not cell.isLeaf():
-            cell_state = state_tree_sequence[cell_idx]
-            for daughter in cell.get_daughters():
-                child_idx = lineageObj.output_lineage.index(daughter)
-                daughter_state = state_tree_sequence[child_idx]
+            cell_state = state_tree_sequence[cIDX]
+            for dIDX in lineageObj.cell_to_daughters[cIDX, :]:
+                daughter_state = state_tree_sequence[dIDX]
                 log_T_score_holder += log_T[cell_state, daughter_state]
 
     return log_T_score_holder

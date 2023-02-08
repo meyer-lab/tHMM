@@ -105,18 +105,6 @@ class CellVar:
         assert curr_cell.isRootParent()
         return curr_cell
 
-    def get_daughters(self) -> list:
-        """
-        Get the left and right daughters of a cell if they exist.
-        :return Temp: The list of existing daughter cells.
-        """
-        temp: list[CellVar] = list()
-        if self.left is not None and self.left.observed:
-            temp.append(self.left)
-        if self.right is not None and self.right.observed:
-            temp.append(self.right)
-        return temp
-
 
 @dataclass(init=True, repr=True, eq=True, order=True)
 class Time:

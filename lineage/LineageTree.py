@@ -13,15 +13,22 @@ class LineageTree:
     pi: npt.NDArray[np.float64]
     T: npt.NDArray[np.float64]
     leaves_idx: npt.NDArray[np.uintp]
+    idx_by_gen: list[np.ndarray]
     output_lineage: list[CellVar]
+    cell_to_parent: np.ndarray
+    cell_to_daughters: np.ndarray
 
     def __init__(self, list_of_cells: list, E: list):
         self.E = E
         # output_lineage must be sorted according to generation
         self.output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
+        self.idx_by_gen = max_gen(self.output_lineage)
         # assign times using the state distribution specific time model
         E[0].assign_times(self.output_lineage)
+
         self.leaves_idx = get_leaves_idx(self.output_lineage)
+        self.cell_to_parent = cell_to_parent(self.output_lineage)
+        self.cell_to_daughters = cell_to_daughters(self.output_lineage)
 
     @classmethod
     def rand_init(
@@ -69,17 +76,6 @@ class LineageTree:
         lineageObj.T = T
         return lineageObj
 
-    def get_parent_idxs(self, level: list) -> set[int]:
-        """
-        Given a list of cells, return the indices of the parents.
-        :param level: The list of cells.
-        :return parent_holder: Indices of the parents.
-        """
-        parent_holder = set()  # set makes sure only one index is put in and no overlap
-        for cell in level:
-            parent_holder.add(self.output_lineage.index(cell.parent))
-        return parent_holder
-
     def get_Marginal_State_Distributions(
         self, pi: np.ndarray, T: np.ndarray
     ) -> npt.NDArray[np.float64]:
@@ -107,17 +103,10 @@ class LineageTree:
         m = np.zeros((len(self.output_lineage), pi.size))
         m[0, :] = pi
 
-        # Getting lineage by generation, but it is sorted this way
-        for cCellIDX, cell in enumerate(self.output_lineage):
-            if cell.gen <= 1:
-                continue
-
-            pCellIDX = self.output_lineage.index(
-                cell.parent
-            )  # get the index of the parent cell
-
-            # recursion based on parent cell
-            m[cCellIDX, :] = m[pCellIDX, :] @ T
+        # recursion based on parent cell
+        for cIDXs in self.idx_by_gen[1:]:
+            pIDXs = self.cell_to_parent[cIDXs]
+            m[cIDXs, :] = m[pIDXs, :] @ T
 
         np.testing.assert_allclose(np.sum(m, axis=1), 1.0)
         return m
@@ -160,27 +149,22 @@ class LineageTree:
         :param NF: normalizing factor. The marginal observation distribution P(x_n = x)
         :return: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
         """
-        beta = np.zeros((len(self.output_lineage), MSD.shape[1]))
+        beta = np.zeros((len(self), MSD.shape[1]))
 
         # Emission Likelihood, Marginal State Distribution, Normalizing Factor (same regardless of state)
         # P(x_n = x | z_n = k), P(z_n = k), P(x_n = x)
         ii = self.leaves_idx
         beta[ii, :] = EL[ii, :] * MSD[ii, :] / NF[ii, np.newaxis]
-        assert np.isclose(np.sum(beta[-1]), 1.0)
+        np.testing.assert_allclose(np.sum(beta[-1]), 1.0)
 
-        lineage = self.output_lineage  # lineage in the population
         MSD_array = np.clip(
             MSD, np.finfo(float).eps, np.inf
         )  # MSD of the respective lineage
         ELMSD = EL * MSD
 
-        output_list_of_gens = max_gen(self.output_lineage)
-
-        for level in output_list_of_gens[2:][
-            ::-1
-        ]:  # a reversed list of generations
-            for pii in self.get_parent_idxs(level):
-                ch_ii = [lineage.index(d) for d in lineage[pii].get_daughters()]
+        for level in self.idx_by_gen[1:][::-1]:  # a reversed list of generations
+            for pii in np.unique(self.cell_to_parent[level]):
+                ch_ii = self.cell_to_daughters[pii, :]
                 ratt = beta[ch_ii, :] / MSD_array[ch_ii, :]
                 fac1 = np.prod(ratt @ T.T, axis=0) * ELMSD[pii, :]
 
@@ -209,19 +193,17 @@ class LineageTree:
         """
         betaMSD = beta_array / np.clip(MSD_array, np.finfo(float).eps, np.inf)
         TbetaMSD = np.clip(betaMSD @ T.T, np.finfo(float).eps, np.inf)
-        lineage = self.output_lineage
         holder = np.zeros(T.shape)
 
         # Getting lineage by generation, but it is sorted this way
-        for cidx, cell in enumerate(self.output_lineage):
+        for cIDX, cell in enumerate(self.output_lineage):
             if cell.gen == 0:
                 continue
 
             if not cell.isLeaf():
-                for daughter_idx in cell.get_daughters():
-                    d_idx = lineage.index(daughter_idx)
-                    js = gamma_array[cidx, :] / TbetaMSD[d_idx, :]
-                    holder += np.outer(js, betaMSD[d_idx, :])
+                for dIDX in self.cell_to_daughters[cIDX, :]:
+                    js = gamma_array[cIDX, :] / TbetaMSD[dIDX, :]
+                    holder += np.outer(js, betaMSD[dIDX, :])
         return holder * T
 
     def get_leaf_Normalizing_Factors(
@@ -313,7 +295,6 @@ class LineageTree:
         gamma = np.zeros((len(self.output_lineage), T.shape[0]))
         gamma[0, :] = beta[0, :]
 
-        lineage = self.output_lineage
         coeffs = beta / np.clip(MSD, np.finfo(float).eps, np.inf)
         coeffs = np.clip(coeffs, np.finfo(float).eps, np.inf)
         beta_parents = np.einsum("ij,kj->ik", T, coeffs)
@@ -325,8 +306,7 @@ class LineageTree:
 
             gam = gamma[parent_idx, :]
 
-            for d in cell.get_daughters():
-                ci = lineage.index(d)
+            for ci in self.cell_to_daughters[parent_idx, :]:
                 gamma[ci, :] = coeffs[ci, :] * np.matmul(
                     gam / beta_parents[:, ci], T
                 )
@@ -387,7 +367,7 @@ def output_assign_obs(state: int, full_lineage: list[CellVar], E: list):
         cell.obs = list_of_tuples_of_obs[i]
 
 
-def max_gen(lineage: list[CellVar]) -> list[list[CellVar]]:
+def max_gen(lineage: list[CellVar]) -> list[np.ndarray]:
     """
     Finds the maximal generation in the tree, and cells organized by their generations.
     This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
@@ -396,15 +376,43 @@ def max_gen(lineage: list[CellVar]) -> list[list[CellVar]]:
     :return max: The maximal generation in the tree.
     :return cells_by_gen: The list of lists of cells belonging to the same generation separated by specific generations.
     """
-    cells_by_gen: list[list[CellVar]] = [[]]
-    for cell in lineage:
-        if cell.observed:
-            if cell.gen >= len(cells_by_gen):
-                cells_by_gen.append([])
-
-            cells_by_gen[cell.gen].append(cell)
-
+    gens = sorted(
+        {cell.gen for cell in lineage}
+    )  # appending the generation of cells in the lineage
+    cells_by_gen: list[np.ndarray] = []
+    for gen in gens:
+        level = np.array(
+            [
+                lineage.index(cell)
+                for cell in lineage
+                if (cell.gen == gen and cell.observed)
+            ],
+            dtype=int,
+        )
+        cells_by_gen.append(level)
     return cells_by_gen
+
+
+def cell_to_parent(lineage: list[CellVar]) -> np.ndarray:
+    output = np.full(len(lineage), -1, dtype=int)
+    for ii, cell in enumerate(lineage):
+        parent = cell.parent
+        if parent is not None:
+            output[ii] = lineage.index(parent)
+
+    return output
+
+
+def cell_to_daughters(lineage: list[CellVar]) -> np.ndarray:
+    output = np.full((len(lineage), 2), -1, dtype=int)
+    for ii, cell in enumerate(lineage):
+        if cell.left is not None and cell.left in lineage:
+            output[ii, 0] = lineage.index(cell.left)
+
+        if cell.right is not None and cell.right in lineage:
+            output[ii, 1] = lineage.index(cell.right)
+
+    return output
 
 
 def get_leaves_idx(lineage: list[CellVar]) -> np.ndarray:
