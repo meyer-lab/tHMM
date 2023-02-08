@@ -47,7 +47,8 @@ def gamma_LL(
     time_cen: list[np.ndarray],
     gammas: list[np.ndarray],
 ):
-    """Log-likelihood for the optionally censored Gamma distribution."""
+    """Log-likelihood for the optionally censored Gamma distribution.
+    The logX is the log transform of the parameters, in case of atonce estimation, it is [shape, scale1, scale2, scale3, scale4]."""
     x = np.exp(logX)
     glnA = gammaln(x[0])
     outt = np.zeros(len(x) - 1)
