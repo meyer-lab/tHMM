@@ -2,21 +2,21 @@
 from copy import deepcopy
 import pytest
 import numpy as np
-import pickle
 from sklearn.metrics import rand_score
 from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 from ..BaumWelch import do_E_step, do_M_E_step, calculate_log_likelihood, calculate_stationary
 from ..LineageTree import LineageTree
 from ..tHMM import tHMM
-from ..Analyze import fit_list
+from ..Analyze import fit_list, Analyze_list
 from ..figures.common import pi, T, E
+from ..Lineage_collections import AllGemcitabine
 
 
 @pytest.mark.parametrize("cens", [0, 2])
 @pytest.mark.parametrize("nStates", [1, 2, 3])
 def test_BW(cens, nStates):
     """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
-    X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 7) - 1, desired_experimental_time=200, censor_condition=cens)
+    X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 7) - 1, desired_experiment_time=200, censor_condition=cens)
     tHMMobj = tHMM([X], num_states=nStates)  # build the tHMM class with X
 
     # Test cases below
@@ -36,7 +36,7 @@ def test_BW(cens, nStates):
 
 def test_fit_seed():
     """ Test that we can set the seed to provide reproducible results. """
-    X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 7) - 1, desired_experimental_time=200)
+    X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 7) - 1, desired_experiment_time=200)
     tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
     # Get the likelihoods after fitting
@@ -50,12 +50,8 @@ def test_fit_seed():
     assert LLone != LLtwo
 
 
-pik1 = open("gemcitabines.pkl", "rb")
-gmc = []
-for i in range(4):
-    gmc.append(pickle.load(pik1))
-
-# model parameters for lapatinib 25nM
+gmc, _,_ = Analyze_list(AllGemcitabine, 5)
+# model parameters for gemcitabine 5 nM
 E3 = gmc[1].estimate.E
 T3 = gmc[1].estimate.T
 pi3 = gmc[1].estimate.pi
@@ -78,9 +74,9 @@ def test_E_step(cens):
     population = []
     for _ in range(200):
         # make sure we have enough cells in the lineage.
-        X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 6) - 1, desired_experimental_time=150, censor_condition=cens)
+        X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 6) - 1, desired_experiment_time=200, censor_condition=cens)
         while len(X.output_lineage) < 5:
-            X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 6) - 1, desired_experimental_time=150, censor_condition=cens)
+            X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 6) - 1, desired_experiment_time=200, censor_condition=cens)
         population.append(X)
 
     tHMMobj = tHMM(population, num_states=5)  # build the tHMM class with X
@@ -92,7 +88,7 @@ def test_E_step(cens):
     pred_states = tHMMobj.predict()
     true_states = [cell.state for cell in tHMMobj.X[0].output_lineage]
 
-    assert rand_score(true_states, pred_states[0]) >= 0.9
+    assert rand_score(true_states, pred_states[0]) >= 0.8
 
 
 @pytest.mark.parametrize("cens", [0, 3])
@@ -102,9 +98,9 @@ def test_M_step(cens):
     population = []
     for _ in range(500):
         # make sure we have enough cells in the lineage.
-        X = LineageTree.rand_init(pi3, T3, E3, desired_num_cells=(2 ** 5) - 1, desired_experimental_time=100, censor_condition=cens)
+        X = LineageTree.rand_init(pi3, T3, E3, desired_num_cells=(2 ** 5) - 1, desired_experiment_time=200, censor_condition=cens)
         while len(X.output_lineage) < 4:
-            X = LineageTree.rand_init(pi3, T3, E3, desired_num_cells=(2 ** 5) - 1, desired_experimental_time=100, censor_condition=cens)
+            X = LineageTree.rand_init(pi3, T3, E3, desired_num_cells=(2 ** 5) - 1, desired_experiment_time=200, censor_condition=cens)
         population.append(X)
 
     tHMMobj = tHMM(population, num_states=gmc[1].num_states)

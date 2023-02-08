@@ -61,7 +61,7 @@ class StateDistribution:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
 
-    def assign_times(self, lineage: list[CellVar], list_of_gens: list[np.ndarray]):
+    def assign_times(self, full_lineage: list):
         """
         Assigns the start and end time for each cell in the lineage.
         The time observation will be stored in the cell's observation parameter list
@@ -69,19 +69,16 @@ class StateDistribution:
         This is used in the creation of LineageTrees
         """
         # traversing the cells by generation
-        for generation, level in enumerate(list_of_gens):
-            for cIDX in level:
-                cell = lineage[cIDX]
+        for cell in full_lineage:
+            if cell.isRootParent():
+                cell.time = Time(0, cell.obs[2] + cell.obs[3])
+                cell.time.transition_time = 0 + cell.obs[2]
+            else:
+                cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[2] + cell.obs[3])
+                cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
 
-                if generation == 0:
-                    assert cell.isRootParent()
-                    cell.time = Time(0, cell.obs[2] + cell.obs[3])
-                    cell.time.transition_time = 0 + cell.obs[2]
-                else:
-                    cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[2] + cell.obs[3])
-                    cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
 
-    def censor_lineage(self, censor_condition: int, full_list_of_gens: list[np.ndarray], full_lineage: list[CellVar], **kwargs):
+    def censor_lineage(self, censor_condition: int, full_lineage: list, desired_experiment_time=2e12):
         """
         This function removes those cells that are intended to be remove
         from the output binary tree based on emissions.
@@ -89,41 +86,20 @@ class StateDistribution:
         applies the pruning to each cell that is supposed to be removed,
         and returns the censored list of cells.
         """
-        if kwargs:
-            desired_experiment_time = kwargs.get("desired_experiment_time", 2e12)
 
         if censor_condition == 0:
-            output_lineage = full_lineage
-            return output_lineage
+            return full_lineage
 
-        output_lineage = []
-        for generation, level in enumerate(full_list_of_gens):
-            for cIDX in level:
-                cell = full_lineage[cIDX]
-                if generation == 0:
-                    assert cell.isRootParent()
-                    basic_censor(cell)
-                    if censor_condition == 1:
-                        fate_censor(cell)
-                    elif censor_condition == 2:
-                        time_censor(cell, desired_experiment_time)
-                    elif censor_condition == 3:
-                        fate_censor(cell)
-                        time_censor(cell, desired_experiment_time)
-                    if cell.observed:
-                        output_lineage.append(cell)
-                else:
-                    basic_censor(cell)
-                    if censor_condition == 1:
-                        fate_censor(cell)
-                    elif censor_condition == 2:
-                        time_censor(cell, desired_experiment_time)
-                    elif censor_condition == 3:
-                        fate_censor(cell)
-                        time_censor(cell, desired_experiment_time)
-                    if cell.observed:
-                        output_lineage.append(cell)
-        return output_lineage
+        for cell in full_lineage:
+            basic_censor(cell)
+
+            if censor_condition in (1, 3):
+                fate_censor(cell)
+
+            if censor_condition in (2, 3):
+                time_censor(cell, desired_experiment_time)
+
+        return [c for c in full_lineage if c.observed]
 
 
 def fate_censor(cell):

@@ -4,25 +4,16 @@
 
 from string import ascii_lowercase
 from matplotlib import gridspec, rcParams, pyplot as plt
-import pickle
 import seaborn as sns
 import numpy as np
 import pandas as pd
-from ..Lineage_collections import pbs, egf, hgf, osm
+from ..Lineage_collections import GFs
+from ..Analyze import Analyze_list
 from ..plotTree import plot_networkx, plot_lineage_samples
-HGF = [pbs, egf, hgf, osm]
 concs = ["PBS", "EGF", "HGF", "OSM"]
 
-pik1 = open("gf.pkl", "rb")
-alls = []
-for i in range(7):
-    hgf_tHMMobj_list = []
-    for i in range(4):
-        hgf_tHMMobj_list.append(pickle.load(pik1))
-    alls.append(hgf_tHMMobj_list)
-
-# selected for growth factors is 3 states which is index 1.
-hgf_tHMMobj_list = alls[2]
+num_states = 3
+hgf_tHMMobj_list, _,_ = Analyze_list(GFs, num_states)
 
 hgf_states_list = [tHMMobj.predict() for tHMMobj in hgf_tHMMobj_list]
 

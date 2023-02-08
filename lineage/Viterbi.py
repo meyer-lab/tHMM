@@ -1,6 +1,7 @@
 """ This file contains the methods for the Viterbi algorithm implemented in an a upward recursion. """
 import numpy as np
 from typing import Tuple
+from .LineageTree import max_gen
 
 from .LineageTree import LineageTree
 
@@ -101,22 +102,25 @@ def Viterbi(tHMMobj) -> list[np.ndarray]:
         opt_state_tree = np.zeros(len(lineageObj), dtype=int)
         possible_first_states = np.multiply(deltas[num][0, :], tHMMobj.estimate.pi)
         opt_state_tree[0] = np.argmax(possible_first_states)
-        for level in lineageObj.idx_by_gen:
-            for pIDX in level:
-                for child_idx in lineageObj.cell_to_daughters[pIDX, :]:
-                    if child_idx == -1:  # If a daughter does not exist
-                        continue
 
-                    parent_state = opt_state_tree[pIDX]
+        for parent_idx, cell in enumerate(lineage):
+            if cell.gen == 0:
+                continue
 
-                    for ii in range(state_ptrs[num].shape[1]):
-                        child_state_tuple = state_ptrs[num][pIDX, ii]
+            for child_idx in lineageObj.cell_to_daughters[parent_idx, :]:
+                if child_idx == -1:  # If a daughter does not exist
+                    continue
 
-                        if child_state_tuple[0] == child_idx:
-                            opt_state_tree[child_idx] = child_state_tuple[1][
-                                parent_state
-                            ]
-                            break
+                parent_state = opt_state_tree[parent_idx]
+
+                for ii in range(state_ptrs[num].shape[1]):
+                    child_state_tuple = state_ptrs[num][parent_idx, ii]
+
+                    if child_state_tuple[0] == child_idx:
+                        opt_state_tree[child_idx] = child_state_tuple[1][
+                            parent_state
+                        ]
+                        break
 
         all_states.append(opt_state_tree)
 

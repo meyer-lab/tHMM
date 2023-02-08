@@ -1,21 +1,13 @@
 """ This file plots the trees with their predicted states for lapatinib. """
 
-import pickle
-
 from .common import getSetup
 from ..plotTree import plotLineage
+from ..Analyze import Analyze_list
+from ..Lineage_collections import AllGemcitabine
 
-# open gemcitabine
-pik1 = open("gemcitabines.pkl", "rb")
-alls = []
-for i in range(7):
-    gemc_tHMMobj_list = []
-    for i in range(4):
-        gemc_tHMMobj_list.append(pickle.load(pik1))
-    alls.append(gemc_tHMMobj_list)
+num_states = 5
+gemc_tHMMobj_list, _,_ = Analyze_list(AllGemcitabine, num_states)
 
-# selected for gemcitabine is 5 states which is index 4.
-gemc_tHMMobj_list = alls[4]
 gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
 
 # assign the predicted states to each cell

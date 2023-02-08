@@ -1,32 +1,12 @@
 """ This file includes functions to separate cell states of different replicates, and plot the barchart for each condition."""
-import pickle
+
 import numpy as np
 from .common import getSetup
-from lineage.Lineage_collections import lpt_cn_reps, lpt_25_reps, lpt_50_reps, lpt_250_reps, gem_cn_reps, gem_5_reps, gem_10_reps, gem_30_reps
+from lineage.Lineage_collections import AllLapatinib, AllGemcitabine, lpt_cn_reps, lpt_25_reps, lpt_50_reps, lpt_250_reps, gem_cn_reps, gem_5_reps, gem_10_reps, gem_30_reps
+from ..Analyze import Analyze_list
 
-
-pik1 = open("lapatinibs.pkl", "rb")
-alls = []
-for i in range(7):
-    lapt_tHMMobj_list = []
-    for i in range(4):
-        lapt_tHMMobj_list.append(pickle.load(pik1))
-    alls.append(lapt_tHMMobj_list)
-
-# selected for lapatinib is 4 states which is index 3.
-lapt_tHMMobj_list = alls[3]
-
-pik1 = open("gemcitabines.pkl", "rb")
-alls = []
-for i in range(7):
-    gemc_tHMMobj_list = []
-    for i in range(4):
-        gemc_tHMMobj_list.append(pickle.load(pik1))
-    alls.append(gemc_tHMMobj_list)
-
-# selected for lapatinib is 5 states which is index 4.
-gemc_tHMMobj_list = alls[4]
-
+lapt_tHMMobj_list, _,_ = Analyze_list(AllLapatinib, 4)
+gemc_tHMMobj_list, _,_ = Analyze_list(AllGemcitabine, 5)
 
 def convertToIndex(lpt_cn_reps):
     """ Takes the list containing the lineage numbers of each replicate,

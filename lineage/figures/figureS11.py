@@ -1,21 +1,13 @@
 """ This is a file to put together 4 conditions of lapatinib together. """
 
 from string import ascii_lowercase
-import pickle
 from .common import getSetup, sort_lins
 from ..plotTree import plotLineage
+from ..Analyze import Analyze_list
+from ..Lineage_collections import AllLapatinib
 
-
-pik1 = open("lapatinibs.pkl", "rb")
-alls = []
-for i in range(7):
-    lapt_tHMMobj_list = []
-    for i in range(4):
-        lapt_tHMMobj_list.append(pickle.load(pik1))
-    alls.append(lapt_tHMMobj_list)
-
-lapt_tHMMobj_list = alls[3]
-assert len(lapt_tHMMobj_list) == 4
+num_states = 4
+lapt_tHMMobj_list, _,_ = Analyze_list(AllLapatinib, num_states)
 
 lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
 
