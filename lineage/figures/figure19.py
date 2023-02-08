@@ -27,7 +27,7 @@ def makeFigure():
         T = T / np.sum(T, axis=1)[:, np.newaxis]
         pi = calculate_stationary(T)
         complete_population = [
-            [LineageTree.rand_init(pi, T, e, 7, censored_condition=3, desired_experiment_time=200) for _ in range(100)] for _ in range(4)
+            [LineageTree.rand_init(pi, T, e, 7, censor_condition=3, desired_experiment_time=200) for _ in range(100)] for _ in range(4)
         ]
 
         output.append(output_LL(complete_population, desired_num_states))
