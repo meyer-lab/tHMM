@@ -74,6 +74,7 @@ def gamma_LL_diff(logX: np.ndarray,
     time_cen: list[np.ndarray],
     gammas: list[np.ndarray],
 ):
+    """Calculating the diff for log likelihood of each parameter with step size = 1e-6."""
     base = gamma_LL(logX, gamma_obs, time_cen, gammas)
 
     logXshape = np.copy(logX)
