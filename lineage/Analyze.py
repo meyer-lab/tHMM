@@ -120,7 +120,7 @@ def Analyze_list(
 
 
 def run_Analyze_over(
-    list_of_populations: list,
+    list_of_populations: list[list],
     num_states: np.ndarray,
     parallel=True,
     atonce=False,
