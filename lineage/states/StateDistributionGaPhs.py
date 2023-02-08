@@ -1,10 +1,9 @@
 """ State distribution class for separated G1 and G2 phase durations as observation. """
-from audioop import lin2adpcm
 import numpy as np
 
 from .stateCommon import basic_censor
 from .StateDistributionGamma import StateDistribution as GammaSD
-from ..CellVar import CellVar, Time
+from ..CellVar import Time
 
 
 class StateDistribution:
