@@ -69,8 +69,8 @@ def gamma_LL(
     return outt
 
 
-
-def gamma_LL_diff(logX: np.ndarray,
+def gamma_LL_diff(
+    logX: np.ndarray,
     gamma_obs: list[np.ndarray],
     time_cen: list[np.ndarray],
     gammas: list[np.ndarray],
@@ -80,7 +80,7 @@ def gamma_LL_diff(logX: np.ndarray,
 
     logXshape = np.copy(logX)
     logXshape[0] += 1e-6
-    
+
     shape_dx = gamma_LL(logXshape, gamma_obs, time_cen, gammas)
 
     logXscale = np.copy(logX)
