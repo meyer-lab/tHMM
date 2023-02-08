@@ -155,7 +155,7 @@ class LineageTree:
         # P(x_n = x | z_n = k), P(z_n = k), P(x_n = x)
         ii = self.leaves_idx
         beta[ii, :] = EL[ii, :] * MSD[ii, :] / NF[ii, np.newaxis]
-        assert np.isclose(np.sum(beta[-1]), 1.0)
+        np.testing.assert_allclose(np.sum(beta[-1]), 1.0)
 
         MSD_array = np.clip(
             MSD, np.finfo(float).eps, np.inf
@@ -193,18 +193,17 @@ class LineageTree:
         """
         betaMSD = beta_array / np.clip(MSD_array, np.finfo(float).eps, np.inf)
         TbetaMSD = np.clip(betaMSD @ T.T, np.finfo(float).eps, np.inf)
-        lineage = self.output_lineage
         holder = np.zeros(T.shape)
 
         # Getting lineage by generation, but it is sorted this way
-        for cidx, cell in enumerate(self.output_lineage):
+        for cIDX, cell in enumerate(self.output_lineage):
             if cell.gen == 0:
                 continue
 
             if not cell.isLeaf():
-                for d_idx in self.cell_to_daughters[cIDX, :]:
-                    js = gamma_array[cidx, :] / TbetaMSD[d_idx, :]
-                    holder += np.outer(js, betaMSD[d_idx, :])
+                for dIDX in self.cell_to_daughters[cIDX, :]:
+                    js = gamma_array[cIDX, :] / TbetaMSD[dIDX, :]
+                    holder += np.outer(js, betaMSD[dIDX, :])
         return holder * T
 
     def get_leaf_Normalizing_Factors(

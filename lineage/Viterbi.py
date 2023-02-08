@@ -103,21 +103,21 @@ def Viterbi(tHMMobj) -> list[np.ndarray]:
         possible_first_states = np.multiply(deltas[num][0, :], tHMMobj.estimate.pi)
         opt_state_tree[0] = np.argmax(possible_first_states)
 
-        for parent_idx, cell in enumerate(lineage):
+        for pIDX, cell in enumerate(lineageObj.output_lineage):
             if cell.gen == 0:
                 continue
 
-            for child_idx in lineageObj.cell_to_daughters[parent_idx, :]:
-                if child_idx == -1:  # If a daughter does not exist
+            parent_state = opt_state_tree[pIDX]
+
+            for cIDX in lineageObj.cell_to_daughters[pIDX, :]:
+                if cIDX == -1:  # If a daughter does not exist
                     continue
 
-                parent_state = opt_state_tree[parent_idx]
-
                 for ii in range(state_ptrs[num].shape[1]):
-                    child_state_tuple = state_ptrs[num][parent_idx, ii]
+                    child_state_tuple = state_ptrs[num][pIDX, ii]
 
-                    if child_state_tuple[0] == child_idx:
-                        opt_state_tree[child_idx] = child_state_tuple[1][
+                    if child_state_tuple[0] == cIDX:
+                        opt_state_tree[cIDX] = child_state_tuple[1][
                             parent_state
                         ]
                         break
