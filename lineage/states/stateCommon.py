@@ -2,11 +2,8 @@
 
 import warnings
 import numpy as np
-from ctypes import CFUNCTYPE, c_double
-from numba.extending import get_cython_function_address
-from numba import jit  # type: ignore
-from numba.typed import List
 from scipy.optimize import minimize, Bounds
+from scipy.special import gammaincc, gammaln
 
 
 warnings.filterwarnings("ignore", message="Values in x were outside bounds")
@@ -44,39 +41,58 @@ def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
     return numerator / denominator
 
 
-addr = get_cython_function_address("scipy.special.cython_special", "gammaincc")
-gammaincc = CFUNCTYPE(c_double, c_double, c_double)(addr)
-
-addr = get_cython_function_address("scipy.special.cython_special", "gammaln")
-gammaln = CFUNCTYPE(c_double, c_double)(addr)
-
-
-@jit(nopython=True)
 def gamma_LL(
     logX: np.ndarray,
-    gamma_obs: List[np.ndarray],
-    time_cen: List[np.ndarray],
-    gammas: List[np.ndarray],
+    gamma_obs: list[np.ndarray],
+    time_cen: list[np.ndarray],
+    gammas: list[np.ndarray],
 ):
-    """Log-likelihood for the optionally censored Gamma distribution."""
+    """Log-likelihood for the optionally censored Gamma distribution.
+    The logX is the log transform of the parameters, in case of atonce estimation, it is [shape, scale1, scale2, scale3, scale4]."""
     x = np.exp(logX)
     glnA = gammaln(x[0])
-    outt = 0.0
+    outt = np.zeros(len(x) - 1)
     for i in range(len(x) - 1):
         gobs = gamma_obs[i] / x[i + 1]
-        outt -= np.dot(
+        outt[i] -= np.dot(
             gammas[i] * time_cen[i],
             (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[i + 1],
         )
 
-        for j in range(len(time_cen[i])):
-            if time_cen[i][j] == 0.0:
-                gamP = gammaincc(x[0], gobs[j])
-                gamP = np.maximum(gamP, 1e-60)  # Clip if the probability hits exactly 0
-                outt -= gammas[i][j] * np.log(gamP)
+        jidx = np.argwhere(time_cen[i] == 0.0)
+        if jidx.size > 0:
+            gamP = gammaincc(x[0], gobs[jidx])
+            gamP = np.maximum(gamP, 1e-35)  # Clip if the probability hits exactly 0
+            outt[i] -= np.dot(gammas[i][jidx].T, np.log(gamP))
 
-    assert np.isfinite(outt)
+    assert np.all(np.isfinite(outt))
     return outt
+
+
+def gamma_LL_diff(
+    logX: np.ndarray,
+    gamma_obs: list[np.ndarray],
+    time_cen: list[np.ndarray],
+    gammas: list[np.ndarray],
+):
+    """Calculating the diff for log likelihood of each parameter with step size = 1e-6."""
+    base = gamma_LL(logX, gamma_obs, time_cen, gammas)
+
+    logXshape = np.copy(logX)
+    logXshape[0] += 1e-6
+
+    shape_dx = gamma_LL(logXshape, gamma_obs, time_cen, gammas)
+
+    logXscale = np.copy(logX)
+    logXscale[1:] += 1e-6
+
+    scale_dx = gamma_LL(logXscale, gamma_obs, time_cen, gammas)
+
+    deriv = np.zeros_like(logX)
+    deriv[0] = (np.sum(shape_dx) - np.sum(base)) / 1e-6
+    deriv[1:] = (scale_dx - base) / 1e-6
+
+    return np.sum(base), deriv
 
 
 def gamma_estimator(
@@ -84,7 +100,7 @@ def gamma_estimator(
     time_cen: list[np.ndarray],
     gammas: list[np.ndarray],
     x0: np.ndarray,
-    phase: str = 'all',
+    phase: str = "all",
 ) -> np.ndarray:
     """
     This is a weighted, closed-form estimator for two parameters
@@ -101,10 +117,10 @@ def gamma_estimator(
         assert gamma_obs[i].shape == time_cen[i].shape
         assert gamma_obs[i].shape == gammas[i].shape
 
-    arrgs = (List(gamma_obs), List(time_cen), List(gammas))
+    arrgs = (gamma_obs, time_cen, gammas)
     linc = list()
 
-    if phase != 'all':  # for constrained optimization
+    if phase != "all":  # for constrained optimization
         A = np.zeros((3, 5))  # constraint Jacobian
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)
@@ -124,7 +140,8 @@ def gamma_estimator(
 
     with np.errstate(all="raise"):
         res = minimize(
-            gamma_LL,
+            gamma_LL_diff,
+            jac=True,
             x0=np.log(x0),
             args=arrgs,
             bounds=bnd,

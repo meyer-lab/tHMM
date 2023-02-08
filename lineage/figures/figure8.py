@@ -9,10 +9,8 @@ from matplotlib.ticker import MaxNLocator
 
 from ..Analyze import run_Analyze_over
 from ..LineageTree import LineageTree
-
-# States to evaluate with the model
-from ..states.StateDistributionGaPhs import StateDistribution
-
+from ..BaumWelch import calculate_stationary
+from .figure18 import state0, state1, state2, state3
 from .common import getSetup, subplotLabel
 
 
@@ -26,14 +24,11 @@ def makeFigure():
     ax, f = getSetup((12, 6), (2, 4))
 
     # Setting up state distributions and E
-    Sone = StateDistribution(0.99, 0.9, 50, 0.1, 50, 0.1)
-    Stwo = StateDistribution(0.9, 0.9, 100, 0.3, 100, 0.3)
-    Sthree = StateDistribution(0.85, 0.9, 150, 0.7, 150, 0.7)
-    Sfour = StateDistribution(0.8, 0.9, 200, 1.0, 200, 1.0)
-    Eone = [Sone, Sone]
-    Etwo = [Sone, Stwo]
-    Ethree = [Sone, Stwo, Sthree]
-    Efour = [Sone, Stwo, Sthree, Sfour]
+
+    Eone = [state0, state0]
+    Etwo = [state0, state1]
+    Ethree = [state0, state1, state2]
+    Efour = [state0, state1, state2, state3]
     E = [Eone, Etwo, Ethree, Efour, Eone, Etwo, Ethree, Efour]
 
     # making lineages and finding BICs (assign number of lineages here)
@@ -46,9 +41,9 @@ def makeFigure():
     for _ in range(10):
         tmp = []
         for idx, e in enumerate(E):
-            pi = np.ones(len(e)) / len(e)
             T = (np.eye(len(e)) + 0.1)
             T = T / np.sum(T, axis=1)[:, np.newaxis]
+            pi = calculate_stationary(T)
             if idx < 3:
                 # uncensored lineage generation
                 lineages = [LineageTree.rand_init(

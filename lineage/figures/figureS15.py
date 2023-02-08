@@ -1,21 +1,14 @@
 """ In this file we plot the abundance of states over time for experimental data. """
 import numpy as np
 import math
-import pickle
 from .common import getSetup, subplotLabel
+from ..Analyze import Analyze_list
+from ..Lineage_collections import AllLapatinib, AllGemcitabine
 
-pik1 = open("lapatinibs.pkl", "rb")
-lapt_tHMMobj_list = []
-for i in range(4):
-    lapt_tHMMobj_list.append(pickle.load(pik1))
-
-pik1 = open("gemcitabines.pkl", "rb")
-gemc_tHMMobj_list = []
-for i in range(4):
-    gemc_tHMMobj_list.append(pickle.load(pik1))
+lapt_tHMMobj_list, _,_ = Analyze_list(AllLapatinib, 4)
+gemc_tHMMobj_list, _,_ = Analyze_list(AllGemcitabine, 5)
 
 times = np.linspace(0.0, 96.0, 48)
-
 
 def find_state_proportions(lapt_tHMMobj, control=False):
     states = np.zeros((len(times), 3))

@@ -6,26 +6,24 @@ authors = ["Your Name <you@example.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.11"
+python = ">=3.10,<3.11"
 numpy = "^1.22.0"
-scipy = "^1.8.1"
-scikit-learn = "1.0.2"
-seaborn = "^0.11"
+scipy = "^1.10.0"
+scikit-learn = "^1.0.2"
+seaborn = "^0.12.2"
 svgutils = "^0.3.4"
 openpyxl = "^3.0.9"
 biopython = "^1.79"
 networkx = "^2.6.3"
-plotly = "^5.9.0"
 pygraphviz = "^1.7"
 Sphinx = "^4.5.0"
 sphinx-autoapi = "^1.8.4"
 statsmodels = "^0.13.2"
-numba = "^0.56.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
 pytest-cov = "^3.0"
-mypy = "^0.910"
+mypy = "^0.990"
 pytest-xdist = "^2.5.0"
 
 [build-system]

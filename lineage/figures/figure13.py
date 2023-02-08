@@ -4,25 +4,16 @@
 
 from string import ascii_lowercase
 from matplotlib import gridspec, rcParams, pyplot as plt
-import pickle
 import seaborn as sns
 import numpy as np
 import pandas as pd
-from ..Lineage_collections import pbs, egf, hgf, osm
+from ..Lineage_collections import GFs
+from ..Analyze import Analyze_list
 from ..plotTree import plot_networkx, plot_lineage_samples
-HGF = [pbs, egf, hgf, osm]
 concs = ["PBS", "EGF", "HGF", "OSM"]
 
-pik1 = open("gf.pkl", "rb")
-alls = []
-for i in range(7):
-    hgf_tHMMobj_list = []
-    for i in range(4):
-        hgf_tHMMobj_list.append(pickle.load(pik1))
-    alls.append(hgf_tHMMobj_list)
-
-# selected for growth factors is 2 states which is index 1.
-hgf_tHMMobj_list = alls[1]
+num_states = 3
+hgf_tHMMobj_list, _,_ = Analyze_list(GFs, num_states)
 
 hgf_states_list = [tHMMobj.predict() for tHMMobj in hgf_tHMMobj_list]
 
@@ -81,7 +72,7 @@ def getSetup(figsize, gridd):
 
 
 # plot transition block
-plot_networkx(T_hgf.shape[0], T_hgf, 'HGF')
+plot_networkx(T_hgf, 'HGF')
 
 # plot sample of lineages
 plot_lineage_samples(hgf_tHMMobj_list, 'figure03')
@@ -102,11 +93,11 @@ def makeFigure():
 
 def plot1(ax, df1, df2):
     """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
-    df1[['Growth Factors', 'State1', 'State2']].plot(x='Growth Factors', kind='bar', ax=ax[8], color=['lightblue', 'orange'], rot=0)
-    df2[['Growth Factors', 'State1', 'State2']].plot(x='Growth Factors', kind='bar', ax=ax[9], color=['lightblue', 'orange'], rot=0)
+    df1[['Growth Factors', 'State1', 'State2', 'State3']].plot(x='Growth Factors', kind='bar', ax=ax[8], color=['lightblue', 'orange', 'green'], rot=0)
+    df2[['Growth Factors', 'State1', 'State2', 'State3']].plot(x='Growth Factors', kind='bar', ax=ax[9], color=['lightblue', 'orange', 'green'], rot=0)
     ax[8].set_title("Lifetime")
-    ax[8].set_ylabel("Mean Time [hr]")
-    ax[8].set_ylim((0.0, 5.0))
+    ax[8].set_ylabel("Log10-Mean Time [hr]")
+    ax[8].set_ylim((0.0, 5.5))
     ax[9].set_title("Fate")
     ax[9].set_ylabel("Division Probability")
     ax[9].set_ylim((0.0, 1.1))
@@ -135,10 +126,13 @@ def plot2(ax, num_states, tHMMobj_list):
 
     df1 = pd.DataFrame({'Growth Factors': ['PBS', 'EGF', 'HGF', 'OSM'],
                         'State1': lpt_avg[:, 0],
-                        'State2': lpt_avg[:, 1]})
+                        'State2': lpt_avg[:, 1],
+                        'State3': lpt_avg[:, 2]})
 
     df2 = pd.DataFrame({'Growth Factors': ['PBS', 'EGF', 'HGF', 'OSM'],
                         'State1': bern_lpt[:, 0],
-                        'State2': bern_lpt[:, 1]})
+                        'State2': bern_lpt[:, 1],
+                        'State3': bern_lpt[:, 2]
+                        })
 
     plot1(ax, df1, df2)
