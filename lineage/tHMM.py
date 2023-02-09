@@ -10,7 +10,7 @@ from .LineageTree import LineageTree
 class estimate:
     """Estimation class."""
 
-    def __init__(self, X: list[LineageTree], nState: int, fpi=None, fT=None, fE=None):
+    def __init__(self, X: list[LineageTree], nState: int, fpi=None, fT=None, fE=None, rand_init=False):
         """
         Instantiating the estimation class.
         The initial probability array (pi), transition probability matrix (T), and the emission likelihood (E) are initialized.
@@ -19,6 +19,8 @@ class estimate:
         :param X: A list of objects (cells) in one lineage
         :param nStates: The number of hidden states
         """
+        if rand_init:
+            np.random.seed(100)
         self.fpi = fpi
         self.fT = fT
         self.fE = fE
