@@ -7,7 +7,7 @@ from ..Analyze import Analyze_list
 from ..Lineage_collections import AllGemcitabine
 
 num_states = 5
-gemc_tHMMobj_list, _,_ = Analyze_list(AllGemcitabine, num_states)
+gemc_tHMMobj_list, _, _ = Analyze_list(AllGemcitabine, num_states)
 
 gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
 
@@ -18,6 +18,7 @@ for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
 
 for i in range(4):
     gemc_tHMMobj_list[i].X = sort_lins(gemc_tHMMobj_list[i])
+
 
 def makeFigure():
     """

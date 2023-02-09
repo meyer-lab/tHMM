@@ -67,7 +67,7 @@ def test_fit_seed():
 @pytest.mark.parametrize("cens", [0, 3])
 def test_E_step(cens):
     """ This tests that given the true model parameters, can it estimate the states correctly."""
-    
+
     population = []
     for _ in range(30):
         # make sure we have enough cells in the lineage.

@@ -13,7 +13,7 @@ from ..plotTree import plot_networkx, plot_lineage_samples
 concs = ["PBS", "EGF", "HGF", "OSM"]
 
 num_states = 3
-hgf_tHMMobj_list, _,_ = Analyze_list(GFs, num_states)
+hgf_tHMMobj_list, _, _ = Analyze_list(GFs, num_states)
 
 hgf_states_list = [tHMMobj.predict() for tHMMobj in hgf_tHMMobj_list]
 

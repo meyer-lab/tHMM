@@ -5,8 +5,9 @@ from .common import getSetup
 from lineage.Lineage_collections import AllLapatinib, AllGemcitabine, lpt_cn_reps, lpt_25_reps, lpt_50_reps, lpt_250_reps, gem_cn_reps, gem_5_reps, gem_10_reps, gem_30_reps
 from ..Analyze import Analyze_list
 
-lapt_tHMMobj_list, _,_ = Analyze_list(AllLapatinib, 4)
-gemc_tHMMobj_list, _,_ = Analyze_list(AllGemcitabine, 5)
+lapt_tHMMobj_list, _, _ = Analyze_list(AllLapatinib, 4)
+gemc_tHMMobj_list, _, _ = Analyze_list(AllGemcitabine, 5)
+
 
 def convertToIndex(lpt_cn_reps):
     """ Takes the list containing the lineage numbers of each replicate,
