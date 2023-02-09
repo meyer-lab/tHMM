@@ -76,7 +76,6 @@ class StateDistribution:
                 cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[2] + cell.obs[3])
                 cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
 
-
     def censor_lineage(self, censor_condition: int, full_lineage: list, desired_experiment_time=2e12):
         """
         This function removes those cells that are intended to be remove
