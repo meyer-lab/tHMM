@@ -19,13 +19,13 @@ class StateDistribution:
         And we used bernoulli distribution for cell lifetime, which has 1 parameter.
         """
         self.params = np.array([bern_p, gamma_a, gamma_scale])
-        rng = np.random.default_rng(rng)
+        self.rng = np.random.default_rng(rng)
 
     def rvs(self, size: int):  # user has to identify what the multivariate (or univariate) random variable looks like
         """User-defined way of calculating a random variable given the parameters of the state stored in their object."""
         # {
-        bern_obs = sp.bernoulli.rvs(p=self.params[0], size=size, random_state=rng)  # bernoulli observations
-        gamma_obs = sp.gamma.rvs(a=self.params[1], scale=self.params[2], size=size, random_state=rng)  # gamma observations
+        bern_obs = sp.bernoulli.rvs(p=self.params[0], size=size, random_state=self.rng)  # bernoulli observations
+        gamma_obs = sp.gamma.rvs(a=self.params[1], scale=self.params[2], size=size, random_state=self.rng)  # gamma observations
         gamma_obs_censor = [1] * size  # 1 if observed
 
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.

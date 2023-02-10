@@ -20,8 +20,8 @@ class StateDistribution:
     def rvs(self, size: int):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """User-defined way of calculating a random variable given the parameters of the state stored in that observation's object."""
         # {
-        bern_obsG1, gamma_obsG1, gamma_censor_obsG1 = self.G1.rvs(size, rng=rng)
-        bern_obsG2, gamma_obsG2, gamma_censor_obsG2 = self.G2.rvs(size, rng=rng)
+        bern_obsG1, gamma_obsG1, gamma_censor_obsG1 = self.G1.rvs(size)
+        bern_obsG2, gamma_obsG2, gamma_censor_obsG2 = self.G2.rvs(size)
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         return bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, gamma_censor_obsG1, gamma_censor_obsG2
