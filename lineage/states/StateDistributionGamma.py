@@ -12,22 +12,20 @@ class StateDistribution:
     StateDistribution for cells with gamma distributed times.
     """
 
-    def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=4.5, rand_init=False):
+    def __init__(self, bern_p=0.9, gamma_a=7, gamma_scale=4.5, rng=None):
         """Initialization function should take in just in the parameters
         for the observations that comprise the multivariate random variable emission they expect their data to have.
         In this case, we used Gamma distribution for cell lifetime, which has 2 parameters; shape and scale.
         And we used bernoulli distribution for cell lifetime, which has 1 parameter.
         """
         self.params = np.array([bern_p, gamma_a, gamma_scale])
-        self.rand_init = rand_init
+        rng = np.random.default_rng(rng)
 
     def rvs(self, size: int):  # user has to identify what the multivariate (or univariate) random variable looks like
         """User-defined way of calculating a random variable given the parameters of the state stored in their object."""
         # {
-        if self.rand_init:
-            np.random.seed(100)
-        bern_obs = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
-        gamma_obs = sp.gamma.rvs(a=self.params[1], scale=self.params[2], size=size)  # gamma observations
+        bern_obs = sp.bernoulli.rvs(p=self.params[0], size=size, random_state=rng)  # bernoulli observations
+        gamma_obs = sp.gamma.rvs(a=self.params[1], scale=self.params[2], size=size, random_state=rng)  # gamma observations
         gamma_obs_censor = [1] * size  # 1 if observed
 
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.

@@ -10,7 +10,7 @@ concs = ["Control", "Lapatinib 25 nM", "Lapatinib 50 nM", "Lapatinib 250 nM"]
 concsValues = ["Control", "25 nM", "50 nM", "250 nM"]
 
 num_states = 4
-lapt_tHMMobj_list, _,_ = Analyze_list(AllLapatinib, num_states)
+lapt_tHMMobj_list, _,_ = Analyze_list(AllLapatinib, num_states, rng=123)
 
 lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
 

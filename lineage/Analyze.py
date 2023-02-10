@@ -103,7 +103,8 @@ def Analyze_list(
     tHMMobj_list = [
         tHMM(X, num_states=num_states, **kwargs) for X in pop_list
     ]  # build the tHMM class with X
-    _, _, _, gammas, LL = fit_list(tHMMobj_list)
+    rng = kwargs.get('rng', None)
+    _, _, _, gammas, LL = fit_list(tHMMobj_list, rng)
 
     for _ in range(5):
         tHMMobj_list2 = [
