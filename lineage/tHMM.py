@@ -10,7 +10,7 @@ from .LineageTree import LineageTree
 class estimate:
     """Estimation class."""
 
-    def __init__(self, X: list[LineageTree], nState: int, fpi=None, fT=None, fE=None):
+    def __init__(self, X: list[LineageTree], nState: int, fpi=None, fT=None, fE=None, rng=None):
         """
         Instantiating the estimation class.
         The initial probability array (pi), transition probability matrix (T), and the emission likelihood (E) are initialized.
@@ -19,19 +19,20 @@ class estimate:
         :param X: A list of objects (cells) in one lineage
         :param nStates: The number of hidden states
         """
+
         self.fpi = fpi
         self.fT = fT
         self.fE = fE
         self.num_states = nState
+        rng = np.random.default_rng(rng)
 
         if self.fpi is None or self.fpi is True:
-            self.pi = np.random.rand(nState)
-            self.pi /= np.sum(self.pi)
+            self.pi = rng.dirichlet(np.ones(nState))
         else:
             self.pi = self.fpi
 
         if self.fT is None:
-            self.T = np.random.dirichlet(np.random.rand(nState), nState)
+            self.T = rng.dirichlet(np.ones(nState), size=nState)
         else:
             self.T = self.fT
 
@@ -45,7 +46,7 @@ class tHMM:
     """Main tHMM class."""
 
     def __init__(
-        self, X: list[LineageTree], num_states: int, fpi=None, fT=None, fE=None
+        self, X: list[LineageTree], num_states: int, fpi=None, fT=None, fE=None, rng=None
     ):
         """Instantiates a tHMM.
         This function uses the following functions and assings them to the cells
@@ -62,7 +63,7 @@ class tHMM:
             num_states  # number of discrete hidden states, should be integral
         )
         self.estimate = estimate(
-            self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE
+            self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE, rng=rng
         )
 
     def predict(self) -> list:

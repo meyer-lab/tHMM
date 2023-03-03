@@ -9,6 +9,9 @@ from ..states.StateDistributionGamma import atonce_estimator, StateDistribution 
 from ..states.StateDistributionGaPhs import StateDistribution as gamma_statePh
 
 
+rng = np.random.default_rng(1)
+
+
 @pytest.mark.parametrize("censored", [0, 3])
 def test_estimationEvaluationGamma(censored):
     """
