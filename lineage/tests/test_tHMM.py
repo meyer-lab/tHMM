@@ -2,8 +2,8 @@
 import unittest
 import pytest
 import numpy as np
-from ..LineageTree import LineageTree
-from ..tHMM import tHMM, get_Emission_Likelihoods
+from ..LineageTree import LineageTree, get_Emission_Likelihoods
+from ..tHMM import tHMM
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
 from ..figures.common import pi, T, E
 from ..Analyze import Analyze, Results, run_Analyze_over
@@ -50,8 +50,8 @@ class TestModel(unittest.TestCase):
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         """
-        EL = get_Emission_Likelihoods(self.t)
-        EL3 = get_Emission_Likelihoods(self.t3)
+        EL = get_Emission_Likelihoods(self.X, self.t)
+        EL3 = get_Emission_Likelihoods(self.X, self.t3)
 
         for ind, ELlin in enumerate(EL):
             self.assertGreaterEqual(ELlin.shape[0], 0)  # at least zero cells in each lineage

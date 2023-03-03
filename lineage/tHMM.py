@@ -2,9 +2,9 @@
 
 from copy import deepcopy
 import numpy as np
-from typing import Tuple, Optional
+from typing import Tuple
 from .Viterbi import Viterbi
-from .LineageTree import LineageTree
+from .LineageTree import LineageTree, get_Emission_Likelihoods
 
 
 class estimate:
@@ -108,9 +108,6 @@ class tHMM:
 
         return BIC_value, degrees_of_freedom
 
-    def get_Emission_Likelihoods(self):
-        return get_Emission_Likelihoods(self)
-
     def log_score(self, X_state_tree_sequence: list, pi=None, T=None, E=None) -> list:
         """
         This function returns the log-likelihood of a possible state assignment
@@ -138,7 +135,7 @@ class tHMM:
             log_score += log_T_score(T, state_tree_sequence, lineageObj)
 
             # Calculate the joint probability of state and observations
-            log_EL_array = np.log(get_Emission_Likelihoods(self, E)[idx])
+            log_EL_array = np.log(get_Emission_Likelihoods(self.X, E)[idx])
             log_score += np.sum(
                 log_EL_array[np.arange(log_EL_array.shape[0]), state_tree_sequence]
             )
@@ -176,39 +173,3 @@ def log_T_score(
                 log_T_score_holder += log_T[cell_state, daughter_state]
 
     return log_T_score_holder
-
-
-def get_Emission_Likelihoods(tHMMobj: tHMM, E: Optional[list] = None) -> list:
-    """
-    Emission Likelihood (EL) matrix.
-
-    Each element in this N by K matrix represents the probability
-
-    :math:`P(x_n = x | z_n = k)`,
-
-    for all :math:`x_n` and :math:`z_n` in our observed and hidden state tree
-    and for all possible discrete states k.
-    :param tHMMobj: A class object with properties of the lineages of cells
-    :param E: The emissions likelihood
-    :return: The marginal state distribution
-    """
-    if E is None:
-        E = tHMMobj.estimate.E
-
-    all_cells = np.array(
-        [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
-    )
-    ELstack = np.zeros((len(all_cells), tHMMobj.num_states))
-
-    for k in range(tHMMobj.num_states):  # for each state
-        ELstack[:, k] = np.exp(E[k].logpdf(all_cells))
-        assert np.all(np.isfinite(ELstack[:, k]))
-    EL = []
-    ii = 0
-    for lineageObj in tHMMobj.X:  # for each lineage in our Population
-        nl = len(lineageObj.output_lineage)  # getting the lineage length
-        EL.append(ELstack[ii: (ii + nl), :])  # append the EL_array for each lineage
-
-        ii += nl
-
-    return EL

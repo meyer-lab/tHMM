@@ -76,206 +76,6 @@ class LineageTree:
         lineageObj.T = T
         return lineageObj
 
-    def get_Marginal_State_Distributions(
-        self, pi: np.ndarray, T: np.ndarray
-    ) -> npt.NDArray[np.float64]:
-        r"""Marginal State Distribution (MSD) matrix by upward recursion.
-        This is the probability that a hidden state variable :math:`z_n` is of
-        state k, that is, each value in the N by K MSD array for each lineage is
-        the probability
-
-        :math:`P(z_n = k)`,
-
-        for all :math:`z_n` in the hidden state tree
-        and for all k in the total number of discrete states. Each MSD array is
-        an N by K array (an entry for each cell and an entry for each state),
-        and each lineage has its own MSD array.
-
-        Every element in MSD matrix is essentially sum over all transitions from any state to
-        state j (from parent to daughter):
-
-        :math:`P(z_u = k) = \sum_j(Transition(j -> k) * P(parent_{cell_u}) = j)`
-
-        :param pi: Initial probabilities vector
-        :param T: State transitions matrix
-        :return: The marginal state distribution
-        """
-        m = np.zeros((len(self.output_lineage), pi.size))
-        m[0, :] = pi
-
-        # recursion based on parent cell
-        for cIDXs in self.idx_by_gen[1:]:
-            pIDXs = self.cell_to_parent[cIDXs]
-            m[cIDXs, :] = m[pIDXs, :] @ T
-
-        np.testing.assert_allclose(np.sum(m, axis=1), 1.0)
-        return m
-
-    def get_beta(
-        self, T: npt.NDArray[np.float64], MSD: npt.NDArray[np.float64], EL: npt.NDArray[np.float64], NF: npt.NDArray[np.float64]
-    ) -> npt.NDArray[np.float64]:
-        r"""Beta matrix and base case at the leaves.
-
-        Each element in this N by K matrix is the beta value
-        for each cell and at each state. In particular, this
-        value is derived from the Marginal State Distributions
-        (MSD), the Emission Likelihoods (EL), and the
-        Normalizing Factors (NF). Each beta value
-        for the leaves is exactly the probability
-
-        :math:`beta[n,k] = P(z_n = k | x_n = x)`.
-
-        Using Bayes Theorem, we see that the above equals
-
-        numerator = :math:`P(x_n = x | z_n = k) * P(z_n = k)`
-        denominator = :math:`P(x_n = x)`
-        :math:`beta[n,k] = numerator / denominator`
-
-        For non-leaf cells, the first value in the numerator is the Emission
-        Likelihoods. The second value in the numerator is
-        the Marginal State Distributions. The value in the
-        denominator is the Normalizing Factor.
-
-        Traverses upward through each tree and calculates the
-        beta value for each non-leaf cell. The normalizing factors (NFs)
-        are also calculated as an intermediate for determining each
-        beta term. Helper functions are called to determine one of
-        the terms in the NF equation. This term is also used in the calculation
-        of the betas.
-
-        :param tHMMobj: A class object with properties of the lineages of cells
-        :param MSD: The marginal state distribution P(z_n = k)
-        :param EL: The emissions likelihood
-        :param NF: normalizing factor. The marginal observation distribution P(x_n = x)
-        :return: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
-        """
-        beta = np.zeros((len(self), MSD.shape[1]))
-
-        # Emission Likelihood, Marginal State Distribution, Normalizing Factor (same regardless of state)
-        # P(x_n = x | z_n = k), P(z_n = k), P(x_n = x)
-        ii = self.leaves_idx
-        beta[ii, :] = EL[ii, :] * MSD[ii, :] / NF[ii, np.newaxis]
-        np.testing.assert_allclose(np.sum(beta[-1]), 1.0)
-
-        MSD_array = np.clip(
-            MSD, np.finfo(float).eps, np.inf
-        )  # MSD of the respective lineage
-        ELMSD = EL * MSD
-
-        for level in self.idx_by_gen[1:][::-1]:  # a reversed list of generations
-            for pii in np.unique(self.cell_to_parent[level]):
-                ch_ii = self.cell_to_daughters[pii, :]
-                ratt = beta[ch_ii, :] / MSD_array[ch_ii, :]
-                fac1 = np.prod(ratt @ T.T, axis=0) * ELMSD[pii, :]
-
-                NF[pii] = sum(fac1)
-                beta[pii, :] = fac1 / NF[pii]
-
-        return beta
-
-    def get_all_zetas(
-        self,
-        beta_array: npt.NDArray[np.float64],
-        MSD_array: npt.NDArray[np.float64],
-        gamma_array: npt.NDArray[np.float64],
-        T: npt.NDArray[np.float64],
-    ) -> npt.NDArray[np.float64]:
-        """
-        Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
-        This is an inner component in calculating the overall transition probability matrix.
-
-        :param lineageObj: the lineage tree of cells
-        :param beta_array: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
-        :param MSD_array: marginal state distribution
-        :param gamma_array: gamma values. The conditional probability of states, given the observation of the whole tree
-        :param T: transition probability matrix
-        :return: numerator for calculating the transition probabilities
-        """
-        betaMSD = beta_array / np.clip(MSD_array, np.finfo(float).eps, np.inf)
-        TbetaMSD = np.clip(betaMSD @ T.T, np.finfo(float).eps, np.inf)
-        holder = np.zeros(T.shape)
-
-        # Getting lineage by generation, but it is sorted this way
-        for cIDX, cell in enumerate(self.output_lineage):
-            if cell.gen == 0:
-                continue
-
-            if not cell.isLeaf():
-                for dIDX in self.cell_to_daughters[cIDX, :]:
-                    js = gamma_array[cIDX, :] / TbetaMSD[dIDX, :]
-                    holder += np.outer(js, betaMSD[dIDX, :])
-        return holder * T
-
-    def get_leaf_Normalizing_Factors(
-        self, MSD: npt.NDArray[np.float64], EL: npt.NDArray[np.float64]
-    ) -> npt.NDArray[np.float64]:
-        """
-        Normalizing factor (NF) matrix and base case at the leaves.
-
-        Each element in this N by 1 matrix is the normalizing
-        factor for each beta value calculation for each node.
-        This normalizing factor is essentially the marginal
-        observation distribution for a node.
-
-        This function gets the normalizing factor for
-        the upward recursion only for the leaves.
-        We first calculate the joint probability
-        using the definition of conditional probability:
-
-        :math:`P(x_n = x | z_n = k) * P(z_n = k) = P(x_n = x , z_n = k)`,
-        where n are the leaf nodes.
-
-        We can then sum this joint probability over k,
-        which are the possible states z_n can be,
-        and through the law of total probability,
-        obtain the marginal observation distribution
-        :math:`P(x_n = x) = sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x)`.
-
-        :param EL: The emissions likelihood
-        :param MSD: The marginal state distribution P(z_n = k)
-        :return: normalizing factor. The marginal observation distribution P(x_n = x)
-        """
-        NF_array = np.zeros(MSD.shape[0], dtype=float)  # instantiating N by 1 array
-
-        # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
-        # this product is the joint probability
-        # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
-        # the sum of the joint probabilities is the marginal probability
-        NF_array[self.leaves_idx] = np.einsum(
-            "ij,ij->i", MSD[self.leaves_idx, :], EL[self.leaves_idx, :]
-        )
-        assert np.all(np.isfinite(NF_array))
-        return NF_array
-
-    def sum_nonleaf_gammas(
-        self, gamma_arr: npt.NDArray[np.float64]
-    ) -> npt.NDArray[np.float64]:
-        """
-        Sum of the gammas of the cells that are able to divide, that is,
-        sum the of the gammas of all the nonleaf cells. It is used in estimating the transition probability matrix.
-        This is an inner component in calculating the overall transition probability matrix.
-
-        This is downward recursion.
-
-        :param lO: the object of lineage tree
-        :param gamma_arr: the gamma values for each lineage
-        :return: the sum of gamma values for each state for non-leaf cells.
-        """
-        sum_wo_leaf = np.zeros(gamma_arr.shape[1])
-
-        # sum the gammas for cells that are transitioning
-        # Getting lineage by generation, but it is sorted this way
-        for cell_idx, cell in enumerate(self.output_lineage):
-            if cell.gen == 0:
-                continue
-
-            if not cell.isLeaf():
-                sum_wo_leaf += gamma_arr[cell_idx, :]
-
-        assert np.all(np.isfinite(sum_wo_leaf))
-
-        return sum_wo_leaf
-
     def get_gamma(
         self,
         T: npt.NDArray[np.float64],
@@ -292,7 +92,7 @@ class LineageTree:
         :param MSD: The marginal state distribution P(z_n = k)
         :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
         """
-        gamma = np.zeros((len(self.output_lineage), T.shape[0]))
+        gamma = np.zeros_like(beta)
         gamma[0, :] = beta[0, :]
 
         coeffs = beta / np.clip(MSD, np.finfo(float).eps, np.inf)
@@ -319,6 +119,39 @@ class LineageTree:
         it contains.
         """
         return len(self.output_lineage)
+
+
+def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list:
+    """
+    Emission Likelihood (EL) matrix.
+
+    Each element in this N by K matrix represents the probability
+
+    :math:`P(x_n = x | z_n = k)`,
+
+    for all :math:`x_n` and :math:`z_n` in our observed and hidden state tree
+    and for all possible discrete states k.
+    :param tHMMobj: A class object with properties of the lineages of cells
+    :param E: The emissions likelihood
+    :return: The marginal state distribution
+    """
+    all_cells = np.array(
+        [cell.obs for lineage in X for cell in lineage.output_lineage]
+    )
+    ELstack = np.zeros((len(all_cells), len(E)))
+
+    for k in range(len(E)):  # for each state
+        ELstack[:, k] = np.exp(E[k].logpdf(all_cells))
+        assert np.all(np.isfinite(ELstack[:, k]))
+    EL = []
+    ii = 0
+    for lineageObj in X:  # for each lineage in our Population
+        nl = len(lineageObj.output_lineage)  # getting the lineage length
+        EL.append(ELstack[ii: (ii + nl), :])  # append the EL_array for each lineage
+
+        ii += nl
+
+    return EL
 
 
 def generate_lineage_list(
@@ -415,7 +248,7 @@ def cell_to_daughters(lineage: list[CellVar]) -> np.ndarray:
     return output
 
 
-def get_leaves_idx(lineage: list[CellVar]) -> np.ndarray:
+def get_leaves_idx(lineage: list[CellVar]) -> npt.NDArray[np.uintp]:
     """
     A function to find the leaves and their indexes in the lineage list.
     :param lineage: The list of cells in a lineageTree object.
@@ -427,4 +260,4 @@ def get_leaves_idx(lineage: list[CellVar]) -> np.ndarray:
         if cell.isLeaf():
             assert cell.observed
             leaf_indices.append(index)  # appending the index of the cells
-    return np.array(leaf_indices)
+    return np.array(leaf_indices, dtype=np.uintp)
