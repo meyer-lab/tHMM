@@ -92,7 +92,7 @@ def test_E_step(cens):
 def test_M_step(cens):
     """ The M step of the BW. check the emission parameters if the true states are given. """
     population = []
-    for _ in range(20):
+    for _ in range(30):
         # make sure we have enough cells in the lineage.
         X = LineageTree.rand_init(pi, T, E, desired_num_cells=num_cells, desired_experiment_time=expt_time, censor_condition=cens, rng=rng)
         population.append(X)
