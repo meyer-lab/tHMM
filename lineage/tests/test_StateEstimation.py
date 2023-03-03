@@ -9,6 +9,9 @@ from ..states.StateDistributionGamma import atonce_estimator, StateDistribution 
 from ..states.StateDistributionGaPhs import StateDistribution as gamma_statePh
 
 
+rng = np.random.default_rng(1)
+
+
 @pytest.mark.parametrize("censored", [0, 3])
 def test_estimationEvaluationGamma(censored):
     """
@@ -17,7 +20,7 @@ def test_estimationEvaluationGamma(censored):
     """
     pi = np.array([1])
     T = np.array([[1]])
-    E_gamma = [gamma_state(bern_p=1., gamma_a=7, gamma_scale=4.5, rng=1)]
+    E_gamma = [gamma_state(bern_p=1., gamma_a=7, gamma_scale=4.5)]
 
     def gen(): return LineageTree.rand_init(pi, T, E_gamma, 2**8, censor_condition=censored, desired_experiment_time=100)
     lineage_gamma = [gen() for _ in range(50)]
@@ -34,7 +37,7 @@ def test_atonce_estimator():
     pi = np.array([1])
     T = np.array([[1]])
     scales1 = [0.2, 0.5, 1.0, 1.5]
-    E_gamma = [[gamma_statePh(bern_p1=0.99, bern_p2=0.95, gamma_a1=70.0, gamma_scale1=sc1, gamma_a2=140.0, gamma_scale2=1., rng=1)] for sc1 in scales1]
+    E_gamma = [[gamma_statePh(bern_p1=0.99, bern_p2=0.95, gamma_a1=70.0, gamma_scale1=sc1, gamma_a2=140.0, gamma_scale2=1.)] for sc1 in scales1]
 
     def gen(i): return LineageTree.rand_init(pi, T, E_gamma[i], 2**8, censor_condition=3, desired_experiment_time=250)
     lineage_gamma_list = [[gen(i) for _ in range(100)] for i in range(4)]

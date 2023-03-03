@@ -39,6 +39,7 @@ class LineageTree:
         desired_num_cells: int,
         censor_condition=0,
         desired_experiment_time=2e12,
+        rng=None,
     ):
         r"""
         Constructor method
@@ -57,12 +58,32 @@ class LineageTree:
         """
         assert pi.size == T.shape[0]
         assert T.shape[0] == T.shape[1]
+        rng = np.random.default_rng(rng)
 
-        full_lineage = generate_lineage_list(
-            pi=pi, T=T, desired_num_cells=desired_num_cells
-        )
+        # Generate lineage list
+        first_state = rng.choice(
+            pi.size, p=pi
+        )  # roll the dice and yield the state for the first cell
+        first_cell = CellVar(parent=None, state=first_state)  # create first cell
+        full_lineage = [first_cell]  # instantiate lineage with first cell
+
+        for cell in full_lineage:  # letting the first cell proliferate
+            if cell.isLeaf():  # if the cell has no daughters...
+                # make daughters by dividing and assigning states
+                full_lineage.extend(cell.divide(T, rng=rng))
+
+            if len(full_lineage) >= desired_num_cells:
+                break
+
+        # Assign observations
         for i_state in range(pi.size):
-            output_assign_obs(i_state, full_lineage, E)
+            cells_in_state = [cell for cell in full_lineage if cell.state == i_state]
+            list_of_tuples_of_obs = E[i_state].rvs(size=len(cells_in_state), rng=rng)
+            list_of_tuples_of_obs = list(map(list, zip(*list_of_tuples_of_obs)))
+
+            assert len(cells_in_state) == len(list_of_tuples_of_obs)
+            for i, cell in enumerate(cells_in_state):
+                cell.obs = list_of_tuples_of_obs[i]
 
         # assign times using the state distribution specific time model
         E[0].assign_times(full_lineage)
@@ -319,52 +340,6 @@ class LineageTree:
         it contains.
         """
         return len(self.output_lineage)
-
-
-def generate_lineage_list(
-    pi: npt.NDArray[np.float64], T: npt.NDArray[np.float64], desired_num_cells: int
-) -> list:
-    """
-    Generates a single lineage tree given Markov variables.
-    This only generates the hidden variables (i.e., the states) in a output binary tree manner.
-    It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
-    :param pi: An array of the initial probability of a cell being a certain state.
-    :param T: An array of the probability of a cell switching states or remaining in the same state.
-    :param desired_num_cells: The desired number of cells in a lineage.
-    :return full_lineage: A list of the generated cell lineage.
-    """
-    first_state = np.random.choice(
-        pi.size, p=pi
-    )  # roll the dice and yield the state for the first cell
-    first_cell = CellVar(parent=None, state=first_state)  # create first cell
-    full_lineage = [first_cell]  # instantiate lineage with first cell
-
-    for cell in full_lineage:  # letting the first cell proliferate
-        if cell.isLeaf():  # if the cell has no daughters...
-            # make daughters by dividing and assigning states
-            full_lineage.extend(cell.divide(T))
-
-        if len(full_lineage) >= desired_num_cells:
-            break
-    return full_lineage
-
-
-def output_assign_obs(state: int, full_lineage: list[CellVar], E: list):
-    """
-    Observation assignment give a state.
-    Given the lineageTree object and the intended state, this function assigns the corresponding observations
-    coming from specific distributions for that state.
-    :param state: The integer value of the state that is being observed.
-    :param full_lineage: The list of cells within the lineageTree object.
-    :param E: The list of observations assignments.
-    """
-    cells_in_state = [cell for cell in full_lineage if cell.state == state]
-    list_of_tuples_of_obs = E[state].rvs(size=len(cells_in_state))
-    list_of_tuples_of_obs = list(map(list, zip(*list_of_tuples_of_obs)))
-
-    assert len(cells_in_state) == len(list_of_tuples_of_obs)
-    for i, cell in enumerate(cells_in_state):
-        cell.obs = list_of_tuples_of_obs[i]
 
 
 def max_gen(lineage: list[CellVar]) -> list[np.ndarray]:

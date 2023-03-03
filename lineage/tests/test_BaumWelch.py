@@ -25,6 +25,8 @@ E = [state0, state1, state2, state3, state4]
 expt_time = 300
 num_cells = 200
 
+rng = np.random.default_rng(3)
+
 
 @pytest.mark.parametrize("cens", [0, 2])
 @pytest.mark.parametrize("nStates", [1, 2, 3])
@@ -71,10 +73,10 @@ def test_E_step(cens):
     population = []
     for _ in range(30):
         # make sure we have enough cells in the lineage.
-        X = LineageTree.rand_init(pi, T, E, desired_num_cells=num_cells, desired_experiment_time=expt_time, censor_condition=cens)
+        X = LineageTree.rand_init(pi, T, E, desired_num_cells=num_cells, desired_experiment_time=expt_time, censor_condition=cens, rng=rng)
         population.append(X)
 
-    tHMMobj = tHMM(population, num_states=5)  # build the tHMM class with X
+    tHMMobj = tHMM(population, num_states=5, rng=rng)  # build the tHMM class with X
     tHMMobj.estimate.pi = pi
     tHMMobj.estimate.T = T
     tHMMobj.estimate.E = E
@@ -83,19 +85,19 @@ def test_E_step(cens):
     pred_states = tHMMobj.predict()
     true_states = [cell.state for cell in tHMMobj.X[0].output_lineage]
 
-    assert rand_score(true_states, pred_states[0]) >= 0.8
+    assert rand_score(true_states, pred_states[0]) >= 0.9
 
 
 @pytest.mark.parametrize("cens", [0, 3])
 def test_M_step(cens):
     """ The M step of the BW. check the emission parameters if the true states are given. """
     population = []
-    for _ in range(30):
+    for _ in range(20):
         # make sure we have enough cells in the lineage.
-        X = LineageTree.rand_init(pi, T, E, desired_num_cells=num_cells, desired_experiment_time=expt_time, censor_condition=cens)
+        X = LineageTree.rand_init(pi, T, E, desired_num_cells=num_cells, desired_experiment_time=expt_time, censor_condition=cens, rng=rng)
         population.append(X)
 
-    tHMMobj = tHMM(population, num_states=len(E))
+    tHMMobj = tHMM(population, num_states=len(E), rng=rng)
     gammas = [np.zeros((len(lineage.output_lineage), tHMMobj.num_states)) for lineage in tHMMobj.X]
 
     # create the gamma matrix (N x K) that shows the probability of a cell n being in state k from the true state assignments.

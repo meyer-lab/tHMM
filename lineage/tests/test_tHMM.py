@@ -9,6 +9,9 @@ from ..figures.common import pi, T, E
 from ..Analyze import Analyze, Results, run_Analyze_over
 
 
+rng = np.random.default_rng(1)
+
+
 class TestModel(unittest.TestCase):
     """
     Unit test class for the tHMM model.
@@ -25,8 +28,8 @@ class TestModel(unittest.TestCase):
         self.E = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
         self.X3 = [LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)]
 
-        self.t = tHMM(self.X, num_states=2, rng=1)  # build the tHMM class with X
-        self.t3 = tHMM(self.X3, num_states=3, rng=1)  # build the tHMM class for 3 states
+        self.t = tHMM(self.X, num_states=2, rng=rng)  # build the tHMM class with X
+        self.t3 = tHMM(self.X3, num_states=3, rng=rng)  # build the tHMM class for 3 states
 
     def test_init_paramlist(self):
         """
@@ -63,9 +66,10 @@ class TestModel(unittest.TestCase):
 def test_fit_performance():
     """ Really defined states should get an accuracy >95%.
     Lineages used should be large and distinct. """
+    
     X = [LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 8) - 1)]
-    first = Results(*Analyze(X, 2, fpi=pi, rng=1))["state_similarity"]
-    second = Results(*Analyze(X, 2, fpi=pi, rng=1))["state_similarity"]
+    first = Results(*Analyze(X, 2, fpi=pi, rng=rng))["state_similarity"]
+    second = Results(*Analyze(X, 2, fpi=pi, rng=rng))["state_similarity"]
     assert max(first, second) > 95.0
 
 
@@ -76,7 +80,7 @@ def test_small_lineages(sizze, stateNum):
     # test with 2 state model
     lin = [LineageTree.rand_init(pi, T, E, sizze) for _ in range(2)]
 
-    _, LL1 = Analyze(lin, stateNum, rng=1)
+    _, LL1 = Analyze(lin, stateNum, rng=rng)
     assert np.all(np.isfinite(LL1))
 
 
