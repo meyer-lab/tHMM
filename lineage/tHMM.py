@@ -2,7 +2,6 @@
 
 from copy import deepcopy
 import numpy as np
-import scipy.stats as sp
 from typing import Tuple, Optional
 from .Viterbi import Viterbi
 from .LineageTree import LineageTree
@@ -25,15 +24,15 @@ class estimate:
         self.fT = fT
         self.fE = fE
         self.num_states = nState
+        rng = np.random.default_rng(rng)
 
         if self.fpi is None or self.fpi is True:
-            self.pi = sp.uniform.rvs(0.0, 1.0, nState)
-            self.pi /= np.sum(self.pi)
+            self.pi = rng.dirichlet(np.ones(nState))
         else:
             self.pi = self.fpi
 
         if self.fT is None:
-            self.T = sp.dirichlet.rvs(np.ones(nState), size=nState, random_state=rng)
+            self.T = rng.dirichlet(np.ones(nState), size=nState)
         else:
             self.T = self.fT
 
