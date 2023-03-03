@@ -57,7 +57,7 @@ def fit_list(
     # when there are no fixed emissions, we need to randomize the start
     init_gam = [
         [
-            sp.dirichlet.rvs(np.ones(tO.num_states), size=len(lin), random_state=rng)
+            rng.dirichlet(np.ones(tO.num_states), size=len(lin))
             for lin in tO.X
         ]
         for tO in tHMMobj_list
