@@ -25,7 +25,7 @@ E = [state0, state1, state2, state3, state4]
 expt_time = 300
 num_cells = 200
 
-rng = np.random.default_rng(3)
+rng = np.random.default_rng(4)
 
 
 @pytest.mark.parametrize("cens", [0, 2])

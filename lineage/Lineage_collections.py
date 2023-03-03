@@ -8,8 +8,8 @@ from .LineageTree import LineageTree
 
 # ----------------------- Control conditions from both old and new versions -----------------------#
 desired_num_states = 2
-E = [StateDistribution(rng=1) for _ in range(desired_num_states)]
-E2 = [StDist(rng=1) for _ in range(desired_num_states)]
+E = [StateDistribution() for _ in range(desired_num_states)]
+E2 = [StDist() for _ in range(desired_num_states)]
 
 
 def popout_single_lineages(lineages):
