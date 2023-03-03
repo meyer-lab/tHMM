@@ -24,7 +24,7 @@ class DummyExecutor(Executor):
         return f
 
 
-def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, float]:
+def Analyze(X: list, num_states: int) -> Tuple[object, float]:
     """Runs the model and outputs the tHMM object, state assignments, and likelihood.
     :param X: The list of LineageTree populations.
     :param num_states: The number of states that we want to run the model for.
@@ -32,7 +32,7 @@ def Analyze(X: list, num_states: int, **kwargs) -> Tuple[object, float]:
     :return st: The nested list of states assigned to cells, with the order of cells from root to leaf in each lineage, and generation.
     :return LL: The log-likelihood of the fitted model.
     """
-    tHMMobj_list, LL, _ = Analyze_list([X], num_states, **kwargs)
+    tHMMobj_list, LL, _ = Analyze_list([X], num_states)
     return tHMMobj_list[0], LL
 
 
@@ -90,7 +90,7 @@ def fit_list(
 
 
 def Analyze_list(
-    pop_list: list, num_states: int, **kwargs
+    pop_list: list, num_states: int, rng=None
 ) -> Tuple[list[tHMM], float, list]:
     """This function runs the analyze function for the case when we want to fit multiple conditions at the same time.
     :param pop_list: The list of cell populations to run the analyze function on.
@@ -99,18 +99,18 @@ def Analyze_list(
     :return pred_states_by_lineage_by_conc: The list of cells in each lineage with states assigned to each cell.
     :return LL: The log-likelihood of the fitted model.
     """
+    rng = np.random.default_rng(rng)
 
     tHMMobj_list = [
-        tHMM(X, num_states=num_states, **kwargs) for X in pop_list
+        tHMM(X, num_states=num_states, rng=rng) for X in pop_list
     ]  # build the tHMM class with X
-    rng = kwargs.get('rng', 1)
     _, _, _, gammas, LL = fit_list(tHMMobj_list, rng)
 
     for _ in range(5):
         tHMMobj_list2 = [
-            tHMM(X, num_states=num_states, **kwargs) for X in pop_list
+            tHMM(X, num_states=num_states, rng=rng) for X in pop_list
         ]  # build the tHMM class with X
-        _, _, _, gammas2, LL2 = fit_list(tHMMobj_list2, rng)
+        _, _, _, gammas2, LL2 = fit_list(tHMMobj_list2, rng=rng)
 
         if LL2 > LL:
             tHMMobj_list = tHMMobj_list2
@@ -125,7 +125,9 @@ def run_Analyze_over(
     num_states: np.ndarray,
     parallel=True,
     atonce=False,
-    **kwargs
+    list_of_fpi=None,
+    list_of_fT=None,
+    list_of_fE=None,
 ) -> list:
     """
     A function that can be parallelized to speed up figure creation.
@@ -141,9 +143,14 @@ def run_Analyze_over(
     :param num_states: The number of states that we want to run the model for.
     :return output: The list of results from fitting a lineage.
     """
-    list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
-    list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
-    list_of_fE = kwargs.get("list_of_fE", [None] * len(list_of_populations))
+    if list_of_fpi is None:
+        list_of_fpi = [None] * len(list_of_populations)
+
+    if list_of_fT is None:
+        list_of_fT = [None] * len(list_of_populations)
+
+    if list_of_fE is None:
+        list_of_fE = [None] * len(list_of_populations)
 
     if isinstance(num_states, (np.ndarray, list)):
         assert len(num_states) == len(list_of_populations)

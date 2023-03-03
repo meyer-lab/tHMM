@@ -17,7 +17,7 @@ import svgutils.transform as st
 from ..Analyze import Results, run_Analyze_over
 from ..BaumWelch import calculate_stationary
 
-matplotlib.use('AGG')
+matplotlib.use("AGG")
 
 
 # T: transition probability matrix
@@ -35,8 +35,8 @@ state20 = phaseStateDist(0.99, 0.95, 8, 7, 4, 2)
 state21 = phaseStateDist(0.95, 0.9, 6, 4, 3, 5)
 E2 = [state20, state21]
 
-min_desired_num_cells = (2 ** 4) - 1
-max_desired_num_cells = (2 ** 7) - 1
+min_desired_num_cells = (2**4) - 1
+max_desired_num_cells = (2**7) - 1
 
 min_experiment_time = 72
 max_experiment_time = 144
@@ -52,13 +52,8 @@ scatter_state_1_kws = {
     "s": 20,
 }
 
-scatter_state_2_kws = {
-    "alpha": 0.5,
-    "marker": "x",
-    "s": 20,
-    "color": "green"
-}
-rcParams['font.sans-serif'] = "Arial"
+scatter_state_2_kws = {"alpha": 0.5, "marker": "x", "s": 20, "color": "green"}
+rcParams["font.sans-serif"] = "Arial"
 scatter_kws_list = [scatter_state_1_kws, scatter_state_2_kws]
 
 
@@ -69,24 +64,25 @@ def getSetup(figsize, gridd):
     with sns.plotting_context("paper"):
         sns.set(
             palette="deep",
-            rc={"axes.facecolor": "#ffffff",  # axes background color
+            rc={
+                "axes.facecolor": "#ffffff",  # axes background color
                 "axes.edgecolor": "#000000",  # axes edge color
-                "axes.xmargin": 0,            # x margin.  See `axes.Axes.margins`
-                "axes.ymargin": 0,            # y margin See `axes.Axes.margins`
-                "axes.linewidth": 1. / 4,
+                "axes.xmargin": 0,  # x margin.  See `axes.Axes.margins`
+                "axes.ymargin": 0,  # y margin See `axes.Axes.margins`
+                "axes.linewidth": 1.0 / 4,
                 "grid.linestyle": "-",
-                "grid.alpha": 1. / 4,
+                "grid.alpha": 1.0 / 4,
                 "grid.color": "#000000",
                 "xtick.bottom": True,
                 "xtick.direction": "inout",
-                "xtick.major.width": 1. / 4,  # major tick width in points
+                "xtick.major.width": 1.0 / 4,  # major tick width in points
                 "xtick.minor.width": 0.5 / 4,  # minor tick width in points
                 "ytick.left": True,
                 "ytick.direction": "inout",
-                "ytick.major.width": 1. / 4,  # major tick width in points
+                "ytick.major.width": 1.0 / 4,  # major tick width in points
                 "ytick.minor.width": 0.5 / 4,  # minor tick width in points
-                "svg.fonttype": "none"  # Keep as text
-                },
+                "svg.fonttype": "none",  # Keep as text
+            },
         )
 
         # Setup plotting space and grid
@@ -108,12 +104,22 @@ def subplotLabel(axs):
     i = 0
     for _, ax in enumerate(axs):
         if ax.has_data() or i == 0:  # only label plots with graphs on them
-            ax.text(-0.2, 1.25, ascii_lowercase[i], transform=ax.transAxes, fontsize=16, fontweight="bold", va="top")
+            ax.text(
+                -0.2,
+                1.25,
+                ascii_lowercase[i],
+                transform=ax.transAxes,
+                fontsize=16,
+                fontweight="bold",
+                va="top",
+            )
             i += 1
 
 
-def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1, rotate=None):
-    """ Add cartoon to a figure file. """
+def overlayCartoon(
+    figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1, rotate=None
+):
+    """Add cartoon to a figure file."""
 
     # Overlay Figure cartoons
     template = st.fromfile(figFile)
@@ -128,71 +134,79 @@ def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1, r
 
 
 def genFigure():
-    """ Main figure generation function. """
-    fdir = './output/'
+    """Main figure generation function."""
+    fdir = "./output/"
     cartoon_dir = r"./lineage/figures/cartoons"
     start = time.time()
-    nameOut = 'figure' + sys.argv[1]
+    nameOut = "figure" + sys.argv[1]
 
-    exec('from lineage.figures.' + nameOut + ' import makeFigure', globals())
+    exec("from lineage.figures." + nameOut + " import makeFigure", globals())
     ff = makeFigure()
-    ff.savefig(fdir + nameOut + '.svg', dpi=ff.dpi,
-               bbox_inches='tight', pad_inches=0)
+    ff.savefig(fdir + nameOut + ".svg", dpi=ff.dpi, bbox_inches="tight", pad_inches=0)
 
-    print(
-        f'Figure {sys.argv[1]} is done after {time.time() - start} seconds.\n')
+    print(f"Figure {sys.argv[1]} is done after {time.time() - start} seconds.\n")
 
-    if sys.argv[1] == 'S01':
+    if sys.argv[1] == "S01":
         # Overlay Figure 1 cartoon
-        overlayCartoon(fdir + 'figureS01.svg',
-                       f'{cartoon_dir}/figureS01.svg', 50, 0, scalee=0.78)
+        overlayCartoon(
+            fdir + "figureS01.svg", f"{cartoon_dir}/figureS01.svg", 50, 0, scalee=0.78
+        )
 
-    if sys.argv[1] == 'S02':
+    if sys.argv[1] == "S02":
         # Overlay Figure 2 cartoon
-        overlayCartoon(fdir + 'figureS02.svg',
-                       f'{cartoon_dir}/figureS02.svg', 80, 0, scalee=0.67)
+        overlayCartoon(
+            fdir + "figureS02.svg", f"{cartoon_dir}/figureS02.svg", 80, 0, scalee=0.67
+        )
 
-    if sys.argv[1] == 'S03':
+    if sys.argv[1] == "S03":
         # Overlay Figure 3 cartoon
-        overlayCartoon(fdir + 'figureS03.svg',
-                       f'{cartoon_dir}/figureS03.svg', 80, 0, scalee=0.67)
+        overlayCartoon(
+            fdir + "figureS03.svg", f"{cartoon_dir}/figureS03.svg", 80, 0, scalee=0.67
+        )
 
-    if sys.argv[1] == 'S04':
+    if sys.argv[1] == "S04":
         # Overlay Figure 4 cartoon
-        overlayCartoon(fdir + 'figureS04.svg',
-                       f'{cartoon_dir}/figureS04.svg', 15, 10, scalee=0.54)
+        overlayCartoon(
+            fdir + "figureS04.svg", f"{cartoon_dir}/figureS04.svg", 15, 10, scalee=0.54
+        )
 
-    if sys.argv[1] == 'S05':
+    if sys.argv[1] == "S05":
         # Overlay Figure 5 cartoon
-        overlayCartoon(fdir + 'figureS05.svg',
-                       f'{cartoon_dir}/figureS05.svg', 15, 10, scalee=0.54)
+        overlayCartoon(
+            fdir + "figureS05.svg", f"{cartoon_dir}/figureS05.svg", 15, 10, scalee=0.54
+        )
 
-    if sys.argv[1] == 'S06':
+    if sys.argv[1] == "S06":
         # Overlay Figure 6 cartoon
-        overlayCartoon(fdir + 'figureS06.svg',
-                       f'{cartoon_dir}/figureS06.svg', 40, 0, scalee=0.52)
+        overlayCartoon(
+            fdir + "figureS06.svg", f"{cartoon_dir}/figureS06.svg", 40, 0, scalee=0.52
+        )
 
-    if sys.argv[1] == 'S07':
+    if sys.argv[1] == "S07":
         # Overlay Figure 7 cartoon
-        overlayCartoon(fdir + 'figureS07.svg',
-                       f'{cartoon_dir}/figureS07.svg', 30, 0, scalee=0.52)
+        overlayCartoon(
+            fdir + "figureS07.svg", f"{cartoon_dir}/figureS07.svg", 30, 0, scalee=0.52
+        )
 
-    if sys.argv[1] == 'S08':
+    if sys.argv[1] == "S08":
         # Overlay Figure 8 cartoon
-        overlayCartoon(fdir + 'figureS08.svg',
-                       f'{cartoon_dir}/figureS08.svg', 110, 0, scalee=0.58)
+        overlayCartoon(
+            fdir + "figureS08.svg", f"{cartoon_dir}/figureS08.svg", 110, 0, scalee=0.58
+        )
 
-    if sys.argv[1] == 'S09':
+    if sys.argv[1] == "S09":
         # Overlay Figure 9 cartoon
-        overlayCartoon(fdir + 'figureS09.svg',
-                       f'{cartoon_dir}/figureS02.svg', 170, 0, scalee=0.48)
+        overlayCartoon(
+            fdir + "figureS09.svg", f"{cartoon_dir}/figureS02.svg", 170, 0, scalee=0.48
+        )
 
-    if sys.argv[1] == 'S10':
+    if sys.argv[1] == "S10":
         # Overlay Figure 10 cartoon
-        overlayCartoon(fdir + 'figureS10.svg',
-                       f'{cartoon_dir}/figureS03.svg', 150, 0, scalee=0.47)
+        overlayCartoon(
+            fdir + "figureS10.svg", f"{cartoon_dir}/figureS03.svg", 150, 0, scalee=0.47
+        )
 
-    if sys.argv[1] == '1':
+    if sys.argv[1] == "1":
         # Overlay Figure 1 cartoon
         overlayCartoon(fdir + 'figure1.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 30, 196, scalee=1.1)
@@ -207,22 +221,29 @@ def genFigure():
         overlayCartoon(fdir + 'figure1.svg',
                        f'{cartoon_dir}/fig1ylabel.svg', 375, 75, scalee=0.21)
 
-    if sys.argv[1] == '4':
+    if sys.argv[1] == "4":
         # Overlay Figure 4 cartoon
-        overlayCartoon(fdir + 'figure4.svg',
-                       f'{cartoon_dir}/experimentEndLine.svg', 590, 37, scalee=0.25)
+        overlayCartoon(
+            fdir + "figure4.svg",
+            f"{cartoon_dir}/experimentEndLine.svg",
+            590,
+            37,
+            scalee=0.25,
+        )
 
-    if sys.argv[1] == '5':
+    if sys.argv[1] == "5":
         # Overlay Figure 5 cartoon
-        overlayCartoon(fdir + 'figure5.svg',
-                       f'{cartoon_dir}/figure5.svg', 5, 5, scalee=1.55)
+        overlayCartoon(
+            fdir + "figure5.svg", f"{cartoon_dir}/figure5.svg", 5, 5, scalee=1.55
+        )
 
-    if sys.argv[1] == '6':
+    if sys.argv[1] == "6":
         # Overlay Figure 6 cartoon
-        overlayCartoon(fdir + 'figure6.svg',
-                       f'{cartoon_dir}/figure6.svg', 70, 65, scalee=0.6)
+        overlayCartoon(
+            fdir + "figure6.svg", f"{cartoon_dir}/figure6.svg", 70, 65, scalee=0.6
+        )
 
-    if sys.argv[1] == '11':
+    if sys.argv[1] == "11":
         # Overlay Transition block
         overlayCartoon(fdir + 'figure11.svg',
                        f'{cartoon_dir}/figure01.svg', 450, 50, scale_x=0.9, scale_y=1.2)
@@ -237,7 +258,7 @@ def genFigure():
         overlayCartoon(fdir + 'figure11.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 1040, 215, scalee=1.44)
 
-    if sys.argv[1] == '12':
+    if sys.argv[1] == "12":
         # Overlay Transition block
         overlayCartoon(fdir + 'figure12.svg',
                        f'{cartoon_dir}/figure02.svg', 450, 50, scale_x=0.9, scale_y=1.2)
@@ -252,7 +273,7 @@ def genFigure():
         overlayCartoon(fdir + 'figure12.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 1040, 215, scalee=1.44)
 
-    if sys.argv[1] == '13':
+    if sys.argv[1] == "13":
         # Overlay Transition block
         overlayCartoon(fdir + 'figure13.svg',
                        f'{cartoon_dir}/figure03.svg', 430, 30, scale_x=0.9, scale_y=1.5)
@@ -287,14 +308,14 @@ def genFigure():
         overlayCartoon(fdir + 'figureS12.svg',
                        f'{cartoon_dir}/xaxis-h.svg', 850, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
 
-    if sys.argv[1] == 'S13':
+    if sys.argv[1] == "S13":
         # Overlay Transition block
         overlayCartoon(fdir + 'figureS13.svg',
                        f'{cartoon_dir}/figure16.svg', 0, 20, scalee=0.8, scale_y=0.5)
         overlayCartoon(fdir + 'figureS13.svg',
                        f'{cartoon_dir}/figure161.svg', 200, 20, scalee=0.8, scale_y=0.5)
 
-    if sys.argv[1] == 'S14':
+    if sys.argv[1] == "S14":
         # Overlay Transition block
         overlayCartoon(fdir + 'figureS14.svg',
                        f'{cartoon_dir}/figure17.svg', 0, 20, scalee=0.8, scale_y=0.5)
@@ -302,19 +323,28 @@ def genFigure():
                        f'{cartoon_dir}/figure171.svg', 200, 20, scalee=0.8, scale_y=0.5)
 
 
-def commonAnalyze(list_of_populations, num_states, xtype="length", **kwargs):
+def commonAnalyze(
+    list_of_populations,
+    num_states,
+    xtype="length",
+    list_of_fpi=None,
+    list_of_fT=None,
+    list_of_fE=None,
+    parallel=True,
+):
     """
     The standard way of analyzing a list of populations (a list of list of lineages)
     for analysis and plotting.
     """
-    list_of_fpi = kwargs.get("list_of_fpi", [None] * len(list_of_populations))
-    list_of_fT = kwargs.get("list_of_fT", [None] * len(list_of_populations))
-    list_of_fE = kwargs.get("list_of_fE", [None] * len(list_of_populations))
-
-    parallel = kwargs.get("parallel", True)
     # Analyzing the lineages in the list of populations (parallelized function)
-    output = run_Analyze_over(list_of_populations, num_states, parallel=parallel,
-                              list_of_fpi=list_of_fpi, list_of_fT=list_of_fT, list_of_fE=list_of_fE)
+    output = run_Analyze_over(
+        list_of_populations,
+        num_states,
+        parallel=parallel,
+        list_of_fpi=list_of_fpi,
+        list_of_fT=list_of_fT,
+        list_of_fE=list_of_fE,
+    )
 
     # Collecting the results of analyzing the lineages
     results_holder = [Results(o[0], o[1]) for o in output]
@@ -344,7 +374,16 @@ def commonAnalyze(list_of_populations, num_states, xtype="length", **kwargs):
     return x, paramEst, dictOut, paramTrues
 
 
-def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", num_lineages=None, dist_dist=False):
+def figureMaker(
+    ax,
+    x,
+    paramEst,
+    dictOut,
+    paramTrues,
+    xlabel="Number of Cells",
+    num_lineages=None,
+    dist_dist=False,
+):
     """
     Makes the common 6 panel figures displaying parameter estimation across lineages
     of various types and sizes.
@@ -355,46 +394,63 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
     tr = dictOut["transition_matrix_similarity"]
     pii = dictOut["pi_similarity"]
 
-    accuracy_df = pd.DataFrame(columns=["x", 'accuracy'])
-    accuracy_df['x'] = x
-    accuracy_df['accuracy'] = accuracies
-    accuracy_df['tr'] = tr
-    accuracy_df['pii'] = pii
-    accuracy_df['bern 0 0'] = paramEst[:, 0, 0]  # bern G1 or Bern
-    accuracy_df['bern 1 0'] = paramEst[:, 1, 0]
+    accuracy_df = pd.DataFrame(columns=["x", "accuracy"])
+    accuracy_df["x"] = x
+    accuracy_df["accuracy"] = accuracies
+    accuracy_df["tr"] = tr
+    accuracy_df["pii"] = pii
+    accuracy_df["bern 0 0"] = paramEst[:, 0, 0]  # bern G1 or Bern
+    accuracy_df["bern 1 0"] = paramEst[:, 1, 0]
     if number_of_params == 6:
-        accuracy_df['bern 0 1'] = paramEst[:, 0, 1]  # bern G2
-        accuracy_df['bern 1 1'] = paramEst[:, 1, 1]
-        accuracy_df['gamma 0 2'] = paramEst[:, 0, 2]  # gamma G1 shape
-        accuracy_df['gamma 1 2'] = paramEst[:, 1, 2]
-        accuracy_df['gamma 0 3'] = paramEst[:, 0, 3]  # gamma G1 scale
-        accuracy_df['gamma 1 3'] = paramEst[:, 1, 3]
-        accuracy_df['gamma 0 4'] = paramEst[:, 0, 4]  # gamma G2 shape
-        accuracy_df['gamma 1 4'] = paramEst[:, 1, 4]
-        accuracy_df['gamma 0 5'] = paramEst[:, 0, 5]  # gamma G2 scale
-        accuracy_df['gamma 1 5'] = paramEst[:, 1, 5]
-        accuracy_df['wasserstein distance 0'] = dictOut["distribution distance 0"]
-        accuracy_df['wasserstein distance 1'] = dictOut["distribution distance 1"]
+        accuracy_df["bern 0 1"] = paramEst[:, 0, 1]  # bern G2
+        accuracy_df["bern 1 1"] = paramEst[:, 1, 1]
+        accuracy_df["gamma 0 2"] = paramEst[:, 0, 2]  # gamma G1 shape
+        accuracy_df["gamma 1 2"] = paramEst[:, 1, 2]
+        accuracy_df["gamma 0 3"] = paramEst[:, 0, 3]  # gamma G1 scale
+        accuracy_df["gamma 1 3"] = paramEst[:, 1, 3]
+        accuracy_df["gamma 0 4"] = paramEst[:, 0, 4]  # gamma G2 shape
+        accuracy_df["gamma 1 4"] = paramEst[:, 1, 4]
+        accuracy_df["gamma 0 5"] = paramEst[:, 0, 5]  # gamma G2 scale
+        accuracy_df["gamma 1 5"] = paramEst[:, 1, 5]
+        accuracy_df["wasserstein distance 0"] = dictOut["distribution distance 0"]
+        accuracy_df["wasserstein distance 1"] = dictOut["distribution distance 1"]
     else:
-        accuracy_df['0 1'] = paramEst[:, 0, 1]  # gamma shape
-        accuracy_df['1 1'] = paramEst[:, 1, 1]
-        accuracy_df['gamma 0 2'] = paramEst[:, 0, 2]  # gamma scale
-        accuracy_df['gamma 1 2'] = paramEst[:, 1, 2]
+        accuracy_df["0 1"] = paramEst[:, 0, 1]  # gamma shape
+        accuracy_df["1 1"] = paramEst[:, 1, 1]
+        accuracy_df["gamma 0 2"] = paramEst[:, 0, 2]  # gamma scale
+        accuracy_df["gamma 1 2"] = paramEst[:, 1, 2]
     if num_lineages is not None:
-        accuracy_df['num lineages'] = num_lineages
+        accuracy_df["num lineages"] = num_lineages
 
     i = 0
-    ax[i].axis('off')
+    ax[i].axis("off")
 
     i += 1  # i = 1
-    ax[i].axis('off')
+    ax[i].axis("off")
 
     i += 1  # i = 2
-    ax[i].axis('off')
+    ax[i].axis("off")
 
     i += 1  # i = 3: plot estimation of bernoulli parameter
-    sns.regplot(x="x", y="bern 0 0", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-    sns.regplot(x="x", y="bern 1 0", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
+    sns.regplot(
+        x="x",
+        y="bern 0 0",
+        data=accuracy_df,
+        ax=ax[i],
+        lowess=True,
+        marker="+",
+        scatter_kws=scatter_kws_list[0],
+    )
+    sns.regplot(
+        x="x",
+        y="bern 1 0",
+        data=accuracy_df,
+        ax=ax[i],
+        lowess=True,
+        marker="+",
+        scatter_kws=scatter_kws_list[1],
+        line_kws={"color": "green"},
+    )
     ax[i].axhline(y=paramTrues[1, 0, 0], linestyle="-", c="#00ffff", alpha=0.5)
     ax[i].axhline(y=paramTrues[1, 1, 0], linestyle="-", c="#00cc00", alpha=0.5)
     ax[i].set_xlabel(xlabel)
@@ -496,7 +552,15 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_ylim([0.0, 15.0])
     else:
         ax[i].set_ylim(bottom=0, top=np.mean(tr) + 0.2)
-        sns.regplot(x="x", y="tr", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+        sns.regplot(
+            x="x",
+            y="tr",
+            data=accuracy_df,
+            ax=ax[i],
+            lowess=True,
+            marker="+",
+            scatter_kws=scatter_kws_list[0],
+        )
         ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
         ax[i].set_title(r"Error in Estimating T")
         ax[i].set_ylim([0.0, 1.0])
@@ -513,11 +577,21 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         ax[i].set_xlabel(xlabel)
         ax[i].set_ylim([0.0, 15.0])
     else:
-        if (len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1])) or (num_lineages is None):
-            ax[i].axis('off')
+        if (
+            len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1])
+        ) or (num_lineages is None):
+            ax[i].axis("off")
         else:
             ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
-            sns.regplot(x="num lineages", y="pii", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+            sns.regplot(
+                x="num lineages",
+                y="pii",
+                data=accuracy_df,
+                ax=ax[i],
+                lowess=True,
+                marker="+",
+                scatter_kws=scatter_kws_list[0],
+            )
             ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
             ax[i].set_title(r"Error in Estimating $\pi$")
             ax[i].set_xlabel("Number of Lineages")
@@ -527,7 +601,15 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
         i += 1
         ax[i].set_ylim(bottom=0, top=101)
         ax[i].set_ylabel(r"Adjusted Rand Index Accuracy [%]")
-        sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+        sns.regplot(
+            x="x",
+            y="accuracy",
+            data=accuracy_df,
+            ax=ax[i],
+            lowess=True,
+            marker="+",
+            scatter_kws=scatter_kws_list[0],
+        )
         ax[i].set_title("State Assignment Accuracy")
         ax[i].set_xlabel(xlabel)
 
@@ -552,7 +634,7 @@ def figureMaker(ax, x, paramEst, dictOut, paramTrues, xlabel="Number of Cells", 
 
 
 def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
-    """ helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli. """
+    """helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli."""
     for i in range(num_states):  # lapatinib that has 3 states
         ax[10].plot(cons, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7, lw=3)
         ax[10].set_title("G1 phase")
@@ -604,7 +686,7 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
 
 
 def sort_lins(tHMMobj):
-    """ Sorts lineages based on their root cell state for plotting the lineage trees. """
+    """Sorts lineages based on their root cell state for plotting the lineage trees."""
     num_st = tHMMobj.estimate.num_states
 
     st = []  # holds the state of root cell in all lineages for this particular tHMMobj
