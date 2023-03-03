@@ -1,7 +1,7 @@
 """ This file plots the BIC for the experimental data. """
 import numpy as np
 from matplotlib.ticker import MaxNLocator
-from ..Analyze import run_Analyze_over, Analyze_list
+from ..Analyze import run_Analyze_over
 from ..Lineage_collections import AllLapatinib, AllGemcitabine, GFs
 from .common import getSetup
 
