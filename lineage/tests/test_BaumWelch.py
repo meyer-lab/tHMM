@@ -42,7 +42,7 @@ def test_BW(cens, nStates):
     assert np.isfinite(LL_before)
 
     # Get the likelihoods after fitting
-    _, NF_after, _, _, new_LL_list_after = fit_list([tHMMobj], max_iter=3)
+    NF_after, _, new_LL_list_after = fit_list([tHMMobj], max_iter=3)
 
     LL_after = calculate_log_likelihood(NF_after[0])
     assert np.isfinite(LL_after)
@@ -56,13 +56,13 @@ def test_fit_seed():
     tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
     # Get the likelihoods after fitting
-    _, NFone, _, _, LLone = fit_list([deepcopy(tHMMobj)], max_iter=3, rng=1)
-    _, NFtwo, _, _, LLtwo = fit_list([deepcopy(tHMMobj)], max_iter=3, rng=1)
+    NFone, _, LLone = fit_list([deepcopy(tHMMobj)], max_iter=3, rng=1)
+    NFtwo, _, LLtwo = fit_list([deepcopy(tHMMobj)], max_iter=3, rng=1)
     assert LLone == LLtwo
     np.testing.assert_allclose(NFone, NFtwo)
 
-    _, _, _, _, LLone = fit_list([deepcopy(tHMMobj)], max_iter=3)
-    _, _, _, _, LLtwo = fit_list([deepcopy(tHMMobj)], max_iter=3)
+    _, _, LLone = fit_list([deepcopy(tHMMobj)], max_iter=3)
+    _, _, LLtwo = fit_list([deepcopy(tHMMobj)], max_iter=3)
     assert LLone != LLtwo
 
 
