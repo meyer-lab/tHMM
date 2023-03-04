@@ -34,9 +34,7 @@ def crossval(train_populations: list, num_states: np.ndarray):
     # save the tHMMobj for each number of states that is being run
     LLs = []
     for k in num_states:
-        out = Analyze_list(train_populations, k)
-        tHMMobj_list = out[0]
-        gamma_list = out[2]
+        tHMMobj_list, _, gamma_list = Analyze_list(train_populations, k)
 
         Logls = 0
         # calculate the log likelihood of hidden observations

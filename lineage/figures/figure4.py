@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from copy import deepcopy
-import random
 from .common import (
     getSetup,
     subplotLabel,

@@ -7,7 +7,7 @@ from ..Analyze import Analyze_list
 from ..Lineage_collections import AllLapatinib
 
 num_states = 4
-lapt_tHMMobj_list, _, _ = Analyze_list(AllLapatinib, num_states)
+lapt_tHMMobj_list = Analyze_list(AllLapatinib, num_states)[0]
 
 lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
 

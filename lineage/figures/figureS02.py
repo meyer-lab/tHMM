@@ -30,12 +30,10 @@ def makeFigure():
     """
     Makes figure 4.
     """
-
     # Get list of axis objects
     ax, f = getSetup((10, 10), (3, 3))
 
     figureMaker(ax, *commonAnalyze(list_of_populations, 2), num_lineages=num_lineages)
 
     subplotLabel(ax)
-
     return f
