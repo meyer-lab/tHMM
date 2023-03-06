@@ -45,7 +45,7 @@ def get_leaf_Normalizing_Factors(
 
 
 def get_Marginal_State_Distributions(
-    cell_to_parent, pi: np.ndarray, T: np.ndarray
+    cell_to_parent: np.ndarray, pi: npt.NDArray[np.float64], T: npt.NDArray[np.float64]
 ) -> npt.NDArray[np.float64]:
     r"""Marginal State Distribution (MSD) matrix by upward recursion.
     This is the probability that a hidden state variable :math:`z_n` is of
