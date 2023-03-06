@@ -97,9 +97,7 @@ class LineageTree:
         lineageObj.T = T
         return lineageObj
 
-    def get_Marginal_State_Distributions(
-        self, pi: np.ndarray, T: np.ndarray
-    ) -> npt.NDArray[np.float64]:
+    def get_MSD(self, pi: npt.NDArray[np.float64], T: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
         r"""Marginal State Distribution (MSD) matrix by upward recursion.
         This is the probability that a hidden state variable :math:`z_n` is of
         state k, that is, each value in the N by K MSD array for each lineage is

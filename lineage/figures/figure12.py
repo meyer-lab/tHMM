@@ -11,7 +11,7 @@ concs = ["Control", "Gemcitabine 5 nM", "Gemcitabine 10 nM", "Gemcitabine 30 nM"
 concsValues = ["Control", "5 nM", "10 nM", "30 nM"]
 
 num_states = 5
-gemc_tHMMobj_list, _, _ = Analyze_list(AllGemcitabine, num_states)
+gemc_tHMMobj_list = Analyze_list(AllGemcitabine, num_states)[0]
 
 gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
 

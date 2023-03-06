@@ -5,8 +5,8 @@ from .common import getSetup, subplotLabel
 from ..Analyze import Analyze_list
 from ..Lineage_collections import AllLapatinib, AllGemcitabine
 
-lapt_tHMMobj_list, _, _ = Analyze_list(AllLapatinib, 4)
-gemc_tHMMobj_list, _, _ = Analyze_list(AllGemcitabine, 5)
+lapt_tHMMobj_list = Analyze_list(AllLapatinib, 4)[0]
+gemc_tHMMobj_list = Analyze_list(AllGemcitabine, 5)[0]
 
 times = np.linspace(0.0, 96.0, 48)
 

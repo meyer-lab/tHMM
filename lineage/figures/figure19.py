@@ -2,7 +2,7 @@
 from .common import getSetup
 import numpy as np
 from ..LineageTree import LineageTree
-from ..crossval import hide_observation, crossval, output_LL
+from ..crossval import output_LL
 from ..BaumWelch import calculate_stationary
 from .figure18 import state0, state1, state2, state3, state4
 

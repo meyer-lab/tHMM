@@ -22,9 +22,7 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     EL = tHMMobj.get_Emission_Likelihoods()
 
     for ii, lO in enumerate(tHMMobj.X):
-        MSD.append(
-            lO.get_Marginal_State_Distributions(tHMMobj.estimate.pi, tHMMobj.estimate.T)
-        )
+        MSD.append(lO.get_MSD(tHMMobj.estimate.pi, tHMMobj.estimate.T))
         NF.append(lO.get_leaf_Normalizing_Factors(MSD[ii], EL[ii]))
         betas.append(lO.get_beta(tHMMobj.estimate.T, MSD[ii], EL[ii], NF[ii]))
         gammas.append(lO.get_gamma(tHMMobj.estimate.T, MSD[ii], betas[ii]))

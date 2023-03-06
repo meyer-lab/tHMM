@@ -1,6 +1,5 @@
 """ Figure 21 to perform cross validation on experimental data. """
 from .common import getSetup
-import pandas as pd
 import numpy as np
 from ..Lineage_collections import AllLapatinib, AllGemcitabine
 from ..crossval import output_LL

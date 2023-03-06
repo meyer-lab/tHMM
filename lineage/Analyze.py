@@ -23,7 +23,7 @@ class DummyExecutor(Executor):
         return f
 
 
-def Analyze(X: list, num_states: int, fpi=None, fT=None, fE=None, rng=None) -> Tuple[object, float]:
+def Analyze(X: list, num_states: int, fpi=None, fT=None, fE=None, rng=None) -> Tuple[tHMM, float]:
     """Wrapper for one-condition case."""
     tHMMobj_list, LL, _ = Analyze_list([X], num_states, fpi=fpi, fT=fT, fE=fE, rng=rng)
     return tHMMobj_list[0], LL
@@ -31,7 +31,7 @@ def Analyze(X: list, num_states: int, fpi=None, fT=None, fE=None, rng=None) -> T
 
 def fit_list(
     tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100, rng=None
-) -> Tuple[list, list, list, list, float]:
+) -> Tuple[list[np.ndarray], list[np.ndarray], float]:
     """
     Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
 
@@ -79,7 +79,7 @@ def fit_list(
 
         old_LL = new_LL
 
-    return MSD_list, NF_list, betas_list, gammas_list, new_LL
+    return NF_list, gammas_list, new_LL
 
 
 def Analyze_list(
@@ -97,13 +97,13 @@ def Analyze_list(
     tHMMobj_list = [
         tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE, rng=rng) for X in pop_list
     ]  # build the tHMM class with X
-    _, _, _, gammas, LL = fit_list(tHMMobj_list, rng=rng)
+    _, gammas, LL = fit_list(tHMMobj_list, rng=rng)
 
     for _ in range(5):
         tHMMobj_list2 = [
             tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE, rng=rng) for X in pop_list
         ]  # build the tHMM class with X
-        _, _, _, gammas2, LL2 = fit_list(tHMMobj_list2, rng=rng)
+        _, gammas2, LL2 = fit_list(tHMMobj_list2, rng=rng)
 
         if LL2 > LL:
             tHMMobj_list = tHMMobj_list2
