@@ -1,8 +1,6 @@
 """ Figure 20 for correlations between cell observations in the lineages. """
 import numpy as np
 import pandas as pd
-import scipy.stats as sp
-import itertools as it
 from .common import getSetup
 from ..Lineage_collections import AllLapatinib, AllGemcitabine
 

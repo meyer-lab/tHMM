@@ -7,7 +7,7 @@ from ..plotTree import plotLineage_MCF10A
 from ..Lineage_collections import GFs
 from ..Analyze import Analyze_list
 
-hgf_tHMMobj_list, _, _ = Analyze_list(GFs, 3)
+hgf_tHMMobj_list = Analyze_list(GFs, 3)[0]
 hgf_states_list = [tHMMobj.predict() for tHMMobj in hgf_tHMMobj_list]
 
 # assign the predicted states to each cell
