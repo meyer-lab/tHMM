@@ -53,8 +53,8 @@ class TestModel(unittest.TestCase):
         Calls get_Emission_Likelihoods and ensures
         the output is of correct data type and structure.
         """
-        EL = get_Emission_Likelihoods(self.X, self.t)
-        EL3 = get_Emission_Likelihoods(self.X, self.t3)
+        EL = get_Emission_Likelihoods(self.X, E)
+        EL3 = get_Emission_Likelihoods(self.X3, self.E)
 
         for ind, ELlin in enumerate(EL):
             self.assertGreaterEqual(ELlin.shape[0], 0)  # at least zero cells in each lineage

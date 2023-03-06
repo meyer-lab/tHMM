@@ -89,7 +89,7 @@ def Viterbi(tHMMobj) -> list[np.ndarray]:
     :param state_ptrs: a list of tuples of daughter cell indexes and their state pointers
     :return: assigned states to each cell in all lineages
     """
-    deltas, state_ptrs = get_deltas(tHMMobj.X, tHMMobj.E, tHMMobj.T)
+    deltas, state_ptrs = get_deltas(tHMMobj.X, tHMMobj.estimate.E, tHMMobj.estimate.T)
     all_states = []
 
     for num, lineageObj in enumerate(tHMMobj.X):
