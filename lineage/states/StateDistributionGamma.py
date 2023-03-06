@@ -20,12 +20,14 @@ class StateDistribution:
         """
         self.params = np.array([bern_p, gamma_a, gamma_scale])
 
-    def rvs(self, size: int):  # user has to identify what the multivariate (or univariate) random variable looks like
+    def rvs(self, size: int, rng=None):  # user has to identify what the multivariate (or univariate) random variable looks like
         """User-defined way of calculating a random variable given the parameters of the state stored in their object."""
         # {
-        bern_obs = sp.bernoulli.rvs(p=self.params[0], size=size)  # bernoulli observations
-        gamma_obs = sp.gamma.rvs(a=self.params[1], scale=self.params[2], size=size)  # gamma observations
+        rng = np.random.default_rng(rng)
+        bern_obs = rng.binomial(1, p=self.params[0], size=size)  # bernoulli observations
+        gamma_obs = rng.gamma(self.params[1], scale=self.params[2], size=size)  # gamma observations
         gamma_obs_censor = [1] * size  # 1 if observed
+
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         return bern_obs, gamma_obs, gamma_obs_censor

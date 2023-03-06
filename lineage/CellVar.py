@@ -36,17 +36,18 @@ class CellVar:
         self.right = None
         self.obs = None
 
-    def divide(self, T: np.ndarray):
+    def divide(self, T: np.ndarray, rng=None):
         """
         Member function that performs division of a cell.
         Equivalent to adding another timestep in a Markov process.
         :param T: The array containing the likelihood of a cell switching states.
         """
+        rng = np.random.default_rng(rng)
         # Checking that the inputs are of the right shape
         assert T.shape[0] == T.shape[1]
 
         # roll a loaded die according to the row in the transtion matrix
-        left_state, right_state = np.random.choice(
+        left_state, right_state = rng.choice(
             T.shape[0], size=2, p=T[self.state, :]
         )
         self.left = CellVar(state=left_state, parent=self)

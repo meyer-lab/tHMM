@@ -10,18 +10,19 @@ class StateDistribution:
     """For G1 and G2 separated as observations."""
 
     def __init__(
-        self, bern_p1=0.9, bern_p2=0.75, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6
+        self, bern_p1=0.9, bern_p2=0.75, gamma_a1=7.0, gamma_scale1=3, gamma_a2=14.0, gamma_scale2=6,
     ):  # user has to identify what parameters to use for each state
         """Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have."""
         self.params = np.array([bern_p1, bern_p2, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2])
         self.G1 = GammaSD(bern_p=bern_p1, gamma_a=gamma_a1, gamma_scale=gamma_scale1)
         self.G2 = GammaSD(bern_p=bern_p2, gamma_a=gamma_a2, gamma_scale=gamma_scale2)
 
-    def rvs(self, size: int):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
+    def rvs(self, size: int, rng=None):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """User-defined way of calculating a random variable given the parameters of the state stored in that observation's object."""
         # {
-        bern_obsG1, gamma_obsG1, gamma_censor_obsG1 = self.G1.rvs(size)
-        bern_obsG2, gamma_obsG2, gamma_censor_obsG2 = self.G2.rvs(size)
+        rng = np.random.default_rng(rng)
+        bern_obsG1, gamma_obsG1, gamma_censor_obsG1 = self.G1.rvs(size, rng=rng)
+        bern_obsG2, gamma_obsG2, gamma_censor_obsG2 = self.G2.rvs(size, rng=rng)
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
         # These tuples of observations will go into the cells in the lineage tree.
         return bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, gamma_censor_obsG1, gamma_censor_obsG2
@@ -75,7 +76,6 @@ class StateDistribution:
             else:
                 cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[2] + cell.obs[3])
                 cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
-
 
     def censor_lineage(self, censor_condition: int, full_lineage: list, desired_experiment_time=2e12):
         """
