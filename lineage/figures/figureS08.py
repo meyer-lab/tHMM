@@ -47,11 +47,9 @@ def accuracy():
 
     # Creating a list of populations to analyze over
     cells = np.linspace(min_desired_num_cells, max_desired_num_cells, num_data_points)
-    list_of_populations = []
-    list_of_fpi = []
-    for cell_num in cells:
-        # Adding populations into a holder for analysing
-        list_of_populations.append([LineageTree.rand_init(pi, T, E2, cell_num)])
-        list_of_fpi.append(pi)
+
+    # Adding populations into a holder for analysing
+    list_of_populations = [[LineageTree.rand_init(pi, T, E2, cell_num)] for cell_num in cells]
+    list_of_fpi = [pi for _ in cells]
 
     return commonAnalyze(list_of_populations, 2, list_of_fpi=list_of_fpi)
