@@ -66,7 +66,7 @@ class TestModel(unittest.TestCase):
 def test_fit_performance():
     """ Really defined states should get an accuracy >95%.
     Lineages used should be large and distinct. """
-    
+
     X = [LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 8) - 1)]
     first = Results(*Analyze(X, 2, fpi=pi, rng=rng))["state_similarity"]
     second = Results(*Analyze(X, 2, fpi=pi, rng=rng))["state_similarity"]
