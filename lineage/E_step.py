@@ -47,7 +47,7 @@ def get_leaf_Normalizing_Factors(
 
 
 @njit
-def get_Marginal_State_Distributions(
+def get_MSD(
     cell_to_parent: np.ndarray, pi: npt.NDArray[np.float64], T: npt.NDArray[np.float64]
 ) -> npt.NDArray[np.float64]:
     r"""Marginal State Distribution (MSD) matrix by upward recursion.
@@ -83,6 +83,22 @@ def get_Marginal_State_Distributions(
     return m
 
 
+@njit
+def np_apply_along_axis(func1d, axis, arr):
+    assert arr.ndim == 2
+    assert axis in [0, 1]
+    if axis == 0:
+        result = np.empty(arr.shape[1])
+        for i in range(len(result)):
+            result[i] = func1d(arr[:, i])
+    else:
+        result = np.empty(arr.shape[0])
+        for i in range(len(result)):
+            result[i] = func1d(arr[i, :])
+    return result
+
+
+@njit
 def get_beta(
     leaves_idx: npt.NDArray[np.uintp],
     cell_to_daughters: npt.NDArray[np.intp],
@@ -130,23 +146,25 @@ def get_beta(
 
     # Emission Likelihood, Marginal State Distribution, Normalizing Factor (same regardless of state)
     # P(x_n = x | z_n = k), P(z_n = k), P(x_n = x)
-    ii = leaves_idx
-    beta[ii, :] = EL[ii, :] * MSD[ii, :] / NF[ii, np.newaxis]
-    np.testing.assert_allclose(np.sum(beta[-1]), 1.0)
+    ZZ = EL * MSD / np.expand_dims(NF, axis=1)
+    beta[leaves_idx, :] = ZZ[leaves_idx, :]
 
-    MSD_array = np.clip(
-        MSD, np.finfo(float).eps, np.inf
+    # Assert all ~= 1.0
+    assert np.abs(np.sum(beta[-1]) - 1.0) < 1e-9
+
+    MSD_array = np.maximum(
+        MSD, np.finfo(MSD.dtype).eps
     )  # MSD of the respective lineage
     ELMSD = EL * MSD
 
     cIDXs = np.arange(MSD.shape[0])
-    cIDXs = np.delete(cIDXs, leaves_idx, axis=0)
+    cIDXs = np.delete(cIDXs, leaves_idx)
     cIDXs = np.flip(cIDXs)
 
     for pii in cIDXs:
         ch_ii = cell_to_daughters[pii, :]
-        ratt = beta[ch_ii, :] / MSD_array[ch_ii, :]
-        fac1 = np.prod(ratt @ T.T, axis=0) * ELMSD[pii, :]
+        ratt = (beta[ch_ii, :] / MSD_array[ch_ii, :]) @ T.T
+        fac1 = np_apply_along_axis(np.prod, axis=0, arr=ratt) * ELMSD[pii, :]
 
         NF[pii] = np.sum(fac1)
         beta[pii, :] = fac1 / NF[pii]
