@@ -1,7 +1,9 @@
 import numpy as np
 import numpy.typing as npt
+from numba import njit
 
 
+@njit
 def get_leaf_Normalizing_Factors(
     leaves_idx: npt.NDArray[np.uintp],
     MSD: npt.NDArray[np.float64],
@@ -39,11 +41,12 @@ def get_leaf_Normalizing_Factors(
     # this product is the joint probability
     # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
     # the sum of the joint probabilities is the marginal probability
-    NF_array[leaves_idx] = np.einsum("ij,ij->i", MSD[leaves_idx, :], EL[leaves_idx, :])
+    NF_array[leaves_idx] = np.sum(MSD[leaves_idx, :] * EL[leaves_idx, :], axis=1)
     assert np.all(np.isfinite(NF_array))
     return NF_array
 
 
+@njit
 def get_Marginal_State_Distributions(
     cell_to_parent: np.ndarray, pi: npt.NDArray[np.float64], T: npt.NDArray[np.float64]
 ) -> npt.NDArray[np.float64]:
@@ -75,7 +78,8 @@ def get_Marginal_State_Distributions(
     for cIDX, pIDX in enumerate(cell_to_parent[1:]):
         m[cIDX + 1, :] = m[pIDX, :] @ T
 
-    np.testing.assert_allclose(np.sum(m, axis=1), 1.0)
+    # Assert all ~= 1.0
+    assert np.linalg.norm(np.sum(m, axis=1) - 1.0) < 1e-9
     return m
 
 
