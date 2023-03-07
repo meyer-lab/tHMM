@@ -170,3 +170,43 @@ def get_beta(
         beta[pii, :] = fac1 / NF[pii]
 
     return beta
+
+
+@njit
+def get_gamma(
+    cell_to_daughters: npt.NDArray[np.uintp],
+    T: npt.NDArray[np.float64],
+    MSD: npt.NDArray[np.float64],
+    beta: npt.NDArray[np.float64],
+) -> npt.NDArray[np.float64]:
+    """
+    Get the gammas using downward recursion from the root nodes.
+    The conditional probability of states, given observation of the whole tree P(z_n = k | X_bar = x_bar)
+    x_bar is the observations for the whole tree.
+    gamma_1 (k) = P(z_1 = k | X_bar = x_bar)
+    gamma_n (k) = P(z_n = k | X_bar = x_bar)
+
+    :param MSD: The marginal state distribution P(z_n = k)
+    :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
+    """
+    gamma = np.zeros_like(beta)
+    gamma[0, :] = beta[0, :]
+
+    epss = np.finfo(np.float32).eps
+    coeffs = beta / np.maximum(MSD, epss)
+    coeffs = np.maximum(coeffs, epss)
+    beta_parents = T @ coeffs.T
+
+    # Getting lineage by generation, but it is sorted this way
+    for pidx, cis in enumerate(cell_to_daughters):
+        for ci in cis:
+            if ci == -1:
+                continue
+
+            A = gamma[pidx, :].T / beta_parents[:, ci]
+
+            gamma[ci, :] = coeffs[ci, :] * (A @ T)
+
+    assert np.all(np.isfinite(gamma))
+    return gamma
+

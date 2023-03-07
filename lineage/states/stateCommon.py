@@ -2,6 +2,7 @@
 
 import warnings
 import numpy as np
+import numpy.typing as npt
 from scipy.optimize import minimize, Bounds
 from scipy.special import gammaincc, gammaln
 
@@ -42,10 +43,10 @@ def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
 
 
 def gamma_LL(
-    logX: np.ndarray,
-    gamma_obs: list[np.ndarray],
-    time_cen: list[np.ndarray],
-    gammas: list[np.ndarray],
+    logX: npt.NDArray[np.float64],
+    gamma_obs: list[npt.NDArray[np.float64]],
+    time_cen: list[npt.NDArray[np.float64]],
+    gammas: list[npt.NDArray[np.float64]],
 ):
     """Log-likelihood for the optionally censored Gamma distribution.
     The logX is the log transform of the parameters, in case of atonce estimation, it is [shape, scale1, scale2, scale3, scale4]."""

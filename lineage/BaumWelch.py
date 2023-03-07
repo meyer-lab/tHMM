@@ -5,7 +5,7 @@ from .tHMM import tHMM
 from .LineageTree import get_Emission_Likelihoods
 from .states.StateDistributionGamma import atonce_estimator
 from .M_step import get_all_zetas, sum_nonleaf_gammas
-from .E_step import get_leaf_Normalizing_Factors, get_MSD, get_beta
+from .E_step import get_leaf_Normalizing_Factors, get_MSD, get_beta, get_gamma
 
 
 def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
@@ -30,7 +30,7 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
         )
         NF.append(get_leaf_Normalizing_Factors(lO.leaves_idx, MSD[ii], EL[ii]))
         betas.append(get_beta(lO.leaves_idx, lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], EL[ii], NF[ii]))
-        gammas.append(lO.get_gamma(tHMMobj.estimate.T, MSD[ii], betas[ii]))
+        gammas.append(get_gamma(lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], betas[ii]))
 
     return MSD, NF, betas, gammas
 

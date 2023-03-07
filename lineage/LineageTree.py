@@ -97,44 +97,6 @@ class LineageTree:
         lineageObj.T = T
         return lineageObj
 
-    def get_gamma(
-        self,
-        T: npt.NDArray[np.float64],
-        MSD: npt.NDArray[np.float64],
-        beta: npt.NDArray[np.float64],
-    ) -> npt.NDArray[np.float64]:
-        """
-        Get the gammas using downward recursion from the root nodes.
-        The conditional probability of states, given observation of the whole tree P(z_n = k | X_bar = x_bar)
-        x_bar is the observations for the whole tree.
-        gamma_1 (k) = P(z_1 = k | X_bar = x_bar)
-        gamma_n (k) = P(z_n = k | X_bar = x_bar)
-
-        :param MSD: The marginal state distribution P(z_n = k)
-        :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
-        """
-        gamma = np.zeros_like(beta)
-        gamma[0, :] = beta[0, :]
-
-        coeffs = beta / np.clip(MSD, np.finfo(float).eps, np.inf)
-        coeffs = np.clip(coeffs, np.finfo(float).eps, np.inf)
-        beta_parents = np.einsum("ij,kj->ik", T, coeffs)
-
-        # Getting lineage by generation, but it is sorted this way
-        for parent_idx, cell in enumerate(self.output_lineage):
-            if cell.gen == 0:
-                continue
-
-            gam = gamma[parent_idx, :]
-
-            for ci in self.cell_to_daughters[parent_idx, :]:
-                gamma[ci, :] = coeffs[ci, :] * np.matmul(
-                    gam / beta_parents[:, ci], T
-                )
-
-        assert np.all(np.isfinite(gamma))
-        return gamma
-
     def __len__(self):
         """Defines the length of a lineage by returning the number of cells
         it contains.
