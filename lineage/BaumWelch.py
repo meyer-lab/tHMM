@@ -4,8 +4,8 @@ from typing import Tuple
 from .tHMM import tHMM
 from .LineageTree import get_Emission_Likelihoods
 from .states.StateDistributionGamma import atonce_estimator
-from .M_step import get_all_zetas, sum_nonleaf_gammas
-from .E_step import get_leaf_Normalizing_Factors, get_MSD, get_beta, get_gamma
+from .HMM.M_step import get_all_zetas, sum_nonleaf_gammas
+from .HMM.E_step import get_leaf_Normalizing_Factors, get_MSD, get_beta, get_gamma
 
 
 def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:

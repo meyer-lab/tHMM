@@ -28,9 +28,9 @@ def makeFigure():
     """
     ax, f = getSetup((14, 4), (1, 3))
 
-    lapBIC, lapObj = find_BIC(AllLapatinib, desired_num_states, num_cells=5290)
-    gemBIC, gemObj = find_BIC(AllGemcitabine, desired_num_states, num_cells=4537)
-    hgfBIC, hgfObj = find_BIC(GFs, desired_num_states, num_cells=1306, mc=True)
+    lapBIC, _ = find_BIC(AllLapatinib, desired_num_states, num_cells=5290)
+    gemBIC, _ = find_BIC(AllGemcitabine, desired_num_states, num_cells=4537)
+    hgfBIC, _ = find_BIC(GFs, desired_num_states, num_cells=1306, mc=True)
 
     # Plotting BICs
     ax[0].plot(desired_num_states, lapBIC)
