@@ -2,6 +2,8 @@
 
 import warnings
 import numpy as np
+from numba import njit
+from numba.typed import List
 import numpy.typing as npt
 from scipy.optimize import minimize, Bounds
 from scipy.special import gammaincc, gammaln
@@ -42,58 +44,33 @@ def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
     return numerator / denominator
 
 
+@njit
 def gamma_LL(
     logX: npt.NDArray[np.float64],
-    gamma_obs: list[npt.NDArray[np.float64]],
-    time_cen: list[npt.NDArray[np.float64]],
-    gammas: list[npt.NDArray[np.float64]],
+    gamma_obs: List[npt.NDArray[np.float64]],
+    time_cen: List[npt.NDArray[np.float64]],
+    gammas: List[npt.NDArray[np.float64]],
 ):
     """Log-likelihood for the optionally censored Gamma distribution.
     The logX is the log transform of the parameters, in case of atonce estimation, it is [shape, scale1, scale2, scale3, scale4]."""
     x = np.exp(logX)
     glnA = gammaln(x[0])
-    outt = np.zeros(len(x) - 1)
+    outt = 0.0
     for i in range(len(x) - 1):
         gobs = gamma_obs[i] / x[i + 1]
-        outt[i] -= np.dot(
+        outt -= np.dot(
             gammas[i] * time_cen[i],
             (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[i + 1],
         )
 
         jidx = np.argwhere(time_cen[i] == 0.0)
-        if jidx.size > 0:
-            gamP = gammaincc(x[0], gobs[jidx])
+        for idxx in jidx[:, 0]:
+            gamP = gammaincc(x[0], gobs[idxx])
             gamP = np.maximum(gamP, 1e-35)  # Clip if the probability hits exactly 0
-            outt[i] -= np.dot(gammas[i][jidx].T, np.log(gamP))
+            outt -= gammas[i][idxx] * np.log(gamP)
 
-    assert np.all(np.isfinite(outt))
+    assert np.isfinite(outt)
     return outt
-
-
-def gamma_LL_diff(
-    logX: np.ndarray,
-    gamma_obs: list[np.ndarray],
-    time_cen: list[np.ndarray],
-    gammas: list[np.ndarray],
-):
-    """Calculating the diff for log likelihood of each parameter with step size = 1e-6."""
-    base = gamma_LL(logX, gamma_obs, time_cen, gammas)
-
-    logXshape = np.copy(logX)
-    logXshape[0] += 1e-6
-
-    shape_dx = gamma_LL(logXshape, gamma_obs, time_cen, gammas)
-
-    logXscale = np.copy(logX)
-    logXscale[1:] += 1e-6
-
-    scale_dx = gamma_LL(logXscale, gamma_obs, time_cen, gammas)
-
-    deriv = np.zeros_like(logX)
-    deriv[0] = (np.sum(shape_dx) - np.sum(base)) / 1e-6
-    deriv[1:] = (scale_dx - base) / 1e-6
-
-    return np.sum(base), deriv
 
 
 def gamma_estimator(
@@ -102,7 +79,7 @@ def gamma_estimator(
     gammas: list[np.ndarray],
     x0: np.ndarray,
     phase: str = "all",
-) -> np.ndarray:
+) -> npt.NDArray[np.float64]:
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
@@ -118,7 +95,7 @@ def gamma_estimator(
         assert gamma_obs[i].shape == time_cen[i].shape
         assert gamma_obs[i].shape == gammas[i].shape
 
-    arrgs = (gamma_obs, time_cen, gammas)
+    arrgs = (List(gamma_obs), List(time_cen), List(gammas))
     linc = list()
 
     if phase != "all":  # for constrained optimization
@@ -141,8 +118,8 @@ def gamma_estimator(
 
     with np.errstate(all="raise"):
         res = minimize(
-            gamma_LL_diff,
-            jac=True,
+            gamma_LL,
+            jac="3-point",
             x0=np.log(x0),
             args=arrgs,
             bounds=bnd,

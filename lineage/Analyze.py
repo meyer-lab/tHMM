@@ -21,7 +21,7 @@ def Analyze(X: list, num_states: int, fpi=None, fT=None, fE=None, rng=None) -> T
 
 
 def fit_list(
-    tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100, rng=None
+    tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 200, rng=None
 ) -> Tuple[list[np.ndarray], list[np.ndarray], float]:
     """
     Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.

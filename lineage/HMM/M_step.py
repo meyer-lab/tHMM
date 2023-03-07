@@ -24,8 +24,8 @@ def sum_nonleaf_gammas(
 
 
 def get_all_zetas(
-    leaves_idx: np.ndarray,
-    cell_to_daughters: np.ndarray,
+    leaves_idx: npt.NDArray[np.uintp],
+    cell_to_daughters: npt.NDArray[np.uintp],
     beta_array: npt.NDArray[np.float64],
     MSD_array: npt.NDArray[np.float64],
     gammas: npt.NDArray[np.float64],
