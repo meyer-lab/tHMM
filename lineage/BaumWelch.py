@@ -2,7 +2,10 @@
 import numpy as np
 from typing import Tuple
 from .tHMM import tHMM
+from .LineageTree import get_Emission_Likelihoods
 from .states.StateDistributionGamma import atonce_estimator
+from .HMM.M_step import get_all_zetas, sum_nonleaf_gammas
+from .HMM.E_step import get_leaf_Normalizing_Factors, get_MSD, get_beta, get_gamma
 
 
 def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
@@ -19,13 +22,15 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     NF = list()
     betas = list()
     gammas = list()
-    EL = tHMMobj.get_Emission_Likelihoods()
+    EL = get_Emission_Likelihoods(tHMMobj.X, tHMMobj.estimate.E)
 
     for ii, lO in enumerate(tHMMobj.X):
-        MSD.append(lO.get_MSD(tHMMobj.estimate.pi, tHMMobj.estimate.T))
-        NF.append(lO.get_leaf_Normalizing_Factors(MSD[ii], EL[ii]))
-        betas.append(lO.get_beta(tHMMobj.estimate.T, MSD[ii], EL[ii], NF[ii]))
-        gammas.append(lO.get_gamma(tHMMobj.estimate.T, MSD[ii], betas[ii]))
+        MSD.append(
+            get_MSD(lO.cell_to_parent, tHMMobj.estimate.pi, tHMMobj.estimate.T)
+        )
+        NF.append(get_leaf_Normalizing_Factors(lO.leaves_idx, MSD[ii], EL[ii]))
+        betas.append(get_beta(lO.leaves_idx, lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], EL[ii], NF[ii]))
+        gammas.append(get_gamma(lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], betas[ii]))
 
     return MSD, NF, betas, gammas
 
@@ -156,10 +161,10 @@ def do_M_T_step(
     for i, tt in enumerate(tHMMobj):
         for num, lO in enumerate(tt.X):
             # local T estimate
-            numer_e += lO.get_all_zetas(
+            numer_e += get_all_zetas(lO.leaves_idx, lO.cell_to_daughters,
                 betas[i][num], MSD[i][num], gammas[i][num], tt.estimate.T
             )
-            denom_e += lO.sum_nonleaf_gammas(gammas[i][num])
+            denom_e += sum_nonleaf_gammas(lO.leaves_idx, gammas[i][num])
 
     T_estimate = numer_e / denom_e[:, np.newaxis]
     T_estimate /= T_estimate.sum(axis=1)[:, np.newaxis]

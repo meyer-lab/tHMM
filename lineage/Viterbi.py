@@ -1,12 +1,11 @@
 """ This file contains the methods for the Viterbi algorithm implemented in an a upward recursion. """
 import numpy as np
 from typing import Tuple
-from .LineageTree import max_gen
 
-from .LineageTree import LineageTree
+from .LineageTree import get_Emission_Likelihoods
 
 
-def get_deltas(tHMMobj) -> Tuple[list[np.ndarray], list]:
+def get_deltas(X: list, E: list, T: np.ndarray) -> Tuple[list[np.ndarray], list]:
     """
     Delta matrix and base case at the leaves.
     Each element in this N by K matrix is the probability for the leaves :math:`P(x_n = x | z_n = k)`.
@@ -16,18 +15,13 @@ def get_deltas(tHMMobj) -> Tuple[list[np.ndarray], list]:
     :param tHMMobj: the tHMM object
     :return: a list of N by K matrices for each lineage, initialized from the leaf cells by EL(n,k).
     """
-    EL = tHMMobj.get_Emission_Likelihoods()
-    T = tHMMobj.estimate.T  # getting the transition matrix of the respective lineage
+    EL = get_Emission_Likelihoods(X, E)
 
     deltas = []
     state_ptrs = []
 
-    for num, linObj in enumerate(
-        tHMMobj.X
-    ):  # getting the lineage in the Population by index
-        delta_array = np.zeros(
-            (len(linObj), tHMMobj.num_states)
-        )  # instantiating N by K array
+    for num, linObj in enumerate(X):  # getting the lineage in the Population by index
+        delta_array = np.zeros((len(linObj), len(E)))  # instantiating N by K array
         state_ptrs_array = np.empty((len(linObj), 2), dtype=object)
         delta_array[linObj.leaves_idx, :] = EL[num][linObj.leaves_idx, :]
 
@@ -49,7 +43,7 @@ def get_deltas(tHMMobj) -> Tuple[list[np.ndarray], list]:
 
 
 def get_delta_parent_child_prod(
-    linObj: LineageTree, delta_array: np.ndarray, T: np.ndarray, node_parent_m_idx: int
+    linObj, delta_array: np.ndarray, T: np.ndarray, node_parent_m_idx: int
 ) -> Tuple[np.ndarray, list]:
     """
     Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.
@@ -95,7 +89,7 @@ def Viterbi(tHMMobj) -> list[np.ndarray]:
     :param state_ptrs: a list of tuples of daughter cell indexes and their state pointers
     :return: assigned states to each cell in all lineages
     """
-    deltas, state_ptrs = get_deltas(tHMMobj)
+    deltas, state_ptrs = get_deltas(tHMMobj.X, tHMMobj.estimate.E, tHMMobj.estimate.T)
     all_states = []
 
     for num, lineageObj in enumerate(tHMMobj.X):
@@ -117,9 +111,7 @@ def Viterbi(tHMMobj) -> list[np.ndarray]:
                     child_state_tuple = state_ptrs[num][pIDX, ii]
 
                     if child_state_tuple[0] == cIDX:
-                        opt_state_tree[cIDX] = child_state_tuple[1][
-                            parent_state
-                        ]
+                        opt_state_tree[cIDX] = child_state_tuple[1][parent_state]
                         break
 
         all_states.append(opt_state_tree)

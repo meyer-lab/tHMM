@@ -1,9 +1,8 @@
 """ Calls the tHMM functions and outputs the parameters needed to generate the Figures. """
 import itertools
-from typing import Any, Tuple, Union
+from typing import Any, Tuple
 import numpy as np
 from scipy.optimize import linear_sum_assignment
-from concurrent.futures import ProcessPoolExecutor, Future, Executor
 from sklearn.metrics import rand_score
 from .tHMM import tHMM
 from .BaumWelch import (
@@ -15,14 +14,6 @@ from .BaumWelch import (
 )
 
 
-class DummyExecutor(Executor):
-    def submit(self, fn, *args, **kwargs):
-        f = Future()
-        result = fn(*args, **kwargs)
-        f.set_result(result)
-        return f
-
-
 def Analyze(X: list, num_states: int, fpi=None, fT=None, fE=None, rng=None) -> Tuple[tHMM, float]:
     """Wrapper for one-condition case."""
     tHMMobj_list, LL, _ = Analyze_list([X], num_states, fpi=fpi, fT=fT, fE=fE, rng=rng)
@@ -30,7 +21,7 @@ def Analyze(X: list, num_states: int, fpi=None, fT=None, fE=None, rng=None) -> T
 
 
 def fit_list(
-    tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 100, rng=None
+    tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 200, rng=None
 ) -> Tuple[list[np.ndarray], list[np.ndarray], float]:
     """
     Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
@@ -116,7 +107,7 @@ def Analyze_list(
 def run_Analyze_over(
     list_of_populations: list[list],
     num_states: np.ndarray,
-    parallel=True,
+    parallel=False,
     atonce=False,
     list_of_fpi=None,
     list_of_fT=None,
@@ -151,20 +142,13 @@ def run_Analyze_over(
         num_states = np.full(len(list_of_populations), num_states)
 
     output = []
-    exe: Union[ProcessPoolExecutor, DummyExecutor]
-    if parallel:
-        exe = ProcessPoolExecutor()
-    else:
-        exe = DummyExecutor()
 
-    prom_holder = []
     for idx, population in enumerate(list_of_populations):
         if (
             atonce
         ):  # if we are running all the concentration simultaneously, they should be given to Analyze_list() specifically in the case of figure 9
-            prom_holder.append(
-                exe.submit(
-                    Analyze_list,
+            output.append(
+                Analyze_list(
                     population,
                     num_states[idx],
                     fpi=list_of_fpi[idx],
@@ -173,9 +157,8 @@ def run_Analyze_over(
                 )
             )
         else:  # if we are not fitting all conditions at once, we need to pass the populations to the Analyze()
-            prom_holder.append(
-                exe.submit(
-                    Analyze,
+            output.append(
+                Analyze(
                     population,
                     num_states[idx],
                     fpi=list_of_fpi[idx],
@@ -183,9 +166,6 @@ def run_Analyze_over(
                     fE=list_of_fE[idx],
                 )
             )
-
-    output = [prom.result() for prom in prom_holder]
-    exe.shutdown()
 
     return output
 
