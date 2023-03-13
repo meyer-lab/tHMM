@@ -13,7 +13,7 @@ output/figure%.svg: lineage/figures/figure%.py
 	fi
 
 test:
-	poetry run pytest -v -n 3
+	poetry run pytest -v -s -x
 
 mypy:
 	poetry run mypy --install-types --non-interactive --ignore-missing-imports lineage

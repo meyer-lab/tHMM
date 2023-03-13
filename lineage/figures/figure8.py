@@ -51,7 +51,7 @@ def makeFigure():
             else:
                 # censored lineage creation
                 lineages = [LineageTree.rand_init(
-                    pi, T, e, 2**6 - 1, censor_condition=3, experiment_time=1200) for _ in range(10)]
+                    pi, T, e, 2**6 - 1, censor_condition=3, desired_experiment_time=1200) for _ in range(10)]
             tmp.append(exe.submit(run_BIC, e, lineages))
         BICprom.append(tmp)
     Bic = [[aaa.result() for aaa in ee] for ee in BICprom]
