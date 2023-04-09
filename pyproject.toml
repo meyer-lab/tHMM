@@ -6,10 +6,10 @@ authors = ["Your Name <you@example.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.11"
-numpy = "^1.20.0"
-scipy = "^1.7.0"
-scikit-learn = "^1.0.2"
+python = ">=3.10,<3.12"
+numpy = "^1.24.2"
+scipy = "^1.10.1"
+scikit-learn = "^1.2"
 seaborn = "^0.12.2"
 svgutils = "^0.3.4"
 openpyxl = "^3.0.9"
@@ -19,8 +19,7 @@ pygraphviz = "^1.7"
 Sphinx = "^4.5.0"
 sphinx-autoapi = "^1.8.4"
 statsmodels = "^0.13.2"
-numba = "^0.56.4"
-numba-scipy = "^0.3.1"
+numba = "0.57.0rc1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

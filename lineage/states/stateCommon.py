@@ -5,11 +5,19 @@ import numpy as np
 from numba import njit
 from numba.typed import List
 import numpy.typing as npt
+from ctypes import CFUNCTYPE, c_double
+from numba.extending import get_cython_function_address
 from scipy.optimize import minimize, Bounds
-from scipy.special import gammaincc, gammaln
 
 
 warnings.filterwarnings("ignore", message="Values in x were outside bounds")
+
+
+addr = get_cython_function_address("scipy.special.cython_special", "gammaincc")
+gammaincc = CFUNCTYPE(c_double, c_double, c_double)(addr)
+
+addr = get_cython_function_address("scipy.special.cython_special", "gammaln")
+gammaln = CFUNCTYPE(c_double, c_double)(addr)
 
 
 def basic_censor(cell):
