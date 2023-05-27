@@ -162,8 +162,8 @@ def do_M_T_step(
         for num, lO in enumerate(tt.X):
             # local T estimate
             numer_e += get_all_zetas(lO.leaves_idx, lO.cell_to_daughters,
-                betas[i][num], MSD[i][num], gammas[i][num], tt.estimate.T
-            )
+                                     betas[i][num], MSD[i][num], gammas[i][num], tt.estimate.T
+                                     )
             denom_e += sum_nonleaf_gammas(lO.leaves_idx, gammas[i][num])
 
     T_estimate = numer_e / denom_e[:, np.newaxis]
