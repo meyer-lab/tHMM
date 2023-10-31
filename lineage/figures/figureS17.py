@@ -30,7 +30,7 @@ def makeFigure():
     ax, f = getSetup((10, 20), (np.max(num_lins), 4))
 
     for i in range(4 * np.max(num_lins)):
-        ax[i].axis('off')
+        ax[i].axis("off")
 
     for j, thmmobj in enumerate(hgf_tHMMobj_list):
         for i, X in enumerate(thmmobj.X):

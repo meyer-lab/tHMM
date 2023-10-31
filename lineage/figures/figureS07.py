@@ -48,14 +48,24 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 7, a), state1] for a in np.linspace(1, 8, num_data_points)]
+    list_of_Es = [
+        [StateDistribution(0.99, 7, a), state1]
+        for a in np.linspace(1, 8, num_data_points)
+    ]
     list_of_populations = []
     list_of_fpi = []
     for E in list_of_Es:
         population = []
 
         for _ in range(5):
-            tmp_lineage = LineageTree.rand_init(pi, T, E, 0.5 * max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
+            tmp_lineage = LineageTree.rand_init(
+                pi,
+                T,
+                E,
+                0.5 * max_desired_num_cells,
+                censor_condition=3,
+                desired_experiment_time=500,
+            )
             if len(tmp_lineage.output_lineage) < 3:
                 pass
             else:

@@ -41,17 +41,27 @@ def makeFigure():
     for _ in range(10):
         tmp = []
         for idx, e in enumerate(E):
-            T = (np.eye(len(e)) + 0.1)
+            T = np.eye(len(e)) + 0.1
             T = T / np.sum(T, axis=1)[:, np.newaxis]
             pi = calculate_stationary(T)
             if idx < 3:
                 # uncensored lineage generation
-                lineages = [LineageTree.rand_init(
-                    pi, T, e, 2**6 - 1) for _ in range(10)]
+                lineages = [
+                    LineageTree.rand_init(pi, T, e, 2**6 - 1) for _ in range(10)
+                ]
             else:
                 # censored lineage creation
-                lineages = [LineageTree.rand_init(
-                    pi, T, e, 2**6 - 1, censor_condition=3, desired_experiment_time=1200) for _ in range(10)]
+                lineages = [
+                    LineageTree.rand_init(
+                        pi,
+                        T,
+                        e,
+                        2**6 - 1,
+                        censor_condition=3,
+                        desired_experiment_time=1200,
+                    )
+                    for _ in range(10)
+                ]
             tmp.append(exe.submit(run_BIC, e, lineages))
         BICprom.append(tmp)
     Bic = [[aaa.result() for aaa in ee] for ee in BICprom]
@@ -60,17 +70,20 @@ def makeFigure():
     exe.shutdown()
 
     # Finding proper ylim range for all 4 uncensored graphs and rounding up
-    upper_ylim_uncensored = int(1 + max([np.max(np.ptp(BIC[i], axis=0)) for i in range(4)]) / 25.0) * 25
+    upper_ylim_uncensored = (
+        int(1 + max([np.max(np.ptp(BIC[i], axis=0)) for i in range(4)]) / 25.0) * 25
+    )
 
     # Finding proper ylim range for all 4 censored graphs and rounding up
-    upper_ylim_censored = int(1 + max([np.max(np.ptp(BIC[i], axis=0)) for i in range(4, 8)]) / 25.0) * 25
+    upper_ylim_censored = (
+        int(1 + max([np.max(np.ptp(BIC[i], axis=0)) for i in range(4, 8)]) / 25.0) * 25
+    )
 
     upper_ylim = [upper_ylim_uncensored, upper_ylim_censored]
 
     # Plotting BICs
     for idx, a in enumerate(BIC):
-        figure_maker(ax[idx], a, (idx % 4) + 1,
-                     upper_ylim[int(idx / 4)], idx > 3)
+        figure_maker(ax[idx], a, (idx % 4) + 1, upper_ylim[int(idx / 4)], idx > 3)
     subplotLabel(ax)
     return f
 
@@ -83,7 +96,9 @@ def run_BIC(E, lineages):
 
     # Storing BICs into array
     BICs = np.empty((len(desired_num_states)))
-    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, parallel=True)
+    output = run_Analyze_over(
+        [lineages] * len(desired_num_states), desired_num_states, parallel=True
+    )
 
     for idx in range(len(desired_num_states)):
         nums = 0

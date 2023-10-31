@@ -19,9 +19,33 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((7.6, 3.1), (8, 3))
     figureMaker(ax)
-    ax[0].text(-0.2, 1.7, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
-    ax[1].text(-0.2, 1.7, ascii_lowercase[1], transform=ax[1].transAxes, fontsize=16, fontweight="bold", va="top")
-    ax[2].text(-0.2, 1.7, ascii_lowercase[2], transform=ax[2].transAxes, fontsize=16, fontweight="bold", va="top")
+    ax[0].text(
+        -0.2,
+        1.7,
+        ascii_lowercase[0],
+        transform=ax[0].transAxes,
+        fontsize=16,
+        fontweight="bold",
+        va="top",
+    )
+    ax[1].text(
+        -0.2,
+        1.7,
+        ascii_lowercase[1],
+        transform=ax[1].transAxes,
+        fontsize=16,
+        fontweight="bold",
+        va="top",
+    )
+    ax[2].text(
+        -0.2,
+        1.7,
+        ascii_lowercase[2],
+        transform=ax[2].transAxes,
+        fontsize=16,
+        fontweight="bold",
+        va="top",
+    )
 
     return f
 
@@ -45,4 +69,4 @@ def figureMaker(ax):
         plotLineage(Gem10uM[indxs_gem[i]], ax[3 * i + 2], censore=False, color=False)
 
     for i in range(24):
-        ax[i].axis('off')
+        ax[i].axis("off")

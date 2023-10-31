@@ -29,7 +29,7 @@ class TestModel(unittest.TestCase):
         self.left1 = c(parent=self.parent1)
         self.left1.obs = [1, 0, 10, 10, 1, 1]
         self.right1 = c(parent=self.parent1)
-        self.right1.obs = [1, float('nan'), 20, 105, 1, 0]
+        self.right1.obs = [1, float("nan"), 20, 105, 1, 0]
         self.parent1.left = self.left1
         self.parent1.right = self.right1
         self.lin1 = [self.left1, self.right1, self.parent1]
@@ -38,8 +38,14 @@ class TestModel(unittest.TestCase):
         self.parent2 = c(parent=None)
         self.parent2.obs = [1, 1, 10, 10, 0, 1]
         self.left2 = c(parent=self.parent2)
-        self.left2.obs = [float('nan'), float(
-            'nan'), 125, float('nan'), 0, float('nan')]
+        self.left2.obs = [
+            float("nan"),
+            float("nan"),
+            125,
+            float("nan"),
+            0,
+            float("nan"),
+        ]
         self.right2 = c(parent=self.parent2)
         self.right2.obs = [1, 0, 10, 10, 1, 1]
         self.parent2.left = self.left2
@@ -48,7 +54,7 @@ class TestModel(unittest.TestCase):
 
         # 3
         self.parent3 = c(parent=None)
-        self.parent3.obs = [1, 1, float('nan'), 30, float('nan'), 0]
+        self.parent3.obs = [1, 1, float("nan"), 30, float("nan"), 0]
         self.left3_1 = c(parent=self.parent3)
         self.left3_1.obs = [1, 1, 30, 30, 1, 1]
         self.right3_1 = c(parent=self.parent3)
@@ -56,11 +62,16 @@ class TestModel(unittest.TestCase):
         self.parent3.left = self.left3_1
         self.parent3.right = self.right3_1
         self.left3_2 = c(parent=self.left3_1)
-        self.left3_2.obs = [1, float('nan'), 30, 25, 1, 0]
+        self.left3_2.obs = [1, float("nan"), 30, 25, 1, 0]
         self.right3_2 = c(parent=self.left3_1)
-        self.right3_2.obs = [1, float('nan'), 25, 30, 1, 0]
-        self.lin3 = [self.left3_2, self.right3_2,
-                     self.left3_1, self.right3_1, self.parent3]
+        self.right3_2.obs = [1, float("nan"), 25, 30, 1, 0]
+        self.lin3 = [
+            self.left3_2,
+            self.right3_2,
+            self.left3_1,
+            self.right3_1,
+            self.parent3,
+        ]
         self.lin = [self.lin1, self.lin2, self.lin3]
 
     def test_import_Heiser(self):
@@ -95,11 +106,25 @@ class TestModel(unittest.TestCase):
             i += 1
         assert i < len(cLin)
         for j in range(6):
-            self.assertTrue(cLin[i].obs[j] == self.left3_1.obs[j] or (
-                math.isnan(self.left3_1.obs[j]) and math.isnan(cLin[i].obs[j])))
-            self.assertTrue(cLin[i].right.obs[j] == self.right3_2.obs[j] or (
-                math.isnan(self.right3_2.obs[j]) and math.isnan(cLin[i].right.obs[j])))
-            self.assertTrue(cLin[i].left.obs[j] == self.left3_2.obs[j] or (
-                math.isnan(self.left3_2.obs[j]) and math.isnan(cLin[i].left.obs[j])))
-            self.assertTrue(cLin[i].parent.obs[j] == self.parent3.obs[j] or (
-                math.isnan(self.parent3.obs[j]) and math.isnan(cLin[i].parent.obs[j])))
+            self.assertTrue(
+                cLin[i].obs[j] == self.left3_1.obs[j]
+                or (math.isnan(self.left3_1.obs[j]) and math.isnan(cLin[i].obs[j]))
+            )
+            self.assertTrue(
+                cLin[i].right.obs[j] == self.right3_2.obs[j]
+                or (
+                    math.isnan(self.right3_2.obs[j])
+                    and math.isnan(cLin[i].right.obs[j])
+                )
+            )
+            self.assertTrue(
+                cLin[i].left.obs[j] == self.left3_2.obs[j]
+                or (math.isnan(self.left3_2.obs[j]) and math.isnan(cLin[i].left.obs[j]))
+            )
+            self.assertTrue(
+                cLin[i].parent.obs[j] == self.parent3.obs[j]
+                or (
+                    math.isnan(self.parent3.obs[j])
+                    and math.isnan(cLin[i].parent.obs[j])
+                )
+            )

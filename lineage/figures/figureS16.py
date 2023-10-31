@@ -1,9 +1,6 @@
 """ Barcoding computational experinece. """
 import numpy as np
-from .common import (
-    getSetup,
-    subplotLabel
-)
+from .common import getSetup, subplotLabel
 from ..Analyze import Analyze_list
 from ..Lineage_collections import AllLapatinib, AllGemcitabine
 
@@ -26,7 +23,7 @@ def makeFigure():
 
 
 def plot_barcode_vs_state(ax, drug_name):
-    """ Plots the histogram of barcode vs states after clustering, using the parameters from lapatinib and gemcitabine fits. """
+    """Plots the histogram of barcode vs states after clustering, using the parameters from lapatinib and gemcitabine fits."""
 
     if drug_name == "lapatinibs":
         tHMMobj_list, _, _ = Analyze_list(AllLapatinib, 4)

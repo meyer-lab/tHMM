@@ -24,20 +24,28 @@ T_lap = lapt_tHMMobj_list[0].estimate.T
 num_states = lapt_tHMMobj_list[0].num_states
 
 # plot transition block
-plot_networkx(T_lap, 'lapatinib')
+plot_networkx(T_lap, "lapatinib")
 
 # plot the sample of lineage trees
-plot_lineage_samples(lapt_tHMMobj_list, 'figure01')
+plot_lineage_samples(lapt_tHMMobj_list, "figure01")
 
 
 def makeFigure():
-    """ Makes figure 11. """
+    """Makes figure 11."""
 
     ax, f = getSetup((17, 7.5), (2, 7))
     plot_all(ax, num_states, lapt_tHMMobj_list, "Laptinib", concs, concsValues)
     for i in range(3, 7):
         ax[i].set_title(concs[i - 3], fontsize=16)
-        ax[i].text(-0.2, 1.25, ascii_lowercase[i - 2], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
-        ax[i].axis('off')
+        ax[i].text(
+            -0.2,
+            1.25,
+            ascii_lowercase[i - 2],
+            transform=ax[i].transAxes,
+            fontsize=16,
+            fontweight="bold",
+            va="top",
+        )
+        ax[i].axis("off")
 
     return f

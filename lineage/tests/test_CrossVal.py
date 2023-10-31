@@ -25,12 +25,21 @@ def test_hide_obs():
 @pytest.mark.parametrize("cen", [0, 3])
 def test_cv(cen):
     """For censored and uncensored 2-state synthetic data,
-    it checks that the log-likelihood of a 2 state model is higher than a 1 state model."""
+    it checks that the log-likelihood of a 2 state model is higher than a 1 state model.
+    """
     complete_lineages = [
-        [LineageTree.rand_init(pi, T, E2, 20, censor_condition=cen, desired_experiment_time=100) for _ in range(50)] for _ in range(4)
+        [
+            LineageTree.rand_init(
+                pi, T, E2, 20, censor_condition=cen, desired_experiment_time=100
+            )
+            for _ in range(50)
+        ]
+        for _ in range(4)
     ]
 
-    train_lineages = [hide_observation(complete_lin, 0.25) for complete_lin in complete_lineages]
+    train_lineages = [
+        hide_observation(complete_lin, 0.25) for complete_lin in complete_lineages
+    ]
 
     ll = crossval(train_lineages, np.arange(1, 3))
     assert ll[0] < ll[1]

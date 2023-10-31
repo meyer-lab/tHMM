@@ -6,7 +6,7 @@ from ..import_lineage import import_AU565, MCF10A
 
 
 def test_data():
-    """ Manually setting up the first two lineages from the new AU565 data. """
+    """Manually setting up the first two lineages from the new AU565 data."""
     cell1 = CellVar(parent=None)
     cell1.left = CellVar(parent=cell1)
     cell1.right = CellVar(parent=cell1)
@@ -27,7 +27,9 @@ def test_data():
     cell4.right.obs = [np.nan, 9.5, 11.02, 1]
     lin2 = [cell4, cell4.left, cell4.right]
 
-    lineages = import_AU565("lineage/data/LineageData/AU02101_A3_field_1_RP_50_CSV-Table.csv")
+    lineages = import_AU565(
+        "lineage/data/LineageData/AU02101_A3_field_1_RP_50_CSV-Table.csv"
+    )
     lin1 = lineages[0]  # lineage ID = 2
     lin2 = lineages[2]  # lineage ID = 3
 

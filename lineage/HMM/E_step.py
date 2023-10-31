@@ -209,4 +209,3 @@ def get_gamma(
 
     assert np.all(np.isfinite(gamma))
     return gamma
-

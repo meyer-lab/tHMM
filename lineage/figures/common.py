@@ -208,18 +208,24 @@ def genFigure():
 
     if sys.argv[1] == "1":
         # Overlay Figure 1 cartoon
-        overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 30, 196, scalee=1.1)
-        overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 215, 196, scalee=1.1)
-        overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 395, 196, scalee=1.1)
-        overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/fig1ylabel.svg', 15, 75, scalee=0.21)
-        overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/fig1ylabel.svg', 195, 75, scalee=0.21)
-        overlayCartoon(fdir + 'figure1.svg',
-                       f'{cartoon_dir}/fig1ylabel.svg', 375, 75, scalee=0.21)
+        overlayCartoon(
+            fdir + "figure1.svg", f"{cartoon_dir}/xaxis-h.svg", 30, 196, scalee=1.1
+        )
+        overlayCartoon(
+            fdir + "figure1.svg", f"{cartoon_dir}/xaxis-h.svg", 215, 196, scalee=1.1
+        )
+        overlayCartoon(
+            fdir + "figure1.svg", f"{cartoon_dir}/xaxis-h.svg", 395, 196, scalee=1.1
+        )
+        overlayCartoon(
+            fdir + "figure1.svg", f"{cartoon_dir}/fig1ylabel.svg", 15, 75, scalee=0.21
+        )
+        overlayCartoon(
+            fdir + "figure1.svg", f"{cartoon_dir}/fig1ylabel.svg", 195, 75, scalee=0.21
+        )
+        overlayCartoon(
+            fdir + "figure1.svg", f"{cartoon_dir}/fig1ylabel.svg", 375, 75, scalee=0.21
+        )
 
     if sys.argv[1] == "4":
         # Overlay Figure 4 cartoon
@@ -245,82 +251,195 @@ def genFigure():
 
     if sys.argv[1] == "11":
         # Overlay Transition block
-        overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/figure01.svg', 450, 50, scale_x=0.9, scale_y=1.2)
-        overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/lapatinib.svg', 5, 80, scalee=0.8)
-        overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 450, 215, scalee=1.44)
-        overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 645, 215, scalee=1.44)
-        overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 840, 215, scalee=1.44)
-        overlayCartoon(fdir + 'figure11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 1040, 215, scalee=1.44)
+        overlayCartoon(
+            fdir + "figure11.svg",
+            f"{cartoon_dir}/figure01.svg",
+            450,
+            50,
+            scale_x=0.9,
+            scale_y=1.2,
+        )
+        overlayCartoon(
+            fdir + "figure11.svg", f"{cartoon_dir}/lapatinib.svg", 5, 80, scalee=0.8
+        )
+        overlayCartoon(
+            fdir + "figure11.svg", f"{cartoon_dir}/xaxis-h.svg", 450, 215, scalee=1.44
+        )
+        overlayCartoon(
+            fdir + "figure11.svg", f"{cartoon_dir}/xaxis-h.svg", 645, 215, scalee=1.44
+        )
+        overlayCartoon(
+            fdir + "figure11.svg", f"{cartoon_dir}/xaxis-h.svg", 840, 215, scalee=1.44
+        )
+        overlayCartoon(
+            fdir + "figure11.svg", f"{cartoon_dir}/xaxis-h.svg", 1040, 215, scalee=1.44
+        )
 
     if sys.argv[1] == "12":
         # Overlay Transition block
-        overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/figure02.svg', 450, 50, scale_x=0.9, scale_y=1.2)
-        overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/gemcitabine.svg', 10, 70, scalee=1.05)
-        overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 450, 215, scalee=1.44)
-        overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 645, 215, scalee=1.44)
-        overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 840, 215, scalee=1.44)
-        overlayCartoon(fdir + 'figure12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 1040, 215, scalee=1.44)
+        overlayCartoon(
+            fdir + "figure12.svg",
+            f"{cartoon_dir}/figure02.svg",
+            450,
+            50,
+            scale_x=0.9,
+            scale_y=1.2,
+        )
+        overlayCartoon(
+            fdir + "figure12.svg", f"{cartoon_dir}/gemcitabine.svg", 10, 70, scalee=1.05
+        )
+        overlayCartoon(
+            fdir + "figure12.svg", f"{cartoon_dir}/xaxis-h.svg", 450, 215, scalee=1.44
+        )
+        overlayCartoon(
+            fdir + "figure12.svg", f"{cartoon_dir}/xaxis-h.svg", 645, 215, scalee=1.44
+        )
+        overlayCartoon(
+            fdir + "figure12.svg", f"{cartoon_dir}/xaxis-h.svg", 840, 215, scalee=1.44
+        )
+        overlayCartoon(
+            fdir + "figure12.svg", f"{cartoon_dir}/xaxis-h.svg", 1040, 215, scalee=1.44
+        )
 
     if sys.argv[1] == "13":
         # Overlay Transition block
-        overlayCartoon(fdir + 'figure13.svg',
-                       f'{cartoon_dir}/figure03.svg', 430, 30, scale_x=0.9, scale_y=1.5)
-        overlayCartoon(fdir + 'figure13.svg',
-                       f'{cartoon_dir}/HGF.svg', 0, 80, scalee=1.1)
-        overlayCartoon(fdir + 'figure13.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 430, 260, scalee=1.44)
-        overlayCartoon(fdir + 'figure13.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 625, 260, scalee=1.44)
-        overlayCartoon(fdir + 'figure13.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 820, 260, scalee=1.4)
-        overlayCartoon(fdir + 'figure13.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 1010, 260, scalee=1.3)
+        overlayCartoon(
+            fdir + "figure13.svg",
+            f"{cartoon_dir}/figure03.svg",
+            430,
+            30,
+            scale_x=0.9,
+            scale_y=1.5,
+        )
+        overlayCartoon(
+            fdir + "figure13.svg", f"{cartoon_dir}/HGF.svg", 0, 80, scalee=1.1
+        )
+        overlayCartoon(
+            fdir + "figure13.svg", f"{cartoon_dir}/xaxis-h.svg", 430, 260, scalee=1.44
+        )
+        overlayCartoon(
+            fdir + "figure13.svg", f"{cartoon_dir}/xaxis-h.svg", 625, 260, scalee=1.44
+        )
+        overlayCartoon(
+            fdir + "figure13.svg", f"{cartoon_dir}/xaxis-h.svg", 820, 260, scalee=1.4
+        )
+        overlayCartoon(
+            fdir + "figure13.svg", f"{cartoon_dir}/xaxis-h.svg", 1010, 260, scalee=1.3
+        )
 
-    if sys.argv[1] == 'S11':
-        overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 40, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
-        overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 320, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
-        overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 580, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
-        overlayCartoon(fdir + 'figureS11.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 850, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
+    if sys.argv[1] == "S11":
+        overlayCartoon(
+            fdir + "figureS11.svg",
+            f"{cartoon_dir}/xaxis-h.svg",
+            40,
+            1790,
+            scalee=1,
+            scale_x=1.6,
+            scale_y=1.6,
+        )
+        overlayCartoon(
+            fdir + "figureS11.svg",
+            f"{cartoon_dir}/xaxis-h.svg",
+            320,
+            1790,
+            scalee=1,
+            scale_x=1.6,
+            scale_y=1.6,
+        )
+        overlayCartoon(
+            fdir + "figureS11.svg",
+            f"{cartoon_dir}/xaxis-h.svg",
+            580,
+            1790,
+            scalee=1,
+            scale_x=1.6,
+            scale_y=1.6,
+        )
+        overlayCartoon(
+            fdir + "figureS11.svg",
+            f"{cartoon_dir}/xaxis-h.svg",
+            850,
+            1790,
+            scalee=1,
+            scale_x=1.6,
+            scale_y=1.6,
+        )
 
-    if sys.argv[1] == 'S12':
-        overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 40, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
-        overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 320, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
-        overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 580, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
-        overlayCartoon(fdir + 'figureS12.svg',
-                       f'{cartoon_dir}/xaxis-h.svg', 850, 1790, scalee=1, scale_x=1.6, scale_y=1.6)
+    if sys.argv[1] == "S12":
+        overlayCartoon(
+            fdir + "figureS12.svg",
+            f"{cartoon_dir}/xaxis-h.svg",
+            40,
+            1790,
+            scalee=1,
+            scale_x=1.6,
+            scale_y=1.6,
+        )
+        overlayCartoon(
+            fdir + "figureS12.svg",
+            f"{cartoon_dir}/xaxis-h.svg",
+            320,
+            1790,
+            scalee=1,
+            scale_x=1.6,
+            scale_y=1.6,
+        )
+        overlayCartoon(
+            fdir + "figureS12.svg",
+            f"{cartoon_dir}/xaxis-h.svg",
+            580,
+            1790,
+            scalee=1,
+            scale_x=1.6,
+            scale_y=1.6,
+        )
+        overlayCartoon(
+            fdir + "figureS12.svg",
+            f"{cartoon_dir}/xaxis-h.svg",
+            850,
+            1790,
+            scalee=1,
+            scale_x=1.6,
+            scale_y=1.6,
+        )
 
     if sys.argv[1] == "S13":
         # Overlay Transition block
-        overlayCartoon(fdir + 'figureS13.svg',
-                       f'{cartoon_dir}/figure16.svg', 0, 20, scalee=0.8, scale_y=0.5)
-        overlayCartoon(fdir + 'figureS13.svg',
-                       f'{cartoon_dir}/figure161.svg', 200, 20, scalee=0.8, scale_y=0.5)
+        overlayCartoon(
+            fdir + "figureS13.svg",
+            f"{cartoon_dir}/figure16.svg",
+            0,
+            20,
+            scalee=0.8,
+            scale_y=0.5,
+        )
+        overlayCartoon(
+            fdir + "figureS13.svg",
+            f"{cartoon_dir}/figure161.svg",
+            200,
+            20,
+            scalee=0.8,
+            scale_y=0.5,
+        )
 
     if sys.argv[1] == "S14":
         # Overlay Transition block
-        overlayCartoon(fdir + 'figureS14.svg',
-                       f'{cartoon_dir}/figure17.svg', 0, 20, scalee=0.8, scale_y=0.5)
-        overlayCartoon(fdir + 'figureS14.svg',
-                       f'{cartoon_dir}/figure171.svg', 200, 20, scalee=0.8, scale_y=0.5)
+        overlayCartoon(
+            fdir + "figureS14.svg",
+            f"{cartoon_dir}/figure17.svg",
+            0,
+            20,
+            scalee=0.8,
+            scale_y=0.5,
+        )
+        overlayCartoon(
+            fdir + "figureS14.svg",
+            f"{cartoon_dir}/figure171.svg",
+            200,
+            20,
+            scalee=0.8,
+            scale_y=0.5,
+        )
 
 
 def commonAnalyze(
@@ -465,16 +584,54 @@ def figureMaker(
     i += 1  # i = 4
     if number_of_params == 6:  # phase specific gamma
         if dist_dist:  # bernoulli G2
-            sns.regplot(x="x", y="bern 0 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-            sns.regplot(x="x", y="bern 1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
-            ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5)
-            ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5)
+            sns.regplot(
+                x="x",
+                y="bern 0 1",
+                data=accuracy_df,
+                ax=ax[i],
+                lowess=True,
+                marker="+",
+                scatter_kws=scatter_kws_list[0],
+            )
+            sns.regplot(
+                x="x",
+                y="bern 1 1",
+                data=accuracy_df,
+                ax=ax[i],
+                lowess=True,
+                marker="+",
+                scatter_kws=scatter_kws_list[1],
+                line_kws={"color": "green"},
+            )
+            ax[i].scatter(
+                x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5
+            )
+            ax[i].scatter(
+                x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5
+            )
             ax[i].set_ylim(bottom=0.5, top=1.02)
             ax[i].set_ylabel("S/G2 Bernoulli p")
             ax[i].set_title(r"S/G2 Bernoulli p Estimation")
         else:
-            sns.regplot(x="x", y="gamma 0 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-            sns.regplot(x="x", y="gamma 1 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
+            sns.regplot(
+                x="x",
+                y="gamma 0 2",
+                data=accuracy_df,
+                ax=ax[i],
+                lowess=True,
+                marker="+",
+                scatter_kws=scatter_kws_list[0],
+            )
+            sns.regplot(
+                x="x",
+                y="gamma 1 2",
+                data=accuracy_df,
+                ax=ax[i],
+                lowess=True,
+                marker="+",
+                scatter_kws=scatter_kws_list[1],
+                line_kws={"color": "green"},
+            )
             ax[i].axhline(y=paramTrues[1, 0, 2], linestyle="-", c="#00ffff", alpha=0.5)
             ax[i].axhline(y=paramTrues[1, 1, 2], linestyle="-", c="#00cc00", alpha=0.5)
             ax[i].set_ylabel(r"G1 Gamma k")
@@ -482,8 +639,25 @@ def figureMaker(
             ax[i].set_ylim([0.0, 15.0])
 
     else:  # simple lifetime gamma
-        sns.regplot(x="x", y="0 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-        sns.regplot(x="x", y="1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
+        sns.regplot(
+            x="x",
+            y="0 1",
+            data=accuracy_df,
+            ax=ax[i],
+            lowess=True,
+            marker="+",
+            scatter_kws=scatter_kws_list[0],
+        )
+        sns.regplot(
+            x="x",
+            y="1 1",
+            data=accuracy_df,
+            ax=ax[i],
+            lowess=True,
+            marker="+",
+            scatter_kws=scatter_kws_list[1],
+            line_kws={"color": "green"},
+        )
         ax[i].axhline(y=paramTrues[1, 0, 1], linestyle="-", c="#00ffff", alpha=0.5)
         ax[i].axhline(y=paramTrues[1, 1, 1], linestyle="-", c="#00cc00", alpha=0.5)
         ax[i].set_ylabel(r"Gamma k")
@@ -494,31 +668,108 @@ def figureMaker(
     i += 1  # i = 5
     if number_of_params == 6:
         if dist_dist:  # plot gamma distance
-            sns.regplot(x="x", y='wasserstein distance 0', data=accuracy_df, ax=ax[i], lowess=True, label="state 1", marker='+', scatter_kws=scatter_kws_list[0])
-            sns.regplot(x="x", y='wasserstein distance 1', data=accuracy_df, ax=ax[i], lowess=True, label="state 2", marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
+            sns.regplot(
+                x="x",
+                y="wasserstein distance 0",
+                data=accuracy_df,
+                ax=ax[i],
+                lowess=True,
+                label="state 1",
+                marker="+",
+                scatter_kws=scatter_kws_list[0],
+            )
+            sns.regplot(
+                x="x",
+                y="wasserstein distance 1",
+                data=accuracy_df,
+                ax=ax[i],
+                lowess=True,
+                label="state 2",
+                marker="+",
+                scatter_kws=scatter_kws_list[1],
+                line_kws={"color": "green"},
+            )
             ax[i].set_title(r"Distance bw true and estm. gamma dists")
             ax[i].set_ylabel(r"Wasserstein Distance")
             ax[i].set_xlabel(xlabel)
             ax[i].set_ylim(0.0, 10.0)
             ax[i].legend()
         else:  # plot gamma params scale
-            sns.regplot(x="x", y="gamma 0 3", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-            sns.regplot(x="x", y="gamma 1 3", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
-            ax[i].axhline(y=paramTrues[1, 0, 3], linestyle="-",
-                          c="#00ffff", alpha=0.5, label="State 1")
-            ax[i].axhline(y=paramTrues[1, 1, 3], linestyle="-",
-                          c="#00cc00", alpha=0.5, label="State 2")
+            sns.regplot(
+                x="x",
+                y="gamma 0 3",
+                data=accuracy_df,
+                ax=ax[i],
+                lowess=True,
+                marker="+",
+                scatter_kws=scatter_kws_list[0],
+            )
+            sns.regplot(
+                x="x",
+                y="gamma 1 3",
+                data=accuracy_df,
+                ax=ax[i],
+                lowess=True,
+                marker="+",
+                scatter_kws=scatter_kws_list[1],
+                line_kws={"color": "green"},
+            )
+            ax[i].axhline(
+                y=paramTrues[1, 0, 3],
+                linestyle="-",
+                c="#00ffff",
+                alpha=0.5,
+                label="State 1",
+            )
+            ax[i].axhline(
+                y=paramTrues[1, 1, 3],
+                linestyle="-",
+                c="#00cc00",
+                alpha=0.5,
+                label="State 2",
+            )
             ax[i].set_xlabel(xlabel)
             ax[i].set_ylabel(r"G1 Gamma $\theta$")
             ax[i].set_title(r"G1 Gamma $\theta$ Estimation")
             ax[i].set_ylim([0.0, 15.0])
     else:  # just simple gamma params
-        sns.regplot(x="x", y="gamma 0 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-        sns.regplot(x="x", y="gamma 1 2", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
-        ax[i].scatter(x, paramTrues[:, 0, 2], marker="_", s=20,
-                      c="#00ffff", alpha=0.5, label="State 1")
-        ax[i].scatter(x, paramTrues[:, 1, 2], marker="_", s=20,
-                      c="#00cc00", alpha=0.5, label="State 2")
+        sns.regplot(
+            x="x",
+            y="gamma 0 2",
+            data=accuracy_df,
+            ax=ax[i],
+            lowess=True,
+            marker="+",
+            scatter_kws=scatter_kws_list[0],
+        )
+        sns.regplot(
+            x="x",
+            y="gamma 1 2",
+            data=accuracy_df,
+            ax=ax[i],
+            lowess=True,
+            marker="+",
+            scatter_kws=scatter_kws_list[1],
+            line_kws={"color": "green"},
+        )
+        ax[i].scatter(
+            x,
+            paramTrues[:, 0, 2],
+            marker="_",
+            s=20,
+            c="#00ffff",
+            alpha=0.5,
+            label="State 1",
+        )
+        ax[i].scatter(
+            x,
+            paramTrues[:, 1, 2],
+            marker="_",
+            s=20,
+            c="#00cc00",
+            alpha=0.5,
+            label="State 2",
+        )
         ax[i].set_xlabel(xlabel)
         ax[i].set_ylabel(r"Gamma $\theta$")
         ax[i].set_title(r"Gamma $\theta$ Estimation")
@@ -527,8 +778,25 @@ def figureMaker(
 
     i += 1  # i = 6
     if number_of_params == 6 and (not dist_dist):
-        sns.regplot(x="x", y="bern 0 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-        sns.regplot(x="x", y="bern 1 1", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
+        sns.regplot(
+            x="x",
+            y="bern 0 1",
+            data=accuracy_df,
+            ax=ax[i],
+            lowess=True,
+            marker="+",
+            scatter_kws=scatter_kws_list[0],
+        )
+        sns.regplot(
+            x="x",
+            y="bern 1 1",
+            data=accuracy_df,
+            ax=ax[i],
+            lowess=True,
+            marker="+",
+            scatter_kws=scatter_kws_list[1],
+            line_kws={"color": "green"},
+        )
         ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5)
         ax[i].set_ylim(bottom=0.0, top=1.02)
@@ -536,15 +804,40 @@ def figureMaker(
         ax[i].set_title(r"S/G2 Bernoulli p")
     else:
         ax[i].set_ylim(bottom=0, top=101)
-        sns.regplot(x="x", y="accuracy", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+        sns.regplot(
+            x="x",
+            y="accuracy",
+            data=accuracy_df,
+            ax=ax[i],
+            lowess=True,
+            marker="+",
+            scatter_kws=scatter_kws_list[0],
+        )
         ax[i].set_ylabel(r"Adjusted Rand Index Accuracy [%]")
         ax[i].set_title("State Assignment Accuracy")
     ax[i].set_xlabel(xlabel)
 
     i += 1  # i = 7
     if number_of_params == 6 and (not dist_dist):
-        sns.regplot(x="x", y="gamma 0 4", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-        sns.regplot(x="x", y="gamma 1 4", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
+        sns.regplot(
+            x="x",
+            y="gamma 0 4",
+            data=accuracy_df,
+            ax=ax[i],
+            lowess=True,
+            marker="+",
+            scatter_kws=scatter_kws_list[0],
+        )
+        sns.regplot(
+            x="x",
+            y="gamma 1 4",
+            data=accuracy_df,
+            ax=ax[i],
+            lowess=True,
+            marker="+",
+            scatter_kws=scatter_kws_list[1],
+            line_kws={"color": "green"},
+        )
         ax[i].scatter(x, paramTrues[:, 0, 4], marker="_", s=20, c="#00ffff", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 1, 4], marker="_", s=20, c="#00cc00", alpha=0.5)
         ax[i].set_ylabel(r"S/G2 Gamma $k$")
@@ -568,8 +861,25 @@ def figureMaker(
 
     i += 1  # i = 8 (last)
     if number_of_params == 6 and (not dist_dist):
-        sns.regplot(x="x", y="gamma 0 5", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
-        sns.regplot(x="x", y="gamma 1 5", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[1], line_kws={"color": "green"})
+        sns.regplot(
+            x="x",
+            y="gamma 0 5",
+            data=accuracy_df,
+            ax=ax[i],
+            lowess=True,
+            marker="+",
+            scatter_kws=scatter_kws_list[0],
+        )
+        sns.regplot(
+            x="x",
+            y="gamma 1 5",
+            data=accuracy_df,
+            ax=ax[i],
+            lowess=True,
+            marker="+",
+            scatter_kws=scatter_kws_list[1],
+            line_kws={"color": "green"},
+        )
         ax[i].scatter(x, paramTrues[:, 0, 5], marker="_", s=20, c="#00ffff", alpha=0.5)
         ax[i].scatter(x, paramTrues[:, 1, 5], marker="_", s=20, c="#00cc00", alpha=0.5)
         ax[i].set_ylabel(r"S/G2 Gamma $\theta$")
@@ -615,18 +925,36 @@ def figureMaker(
 
         i += 1
         ax[i].set_ylim(bottom=0, top=np.mean(tr) + 0.2)
-        sns.regplot(x="x", y="tr", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+        sns.regplot(
+            x="x",
+            y="tr",
+            data=accuracy_df,
+            ax=ax[i],
+            lowess=True,
+            marker="+",
+            scatter_kws=scatter_kws_list[0],
+        )
         ax[i].set_ylabel(r"$||T-T_{est}||_{F}$")
         ax[i].set_title(r"Error in Estimating T")
         ax[i].set_ylim([0.0, 1.0])
         ax[i].set_xlabel(xlabel)
 
         i += 1
-        if (len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1])) or (num_lineages is None):
-            ax[i].axis('off')
+        if (
+            len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1])
+        ) or (num_lineages is None):
+            ax[i].axis("off")
         else:
             ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
-            sns.regplot(x="num lineages", y="pii", data=accuracy_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_kws_list[0])
+            sns.regplot(
+                x="num lineages",
+                y="pii",
+                data=accuracy_df,
+                ax=ax[i],
+                lowess=True,
+                marker="+",
+                scatter_kws=scatter_kws_list[0],
+            )
             ax[i].set_ylabel(r"$||\pi-\pi_{est}||_{2}$")
             ax[i].set_title(r"Error in Estimating $\pi$")
             ax[i].set_xlabel("Number of Lineages")
@@ -636,13 +964,21 @@ def figureMaker(
 def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
     """helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli."""
     for i in range(num_states):  # lapatinib that has 3 states
-        ax[10].plot(cons, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7, lw=3)
+        ax[10].plot(
+            cons, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7, lw=3
+        )
         ax[10].set_title("G1 phase")
-        ax[11].plot(cons, lpt_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7, lw=3)
+        ax[11].plot(
+            cons, lpt_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7, lw=3
+        )
         ax[11].set_title("S/G2 phase")
-        ax[12].plot(cons, bern_lpt[:, i, 0], label="state " + str(i + 1), alpha=0.7, lw=3)
+        ax[12].plot(
+            cons, bern_lpt[:, i, 0], label="state " + str(i + 1), alpha=0.7, lw=3
+        )
         ax[12].set_title("G1 phase")
-        ax[13].plot(cons, bern_lpt[:, i, 1], label="state " + str(i + 1), alpha=0.7, lw=3)
+        ax[13].plot(
+            cons, bern_lpt[:, i, 1], label="state " + str(i + 1), alpha=0.7, lw=3
+        )
         ax[13].set_title("S/G2 phase")
 
     # ylim and ylabel
@@ -660,24 +996,52 @@ def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
         ax[i].legend()
         ax[i].set_xlabel("Concentration [nM]")
         ax[i].set_xticklabels(concsValues, rotation=30)
-        ax[i].text(-0.2, 1.25, ascii_lowercase[i - 5], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
+        ax[i].text(
+            -0.2,
+            1.25,
+            ascii_lowercase[i - 5],
+            transform=ax[i].transAxes,
+            fontsize=16,
+            fontweight="bold",
+            va="top",
+        )
 
 
 def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     for i in range(3):
         ax[i].axis("off")
         ax[7 + i].axis("off")
-    ax[0].text(-0.2, 1.25, ascii_lowercase[0], transform=ax[0].transAxes, fontsize=16, fontweight="bold", va="top")
+    ax[0].text(
+        -0.2,
+        1.25,
+        ascii_lowercase[0],
+        transform=ax[0].transAxes,
+        fontsize=16,
+        fontweight="bold",
+        va="top",
+    )
 
     # lapatinib
-    lpt_avg = np.zeros((4, num_states, 2))  # the avg lifetime: num_conc x num_states x num_phases
+    lpt_avg = np.zeros(
+        (4, num_states, 2)
+    )  # the avg lifetime: num_conc x num_states x num_phases
     bern_lpt = np.zeros((4, num_states, 2))  # bernoulli
     # print parameters and estimated values
-    print(Dname, "\n the \u03C0: ", tHMMobj_list[0].estimate.pi, "\n the transition matrix: ", tHMMobj_list[0].estimate.T)
+    print(
+        Dname,
+        "\n the \u03C0: ",
+        tHMMobj_list[0].estimate.pi,
+        "\n the transition matrix: ",
+        tHMMobj_list[0].estimate.T,
+    )
     for idx, tHMMobj in enumerate(tHMMobj_list):  # for each concentration data
         for i in range(num_states):
-            lpt_avg[idx, i, 0] = np.log10(tHMMobj.estimate.E[i].params[2] * tHMMobj.estimate.E[i].params[3])  # G1
-            lpt_avg[idx, i, 1] = np.log10(tHMMobj.estimate.E[i].params[4] * tHMMobj.estimate.E[i].params[5])  # G2
+            lpt_avg[idx, i, 0] = np.log10(
+                tHMMobj.estimate.E[i].params[2] * tHMMobj.estimate.E[i].params[3]
+            )  # G1
+            lpt_avg[idx, i, 1] = np.log10(
+                tHMMobj.estimate.E[i].params[4] * tHMMobj.estimate.E[i].params[5]
+            )  # G2
             # bernoullis
             for j in range(2):
                 bern_lpt[idx, i, j] = tHMMobj.estimate.E[i].params[j]

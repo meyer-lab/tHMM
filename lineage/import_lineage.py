@@ -11,7 +11,7 @@ from .CellVar import CellVar
 
 
 def import_AU565(path: str) -> list:
-    """ Importing AU565 file cells.
+    """Importing AU565 file cells.
     :param path: the path to the file.
     :return population: list of cells structured in CellVar objects.
     """
@@ -21,11 +21,13 @@ def import_AU565(path: str) -> list:
     # loop over "lineageId"s
     for i in df["lineageId"].unique():
         # select all the cells that belong to that lineage
-        lineage = df.loc[df['lineageId'] == i]
+        lineage = df.loc[df["lineageId"] == i]
 
         # if the lineage Id exists, do the rest, if not, pass
         if not (lineage.empty):
-            unique_cell_ids = list(lineage["trackId"].unique())  # the length of this shows the number of cells in this lineage
+            unique_cell_ids = list(
+                lineage["trackId"].unique()
+            )  # the length of this shows the number of cells in this lineage
             unique_parent_trackIDs = lineage["parentTrackId"].unique()
 
             pid = [[0]]  # root parent's parent id
@@ -41,11 +43,23 @@ def import_AU565(path: str) -> list:
             # create a list to store cells belonging to a lineage
             lineage_list: list[CellVar] = [parent_cell]
             for k, val in enumerate(unique_cell_ids):
-                if val in parent_ids:  # if the id of a cell exists in the parent ids, it means the cell divides
-                    parent_index = [indx for indx, value in enumerate(parent_ids) if value == val]  # find whose mother it is
+                if (
+                    val in parent_ids
+                ):  # if the id of a cell exists in the parent ids, it means the cell divides
+                    parent_index = [
+                        indx for indx, value in enumerate(parent_ids) if value == val
+                    ]  # find whose mother it is
                     assert len(parent_index) == 2  # make sure has two children
-                    a = assign_observs_AU565(CellVar(parent=lineage_list[k]), lineage, unique_cell_ids[parent_index[0]])
-                    b = assign_observs_AU565(CellVar(parent=lineage_list[k]), lineage, unique_cell_ids[parent_index[1]])
+                    a = assign_observs_AU565(
+                        CellVar(parent=lineage_list[k]),
+                        lineage,
+                        unique_cell_ids[parent_index[0]],
+                    )
+                    b = assign_observs_AU565(
+                        CellVar(parent=lineage_list[k]),
+                        lineage,
+                        unique_cell_ids[parent_index[1]],
+                    )
                     lineage_list[k].left = a
                     lineage_list[k].right = b
 
@@ -55,7 +69,7 @@ def import_AU565(path: str) -> list:
         assert len(lineage_list) == len(unique_cell_ids)
         # if both observations are zero, remove the cell
         for n, cell in enumerate(lineage_list):
-            if (cell.obs[1] == 0 and cell.obs[2] == 0):
+            if cell.obs[1] == 0 and cell.obs[2] == 0:
                 lineage_list.pop(n)
 
         population.append(lineage_list)
@@ -72,8 +86,12 @@ def assign_observs_AU565(cell: CellVar, lineage, uniq_id: int) -> CellVar:
     cell.obs = np.array([1, 0, 0, 0], dtype=float)
     parent_id = lineage["parentTrackId"].unique()
     # cell fate: die = 0, divide = 1
-    if not (uniq_id in parent_id):  # if the cell has not divided, means either died or reached experiment end time
-        if np.max(lineage.loc[lineage["trackId"] == uniq_id]["frame"]) == 49:  # means reached end of experiment
+    if not (
+        uniq_id in parent_id
+    ):  # if the cell has not divided, means either died or reached experiment end time
+        if (
+            np.max(lineage.loc[lineage["trackId"] == uniq_id]["frame"]) == 49
+        ):  # means reached end of experiment
             cell.obs[0] = np.nan  # don't know
             cell.obs[3] = 1  # censored
         else:  # means cell died before experiment ended
@@ -84,9 +102,12 @@ def assign_observs_AU565(cell: CellVar, lineage, uniq_id: int) -> CellVar:
         cell.obs[3] = 1  # meaning it is left censored in its lifetime
 
     # cell's lifetime
-    cell.obs[1] = 0.5 * (np.max(lineage.loc[lineage['trackId'] == uniq_id]['frame']) - np.min(lineage.loc[lineage['trackId'] == uniq_id]['frame']))
+    cell.obs[1] = 0.5 * (
+        np.max(lineage.loc[lineage["trackId"] == uniq_id]["frame"])
+        - np.min(lineage.loc[lineage["trackId"] == uniq_id]["frame"])
+    )
     # cell's diameter
-    diam = np.array(lineage.loc[lineage['trackId'] == uniq_id]['Diameter_0'])
+    diam = np.array(lineage.loc[lineage["trackId"] == uniq_id]["Diameter_0"])
     if np.count_nonzero(diam == 0.0) != 0:
         diam[diam == 0.0] = np.nan
         if diam.size == 0:  # if empty
@@ -100,6 +121,7 @@ def assign_observs_AU565(cell: CellVar, lineage, uniq_id: int) -> CellVar:
 
     return cell
 
+
 #######################
 # importing MCF10A data
 #######################
@@ -107,7 +129,7 @@ def assign_observs_AU565(cell: CellVar, lineage, uniq_id: int) -> CellVar:
 
 
 def import_MCF10A(path: str):
-    """ Reading the data and extracting lineages and assigning their corresponding observations.
+    """Reading the data and extracting lineages and assigning their corresponding observations.
     :param path: the path to the mcf10a data.
     :return population: list of cells structured in CellVar objects.
     """
@@ -116,7 +138,7 @@ def import_MCF10A(path: str):
     # loop over "lineageId"s
     for i in df["lineage"].unique():
         # select all the cells that belong to that lineage
-        lineage = df.loc[df['lineage'] == i]
+        lineage = df.loc[df["lineage"] == i]
 
         lin_code = list(lineage["TID"].unique())[0]  # lineage code to process
         unique_parent_trackIDs = lineage["motherID"].unique()
@@ -167,14 +189,21 @@ def assign_observs_MCF10A(cell, lineage, uniq_id: int):
     cell.obs = [1, 0, 1, 0, 0]  # [fate, lifetime, censored?, velocity, mean_distance]
     t_end = 2880
     # check if cell's lifetime is zero
-    if (np.max(lineage.loc[lineage['TID'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['TID'] == uniq_id]['tmin'])) / 60 == 0:
+    if (
+        np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"])
+        - np.min(lineage.loc[lineage["TID"] == uniq_id]["tmin"])
+    ) / 60 == 0:
         lineage = lineage.loc[lineage["tmin"] < 2880]
         t_end = 2850
     parent_id = lineage["motherID"].unique()
 
     # cell fate: die = 0, divide = 1
-    if not (uniq_id in parent_id):  # if the cell has not divided, means either died or reached experiment end time
-        if np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"]) == t_end:  # means reached end of experiment
+    if not (
+        uniq_id in parent_id
+    ):  # if the cell has not divided, means either died or reached experiment end time
+        if (
+            np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"]) == t_end
+        ):  # means reached end of experiment
             cell.obs[0] = np.nan  # don't know
             cell.obs[2] = 0  # censored
         else:  # means cell died before experiment ended
@@ -185,15 +214,18 @@ def assign_observs_MCF10A(cell, lineage, uniq_id: int):
         cell.obs[2] = 0  # meaning it is left censored in its lifetime
 
     # cell's lifetime
-    cell.obs[1] = (np.max(lineage.loc[lineage['TID'] == uniq_id]['tmin']) - np.min(lineage.loc[lineage['TID'] == uniq_id]['tmin'])) / 60
-    cell.obs[3] = np.mean(lineage.loc[lineage['TID'] == uniq_id]['average_velocity'])
-    cell.obs[4] = np.mean(lineage.loc[lineage['TID'] == uniq_id]['distance_mean'])
+    cell.obs[1] = (
+        np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"])
+        - np.min(lineage.loc[lineage["TID"] == uniq_id]["tmin"])
+    ) / 60
+    cell.obs[3] = np.mean(lineage.loc[lineage["TID"] == uniq_id]["average_velocity"])
+    cell.obs[4] = np.mean(lineage.loc[lineage["TID"] == uniq_id]["distance_mean"])
 
     return cell
 
 
 def MCF10A(condition: str):
-    """ Creates the population of lineages for each condition.
+    """Creates the population of lineages for each condition.
     Conditions include: PBS, EGF-treated, HGF-treated, OSM-treated.
     :param condition: a condition between [PBS, EGF, HGF, OSM]
     """
@@ -226,4 +258,6 @@ def MCF10A(condition: str):
         return data1 + data2 + data3 + data4 + data5 + data6
 
     else:
-        raise ValueError("condition does not exist. choose between [PBS, EGF, HGF, OSM]")
+        raise ValueError(
+            "condition does not exist. choose between [PBS, EGF, HGF, OSM]"
+        )

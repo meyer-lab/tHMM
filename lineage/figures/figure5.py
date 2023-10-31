@@ -11,19 +11,28 @@ from .common import (
     max_num_lineages,
     num_data_points,
     figureMaker,
-    commonAnalyze
+    commonAnalyze,
 )
 from ..LineageTree import LineageTree
 
 # Creating a list of populations to analyze over
-num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
+num_lineages = np.linspace(
+    min_num_lineages, max_num_lineages, num_data_points, dtype=int
+)
 experiment_times = np.linspace(1200, int(2.5 * 1000), num_data_points)
 
 list_of_populations = []
 for indx, num in enumerate(num_lineages):
     population = []
     for _ in range(num):
-        tmp_lineage = LineageTree.rand_init(pi, T, E2, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
+        tmp_lineage = LineageTree.rand_init(
+            pi,
+            T,
+            E2,
+            desired_num_cells=min_desired_num_cells,
+            censor_condition=3,
+            desired_experiment_time=experiment_times[indx],
+        )
         if len(tmp_lineage.output_lineage) < 3:
             pass
         else:
@@ -41,7 +50,12 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((11, 8), (3, 3))
     # dist_dist is distribution distance
-    figureMaker(ax, *commonAnalyze(list_of_populations, 2), num_lineages=num_lineages, dist_dist=True)
+    figureMaker(
+        ax,
+        *commonAnalyze(list_of_populations, 2),
+        num_lineages=num_lineages,
+        dist_dist=True
+    )
 
     subplotLabel(ax)
 

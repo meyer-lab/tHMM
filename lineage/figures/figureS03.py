@@ -25,8 +25,21 @@ from ..LineageTree import LineageTree
 rng = np.random.default_rng(1)
 
 # Creating a list of populations to analyze over
-num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
-def func(): return LineageTree.rand_init(pi, T, E, min_desired_num_cells, censor_condition=3, desired_experiment_time=min_experiment_time, rng=rng)
+num_lineages = np.linspace(
+    min_num_lineages, max_num_lineages, num_data_points, dtype=int
+)
+
+
+def func():
+    return LineageTree.rand_init(
+        pi,
+        T,
+        E,
+        min_desired_num_cells,
+        censor_condition=3,
+        desired_experiment_time=min_experiment_time,
+        rng=rng,
+    )
 
 
 # Build population
