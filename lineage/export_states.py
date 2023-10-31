@@ -5,7 +5,7 @@ import pandas as pd
 
 
 def assign_states(input_X: list):
-    """ Given a list of lineages, it returns a 2D array of cell states in the form of a tree that will then be written into excel sheets.
+    """Given a list of lineages, it returns a 2D array of cell states in the form of a tree that will then be written into excel sheets.
     :param input_X: list of lineages.
     """
     X = []
@@ -43,23 +43,33 @@ def assign_states(input_X: list):
 
 
 def deintegrate(population, len_condition, gem=False):
-    """ Given the tHMMobj.X and the array that holds lengths of excel sheets for a condition, it returns a list including lineages corresponding to each excel sheet."""
+    """Given the tHMMobj.X and the array that holds lengths of excel sheets for a condition, it returns a list including lineages corresponding to each excel sheet."""
     condition = []
     if gem:
         j = 4
         for lens in len_condition:
-            condition.append(population[j: j + lens])
+            condition.append(population[j : j + lens])
             j += lens
     else:
         j = 0
         for lens in len_condition:
-            condition.append(population[j: j + lens])
+            condition.append(population[j : j + lens])
             j += lens
     return condition
 
 
-def write_onExcel(lapt_tHMMobj_list, len_lp_cntr, len_lp_25, len_lp_50, len_lp_250, conc1, conc2, conc3, gem=False):
-    """ Write cell states with the pattern of input data (in a binary format) to excel sheets. """
+def write_onExcel(
+    lapt_tHMMobj_list,
+    len_lp_cntr,
+    len_lp_25,
+    len_lp_50,
+    len_lp_250,
+    conc1,
+    conc2,
+    conc3,
+    gem=False,
+):
+    """Write cell states with the pattern of input data (in a binary format) to excel sheets."""
     # each of these is a list holding populations that belong to each sheet we imported.
     if gem:
         lpcont = deintegrate(lapt_tHMMobj_list[0].X, len_lp_cntr, gem=True)
@@ -80,36 +90,36 @@ def write_onExcel(lapt_tHMMobj_list, len_lp_cntr, len_lp_25, len_lp_50, len_lp_2
 
     for ind, sheet in enumerate(lpt_cnt):
         j = 1
-        writer = pd.ExcelWriter(cnt + str(ind) + ".xlsx", engine='openpyxl')
+        writer = pd.ExcelWriter(cnt + str(ind) + ".xlsx", engine="openpyxl")
         for arrays in sheet:
             df = pd.DataFrame(arrays)
-            df.to_excel(writer, sheet_name='sheet1', startrow=j)
+            df.to_excel(writer, sheet_name="sheet1", startrow=j)
             j += 19
         writer.save()
 
     for ind, sheet in enumerate(lpt_25):
         j = 1
-        writer = pd.ExcelWriter(conc1 + str(ind) + ".xlsx", engine='openpyxl')
+        writer = pd.ExcelWriter(conc1 + str(ind) + ".xlsx", engine="openpyxl")
         for arrays in sheet:
             df = pd.DataFrame(arrays)
-            df.to_excel(writer, sheet_name='sheet1', startrow=j)
+            df.to_excel(writer, sheet_name="sheet1", startrow=j)
             j += 19
         writer.save()
 
     for ind, sheet in enumerate(lpt_50):
         j = 1
-        writer = pd.ExcelWriter(conc2 + str(ind) + ".xlsx", engine='openpyxl')
+        writer = pd.ExcelWriter(conc2 + str(ind) + ".xlsx", engine="openpyxl")
         for arrays in sheet:
             df = pd.DataFrame(arrays)
-            df.to_excel(writer, sheet_name='sheet1', startrow=j)
+            df.to_excel(writer, sheet_name="sheet1", startrow=j)
             j += 19
         writer.save()
 
     for ind, sheet in enumerate(lpt_250):
         j = 1
-        writer = pd.ExcelWriter(conc3 + str(ind) + ".xlsx", engine='openpyxl')
+        writer = pd.ExcelWriter(conc3 + str(ind) + ".xlsx", engine="openpyxl")
         for arrays in sheet:
             df = pd.DataFrame(arrays)
-            df.to_excel(writer, sheet_name='sheet1', startrow=j)
+            df.to_excel(writer, sheet_name="sheet1", startrow=j)
             j += 19
         writer.save()

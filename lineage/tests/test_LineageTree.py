@@ -39,13 +39,27 @@ class TestModel(unittest.TestCase):
         self.E = [state_obj0, state_obj1]
 
         # creating lineages with the various censor conditions
-        self.lineage1 = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
-        self.lineage2_fate_censored = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=1)
+        self.lineage1 = LineageTree.rand_init(
+            self.pi, self.T, self.E, desired_num_cells=(2**11) - 1
+        )
+        self.lineage2_fate_censored = LineageTree.rand_init(
+            self.pi, self.T, self.E, desired_num_cells=(2**11) - 1, censor_condition=1
+        )
         self.lineage3_time_censored = LineageTree.rand_init(
-            self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=2, desired_experiment_time=500
+            self.pi,
+            self.T,
+            self.E,
+            desired_num_cells=(2**11) - 1,
+            censor_condition=2,
+            desired_experiment_time=500,
         )
         self.lineage4_both_censored = LineageTree.rand_init(
-            self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=500
+            self.pi,
+            self.T,
+            self.E,
+            desired_num_cells=(2**11) - 1,
+            censor_condition=3,
+            desired_experiment_time=500,
         )
 
         # creating 7 cells for 3 generations manually
@@ -107,7 +121,7 @@ class TestModel(unittest.TestCase):
         np.testing.assert_array_equal(list_by_gen[2], self.level3)
 
     def test_get_parent_for_level(self):
-        """ A unittest for get_parent_for_level. """
+        """A unittest for get_parent_for_level."""
         list_by_gen = max_gen(self.lineage1.output_lineage)
         parent_ind_holder = np.unique(self.lineage1.cell_to_parent[list_by_gen[3]])
         np.testing.assert_array_equal(parent_ind_holder, list_by_gen[2])

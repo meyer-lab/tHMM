@@ -14,7 +14,9 @@ from .BaumWelch import (
 )
 
 
-def Analyze(X: list, num_states: int, fpi=None, fT=None, fE=None, rng=None) -> Tuple[tHMM, float]:
+def Analyze(
+    X: list, num_states: int, fpi=None, fT=None, fE=None, rng=None
+) -> Tuple[tHMM, float]:
     """Wrapper for one-condition case."""
     tHMMobj_list, LL, _ = Analyze_list([X], num_states, fpi=fpi, fT=fT, fE=fE, rng=rng)
     return tHMMobj_list[0], LL
@@ -40,10 +42,7 @@ def fit_list(
     # Step 0: initialize with random assignments and do an M step
     # when there are no fixed emissions, we need to randomize the start
     init_gam = [
-        [
-            rng.dirichlet(np.ones(tO.num_states), size=len(lin))
-            for lin in tO.X
-        ]
+        [rng.dirichlet(np.ones(tO.num_states), size=len(lin)) for lin in tO.X]
         for tO in tHMMobj_list
     ]
 
@@ -92,7 +91,8 @@ def Analyze_list(
 
     for _ in range(5):
         tHMMobj_list2 = [
-            tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE, rng=rng) for X in pop_list
+            tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE, rng=rng)
+            for X in pop_list
         ]  # build the tHMM class with X
         _, gammas2, LL2 = fit_list(tHMMobj_list2, rng=rng)
 

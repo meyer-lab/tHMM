@@ -43,9 +43,20 @@ def find_state_proportions(lapt_tHMMobj, control=False):
 
 
 # labels
-concs = ["control", "lapatinib 25 nM", "lapatinib 50 nM", "lapatinib 250 nM", "control", "gemcitabine 5 nM", "gemcitabine 10 nM", "gemcitabine 30 nM"]
+concs = [
+    "control",
+    "lapatinib 25 nM",
+    "lapatinib 50 nM",
+    "lapatinib 250 nM",
+    "control",
+    "gemcitabine 5 nM",
+    "gemcitabine 10 nM",
+    "gemcitabine 30 nM",
+]
 # control
-control_L = find_state_proportions(lapt_tHMMobj_list[0], control=lapt_tHMMobj_list[0].X[0:100])
+control_L = find_state_proportions(
+    lapt_tHMMobj_list[0], control=lapt_tHMMobj_list[0].X[0:100]
+)
 
 # 25 nM
 conc1_L = find_state_proportions(lapt_tHMMobj_list[1])
@@ -57,7 +68,9 @@ conc2_L = find_state_proportions(lapt_tHMMobj_list[2])
 conc3_L = find_state_proportions(lapt_tHMMobj_list[3])
 
 # control
-control_G = find_state_proportions(gemc_tHMMobj_list[0], control=gemc_tHMMobj_list[0].X[101:])
+control_G = find_state_proportions(
+    gemc_tHMMobj_list[0], control=gemc_tHMMobj_list[0].X[101:]
+)
 
 # 5 nM
 conc1_G = find_state_proportions(gemc_tHMMobj_list[1])
@@ -70,19 +83,75 @@ conc3_G = find_state_proportions(gemc_tHMMobj_list[3])
 
 
 def makeFigure():
-    """ Makes figure S15. """
+    """Makes figure S15."""
 
     ax, f = getSetup((10, 5), (2, 4))
 
-    ax[0].stackplot(times, control_L[:, 0], control_L[:, 1], control_L[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
-    ax[1].stackplot(times, conc1_L[:, 0], conc1_L[:, 1], conc1_L[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
-    ax[2].stackplot(times, conc2_L[:, 0], conc2_L[:, 1], conc2_L[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
-    ax[3].stackplot(times, conc3_L[:, 0], conc3_L[:, 1], conc3_L[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
+    ax[0].stackplot(
+        times,
+        control_L[:, 0],
+        control_L[:, 1],
+        control_L[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
+    ax[1].stackplot(
+        times,
+        conc1_L[:, 0],
+        conc1_L[:, 1],
+        conc1_L[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
+    ax[2].stackplot(
+        times,
+        conc2_L[:, 0],
+        conc2_L[:, 1],
+        conc2_L[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
+    ax[3].stackplot(
+        times,
+        conc3_L[:, 0],
+        conc3_L[:, 1],
+        conc3_L[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
 
-    ax[4].stackplot(times, control_G[:, 0], control_G[:, 1], control_G[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
-    ax[5].stackplot(times, conc1_G[:, 0], conc1_G[:, 1], conc1_G[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
-    ax[6].stackplot(times, conc2_G[:, 0], conc2_G[:, 1], conc2_G[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
-    ax[7].stackplot(times, conc3_G[:, 0], conc3_G[:, 1], conc3_G[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
+    ax[4].stackplot(
+        times,
+        control_G[:, 0],
+        control_G[:, 1],
+        control_G[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
+    ax[5].stackplot(
+        times,
+        conc1_G[:, 0],
+        conc1_G[:, 1],
+        conc1_G[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
+    ax[6].stackplot(
+        times,
+        conc2_G[:, 0],
+        conc2_G[:, 1],
+        conc2_G[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
+    ax[7].stackplot(
+        times,
+        conc3_G[:, 0],
+        conc3_G[:, 1],
+        conc3_G[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
 
     for i in range(8):
         ax[i].legend()

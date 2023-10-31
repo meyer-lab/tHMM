@@ -47,9 +47,7 @@ class CellVar:
         assert T.shape[0] == T.shape[1]
 
         # roll a loaded die according to the row in the transtion matrix
-        left_state, right_state = rng.choice(
-            T.shape[0], size=2, p=T[self.state, :]
-        )
+        left_state, right_state = rng.choice(T.shape[0], size=2, p=T[self.state, :])
         self.left = CellVar(state=left_state, parent=self)
         self.right = CellVar(state=right_state, parent=self)
 

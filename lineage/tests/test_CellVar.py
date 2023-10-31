@@ -78,7 +78,9 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell.isLeafBecauseTerminal())
         left_cell, right_cell = cell.divide(T)
         self.assertFalse(cell.isLeafBecauseTerminal())
-        self.assertTrue(left_cell.isLeafBecauseTerminal() and right_cell.isLeafBecauseTerminal())
+        self.assertTrue(
+            left_cell.isLeafBecauseTerminal() and right_cell.isLeafBecauseTerminal()
+        )
 
     def test_get_sister(self):
         """
@@ -89,7 +91,10 @@ class TestModel(unittest.TestCase):
         parent_state = 1
         cell = c(state=parent_state, parent=None)
         left_cell, right_cell = cell.divide(T)
-        self.assertTrue(left_cell.get_sister() is right_cell and right_cell.get_sister() is left_cell)
+        self.assertTrue(
+            left_cell.get_sister() is right_cell
+            and right_cell.get_sister() is left_cell
+        )
 
     def test_get_root_cell(self):
         """
@@ -101,4 +106,6 @@ class TestModel(unittest.TestCase):
         cell = c(state=parent_state, parent=None)
         self.assertTrue(cell.get_root_cell() is cell)
         left_cell, right_cell = cell.divide(T)
-        self.assertTrue(left_cell.get_root_cell() is cell and right_cell.get_root_cell() is cell)
+        self.assertTrue(
+            left_cell.get_root_cell() is cell and right_cell.get_root_cell() is cell
+        )

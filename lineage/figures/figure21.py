@@ -17,10 +17,14 @@ def makeFigure():
     gem_out = output_LL(AllGemcitabine, desired_num_states)
 
     # ax[0].plot(desired_num_states, np.mean(np.asarray(lap_eqT), axis=0), label='equal T')
-    ax[0].plot(desired_num_states, np.mean(np.asarray(lap_estT), axis=0), label='estimate T')
+    ax[0].plot(
+        desired_num_states, np.mean(np.asarray(lap_estT), axis=0), label="estimate T"
+    )
     ax[0].set_title("Lapatinib-treated")
     # ax[1].plot(desired_num_states, np.mean(np.asarray(gem_eqT), axis=0), label='equal T')
-    ax[1].plot(desired_num_states, np.mean(np.asarray(gem_estT), axis=0), label='estimate T')
+    ax[1].plot(
+        desired_num_states, np.mean(np.asarray(gem_estT), axis=0), label="estimate T"
+    )
     ax[1].set_title("Gemcitabine-treated")
 
     for i in range(2):

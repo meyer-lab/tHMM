@@ -28,7 +28,6 @@ def basic_censor(cell):
     """
     if not cell.isRootParent():
         if not cell.parent.observed:
-
             cell.observed = False
             if not cell.isLeafBecauseTerminal():
                 cell.left.observed = False
@@ -60,7 +59,8 @@ def gamma_LL(
     gammas: List[npt.NDArray[np.float64]],
 ):
     """Log-likelihood for the optionally censored Gamma distribution.
-    The logX is the log transform of the parameters, in case of atonce estimation, it is [shape, scale1, scale2, scale3, scale4]."""
+    The logX is the log transform of the parameters, in case of atonce estimation, it is [shape, scale1, scale2, scale3, scale4].
+    """
     x = np.exp(logX)
     glnA = gammaln(x[0])
     outt = 0.0

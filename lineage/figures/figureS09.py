@@ -22,8 +22,13 @@ from .common import (
 from ..LineageTree import LineageTree
 
 # Creating a list of populations to analyze over
-num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
-list_of_populations = [[LineageTree.rand_init(pi, T, E2, min_desired_num_cells) for _ in range(num)] for num in num_lineages]
+num_lineages = np.linspace(
+    min_num_lineages, max_num_lineages, num_data_points, dtype=int
+)
+list_of_populations = [
+    [LineageTree.rand_init(pi, T, E2, min_desired_num_cells) for _ in range(num)]
+    for num in num_lineages
+]
 
 
 def makeFigure():

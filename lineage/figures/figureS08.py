@@ -16,7 +16,7 @@ from .common import (
     max_desired_num_cells,
     num_data_points,
     min_desired_num_cells,
-    figureMaker
+    figureMaker,
 )
 from ..LineageTree import LineageTree
 
@@ -49,7 +49,9 @@ def accuracy():
     cells = np.linspace(min_desired_num_cells, max_desired_num_cells, num_data_points)
 
     # Adding populations into a holder for analysing
-    list_of_populations = [[LineageTree.rand_init(pi, T, E2, cell_num)] for cell_num in cells]
+    list_of_populations = [
+        [LineageTree.rand_init(pi, T, E2, cell_num)] for cell_num in cells
+    ]
     list_of_fpi = [pi for _ in cells]
 
     return commonAnalyze(list_of_populations, 2, list_of_fpi=list_of_fpi)

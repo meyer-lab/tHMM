@@ -18,18 +18,28 @@ class TestModel(unittest.TestCase):
     """
 
     def setUp(self):
-        """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
+        """This tests that one step of Baum-Welch increases the likelihood of the fit."""
         # Using an unpruned lineage to avoid unforseen issues
-        self.X = [LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 11) - 1)]
+        self.X = [LineageTree.rand_init(pi, T, E, desired_num_cells=(2**11) - 1)]
         self.pi = np.array([0.55, 0.35, 0.10])
         self.T = np.array([[0.75, 0.20, 0.05], [0.1, 0.85, 0.05], [0.1, 0.1, 0.8]])
 
         # Emissions
-        self.E = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
-        self.X3 = [LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)]
+        self.E = [
+            StateDistPhase(0.99, 0.9, 20, 5, 10, 3),
+            StateDistPhase(0.88, 0.75, 10, 2, 15, 4),
+            StateDistPhase(0.77, 0.85, 15, 7, 20, 5),
+        ]
+        self.X3 = [
+            LineageTree.rand_init(
+                self.pi, self.T, self.E, desired_num_cells=(2**11) - 1
+            )
+        ]
 
         self.t = tHMM(self.X, num_states=2, rng=rng)  # build the tHMM class with X
-        self.t3 = tHMM(self.X3, num_states=3, rng=rng)  # build the tHMM class for 3 states
+        self.t3 = tHMM(
+            self.X3, num_states=3, rng=rng
+        )  # build the tHMM class for 3 states
 
     def test_init_paramlist(self):
         """
@@ -57,17 +67,21 @@ class TestModel(unittest.TestCase):
         EL3 = get_Emission_Likelihoods(self.X3, self.E)
 
         for ind, ELlin in enumerate(EL):
-            self.assertGreaterEqual(ELlin.shape[0], 0)  # at least zero cells in each lineage
-            self.assertGreaterEqual(EL3[ind].shape[0], 0)  # at least zero cells in each lineage
+            self.assertGreaterEqual(
+                ELlin.shape[0], 0
+            )  # at least zero cells in each lineage
+            self.assertGreaterEqual(
+                EL3[ind].shape[0], 0
+            )  # at least zero cells in each lineage
             self.assertEqual(ELlin.shape[1], 2)  # there are 2 states for each cell
             self.assertEqual(EL3[ind].shape[1], 3)  # there are 3 states for each cell
 
 
 def test_fit_performance():
-    """ Really defined states should get an accuracy >95%.
-    Lineages used should be large and distinct. """
+    """Really defined states should get an accuracy >95%.
+    Lineages used should be large and distinct."""
 
-    X = [LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 8) - 1)]
+    X = [LineageTree.rand_init(pi, T, E, desired_num_cells=(2**8) - 1)]
     first = Results(*Analyze(X, 2, fpi=pi, rng=rng))["state_similarity"]
     second = Results(*Analyze(X, 2, fpi=pi, rng=rng))["state_similarity"]
     assert max(first, second) > 95.0
@@ -76,7 +90,7 @@ def test_fit_performance():
 @pytest.mark.parametrize("sizze", [1, 3])
 @pytest.mark.parametrize("stateNum", [1, 2, 3])
 def test_small_lineages(sizze, stateNum):
-    """ To test lineages with 3 cells in them for simple gamma. """
+    """To test lineages with 3 cells in them for simple gamma."""
     # test with 2 state model
     lin = [LineageTree.rand_init(pi, T, E, sizze) for _ in range(2)]
 

@@ -42,9 +42,16 @@ def crossval(train_populations: list, num_states: np.ndarray):
             for lin_indx, lin in enumerate(tHMMobj.X):
                 for cell_indx, cell in enumerate(lin.output_lineage):
                     if cell.obs[2] < 0:
-                        positive_obs = np.array([-1 * o for o in cell.obs])[np.newaxis, :]
+                        positive_obs = np.array([-1 * o for o in cell.obs])[
+                            np.newaxis, :
+                        ]
 
-                        tmp = np.array([tHMMobj.estimate.E[i].logpdf(positive_obs)[0] for i in range(k)])
+                        tmp = np.array(
+                            [
+                                tHMMobj.estimate.E[i].logpdf(positive_obs)[0]
+                                for i in range(k)
+                            ]
+                        )
                         tmp += np.log(gamma_list[idx][lin_indx][cell_indx])
 
                         Logls += logsumexp(tmp)
@@ -57,7 +64,9 @@ def output_LL(complete_population, desired_num_states):
     # create training data by hiding 25% of cells in each lineage
     promholder = []
     for i in range(10):
-        train_population = [hide_observation(complete_pop, 0.25) for complete_pop in complete_population]
+        train_population = [
+            hide_observation(complete_pop, 0.25) for complete_pop in complete_population
+        ]
         promholder.append(exe.submit(crossval, train_population, desired_num_states))
 
     output = [p.result() for p in promholder]

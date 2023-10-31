@@ -29,18 +29,28 @@ def makeFigure():
     ax, f = getSetup((15, 45), (170, 4))
 
     for i in range(170):
-        ax[4 * i].axis('off')
-        ax[4 * i + 1].axis('off')
-        ax[4 * i + 2].axis('off')
-        ax[4 * i + 3].axis('off')
+        ax[4 * i].axis("off")
+        ax[4 * i + 1].axis("off")
+        ax[4 * i + 2].axis("off")
+        ax[4 * i + 3].axis("off")
         plotLineage(lapt_tHMMobj_list[0].X[i], ax[4 * i])
         plotLineage(lapt_tHMMobj_list[1].X[i], ax[4 * i + 1])
         plotLineage(lapt_tHMMobj_list[2].X[i], ax[4 * i + 2])
         plotLineage(lapt_tHMMobj_list[3].X[i], ax[4 * i + 3])
 
     for i in range(4):
-        ax[i].axis('off')
-        ax[i].text(-0.2, 1.55, ascii_lowercase[i], transform=ax[i].transAxes, fontsize=20, fontweight="bold", va="top")
-        ax[i].text(0.0, 1.55, titles[i], transform=ax[i].transAxes, fontsize=20, va="top")
+        ax[i].axis("off")
+        ax[i].text(
+            -0.2,
+            1.55,
+            ascii_lowercase[i],
+            transform=ax[i].transAxes,
+            fontsize=20,
+            fontweight="bold",
+            va="top",
+        )
+        ax[i].text(
+            0.0, 1.55, titles[i], transform=ax[i].transAxes, fontsize=20, va="top"
+        )
 
     return f

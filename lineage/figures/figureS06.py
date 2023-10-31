@@ -47,8 +47,14 @@ def accuracy():
     increasing the Wasserstein divergence between the two states.
     """
     # Creating a list of populations to analyze over
-    list_of_Es = [[StateDistribution(0.99, 8, a), state1] for a in np.linspace(1, 8, num_data_points)]
-    list_of_populations = [[LineageTree.rand_init(pi, T, E, max_desired_num_cells) for _ in range(4)] for E in list_of_Es]
+    list_of_Es = [
+        [StateDistribution(0.99, 8, a), state1]
+        for a in np.linspace(1, 8, num_data_points)
+    ]
+    list_of_populations = [
+        [LineageTree.rand_init(pi, T, E, max_desired_num_cells) for _ in range(4)]
+        for E in list_of_Es
+    ]
     list_of_fpi = [pi] * len(list_of_Es)
 
     return commonAnalyze(list_of_populations, 2, xtype="wass", list_of_fpi=list_of_fpi)

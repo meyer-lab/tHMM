@@ -26,7 +26,7 @@ def makeFigure():
     ax, f = getSetup((4, 40), (60, 1))
 
     for i in range(60):
-        ax[i].axis('off')
+        ax[i].axis("off")
         plotLineage(only_gemcitabine_control_1[i], ax[i])
 
     return f

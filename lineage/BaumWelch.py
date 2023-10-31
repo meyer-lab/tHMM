@@ -25,12 +25,21 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     EL = get_Emission_Likelihoods(tHMMobj.X, tHMMobj.estimate.E)
 
     for ii, lO in enumerate(tHMMobj.X):
-        MSD.append(
-            get_MSD(lO.cell_to_parent, tHMMobj.estimate.pi, tHMMobj.estimate.T)
-        )
+        MSD.append(get_MSD(lO.cell_to_parent, tHMMobj.estimate.pi, tHMMobj.estimate.T))
         NF.append(get_leaf_Normalizing_Factors(lO.leaves_idx, MSD[ii], EL[ii]))
-        betas.append(get_beta(lO.leaves_idx, lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], EL[ii], NF[ii]))
-        gammas.append(get_gamma(lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], betas[ii]))
+        betas.append(
+            get_beta(
+                lO.leaves_idx,
+                lO.cell_to_daughters,
+                tHMMobj.estimate.T,
+                MSD[ii],
+                EL[ii],
+                NF[ii],
+            )
+        )
+        gammas.append(
+            get_gamma(lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], betas[ii])
+        )
 
     return MSD, NF, betas, gammas
 
@@ -161,8 +170,13 @@ def do_M_T_step(
     for i, tt in enumerate(tHMMobj):
         for num, lO in enumerate(tt.X):
             # local T estimate
-            numer_e += get_all_zetas(lO.leaves_idx, lO.cell_to_daughters,
-                betas[i][num], MSD[i][num], gammas[i][num], tt.estimate.T
+            numer_e += get_all_zetas(
+                lO.leaves_idx,
+                lO.cell_to_daughters,
+                betas[i][num],
+                MSD[i][num],
+                gammas[i][num],
+                tt.estimate.T,
             )
             denom_e += sum_nonleaf_gammas(lO.leaves_idx, gammas[i][num])
 

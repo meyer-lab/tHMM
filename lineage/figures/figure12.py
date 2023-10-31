@@ -24,19 +24,27 @@ T_gem = gemc_tHMMobj_list[0].estimate.T
 num_states = gemc_tHMMobj_list[0].num_states
 
 # plot transition block
-plot_networkx(T_gem, 'gemcitabine')
+plot_networkx(T_gem, "gemcitabine")
 
 # plot sample of lineages
-plot_lineage_samples(gemc_tHMMobj_list, 'figure02')
+plot_lineage_samples(gemc_tHMMobj_list, "figure02")
 
 
 def makeFigure():
-    """ Makes figure 12. """
+    """Makes figure 12."""
     ax, f = getSetup((17, 7.5), (2, 7))
     plot_all(ax, num_states, gemc_tHMMobj_list, "Gemcitabine", concs, concsValues)
     for i in range(3, 7):
         ax[i].set_title(concs[i - 3], fontsize=16)
-        ax[i].text(-0.2, 1.25, ascii_lowercase[i - 2], transform=ax[i].transAxes, fontsize=16, fontweight="bold", va="top")
-        ax[i].axis('off')
+        ax[i].text(
+            -0.2,
+            1.25,
+            ascii_lowercase[i - 2],
+            transform=ax[i].transAxes,
+            fontsize=16,
+            fontweight="bold",
+            va="top",
+        )
+        ax[i].axis("off")
 
     return f

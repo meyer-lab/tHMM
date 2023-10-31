@@ -12,7 +12,7 @@ T_gem = gemc_tHMMobj_list[0].estimate.T
 
 
 def makeFigure():
-    """ makes figure 13 for transition matrices. """
+    """makes figure 13 for transition matrices."""
 
     ax, f = getSetup((13, 8), (1, 2))
     subplotLabel(ax)

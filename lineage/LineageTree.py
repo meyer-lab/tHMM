@@ -118,9 +118,7 @@ def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list:
     :param E: The emissions likelihood
     :return: The marginal state distribution
     """
-    all_cells = np.array(
-        [cell.obs for lineage in X for cell in lineage.output_lineage]
-    )
+    all_cells = np.array([cell.obs for lineage in X for cell in lineage.output_lineage])
     ELstack = np.zeros((len(all_cells), len(E)))
 
     for k in range(len(E)):  # for each state
@@ -130,7 +128,7 @@ def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list:
     ii = 0
     for lineageObj in X:  # for each lineage in our Population
         nl = len(lineageObj.output_lineage)  # getting the lineage length
-        EL.append(ELstack[ii: (ii + nl), :])  # append the EL_array for each lineage
+        EL.append(ELstack[ii : (ii + nl), :])  # append the EL_array for each lineage
 
         ii += nl
 

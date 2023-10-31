@@ -20,13 +20,42 @@ class TestModel(unittest.TestCase):
 
         # Emissions
         self.E = [StateDistribution(0.99, 20, 5), StateDistribution(0.80, 10, 1)]
-        self.E2 = [StateDistPhase(0.99, 0.9, 100, 1, 20, 1.5), StateDistPhase(0.8, 0.75, 100, 0.2, 60, 1)]
+        self.E2 = [
+            StateDistPhase(0.99, 0.9, 100, 1, 20, 1.5),
+            StateDistPhase(0.8, 0.75, 100, 0.2, 60, 1),
+        ]
 
         # creating two lineages, one with False for pruning, one with True.
-        self.lineage = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
-        self.lineage2 = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 5.5) - 1, censor_condition=2, desired_experiment_time=50)
-        self.lineage3 = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800)
-        self.population = [LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800) for i in range(50)]
+        self.lineage = LineageTree.rand_init(
+            self.pi, self.T, self.E, desired_num_cells=(2**11) - 1
+        )
+        self.lineage2 = LineageTree.rand_init(
+            self.pi,
+            self.T,
+            self.E,
+            desired_num_cells=(2**5.5) - 1,
+            censor_condition=2,
+            desired_experiment_time=50,
+        )
+        self.lineage3 = LineageTree.rand_init(
+            self.pi,
+            self.T,
+            self.E,
+            desired_num_cells=(2**11) - 1,
+            censor_condition=3,
+            desired_experiment_time=800,
+        )
+        self.population = [
+            LineageTree.rand_init(
+                self.pi,
+                self.T,
+                self.E,
+                desired_num_cells=(2**11) - 1,
+                censor_condition=3,
+                desired_experiment_time=800,
+            )
+            for i in range(50)
+        ]
 
     def test_rvs(self):
         """
@@ -41,12 +70,18 @@ class TestModel(unittest.TestCase):
         self.assertTrue(len(bern_obs1) == len(gamma_obs1) == 40)
 
         bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, _, _ = self.E2[0].rvs(size=50)
-        self.assertTrue(len(bern_obsG1) == len(bern_obsG2) == len(gamma_obsG1) == len(gamma_obsG2) == 50)
+        self.assertTrue(
+            len(bern_obsG1)
+            == len(bern_obsG2)
+            == len(gamma_obsG1)
+            == len(gamma_obsG2)
+            == 50
+        )
 
     def test_estimator(self):
         """
         A unittest for the estimator function, by generating 3000 observatons for each of the
-        distribution functions, we use the estimator and compare. """
+        distribution functions, we use the estimator and compare."""
         # Gamma dist.
         tuples_of_obs = self.E[0].rvs(size=5000)
         tuples_of_obs = list(map(list, zip(*tuples_of_obs)))
@@ -65,8 +100,12 @@ class TestModel(unittest.TestCase):
         np.testing.assert_allclose(estimator_obj.params, self.E[0].params, rtol=0.1)
 
         # For StateDistPhase
-        np.testing.assert_allclose(estimator_objPhase.G1.params, self.E2[0].G1.params, rtol=0.1)
-        np.testing.assert_allclose(estimator_objPhase.G2.params, self.E2[0].G2.params, rtol=0.1)
+        np.testing.assert_allclose(
+            estimator_objPhase.G1.params, self.E2[0].G1.params, rtol=0.1
+        )
+        np.testing.assert_allclose(
+            estimator_objPhase.G2.params, self.E2[0].G2.params, rtol=0.1
+        )
 
     def test_censor(self):
         """
@@ -82,6 +121,6 @@ class TestModel(unittest.TestCase):
 
 @pytest.mark.parametrize("dist", [StateDistribution, StateDistPhase])
 def test_self_dist_zero(dist):
-    """ Test that the distance from a distribution to itself is zero. """
+    """Test that the distance from a distribution to itself is zero."""
     dd = dist()
     assert dd.dist(dd) == 0.0
