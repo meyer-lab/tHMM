@@ -2,7 +2,7 @@
 
 import warnings
 import numpy as np
-from numba import njit
+from numba import jit
 from numba.typed import List
 import numpy.typing as npt
 from ctypes import CFUNCTYPE, c_double
@@ -51,7 +51,7 @@ def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
     return numerator / denominator
 
 
-@njit
+@jit(nopython=True)
 def gamma_LL(
     logX: npt.NDArray[np.float64],
     gamma_obs: List[npt.NDArray[np.float64]],

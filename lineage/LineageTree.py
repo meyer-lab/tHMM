@@ -12,7 +12,7 @@ class LineageTree:
 
     pi: npt.NDArray[np.float64]
     T: npt.NDArray[np.float64]
-    leaves_idx: npt.NDArray[np.uintp]
+    leaves_idx: np.ndarray
     idx_by_gen: list[np.ndarray]
     output_lineage: list[CellVar]
     cell_to_parent: np.ndarray
@@ -26,9 +26,11 @@ class LineageTree:
         # assign times using the state distribution specific time model
         E[0].assign_times(self.output_lineage)
 
-        self.leaves_idx = get_leaves_idx(self.output_lineage)
         self.cell_to_parent = cell_to_parent(self.output_lineage)
         self.cell_to_daughters = cell_to_daughters(self.output_lineage)
+
+        # Leaves have no daughters
+        self.leaves_idx = np.nonzero(np.all(self.cell_to_daughters == -1, axis=1))[0]
 
     @classmethod
     def rand_init(
@@ -227,18 +229,3 @@ def cell_to_daughters(lineage: list[CellVar]) -> np.ndarray:
             output[ii, 1] = lineage.index(cell.right)
 
     return output
-
-
-def get_leaves_idx(lineage: list[CellVar]) -> npt.NDArray[np.uintp]:
-    """
-    A function to find the leaves and their indexes in the lineage list.
-    :param lineage: The list of cells in a lineageTree object.
-    :return leaf_indices: The list of cell indexes.
-    :return leaves: The last cells in the lineage branch.
-    """
-    leaf_indices = []
-    for index, cell in enumerate(lineage):
-        if cell.isLeaf():
-            assert cell.observed
-            leaf_indices.append(index)  # appending the index of the cells
-    return np.array(leaf_indices, dtype=np.uintp)

@@ -2,7 +2,7 @@
 import unittest
 import numpy as np
 from ..CellVar import CellVar as c
-from ..LineageTree import LineageTree, max_gen, get_leaves_idx
+from ..LineageTree import LineageTree, max_gen
 from ..states.StateDistributionGamma import StateDistribution
 
 
@@ -125,14 +125,3 @@ class TestModel(unittest.TestCase):
         list_by_gen = max_gen(self.lineage1.output_lineage)
         parent_ind_holder = np.unique(self.lineage1.cell_to_parent[list_by_gen[3]])
         np.testing.assert_array_equal(parent_ind_holder, list_by_gen[2])
-
-    def test_get_leaves(self):
-        """
-        A unittest fot get_leaves function.
-        """
-        # getting the leaves and their indexes for lineage1
-        leaf_index = get_leaves_idx(self.lineage1.output_lineage)
-
-        # to check the indexes for leaf cells are true
-        for i in leaf_index:
-            self.assertTrue(self.lineage1.output_lineage[i].isLeaf())
