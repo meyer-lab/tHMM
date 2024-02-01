@@ -83,27 +83,6 @@ class CellVar:
         """
         return self.parent is None
 
-    def get_sister(self):
-        """
-        :Return cell_to_return: The sister of the current cell.
-        """
-        cell_to_return = None
-        if self.parent.left is self:
-            cell_to_return = self.parent.right
-        elif self.parent.right is self:
-            cell_to_return = self.parent.left
-        return cell_to_return
-
-    def get_root_cell(self):
-        """
-        :Return curr_cell: The first cell in the lineage to which this cell belongs.
-        """
-        curr_cell = self
-        while curr_cell.gen > 1:
-            curr_cell = curr_cell.parent
-        assert curr_cell.isRootParent()
-        return curr_cell
-
 
 @dataclass(init=True, repr=True, eq=True, order=True)
 class Time:

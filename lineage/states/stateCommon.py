@@ -20,23 +20,14 @@ addr = get_cython_function_address("scipy.special.cython_special", "gammaln")
 gammaln = CFUNCTYPE(c_double, c_double)(addr)
 
 
-def basic_censor(cell):
+def basic_censor(cells: list):
     """
-    Censors a cell, its daughters, its sister, and
-    it's sister's daughters if the cell's parent is
-    censored.
+    Censors a cell if the cell's parent is censored.
     """
-    if not cell.isRootParent():
-        if not cell.parent.observed:
-            cell.observed = False
-            if not cell.isLeafBecauseTerminal():
-                cell.left.observed = False
-                cell.right.observed = False
-
-            cell.get_sister().observed = False
-            if not cell.get_sister().isLeafBecauseTerminal():
-                cell.get_sister().left.observed = False
-                cell.get_sister().right.observed = False
+    for cell in cells:
+        if not cell.isRootParent():
+            if not cell.parent.observed:
+                cell.observed = False
 
 
 def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):

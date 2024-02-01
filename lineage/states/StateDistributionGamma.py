@@ -159,13 +159,13 @@ class StateDistribution:
             return full_lineage
 
         for cell in full_lineage:
-            basic_censor(cell)
-
             if censor_condition in (1, 3):
                 fate_censor(cell)
 
             if censor_condition in (2, 3):
                 time_censor(cell, desired_experiment_time)
+
+        basic_censor(full_lineage)
 
         return [c for c in full_lineage if c.observed]
 

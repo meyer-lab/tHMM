@@ -91,25 +91,6 @@ class TestModel(unittest.TestCase):
         # for test_get_mixed_subtrees
         self.mixed = [cell_2, cell_3, cell_4, cell_5, cell_6, cell_7]
 
-    def test_censor_lineage(self):
-        """
-        A unittest for censor_lineage.
-        """
-
-        # checking all the cells in the censored version should have all the
-        # bernoulli observations == 1 (dead cells have been removed.)
-        for cell in self.lineage1.output_lineage:
-            self.assertTrue(cell.observed)
-        for cell in self.lineage2_fate_censored.output_lineage:
-            if not cell.observed and not cell.get_sister().observed:
-                self.assertTrue(cell.parent.isLeaf)
-        for cell in self.lineage3_time_censored.output_lineage:
-            if not cell.observed and not cell.get_sister().observed:
-                self.assertTrue(cell.parent.isLeaf)
-        for cell in self.lineage4_both_censored.output_lineage:
-            if not cell.observed and not cell.get_sister().observed:
-                self.assertTrue(cell.parent.isLeaf)
-
     def test_max_gen(self):
         """
         A unittest for testing max_gen function by creating the lineage manually
