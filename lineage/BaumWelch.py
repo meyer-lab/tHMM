@@ -1,4 +1,5 @@
 """ Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch. """
+
 import numpy as np
 from typing import Tuple
 from .tHMM import tHMM

@@ -1,4 +1,5 @@
 """ Figure 20 for correlations between cell observations in the lineages. """
+
 import numpy as np
 import pandas as pd
 from .common import getSetup

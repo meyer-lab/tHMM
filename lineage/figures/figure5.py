@@ -1,4 +1,5 @@
 """ This file contains figures related to how big the experment needs to be. """
+
 import numpy as np
 from .common import (
     getSetup,

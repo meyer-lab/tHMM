@@ -4,6 +4,7 @@ Purpose: Generates figure S03.
 Figure S03 analyzes heterogeneous (2 state), censored (by both time and fate),
 populations of lineages (more than one lineage per populations).
 """
+
 import numpy as np
 
 from .common import (

@@ -1,5 +1,6 @@
 """ This file contains figures related to how far the states need to be,
 which is shown by Wasserestein distance. """
+
 import numpy as np
 import pandas as pd
 import seaborn as sns

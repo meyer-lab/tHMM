@@ -4,6 +4,7 @@ Purpose: Generates figure S02.
 Figure S02 analyzes heterogeneous (2 state), uncensored,
 populations of lineages (more than one lineage per populations).
 """
+
 import numpy as np
 
 from .common import (

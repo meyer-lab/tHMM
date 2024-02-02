@@ -1,4 +1,5 @@
 """ Cross validation. """
+
 import numpy as np
 from scipy.stats import bernoulli
 from scipy.special import logsumexp

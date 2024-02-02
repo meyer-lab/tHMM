@@ -4,6 +4,7 @@ Purpose: Generates figure S08.
 Figure S08 analyzes heterogeneous (2 state), uncensored,
 single lineages (no more than one lineage per population).
 """
+
 import numpy as np
 
 from .common import (

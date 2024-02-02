@@ -1,4 +1,5 @@
 """ Unit test file for Viterbi. """
+
 import unittest
 import numpy as np
 from ..tHMM import tHMM
