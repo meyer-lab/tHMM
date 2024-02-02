@@ -1,9 +1,7 @@
 import numpy as np
 import numpy.typing as npt
-from numba import njit
 
 
-@njit
 def get_leaf_Normalizing_Factors(
     leaves_idx: npt.NDArray[np.uintp],
     MSD: npt.NDArray[np.float64],
@@ -46,7 +44,6 @@ def get_leaf_Normalizing_Factors(
     return NF_array
 
 
-@njit
 def get_MSD(
     cell_to_parent: np.ndarray, pi: npt.NDArray[np.float64], T: npt.NDArray[np.float64]
 ) -> npt.NDArray[np.float64]:
@@ -156,7 +153,6 @@ def get_beta(
     return beta
 
 
-@njit
 def get_gamma(
     cell_to_daughters: npt.NDArray[np.uintp],
     T: npt.NDArray[np.float64],

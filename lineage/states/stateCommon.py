@@ -2,22 +2,12 @@
 
 import warnings
 import numpy as np
-from numba import jit
-from numba.typed import List
 import numpy.typing as npt
-from ctypes import CFUNCTYPE, c_double
-from numba.extending import get_cython_function_address
 from scipy.optimize import minimize, Bounds
+from scipy.special import gammaincc, gammaln
 
 
 warnings.filterwarnings("ignore", message="Values in x were outside bounds")
-
-
-addr = get_cython_function_address("scipy.special.cython_special", "gammaincc")
-gammaincc = CFUNCTYPE(c_double, c_double, c_double)(addr)
-
-addr = get_cython_function_address("scipy.special.cython_special", "gammaln")
-gammaln = CFUNCTYPE(c_double, c_double)(addr)
 
 
 def basic_censor(cells: list):
@@ -42,12 +32,11 @@ def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
     return numerator / denominator
 
 
-@jit(nopython=True)
 def gamma_LL(
     logX: npt.NDArray[np.float64],
-    gamma_obs: List[npt.NDArray[np.float64]],
-    time_cen: List[npt.NDArray[np.float64]],
-    gammas: List[npt.NDArray[np.float64]],
+    gamma_obs: list[npt.NDArray[np.float64]],
+    time_cen: list[npt.NDArray[np.float64]],
+    gammas: list[npt.NDArray[np.float64]],
 ):
     """Log-likelihood for the optionally censored Gamma distribution.
     The logX is the log transform of the parameters, in case of atonce estimation, it is [shape, scale1, scale2, scale3, scale4].
@@ -94,7 +83,7 @@ def gamma_estimator(
         assert gamma_obs[i].shape == time_cen[i].shape
         assert gamma_obs[i].shape == gammas[i].shape
 
-    arrgs = (List(gamma_obs), List(time_cen), List(gammas))
+    arrgs = (list(gamma_obs), list(time_cen), list(gammas))
     linc = list()
 
     if phase != "all":  # for constrained optimization
