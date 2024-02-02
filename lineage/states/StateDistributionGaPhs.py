@@ -1,4 +1,5 @@
 """ State distribution class for separated G1 and G2 phase durations as observation. """
+
 import numpy as np
 
 from .stateCommon import basic_censor

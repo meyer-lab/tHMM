@@ -3,6 +3,7 @@ File: figure8.py
 Purpose: Generates figure 8.
 BIC for synthetic data.
 """
+
 from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 from matplotlib.ticker import MaxNLocator

@@ -3,6 +3,7 @@ File: figure1.py
 Purpose: Generates figure 1.
 Figure 1 is the tHMM model and its purpose.
 """
+
 from string import ascii_lowercase
 import random
 import numpy as np

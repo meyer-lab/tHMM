@@ -1,4 +1,5 @@
 """ This file contains the methods for the Viterbi algorithm implemented in an a upward recursion. """
+
 import numpy as np
 from typing import Tuple
 

@@ -1,4 +1,5 @@
 """ This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
+
 from __future__ import annotations
 import numpy as np
 from typing import Optional

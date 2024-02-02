@@ -6,6 +6,7 @@ single lineages (more than one lineage per population)
 with different proportions of cells in states by
 changing the values in the transition matrices.
 """
+
 import numpy as np
 
 from .common import (

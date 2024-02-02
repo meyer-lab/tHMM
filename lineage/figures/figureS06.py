@@ -6,6 +6,7 @@ single lineages (more than one lineage per population)
 with similar proportions of cells in states but
 of varying distributions.
 """
+
 import numpy as np
 
 from .common import (

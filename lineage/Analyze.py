@@ -1,4 +1,5 @@
 """ Calls the tHMM functions and outputs the parameters needed to generate the Figures. """
+
 import itertools
 from typing import Any, Tuple
 import numpy as np

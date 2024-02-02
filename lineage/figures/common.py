@@ -2,6 +2,7 @@
 Contains utilities, functions, and variables that are commonly used or shared amongst
 the figure creation files.
 """
+
 from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 from ..states.StateDistributionGamma import StateDistribution
 import sys
