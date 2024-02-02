@@ -83,22 +83,6 @@ def get_MSD(
     return m
 
 
-@njit
-def np_apply_along_axis(func1d, axis, arr):
-    assert arr.ndim == 2
-    assert axis in [0, 1]
-    if axis == 0:
-        result = np.empty(arr.shape[1])
-        for i in range(len(result)):
-            result[i] = func1d(arr[:, i])
-    else:
-        result = np.empty(arr.shape[0])
-        for i in range(len(result)):
-            result[i] = func1d(arr[i, :])
-    return result
-
-
-@njit
 def get_beta(
     leaves_idx: npt.NDArray[np.uintp],
     cell_to_daughters: npt.NDArray[np.intp],
@@ -146,8 +130,8 @@ def get_beta(
 
     # Emission Likelihood, Marginal State Distribution, Normalizing Factor (same regardless of state)
     # P(x_n = x | z_n = k), P(z_n = k), P(x_n = x)
-    ZZ = EL * MSD / np.expand_dims(NF, axis=1)
-    beta[leaves_idx, :] = ZZ[leaves_idx, :]
+    ZZ = EL[leaves_idx, :] * MSD[leaves_idx, :] / NF[leaves_idx, np.newaxis]
+    beta[leaves_idx, :] = ZZ
 
     # Assert all ~= 1.0
     assert np.abs(np.sum(beta[-1]) - 1.0) < 1e-9
@@ -164,7 +148,7 @@ def get_beta(
     for pii in cIDXs:
         ch_ii = cell_to_daughters[pii, :]
         ratt = (beta[ch_ii, :] / MSD_array[ch_ii, :]) @ T.T
-        fac1 = np_apply_along_axis(np.prod, axis=0, arr=ratt) * ELMSD[pii, :]
+        fac1 = np.prod(ratt, axis=0) * ELMSD[pii, :]
 
         NF[pii] = np.sum(fac1)
         beta[pii, :] = fac1 / NF[pii]
