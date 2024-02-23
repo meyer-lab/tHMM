@@ -259,7 +259,7 @@ def tryRecursion(
     # Check that there is a value
     assert not math.isnan(data[parentPos][pColumn + 1]) or not math.isnan(
         data[parentPos][pColumn + 2]
-    ), f"Value missing in cell"
+    ), "Value missing in cell"
 
     # Creating daughter
     daughterCell = c(parent=parentCell)
