@@ -87,9 +87,8 @@ def assign_observs_AU565(cell: CellVar, lineage, uniq_id: int) -> CellVar:
     cell.obs = np.array([1, 0, 0, 0], dtype=float)
     parent_id = lineage["parentTrackId"].unique()
     # cell fate: die = 0, divide = 1
-    if not (
-        uniq_id in parent_id
-    ):  # if the cell has not divided, means either died or reached experiment end time
+    # if the cell has not divided, means either died or reached experiment end time
+    if uniq_id not in parent_id:
         if (
             np.max(lineage.loc[lineage["trackId"] == uniq_id]["frame"]) == 49
         ):  # means reached end of experiment
