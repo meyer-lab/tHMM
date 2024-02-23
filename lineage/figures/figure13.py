@@ -2,7 +2,6 @@
 
 """ This file depicts the distribution of phase lengths versus the states for each concentration of lapatinib. """
 
-
 from string import ascii_lowercase
 from matplotlib import gridspec, rcParams, pyplot as plt
 import seaborn as sns

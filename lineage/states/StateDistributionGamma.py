@@ -111,7 +111,7 @@ class StateDistribution:
         g_mask = np.logical_and(np.isfinite(γ_obs_), bern_obs_.astype("bool"))
         assert (
             np.sum(g_mask) > 0
-        ), f"All the cells are eliminated from the Gamma estimator."
+        ), "All the cells are eliminated from the Gamma estimator."
 
         self.params[0] = bern_estimator(bern_obs, gammas)
         self.params[1], self.params[2] = gamma_estimator(
@@ -235,7 +235,7 @@ def atonce_estimator(
     for g_mask in g_masks:
         assert (
             np.sum(g_mask) > 0
-        ), f"All the cells are eliminated from the Gamma estimator."
+        ), "All the cells are eliminated from the Gamma estimator."
 
     γ_obs_total = [g_obs[g_masks[i]] for i, g_obs in enumerate(γ_obs_)]
     γ_obs_total_censored = [
