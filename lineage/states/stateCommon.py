@@ -115,5 +115,5 @@ def gamma_estimator(
             constraints=linc,
         )
 
-    assert res.success or ("maximum number of function evaluations" in res.message)
+    assert res.success
     return np.exp(res.x)
