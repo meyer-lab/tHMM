@@ -102,12 +102,12 @@ def gamma_estimator(
         if np.any(np.dot(A, x0) < 0.0):
             x0 = np.array([x0[0], x0[1], x0[1], x0[1], x0[1]])
 
-    bnd = Bounds(np.full_like(x0, -3.5), np.full_like(x0, 6.0), keep_feasible=True)
+    bnd = Bounds(-4.0, 7.0, keep_feasible=True)
 
     with np.errstate(all="raise"):
         res = minimize(
             gamma_LL,
-            jac="3-point",
+            jac="2-point",
             x0=np.log(x0),
             args=arrgs,
             bounds=bnd,
