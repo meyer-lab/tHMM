@@ -16,6 +16,7 @@ class CellVar:
     observed: bool
     state: Optional[int]
     obs: Optional[np.ndarray]
+    time: Optional[Time]
     left: Optional["CellVar"]
     right: Optional["CellVar"]
 
