@@ -170,15 +170,15 @@ def log_T_score(
     :type lineageObj: object
     :return: the log-likelihood of the transition probability matrix
     """
-    log_T_score_holder = 0
+    log_T_score_holder = 0.0
     log_T = np.log(T)
 
     # we start with the first transition, from the root cell
     for cIDX, cell in enumerate(lineageObj.output_lineage):
         if cell.gen > 0 and not cell.isLeaf():
             cell_state = state_tree_sequence[cIDX]
-            for dIDX in lineageObj.cell_to_daughters[cIDX, :]:
+            for dIDX in [cIDX * 2 + 1, cIDX * 2 + 2]:
                 daughter_state = state_tree_sequence[dIDX]
-                log_T_score_holder += log_T[cell_state, daughter_state]
+                log_T_score_holder += float(log_T[cell_state, daughter_state])
 
     return log_T_score_holder

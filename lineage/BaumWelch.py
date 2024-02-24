@@ -26,12 +26,10 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     EL = get_Emission_Likelihoods(tHMMobj.X, tHMMobj.estimate.E)
 
     for ii, lO in enumerate(tHMMobj.X):
-        MSD.append(get_MSD(lO.cell_to_parent, tHMMobj.estimate.pi, tHMMobj.estimate.T))
-        NF.append(get_leaf_Normalizing_Factors(lO.leaves_idx, MSD[ii], EL[ii]))
+        MSD.append(get_MSD(len(lO), tHMMobj.estimate.pi, tHMMobj.estimate.T))
+        NF.append(get_leaf_Normalizing_Factors(MSD[ii], EL[ii]))
         betas.append(
             get_beta(
-                lO.leaves_idx,
-                lO.cell_to_daughters,
                 tHMMobj.estimate.T,
                 MSD[ii],
                 EL[ii],
@@ -39,7 +37,7 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
             )
         )
         gammas.append(
-            get_gamma(lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], betas[ii])
+            get_gamma(tHMMobj.estimate.T, MSD[ii], betas[ii])
         )
 
     return MSD, NF, betas, gammas
@@ -172,14 +170,12 @@ def do_M_T_step(
         for num, lO in enumerate(tt.X):
             # local T estimate
             numer_e += get_all_zetas(
-                lO.leaves_idx,
-                lO.cell_to_daughters,
                 betas[i][num],
                 MSD[i][num],
                 gammas[i][num],
                 tt.estimate.T,
             )
-            denom_e += sum_nonleaf_gammas(lO.leaves_idx, gammas[i][num])
+            denom_e += sum_nonleaf_gammas(gammas[i][num])
 
     T_estimate = numer_e / denom_e[:, np.newaxis]
     T_estimate /= T_estimate.sum(axis=1)[:, np.newaxis]
@@ -200,7 +196,17 @@ def do_M_E_step(tHMMobj: tHMM, gammas: list[np.ndarray]):
     :type tHMMobj: object
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
     """
-    all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+    all_cells: list[np.ndarray] = []
+
+    for lineage in tHMMobj.X:
+        for cell in lineage.output_lineage:
+            if cell is None:
+                all_cells.append(-1 * np.ones(all_cells[0].size))
+            else:
+                all_cells.append(np.array(cell.obs))
+
+    all_cells = np.array(all_cells) # type: ignore
+
     all_gammas = np.vstack(gammas)
     for state_j in range(tHMMobj.num_states):
         tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])

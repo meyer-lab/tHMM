@@ -3,7 +3,6 @@ import numpy.typing as npt
 
 
 def get_leaf_Normalizing_Factors(
-    leaves_idx: npt.NDArray[np.uintp],
     MSD: npt.NDArray[np.float64],
     EL: npt.NDArray[np.float64],
 ) -> npt.NDArray[np.float64]:
@@ -34,18 +33,19 @@ def get_leaf_Normalizing_Factors(
     :return: normalizing factor. The marginal observation distribution P(x_n = x)
     """
     NF_array = np.zeros(MSD.shape[0], dtype=float)  # instantiating N by 1 array
+    first_leaf = int(np.floor(MSD.shape[0] / 2))
 
     # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
     # this product is the joint probability
     # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
     # the sum of the joint probabilities is the marginal probability
-    NF_array[leaves_idx] = np.sum(MSD[leaves_idx, :] * EL[leaves_idx, :], axis=1)
+    NF_array[first_leaf:] = np.sum(MSD[first_leaf:, :] * EL[first_leaf:, :], axis=1)
     assert np.all(np.isfinite(NF_array))
     return NF_array
 
 
 def get_MSD(
-    cell_to_parent: np.ndarray, pi: npt.NDArray[np.float64], T: npt.NDArray[np.float64]
+    n_cells: int, pi: npt.NDArray[np.float64], T: npt.NDArray[np.float64]
 ) -> npt.NDArray[np.float64]:
     r"""Marginal State Distribution (MSD) matrix by upward recursion.
     This is the probability that a hidden state variable :math:`z_n` is of
@@ -68,12 +68,13 @@ def get_MSD(
     :param T: State transitions matrix
     :return: The marginal state distribution
     """
-    m = np.zeros((cell_to_parent.size, pi.size))
+    m = np.zeros((n_cells, pi.size))
     m[0, :] = pi
 
     # recursion based on parent cell
-    for cIDX, pIDX in enumerate(cell_to_parent[1:]):
-        m[cIDX + 1, :] = m[pIDX, :] @ T
+    for cIDX in range(1, n_cells):
+        pIDX = int(np.floor(cIDX / 2))
+        m[cIDX, :] = m[pIDX, :] @ T
 
     # Assert all ~= 1.0
     assert np.linalg.norm(np.sum(m, axis=1) - 1.0) < 1e-9
@@ -81,8 +82,6 @@ def get_MSD(
 
 
 def get_beta(
-    leaves_idx: npt.NDArray[np.uintp],
-    cell_to_daughters: npt.NDArray[np.intp],
     T: npt.NDArray[np.float64],
     MSD: npt.NDArray[np.float64],
     EL: npt.NDArray[np.float64],
@@ -124,11 +123,12 @@ def get_beta(
     :return: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
     """
     beta = np.zeros_like(MSD)
+    first_leaf = int(np.floor(MSD.shape[0] / 2))
 
     # Emission Likelihood, Marginal State Distribution, Normalizing Factor (same regardless of state)
     # P(x_n = x | z_n = k), P(z_n = k), P(x_n = x)
-    ZZ = EL[leaves_idx, :] * MSD[leaves_idx, :] / NF[leaves_idx, np.newaxis]
-    beta[leaves_idx, :] = ZZ
+    ZZ = EL[first_leaf:, :] * MSD[first_leaf:, :] / NF[first_leaf:, np.newaxis]
+    beta[first_leaf:, :] = ZZ
 
     # Assert all ~= 1.0
     assert np.abs(np.sum(beta[-1]) - 1.0) < 1e-9
@@ -138,12 +138,11 @@ def get_beta(
     )  # MSD of the respective lineage
     ELMSD = EL * MSD
 
-    cIDXs = np.arange(MSD.shape[0])
-    cIDXs = np.delete(cIDXs, leaves_idx)
+    cIDXs = np.arange(first_leaf)
     cIDXs = np.flip(cIDXs)
 
     for pii in cIDXs:
-        ch_ii = cell_to_daughters[pii, :]
+        ch_ii = np.array([pii * 2 + 1, pii * 2 + 2])
         ratt = (beta[ch_ii, :] / MSD_array[ch_ii, :]) @ T.T
         fac1 = np.prod(ratt, axis=0) * ELMSD[pii, :]
 
@@ -154,7 +153,6 @@ def get_beta(
 
 
 def get_gamma(
-    cell_to_daughters: npt.NDArray[np.uintp],
     T: npt.NDArray[np.float64],
     MSD: npt.NDArray[np.float64],
     beta: npt.NDArray[np.float64],
@@ -177,12 +175,11 @@ def get_gamma(
     coeffs = np.maximum(coeffs, epss)
     beta_parents = T @ coeffs.T
 
-    # Getting lineage by generation, but it is sorted this way
-    for pidx, cis in enumerate(cell_to_daughters):
-        for ci in cis:
-            if ci == -1:
-                continue
+    first_leaf = int(np.floor(MSD.shape[0] / 2))
 
+    # Getting lineage by generation, but it is sorted this way
+    for pidx in range(first_leaf):
+        for ci in [pidx * 2 + 1, pidx * 2 + 2]:
             A = gamma[pidx, :].T / beta_parents[:, ci]
 
             gamma[ci, :] = coeffs[ci, :] * (A @ T)

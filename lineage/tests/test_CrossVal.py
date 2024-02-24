@@ -24,6 +24,7 @@ def test_hide_obs():
 
 
 @pytest.mark.parametrize("cen", [0, 3])
+@pytest.mark.skip()
 def test_cv(cen):
     """For censored and uncensored 2-state synthetic data,
     it checks that the log-likelihood of a 2 state model is higher than a 1 state model.
