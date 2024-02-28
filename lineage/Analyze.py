@@ -191,7 +191,7 @@ def Results(tHMMobj: tHMM, LL: float) -> dict[str, Any]:
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
     results_dict["total_number_of_cells"] = sum(
-        [len(lineage.output_lineage) for lineage in tHMMobj.X]
+        [len(lineage) for lineage in tHMMobj.X]
     )
 
     true_states_by_lineage = [

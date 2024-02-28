@@ -49,7 +49,7 @@ for num in num_lineages:
         tmp_lineage = LineageTree.rand_init(
             pi, T, E, desired_num_cells, censor_condition=3, desired_experiment_time=96
         )
-        while len(tmp_lineage.output_lineage) < 3:
+        while len(tmp_lineage) < 3:
             tmp_lineage = LineageTree.rand_init(
                 pi,
                 T,
@@ -59,7 +59,7 @@ for num in num_lineages:
                 desired_experiment_time=96,
             )
         population.append(tmp_lineage)
-        nn += len(tmp_lineage.output_lineage)
+        nn += len(tmp_lineage)
 
     # Adding populations into a holder for analysing
     list_of_populations.append(population)

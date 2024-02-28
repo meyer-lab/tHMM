@@ -114,10 +114,10 @@ class TestModel(unittest.TestCase):
         as expected.
         """
         for lin in self.population:
-            for cell in lin.output_lineage:
-                if not cell.isRootParent:
-                    if not cell.parent.observed:
-                        self.assertFalse(cell.observed)
+            # Skip root parent
+            for cell in lin.output_lineage[1:]:
+                if not cell.parent.observed:
+                    self.assertFalse(cell.observed)
 
 
 @pytest.mark.parametrize("dist", [StateDistribution, StateDistPhase])

@@ -70,14 +70,19 @@ class LineageTree:
         )  # roll the dice and yield the state for the first cell
         first_cell = CellVar(parent=None, state=first_state)  # create first cell
         full_lineage = [first_cell]  # instantiate lineage with first cell
+        pIDX = 0
 
-        for cell in full_lineage:  # letting the first cell proliferate
-            if cell.isLeaf():  # if the cell has no daughters...
-                # make daughters by dividing and assigning states
-                full_lineage.extend(cell.divide(T, rng=rng))
+        # fill in the cells
+        while len(full_lineage) < desired_num_cells:  # letting the first cell proliferate
+            parent = full_lineage[pIDX]
+            states = rng.choice(T.shape[0], size=2, p=T[parent.state, :])
 
-            if len(full_lineage) >= desired_num_cells:
-                break
+            full_lineage.append(CellVar(parent=parent, state=states[0]))
+            full_lineage.append(CellVar(parent=parent, state=states[1]))
+            parent.left = full_lineage[-2]
+            parent.right = full_lineage[-1]
+
+            pIDX += 1
 
         # Assign observations
         for i_state in range(pi.size):
@@ -140,7 +145,7 @@ def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list:
     EL = []
     ii = 0
     for lineageObj in X:  # for each lineage in our Population
-        nl = len(lineageObj.output_lineage)  # getting the lineage length
+        nl = len(lineageObj)  # getting the lineage length
         EL.append(ELstack[ii : (ii + nl), :])  # append the EL_array for each lineage
 
         ii += nl

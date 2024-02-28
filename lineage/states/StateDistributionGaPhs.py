@@ -87,8 +87,9 @@ class StateDistribution:
         This is used in the creation of LineageTrees
         """
         # traversing the cells by generation
-        for cell in full_lineage:
-            if cell.isRootParent():
+        for ii, cell in enumerate(full_lineage):
+            # handle root separately
+            if ii == 0:
                 cell.time = Time(0, cell.obs[2] + cell.obs[3])
                 cell.time.transition_time = 0 + cell.obs[2]
             else:

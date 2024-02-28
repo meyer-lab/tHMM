@@ -14,10 +14,9 @@ def basic_censor(cells: list):
     """
     Censors a cell if the cell's parent is censored.
     """
-    for cell in cells:
-        if not cell.isRootParent():
-            if not cell.parent.observed:
-                cell.observed = False
+    for cell in cells[1:]:
+        if not cell.parent.observed:
+            cell.observed = False
 
 
 def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
@@ -114,6 +113,7 @@ def gamma_estimator(
             method="SLSQP",
             constraints=linc,
         )
+        print(res.nit)
 
     assert res.success
     return np.exp(res.x)
