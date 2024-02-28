@@ -6,6 +6,8 @@ import numpy.typing as npt
 from scipy.optimize import minimize, Bounds
 from scipy.special import gammaincc, gammaln
 
+arr_type = npt.NDArray[np.float64]
+
 
 warnings.filterwarnings("ignore", message="Values in x were outside bounds")
 
@@ -33,29 +35,28 @@ def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
 
 
 def gamma_LL(
-    logX: npt.NDArray[np.float64],
-    gamma_obs: list[npt.NDArray[np.float64]],
-    time_cen: list[npt.NDArray[np.float64]],
-    gammas: list[npt.NDArray[np.float64]],
+    logX: arr_type,
+    gamma_obs: arr_type,
+    time_cen: arr_type,
+    gammas: arr_type,
+    param_idx
 ):
     """Log-likelihood for the optionally censored Gamma distribution.
     The logX is the log transform of the parameters, in case of atonce estimation, it is [shape, scale1, scale2, scale3, scale4].
     """
     x = np.exp(logX)
     glnA = gammaln(x[0])
-    outt = 0.0
-    for i in range(len(x) - 1):
-        gobs = gamma_obs[i] / x[i + 1]
-        outt -= np.dot(
-            gammas[i] * time_cen[i],
-            (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[i + 1],
-        )
 
-        jidx = np.argwhere(time_cen[i] == 0.0)
-        for idxx in jidx[:, 0]:
-            gamP = gammaincc(x[0], gobs[idxx])
-            gamP = np.maximum(gamP, 1e-35)  # Clip if the probability hits exactly 0
-            outt -= gammas[i][idxx] * np.log(gamP)
+    gobs = gamma_obs / x[param_idx]
+    outt = -1.0 * np.dot(
+        gammas * time_cen,
+        (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[param_idx],
+    )
+
+    jidx = time_cen == 0.0
+    gamP = gammaincc(x[0], gobs[jidx])
+    gamP = np.maximum(gamP, 1e-35)  # Clip if the probability hits exactly 0
+    outt -= np.sum(gammas[jidx] * np.log(gamP))
 
     assert np.isfinite(outt)
     return outt
@@ -83,7 +84,9 @@ def gamma_estimator(
         assert gamma_obs[i].shape == time_cen[i].shape
         assert gamma_obs[i].shape == gammas[i].shape
 
-    arrgs = (list(gamma_obs), list(time_cen), list(gammas))
+    param_idx = np.concatenate([np.full(gam.size, ii + 1) for ii, gam in enumerate(gamma_obs)])
+
+    arrgs = (np.concatenate(gamma_obs), np.concatenate(time_cen), np.concatenate(gammas), param_idx)
     linc = list()
 
     if phase != "all":  # for constrained optimization
