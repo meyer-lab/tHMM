@@ -3,7 +3,7 @@
 import warnings
 import numpy as np
 import numpy.typing as npt
-from scipy.optimize import minimize, Bounds
+from scipy.optimize import minimize, Bounds, LinearConstraint
 from scipy.special import gammaincc, gammaln
 
 arr_type = npt.NDArray[np.float64]
@@ -35,11 +35,7 @@ def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
 
 
 def gamma_LL(
-    logX: arr_type,
-    gamma_obs: arr_type,
-    time_cen: arr_type,
-    gammas: arr_type,
-    param_idx
+    logX: arr_type, gamma_obs: arr_type, time_cen: arr_type, gammas: arr_type, param_idx
 ):
     """Log-likelihood for the optionally censored Gamma distribution.
     The logX is the log transform of the parameters, in case of atonce estimation, it is [shape, scale1, scale2, scale3, scale4].
@@ -84,26 +80,25 @@ def gamma_estimator(
         assert gamma_obs[i].shape == time_cen[i].shape
         assert gamma_obs[i].shape == gammas[i].shape
 
-    param_idx = np.concatenate([np.full(gam.size, ii + 1) for ii, gam in enumerate(gamma_obs)])
+    param_idx = np.concatenate(
+        [np.full(gam.size, ii + 1) for ii, gam in enumerate(gamma_obs)]
+    )
 
-    arrgs = (np.concatenate(gamma_obs), np.concatenate(time_cen), np.concatenate(gammas), param_idx)
-    linc = list()
+    arrgs = (
+        np.concatenate(gamma_obs),
+        np.concatenate(time_cen),
+        np.concatenate(gammas),
+        param_idx,
+    )
 
     if phase != "all":  # for constrained optimization
         A = np.zeros((3, 5))  # constraint Jacobian
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)
 
-        linc.append(
-            {
-                "type": "ineq",
-                "fun": lambda x: np.diff(x)[1:],
-                "jac": lambda _: A,
-            }
-        )
-
-        if np.any(np.dot(A, x0) < 0.0):
-            x0 = np.array([x0[0], x0[1], x0[1], x0[1], x0[1]])
+        linc = LinearConstraint(A, lb=0.0, keep_feasible=False)
+    else:
+        linc = ()
 
     bnd = Bounds(-4.0, 7.0, keep_feasible=True)
 
