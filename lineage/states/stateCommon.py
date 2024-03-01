@@ -102,16 +102,15 @@ def gamma_estimator(
 
     bnd = Bounds(-4.0, 7.0, keep_feasible=False)
 
-    with np.errstate(all="raise"):
-        res = minimize(
-            gamma_LL,
-            jac="3-point",
-            x0=np.log(x0),
-            args=arrgs,
-            bounds=bnd,
-            method="SLSQP",
-            constraints=linc,
-        )
+    res = minimize(
+        gamma_LL,
+        jac="3-point",
+        x0=np.log(x0),
+        args=arrgs,
+        bounds=bnd,
+        method="SLSQP",
+        constraints=linc,
+    )
 
     assert res.success
     return np.exp(res.x)
