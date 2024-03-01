@@ -105,7 +105,7 @@ def gamma_estimator(
     with np.errstate(all="raise"):
         res = minimize(
             gamma_LL,
-            jac="2-point",
+            jac="3-point",
             x0=np.log(x0),
             args=arrgs,
             bounds=bnd,
