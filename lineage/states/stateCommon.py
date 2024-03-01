@@ -59,12 +59,12 @@ def gamma_LL(
 
 
 def gamma_estimator(
-    gamma_obs: list[np.ndarray],
-    time_cen: list[np.ndarray],
-    gammas: list[np.ndarray],
-    x0: np.ndarray,
+    gamma_obs: list[arr_type],
+    time_cen: list[arr_type],
+    gammas: list[arr_type],
+    x0: arr_type,
     phase: str = "all",
-) -> npt.NDArray[np.float64]:
+) -> arr_type:
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
@@ -100,7 +100,7 @@ def gamma_estimator(
     else:
         linc = ()
 
-    bnd = Bounds(-4.0, 7.0, keep_feasible=True)
+    bnd = Bounds(-4.0, 7.0, keep_feasible=False)
 
     with np.errstate(all="raise"):
         res = minimize(

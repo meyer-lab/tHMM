@@ -12,12 +12,12 @@ class StateDistribution:
 
     def __init__(
         self,
-        bern_p1=0.9,
-        bern_p2=0.75,
-        gamma_a1=7.0,
-        gamma_scale1=3,
-        gamma_a2=14.0,
-        gamma_scale2=6,
+        bern_p1: float = 0.9,
+        bern_p2: float = 0.75,
+        gamma_a1: float = 7.0,
+        gamma_scale1: float = 3.0,
+        gamma_a2: float = 14.0,
+        gamma_scale2: float = 6.0,
     ):  # user has to identify what parameters to use for each state
         """Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have."""
         self.params = np.array(
