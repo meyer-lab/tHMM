@@ -17,8 +17,7 @@ gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
 
 for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
     for lin_indx, lin in enumerate(gemc_tHMMobj.X):
-        for cell_indx, cell in enumerate(lin.output_lineage):
-            cell.state = gemc_states_list[idx][lin_indx][cell_indx]
+        lin.states = gemc_states_list[idx][lin_indx]
 
 T_gem = gemc_tHMMobj_list[0].estimate.T
 num_states = gemc_tHMMobj_list[0].num_states

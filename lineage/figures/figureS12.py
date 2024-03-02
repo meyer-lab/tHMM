@@ -13,8 +13,7 @@ gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
 
 for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
     for lin_indx, lin in enumerate(gemc_tHMMobj.X):
-        for cell_indx, cell in enumerate(lin.output_lineage):
-            cell.state = gemc_states_list[idx][lin_indx][cell_indx]
+        lin.states = gemc_states_list[idx][lin_indx]
 
 for i in range(4):
     gemc_tHMMobj_list[i].X = sort_lins(gemc_tHMMobj_list[i])

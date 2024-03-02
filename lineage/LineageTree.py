@@ -18,6 +18,7 @@ class LineageTree:
     output_lineage: list[CellVar]
     cell_to_parent: np.ndarray
     cell_to_daughters: np.ndarray
+    states = np.ndarray
 
     def __init__(self, list_of_cells: list, E: list):
         self.E = E
@@ -32,6 +33,8 @@ class LineageTree:
 
         # Leaves have no daughters
         self.leaves_idx = np.nonzero(np.all(self.cell_to_daughters == -1, axis=1))[0]
+
+        self.states = np.array([cell.state for cell in self.output_lineage], dtype=int)
 
     @classmethod
     def rand_init(

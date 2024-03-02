@@ -21,8 +21,7 @@ hgf_states_list = [tHMMobj.predict() for tHMMobj in hgf_tHMMobj_list]
 # assign the predicted states to each cell
 for idx, hgf_tHMMobj in enumerate(hgf_tHMMobj_list):
     for lin_indx, lin in enumerate(hgf_tHMMobj.X):
-        for cell_indx, cell in enumerate(lin.output_lineage):
-            cell.state = hgf_states_list[idx][lin_indx][cell_indx]
+        lin.states = hgf_states_list[idx][lin_indx]
 
 T_hgf = hgf_tHMMobj_list[0].estimate.T
 

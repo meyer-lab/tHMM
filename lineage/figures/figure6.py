@@ -78,7 +78,7 @@ def accuracy():
 
     for ii, pop in enumerate(list_of_populations):
         ravel_true_states = np.array(
-            [cell.state for lineage in pop for cell in lineage.output_lineage]
+            [lineage.states for lineage in pop]
         )
         all_cells = np.array(
             [cell.obs[2] for lineage in pop for cell in lineage.output_lineage]
@@ -123,9 +123,9 @@ def accuracy():
         for cell in lineage.output_lineage
     ]
     distribution_df["State"] = [
-        "State 1" if cell.state == 0 else "State 2"
+        "State 1" if state == 0 else "State 2"
         for lineage in lineages
-        for cell in lineage.output_lineage
+        for state in lineage.states
     ]
     distribution_df["Distribution Similarity"] = (
         len_lineages[0] * ["Same\n" + str(0) + "-" + str(wass[-1] / 4)]

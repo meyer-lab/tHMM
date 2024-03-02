@@ -84,6 +84,8 @@ def plotLineage(lineage, axes, censor=True, color=True):
     """
     Given a lineage of cells, uses the `CladeRecursive` function to plot the lineage.
     """
+    for ii, cell in enumerate(lineage):
+        cell.state = lineage.states[ii]
 
     root = lineage.output_lineage[0]
     if np.isfinite(root.obs[4]):  # the lineage starts from G1 phase

@@ -195,7 +195,7 @@ def Results(tHMMobj: tHMM, LL: float) -> dict[str, Any]:
     )
 
     true_states_by_lineage = [
-        [cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X
+        lineage.states for lineage in tHMMobj.X
     ]
 
     results_dict["transition_matrix_similarity"] = np.linalg.norm(

@@ -35,8 +35,7 @@ def plot_barcode_vs_state(ax, drug_name):
 
     for idx, tHMMobj in enumerate(tHMMobj_list):
         for lin_indx, lin in enumerate(tHMMobj.X):
-            for cell_indx, cell in enumerate(lin.output_lineage):
-                cell.state = states_list[idx][lin_indx][cell_indx]
+            lin.states = states_list[idx][lin_indx]
 
     num_states = tHMMobj_list[0].num_states
 

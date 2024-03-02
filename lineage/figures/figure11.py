@@ -17,8 +17,7 @@ lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
 # assign the predicted states to each cell
 for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
     for lin_indx, lin in enumerate(lapt_tHMMobj.X):
-        for cell_indx, cell in enumerate(lin.output_lineage):
-            cell.state = lapt_states_list[idx][lin_indx][cell_indx]
+        lin.states = lapt_states_list[idx][lin_indx]
 
 T_lap = lapt_tHMMobj_list[0].estimate.T
 num_states = lapt_tHMMobj_list[0].num_states
