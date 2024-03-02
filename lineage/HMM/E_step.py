@@ -140,9 +140,8 @@ def get_beta(
 
     cIDXs = np.arange(MSD.shape[0])
     cIDXs = np.delete(cIDXs, leaves_idx)
-    cIDXs = np.flip(cIDXs)
 
-    for pii in cIDXs:
+    for pii in reversed(cIDXs):
         ch_ii = cell_to_daughters[pii, :]
         ratt = (beta[ch_ii, :] / MSD_array[ch_ii, :]) @ T.T
         fac1 = np.prod(ratt, axis=0) * ELMSD[pii, :]
