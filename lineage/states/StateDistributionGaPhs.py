@@ -62,7 +62,7 @@ class StateDistribution:
 
         return G1_LL + G2_LL
 
-    def estimator(self, x: np.ndarray, gammas):
+    def estimator(self, x: np.ndarray, gammas: np.ndarray):
         """User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells."""
         x = np.array(x)
 
