@@ -79,12 +79,6 @@ class CellVar:
         # otherwise, it itself is observed and at least one of its daughters is observed
         return False
 
-    def isRootParent(self) -> bool:
-        """
-        Returns true if this cell is the first cell in a lineage.
-        """
-        return self.parent is None
-
 
 @dataclass(init=True, repr=True, eq=True, order=True)
 class Time:
