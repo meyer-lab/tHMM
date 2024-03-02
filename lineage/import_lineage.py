@@ -198,8 +198,8 @@ def assign_observs_MCF10A(cell, lineage, uniq_id: int):
     parent_id = lineage["motherID"].unique()
 
     # cell fate: die = 0, divide = 1
-    if not (
-        uniq_id in parent_id
+    if (
+        uniq_id not in parent_id
     ):  # if the cell has not divided, means either died or reached experiment end time
         if (
             np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"]) == t_end

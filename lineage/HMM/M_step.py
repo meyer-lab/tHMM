@@ -46,7 +46,7 @@ def get_all_zetas(
     TbetaMSD = np.clip(betaMSD @ T.T, np.finfo(float).eps, np.inf)
 
     cIDXs = np.arange(gammas.shape[0])
-    cIDXs = np.delete(cIDXs, leaves_idx, axis=0)
+    cIDXs = np.delete(cIDXs, leaves_idx)
 
     dIDXs = cell_to_daughters[cIDXs, :]
 
