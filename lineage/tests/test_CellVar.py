@@ -56,18 +56,6 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell.gen == 1)
         self.assertTrue(left_cell.gen == 2 and right_cell.gen == 2)
 
-    def test_isRootParent(self):
-        """
-        Tests whether the correct root parent asserts work.
-        """
-        T = np.array([[1.0, 0.0], [0.0, 1.0]])
-
-        parent_state = 1
-        cell = c(state=parent_state, parent=None)
-        left_cell, right_cell = cell.divide(T)
-        self.assertTrue(cell.isRootParent())
-        self.assertFalse(left_cell.isRootParent() and right_cell.isRootParent())
-
     def test_isLeafBecauseTerminal(self):
         """
         Tests whether the leaf cells are correctly checked.
