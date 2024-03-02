@@ -34,6 +34,18 @@ class LineageTree:
                 self.output_lineage.append(parent.left)
                 self.output_lineage.append(parent.right)
 
+    def get_observations(self):
+        all_cells = []
+        n_obs = len(self.output_lineage[0].obs)
+
+        for cell in self.output_lineage:
+            if cell is None:
+                all_cells.append(np.full(n_obs, np.nan))
+            else:
+                all_cells.append(cell.obs)
+
+        return np.vstack(all_cells)
+
     @classmethod
     def rand_init(
         cls,

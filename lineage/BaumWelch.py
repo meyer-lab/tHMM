@@ -222,10 +222,9 @@ def do_M_E_step_atonce(all_tHMMobj: list[tHMM], all_gammas: list[list[np.ndarray
     for gm in all_gammas:
         gms.append(np.vstack(gm))
 
-    all_cells = np.array(
-        [cell.obs for lineage in all_tHMMobj[0].X for cell in lineage.output_lineage]
-    )
-    if len(all_cells[1, :]) == 6:
+    all_cells = all_tHMMobj[0].X[0].get_observations()
+
+    if all_cells.shape[1] == 6:
         phase = True
     else:
         phase = False
@@ -234,8 +233,8 @@ def do_M_E_step_atonce(all_tHMMobj: list[tHMM], all_gammas: list[list[np.ndarray
     G2cells = []
     cells = []
     for tHMMobj in all_tHMMobj:
-        all_cells = np.array(
-            [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+        all_cells = np.vstack(
+            [lineage.get_observations() for lineage in tHMMobj.X]
         )
         if phase:
             G1cells.append(all_cells[:, np.array([0, 2, 4])])
