@@ -13,7 +13,7 @@ jobs:
     - name: Setup submodule
       run: git submodule update --init --recursive
     - name: Install dependencies
-      run: poetry install --no-root
+      run: poetry install
     - name: Test with pytest
       run: poetry run pytest --cov=lineage --cov-report=xml --cov-config=.github/workflows/coveragerc
     - name: Upload coverage to Codecov
@@ -21,6 +21,5 @@ jobs:
       with:
         file: ./coverage.xml
         flags: unittests
-        env_vars: OS,PYTHON
-        name: codecov-umbrella
+        token: ${{ secrets.CODECOV_TOKEN }}
         fail_ci_if_error: true

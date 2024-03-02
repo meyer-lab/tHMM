@@ -3,8 +3,10 @@
 import warnings
 import numpy as np
 import numpy.typing as npt
-from scipy.optimize import minimize, Bounds
+from scipy.optimize import minimize, Bounds, LinearConstraint
 from scipy.special import gammaincc, gammaln
+
+arr_type = npt.NDArray[np.float64]
 
 
 warnings.filterwarnings("ignore", message="Values in x were outside bounds")
@@ -32,41 +34,36 @@ def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
 
 
 def gamma_LL(
-    logX: npt.NDArray[np.float64],
-    gamma_obs: list[npt.NDArray[np.float64]],
-    time_cen: list[npt.NDArray[np.float64]],
-    gammas: list[npt.NDArray[np.float64]],
+    logX: arr_type, gamma_obs: arr_type, time_cen: arr_type, gammas: arr_type, param_idx
 ):
     """Log-likelihood for the optionally censored Gamma distribution.
     The logX is the log transform of the parameters, in case of atonce estimation, it is [shape, scale1, scale2, scale3, scale4].
     """
     x = np.exp(logX)
     glnA = gammaln(x[0])
-    outt = 0.0
-    for i in range(len(x) - 1):
-        gobs = gamma_obs[i] / x[i + 1]
-        outt -= np.dot(
-            gammas[i] * time_cen[i],
-            (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[i + 1],
-        )
 
-        jidx = np.argwhere(time_cen[i] == 0.0)
-        for idxx in jidx[:, 0]:
-            gamP = gammaincc(x[0], gobs[idxx])
-            gamP = np.maximum(gamP, 1e-35)  # Clip if the probability hits exactly 0
-            outt -= gammas[i][idxx] * np.log(gamP)
+    gobs = gamma_obs / x[param_idx]
+    outt = -1.0 * np.dot(
+        gammas * time_cen,
+        (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[param_idx],
+    )
+
+    jidx = time_cen == 0.0
+    gamP = gammaincc(x[0], gobs[jidx])
+    gamP = np.maximum(gamP, 1e-35)  # Clip if the probability hits exactly 0
+    outt -= np.sum(gammas[jidx] * np.log(gamP))
 
     assert np.isfinite(outt)
     return outt
 
 
 def gamma_estimator(
-    gamma_obs: list[np.ndarray],
-    time_cen: list[np.ndarray],
-    gammas: list[np.ndarray],
-    x0: np.ndarray,
+    gamma_obs: list[arr_type],
+    time_cen: list[arr_type],
+    gammas: list[arr_type],
+    x0: arr_type,
     phase: str = "all",
-) -> npt.NDArray[np.float64]:
+) -> arr_type:
     """
     This is a weighted, closed-form estimator for two parameters
     of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
@@ -82,38 +79,37 @@ def gamma_estimator(
         assert gamma_obs[i].shape == time_cen[i].shape
         assert gamma_obs[i].shape == gammas[i].shape
 
-    arrgs = (list(gamma_obs), list(time_cen), list(gammas))
-    linc = list()
+    param_idx = np.concatenate(
+        [np.full(gam.size, ii + 1) for ii, gam in enumerate(gamma_obs)]
+    )
+
+    arrgs = (
+        np.concatenate(gamma_obs),
+        np.concatenate(time_cen),
+        np.concatenate(gammas),
+        param_idx,
+    )
 
     if phase != "all":  # for constrained optimization
         A = np.zeros((3, 5))  # constraint Jacobian
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)
 
-        linc.append(
-            {
-                "type": "ineq",
-                "fun": lambda x: np.diff(x)[1:],
-                "jac": lambda _: A,
-            }
-        )
+        linc = LinearConstraint(A, lb=0.0, keep_feasible=False)
+    else:
+        linc = ()
 
-        if np.any(np.dot(A, x0) < 0.0):
-            x0 = np.array([x0[0], x0[1], x0[1], x0[1], x0[1]])
+    bnd = Bounds(-4.0, 7.0, keep_feasible=False)
 
-    bnd = Bounds(-4.0, 7.0, keep_feasible=True)
-
-    with np.errstate(all="raise"):
-        res = minimize(
-            gamma_LL,
-            jac="2-point",
-            x0=np.log(x0),
-            args=arrgs,
-            bounds=bnd,
-            method="SLSQP",
-            constraints=linc,
-        )
-        print(res.nit)
+    res = minimize(
+        gamma_LL,
+        jac="3-point",
+        x0=np.log(x0),
+        args=arrgs,
+        bounds=bnd,
+        method="SLSQP",
+        constraints=linc,
+    )
 
     assert res.success
     return np.exp(res.x)

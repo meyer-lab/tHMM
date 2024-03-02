@@ -140,6 +140,7 @@ def get_beta(
 
     for pii in range(first_leaf - 1, -1, -1):
         ch_ii = np.array([pii * 2 + 1, pii * 2 + 2])
+
         ratt = (beta[ch_ii, :] / MSD_array[ch_ii, :]) @ T.T
         fac1 = np.prod(ratt, axis=0) * ELMSD[pii, :]
 
