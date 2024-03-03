@@ -128,7 +128,7 @@ def assign_observs_AU565(cell: CellVar, lineage, uniq_id: int) -> CellVar:
 # partof_path = "lineage/data/MCF10A/"
 
 
-def import_MCF10A(path: str):
+def import_MCF10A(path: str) -> list[list[CellVar]]:
     """Reading the data and extracting lineages and assigning their corresponding observations.
     :param path: the path to the mcf10a data.
     :return population: list of cells structured in CellVar objects.
@@ -136,46 +136,43 @@ def import_MCF10A(path: str):
     df = pd.read_csv(path)
     population = []
     # loop over "lineageId"s
-    for i in df["lineage"].unique():
-        # select all the cells that belong to that lineage
-        lineage = df.loc[df["lineage"] == i]
-
-        lin_code = list(lineage["TID"].unique())[0]  # lineage code to process
-        unique_parent_trackIDs = lineage["motherID"].unique()
-
-        parent_cell = CellVar(parent=None)
-        parent_cell = assign_observs_MCF10A(parent_cell, lineage, lin_code)
+    for _, lineage in df.groupby("lineage"):
+        connection_df = (
+            lineage.loc[:, ["TID", "motherID"]]
+            .sort_values("motherID")
+            .drop_duplicates()
+        )
 
         # create a list to store cells belonging to a lineage
-        lineage_list = [parent_cell]
-        for k, val in enumerate(unique_parent_trackIDs[1:]):
-            temp_lin = lineage.loc[lineage["motherID"] == val]
-            child_id = temp_lin["TID"].unique()  # find children
-            if not (len(child_id) == 2):
-                break
+        lineage_list = []
+        for mother, TIDs in connection_df.groupby("motherID"):
+            if mother == 0:
+                lineage_list.append(
+                    assign_observs_MCF10A(
+                        CellVar(parent=None), lineage, TIDs["TID"].iloc[0]
+                    )
+                )
+                continue
+            elif TIDs.shape[0] != 2:
                 lineage_list = []
-            for cells in lineage_list:
-                if lin_code == val:
-                    cell = cells
+                break
 
-            a = assign_observs_MCF10A(CellVar(parent=cell), lineage, child_id[0])
-            b = assign_observs_MCF10A(CellVar(parent=cell), lineage, child_id[1])
-            cell.left = a
-            cell.right = b
+            pIDX = int(np.argwhere(connection_df["TID"] == mother)[0][0])
+            parent = lineage_list[pIDX]
+
+            a = assign_observs_MCF10A(
+                CellVar(parent=parent), lineage, TIDs["TID"].iloc[0]
+            )
+            b = assign_observs_MCF10A(
+                CellVar(parent=parent), lineage, TIDs["TID"].iloc[1]
+            )
+            parent.left = a
+            parent.right = b
 
             lineage_list.append(a)
             lineage_list.append(b)
 
-        if lineage_list:
-            # organize the order of cells by their generation
-            ordered_list = []
-            max_gen = np.max(lineage["generation"])
-            for ii in range(1, max_gen + 1):
-                for cells in lineage_list:
-                    if cells.gen == ii:
-                        ordered_list.append(cells)
-
-            population.append(ordered_list)
+            population.append(lineage_list)
     return population
 
 
