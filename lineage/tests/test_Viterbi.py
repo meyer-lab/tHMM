@@ -13,7 +13,7 @@ class TestViterbi(unittest.TestCase):
     def test_vt(self):
         """This tests that state assignments by Viterbi are maximum likelihood."""
         X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2**9) - 1)
-        tHMMobj = tHMM([X], num_states=2, fpi=pi, fT=T, fE=E)
+        tHMMobj = tHMM([X], num_states=2, fpi=pi, fT=T)
         model_log_score = tHMMobj.log_score(tHMMobj.predict())[0]
 
         for _ in range(5):

@@ -107,7 +107,6 @@ def accuracy():
         xtype="wass",
         list_of_fpi=[pi] * num_data_points,
         list_of_fT=[T] * num_data_points,
-        parallel=True,
     )
     accuracy = dict_out["state_similarity"]
     distribution_df = pd.DataFrame(

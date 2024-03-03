@@ -128,7 +128,7 @@ def assign_observs_AU565(cell: CellVar, lineage, uniq_id: int) -> CellVar:
 # partof_path = "lineage/data/MCF10A/"
 
 
-def import_MCF10A(path: str):
+def import_MCF10A(path: str) -> list[list]:
     """Reading the data and extracting lineages and assigning their corresponding observations.
     :param path: the path to the mcf10a data.
     :return population: list of cells structured in CellVar objects.
@@ -148,45 +148,45 @@ def import_MCF10A(path: str):
 
         # create a list to store cells belonging to a lineage
         lineage_list = [parent_cell]
-        for k, val in enumerate(unique_parent_trackIDs[1:]):
+        for val in unique_parent_trackIDs[1:]:
             temp_lin = lineage.loc[lineage["motherID"] == val]
             child_id = temp_lin["TID"].unique()  # find children
-            if not (len(child_id) == 2):
-                break
+
+            # If there are not two children then skip lineage
+            if len(child_id) != 2:
                 lineage_list = []
+                break
+
             for cells in lineage_list:
                 if lin_code == val:
                     cell = cells
 
-            a = assign_observs_MCF10A(CellVar(parent=cell), lineage, child_id[0])
-            b = assign_observs_MCF10A(CellVar(parent=cell), lineage, child_id[1])
-            cell.left = a
-            cell.right = b
+            cell.left = assign_observs_MCF10A(
+                CellVar(parent=cell), lineage, child_id[0]
+            )
+            cell.right = assign_observs_MCF10A(
+                CellVar(parent=cell), lineage, child_id[1]
+            )
 
-            lineage_list.append(a)
-            lineage_list.append(b)
+            lineage_list.append(cell.left)
+            lineage_list.append(cell.right)
 
-        if lineage_list:
-            # organize the order of cells by their generation
-            ordered_list = []
-            max_gen = np.max(lineage["generation"])
-            for ii in range(1, max_gen + 1):
-                for cells in lineage_list:
-                    if cells.gen == ii:
-                        ordered_list.append(cells)
-
-            population.append(ordered_list)
+            population.append(lineage_list)
     return population
 
 
-def assign_observs_MCF10A(cell, lineage, uniq_id: int):
+def assign_observs_MCF10A(
+    cell: CellVar, lineage: pd.DataFrame, uniq_id: int
+) -> CellVar:
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it.
     :param cell: a CellVar object to be assigned observations.
     :param lineage: the lineage list of cells that the given cell is from.
     :param uniq_id: the id given to the cell from the experiment.
     """
     # initialize
-    cell.obs = [1, 0, 1, 0, 0]  # [fate, lifetime, censored?, velocity, mean_distance]
+    cell.obs = np.array(
+        [1.0, 0.0, 1, 0, 0]
+    )  # [fate, lifetime, censored?, velocity, mean_distance]
     t_end = 2880
     # check if cell's lifetime is zero
     if (
@@ -224,7 +224,7 @@ def assign_observs_MCF10A(cell, lineage, uniq_id: int):
     return cell
 
 
-def MCF10A(condition: str):
+def MCF10A(condition: str) -> list[list]:
     """Creates the population of lineages for each condition.
     Conditions include: PBS, EGF-treated, HGF-treated, OSM-treated.
     :param condition: a condition between [PBS, EGF, HGF, OSM]

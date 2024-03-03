@@ -80,7 +80,6 @@ def makeFigure():
             num_states=5,
             list_of_fpi=len(list_of_populations) * [pi],
             list_of_fT=len(list_of_populations) * [T],
-            parallel=True,
         ),
         num_lineages=num_lineages
     )
