@@ -449,7 +449,6 @@ def commonAnalyze(
     xtype="length",
     list_of_fpi=None,
     list_of_fT=None,
-    list_of_fE=None,
     parallel=True,
 ):
     """
@@ -463,7 +462,6 @@ def commonAnalyze(
         parallel=parallel,
         list_of_fpi=list_of_fpi,
         list_of_fT=list_of_fT,
-        list_of_fE=list_of_fE,
     )
 
     # Collecting the results of analyzing the lineages
