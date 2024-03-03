@@ -85,15 +85,15 @@ class TestModel(unittest.TestCase):
         distribution functions, we use the estimator and compare."""
         # Gamma dist.
         tuples_of_obs = self.E[0].rvs(size=5000)
-        tuples_of_obs = list(map(list, zip(*tuples_of_obs)))
-        gammas = np.ones(len(tuples_of_obs))
+        tuples_of_obs = np.vstack(tuples_of_obs).T
+        gammas = np.ones(tuples_of_obs.shape[0])
         estimator_obj = deepcopy(self.E[0])
         estimator_obj.estimator(tuples_of_obs, gammas)
 
         # G1/G2 separated Gamma dist.
         tuples_of_obsPhase = self.E2[0].rvs(size=5000)
-        tuples_of_obsPhase = list(map(list, zip(*tuples_of_obsPhase)))
-        gammas = np.ones(len(tuples_of_obsPhase))
+        tuples_of_obsPhase = np.vstack(tuples_of_obsPhase).T
+        gammas = np.ones(tuples_of_obsPhase.shape[0])
         estimator_objPhase = deepcopy(self.E2[0])
         estimator_objPhase.estimator(tuples_of_obsPhase, gammas)
 
