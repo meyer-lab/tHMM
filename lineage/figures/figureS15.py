@@ -12,18 +12,20 @@ gemc_tHMMobj_list = Analyze_list(AllGemcitabine, 5)[0]
 times = np.linspace(0.0, 96.0, 48)
 
 
-def find_state_proportions(lapt_tHMMobj, control=False):
+def find_state_proportions(lapt_tHMMobj, control=None):
     states = np.zeros((len(times), 3))
     for indx, t in enumerate(times):
         st0 = 0
         st1 = 0
         st2 = 0
-        if control:
+        thmm = lapt_tHMMobj.X
+
+        if control is not None:
             thmm = control
-        else:
-            thmm = lapt_tHMMobj.X
 
         for lineage in thmm:
+            lineage = lineage.E.censor_lineage(censor_condition=0, full_lineage=lineage)
+
             for cell in lineage.output_lineage:
                 if math.isnan(cell.time.startT):  # left censored. startT = 0
                     cell.time.startT = 0.0
