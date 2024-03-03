@@ -198,6 +198,7 @@ def do_M_E_step(tHMMobj: tHMM, gammas: list[np.ndarray]):
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
     """
     all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+    all_cells = np.array(all_cells)
     all_gammas = np.vstack(gammas)
     for state_j in range(tHMMobj.num_states):
         tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])

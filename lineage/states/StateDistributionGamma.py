@@ -93,21 +93,20 @@ class StateDistribution:
 
         return ll
 
-    def estimator(self, X: list, gammas: np.ndarray):
+    def estimator(self, x: np.ndarray, gammas: np.ndarray):
         """User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells."""
 
         # getting the observations as individual lists
         # {
-        x = np.array(X)
         bern_obs = x[:, 0]
-        γ_obs = x[:, 1]
+        gam_obs = x[:, 1]
         gamma_obs_censor = x[:, 2]
 
         # remove negative observations from fitting
-        bern_obs_ = bern_obs[γ_obs >= 0]
-        γ_obs_ = γ_obs[γ_obs >= 0]
-        gamma_obs_censor_ = gamma_obs_censor[γ_obs >= 0]
-        gammas_ = gammas[γ_obs >= 0]
+        bern_obs_ = bern_obs[gam_obs >= 0]
+        γ_obs_ = gam_obs[gam_obs >= 0]
+        gamma_obs_censor_ = gamma_obs_censor[gam_obs >= 0]
+        gammas_ = gammas[gam_obs >= 0]
 
         # Both unoberved and dead cells should be removed from gamma
         g_mask = np.logical_and(np.isfinite(γ_obs_), bern_obs_.astype("bool"))
@@ -132,22 +131,6 @@ class StateDistribution:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
 
-    def assign_times(self, full_lineage: list[CellVar]):
-        """
-        Assigns the start and end time for each cell in the lineage.
-        The time observation will be stored in the cell's observation parameter list
-        in the second position (index 1). See the other time functions to understand.
-        This is used in the creation of LineageTrees.
-        """
-        # traversing the cells by generation
-        for ii, cell in enumerate(full_lineage):
-            if ii == 0:
-                cell.time = Time(0, cell.obs[1])
-            else:
-                cell.time = Time(
-                    cell.parent.time.endT, cell.parent.time.endT + cell.obs[1]
-                )
-
     def censor_lineage(
         self,
         censor_condition: int,
@@ -161,6 +144,16 @@ class StateDistribution:
         applies the censorship to each cell that is supposed to be removed,
         and returns the lineage of cells that are supposed to be alive and accounted for.
         """
+        # Assign times
+        # traversing the cells by generation
+        for ii, cell in enumerate(full_lineage):
+            if ii == 0:
+                cell.time = Time(0, cell.obs[1])
+            else:
+                cell.time = Time(
+                    cell.parent.time.endT, cell.parent.time.endT + cell.obs[1]
+                )
+
         if censor_condition == 0:
             return full_lineage
 

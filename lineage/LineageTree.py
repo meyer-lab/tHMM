@@ -22,9 +22,6 @@ class LineageTree:
         # output_lineage must be sorted according to generation
         self.output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
 
-        # assign times using the state distribution specific time model
-        E[0].assign_times(self.output_lineage)
-
         self.cell_to_daughters = cell_to_daughters(self.output_lineage)
 
         # Leaves have no daughters
@@ -84,9 +81,6 @@ class LineageTree:
             assert len(cells_in_state) == len(list_of_tuples_of_obs)
             for i, cell in enumerate(cells_in_state):
                 cell.obs = list_of_tuples_of_obs[i]
-
-        # assign times using the state distribution specific time model
-        E[0].assign_times(full_lineage)
 
         output_lineage = E[0].censor_lineage(
             censor_condition, full_lineage, desired_experiment_time

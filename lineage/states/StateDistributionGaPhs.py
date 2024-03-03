@@ -4,7 +4,7 @@ import numpy as np
 
 from .stateCommon import basic_censor
 from .StateDistributionGamma import StateDistribution as GammaSD
-from ..CellVar import Time
+from ..CellVar import Time, CellVar
 
 
 class StateDistribution:
@@ -64,8 +64,6 @@ class StateDistribution:
 
     def estimator(self, x: np.ndarray, gammas: np.ndarray):
         """User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells."""
-        x = np.array(x)
-
         self.G1.estimator(x[:, np.array([0, 2, 4])], gammas)
         self.G2.estimator(x[:, np.array([1, 3, 5])], gammas)
 
@@ -79,13 +77,20 @@ class StateDistribution:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
 
-    def assign_times(self, full_lineage: list):
+    def censor_lineage(
+        self,
+        censor_condition: int,
+        full_lineage: list[CellVar],
+        desired_experiment_time=2e12,
+    ):
         """
-        Assigns the start and end time for each cell in the lineage.
-        The time observation will be stored in the cell's observation parameter list
-        in the second position (index 1). See the other time functions to understand.
-        This is used in the creation of LineageTrees
+        This function removes those cells that are intended to be remove
+        from the output binary tree based on emissions.
+        It takes in LineageTree object, walks through all the cells in the output binary tree,
+        applies the pruning to each cell that is supposed to be removed,
+        and returns the censored list of cells.
         """
+        # Assign times
         # traversing the cells by generation
         for ii, cell in enumerate(full_lineage):
             if ii == 0:
@@ -97,17 +102,6 @@ class StateDistribution:
                     cell.parent.time.endT + cell.obs[2] + cell.obs[3],
                 )
                 cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
-
-    def censor_lineage(
-        self, censor_condition: int, full_lineage: list, desired_experiment_time=2e12
-    ):
-        """
-        This function removes those cells that are intended to be remove
-        from the output binary tree based on emissions.
-        It takes in LineageTree object, walks through all the cells in the output binary tree,
-        applies the pruning to each cell that is supposed to be removed,
-        and returns the censored list of cells.
-        """
 
         if censor_condition == 0:
             return full_lineage
