@@ -26,7 +26,7 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     EL = get_Emission_Likelihoods(tHMMobj.X, tHMMobj.estimate.E)
 
     for ii, lO in enumerate(tHMMobj.X):
-        MSD.append(get_MSD(lO.cell_to_parent, tHMMobj.estimate.pi, tHMMobj.estimate.T))
+        MSD.append(get_MSD(lO.cell_to_daughters, tHMMobj.estimate.pi, tHMMobj.estimate.T))
 
         NF_one, beta = get_beta_and_NF(
             lO.leaves_idx, lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], EL[ii]

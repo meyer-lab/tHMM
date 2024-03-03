@@ -4,7 +4,7 @@ from numba import jit
 
 
 def get_MSD(
-    cell_to_parent: np.ndarray, pi: npt.NDArray[np.float64], T: npt.NDArray[np.float64]
+    cell_to_daughters: np.ndarray, pi: npt.NDArray[np.float64], T: npt.NDArray[np.float64]
 ) -> npt.NDArray[np.float64]:
     r"""Marginal State Distribution (MSD) matrix by upward recursion.
     This is the probability that a hidden state variable :math:`z_n` is of
@@ -27,12 +27,15 @@ def get_MSD(
     :param T: State transitions matrix
     :return: The marginal state distribution
     """
-    m = np.zeros((cell_to_parent.size, pi.size))
+    m = np.zeros((cell_to_daughters.shape[0], pi.size))
     m[0, :] = pi
 
     # recursion based on parent cell
-    for cIDX, pIDX in enumerate(cell_to_parent[1:]):
-        m[cIDX + 1, :] = m[pIDX, :] @ T
+    for pIDX, cIDX in enumerate(cell_to_daughters):
+        if cIDX[0] != -1:
+            m[cIDX[0], :] = m[pIDX, :] @ T
+        if cIDX[1] != -1:
+            m[cIDX[1], :] = m[pIDX, :] @ T
 
     # Assert all ~= 1.0
     assert np.linalg.norm(np.sum(m, axis=1) - 1.0) < 1e-9
