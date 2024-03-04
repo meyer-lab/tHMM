@@ -67,7 +67,7 @@ def fit_list(
 
 def Analyze_list(
     pop_list: list, num_states: int, fpi=None, fT=None, rng=None
-) -> Tuple[list[tHMM], float, list]:
+) -> Tuple[list[tHMM], float, list[np.ndarray]]:
     """This function runs the analyze function for the case when we want to fit multiple conditions at the same time.
     :param pop_list: The list of cell populations to run the analyze function on.
     :param num_states: The number of states that we want to run the model for.
@@ -102,7 +102,7 @@ def run_Analyze_over(
     atonce=False,
     list_of_fpi=None,
     list_of_fT=None,
-) -> list[tuple]:
+) -> list[Tuple[list[tHMM], float, list[np.ndarray]]]:
     """
     A function that can be parallelized to speed up figure creation.
 
