@@ -176,14 +176,18 @@ def import_MCF10A(path: str) -> list[list[CellVar]]:
     return population
 
 
-def assign_observs_MCF10A(cell, lineage, uniq_id: int):
+def assign_observs_MCF10A(
+    cell: CellVar, lineage: pd.DataFrame, uniq_id: int
+) -> CellVar:
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it.
     :param cell: a CellVar object to be assigned observations.
     :param lineage: the lineage list of cells that the given cell is from.
     :param uniq_id: the id given to the cell from the experiment.
     """
     # initialize
-    cell.obs = [1, 0, 1, 0, 0]  # [fate, lifetime, censored?, velocity, mean_distance]
+    cell.obs = np.array(
+        [1.0, 0.0, 1, 0, 0]
+    )  # [fate, lifetime, censored?, velocity, mean_distance]
     t_end = 2880
     # check if cell's lifetime is zero
     if (
@@ -221,7 +225,7 @@ def assign_observs_MCF10A(cell, lineage, uniq_id: int):
     return cell
 
 
-def MCF10A(condition: str):
+def MCF10A(condition: str) -> list[list]:
     """Creates the population of lineages for each condition.
     Conditions include: PBS, EGF-treated, HGF-treated, OSM-treated.
     :param condition: a condition between [PBS, EGF, HGF, OSM]
