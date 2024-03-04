@@ -6,7 +6,6 @@ import numpy as np
 from numba import njit
 import numpy.typing as npt
 from scipy.optimize import minimize, Bounds, LinearConstraint
-from ..CellVar import CellVar
 from ctypes import CFUNCTYPE, c_double
 from numba.extending import get_cython_function_address
 
@@ -14,26 +13,6 @@ arr_type = npt.NDArray[np.float64]
 
 
 warnings.filterwarnings("ignore", message="Values in x were outside bounds")
-
-
-class StateDistributionClass:
-    def rvs(self, size: int, rng=None):
-        raise NotImplementedError("dist not implemented.")
-
-    def dist(self, other) -> float:
-        raise NotImplementedError("dist not implemented.")
-
-    def dof(self) -> int:
-        raise NotImplementedError("dof not implemented.")
-
-    def logpdf(self, x: np.ndarray) -> np.ndarray:
-        raise NotImplementedError("logpdf not implemented.")
-
-    def estimator(self, x: np.ndarray, gammas: np.ndarray):
-        raise NotImplementedError("estimator not implemented.")
-
-    def censor_lineage(self, censor_condition: int, full_lineage: list[CellVar], desired_experiment_time=2e12) -> list[CellVar]:
-        raise NotImplementedError("censor_lineage not implemented.")
 
 
 def basic_censor(cells: list):

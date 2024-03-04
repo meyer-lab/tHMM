@@ -4,11 +4,11 @@ import numpy as np
 import scipy.stats as sp
 from typing import Union, Literal
 
-from .stateCommon import gamma_estimator, basic_censor, bern_estimator, StateDistributionClass
+from .stateCommon import gamma_estimator, basic_censor, bern_estimator
 from ..CellVar import Time, CellVar
 
 
-class StateDistribution(StateDistributionClass):
+class StateDistribution:
     """
     StateDistribution for cells with gamma distributed times.
     """

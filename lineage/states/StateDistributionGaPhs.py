@@ -2,12 +2,12 @@
 
 import numpy as np
 
-from .stateCommon import basic_censor, StateDistributionClass
+from .stateCommon import basic_censor
 from .StateDistributionGamma import StateDistribution as GammaSD
 from ..CellVar import Time, CellVar
 
 
-class StateDistribution(StateDistributionClass):
+class StateDistribution:
     """For G1 and G2 separated as observations."""
 
     def __init__(
