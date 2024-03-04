@@ -6,12 +6,20 @@ from typing import Tuple
 from .LineageTree import get_Emission_Likelihoods
 
 
-def get_deltas(X: list, E: list, T: np.ndarray) -> Tuple[list[np.ndarray], list]:
+def get_deltas(
+    X: list, E: list, T: np.ndarray
+) -> Tuple[list[np.ndarray], list[np.ndarray]]:
     """
     Delta matrix and base case at the leaves.
     Each element in this N by K matrix is the probability for the leaves :math:`P(x_n = x | z_n = k)`.
 
     Then calculates delta values for non-leaf cells by filling out the delta matrix.
+
+    Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.
+    In these set of functions
+    state pointer is an array of size K, that holds the state number with the highest probability in each row of the max_holder.
+    max_holder is a matrix of size K x K that initially starts from T, and gets updated.
+    delta_m_n_holder is a vector of size K that has the highest of those probabilities.
 
     :param tHMMobj: the tHMM object
     :return: a list of N by K matrices for each lineage, initialized from the leaf cells by EL(n,k).
@@ -26,58 +34,32 @@ def get_deltas(X: list, E: list, T: np.ndarray) -> Tuple[list[np.ndarray], list]
         state_ptrs_array = np.empty((len(linObj), 2), dtype=object)
         delta_array[linObj.leaves_idx, :] = EL[num][linObj.leaves_idx, :]
 
+        # Get non-leaves
+        pIDXs = np.arange(len(linObj))
+        pIDXs = np.delete(pIDXs, linObj.leaves_idx)
+        pIDXs = np.flip(pIDXs)
+
         # move up one generation until the 2nd generation is the children
         # and the root nodes are the parents
-        for level in linObj.idx_by_gen[1:][::-1]:
-            for pIDX in np.unique(linObj.cell_to_parent[level]):
-                fac1, max_state_ptr = get_delta_parent_child_prod(
-                    linObj, delta_array, T, pIDX
-                )
+        for pIDX in pIDXs:
+            fac1 = np.ones(T.shape[0])  # list to hold the factors in the product
 
-                delta_array[pIDX, :] = fac1 * EL[num][pIDX, :]
-                state_ptrs_array[pIDX, :] = max_state_ptr
+            for ii, cIDX in enumerate(linObj.cell_to_daughters[pIDX]):
+                # get the already calculated delta at node n for state k
+                # get the transition rate for going from state j to state k
+                # P( z_n = k | z_m = j)
+                max_holder = T * delta_array[cIDX, :]
+
+                state_ptr = np.argmax(max_holder, axis=1)
+                fac1 *= np.max(max_holder, axis=1)
+                state_ptrs_array[pIDX, ii] = (cIDX, state_ptr)
+
+            delta_array[pIDX, :] = fac1 * EL[num][pIDX, :]
 
         deltas.append(delta_array)
         state_ptrs.append(state_ptrs_array)
 
     return deltas, state_ptrs
-
-
-def get_delta_parent_child_prod(
-    linObj, delta_array: np.ndarray, T: np.ndarray, node_parent_m_idx: int
-) -> Tuple[np.ndarray, list]:
-    """
-    Calculates the delta coefficient for every parent-child relationship of a given parent cell in a given state.
-    In these set of functions
-    state pointer is an array of size K, that holds the state number with the highest probability in each row of the max_holder.
-    max_holder is a matrix of size K x K that initially starts from T, and gets updated.
-    delta_m_n_holder is a vector of size K that has the highest of those probabilities.
-
-    :param lineage: A list containing cells (which are objects with their own properties).
-    :param delta_array: A N by K matrix containing the delta values that will be used in Viterbi.
-    :param T: The K by K transition matrix.
-    :param node_parent_m_index: The index of the parent to the currently-intended-cell.
-    :return delta_m_n_holder: A list to hold the factors in the product.
-    :return max_state_ptr: A list of tuples of daughter cell indexes and their state pointers.
-    """
-    delta_m_n_holder = np.ones(T.shape[0])  # list to hold the factors in the product
-    max_state_ptr = []
-    children_idx_list = linObj.cell_to_daughters[
-        node_parent_m_idx, :
-    ]  # list to hold the children
-    assert np.all(children_idx_list != -1)  # Make sure we found cells
-
-    for cIDX in children_idx_list:
-        # get the already calculated delta at node n for state k
-        # get the transition rate for going from state j to state k
-        # P( z_n = k | z_m = j)
-        max_holder = T * delta_array[cIDX, :]
-
-        state_ptr = np.argmax(max_holder, axis=1)
-        delta_m_n_holder *= np.max(max_holder, axis=1)
-        max_state_ptr.append((cIDX, state_ptr))
-
-    return delta_m_n_holder, max_state_ptr
 
 
 def Viterbi(tHMMobj) -> list[np.ndarray]:

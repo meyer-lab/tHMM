@@ -62,7 +62,7 @@ class StateDistribution:
 
         return G1_LL + G2_LL
 
-    def estimator(self, x: np.ndarray, gammas):
+    def estimator(self, x: np.ndarray, gammas: np.ndarray):
         """User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells."""
         self.G1.estimator(x[:, np.array([0, 2, 4])], gammas)
         self.G2.estimator(x[:, np.array([1, 3, 5])], gammas)
@@ -97,6 +97,9 @@ class StateDistribution:
                 cell.time = Time(0, cell.obs[2] + cell.obs[3])
                 cell.time.transition_time = 0 + cell.obs[2]
             else:
+                assert cell.parent is not None
+                assert cell.parent.time is not None
+
                 cell.time = Time(
                     cell.parent.time.endT,
                     cell.parent.time.endT + cell.obs[2] + cell.obs[3],

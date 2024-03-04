@@ -463,7 +463,7 @@ def commonAnalyze(
     )
 
     # Collecting the results of analyzing the lineages
-    results_holder = [Results(o[0], o[1]) for o in output]
+    results_holder = [Results(o[0][0], o[1]) for o in output]
 
     dictOut = {}
 
