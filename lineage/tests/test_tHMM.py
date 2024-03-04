@@ -7,7 +7,7 @@ from ..LineageTree import LineageTree, get_Emission_Likelihoods
 from ..tHMM import tHMM
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
 from ..figures.common import pi, T, E
-from ..Analyze import Analyze, Results, run_Analyze_over
+from ..Analyze import Analyze_list, Results, run_Analyze_over
 
 
 rng = np.random.default_rng(1)
@@ -83,8 +83,12 @@ def test_fit_performance():
     Lineages used should be large and distinct."""
 
     X = [LineageTree.rand_init(pi, T, E, desired_num_cells=(2**8) - 1)]
-    first = Results(*Analyze(X, 2, fpi=pi, rng=rng))["state_similarity"]
-    second = Results(*Analyze(X, 2, fpi=pi, rng=rng))["state_similarity"]
+
+    a, b, _ = Analyze_list([X], 2, fpi=pi, rng=rng)
+    first = Results(a[0], b)["state_similarity"]
+
+    a, b, _ = Analyze_list([X], 2, fpi=pi, rng=rng)
+    second = Results(a[0], b)["state_similarity"]
     assert max(first, second) > 95.0
 
 
@@ -95,7 +99,7 @@ def test_small_lineages(sizze, stateNum):
     # test with 2 state model
     lin = [LineageTree.rand_init(pi, T, E, sizze) for _ in range(2)]
 
-    _, LL1 = Analyze(lin, stateNum, rng=rng)
+    _, LL1, _ = Analyze_list([lin], stateNum, rng=rng)
     assert np.all(np.isfinite(LL1))
 
 
@@ -120,5 +124,5 @@ def test_BIC():
         output = run_Analyze_over(lin, desired_num_states)
 
         for idx in range(len(desired_num_states)):
-            BIC, _ = output[idx][0].get_BIC(output[idx][1], nums)
+            BIC, _ = output[idx][0][0].get_BIC(output[idx][1], nums)
             assert np.argmin(BIC) == 0

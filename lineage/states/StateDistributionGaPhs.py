@@ -97,6 +97,9 @@ class StateDistribution:
                 cell.time = Time(0, cell.obs[2] + cell.obs[3])
                 cell.time.transition_time = 0 + cell.obs[2]
             else:
+                assert cell.parent is not None
+                assert cell.parent.time is not None
+
                 cell.time = Time(
                     cell.parent.time.endT,
                     cell.parent.time.endT + cell.obs[2] + cell.obs[3],

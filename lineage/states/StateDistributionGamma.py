@@ -150,6 +150,9 @@ class StateDistribution:
             if ii == 0:
                 cell.time = Time(0, cell.obs[1])
             else:
+                assert cell.parent is not None
+                assert cell.parent.time is not None
+
                 cell.time = Time(
                     cell.parent.time.endT, cell.parent.time.endT + cell.obs[1]
                 )

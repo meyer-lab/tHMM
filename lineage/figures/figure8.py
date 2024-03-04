@@ -89,7 +89,7 @@ def makeFigure():
     return f
 
 
-def run_BIC(E, lineages):
+def run_BIC(E, lineages: list):
     """
     Run's BIC for known lineages with known lineages and stores the output for
     figure drawing.
@@ -103,7 +103,7 @@ def run_BIC(E, lineages):
         nums = 0
         for lin in output[idx][0].X:
             nums += len(lin.output_lineage)
-        BIC, _ = output[idx][0].get_BIC(output[idx][1], num_cells=nums)
+        BIC, _ = output[idx][0][0].get_BIC(output[idx][1], num_cells=nums)
         BICs[idx] = BIC
     # normalize
     return BICs - np.min(BICs)
