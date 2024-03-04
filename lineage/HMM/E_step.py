@@ -1,51 +1,12 @@
 import numpy as np
 import numpy.typing as npt
-
-
-def get_leaf_Normalizing_Factors(
-    leaves_idx: npt.NDArray[np.uintp],
-    MSD: npt.NDArray[np.float64],
-    EL: npt.NDArray[np.float64],
-) -> npt.NDArray[np.float64]:
-    """
-    Normalizing factor (NF) matrix and base case at the leaves.
-
-    Each element in this N by 1 matrix is the normalizing
-    factor for each beta value calculation for each node.
-    This normalizing factor is essentially the marginal
-    observation distribution for a node.
-
-    This function gets the normalizing factor for
-    the upward recursion only for the leaves.
-    We first calculate the joint probability
-    using the definition of conditional probability:
-
-    :math:`P(x_n = x | z_n = k) * P(z_n = k) = P(x_n = x , z_n = k)`,
-    where n are the leaf nodes.
-
-    We can then sum this joint probability over k,
-    which are the possible states z_n can be,
-    and through the law of total probability,
-    obtain the marginal observation distribution
-    :math:`P(x_n = x) = sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x)`.
-
-    :param EL: The emissions likelihood
-    :param MSD: The marginal state distribution P(z_n = k)
-    :return: normalizing factor. The marginal observation distribution P(x_n = x)
-    """
-    NF_array = np.zeros(MSD.shape[0], dtype=float)  # instantiating N by 1 array
-
-    # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
-    # this product is the joint probability
-    # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
-    # the sum of the joint probabilities is the marginal probability
-    NF_array[leaves_idx] = np.sum(MSD[leaves_idx, :] * EL[leaves_idx, :], axis=1)
-    assert np.all(np.isfinite(NF_array))
-    return NF_array
+from numba import jit
 
 
 def get_MSD(
-    cell_to_parent: np.ndarray, pi: npt.NDArray[np.float64], T: npt.NDArray[np.float64]
+    cell_to_daughters: np.ndarray,
+    pi: npt.NDArray[np.float64],
+    T: npt.NDArray[np.float64],
 ) -> npt.NDArray[np.float64]:
     r"""Marginal State Distribution (MSD) matrix by upward recursion.
     This is the probability that a hidden state variable :math:`z_n` is of
@@ -68,27 +29,48 @@ def get_MSD(
     :param T: State transitions matrix
     :return: The marginal state distribution
     """
-    m = np.zeros((cell_to_parent.size, pi.size))
+    m = np.zeros((cell_to_daughters.shape[0], pi.size))
     m[0, :] = pi
 
     # recursion based on parent cell
-    for cIDX, pIDX in enumerate(cell_to_parent[1:]):
-        m[cIDX + 1, :] = m[pIDX, :] @ T
+    for pIDX, cIDX in enumerate(cell_to_daughters):
+        if cIDX[0] != -1:
+            m[cIDX[0], :] = m[pIDX, :] @ T
+        if cIDX[1] != -1:
+            m[cIDX[1], :] = m[pIDX, :] @ T
 
     # Assert all ~= 1.0
     assert np.linalg.norm(np.sum(m, axis=1) - 1.0) < 1e-9
     return m
 
 
-def get_beta(
-    leaves_idx: npt.NDArray[np.uintp],
-    cell_to_daughters: npt.NDArray[np.intp],
-    T: npt.NDArray[np.float64],
-    MSD: npt.NDArray[np.float64],
-    EL: npt.NDArray[np.float64],
-    NF: npt.NDArray[np.float64],
-) -> npt.NDArray[np.float64]:
-    r"""Beta matrix and base case at the leaves.
+@jit
+def get_beta_and_NF(
+    leaves_idx, cell_to_daughters, T: np.ndarray, MSD: np.ndarray, EL: np.ndarray
+):
+    r"""
+    Normalizing factor (NF) matrix and base case at the leaves.
+
+    Each element in this N by 1 matrix is the normalizing
+    factor for each beta value calculation for each node.
+    This normalizing factor is essentially the marginal
+    observation distribution for a node.
+
+    This function gets the normalizing factor for
+    the upward recursion only for the leaves.
+    We first calculate the joint probability
+    using the definition of conditional probability:
+
+    :math:`P(x_n = x | z_n = k) * P(z_n = k) = P(x_n = x , z_n = k)`,
+    where n are the leaf nodes.
+
+    We can then sum this joint probability over k,
+    which are the possible states z_n can be,
+    and through the law of total probability,
+    obtain the marginal observation distribution
+    :math:`P(x_n = x) = sum_k ( P(x_n = x , z_n = k) ) = P(x_n = x)`.
+
+    Beta matrix and base case at the leaves.
 
     Each element in this N by K matrix is the beta value
     for each cell and at each state. In particular, this
@@ -120,36 +102,45 @@ def get_beta(
     :param tHMMobj: A class object with properties of the lineages of cells
     :param MSD: The marginal state distribution P(z_n = k)
     :param EL: The emissions likelihood
-    :param NF: normalizing factor. The marginal observation distribution P(x_n = x)
+    :return: normalizing factor. The marginal observation distribution P(x_n = x)
     :return: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
     """
+    # MSD of the respective lineage
+    MSD_array = np.maximum(MSD, np.finfo(MSD.dtype).eps)
+    ELMSD = EL * MSD
+
+    ### NF leaf calculation
+    # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
+    # this product is the joint probability
+    # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
+    # the sum of the joint probabilities is the marginal probability
+    NF = np.zeros(MSD.shape[0], dtype=float)  # instantiating N by 1 array
+    NF[leaves_idx] = np.sum(ELMSD[leaves_idx, :], axis=1)
+    assert np.all(np.isfinite(NF))
+
+    ### beta calculation
     beta = np.zeros_like(MSD)
 
     # Emission Likelihood, Marginal State Distribution, Normalizing Factor (same regardless of state)
     # P(x_n = x | z_n = k), P(z_n = k), P(x_n = x)
-    ZZ = EL[leaves_idx, :] * MSD[leaves_idx, :] / NF[leaves_idx, np.newaxis]
-    beta[leaves_idx, :] = ZZ
+    beta[leaves_idx, :] = ELMSD[leaves_idx, :] / NF[leaves_idx, np.newaxis]
 
     # Assert all ~= 1.0
     assert np.abs(np.sum(beta[-1]) - 1.0) < 1e-9
 
-    MSD_array = np.maximum(
-        MSD, np.finfo(MSD.dtype).eps
-    )  # MSD of the respective lineage
-    ELMSD = EL * MSD
-
     cIDXs = np.arange(MSD.shape[0])
     cIDXs = np.delete(cIDXs, leaves_idx)
+    cIDXs = np.flip(cIDXs)
 
-    for pii in reversed(cIDXs):
+    for pii in cIDXs:
         ch_ii = cell_to_daughters[pii, :]
         ratt = (beta[ch_ii, :] / MSD_array[ch_ii, :]) @ T.T
-        fac1 = np.prod(ratt, axis=0) * ELMSD[pii, :]
+        fac1 = ratt[0, :] * ratt[1, :] * ELMSD[pii, :]
 
         NF[pii] = np.sum(fac1)
         beta[pii, :] = fac1 / NF[pii]
 
-    return beta
+    return NF, beta
 
 
 def get_gamma(

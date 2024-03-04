@@ -81,9 +81,9 @@ def test_atonce_estimator():
         g1phase_cells.append(tmp[:, np.array([0, 2, 4])])
 
     # Setup gammas
-    gammas_1st = [np.ones(vec.shape[0]) for vec in g1phase_cells]
+    gammas_1st = [np.ones((vec.shape[0], 1)) for vec in g1phase_cells]
 
-    atonce_estimator(solver_gamma_list, g1phase_cells, gammas_1st, "G1", 0)
+    atonce_estimator(solver_gamma_list, g1phase_cells, gammas_1st, "G1")
     xout = np.array(
         [solver_gamma_list[0].estimate.E[0].params[2]]
         + [tHMMobj.estimate.E[0].params[3] for tHMMobj in solver_gamma_list]
