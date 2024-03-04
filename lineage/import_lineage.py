@@ -128,7 +128,7 @@ def assign_observs_AU565(cell: CellVar, lineage, uniq_id: int) -> CellVar:
 # partof_path = "lineage/data/MCF10A/"
 
 
-def import_MCF10A(path: str) -> list[list]:
+def import_MCF10A(path: str) -> list[list[CellVar]]:
     """Reading the data and extracting lineages and assigning their corresponding observations.
     :param path: the path to the mcf10a data.
     :return population: list of cells structured in CellVar objects.
@@ -136,40 +136,41 @@ def import_MCF10A(path: str) -> list[list]:
     df = pd.read_csv(path)
     population = []
     # loop over "lineageId"s
-    for i in df["lineage"].unique():
-        # select all the cells that belong to that lineage
-        lineage = df.loc[df["lineage"] == i]
-
-        lin_code = list(lineage["TID"].unique())[0]  # lineage code to process
-        unique_parent_trackIDs = lineage["motherID"].unique()
-
-        parent_cell = CellVar(parent=None)
-        parent_cell = assign_observs_MCF10A(parent_cell, lineage, lin_code)
+    for _, lineage in df.groupby("lineage"):
+        connection_df = (
+            lineage.loc[:, ["TID", "motherID"]]
+            .sort_values("motherID")
+            .drop_duplicates()
+        )
 
         # create a list to store cells belonging to a lineage
-        lineage_list = [parent_cell]
-        for val in unique_parent_trackIDs[1:]:
-            temp_lin = lineage.loc[lineage["motherID"] == val]
-            child_id = temp_lin["TID"].unique()  # find children
-
-            # If there are not two children then skip lineage
-            if len(child_id) != 2:
+        lineage_list = []
+        for mother, TIDs in connection_df.groupby("motherID"):
+            if mother == 0:
+                lineage_list.append(
+                    assign_observs_MCF10A(
+                        CellVar(parent=None), lineage, TIDs["TID"].iloc[0]
+                    )
+                )
+                continue
+            elif TIDs.shape[0] != 2:
                 lineage_list = []
                 break
 
-            for cells in lineage_list:
-                if lin_code == val:
-                    cell = cells
+            pIDX = int(np.argwhere(connection_df["TID"] == mother)[0][0])
+            parent = lineage_list[pIDX]
 
-            cell.left = assign_observs_MCF10A(
-                CellVar(parent=cell), lineage, child_id[0]
+            a = assign_observs_MCF10A(
+                CellVar(parent=parent), lineage, TIDs["TID"].iloc[0]
             )
-            cell.right = assign_observs_MCF10A(
-                CellVar(parent=cell), lineage, child_id[1]
+            b = assign_observs_MCF10A(
+                CellVar(parent=parent), lineage, TIDs["TID"].iloc[1]
             )
+            parent.left = a
+            parent.right = b
 
-            lineage_list.append(cell.left)
-            lineage_list.append(cell.right)
+            lineage_list.append(a)
+            lineage_list.append(b)
 
             population.append(lineage_list)
     return population
