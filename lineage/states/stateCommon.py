@@ -3,14 +3,37 @@
 import warnings
 from typing import Literal
 import numpy as np
+from numba import njit
 import numpy.typing as npt
 from scipy.optimize import minimize, Bounds, LinearConstraint
-from scipy.special import gammaincc, gammaln
+from ..CellVar import CellVar
+from ctypes import CFUNCTYPE, c_double
+from numba.extending import get_cython_function_address
 
 arr_type = npt.NDArray[np.float64]
 
 
 warnings.filterwarnings("ignore", message="Values in x were outside bounds")
+
+
+class StateDistributionClass:
+    def rvs(self, size: int, rng=None):
+        raise NotImplementedError("dist not implemented.")
+
+    def dist(self, other) -> float:
+        raise NotImplementedError("dist not implemented.")
+
+    def dof(self) -> int:
+        raise NotImplementedError("dof not implemented.")
+
+    def logpdf(self, x: np.ndarray) -> np.ndarray:
+        raise NotImplementedError("logpdf not implemented.")
+
+    def estimator(self, x: np.ndarray, gammas: np.ndarray):
+        raise NotImplementedError("estimator not implemented.")
+
+    def censor_lineage(self, censor_condition: int, full_lineage: list[CellVar], desired_experiment_time=2e12) -> list[CellVar]:
+        raise NotImplementedError("censor_lineage not implemented.")
 
 
 def basic_censor(cells: list):
@@ -34,6 +57,14 @@ def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
     return numerator / denominator
 
 
+addr = get_cython_function_address("scipy.special.cython_special", "gammaincc")
+gammaincc = CFUNCTYPE(c_double, c_double, c_double)(addr)
+
+addr = get_cython_function_address("scipy.special.cython_special", "gammaln")
+gammaln = CFUNCTYPE(c_double, c_double)(addr)
+
+
+@njit
 def gamma_LL(
     logX: arr_type, gamma_obs: arr_type, time_cen: arr_type, gammas: arr_type, param_idx
 ):
@@ -49,10 +80,11 @@ def gamma_LL(
         (x[0] - 1.0) * np.log(gobs) - gobs - glnA - logX[param_idx],
     )
 
-    jidx = time_cen == 0.0
-    gamP = gammaincc(x[0], gobs[jidx])
-    gamP = np.maximum(gamP, 1e-35)  # Clip if the probability hits exactly 0
-    outt -= np.sum(gammas[jidx] * np.log(gamP))
+    for jj, cen in enumerate(time_cen):
+        if cen == 0:
+            gamP = gammaincc(x[0], gobs[jj])
+            gamP = np.maximum(gamP, 1e-35)  # Clip if the probability hits exactly 0
+            outt -= gammas[jj] * np.log(gamP)
 
     assert np.isfinite(outt)
     return outt
@@ -92,7 +124,7 @@ def gamma_estimator(
 
     res = minimize(
         gamma_LL,
-        jac="3-point",
+        jac="2-point",
         x0=np.log(x0),
         args=arrgs,
         bounds=bnd,

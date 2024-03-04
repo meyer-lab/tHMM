@@ -4,11 +4,11 @@ import numpy as np
 import scipy.stats as sp
 from typing import Union, Literal
 
-from .stateCommon import gamma_estimator, basic_censor, bern_estimator
+from .stateCommon import gamma_estimator, basic_censor, bern_estimator, StateDistributionClass
 from ..CellVar import Time, CellVar
 
 
-class StateDistribution:
+class StateDistribution(StateDistributionClass):
     """
     StateDistribution for cells with gamma distributed times.
     """
@@ -136,7 +136,7 @@ class StateDistribution:
         censor_condition: int,
         full_lineage: list[CellVar],
         desired_experiment_time=2e12,
-    ):
+    ) -> list[CellVar]:
         """
         This function removes those cells that are intended to be removed.
         These cells include the descendants of a cell that has died, or has lived beyonf the experimental end time.

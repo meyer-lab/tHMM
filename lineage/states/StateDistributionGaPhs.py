@@ -2,12 +2,12 @@
 
 import numpy as np
 
-from .stateCommon import basic_censor
+from .stateCommon import basic_censor, StateDistributionClass
 from .StateDistributionGamma import StateDistribution as GammaSD
 from ..CellVar import Time, CellVar
 
 
-class StateDistribution:
+class StateDistribution(StateDistributionClass):
     """For G1 and G2 separated as observations."""
 
     def __init__(
@@ -54,7 +54,7 @@ class StateDistribution:
         """Return the degrees of freedom."""
         return self.G1.dof() + self.G2.dof()
 
-    def logpdf(self, x: np.ndarray):
+    def logpdf(self, x: np.ndarray) -> np.ndarray:
         """To calculate the log-likelihood of observations to states."""
 
         G1_LL = self.G1.logpdf(x[:, np.array([0, 2, 4])])
