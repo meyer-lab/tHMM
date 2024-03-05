@@ -15,7 +15,7 @@ class CellVar:
     gen: int
     observed: bool
     state: Optional[int]
-    obs: Optional[np.ndarray]
+    obs: np.ndarray
     time: Optional[Time]
     left: Optional["CellVar"]
     right: Optional["CellVar"]
@@ -36,7 +36,7 @@ class CellVar:
         self.state = state
         self.left = None
         self.right = None
-        self.obs = None
+        self.obs = np.empty(0, dtype=float)
 
     def isLeafBecauseTerminal(self) -> bool:
         """

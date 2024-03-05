@@ -20,9 +20,6 @@ class LineageTree:
         # sort according to generation
         sorted_cells = sorted(list_of_cells, key=operator.attrgetter("gen"))
 
-        # assign times using the state distribution specific time model
-        E[0].assign_times(sorted_cells)
-
         # add root
         self.output_lineage = [sorted_cells[0]]
 
@@ -106,9 +103,6 @@ class LineageTree:
             for i, cell in enumerate(cells_in_state):
                 cell.obs = list_of_tuples_of_obs[i]
 
-        # assign times using the state distribution specific time model
-        E[0].assign_times(full_lineage)
-
         output_lineage = E[0].censor_lineage(
             censor_condition, full_lineage, desired_experiment_time
         )
@@ -125,7 +119,7 @@ class LineageTree:
         return len(self.output_lineage)
 
 
-def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list:
+def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list[np.ndarray]:
     """
     Emission Likelihood (EL) matrix.
 

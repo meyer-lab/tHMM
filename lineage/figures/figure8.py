@@ -63,7 +63,7 @@ def makeFigure():
                     )
                     for _ in range(10)
                 ]
-            tmp.append(exe.submit(run_BIC, e, lineages))
+            tmp.append(exe.submit(run_BIC, lineages))
         BICprom.append(tmp)
     Bic = [[aaa.result() for aaa in ee] for ee in BICprom]
     BIC = list(map(list, zip(*Bic)))
@@ -89,7 +89,7 @@ def makeFigure():
     return f
 
 
-def run_BIC(E, lineages):
+def run_BIC(lineages: list[LineageTree]) -> np.ndarray:
     """
     Run's BIC for known lineages with known lineages and stores the output for
     figure drawing.
@@ -97,15 +97,13 @@ def run_BIC(E, lineages):
 
     # Storing BICs into array
     BICs = np.empty((len(desired_num_states)))
-    output = run_Analyze_over(
-        [lineages] * len(desired_num_states), desired_num_states, parallel=True
-    )
+    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states)
 
     for idx in range(len(desired_num_states)):
         nums = 0
-        for lin in output[idx][0].X:
+        for lin in output[idx][0][0].X:
             nums += len(lin.output_lineage)
-        BIC, _ = output[idx][0].get_BIC(output[idx][1], num_cells=nums)
+        BIC, _ = output[idx][0][0].get_BIC(output[idx][1], num_cells=nums)
         BICs[idx] = BIC
     # normalize
     return BICs - np.min(BICs)

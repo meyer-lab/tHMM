@@ -449,8 +449,6 @@ def commonAnalyze(
     xtype="length",
     list_of_fpi=None,
     list_of_fT=None,
-    list_of_fE=None,
-    parallel=True,
 ):
     """
     The standard way of analyzing a list of populations (a list of list of lineages)
@@ -460,14 +458,12 @@ def commonAnalyze(
     output = run_Analyze_over(
         list_of_populations,
         num_states,
-        parallel=parallel,
         list_of_fpi=list_of_fpi,
         list_of_fT=list_of_fT,
-        list_of_fE=list_of_fE,
     )
 
     # Collecting the results of analyzing the lineages
-    results_holder = [Results(o[0], o[1]) for o in output]
+    results_holder = [Results(o[0][0], o[1]) for o in output]
 
     dictOut = {}
 

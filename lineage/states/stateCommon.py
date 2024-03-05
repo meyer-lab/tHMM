@@ -1,6 +1,7 @@
 """ Common utilities used between states regardless of distribution. """
 
 import warnings
+from typing import Literal
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize, Bounds, LinearConstraint
@@ -58,11 +59,12 @@ def gamma_LL(
 
 
 def gamma_estimator(
-    gamma_obs: list[arr_type],
-    time_cen: list[arr_type],
-    gammas: list[arr_type],
+    gamma_obs: arr_type,
+    time_cen: arr_type,
+    gammas: arr_type,
+    param_idx,
     x0: arr_type,
-    phase: str = "all",
+    phase: Literal["all", "G1", "G2"],
 ) -> arr_type:
     """
     This is a weighted, closed-form estimator for two parameters
@@ -70,23 +72,10 @@ def gamma_estimator(
     In the phase-specific case, we have 3 linear constraints: scale1 > scale2, scale2 > scale3, scale3 > scale 4.
     In the non-specific case, we have only 1 constraint: scale1 > scale2 ==> A = np.array([1, 3])
     """
-    # Handle no observations
-    if np.sum([np.sum(g) for g in gammas]) < 0.1:
-        gammas = [np.ones(g.size) for g in gammas]
-
-    # Check shapes
-    for i in range(len(gamma_obs)):
-        assert gamma_obs[i].shape == time_cen[i].shape
-        assert gamma_obs[i].shape == gammas[i].shape
-
-    param_idx = np.concatenate(
-        [np.full(gam.size, ii + 1) for ii, gam in enumerate(gamma_obs)]
-    )
-
     arrgs = (
-        np.concatenate(gamma_obs),
-        np.concatenate(time_cen),
-        np.concatenate(gammas),
+        gamma_obs,
+        time_cen,
+        gammas,
         param_idx,
     )
 

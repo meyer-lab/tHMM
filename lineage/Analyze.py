@@ -15,16 +15,8 @@ from .BaumWelch import (
 )
 
 
-def Analyze(
-    X: list, num_states: int, fpi=None, fT=None, fE=None, rng=None
-) -> Tuple[tHMM, float]:
-    """Wrapper for one-condition case."""
-    tHMMobj_list, LL, _ = Analyze_list([X], num_states, fpi=fpi, fT=fT, fE=fE, rng=rng)
-    return tHMMobj_list[0], LL
-
-
 def fit_list(
-    tHMMobj_list: list, tolerance: float = 1e-6, max_iter: int = 200, rng=None
+    tHMMobj_list: list[tHMM], tolerance: float = 1e-6, max_iter: int = 200, rng=None
 ) -> Tuple[list[np.ndarray], list[np.ndarray], float]:
     """
     Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
@@ -74,8 +66,8 @@ def fit_list(
 
 
 def Analyze_list(
-    pop_list: list, num_states: int, fpi=None, fT=None, fE=None, rng=None
-) -> Tuple[list[tHMM], float, list]:
+    pop_list: list, num_states: int, fpi=None, fT=None, rng=None
+) -> Tuple[list[tHMM], float, list[np.ndarray]]:
     """This function runs the analyze function for the case when we want to fit multiple conditions at the same time.
     :param pop_list: The list of cell populations to run the analyze function on.
     :param num_states: The number of states that we want to run the model for.
@@ -86,14 +78,13 @@ def Analyze_list(
     rng = np.random.default_rng(rng)
 
     tHMMobj_list = [
-        tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE, rng=rng) for X in pop_list
+        tHMM(X, num_states=num_states, fpi=fpi, fT=fT, rng=rng) for X in pop_list
     ]  # build the tHMM class with X
     _, gammas, LL = fit_list(tHMMobj_list, rng=rng)
 
     for _ in range(5):
         tHMMobj_list2 = [
-            tHMM(X, num_states=num_states, fpi=fpi, fT=fT, fE=fE, rng=rng)
-            for X in pop_list
+            tHMM(X, num_states=num_states, fpi=fpi, fT=fT, rng=rng) for X in pop_list
         ]  # build the tHMM class with X
         _, gammas2, LL2 = fit_list(tHMMobj_list2, rng=rng)
 
@@ -108,12 +99,10 @@ def Analyze_list(
 def run_Analyze_over(
     list_of_populations: list[list],
     num_states: np.ndarray,
-    parallel=False,
     atonce=False,
     list_of_fpi=None,
     list_of_fT=None,
-    list_of_fE=None,
-) -> list:
+) -> list[Tuple[list[tHMM], float, list[np.ndarray]]]:
     """
     A function that can be parallelized to speed up figure creation.
 
@@ -134,39 +123,28 @@ def run_Analyze_over(
     if list_of_fT is None:
         list_of_fT = [None] * len(list_of_populations)
 
-    if list_of_fE is None:
-        list_of_fE = [None] * len(list_of_populations)
-
     if isinstance(num_states, (np.ndarray, list)):
         assert len(num_states) == len(list_of_populations)
     else:
         num_states = np.full(len(list_of_populations), num_states)
 
-    output = []
+    output: list[tuple] = []
 
     for idx, population in enumerate(list_of_populations):
-        if (
-            atonce
-        ):  # if we are running all the concentration simultaneously, they should be given to Analyze_list() specifically in the case of figure 9
-            output.append(
-                Analyze_list(
-                    population,
-                    num_states[idx],
-                    fpi=list_of_fpi[idx],
-                    fT=list_of_fT[idx],
-                    fE=list_of_fE[idx],
-                )
+        # if we are running all the concentrations simultaneously, they should be given to Analyze_list() specifically in the case of figure 9
+        if atonce:
+            input = population
+        else:
+            input = [population]
+
+        output.append(
+            Analyze_list(
+                input,
+                num_states[idx],
+                fpi=list_of_fpi[idx],
+                fT=list_of_fT[idx],
             )
-        else:  # if we are not fitting all conditions at once, we need to pass the populations to the Analyze()
-            output.append(
-                Analyze(
-                    population,
-                    num_states[idx],
-                    fpi=list_of_fpi[idx],
-                    fT=list_of_fT[idx],
-                    fE=list_of_fE[idx],
-                )
-            )
+        )
 
     return output
 

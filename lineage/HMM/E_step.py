@@ -119,9 +119,23 @@ def get_beta(
     :param tHMMobj: A class object with properties of the lineages of cells
     :param MSD: The marginal state distribution P(z_n = k)
     :param EL: The emissions likelihood
-    :param NF: normalizing factor. The marginal observation distribution P(x_n = x)
+    :return: normalizing factor. The marginal observation distribution P(x_n = x)
     :return: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
     """
+    # MSD of the respective lineage
+    MSD_array = np.maximum(MSD, np.finfo(MSD.dtype).eps)
+    ELMSD = EL * MSD
+
+    ### NF leaf calculation
+    # P(x_n = x , z_n = k) = P(x_n = x | z_n = k) * P(z_n = k)
+    # this product is the joint probability
+    # P(x_n = x) = sum_k ( P(x_n = x , z_n = k) )
+    # the sum of the joint probabilities is the marginal probability
+    NF = np.zeros(MSD.shape[0], dtype=float)  # instantiating N by 1 array
+    NF[leaves_idx] = np.sum(ELMSD[leaves_idx, :], axis=1)
+    assert np.all(np.isfinite(NF))
+
+    ### beta calculation
     beta = np.zeros_like(MSD)
     first_leaf = int(np.floor(MSD.shape[0] / 2))
 
@@ -142,12 +156,12 @@ def get_beta(
         ch_ii = np.array([pii * 2 + 1, pii * 2 + 2])
 
         ratt = (beta[ch_ii, :] / MSD_array[ch_ii, :]) @ T.T
-        fac1 = np.prod(ratt, axis=0) * ELMSD[pii, :]
+        fac1 = ratt[0, :] * ratt[1, :] * ELMSD[pii, :]
 
         NF[pii] = np.sum(fac1)
         beta[pii, :] = fac1 / NF[pii]
 
-    return beta
+    return NF, beta
 
 
 def get_gamma(
