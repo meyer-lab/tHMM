@@ -115,7 +115,7 @@ def test_E_step(cens):
 
     do_E_step(tHMMobj)
     pred_states = tHMMobj.predict()
-    true_states = [cell.state for cell in tHMMobj.X[0].output_lineage]
+    true_states = tHMMobj.X[0].states
 
     assert rand_score(true_states, pred_states[0]) >= 0.9
 

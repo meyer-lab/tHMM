@@ -4,6 +4,8 @@ import numpy as np
 from Bio.Phylo.BaseTree import Clade
 import networkx as nx
 from .figures.common import getSetup
+from .LineageTree import LineageTree
+from .CellVar import CellVar
 
 cs = ["lightblue", "orange", "lightgreen", "red", "purple", "grey"]
 stateColors = ["blue", "orange", "green", "red", "purple", "grey"]
@@ -26,7 +28,7 @@ def plot_lineage_samples(tHMMobj_list, name):
     f.savefig("lineage/figures/cartoons/" + name + ".svg")
 
 
-def CladeRecursive(cell, a: list, censor: bool, color: bool):
+def CladeRecursive(cell: CellVar, a: list, censor: bool, color: bool):
     """A recurssive function that takes in the root cell and traverses through cells to plot the lineage.
     The width of the lines show the phase of the cells.
     The color of the lines show the state of the cells.
@@ -80,10 +82,15 @@ def CladeRecursive(cell, a: list, censor: bool, color: bool):
         return my_clade
 
 
-def plotLineage(lineage, axes, censor=True, color=True):
+def plotLineage(lineage: LineageTree, axes, censor: bool = True, color: bool = True):
     """
     Given a lineage of cells, uses the `CladeRecursive` function to plot the lineage.
     """
+    for ii, cell in enumerate(lineage.output_lineage):
+        cell.state = lineage.states[ii]
+
+        if color:
+            assert cell.state >= 0
 
     root = lineage.output_lineage[0]
     if np.isfinite(root.obs[4]):  # the lineage starts from G1 phase
@@ -103,7 +110,9 @@ def plotLineage(lineage, axes, censor=True, color=True):
     return draw(c, axes=axes)
 
 
-def plotLineage_MCF10A(lineage, axes, censor=True, color=True):
+def plotLineage_MCF10A(
+    lineage: LineageTree, axes, censor: bool = True, color: bool = True
+):
     """
     Given a lineage of cells, uses the `CladeRecursive` function to plot the lineage.
     """

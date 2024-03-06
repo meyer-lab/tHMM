@@ -1,9 +1,21 @@
 """ This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
 
-from __future__ import annotations
 import numpy as np
 from typing import Optional
 from dataclasses import dataclass
+
+
+@dataclass(init=True, repr=True, eq=True, order=True)
+class Time:
+    """
+    Class that stores all the time related observations in a neater format.
+    This assists in pruning based on experimental time and obtaining
+    attributes of the lineage as a whole like the average growth rate.
+    """
+
+    startT: float
+    endT: float
+    transition_time: float = 0.0
 
 
 class CellVar:
@@ -14,13 +26,13 @@ class CellVar:
     parent: Optional["CellVar"]
     gen: int
     observed: bool
-    state: Optional[int]
+    state: int
     obs: np.ndarray
     time: Optional[Time]
     left: Optional["CellVar"]
     right: Optional["CellVar"]
 
-    def __init__(self, parent: Optional["CellVar"], state: Optional[int] = None):
+    def __init__(self, parent: Optional["CellVar"], state: int = -1):
         """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
@@ -78,16 +90,3 @@ class CellVar:
 
         # otherwise, it itself is observed and at least one of its daughters is observed
         return False
-
-
-@dataclass(init=True, repr=True, eq=True, order=True)
-class Time:
-    """
-    Class that stores all the time related observations in a neater format.
-    This assists in pruning based on experimental time and obtaining
-    attributes of the lineage as a whole like the average growth rate.
-    """
-
-    startT: float
-    endT: float
-    transition_time: float = 0.0

@@ -51,34 +51,20 @@ def state_abundance_perRep(reps):
     s3 = []
     s4 = []
     s5 = []
+
     for rep in reps:
-        st0 = 0
-        st1 = 0
-        st2 = 0
-        st3 = 0
-        st4 = 0
-        st5 = 0
+        states = []
+
         for lineageTree_list in rep:
             for lineage_tree in lineageTree_list:
-                for cell in lineage_tree.output_lineage:
-                    if cell.state == 0:
-                        st0 += 1
-                    elif cell.state == 1:
-                        st1 += 1
-                    elif cell.state == 2:
-                        st2 += 1
-                    elif cell.state == 3:
-                        st3 += 1
-                    elif cell.state == 4:
-                        st4 += 1
-                    elif cell.state == 5:
-                        st5 += 1
-        s0.append(st0)
-        s1.append(st1)
-        s2.append(st2)
-        s3.append(st3)
-        s4.append(st4)
-        s5.append(st5)
+                states = np.concatenate((states, lineage_tree.states))
+
+        s0.append(np.sum(states == 0))
+        s1.append(np.sum(states == 1))
+        s2.append(np.sum(states == 2))
+        s3.append(np.sum(states == 3))
+        s4.append(np.sum(states == 4))
+        s5.append(np.sum(states == 5))
 
     return [s0, s1, s2, s3, s4, s5]
 
