@@ -16,16 +16,14 @@ concs = ["PBS", "EGF", "HGF", "OSM"]
 num_states = 3
 hgf_tHMMobj_list = Analyze_list(GFs, num_states)[0]
 
-hgf_states_list = [tHMMobj.predict() for tHMMobj in hgf_tHMMobj_list]
-
 # assign the predicted states to each cell
 for idx, hgf_tHMMobj in enumerate(hgf_tHMMobj_list):
+    states = hgf_tHMMobj.predict()
+
     for lin_indx, lin in enumerate(hgf_tHMMobj.X):
-        lin.states = hgf_states_list[idx][lin_indx]
+        lin.states = states[idx][lin_indx]
 
 T_hgf = hgf_tHMMobj_list[0].estimate.T
-
-num_states = hgf_tHMMobj_list[0].num_states
 
 rcParams["font.sans-serif"] = "Arial"
 

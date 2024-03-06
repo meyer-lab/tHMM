@@ -8,12 +8,13 @@ from ..Lineage_collections import GFs
 from ..Analyze import Analyze_list
 
 hgf_tHMMobj_list = Analyze_list(GFs, 3)[0]
-hgf_states_list = [tHMMobj.predict() for tHMMobj in hgf_tHMMobj_list]
 
 # assign the predicted states to each cell
 for idx, hgf_tHMMobj in enumerate(hgf_tHMMobj_list):
+    states = hgf_tHMMobj.predict()
+
     for lin_indx, lin in enumerate(hgf_tHMMobj.X):
-        lin.states = hgf_states_list[idx][lin_indx]
+        lin.states = states[idx][lin_indx]
 
 for thmm_obj in hgf_tHMMobj_list:
     thmm_obj.X = sort_lins(thmm_obj)

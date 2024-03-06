@@ -82,7 +82,7 @@ def CladeRecursive(cell: CellVar, a: list, censor: bool, color: bool):
         return my_clade
 
 
-def plotLineage(lineage: LineageTree, axes, censor: bool=True, color: bool=True):
+def plotLineage(lineage: LineageTree, axes, censor: bool = True, color: bool = True):
     """
     Given a lineage of cells, uses the `CladeRecursive` function to plot the lineage.
     """
@@ -107,7 +107,9 @@ def plotLineage(lineage: LineageTree, axes, censor: bool=True, color: bool=True)
     return draw(c, axes=axes)
 
 
-def plotLineage_MCF10A(lineage: LineageTree, axes, censor: bool=True, color: bool=True):
+def plotLineage_MCF10A(
+    lineage: LineageTree, axes, censor: bool = True, color: bool = True
+):
     """
     Given a lineage of cells, uses the `CladeRecursive` function to plot the lineage.
     """
