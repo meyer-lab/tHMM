@@ -54,7 +54,7 @@ class StateDistribution:
         """Return the degrees of freedom."""
         return self.G1.dof() + self.G2.dof()
 
-    def logpdf(self, x: np.ndarray):
+    def logpdf(self, x: np.ndarray) -> np.ndarray:
         """To calculate the log-likelihood of observations to states."""
 
         G1_LL = self.G1.logpdf(x[:, np.array([0, 2, 4])])
