@@ -19,7 +19,7 @@ def makeFigure():
     """
     Makes figure 101.
     """
-    num_lins = [len(hgf_tHMMobj_list[i].X) for i in range(4)]
+    num_lins = [len(tM.X) for tM in hgf_tHMMobj_list]
     ax, f = getSetup((10, 20), (np.max(num_lins), 4))
 
     for i in range(4 * np.max(num_lins)):
