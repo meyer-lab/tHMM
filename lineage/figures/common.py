@@ -1046,19 +1046,6 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states)
 
 
-def sort_lins(tHMMobj):
+def sort_lins(tHMMobj) -> list:
     """Sorts lineages based on their root cell state for plotting the lineage trees."""
-    num_st = tHMMobj.estimate.num_states
-
-    st = []  # holds the state of root cell in all lineages for this particular tHMMobj
-    for lins in tHMMobj.X:
-        st.append(lins.output_lineage[0].state)
-
-    states = []
-    for i in range(num_st):
-        st_i = [index for index, val in enumerate(st) if val == i]
-        temp = [tHMMobj.X[k] for k in st_i]
-
-        states += temp
-
-    return states
+    return sorted(tHMMobj.X, key=lambda lin: lin.states[0])
