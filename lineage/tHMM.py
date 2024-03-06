@@ -84,7 +84,7 @@ class tHMM:
         return Viterbi(self)
 
     def get_BIC(
-        self, LL: float, num_cells: int, atonce=False, mcf10a=False
+        self, LL: float, num_cells: int, atonce: bool = False, mcf10a: bool = False
     ) -> Tuple[float, float]:
         """
         Gets the BIC values. Akaike Information Criterion, used for model selection and deals with the trade off
@@ -117,7 +117,9 @@ class tHMM:
 
         return BIC_value, degrees_of_freedom
 
-    def log_score(self, X_state_tree_sequence: list, pi=None, T=None, E=None) -> list:
+    def log_score(
+        self, X_state_tree_sequence: list, pi=None, T=None, E=None
+    ) -> list[float]:
         """
         This function returns the log-likelihood of a possible state assignment
         given the estimated model parameters.
@@ -150,13 +152,13 @@ class tHMM:
             )
 
             assert np.all(np.isfinite(log_score))
-            log_scores.append(log_score)
+            log_scores.append(float(log_score))
 
         return log_scores
 
 
 def log_T_score(
-    T: np.ndarray, state_tree_sequence: list, lineageObj: LineageTree
+    T: np.ndarray, state_tree_sequence: list[np.ndarray], lineageObj: LineageTree
 ) -> float:
     """
     To calculate the joint probability of state and observations.
@@ -170,7 +172,7 @@ def log_T_score(
     :type lineageObj: object
     :return: the log-likelihood of the transition probability matrix
     """
-    log_T_score_holder = 0
+    log_T_score_holder = 0.0
     log_T = np.log(T)
 
     # we start with the first transition, from the root cell
@@ -181,4 +183,4 @@ def log_T_score(
                 daughter_state = state_tree_sequence[dIDX]
                 log_T_score_holder += log_T[cell_state, daughter_state]
 
-    return log_T_score_holder
+    return float(log_T_score_holder)

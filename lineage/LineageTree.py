@@ -1,9 +1,12 @@
 """ This file contains the LineageTree class. """
 
+from typing import Sequence
 import numpy as np
 import numpy.typing as npt
 import operator
 from .CellVar import CellVar
+from .states.StateDistributionGamma import StateDistribution as StA
+from .states.StateDistributionGaPhs import StateDistribution as StB
 
 
 class LineageTree:
@@ -14,21 +17,16 @@ class LineageTree:
     pi: npt.NDArray[np.float64]
     T: npt.NDArray[np.float64]
     leaves_idx: np.ndarray
-    idx_by_gen: list[np.ndarray]
     output_lineage: list[CellVar]
-    cell_to_parent: np.ndarray
     cell_to_daughters: np.ndarray
     states = np.ndarray
+    E: Sequence[StA | StB]
 
-    def __init__(self, list_of_cells: list, E: list):
+    def __init__(self, list_of_cells: list, E: Sequence[StA | StB]):
         self.E = E
         # output_lineage must be sorted according to generation
         self.output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
-        self.idx_by_gen = max_gen(self.output_lineage)
-        # assign times using the state distribution specific time model
-        E[0].assign_times(self.output_lineage)
 
-        self.cell_to_parent = cell_to_parent(self.output_lineage)
         self.cell_to_daughters = cell_to_daughters(self.output_lineage)
 
         # Leaves have no daughters
@@ -41,7 +39,7 @@ class LineageTree:
         cls,
         pi: np.ndarray,
         T: np.ndarray,
-        E: list,
+        E: Sequence[StA | StB],
         desired_num_cells: int,
         censor_condition=0,
         desired_experiment_time=2e12,
@@ -91,9 +89,6 @@ class LineageTree:
             for i, cell in enumerate(cells_in_state):
                 cell.obs = list_of_tuples_of_obs[i]
 
-        # assign times using the state distribution specific time model
-        E[0].assign_times(full_lineage)
-
         output_lineage = E[0].censor_lineage(
             censor_condition, full_lineage, desired_experiment_time
         )
@@ -110,7 +105,7 @@ class LineageTree:
         return len(self.output_lineage)
 
 
-def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list:
+def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list[np.ndarray]:
     """
     Emission Likelihood (EL) matrix.
 
@@ -139,42 +134,6 @@ def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list:
         ii += nl
 
     return EL
-
-
-def max_gen(lineage: list[CellVar]) -> list[np.ndarray]:
-    """
-    Finds the maximal generation in the tree, and cells organized by their generations.
-    This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
-    creates a list of them, appends the lists leading to have a list of the lists of cells in specific generations.
-    :param lineage: The list of cells in a lineageTree object.
-    :return max: The maximal generation in the tree.
-    :return cells_by_gen: The list of lists of cells belonging to the same generation separated by specific generations.
-    """
-    gens = sorted(
-        {cell.gen for cell in lineage}
-    )  # appending the generation of cells in the lineage
-    cells_by_gen: list[np.ndarray] = []
-    for gen in gens:
-        level = np.array(
-            [
-                lineage.index(cell)
-                for cell in lineage
-                if (cell.gen == gen and cell.observed)
-            ],
-            dtype=int,
-        )
-        cells_by_gen.append(level)
-    return cells_by_gen
-
-
-def cell_to_parent(lineage: list[CellVar]) -> np.ndarray:
-    output = np.full(len(lineage), -1, dtype=int)
-    for ii, cell in enumerate(lineage):
-        parent = cell.parent
-        if parent is not None:
-            output[ii] = lineage.index(parent)
-
-    return output
 
 
 def cell_to_daughters(lineage: list[CellVar]) -> np.ndarray:

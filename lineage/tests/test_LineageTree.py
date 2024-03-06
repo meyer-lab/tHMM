@@ -3,7 +3,7 @@
 import unittest
 import numpy as np
 from ..CellVar import CellVar as c
-from ..LineageTree import LineageTree, max_gen
+from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
 
 
@@ -91,19 +91,3 @@ class TestModel(unittest.TestCase):
         self.cell_1 = cell_1
         # for test_get_mixed_subtrees
         self.mixed = [cell_2, cell_3, cell_4, cell_5, cell_6, cell_7]
-
-    def test_max_gen(self):
-        """
-        A unittest for testing max_gen function by creating the lineage manually
-        for 3 generations ==> total of 7 cells in the setup function.
-        """
-        list_by_gen = max_gen(self.test_lineage)
-        np.testing.assert_array_equal(list_by_gen[0], self.level1)
-        np.testing.assert_array_equal(list_by_gen[1], self.level2)
-        np.testing.assert_array_equal(list_by_gen[2], self.level3)
-
-    def test_get_parent_for_level(self):
-        """A unittest for get_parent_for_level."""
-        list_by_gen = max_gen(self.lineage1.output_lineage)
-        parent_ind_holder = np.unique(self.lineage1.cell_to_parent[list_by_gen[3]])
-        np.testing.assert_array_equal(parent_ind_holder, list_by_gen[2])

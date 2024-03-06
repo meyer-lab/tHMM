@@ -4,7 +4,7 @@ import numpy as np
 
 from .stateCommon import basic_censor
 from .StateDistributionGamma import StateDistribution as GammaSD
-from ..CellVar import Time
+from ..CellVar import Time, CellVar
 
 
 class StateDistribution:
@@ -54,7 +54,7 @@ class StateDistribution:
         """Return the degrees of freedom."""
         return self.G1.dof() + self.G2.dof()
 
-    def logpdf(self, x: np.ndarray):
+    def logpdf(self, x: np.ndarray) -> np.ndarray:
         """To calculate the log-likelihood of observations to states."""
 
         G1_LL = self.G1.logpdf(x[:, np.array([0, 2, 4])])
@@ -62,10 +62,8 @@ class StateDistribution:
 
         return G1_LL + G2_LL
 
-    def estimator(self, x: np.ndarray, gammas):
+    def estimator(self, x: np.ndarray, gammas: np.ndarray):
         """User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells."""
-        x = np.array(x)
-
         self.G1.estimator(x[:, np.array([0, 2, 4])], gammas)
         self.G2.estimator(x[:, np.array([1, 3, 5])], gammas)
 
@@ -79,27 +77,11 @@ class StateDistribution:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
 
-    def assign_times(self, full_lineage: list):
-        """
-        Assigns the start and end time for each cell in the lineage.
-        The time observation will be stored in the cell's observation parameter list
-        in the second position (index 1). See the other time functions to understand.
-        This is used in the creation of LineageTrees
-        """
-        # traversing the cells by generation
-        for ii, cell in enumerate(full_lineage):
-            if ii == 0:
-                cell.time = Time(0, cell.obs[2] + cell.obs[3])
-                cell.time.transition_time = 0 + cell.obs[2]
-            else:
-                cell.time = Time(
-                    cell.parent.time.endT,
-                    cell.parent.time.endT + cell.obs[2] + cell.obs[3],
-                )
-                cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
-
     def censor_lineage(
-        self, censor_condition: int, full_lineage: list, desired_experiment_time=2e12
+        self,
+        censor_condition: int,
+        full_lineage: list[CellVar],
+        desired_experiment_time=2e12,
     ):
         """
         This function removes those cells that are intended to be remove
@@ -108,6 +90,21 @@ class StateDistribution:
         applies the pruning to each cell that is supposed to be removed,
         and returns the censored list of cells.
         """
+        # Assign times
+        # traversing the cells by generation
+        for ii, cell in enumerate(full_lineage):
+            if ii == 0:
+                cell.time = Time(0, cell.obs[2] + cell.obs[3])
+                cell.time.transition_time = 0 + cell.obs[2]
+            else:
+                assert cell.parent is not None
+                assert cell.parent.time is not None
+
+                cell.time = Time(
+                    cell.parent.time.endT,
+                    cell.parent.time.endT + cell.obs[2] + cell.obs[3],
+                )
+                cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
 
         if censor_condition == 0:
             return full_lineage
