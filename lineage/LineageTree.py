@@ -16,20 +16,36 @@ class LineageTree:
 
     pi: npt.NDArray[np.float64]
     T: npt.NDArray[np.float64]
-    leaves_idx: np.ndarray
     output_lineage: list[CellVar]
-    cell_to_daughters: np.ndarray
     E: Sequence[StA | StB]
 
     def __init__(self, list_of_cells: list, E: Sequence[StA | StB]):
         self.E = E
-        # output_lineage must be sorted according to generation
-        self.output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
+        # sort according to generation
+        sorted_cells = sorted(list_of_cells, key=operator.attrgetter("gen"))
 
-        self.cell_to_daughters = cell_to_daughters(self.output_lineage)
+        # add root
+        self.output_lineage = [sorted_cells[0]]
 
-        # Leaves have no daughters
-        self.leaves_idx = np.nonzero(np.all(self.cell_to_daughters == -1, axis=1))[0]
+        # build remaining tree
+        for parent_idx in range(2**(sorted_cells[-1].gen - 1) - 1):
+            parent = self.output_lineage[parent_idx]
+
+            if parent is not None:
+                self.output_lineage.append(parent.left)
+                self.output_lineage.append(parent.right)
+
+    def get_observations(self):
+        all_cells = []
+        n_obs = len(self.output_lineage[0].obs)
+
+        for cell in self.output_lineage:
+            if cell is None:
+                all_cells.append(np.full(n_obs, np.nan))
+            else:
+                all_cells.append(cell.obs)
+
+        return np.vstack(all_cells)
 
     @classmethod
     def rand_init(
@@ -67,14 +83,19 @@ class LineageTree:
         )  # roll the dice and yield the state for the first cell
         first_cell = CellVar(parent=None, state=first_state)  # create first cell
         full_lineage = [first_cell]  # instantiate lineage with first cell
+        pIDX = 0
 
-        for cell in full_lineage:  # letting the first cell proliferate
-            if cell.isLeaf():  # if the cell has no daughters...
-                # make daughters by dividing and assigning states
-                full_lineage.extend(cell.divide(T, rng=rng))
+        # fill in the cells
+        while len(full_lineage) < desired_num_cells:  # letting the first cell proliferate
+            parent = full_lineage[pIDX]
+            states = rng.choice(T.shape[0], size=2, p=T[parent.state, :])
 
-            if len(full_lineage) >= desired_num_cells:
-                break
+            full_lineage.append(CellVar(parent=parent, state=states[0]))
+            full_lineage.append(CellVar(parent=parent, state=states[1]))
+            parent.left = full_lineage[-2]
+            parent.right = full_lineage[-1]
+
+            pIDX += 1
 
         # Assign observations
         for i_state in range(pi.size):
@@ -116,7 +137,16 @@ def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list[np.ndarray]:
     :param E: The emissions likelihood
     :return: The marginal state distribution
     """
-    all_cells = np.array([cell.obs for lineage in X for cell in lineage.output_lineage])
+    all_cells: list[np.ndarray] = []
+
+    for lineage in X:
+        for cell in lineage.output_lineage:
+            if cell is None:
+                all_cells.append(-1 * np.ones(all_cells[0].size))
+            else:
+                all_cells.append(np.array(cell.obs))
+
+    all_cells = np.array(all_cells) # type: ignore
     ELstack = np.zeros((len(all_cells), len(E)))
 
     for k in range(len(E)):  # for each state
@@ -125,21 +155,9 @@ def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list[np.ndarray]:
     EL = []
     ii = 0
     for lineageObj in X:  # for each lineage in our Population
-        nl = len(lineageObj.output_lineage)  # getting the lineage length
+        nl = len(lineageObj)  # getting the lineage length
         EL.append(ELstack[ii : (ii + nl), :])  # append the EL_array for each lineage
 
         ii += nl
 
     return EL
-
-
-def cell_to_daughters(lineage: list[CellVar]) -> np.ndarray:
-    output = np.full((len(lineage), 2), -1, dtype=int)
-    for ii, cell in enumerate(lineage):
-        if cell.left is not None and cell.left in lineage:
-            output[ii, 0] = lineage.index(cell.left)
-
-        if cell.right is not None and cell.right in lineage:
-            output[ii, 1] = lineage.index(cell.right)
-
-    return output

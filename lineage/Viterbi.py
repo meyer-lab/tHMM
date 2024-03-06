@@ -30,9 +30,10 @@ def get_deltas(
     state_ptrs = []
 
     for num, linObj in enumerate(X):  # getting the lineage in the Population by index
+        first_leaf = int(np.floor(len(linObj) / 2))
         delta_array = np.zeros((len(linObj), len(E)))  # instantiating N by K array
         state_ptrs_array = np.empty((len(linObj), 2), dtype=object)
-        delta_array[linObj.leaves_idx, :] = EL[num][linObj.leaves_idx, :]
+        delta_array[first_leaf:, :] = EL[num][first_leaf:, :]
 
         # Get non-leaves
         pIDXs = np.arange(len(linObj))
@@ -41,10 +42,10 @@ def get_deltas(
 
         # move up one generation until the 2nd generation is the children
         # and the root nodes are the parents
-        for pIDX in pIDXs:
+        for pIDX in range(int(np.floor(len(linObj) / 2)) - 1, -1, -1):
             fac1 = np.ones(T.shape[0])  # list to hold the factors in the product
 
-            for ii, cIDX in enumerate(linObj.cell_to_daughters[pIDX]):
+            for ii, cIDX in enumerate([pIDX * 2 + 1, pIDX * 2 + 2]):
                 # get the already calculated delta at node n for state k
                 # get the transition rate for going from state j to state k
                 # P( z_n = k | z_m = j)
@@ -80,16 +81,12 @@ def Viterbi(tHMMobj) -> list[np.ndarray]:
         possible_first_states = np.multiply(deltas[num][0, :], tHMMobj.estimate.pi)
         opt_state_tree[0] = np.argmax(possible_first_states)
 
-        for pIDX, cell in enumerate(lineageObj.output_lineage):
-            if cell.gen == 0:
-                continue
+        first_leaf = int(np.floor(len(lineageObj) / 2))
 
+        for pIDX in range(first_leaf):
             parent_state = opt_state_tree[pIDX]
 
-            for cIDX in lineageObj.cell_to_daughters[pIDX, :]:
-                if cIDX == -1:  # If a daughter does not exist
-                    continue
-
+            for cIDX in [pIDX * 2 + 1, pIDX * 2 + 2]:
                 for ii in range(state_ptrs[num].shape[1]):
                     child_state_tuple = state_ptrs[num][pIDX, ii]
 

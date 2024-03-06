@@ -6,7 +6,7 @@ from .tHMM import tHMM
 from .LineageTree import get_Emission_Likelihoods
 from .states.StateDistributionGamma import atonce_estimator
 from .HMM.M_step import get_all_zetas, sum_nonleaf_gammas
-from .HMM.E_step import get_beta_and_NF, get_MSD, get_gamma
+from .HMM.E_step import get_beta, get_MSD, get_gamma, get_leaf_Normalizing_Factors
 
 
 def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
@@ -26,17 +26,18 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     EL = get_Emission_Likelihoods(tHMMobj.X, tHMMobj.estimate.E)
 
     for ii, lO in enumerate(tHMMobj.X):
-        MSD.append(
-            get_MSD(lO.cell_to_daughters, tHMMobj.estimate.pi, tHMMobj.estimate.T)
+        MSD.append(get_MSD(len(lO), tHMMobj.estimate.pi, tHMMobj.estimate.T))
+        NF.append(get_leaf_Normalizing_Factors(MSD[ii], EL[ii]))
+        betas.append(
+            get_beta(
+                tHMMobj.estimate.T,
+                MSD[ii],
+                EL[ii],
+                NF[ii],
+            )
         )
-
-        NF_one, beta = get_beta_and_NF(
-            lO.leaves_idx, lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], EL[ii]
-        )
-        NF.append(NF_one)
-        betas.append(beta)
         gammas.append(
-            get_gamma(lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], betas[ii])
+            get_gamma(tHMMobj.estimate.T, MSD[ii], betas[ii])
         )
 
     return MSD, NF, betas, gammas
@@ -169,14 +170,12 @@ def do_M_T_step(
         for num, lO in enumerate(tt.X):
             # local T estimate
             numer_e += get_all_zetas(
-                lO.leaves_idx,
-                lO.cell_to_daughters,
                 betas[i][num],
                 MSD[i][num],
                 gammas[i][num],
                 tt.estimate.T,
             )
-            denom_e += sum_nonleaf_gammas(lO.leaves_idx, gammas[i][num])
+            denom_e += sum_nonleaf_gammas(gammas[i][num])
 
     T_estimate = numer_e / denom_e[:, np.newaxis]
     T_estimate /= T_estimate.sum(axis=1)[:, np.newaxis]
@@ -197,8 +196,17 @@ def do_M_E_step(tHMMobj: tHMM, gammas: list[np.ndarray]):
     :type tHMMobj: object
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
     """
-    all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
-    cell_arr = np.array(all_cells)
+    all_cells: list[np.ndarray] = []
+
+    for lineage in tHMMobj.X:
+        for cell in lineage.output_lineage:
+            if cell is None:
+                all_cells.append(-1 * np.ones(all_cells[0].size))
+            else:
+                all_cells.append(np.array(cell.obs))
+
+    all_cells = np.array(all_cells) # type: ignore
+
     all_gammas = np.vstack(gammas)
     for state_j in range(tHMMobj.num_states):
         tHMMobj.estimate.E[state_j].estimator(cell_arr, all_gammas[:, state_j])
@@ -214,10 +222,9 @@ def do_M_E_step_atonce(all_tHMMobj: list[tHMM], all_gammas: list[list[np.ndarray
     for gm in all_gammas:
         gms.append(np.vstack(gm))
 
-    all_cells = np.array(
-        [cell.obs for lineage in all_tHMMobj[0].X for cell in lineage.output_lineage]
-    )
-    if len(all_cells[1, :]) == 6:
+    all_cells = all_tHMMobj[0].X[0].get_observations()
+
+    if all_cells.shape[1] == 6:
         phase = True
     else:
         phase = False
@@ -226,8 +233,8 @@ def do_M_E_step_atonce(all_tHMMobj: list[tHMM], all_gammas: list[list[np.ndarray
     G2cells = []
     cells = []
     for tHMMobj in all_tHMMobj:
-        all_cells = np.array(
-            [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+        all_cells = np.vstack(
+            [lineage.get_observations() for lineage in tHMMobj.X]
         )
         if phase:
             G1cells.append(all_cells[:, np.array([0, 2, 4])])

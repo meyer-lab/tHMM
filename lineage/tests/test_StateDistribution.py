@@ -114,6 +114,7 @@ class TestModel(unittest.TestCase):
         as expected.
         """
         for lin in self.population:
+            # Skip root parent
             for cell in lin.output_lineage[1:]:
                 if not cell.parent.observed:
                     self.assertFalse(cell.observed)

@@ -179,8 +179,8 @@ def log_T_score(
     for cIDX, cell in enumerate(lineageObj.output_lineage):
         if cell.gen > 0 and not cell.isLeaf():
             cell_state = state_tree_sequence[cIDX]
-            for dIDX in lineageObj.cell_to_daughters[cIDX, :]:
+            for dIDX in [cIDX * 2 + 1, cIDX * 2 + 2]:
                 daughter_state = state_tree_sequence[dIDX]
-                log_T_score_holder += log_T[cell_state, daughter_state]
+                log_T_score_holder += float(log_T[cell_state, daughter_state])
 
     return float(log_T_score_holder)
