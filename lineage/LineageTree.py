@@ -19,7 +19,7 @@ class LineageTree:
     leaves_idx: np.ndarray
     output_lineage: list[CellVar]
     cell_to_daughters: np.ndarray
-    states = np.ndarray
+    states: np.ndarray
     E: Sequence[StA | StB]
 
     def __init__(self, list_of_cells: list, E: Sequence[StA | StB]):
@@ -32,7 +32,7 @@ class LineageTree:
         # Leaves have no daughters
         self.leaves_idx = np.nonzero(np.all(self.cell_to_daughters == -1, axis=1))[0]
 
-        self.states = np.array([cell.state for cell in self.output_lineage], dtype=int)
+        self.states = np.array([cell.state for cell in self.output_lineage], dtype=float)
 
     @classmethod
     def rand_init(

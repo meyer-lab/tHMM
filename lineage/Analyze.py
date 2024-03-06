@@ -168,13 +168,9 @@ def Results(tHMMobj: tHMM, LL: float) -> dict[str, Any]:
 
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
-    results_dict["total_number_of_cells"] = sum(
-        [len(lineage.output_lineage) for lineage in tHMMobj.X]
-    )
+    results_dict["total_number_of_cells"] = sum([len(lin) for lin in tHMMobj.X])
 
-    true_states_by_lineage = [
-        lineage.states for lineage in tHMMobj.X
-    ]
+    true_states_by_lineage = [lin.states for lin in tHMMobj.X]
 
     results_dict["transition_matrix_similarity"] = np.linalg.norm(
         tHMMobj.estimate.T - tHMMobj.X[0].T

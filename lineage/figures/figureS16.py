@@ -41,10 +41,7 @@ def plot_barcode_vs_state(ax, drug_name):
 
     states_by_lin = []
     for lineage in tHMMobj_list[0].X:
-        tmp2 = []
-        for cell in lineage.output_lineage:
-            tmp2.append(cell.state)
-        states_by_lin.append(tmp2)
+        states_by_lin.append(lineage.states)
 
     for i in range(num_lineages):
         ax[i].hist(states_by_lin[i], bins=np.linspace(0, 5, 11))

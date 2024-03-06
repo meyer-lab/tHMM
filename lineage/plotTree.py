@@ -4,6 +4,7 @@ import numpy as np
 from Bio.Phylo.BaseTree import Clade
 import networkx as nx
 from .figures.common import getSetup
+from .LineageTree import LineageTree
 
 cs = ["lightblue", "orange", "lightgreen", "red", "purple", "grey"]
 stateColors = ["blue", "orange", "green", "red", "purple", "grey"]
@@ -80,11 +81,11 @@ def CladeRecursive(cell, a: list, censor: bool, color: bool):
         return my_clade
 
 
-def plotLineage(lineage, axes, censor=True, color=True):
+def plotLineage(lineage: LineageTree, axes, censor: bool=True, color: bool=True):
     """
     Given a lineage of cells, uses the `CladeRecursive` function to plot the lineage.
     """
-    for ii, cell in enumerate(lineage):
+    for ii, cell in enumerate(lineage.output_lineage):
         cell.state = lineage.states[ii]
 
     root = lineage.output_lineage[0]
@@ -105,7 +106,7 @@ def plotLineage(lineage, axes, censor=True, color=True):
     return draw(c, axes=axes)
 
 
-def plotLineage_MCF10A(lineage, axes, censor=True, color=True):
+def plotLineage_MCF10A(lineage: LineageTree, axes, censor: bool=True, color: bool=True):
     """
     Given a lineage of cells, uses the `CladeRecursive` function to plot the lineage.
     """
