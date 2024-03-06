@@ -1,5 +1,6 @@
 """ The file contains the methods used to input lineage data from the Heiser lab. """
 
+import logging
 import math
 import pandas as pd
 from .CellVar import CellVar as c
@@ -250,7 +251,7 @@ def tryRecursion(
 
     # Check that the parent cell didn't get time censored (Likely divided in last frame)
     if divisionTime == exp_time:
-        print(
+        logging.info(
             f"Cell time censorship, but daughters were found in row {parentPos+1}, column {pColumn+1}. By default they will be set to None"
         )
 
@@ -263,7 +264,7 @@ def tryRecursion(
 
     # Creating daughter
     daughterCell = c(parent=parentCell)
-    daughterCell.obs = [0, 0, 0, 0, 0, 0]
+    daughterCell.obs = np.array([0.0, 0, 0, 0, 0, 0])
 
     # find upper daughter
     daughterCell.left = tryRecursion(

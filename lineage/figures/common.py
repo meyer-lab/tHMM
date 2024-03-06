@@ -1023,14 +1023,7 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
         (4, num_states, 2)
     )  # the avg lifetime: num_conc x num_states x num_phases
     bern_lpt = np.zeros((4, num_states, 2))  # bernoulli
-    # print parameters and estimated values
-    print(
-        Dname,
-        "\n the \u03C0: ",
-        tHMMobj_list[0].estimate.pi,
-        "\n the transition matrix: ",
-        tHMMobj_list[0].estimate.T,
-    )
+
     for idx, tHMMobj in enumerate(tHMMobj_list):  # for each concentration data
         for i in range(num_states):
             lpt_avg[idx, i, 0] = np.log10(
@@ -1046,19 +1039,6 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states)
 
 
-def sort_lins(tHMMobj):
+def sort_lins(tHMMobj) -> list:
     """Sorts lineages based on their root cell state for plotting the lineage trees."""
-    num_st = tHMMobj.estimate.num_states
-
-    st = []  # holds the state of root cell in all lineages for this particular tHMMobj
-    for lins in tHMMobj.X:
-        st.append(lins.output_lineage[0].state)
-
-    states = []
-    for i in range(num_st):
-        st_i = [index for index, val in enumerate(st) if val == i]
-        temp = [tHMMobj.X[k] for k in st_i]
-
-        states += temp
-
-    return states
+    return sorted(tHMMobj.X, key=lambda lin: lin.states[0])

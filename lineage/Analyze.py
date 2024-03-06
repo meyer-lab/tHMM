@@ -66,7 +66,7 @@ def fit_list(
 
 
 def Analyze_list(
-    pop_list: list, num_states: int, fpi=None, fT=None, rng=None
+    pop_list: list, num_states: int, fpi=None, fT=None, rng=None, write_states=False
 ) -> Tuple[list[tHMM], float, list[np.ndarray]]:
     """This function runs the analyze function for the case when we want to fit multiple conditions at the same time.
     :param pop_list: The list of cell populations to run the analyze function on.
@@ -92,6 +92,14 @@ def Analyze_list(
             tHMMobj_list = tHMMobj_list2
             LL = LL2
             gammas = gammas2
+
+    # store the Viterbi-predicted states
+    if write_states:
+        for tHMMobj in tHMMobj_list:
+            states = tHMMobj.predict()
+
+            for lin_indx, lin in enumerate(tHMMobj.X):
+                lin.states = states[lin_indx]
 
     return tHMMobj_list, LL, gammas
 
@@ -168,13 +176,9 @@ def Results(tHMMobj: tHMM, LL: float) -> dict[str, Any]:
 
     results_dict["total_number_of_lineages"] = len(tHMMobj.X)
     results_dict["LL"] = LL
-    results_dict["total_number_of_cells"] = sum(
-        [len(lineage.output_lineage) for lineage in tHMMobj.X]
-    )
+    results_dict["total_number_of_cells"] = sum([len(lin) for lin in tHMMobj.X])
 
-    true_states_by_lineage = [
-        [cell.state for cell in lineage.output_lineage] for lineage in tHMMobj.X
-    ]
+    true_states_by_lineage = [lin.states for lin in tHMMobj.X]
 
     results_dict["transition_matrix_similarity"] = np.linalg.norm(
         tHMMobj.estimate.T - tHMMobj.X[0].T

@@ -28,15 +28,15 @@ def find_state_proportions(lapt_tHMMobj, control=None):
                 censor_condition=0, full_lineage=lineage.output_lineage
             )
 
-            for cell in output_lineage:
+            for ii, cell in enumerate(output_lineage):
                 if math.isnan(cell.time.startT):  # left censored. startT = 0
                     cell.time.startT = 0.0
                 if math.isnan(cell.time.endT):  # right censored. endT = 96
                     cell.time.endT = 96.0
                 if cell.time.startT <= t <= cell.time.endT:
-                    if cell.state == 0:
+                    if lineage.states[ii] == 0:
                         st0 += 1
-                    elif cell.state == 1:
+                    elif lineage.states[ii] == 1:
                         st1 += 1
                     else:
                         st2 += 1
