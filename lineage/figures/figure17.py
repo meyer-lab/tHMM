@@ -6,14 +6,7 @@ from ..Analyze import Analyze_list
 from ..Lineage_collections import AllGemcitabine
 
 num_states = 5
-gemc_tHMMobj_list = Analyze_list(AllGemcitabine, num_states)[0]
-
-gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
-
-# assign the predicted states to each cell
-for idx, lapt_tHMMobj in enumerate(gemc_tHMMobj_list):
-    for lin_indx, lin in enumerate(lapt_tHMMobj.X):
-        lin.states = gemc_states_list[idx][lin_indx]
+gemc_tHMMobj_list = Analyze_list(AllGemcitabine, num_states, write_states=True)[0]
 
 only_gemcitabine_control_1 = gemc_tHMMobj_list[0].X[100:200]
 

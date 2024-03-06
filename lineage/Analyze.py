@@ -66,7 +66,7 @@ def fit_list(
 
 
 def Analyze_list(
-    pop_list: list, num_states: int, fpi=None, fT=None, rng=None
+    pop_list: list, num_states: int, fpi=None, fT=None, rng=None, write_states=False
 ) -> Tuple[list[tHMM], float, list[np.ndarray]]:
     """This function runs the analyze function for the case when we want to fit multiple conditions at the same time.
     :param pop_list: The list of cell populations to run the analyze function on.
@@ -92,6 +92,14 @@ def Analyze_list(
             tHMMobj_list = tHMMobj_list2
             LL = LL2
             gammas = gammas2
+
+    # store the Viterbi-predicted states
+    if write_states:
+        for tHMMobj in tHMMobj_list:
+            states = tHMMobj.predict()
+
+            for lin_indx, lin in enumerate(tHMMobj.X):
+                lin.states = states[lin_indx]
 
     return tHMMobj_list, LL, gammas
 

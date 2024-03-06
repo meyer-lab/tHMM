@@ -14,14 +14,7 @@ from ..plotTree import plot_networkx, plot_lineage_samples
 concs = ["PBS", "EGF", "HGF", "OSM"]
 
 num_states = 3
-hgf_tHMMobj_list = Analyze_list(GFs, num_states)[0]
-
-# assign the predicted states to each cell
-for idx, hgf_tHMMobj in enumerate(hgf_tHMMobj_list):
-    states = hgf_tHMMobj.predict()
-
-    for lin_indx, lin in enumerate(hgf_tHMMobj.X):
-        lin.states = states[idx][lin_indx]
+hgf_tHMMobj_list = Analyze_list(GFs, num_states, write_states=True)[0]
 
 T_hgf = hgf_tHMMobj_list[0].estimate.T
 

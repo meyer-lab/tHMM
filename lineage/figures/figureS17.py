@@ -7,14 +7,7 @@ from ..plotTree import plotLineage_MCF10A
 from ..Lineage_collections import GFs
 from ..Analyze import Analyze_list
 
-hgf_tHMMobj_list = Analyze_list(GFs, 3)[0]
-
-# assign the predicted states to each cell
-for idx, hgf_tHMMobj in enumerate(hgf_tHMMobj_list):
-    states = hgf_tHMMobj.predict()
-
-    for lin_indx, lin in enumerate(hgf_tHMMobj.X):
-        lin.states = states[idx][lin_indx]
+hgf_tHMMobj_list = Analyze_list(GFs, 3, write_states=True)[0]
 
 for thmm_obj in hgf_tHMMobj_list:
     thmm_obj.X = sort_lins(thmm_obj)

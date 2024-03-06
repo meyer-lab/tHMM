@@ -11,16 +11,9 @@ concs = ["Control", "Gemcitabine 5 nM", "Gemcitabine 10 nM", "Gemcitabine 30 nM"
 concsValues = ["Control", "5 nM", "10 nM", "30 nM"]
 
 num_states = 5
-gemc_tHMMobj_list = Analyze_list(AllGemcitabine, num_states)[0]
-
-gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
-
-for idx, gemc_tHMMobj in enumerate(gemc_tHMMobj_list):
-    for lin_indx, lin in enumerate(gemc_tHMMobj.X):
-        lin.states = gemc_states_list[idx][lin_indx]
+gemc_tHMMobj_list = Analyze_list(AllGemcitabine, num_states, write_states=True)[0]
 
 T_gem = gemc_tHMMobj_list[0].estimate.T
-num_states = gemc_tHMMobj_list[0].num_states
 
 # plot transition block
 plot_networkx(T_gem, "gemcitabine")
