@@ -32,7 +32,7 @@ class LineageTree:
         # Leaves have no daughters
         self.leaves_idx = np.nonzero(np.all(self.cell_to_daughters == -1, axis=1))[0]
 
-        self.states = np.array([cell.state for cell in self.output_lineage], dtype=float)
+        self.states = np.array([cell.state for cell in self.output_lineage], dtype=int)
 
     @classmethod
     def rand_init(

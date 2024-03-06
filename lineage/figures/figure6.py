@@ -77,7 +77,7 @@ def accuracy():
     balanced_score = np.empty(len(list_of_populations))
 
     for ii, pop in enumerate(list_of_populations):
-        ravel_true_states = np.array([lineage.states for lineage in pop])
+        ravel_true_states = np.array([lineage.states for lineage in pop]).flatten()
         all_cells = np.array(
             [cell.obs[2] for lineage in pop for cell in lineage.output_lineage]
         )

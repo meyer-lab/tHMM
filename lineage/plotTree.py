@@ -5,6 +5,7 @@ from Bio.Phylo.BaseTree import Clade
 import networkx as nx
 from .figures.common import getSetup
 from .LineageTree import LineageTree
+from .CellVar import CellVar
 
 cs = ["lightblue", "orange", "lightgreen", "red", "purple", "grey"]
 stateColors = ["blue", "orange", "green", "red", "purple", "grey"]
@@ -27,7 +28,7 @@ def plot_lineage_samples(tHMMobj_list, name):
     f.savefig("lineage/figures/cartoons/" + name + ".svg")
 
 
-def CladeRecursive(cell, a: list, censor: bool, color: bool):
+def CladeRecursive(cell: CellVar, a: list, censor: bool, color: bool):
     """A recurssive function that takes in the root cell and traverses through cells to plot the lineage.
     The width of the lines show the phase of the cells.
     The color of the lines show the state of the cells.
