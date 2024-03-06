@@ -136,7 +136,7 @@ class StateDistribution:
         censor_condition: int,
         full_lineage: list[CellVar],
         desired_experiment_time=2e12,
-    ):
+    ) -> list[CellVar]:
         """
         This function removes those cells that are intended to be removed.
         These cells include the descendants of a cell that has died, or has lived beyonf the experimental end time.

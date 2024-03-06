@@ -84,7 +84,7 @@ class tHMM:
         return Viterbi(self)
 
     def get_BIC(
-        self, LL: float, num_cells: int, atonce: bool=False, mcf10a: bool=False
+        self, LL: float, num_cells: int, atonce: bool = False, mcf10a: bool = False
     ) -> Tuple[float, float]:
         """
         Gets the BIC values. Akaike Information Criterion, used for model selection and deals with the trade off
@@ -117,7 +117,9 @@ class tHMM:
 
         return BIC_value, degrees_of_freedom
 
-    def log_score(self, X_state_tree_sequence: list, pi=None, T=None, E=None) -> list[float]:
+    def log_score(
+        self, X_state_tree_sequence: list, pi=None, T=None, E=None
+    ) -> list[float]:
         """
         This function returns the log-likelihood of a possible state assignment
         given the estimated model parameters.

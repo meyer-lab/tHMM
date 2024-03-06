@@ -1,9 +1,12 @@
 """ This file contains the LineageTree class. """
 
+from typing import Sequence
 import numpy as np
 import numpy.typing as npt
 import operator
 from .CellVar import CellVar
+from .states.StateDistributionGamma import StateDistribution as StA
+from .states.StateDistributionGaPhs import StateDistribution as StB
 
 
 class LineageTree:
@@ -14,8 +17,9 @@ class LineageTree:
     pi: npt.NDArray[np.float64]
     T: npt.NDArray[np.float64]
     output_lineage: list[CellVar]
+    E: Sequence[StA | StB]
 
-    def __init__(self, list_of_cells: list, E: list):
+    def __init__(self, list_of_cells: list, E: Sequence[StA | StB]):
         self.E = E
         # sort according to generation
         sorted_cells = sorted(list_of_cells, key=operator.attrgetter("gen"))
@@ -48,7 +52,7 @@ class LineageTree:
         cls,
         pi: np.ndarray,
         T: np.ndarray,
-        E: list,
+        E: Sequence[StA | StB],
         desired_num_cells: int,
         censor_condition=0,
         desired_experiment_time=2e12,
