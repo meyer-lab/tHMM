@@ -89,6 +89,9 @@ def plotLineage(lineage: LineageTree, axes, censor: bool = True, color: bool = T
     for ii, cell in enumerate(lineage.output_lineage):
         cell.state = lineage.states[ii]
 
+        if color:
+            assert cell.state >= 0
+
     root = lineage.output_lineage[0]
     if np.isfinite(root.obs[4]):  # the lineage starts from G1 phase
         if np.isfinite(root.obs[3]):

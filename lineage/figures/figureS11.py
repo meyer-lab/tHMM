@@ -6,8 +6,7 @@ from ..plotTree import plotLineage
 from ..Analyze import Analyze_list
 from ..Lineage_collections import AllLapatinib
 
-num_states = 4
-lapt_tHMMobj_list = Analyze_list(AllLapatinib, num_states)[0]
+lapt_tHMMobj_list = Analyze_list(AllLapatinib, 4, write_states=True)[0]
 
 for i in range(4):
     lapt_tHMMobj_list[i].X = sort_lins(lapt_tHMMobj_list[i])
