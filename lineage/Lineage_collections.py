@@ -24,82 +24,34 @@ def popout_single_lineages(lineages):
     return trimed_lineages
 
 
+def load_condition(filename):
+    return [
+        LineageTree(list_of_cells, E)
+        for list_of_cells in import_exp_data(
+            path=f"lineage/data/LineageData/{filename}.xlsx"
+        )
+    ]
+
+
 # -- Lapatinib control
-
-
-lap01 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_A5_1_V5.xlsx"
-    )
-]
-lap012 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_A5_2_V4.xlsx"
-    )
-]
-lap02 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_A5_1_V4.xlsx"
-    )
-]
-lap03 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_A5_1_V4.xlsx"
-    )
-]
+lap01 = load_condition("AU00601_A5_1_V5")
+lap012 = load_condition("AU00601_A5_2_V4")
+lap02 = load_condition("AU00701_A5_1_V4")
+lap03 = load_condition("AU00801_A5_1_V4")
 
 Lapatinib_Control = lap01 + lap012 + lap02 + lap03
 # used for when we want to writes states instead of phase lengths
 len_lp_cntr = [len(lap01), len(lap012), len(lap02), len(lap03)]
 lpt_cn_reps = [len(lap01 + lap012), len(lap02), len(lap03)]
-# -- LAPATINIB 25 uMolars
 
-lapb63 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_B6_1_V4.xlsx"
-    )
-]
-lapb632 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_B6_2_V4.xlsx"
-    )
-]
-lapb64 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_B6_1_V4.xlsx"
-    )
-]
-lapb642 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_B6_2_V4.xlsx"
-    )
-]
-lapb65 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_B6_1_V4.xlsx"
-    )
-]
-lapb652 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_B6_2_V4.xlsx"
-    )
-]
-lapb653 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_B6_3_V4.xlsx"
-    )
-]
+# -- LAPATINIB 25 uM
+lapb63 = load_condition("AU00601_B6_1_V4")
+lapb632 = load_condition("AU00601_B6_2_V4")
+lapb64 = load_condition("AU00701_B6_1_V4")
+lapb642 = load_condition("AU00701_B6_2_V4")
+lapb65 = load_condition("AU00801_B6_1_V4")
+lapb652 = load_condition("AU00801_B6_2_V4")
+lapb653 = load_condition("AU00801_B6_3_V4")
 
 
 Lapt25uM = lapb63 + lapb632 + lapb64 + lapb642 + lapb65 + lapb652 + lapb653
