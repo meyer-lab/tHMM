@@ -71,92 +71,20 @@ lpt_25_reps = [
 ]
 # -- LAPATINIB 50 uMolars
 
-lapC501 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_C5_1_V4.xlsx"
-    )
-]
-lapC502 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_C5_2_1_V4.xlsx"
-    )
-]
-lapC503 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_C5_2_2_V4.xlsx"
-    )
-]
-lapC504 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_C5_3_1.xlsx"
-    )
-]
-lapC505 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_C5_3_2.xlsx"
-    )
-]
-lapC506 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_C5_3_3.xlsx"
-    )
-]
-
-lapC507 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_C5_1_V4.xlsx"
-    )
-]
-lapC508 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_C5_2_V4.xlsx"
-    )
-]
-lapC509 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_C5_3_V4.xlsx"
-    )
-]
-lapC510 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_C5_4_V4.xlsx"
-    )
-]
-
-lapC511 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_C5_1_V4.xlsx"
-    )
-]
-lapC512 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_C5_2_V4.xlsx"
-    )
-]
-lapC513 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_C5_3_1.xlsx"
-    )
-]
-lapC514 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_C5_3_2.xlsx"
-    )
-]
+lapC501 = load_condition("AU00601_C5_1_V4")
+lapC502 = load_condition("AU00601_C5_2_1_V4")
+lapC503 = load_condition("AU00601_C5_2_2_V4")
+lapC504 = load_condition("AU00601_C5_3_1")
+lapC505 = load_condition("AU00601_C5_3_2")
+lapC506 = load_condition("AU00601_C5_3_3")
+lapC507 = load_condition("AU00701_C5_1_V4")
+lapC508 = load_condition("AU00701_C5_2_V4")
+lapC509 = load_condition("AU00701_C5_3_V4")
+lapC510 = load_condition("AU00701_C5_4_V4")
+lapC511 = load_condition("AU00801_C5_1_V4")
+lapC512 = load_condition("AU00801_C5_2_V4")
+lapC513 = load_condition("AU00801_C5_3_1")
+lapC514 = load_condition("AU00801_C5_3_2")
 
 Lapt50uM = (
     lapC501
@@ -197,54 +125,14 @@ len_lp_50 = [
 ]
 
 # -- LAPATINIB 250 uMolars
-lapD51 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_D5_1_V4.xlsx"
-    )
-]
-lapD54 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_D5_2_V4.xlsx"
-    )
-]
-lapD57 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_D5_3_V4.xlsx"
-    )
-]
-lapD52 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_D5_1_V4.xlsx"
-    )
-]
-lapD55 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_D5_2_V4.xlsx"
-    )
-]
-lapD53 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_D5_1_V4.xlsx"
-    )
-]
-lapD56 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_D5_2_V4.xlsx"
-    )
-]
-lapD58 = [
-    LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_D5_3_V4.xlsx"
-    )
-]
+lapD51 = load_condition("AU00601_D5_1_V4")
+lapD54 = load_condition("AU00601_D5_2_V4")
+lapD57 = load_condition("AU00601_D5_3_V4")
+lapD52 = load_condition("AU00701_D5_1_V4")
+lapD55 = load_condition("AU00701_D5_2_V4")
+lapD53 = load_condition("AU00801_D5_1_V4")
+lapD56 = load_condition("AU00801_D5_2_V4")
+lapD58 = load_condition("AU00801_D5_3_V4")
 
 Lap250uM = lapD51 + lapD54 + lapD57 + lapD52 + lapD55 + lapD53 + lapD56 + lapD58
 len_lp_250 = [
