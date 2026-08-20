@@ -1,23 +1,23 @@
-""" This file contains figures related to how far the states need to be,
-which is shown by Wasserestein distance. """
+"""This file contains figures related to how far the states need to be,
+which is shown by Wasserestein distance."""
 
 import numpy as np
 import pandas as pd
 import seaborn as sns
 from sklearn.metrics import rand_score
 
-from .common import (
-    getSetup,
-    subplotLabel,
-    commonAnalyze,
-    pi,
-    T,
-    E2,
-    max_desired_num_cells,
-    num_data_points,
-)
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGaPhs import StateDistribution
+from .common import (
+    E2,
+    T,
+    commonAnalyze,
+    getSetup,
+    max_desired_num_cells,
+    num_data_points,
+    pi,
+    subplotLabel,
+)
 
 
 def makeFigure():
@@ -51,9 +51,7 @@ def accuracy():
         ]
         for a in np.linspace(4.0, 20.0, num_data_points)
     ]
-    list_of_populations = [
-        [LineageTree.rand_init(pi, T, E, max_desired_num_cells)] for E in list_of_Es
-    ]
+    list_of_populations = [[LineageTree.rand_init(pi, T, E, max_desired_num_cells)] for E in list_of_Es]
     # for the violin plots
     list_of_Es2 = [
         [
@@ -69,18 +67,13 @@ def accuracy():
         ]
         for a in np.linspace(4.0, 20.0, num_data_points)
     ]
-    list_of_populations2 = [
-        [LineageTree.rand_init(pi, T, E, 3 * max_desired_num_cells)]
-        for E in list_of_Es2
-    ]
+    list_of_populations2 = [[LineageTree.rand_init(pi, T, E, 3 * max_desired_num_cells)] for E in list_of_Es2]
 
     balanced_score = np.empty(len(list_of_populations))
 
     for ii, pop in enumerate(list_of_populations):
         ravel_true_states = np.array([lineage.states for lineage in pop]).flatten()
-        all_cells = np.array(
-            [cell.obs[2] for lineage in pop for cell in lineage.output_lineage]
-        )
+        all_cells = np.array([cell.obs[2] for lineage in pop for cell in lineage.output_lineage])
 
         shape, scale1, scale2 = (
             list_of_Es[ii][0].params[2],
@@ -95,9 +88,7 @@ def accuracy():
         balanced_score[ii] = 100 * rand_score(ravel_true_states, pred_st)
 
     # replace x with 1-x if the accuracy is less than 50%
-    balanced_score[balanced_score < 50.0] = (
-        100.0 - balanced_score[balanced_score < 50.0]
-    )
+    balanced_score[balanced_score < 50.0] = 100.0 - balanced_score[balanced_score < 50.0]
 
     wass, _, dict_out, _ = commonAnalyze(
         list_of_populations,
@@ -107,35 +98,24 @@ def accuracy():
         list_of_fT=[T] * num_data_points,
     )
     accuracy = dict_out["state_similarity"]
-    distribution_df = pd.DataFrame(
-        columns=["Distribution Similarity", "G1 lifetime", "State"]
-    )
-    lineages = [
-        list_of_populations2[int(num_data_points * i / 4.0)][0] for i in range(4)
-    ]
+    distribution_df = pd.DataFrame(columns=["Distribution Similarity", "G1 lifetime", "State"])
+    lineages = [list_of_populations2[int(num_data_points * i / 4.0)][0] for i in range(4)]
     len_lineages = [len(lineage) for lineage in lineages]
     distribution_df["G1 lifetime"] = [
-        (cell.obs[1] + cell.obs[2])
-        for lineage in lineages
-        for cell in lineage.output_lineage
+        (cell.obs[1] + cell.obs[2]) for lineage in lineages for cell in lineage.output_lineage
     ]
     distribution_df["State"] = [
-        "State 1" if state == 0 else "State 2"
-        for lineage in lineages
-        for state in lineage.states
+        "State 1" if state == 0 else "State 2" for lineage in lineages for state in lineage.states
     ]
     distribution_df["Distribution Similarity"] = (
         len_lineages[0] * ["Same\n" + str(0) + "-" + str(wass[-1] / 4)]
         + len_lineages[1] * ["Similar\n" + str(wass[-1] / 4) + "-" + str(wass[-1] / 2)]
-        + len_lineages[2]
-        * ["Different\n" + str(wass[-1] / 2) + "-" + str(wass[-1] * 0.75)]
+        + len_lineages[2] * ["Different\n" + str(wass[-1] / 2) + "-" + str(wass[-1] * 0.75)]
         + len_lineages[3] * ["Distinct\n>" + str(wass[-1] * 0.75)]
     )
 
     # for the violin plot (distributions)
-    wasser_df = pd.DataFrame(
-        columns=["Wasserstein distance", "Adjusted Rand Index Accuracy"]
-    )
+    wasser_df = pd.DataFrame(columns=["Wasserstein distance", "Adjusted Rand Index Accuracy"])
     wasser_df["Wasserstein distance"] = wass
     wasser_df["Adjusted Rand Index Accuracy"] = accuracy
     wasser_df["Baseline Accuracy"] = balanced_score

@@ -1,13 +1,15 @@
-""" Figure 18 benchmark model with 5 states. """
+"""Figure 18 benchmark model with 5 states."""
+
+import itertools as it
 
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import itertools as it
-from .common import getSetup, subplotLabel, commonAnalyze
+
+from ..BaumWelch import calculate_stationary
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
-from ..BaumWelch import calculate_stationary
+from .common import commonAnalyze, getSetup, subplotLabel
 
 desired_num_cells = 31
 num_data_points = 100
@@ -36,9 +38,7 @@ state4 = phaseStateDist(0.99, 0.75, 50, 0.2, 250, 0.1)
 E = [state0, state1, state2, state3, state4]
 
 # Creating a list of populations to analyze over
-num_lineages = np.linspace(
-    min_num_lineages, max_num_lineages, num_data_points, dtype=int
-)
+num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
 list_of_populations = []
 
 for num in num_lineages:
@@ -46,9 +46,7 @@ for num in num_lineages:
 
     nn = 0
     for _ in range(num):
-        tmp_lineage = LineageTree.rand_init(
-            pi, T, E, desired_num_cells, censor_condition=3, desired_experiment_time=96
-        )
+        tmp_lineage = LineageTree.rand_init(pi, T, E, desired_num_cells, censor_condition=3, desired_experiment_time=96)
         while len(tmp_lineage.output_lineage) < 3:
             tmp_lineage = LineageTree.rand_init(
                 pi,
@@ -81,7 +79,7 @@ def makeFigure():
             list_of_fpi=len(list_of_populations) * [pi],
             list_of_fT=len(list_of_populations) * [T],
         ),
-        num_lineages=num_lineages
+        num_lineages=num_lineages,
     )
 
     subplotLabel(ax)
@@ -156,9 +154,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
             color="C" + str(j),
             scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color": "C" + str(j)},
         )
-        ax[i].axhline(
-            paramTrues[0, j, 0], linestyle="--", c="C" + str(j), label="S " + str(j + 1)
-        )
+        ax[i].axhline(paramTrues[0, j, 0], linestyle="--", c="C" + str(j), label="S " + str(j + 1))
     ax[i].set_xlabel("Number of Cells")
     ax[i].set_ylabel("Bernoulli p")
     ax[i].set_title("Bernoulli p G1 Estimation")
@@ -176,9 +172,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
             color="C" + str(j),
             scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color": "C" + str(j)},
         )
-        ax[i].axhline(
-            paramTrues[0, j, 2], linestyle="--", c="C" + str(j), label="S " + str(j + 1)
-        )
+        ax[i].axhline(paramTrues[0, j, 2], linestyle="--", c="C" + str(j), label="S " + str(j + 1))
     ax[i].set_ylabel(r"Gamma k")
     ax[i].set_title(r"Gamma k G1 Estimation")
     # ax[i].set_ylim([0.0, max(paramTrues[0, :, 2])+2])
@@ -195,9 +189,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
             color="C" + str(j),
             scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color": "C" + str(j)},
         )
-        ax[i].axhline(
-            paramTrues[0, j, 3], linestyle="--", c="C" + str(j), label="S " + str(j + 1)
-        )
+        ax[i].axhline(paramTrues[0, j, 3], linestyle="--", c="C" + str(j), label="S " + str(j + 1))
     ax[i].set_ylabel(r"Gamma $\theta$")
     ax[i].set_title(r"Gamma $\theta$ G1 Estimation")
     # ax[i].set_ylim([0.0, max(paramTrues[0, :, 3]+15)])
@@ -215,9 +207,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
             color="C" + str(j),
             scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color": "C" + str(j)},
         )
-        ax[i].axhline(
-            paramTrues[0, j, 1], linestyle="--", c="C" + str(j), label="S " + str(j + 1)
-        )
+        ax[i].axhline(paramTrues[0, j, 1], linestyle="--", c="C" + str(j), label="S " + str(j + 1))
     ax[i].set_xlabel("Number of Cells")
     ax[i].set_ylabel("Bernoulli p")
     ax[i].set_title("Bernoulli p G2 Estimation")
@@ -234,9 +224,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
             color="C" + str(j),
             scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color": "C" + str(j)},
         )
-        ax[i].axhline(
-            paramTrues[0, j, 4], linestyle="--", c="C" + str(j), label="S " + str(j + 1)
-        )
+        ax[i].axhline(paramTrues[0, j, 4], linestyle="--", c="C" + str(j), label="S " + str(j + 1))
     ax[i].set_ylabel(r"Gamma k")
     ax[i].set_title(r"Gamma k G2 Estimation")
     # ax[i].set_ylim([0.0, max(paramTrues[0, :, 4])+2])
@@ -253,9 +241,7 @@ def figureMaker5(ax, x, paramEst, dictOut, paramTrues, num_lineages):
             color="C" + str(j),
             scatter_kws={"alpha": 0.5, "marker": "x", "s": 20, "color": "C" + str(j)},
         )
-        ax[i].axhline(
-            paramTrues[0, j, 5], linestyle="--", c="C" + str(j), label="S " + str(j + 1)
-        )
+        ax[i].axhline(paramTrues[0, j, 5], linestyle="--", c="C" + str(j), label="S " + str(j + 1))
     ax[i].set_ylabel(r"Gamma $\theta$")
     ax[i].set_title(r"Gamma $\theta$ G2 Estimation")
     # ax[i].set_ylim([0.0, max(paramTrues[0, :, 5])+2])

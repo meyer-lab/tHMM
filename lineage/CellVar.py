@@ -1,8 +1,11 @@
-""" This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
+"""This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
-from typing import Optional
-from dataclasses import dataclass
 
 
 @dataclass(init=True, repr=True, eq=True, order=True)
@@ -23,16 +26,16 @@ class CellVar:
     Cell class.
     """
 
-    parent: Optional["CellVar"]
+    parent: CellVar | None
     gen: int
     observed: bool
     state: int
-    obs: np.ndarray
-    time: Optional[Time]
-    left: Optional["CellVar"]
-    right: Optional["CellVar"]
+    obs: np.ndarray | list[Any]
+    time: Time | None
+    left: CellVar | None
+    right: CellVar | None
 
-    def __init__(self, parent: Optional["CellVar"], state: int = -1):
+    def __init__(self, parent: CellVar | None = None, state: int = -1):
         """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.

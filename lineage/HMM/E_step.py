@@ -45,9 +45,7 @@ def get_MSD(
 
 
 @jit
-def get_beta_and_NF(
-    leaves_idx, cell_to_daughters, T: np.ndarray, MSD: np.ndarray, EL: np.ndarray
-):
+def get_beta_and_NF(leaves_idx, cell_to_daughters, T: np.ndarray, MSD: np.ndarray, EL: np.ndarray):
     r"""
     Normalizing factor (NF) matrix and base case at the leaves.
 

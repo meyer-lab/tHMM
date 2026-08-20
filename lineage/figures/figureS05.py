@@ -7,19 +7,17 @@ with different proportions of cells in states by
 changing the values in the transition matrices.
 """
 
-import numpy as np
-
+from ..BaumWelch import calculate_stationary
+from ..LineageTree import LineageTree
 from .common import (
-    getSetup,
-    subplotLabel,
+    E,
     commonAnalyze,
     figureMaker,
-    E,
+    getSetup,
+    make_transition_matrix_sweep,
     max_desired_num_cells,
-    num_data_points,
+    subplotLabel,
 )
-from ..LineageTree import LineageTree
-from ..BaumWelch import calculate_stationary
 
 
 def makeFigure():
@@ -45,15 +43,7 @@ def accuracy():
     We increase the proportion of cells in a lineage by
     fixing the Transition matrix to be biased towards state 0.
     """
-
-    # Creating a list of populations to analyze over
-    list_of_Ts = [
-        np.array([[i, 1.0 - i], [i, 1.0 - i]])
-        for i in np.linspace(0.01, 0.99, num_data_points)
-    ]
-    list_of_Ts = [a + 5 * np.eye(2) for a in list_of_Ts]
-    list_of_Ts = [a / np.sum(a, axis=1)[:, np.newaxis] for a in list_of_Ts]
-    list_of_fpi = [calculate_stationary(a) for a in list_of_Ts]
+    list_of_Ts, list_of_fpi = make_transition_matrix_sweep()
 
     # generate lineages
     def genC(x):

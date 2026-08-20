@@ -1,20 +1,22 @@
-""" This file includes functions to separate cell states of different replicates, and plot the barchart for each condition."""
+"""This file includes functions to separate cell states of different replicates, and plot the barchart for each condition."""
 
 import numpy as np
-from .common import getSetup
+
 from lineage.Lineage_collections import (
-    AllLapatinib,
     AllGemcitabine,
-    lpt_cn_reps,
-    lpt_25_reps,
-    lpt_50_reps,
-    lpt_250_reps,
-    gem_cn_reps,
+    AllLapatinib,
     gem_5_reps,
     gem_10_reps,
     gem_30_reps,
+    gem_cn_reps,
+    lpt_25_reps,
+    lpt_50_reps,
+    lpt_250_reps,
+    lpt_cn_reps,
 )
+
 from ..Analyze import Analyze_list
+from .common import getSetup
 
 lapt_tHMMobj_list = Analyze_list(AllLapatinib, 4)[0]
 gemc_tHMMobj_list = Analyze_list(AllGemcitabine, 5)[0]
@@ -87,22 +89,12 @@ def makeFigure():
     """Plot the bar charts of state abundances for all conditions and replicates."""
 
     ax, f = getSetup((7, 3), (1, 2))
-    titles_L = ["control", "25 nM Lapatinib", "50 nM Lapatinib", "250 nM Lapatinib"]
-    titles_G = ["control", "5 nM Gemcitabine", "10 nM Gemcitabine", "30 nM Gemcitabine"]
     labels_G = ["state 0", "state 1", "state 2", "state 3", "state 4"]
     labels_L = ["state 0", "state 1", "state 2", "state 3", "state 4", "state 5"]
 
-    lpt = np.array(
-        reps_all_conditions(
-            lpt_cn_reps, lpt_25_reps, lpt_50_reps, lpt_250_reps, lapt_tHMMobj_list
-        )
-    )
+    lpt = np.array(reps_all_conditions(lpt_cn_reps, lpt_25_reps, lpt_50_reps, lpt_250_reps, lapt_tHMMobj_list))
     LPT = np.sum(lpt, axis=0)
-    gem = np.array(
-        reps_all_conditions(
-            gem_cn_reps, gem_5_reps, gem_10_reps, gem_30_reps, gemc_tHMMobj_list
-        )
-    )
+    gem = np.array(reps_all_conditions(gem_cn_reps, gem_5_reps, gem_10_reps, gem_30_reps, gemc_tHMMobj_list))
     GEM = np.sum(gem, axis=0)
     x1 = np.arange(len(labels_L))
     x2 = np.arange(len(labels_G))

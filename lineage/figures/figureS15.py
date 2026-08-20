@@ -1,10 +1,12 @@
-""" In this file we plot the abundance of states over time for experimental data. """
+"""In this file we plot the abundance of states over time for experimental data."""
+
+import math
 
 import numpy as np
-import math
-from .common import getSetup, subplotLabel
+
 from ..Analyze import Analyze_list
-from ..Lineage_collections import AllLapatinib, AllGemcitabine
+from ..Lineage_collections import AllGemcitabine, AllLapatinib
+from .common import getSetup, subplotLabel
 
 lapt_tHMMobj_list = Analyze_list(AllLapatinib, 4)[0]
 gemc_tHMMobj_list = Analyze_list(AllGemcitabine, 5)[0]
@@ -24,9 +26,7 @@ def find_state_proportions(lapt_tHMMobj, control=None):
             thmm = control
 
         for lineage in thmm:
-            output_lineage = lineage.E[0].censor_lineage(
-                censor_condition=0, full_lineage=lineage.output_lineage
-            )
+            output_lineage = lineage.E[0].censor_lineage(censor_condition=0, full_lineage=lineage.output_lineage)
 
             for ii, cell in enumerate(output_lineage):
                 if math.isnan(cell.time.startT):  # left censored. startT = 0
@@ -59,9 +59,7 @@ concs = [
     "gemcitabine 30 nM",
 ]
 # control
-control_L = find_state_proportions(
-    lapt_tHMMobj_list[0], control=lapt_tHMMobj_list[0].X[0:100]
-)
+control_L = find_state_proportions(lapt_tHMMobj_list[0], control=lapt_tHMMobj_list[0].X[0:100])
 
 # 25 nM
 conc1_L = find_state_proportions(lapt_tHMMobj_list[1])
@@ -73,9 +71,7 @@ conc2_L = find_state_proportions(lapt_tHMMobj_list[2])
 conc3_L = find_state_proportions(lapt_tHMMobj_list[3])
 
 # control
-control_G = find_state_proportions(
-    gemc_tHMMobj_list[0], control=gemc_tHMMobj_list[0].X[101:]
-)
+control_G = find_state_proportions(gemc_tHMMobj_list[0], control=gemc_tHMMobj_list[0].X[101:])
 
 # 5 nM
 conc1_G = find_state_proportions(gemc_tHMMobj_list[1])

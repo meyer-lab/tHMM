@@ -7,28 +7,25 @@ populations of lineages (more than one lineage per populations).
 
 import numpy as np
 
+from ..LineageTree import LineageTree
 from .common import (
-    getSetup,
-    subplotLabel,
+    E,
+    T,
     commonAnalyze,
     figureMaker,
-    pi,
-    T,
-    E,
+    getSetup,
+    max_num_lineages,
     min_desired_num_cells,
     min_num_lineages,
-    max_num_lineages,
     num_data_points,
+    pi,
+    subplotLabel,
 )
-from ..LineageTree import LineageTree
 
 # Creating a list of populations to analyze over
-num_lineages = np.linspace(
-    min_num_lineages, max_num_lineages, num_data_points, dtype=int
-)
+num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
 list_of_populations = [
-    [LineageTree.rand_init(pi, T, E, min_desired_num_cells) for _ in range(num)]
-    for num in num_lineages
+    [LineageTree.rand_init(pi, T, E, min_desired_num_cells) for _ in range(num)] for num in num_lineages
 ]
 
 

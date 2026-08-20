@@ -1,9 +1,10 @@
-""" Barcoding computational experinece. """
+"""Barcoding computational experinece."""
 
 import numpy as np
-from .common import getSetup, subplotLabel
+
 from ..Analyze import Analyze_list
-from ..Lineage_collections import AllLapatinib, AllGemcitabine
+from ..Lineage_collections import AllGemcitabine, AllLapatinib
+from .common import getSetup, subplotLabel
 
 num_lineages = 10
 

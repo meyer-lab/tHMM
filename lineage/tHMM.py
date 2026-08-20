@@ -1,18 +1,17 @@
-""" This file holds the parameters of our tHMM in the tHMM class. """
+"""This file holds the parameters of our tHMM in the tHMM class."""
 
 from copy import deepcopy
+
 import numpy as np
-from typing import Tuple
-from .Viterbi import Viterbi
+
 from .LineageTree import LineageTree, get_Emission_Likelihoods
+from .Viterbi import Viterbi
 
 
 class estimate:
     """Estimation class."""
 
-    def __init__(
-        self, X: list[LineageTree], nState: int, fpi=None, fT=None, fE=None, rng=None
-    ):
+    def __init__(self, X: list[LineageTree], nState: int, fpi=None, fT=None, fE=None, rng=None):
         """
         Instantiating the estimation class.
         The initial probability array (pi), transition probability matrix (T), and the emission likelihood (E) are initialized.
@@ -67,12 +66,8 @@ class tHMM:
         self.fT = fT
         self.fE = fE
         self.X = X  # list containing lineages
-        self.num_states = (
-            num_states  # number of discrete hidden states, should be integral
-        )
-        self.estimate = estimate(
-            self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE, rng=rng
-        )
+        self.num_states = num_states  # number of discrete hidden states, should be integral
+        self.estimate = estimate(self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE, rng=rng)
 
     def predict(self) -> list:
         """
@@ -83,9 +78,7 @@ class tHMM:
         """
         return Viterbi(self)
 
-    def get_BIC(
-        self, LL: float, num_cells: int, atonce: bool = False, mcf10a: bool = False
-    ) -> Tuple[float, float]:
+    def get_BIC(self, LL: float, num_cells: int, atonce: bool = False, mcf10a: bool = False) -> tuple[float, float]:
         """
         Gets the BIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.
@@ -117,9 +110,7 @@ class tHMM:
 
         return BIC_value, degrees_of_freedom
 
-    def log_score(
-        self, X_state_tree_sequence: list, pi=None, T=None, E=None
-    ) -> list[float]:
+    def log_score(self, X_state_tree_sequence: list, pi=None, T=None, E=None) -> list[float]:
         """
         This function returns the log-likelihood of a possible state assignment
         given the estimated model parameters.
@@ -147,9 +138,7 @@ class tHMM:
 
             # Calculate the joint probability of state and observations
             log_EL_array = np.log(get_Emission_Likelihoods(self.X, E)[idx])
-            log_score += np.sum(
-                log_EL_array[np.arange(log_EL_array.shape[0]), state_tree_sequence]
-            )
+            log_score += np.sum(log_EL_array[np.arange(log_EL_array.shape[0]), state_tree_sequence])
 
             assert np.all(np.isfinite(log_score))
             log_scores.append(float(log_score))
@@ -157,9 +146,7 @@ class tHMM:
         return log_scores
 
 
-def log_T_score(
-    T: np.ndarray, state_tree_sequence: list[np.ndarray], lineageObj: LineageTree
-) -> float:
+def log_T_score(T: np.ndarray, state_tree_sequence: list[np.ndarray], lineageObj: LineageTree) -> float:
     """
     To calculate the joint probability of state and observations.
     This function calculates the second term.

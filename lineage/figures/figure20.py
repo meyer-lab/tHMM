@@ -1,9 +1,10 @@
-""" Figure 20 for correlations between cell observations in the lineages. """
+"""Figure 20 for correlations between cell observations in the lineages."""
 
 import numpy as np
 import pandas as pd
+
+from ..Lineage_collections import AllGemcitabine, AllLapatinib
 from .common import getSetup
-from ..Lineage_collections import AllLapatinib, AllGemcitabine
 
 
 def makeFigure():

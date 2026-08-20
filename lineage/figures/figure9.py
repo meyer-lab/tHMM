@@ -1,9 +1,10 @@
-""" This file plots the BIC for the experimental data. """
+"""This file plots the BIC for the experimental data."""
 
 import numpy as np
 from matplotlib.ticker import MaxNLocator
+
 from ..Analyze import run_Analyze_over
-from ..Lineage_collections import AllLapatinib, AllGemcitabine, GFs
+from ..Lineage_collections import AllGemcitabine, AllLapatinib, GFs
 from .common import getSetup
 
 desired_num_states = np.arange(1, 8)
@@ -17,9 +18,7 @@ def find_BIC(data, desired_num_states, num_cells, mc=False):
 
     # Run fitting
     output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
-    BICs = np.array(
-        [oo[0][0].get_BIC(oo[1], num_cells, atonce=True, mcf10a=mc)[0] for oo in output]
-    )
+    BICs = np.array([oo[0][0].get_BIC(oo[1], num_cells, atonce=True, mcf10a=mc)[0] for oo in output])
     thobj = [oo[0] for oo in output]
 
     return BICs - np.min(BICs, axis=0), thobj

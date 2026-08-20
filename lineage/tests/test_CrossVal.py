@@ -1,10 +1,11 @@
-""" Test cross validation. """
+"""Test cross validation."""
 
 import numpy as np
 import pytest
+
+from ..crossval import crossval, hide_observation
+from ..figures.common import E2, T, pi
 from ..LineageTree import LineageTree
-from ..figures.common import pi, T, E2
-from ..crossval import hide_observation, crossval
 
 
 def test_hide_obs():
@@ -28,19 +29,13 @@ def test_cv(cen):
     """For censored and uncensored 2-state synthetic data,
     it checks that the log-likelihood of a 2 state model is higher than a 1 state model.
     """
+    local_rng = np.random.default_rng(cen + 5)
     complete_lineages = [
-        [
-            LineageTree.rand_init(
-                pi, T, E2, 20, censor_condition=cen, desired_experiment_time=100
-            )
-            for _ in range(50)
-        ]
+        [LineageTree.rand_init(pi, T, E2, 31, censor_condition=cen, desired_experiment_time=150, rng=local_rng) for _ in range(20)]
         for _ in range(4)
     ]
 
-    train_lineages = [
-        hide_observation(complete_lin, 0.25) for complete_lin in complete_lineages
-    ]
+    train_lineages = [hide_observation(complete_lin, 0.25) for complete_lin in complete_lineages]
 
     ll = crossval(train_lineages, np.arange(1, 3))
     assert ll[0] < ll[1]
