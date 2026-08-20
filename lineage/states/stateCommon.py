@@ -9,6 +9,7 @@ import numpy.typing as npt
 from numba import njit
 from numba.extending import get_cython_function_address
 from scipy.optimize import Bounds, LinearConstraint, minimize
+from scipy.sparse import csr_array
 
 arr_type = npt.NDArray[np.float64]
 
@@ -16,37 +17,151 @@ arr_type = npt.NDArray[np.float64]
 warnings.filterwarnings("ignore", message="Values in x were outside bounds")
 
 
-def basic_censor(cells: list):
-    """
-    Censors a cell if the cell's parent is censored.
-    """
-    for cell in cells[1:]:
-        if not cell.parent.observed:
-            cell.observed = False
-
-
-def apply_censoring(
-    full_lineage: list,
+def censor_lineage_gamma(
+    tree: csr_array,
+    obs: np.ndarray,
+    states: np.ndarray,
     censor_condition: int,
-    desired_experiment_time: float,
-    assign_times_fn,
-    fate_censor_fn,
-    time_censor_fn,
-) -> list:
-    """Applies temporal and fate censorship across a lineage of cells."""
-    assign_times_fn(full_lineage)
-
+    desired_experiment_time: float = 2e12,
+) -> tuple[csr_array, np.ndarray, np.ndarray]:
+    """Applies temporal and fate censorship to Gamma distribution lineages using arrays."""
     if censor_condition == 0:
-        return full_lineage
+        return tree, obs, states
 
-    for cell in full_lineage:
-        if censor_condition in (1, 3):
-            fate_censor_fn(cell)
-        if censor_condition in (2, 3):
-            time_censor_fn(cell, desired_experiment_time)
+    n = tree.shape[0]
+    obs = obs.copy()
+    states = states.copy()
 
-    basic_censor(full_lineage)
-    return [c for c in full_lineage if c.observed]
+    startT = np.zeros(n)
+    endT = np.zeros(n)
+    endT[0] = obs[0, 1]
+    parents = np.repeat(np.arange(n), np.diff(tree.indptr))
+    daughters = tree.indices
+
+    for p, d in zip(parents, daughters, strict=False):
+        startT[d] = endT[p]
+        endT[d] = startT[d] + obs[d, 1]
+
+    observed = np.ones(n, dtype=bool)
+
+    # Fate censor (condition 1 or 3)
+    if censor_condition in (1, 3):
+        for i in range(n):
+            if obs[i, 0] == 0:
+                start, end = tree.indptr[i], tree.indptr[i + 1]
+                for c in tree.indices[start:end]:
+                    observed[c] = False
+
+    # Time censor (condition 2 or 3)
+    if censor_condition in (2, 3):
+        for i in range(n):
+            if endT[i] > desired_experiment_time:
+                endT[i] = desired_experiment_time
+                obs[i, 0] = np.nan
+                obs[i, 1] = desired_experiment_time - startT[i]
+                obs[i, 2] = 0  # censored
+                start, end = tree.indptr[i], tree.indptr[i + 1]
+                for c in tree.indices[start:end]:
+                    observed[c] = False
+
+    # Basic censor: downward propagation of unobserved
+    for p, d in zip(parents, daughters, strict=False):
+        if not observed[p]:
+            observed[d] = False
+
+    kept = np.nonzero(observed)[0]
+    pruned_tree = tree[kept, :][:, kept]
+    pruned_obs = obs[kept, :]
+    pruned_states = states[kept]
+
+    return pruned_tree, pruned_obs, pruned_states
+
+
+def censor_lineage_gaphs(
+    tree: csr_array,
+    obs: np.ndarray,
+    states: np.ndarray,
+    censor_condition: int,
+    desired_experiment_time: float = 2e12,
+) -> tuple[csr_array, np.ndarray, np.ndarray]:
+    """Applies temporal and fate censorship to 2-phase GaPhs lineages using arrays."""
+    if censor_condition == 0:
+        return tree, obs, states
+
+    n = tree.shape[0]
+    obs = obs.copy()
+    states = states.copy()
+
+    startT = np.zeros(n)
+    transT = np.zeros(n)
+    endT = np.zeros(n)
+
+    transT[0] = obs[0, 2]
+    endT[0] = obs[0, 2] + obs[0, 3]
+
+    parents = np.repeat(np.arange(n), np.diff(tree.indptr))
+    daughters = tree.indices
+
+    for p, d in zip(parents, daughters, strict=False):
+        startT[d] = endT[p]
+        transT[d] = startT[d] + obs[d, 2]
+        endT[d] = transT[d] + obs[d, 3]
+
+    observed = np.ones(n, dtype=bool)
+
+    # Fate censor (condition 1 or 3)
+    if censor_condition in (1, 3):
+        for i in range(n):
+            if obs[i, 0] == 0 or obs[i, 1] == 0:
+                start, end = tree.indptr[i], tree.indptr[i + 1]
+                for c in tree.indices[start:end]:
+                    observed[c] = False
+
+                if obs[i, 0] == 0:  # dies in G1
+                    obs[i, 1] = np.nan
+                    obs[i, 3] = np.nan
+                    obs[i, 5] = np.nan
+                    endT[i] = startT[i] + obs[i, 2]
+                    transT[i] = endT[i]
+                elif obs[i, 1] == 0:  # dies in G2
+                    endT[i] = startT[i] + obs[i, 2] + obs[i, 3]
+
+    # Time censor (condition 2 or 3)
+    if censor_condition in (2, 3):
+        for i in range(n):
+            if endT[i] > desired_experiment_time:
+                endT[i] = desired_experiment_time
+                obs[i, 1] = np.nan
+                obs[i, 3] = desired_experiment_time - transT[i]
+                obs[i, 5] = 0
+                start, end = tree.indptr[i], tree.indptr[i + 1]
+                for c in tree.indices[start:end]:
+                    observed[c] = False
+
+            if transT[i] > desired_experiment_time:
+                endT[i] = desired_experiment_time
+                transT[i] = desired_experiment_time
+                obs[i, 0] = np.nan
+                obs[i, 1] = np.nan
+                obs[i, 2] = desired_experiment_time - startT[i]
+                obs[i, 3] = np.nan
+                obs[i, 4] = 0
+                obs[i, 5] = np.nan
+                start, end = tree.indptr[i], tree.indptr[i + 1]
+                for c in tree.indices[start:end]:
+                    observed[c] = False
+
+    # Basic censor: downward propagation of unobserved
+    for p, d in zip(parents, daughters, strict=False):
+        if not observed[p]:
+            observed[d] = False
+
+    kept = np.nonzero(observed)[0]
+    pruned_tree = tree[kept, :][:, kept]
+    pruned_obs = obs[kept, :]
+    pruned_states = states[kept]
+
+    return pruned_tree, pruned_obs, pruned_states
 
 
 def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):

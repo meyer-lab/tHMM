@@ -28,12 +28,12 @@ def do_E_step(tHMMobj: tHMM) -> tuple[list, list, list, list]:
     EL = get_Emission_Likelihoods(tHMMobj.X, tHMMobj.estimate.E)
 
     for ii, lO in enumerate(tHMMobj.X):
-        MSD.append(get_MSD(lO.cell_to_daughters, tHMMobj.estimate.pi, tHMMobj.estimate.T))
+        MSD.append(get_MSD(lO.tree, tHMMobj.estimate.pi, tHMMobj.estimate.T))
 
-        NF_one, beta = get_beta_and_NF(lO.leaves_idx, lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], EL[ii])
+        NF_one, beta = get_beta_and_NF(lO.leaves_idx, lO.tree, tHMMobj.estimate.T, MSD[ii], EL[ii])
         NF.append(NF_one)
         betas.append(beta)
-        gammas.append(get_gamma(lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], betas[ii]))
+        gammas.append(get_gamma(lO.tree, tHMMobj.estimate.T, MSD[ii], betas[ii]))
 
     return MSD, NF, betas, gammas
 
@@ -165,8 +165,7 @@ def do_M_T_step(
         for num, lO in enumerate(tt.X):
             # local T estimate
             numer_e += get_all_zetas(
-                lO.leaves_idx,
-                lO.cell_to_daughters,
+                lO.tree,
                 betas[i][num],
                 MSD[i][num],
                 gammas[i][num],
@@ -193,8 +192,7 @@ def do_M_E_step(tHMMobj: tHMM, gammas: list[np.ndarray]):
     :type tHMMobj: object
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
     """
-    all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
-    cell_arr = np.array(all_cells)
+    cell_arr = np.vstack([lineage.obs for lineage in tHMMobj.X])
     all_gammas = np.vstack(gammas)
     for state_j in range(tHMMobj.num_states):
         tHMMobj.estimate.E[state_j].estimator(cell_arr, all_gammas[:, state_j])
@@ -206,24 +204,19 @@ def do_M_E_step_atonce(all_tHMMobj: list[tHMM], all_gammas: list[list[np.ndarray
     After reshaping, we will have a list of lists for each state.
     This function is specifically written for the experimental data of G1 and S-G2 cell cycle fates and durations.
     """
-    gms = []
-    for gm in all_gammas:
-        gms.append(np.vstack(gm))
+    gms = [np.vstack(gm) for gm in all_gammas]
 
-    all_cells = np.array([cell.obs for lineage in all_tHMMobj[0].X for cell in lineage.output_lineage])
-    if len(all_cells[1, :]) == 6:
-        phase = True
-    else:
-        phase = False
+    all_cells_0 = np.vstack([lineage.obs for lineage in all_tHMMobj[0].X])
+    phase = all_cells_0.shape[1] == 6
 
     G1cells = []
     G2cells = []
     cells = []
     for tHMMobj in all_tHMMobj:
-        all_cells = np.array([cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage])
+        all_cells = np.vstack([lineage.obs for lineage in tHMMobj.X])
         if phase:
-            G1cells.append(all_cells[:, np.array([0, 2, 4])])
-            G2cells.append(all_cells[:, np.array([1, 3, 5])])
+            G1cells.append(all_cells[:, [0, 2, 4]])
+            G2cells.append(all_cells[:, [1, 3, 5]])
         else:
             cells.append(all_cells)
 

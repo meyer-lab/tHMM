@@ -146,7 +146,7 @@ class tHMM:
         return log_scores
 
 
-def log_T_score(T: np.ndarray, state_tree_sequence: list[np.ndarray], lineageObj: LineageTree) -> float:
+def log_T_score(T: np.ndarray, state_tree_sequence: list[np.ndarray] | np.ndarray, lineageObj: LineageTree) -> float:
     """
     To calculate the joint probability of state and observations.
     This function calculates the second term.
@@ -159,15 +159,12 @@ def log_T_score(T: np.ndarray, state_tree_sequence: list[np.ndarray], lineageObj
     :type lineageObj: object
     :return: the log-likelihood of the transition probability matrix
     """
-    log_T_score_holder = 0.0
+    tree = lineageObj.tree
+    if tree.nnz == 0:
+        return 0.0
+
+    state_seq = np.asarray(state_tree_sequence)
     log_T = np.log(T)
+    parents, daughters = lineageObj.edges
 
-    # we start with the first transition, from the root cell
-    for cIDX, cell in enumerate(lineageObj.output_lineage):
-        if cell.gen > 0 and not cell.isLeaf():
-            cell_state = state_tree_sequence[cIDX]
-            for dIDX in lineageObj.cell_to_daughters[cIDX, :]:
-                daughter_state = state_tree_sequence[dIDX]
-                log_T_score_holder += log_T[cell_state, daughter_state]
-
-    return float(log_T_score_holder)
+    return float(np.sum(log_T[state_seq[parents], state_seq[daughters]]))
