@@ -1,9 +1,10 @@
 """State distribution class for separated G1 and G2 phase durations as observation."""
 
 import numpy as np
+from scipy.sparse import csr_array
 
 from ..CellVar import CellVar, Time
-from .stateCommon import apply_censoring
+from .stateCommon import apply_censoring, censor_lineage_gaphs
 from .StateDistributionGamma import StateDistribution as GammaSD
 
 
@@ -90,6 +91,17 @@ class StateDistribution:
             fate_censor,
             time_censor,
         )
+
+    def censor_lineage_array(
+        self,
+        censor_condition: int,
+        tree: csr_array,
+        obs: np.ndarray,
+        states: np.ndarray,
+        desired_experiment_time=2e12,
+    ) -> tuple[csr_array, np.ndarray, np.ndarray]:
+        """Applies censoring to array representation directly."""
+        return censor_lineage_gaphs(tree, obs, states, censor_condition, desired_experiment_time)
 
 
 def assign_times_phases(full_lineage: list[CellVar]):

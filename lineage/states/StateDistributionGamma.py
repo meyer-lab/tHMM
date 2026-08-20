@@ -4,9 +4,10 @@ from typing import Literal
 
 import numpy as np
 import scipy.stats as sp
+from scipy.sparse import csr_array
 
 from ..CellVar import CellVar, Time
-from .stateCommon import apply_censoring, bern_estimator, gamma_estimator
+from .stateCommon import apply_censoring, bern_estimator, censor_lineage_gamma, gamma_estimator
 
 
 class StateDistribution:
@@ -131,6 +132,17 @@ class StateDistribution:
             fate_censor,
             time_censor,
         )
+
+    def censor_lineage_array(
+        self,
+        censor_condition: int,
+        tree: csr_array,
+        obs: np.ndarray,
+        states: np.ndarray,
+        desired_experiment_time=2e12,
+    ) -> tuple[csr_array, np.ndarray, np.ndarray]:
+        """Applies censoring to array representation directly."""
+        return censor_lineage_gamma(tree, obs, states, censor_condition, desired_experiment_time)
 
 
 def assign_times(full_lineage: list[CellVar]):
