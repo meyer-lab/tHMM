@@ -1,11 +1,12 @@
-"""" Unit test file. """
+""" " Unit test file."""
 
-import unittest
 import math
+import unittest
+
 import pandas as pd
 
-from ..LineageInputOutput import import_exp_data, tryRecursion
 from ..CellVar import CellVar as c
+from ..LineageInputOutput import import_exp_data, tryRecursion
 
 
 class TestModel(unittest.TestCase):
@@ -87,9 +88,9 @@ class TestModel(unittest.TestCase):
         self.assertTrue(len(lineages[2]) == 5)
 
         # This won't work if the order the cells are stored is changed
-        for i, lineage in enumerate(lineages):
+        for lineage in lineages:
             # soft check that the order is probably the same
-            assert lineage[len(lineage) - 1].gen == 1
+            assert lineage[-1].gen == 1
 
     def test_tryRecursion(self):
         """
@@ -113,10 +114,7 @@ class TestModel(unittest.TestCase):
             )
             self.assertTrue(
                 cLin[i].right.obs[j] == self.right3_2.obs[j]
-                or (
-                    math.isnan(self.right3_2.obs[j])
-                    and math.isnan(cLin[i].right.obs[j])
-                )
+                or (math.isnan(self.right3_2.obs[j]) and math.isnan(cLin[i].right.obs[j]))
             )
             self.assertTrue(
                 cLin[i].left.obs[j] == self.left3_2.obs[j]
@@ -124,8 +122,5 @@ class TestModel(unittest.TestCase):
             )
             self.assertTrue(
                 cLin[i].parent.obs[j] == self.parent3.obs[j]
-                or (
-                    math.isnan(self.parent3.obs[j])
-                    and math.isnan(cLin[i].parent.obs[j])
-                )
+                or (math.isnan(self.parent3.obs[j]) and math.isnan(cLin[i].parent.obs[j]))
             )

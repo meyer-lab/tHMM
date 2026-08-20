@@ -1,13 +1,14 @@
-""" Common utilities used between states regardless of distribution. """
+"""Common utilities used between states regardless of distribution."""
 
 import warnings
-from typing import Literal
-import numpy as np
-from numba import njit
-import numpy.typing as npt
-from scipy.optimize import minimize, Bounds, LinearConstraint
 from ctypes import CFUNCTYPE, c_double
+from typing import Literal
+
+import numpy as np
+import numpy.typing as npt
+from numba import njit
 from numba.extending import get_cython_function_address
+from scipy.optimize import Bounds, LinearConstraint, minimize
 
 arr_type = npt.NDArray[np.float64]
 
@@ -44,9 +45,7 @@ gammaln = CFUNCTYPE(c_double, c_double)(addr)
 
 
 @njit
-def gamma_LL(
-    logX: arr_type, gamma_obs: arr_type, time_cen: arr_type, gammas: arr_type, param_idx
-):
+def gamma_LL(logX: arr_type, gamma_obs: arr_type, time_cen: arr_type, gammas: arr_type, param_idx):
     """Log-likelihood for the optionally censored Gamma distribution.
     The logX is the log transform of the parameters, in case of atonce estimation, it is [shape, scale1, scale2, scale3, scale4].
     """

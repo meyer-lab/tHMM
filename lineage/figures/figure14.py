@@ -1,10 +1,9 @@
-""" To draw transition matrix """
+"""To draw transition matrix"""
 
+from ..plotTree import plot_networkx
+from .common import getSetup, subplotLabel
 from .figure11 import lapt_tHMMobj_list
 from .figure12 import gemc_tHMMobj_list
-from .common import getSetup, subplotLabel
-from ..plotTree import plot_networkx
-
 
 gemc = gemc_tHMMobj_list[0]
 lapt = lapt_tHMMobj_list[0]

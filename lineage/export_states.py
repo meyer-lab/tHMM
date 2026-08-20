@@ -1,4 +1,4 @@
-""" This file exports excel sheets of lineages of cells with their states assigned to them after fitting. """
+"""This file exports excel sheets of lineages of cells with their states assigned to them after fitting."""
 
 import numpy as np
 import pandas as pd
@@ -95,7 +95,7 @@ def write_onExcel(
             df = pd.DataFrame(arrays)
             df.to_excel(writer, sheet_name="sheet1", startrow=j)
             j += 19
-        writer.save()
+        writer.close()
 
     for ind, sheet in enumerate(lpt_25):
         j = 1
@@ -104,7 +104,7 @@ def write_onExcel(
             df = pd.DataFrame(arrays)
             df.to_excel(writer, sheet_name="sheet1", startrow=j)
             j += 19
-        writer.save()
+        writer.close()
 
     for ind, sheet in enumerate(lpt_50):
         j = 1
@@ -113,7 +113,7 @@ def write_onExcel(
             df = pd.DataFrame(arrays)
             df.to_excel(writer, sheet_name="sheet1", startrow=j)
             j += 19
-        writer.save()
+        writer.close()
 
     for ind, sheet in enumerate(lpt_250):
         j = 1
@@ -122,4 +122,4 @@ def write_onExcel(
             df = pd.DataFrame(arrays)
             df.to_excel(writer, sheet_name="sheet1", startrow=j)
             j += 19
-        writer.save()
+        writer.close()

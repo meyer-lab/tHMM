@@ -1,20 +1,21 @@
-""" Unit test file. """
+"""Unit test file."""
 
 from copy import deepcopy
-import pytest
+
 import numpy as np
+import pytest
 from sklearn.metrics import rand_score
-from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
+
+from ..Analyze import fit_list
 from ..BaumWelch import (
-    do_E_step,
-    do_M_E_step,
     calculate_log_likelihood,
     calculate_stationary,
+    do_E_step,
+    do_M_E_step,
 )
 from ..LineageTree import LineageTree
+from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 from ..tHMM import tHMM
-from ..Analyze import fit_list
-
 
 T = np.array(
     [
@@ -74,9 +75,7 @@ def test_BW(cens, nStates):
 
 def test_fit_seed():
     """Test that we can set the seed to provide reproducible results."""
-    X = LineageTree.rand_init(
-        pi, T, E, desired_num_cells=num_cells, desired_experiment_time=expt_time
-    )
+    X = LineageTree.rand_init(pi, T, E, desired_num_cells=num_cells, desired_experiment_time=expt_time)
     tHMMobj = tHMM([X], num_states=2)  # build the tHMM class with X
 
     # Get the likelihoods after fitting
@@ -138,10 +137,7 @@ def test_M_step(cens):
         population.append(X)
 
     tHMMobj = tHMM(population, num_states=len(E), rng=rng)
-    gammas = [
-        np.zeros((len(lineage.output_lineage), tHMMobj.num_states))
-        for lineage in tHMMobj.X
-    ]
+    gammas = [np.zeros((len(lineage.output_lineage), tHMMobj.num_states)) for lineage in tHMMobj.X]
 
     # create the gamma matrix (N x K) that shows the probability of a cell n being in state k from the true state assignments.
     for idx, g_lin in enumerate(gammas):

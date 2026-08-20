@@ -7,28 +7,26 @@ single lineages (no more than one lineage per population).
 
 import numpy as np
 
+from ..LineageTree import LineageTree
 from .common import (
-    getSetup,
-    subplotLabel,
+    E,
+    T,
     commonAnalyze,
     figureMaker,
-    pi,
-    T,
-    E,
+    getSetup,
     max_desired_num_cells,
-    num_data_points,
     min_desired_num_cells,
+    num_data_points,
+    pi,
+    subplotLabel,
 )
-from ..LineageTree import LineageTree
 
 # Creating a list of populations to analyze over
-cells = np.linspace(min_desired_num_cells, max_desired_num_cells, num_data_points)
+cells = np.linspace(min_desired_num_cells, max_desired_num_cells, num_data_points, dtype=int)
 list_of_fpi = [pi] * cells.size
 
 # Generate populations
-list_of_populations = [
-    [LineageTree.rand_init(pi, T, E, cell_num)] for cell_num in cells
-]
+list_of_populations = [[LineageTree.rand_init(pi, T, E, int(cell_num))] for cell_num in cells]
 
 
 def makeFigure():

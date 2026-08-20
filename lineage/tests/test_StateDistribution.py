@@ -1,12 +1,14 @@
-""" Unit test file. """
+"""Unit test file."""
 
 import unittest
-import pytest
 from copy import deepcopy
+
 import numpy as np
+import pytest
+
+from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
-from ..LineageTree import LineageTree
 
 
 class TestModel(unittest.TestCase):
@@ -27,14 +29,12 @@ class TestModel(unittest.TestCase):
         ]
 
         # creating two lineages, one with False for pruning, one with True.
-        self.lineage = LineageTree.rand_init(
-            self.pi, self.T, self.E, desired_num_cells=(2**11) - 1
-        )
+        self.lineage = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2**11) - 1)
         self.lineage2 = LineageTree.rand_init(
             self.pi,
             self.T,
             self.E,
-            desired_num_cells=(2**5.5) - 1,
+            desired_num_cells=int((2**5.5) - 1),
             censor_condition=2,
             desired_experiment_time=50,
         )
@@ -71,13 +71,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(len(bern_obs1) == len(gamma_obs1) == 40)
 
         bern_obsG1, bern_obsG2, gamma_obsG1, gamma_obsG2, _, _ = self.E2[0].rvs(size=50)
-        self.assertTrue(
-            len(bern_obsG1)
-            == len(bern_obsG2)
-            == len(gamma_obsG1)
-            == len(gamma_obsG2)
-            == 50
-        )
+        self.assertTrue(len(bern_obsG1) == len(bern_obsG2) == len(gamma_obsG1) == len(gamma_obsG2) == 50)
 
     def test_estimator(self):
         """
@@ -101,12 +95,8 @@ class TestModel(unittest.TestCase):
         np.testing.assert_allclose(estimator_obj.params, self.E[0].params, rtol=0.1)
 
         # For StateDistPhase
-        np.testing.assert_allclose(
-            estimator_objPhase.G1.params, self.E2[0].G1.params, rtol=0.1
-        )
-        np.testing.assert_allclose(
-            estimator_objPhase.G2.params, self.E2[0].G2.params, rtol=0.1
-        )
+        np.testing.assert_allclose(estimator_objPhase.G1.params, self.E2[0].G1.params, rtol=0.1)
+        np.testing.assert_allclose(estimator_objPhase.G2.params, self.E2[0].G2.params, rtol=0.1)
 
     def test_censor(self):
         """

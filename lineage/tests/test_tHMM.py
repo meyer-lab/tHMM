@@ -1,14 +1,15 @@
-""" Unit test file. """
+"""Unit test file."""
 
 import unittest
-import pytest
-import numpy as np
-from ..LineageTree import LineageTree, get_Emission_Likelihoods
-from ..tHMM import tHMM
-from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
-from ..figures.common import pi, T, E
-from ..Analyze import Analyze_list, Results, run_Analyze_over
 
+import numpy as np
+import pytest
+
+from ..Analyze import Analyze_list, Results, run_Analyze_over
+from ..figures.common import E, T, pi
+from ..LineageTree import LineageTree, get_Emission_Likelihoods
+from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
+from ..tHMM import tHMM
 
 rng = np.random.default_rng(1)
 
@@ -31,16 +32,10 @@ class TestModel(unittest.TestCase):
             StateDistPhase(0.88, 0.75, 10, 2, 15, 4),
             StateDistPhase(0.77, 0.85, 15, 7, 20, 5),
         ]
-        self.X3 = [
-            LineageTree.rand_init(
-                self.pi, self.T, self.E, desired_num_cells=(2**11) - 1
-            )
-        ]
+        self.X3 = [LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2**11) - 1)]
 
         self.t = tHMM(self.X, num_states=2, rng=rng)  # build the tHMM class with X
-        self.t3 = tHMM(
-            self.X3, num_states=3, rng=rng
-        )  # build the tHMM class for 3 states
+        self.t3 = tHMM(self.X3, num_states=3, rng=rng)  # build the tHMM class for 3 states
 
     def test_init_paramlist(self):
         """
@@ -68,12 +63,8 @@ class TestModel(unittest.TestCase):
         EL3 = get_Emission_Likelihoods(self.X3, self.E)
 
         for ind, ELlin in enumerate(EL):
-            self.assertGreaterEqual(
-                ELlin.shape[0], 0
-            )  # at least zero cells in each lineage
-            self.assertGreaterEqual(
-                EL3[ind].shape[0], 0
-            )  # at least zero cells in each lineage
+            self.assertGreaterEqual(ELlin.shape[0], 0)  # at least zero cells in each lineage
+            self.assertGreaterEqual(EL3[ind].shape[0], 0)  # at least zero cells in each lineage
             self.assertEqual(ELlin.shape[1], 2)  # there are 2 states for each cell
             self.assertEqual(EL3[ind].shape[1], 3)  # there are 3 states for each cell
 

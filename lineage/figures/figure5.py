@@ -1,25 +1,24 @@
-""" This file contains figures related to how big the experment needs to be. """
+"""This file contains figures related to how big the experment needs to be."""
 
 import numpy as np
+
+from ..LineageTree import LineageTree
 from .common import (
-    getSetup,
-    subplotLabel,
-    pi,
     E2,
     T,
+    commonAnalyze,
+    figureMaker,
+    getSetup,
+    max_num_lineages,
     min_desired_num_cells,
     min_num_lineages,
-    max_num_lineages,
     num_data_points,
-    figureMaker,
-    commonAnalyze,
+    pi,
+    subplotLabel,
 )
-from ..LineageTree import LineageTree
 
 # Creating a list of populations to analyze over
-num_lineages = np.linspace(
-    min_num_lineages, max_num_lineages, num_data_points, dtype=int
-)
+num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
 experiment_times = np.linspace(1200, int(2.5 * 1000), num_data_points)
 
 list_of_populations = []
@@ -51,12 +50,7 @@ def makeFigure():
     # Get list of axis objects
     ax, f = getSetup((11, 8), (3, 3))
     # dist_dist is distribution distance
-    figureMaker(
-        ax,
-        *commonAnalyze(list_of_populations, 2),
-        num_lineages=num_lineages,
-        dist_dist=True
-    )
+    figureMaker(ax, *commonAnalyze(list_of_populations, 2), num_lineages=num_lineages, dist_dist=True)
 
     subplotLabel(ax)
 

@@ -3,20 +3,24 @@ Contains utilities, functions, and variables that are commonly used or shared am
 the figure creation files.
 """
 
-from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
-from ..states.StateDistributionGamma import StateDistribution
+import importlib
+import math
 import sys
 import time
-import matplotlib
 from string import ascii_lowercase
-import math
+
+import matplotlib
 import numpy as np
 import pandas as pd
-from matplotlib import gridspec, rcParams, pyplot as plt
 import seaborn as sns
 import svgutils.transform as st
+from matplotlib import gridspec, rcParams
+from matplotlib import pyplot as plt
+
 from ..Analyze import Results, run_Analyze_over
 from ..BaumWelch import calculate_stationary
+from ..states.StateDistributionGamma import StateDistribution
+from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 
 matplotlib.use("AGG")
 
@@ -117,9 +121,7 @@ def subplotLabel(axs):
             i += 1
 
 
-def overlayCartoon(
-    figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1, rotate=None
-):
+def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1, rotate=None):
     """Add cartoon to a figure file."""
 
     # Overlay Figure cartoons
@@ -141,92 +143,60 @@ def genFigure():
     start = time.time()
     nameOut = "figure" + sys.argv[1]
 
-    exec("from lineage.figures." + nameOut + " import makeFigure", globals())
-    ff = makeFigure()
+    mod = importlib.import_module(f"lineage.figures.{nameOut}")
+    ff = mod.makeFigure()
     ff.savefig(fdir + nameOut + ".svg", dpi=ff.dpi, bbox_inches="tight", pad_inches=0)
 
     print(f"Figure {sys.argv[1]} is done after {time.time() - start} seconds.\n")
 
     if sys.argv[1] == "S01":
         # Overlay Figure 1 cartoon
-        overlayCartoon(
-            fdir + "figureS01.svg", f"{cartoon_dir}/figureS01.svg", 50, 0, scalee=0.78
-        )
+        overlayCartoon(fdir + "figureS01.svg", f"{cartoon_dir}/figureS01.svg", 50, 0, scalee=0.78)
 
     if sys.argv[1] == "S02":
         # Overlay Figure 2 cartoon
-        overlayCartoon(
-            fdir + "figureS02.svg", f"{cartoon_dir}/figureS02.svg", 80, 0, scalee=0.67
-        )
+        overlayCartoon(fdir + "figureS02.svg", f"{cartoon_dir}/figureS02.svg", 80, 0, scalee=0.67)
 
     if sys.argv[1] == "S03":
         # Overlay Figure 3 cartoon
-        overlayCartoon(
-            fdir + "figureS03.svg", f"{cartoon_dir}/figureS03.svg", 80, 0, scalee=0.67
-        )
+        overlayCartoon(fdir + "figureS03.svg", f"{cartoon_dir}/figureS03.svg", 80, 0, scalee=0.67)
 
     if sys.argv[1] == "S04":
         # Overlay Figure 4 cartoon
-        overlayCartoon(
-            fdir + "figureS04.svg", f"{cartoon_dir}/figureS04.svg", 15, 10, scalee=0.54
-        )
+        overlayCartoon(fdir + "figureS04.svg", f"{cartoon_dir}/figureS04.svg", 15, 10, scalee=0.54)
 
     if sys.argv[1] == "S05":
         # Overlay Figure 5 cartoon
-        overlayCartoon(
-            fdir + "figureS05.svg", f"{cartoon_dir}/figureS05.svg", 15, 10, scalee=0.54
-        )
+        overlayCartoon(fdir + "figureS05.svg", f"{cartoon_dir}/figureS05.svg", 15, 10, scalee=0.54)
 
     if sys.argv[1] == "S06":
         # Overlay Figure 6 cartoon
-        overlayCartoon(
-            fdir + "figureS06.svg", f"{cartoon_dir}/figureS06.svg", 40, 0, scalee=0.52
-        )
+        overlayCartoon(fdir + "figureS06.svg", f"{cartoon_dir}/figureS06.svg", 40, 0, scalee=0.52)
 
     if sys.argv[1] == "S07":
         # Overlay Figure 7 cartoon
-        overlayCartoon(
-            fdir + "figureS07.svg", f"{cartoon_dir}/figureS07.svg", 30, 0, scalee=0.52
-        )
+        overlayCartoon(fdir + "figureS07.svg", f"{cartoon_dir}/figureS07.svg", 30, 0, scalee=0.52)
 
     if sys.argv[1] == "S08":
         # Overlay Figure 8 cartoon
-        overlayCartoon(
-            fdir + "figureS08.svg", f"{cartoon_dir}/figureS08.svg", 110, 0, scalee=0.58
-        )
+        overlayCartoon(fdir + "figureS08.svg", f"{cartoon_dir}/figureS08.svg", 110, 0, scalee=0.58)
 
     if sys.argv[1] == "S09":
         # Overlay Figure 9 cartoon
-        overlayCartoon(
-            fdir + "figureS09.svg", f"{cartoon_dir}/figureS02.svg", 170, 0, scalee=0.48
-        )
+        overlayCartoon(fdir + "figureS09.svg", f"{cartoon_dir}/figureS02.svg", 170, 0, scalee=0.48)
 
     if sys.argv[1] == "S10":
         # Overlay Figure 10 cartoon
-        overlayCartoon(
-            fdir + "figureS10.svg", f"{cartoon_dir}/figureS03.svg", 150, 0, scalee=0.47
-        )
+        overlayCartoon(fdir + "figureS10.svg", f"{cartoon_dir}/figureS03.svg", 150, 0, scalee=0.47)
 
     if sys.argv[1] == "1":
         # Overlay Figure 1 cartoon
-        overlayCartoon(
-            fdir + "figure1.svg", f"{cartoon_dir}/xaxis-h.svg", 30, 196, scalee=1.1
-        )
-        overlayCartoon(
-            fdir + "figure1.svg", f"{cartoon_dir}/xaxis-h.svg", 215, 196, scalee=1.1
-        )
-        overlayCartoon(
-            fdir + "figure1.svg", f"{cartoon_dir}/xaxis-h.svg", 395, 196, scalee=1.1
-        )
-        overlayCartoon(
-            fdir + "figure1.svg", f"{cartoon_dir}/fig1ylabel.svg", 15, 75, scalee=0.21
-        )
-        overlayCartoon(
-            fdir + "figure1.svg", f"{cartoon_dir}/fig1ylabel.svg", 195, 75, scalee=0.21
-        )
-        overlayCartoon(
-            fdir + "figure1.svg", f"{cartoon_dir}/fig1ylabel.svg", 375, 75, scalee=0.21
-        )
+        overlayCartoon(fdir + "figure1.svg", f"{cartoon_dir}/xaxis-h.svg", 30, 196, scalee=1.1)
+        overlayCartoon(fdir + "figure1.svg", f"{cartoon_dir}/xaxis-h.svg", 215, 196, scalee=1.1)
+        overlayCartoon(fdir + "figure1.svg", f"{cartoon_dir}/xaxis-h.svg", 395, 196, scalee=1.1)
+        overlayCartoon(fdir + "figure1.svg", f"{cartoon_dir}/fig1ylabel.svg", 15, 75, scalee=0.21)
+        overlayCartoon(fdir + "figure1.svg", f"{cartoon_dir}/fig1ylabel.svg", 195, 75, scalee=0.21)
+        overlayCartoon(fdir + "figure1.svg", f"{cartoon_dir}/fig1ylabel.svg", 375, 75, scalee=0.21)
 
     if sys.argv[1] == "4":
         # Overlay Figure 4 cartoon
@@ -240,15 +210,11 @@ def genFigure():
 
     if sys.argv[1] == "5":
         # Overlay Figure 5 cartoon
-        overlayCartoon(
-            fdir + "figure5.svg", f"{cartoon_dir}/figure5.svg", 5, 5, scalee=1.55
-        )
+        overlayCartoon(fdir + "figure5.svg", f"{cartoon_dir}/figure5.svg", 5, 5, scalee=1.55)
 
     if sys.argv[1] == "6":
         # Overlay Figure 6 cartoon
-        overlayCartoon(
-            fdir + "figure6.svg", f"{cartoon_dir}/figure6.svg", 70, 65, scalee=0.6
-        )
+        overlayCartoon(fdir + "figure6.svg", f"{cartoon_dir}/figure6.svg", 70, 65, scalee=0.6)
 
     if sys.argv[1] == "11":
         # Overlay Transition block
@@ -260,21 +226,11 @@ def genFigure():
             scale_x=0.9,
             scale_y=1.2,
         )
-        overlayCartoon(
-            fdir + "figure11.svg", f"{cartoon_dir}/lapatinib.svg", 5, 80, scalee=0.8
-        )
-        overlayCartoon(
-            fdir + "figure11.svg", f"{cartoon_dir}/xaxis-h.svg", 450, 215, scalee=1.44
-        )
-        overlayCartoon(
-            fdir + "figure11.svg", f"{cartoon_dir}/xaxis-h.svg", 645, 215, scalee=1.44
-        )
-        overlayCartoon(
-            fdir + "figure11.svg", f"{cartoon_dir}/xaxis-h.svg", 840, 215, scalee=1.44
-        )
-        overlayCartoon(
-            fdir + "figure11.svg", f"{cartoon_dir}/xaxis-h.svg", 1040, 215, scalee=1.44
-        )
+        overlayCartoon(fdir + "figure11.svg", f"{cartoon_dir}/lapatinib.svg", 5, 80, scalee=0.8)
+        overlayCartoon(fdir + "figure11.svg", f"{cartoon_dir}/xaxis-h.svg", 450, 215, scalee=1.44)
+        overlayCartoon(fdir + "figure11.svg", f"{cartoon_dir}/xaxis-h.svg", 645, 215, scalee=1.44)
+        overlayCartoon(fdir + "figure11.svg", f"{cartoon_dir}/xaxis-h.svg", 840, 215, scalee=1.44)
+        overlayCartoon(fdir + "figure11.svg", f"{cartoon_dir}/xaxis-h.svg", 1040, 215, scalee=1.44)
 
     if sys.argv[1] == "12":
         # Overlay Transition block
@@ -286,21 +242,11 @@ def genFigure():
             scale_x=0.9,
             scale_y=1.2,
         )
-        overlayCartoon(
-            fdir + "figure12.svg", f"{cartoon_dir}/gemcitabine.svg", 10, 70, scalee=1.05
-        )
-        overlayCartoon(
-            fdir + "figure12.svg", f"{cartoon_dir}/xaxis-h.svg", 450, 215, scalee=1.44
-        )
-        overlayCartoon(
-            fdir + "figure12.svg", f"{cartoon_dir}/xaxis-h.svg", 645, 215, scalee=1.44
-        )
-        overlayCartoon(
-            fdir + "figure12.svg", f"{cartoon_dir}/xaxis-h.svg", 840, 215, scalee=1.44
-        )
-        overlayCartoon(
-            fdir + "figure12.svg", f"{cartoon_dir}/xaxis-h.svg", 1040, 215, scalee=1.44
-        )
+        overlayCartoon(fdir + "figure12.svg", f"{cartoon_dir}/gemcitabine.svg", 10, 70, scalee=1.05)
+        overlayCartoon(fdir + "figure12.svg", f"{cartoon_dir}/xaxis-h.svg", 450, 215, scalee=1.44)
+        overlayCartoon(fdir + "figure12.svg", f"{cartoon_dir}/xaxis-h.svg", 645, 215, scalee=1.44)
+        overlayCartoon(fdir + "figure12.svg", f"{cartoon_dir}/xaxis-h.svg", 840, 215, scalee=1.44)
+        overlayCartoon(fdir + "figure12.svg", f"{cartoon_dir}/xaxis-h.svg", 1040, 215, scalee=1.44)
 
     if sys.argv[1] == "13":
         # Overlay Transition block
@@ -312,21 +258,11 @@ def genFigure():
             scale_x=0.9,
             scale_y=1.5,
         )
-        overlayCartoon(
-            fdir + "figure13.svg", f"{cartoon_dir}/HGF.svg", 0, 80, scalee=1.1
-        )
-        overlayCartoon(
-            fdir + "figure13.svg", f"{cartoon_dir}/xaxis-h.svg", 430, 260, scalee=1.44
-        )
-        overlayCartoon(
-            fdir + "figure13.svg", f"{cartoon_dir}/xaxis-h.svg", 625, 260, scalee=1.44
-        )
-        overlayCartoon(
-            fdir + "figure13.svg", f"{cartoon_dir}/xaxis-h.svg", 820, 260, scalee=1.4
-        )
-        overlayCartoon(
-            fdir + "figure13.svg", f"{cartoon_dir}/xaxis-h.svg", 1010, 260, scalee=1.3
-        )
+        overlayCartoon(fdir + "figure13.svg", f"{cartoon_dir}/HGF.svg", 0, 80, scalee=1.1)
+        overlayCartoon(fdir + "figure13.svg", f"{cartoon_dir}/xaxis-h.svg", 430, 260, scalee=1.44)
+        overlayCartoon(fdir + "figure13.svg", f"{cartoon_dir}/xaxis-h.svg", 625, 260, scalee=1.44)
+        overlayCartoon(fdir + "figure13.svg", f"{cartoon_dir}/xaxis-h.svg", 820, 260, scalee=1.4)
+        overlayCartoon(fdir + "figure13.svg", f"{cartoon_dir}/xaxis-h.svg", 1010, 260, scalee=1.3)
 
     if sys.argv[1] == "S11":
         overlayCartoon(
@@ -600,12 +536,8 @@ def figureMaker(
                 scatter_kws=scatter_kws_list[1],
                 line_kws={"color": "green"},
             )
-            ax[i].scatter(
-                x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5
-            )
-            ax[i].scatter(
-                x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5
-            )
+            ax[i].scatter(x, paramTrues[:, 0, 1], marker="_", s=20, c="#00ffff", alpha=0.5)
+            ax[i].scatter(x, paramTrues[:, 1, 1], marker="_", s=20, c="#00cc00", alpha=0.5)
             ax[i].set_ylim(bottom=0.5, top=1.02)
             ax[i].set_ylabel("S/G2 Bernoulli p")
             ax[i].set_title(r"S/G2 Bernoulli p Estimation")
@@ -884,9 +816,7 @@ def figureMaker(
         ax[i].set_xlabel(xlabel)
         ax[i].set_ylim([0.0, 15.0])
     else:
-        if (
-            len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1])
-        ) or (num_lineages is None):
+        if (len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1])) or (num_lineages is None):
             ax[i].axis("off")
         else:
             ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
@@ -937,9 +867,7 @@ def figureMaker(
         ax[i].set_xlabel(xlabel)
 
         i += 1
-        if (
-            len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1])
-        ) or (num_lineages is None):
+        if (len(accuracy_df["pii"].unique()) <= math.factorial(paramTrues.shape[1])) or (num_lineages is None):
             ax[i].axis("off")
         else:
             ax[i].set_ylim(bottom=0, top=np.mean(pii) + 0.2)
@@ -961,21 +889,13 @@ def figureMaker(
 def plotting(ax, lpt_avg, bern_lpt, cons, concsValues, num_states):
     """helps to avoid duplicating code for plotting the gamma-related emission results and bernoulli."""
     for i in range(num_states):  # lapatinib that has 3 states
-        ax[10].plot(
-            cons, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7, lw=3
-        )
+        ax[10].plot(cons, lpt_avg[:, i, 0], label="state " + str(i + 1), alpha=0.7, lw=3)
         ax[10].set_title("G1 phase")
-        ax[11].plot(
-            cons, lpt_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7, lw=3
-        )
+        ax[11].plot(cons, lpt_avg[:, i, 1], label="state " + str(i + 1), alpha=0.7, lw=3)
         ax[11].set_title("S/G2 phase")
-        ax[12].plot(
-            cons, bern_lpt[:, i, 0], label="state " + str(i + 1), alpha=0.7, lw=3
-        )
+        ax[12].plot(cons, bern_lpt[:, i, 0], label="state " + str(i + 1), alpha=0.7, lw=3)
         ax[12].set_title("G1 phase")
-        ax[13].plot(
-            cons, bern_lpt[:, i, 1], label="state " + str(i + 1), alpha=0.7, lw=3
-        )
+        ax[13].plot(cons, bern_lpt[:, i, 1], label="state " + str(i + 1), alpha=0.7, lw=3)
         ax[13].set_title("S/G2 phase")
 
     # ylim and ylabel
@@ -1019,19 +939,13 @@ def plot_all(ax, num_states, tHMMobj_list, Dname, cons, concsValues):
     )
 
     # lapatinib
-    lpt_avg = np.zeros(
-        (4, num_states, 2)
-    )  # the avg lifetime: num_conc x num_states x num_phases
+    lpt_avg = np.zeros((4, num_states, 2))  # the avg lifetime: num_conc x num_states x num_phases
     bern_lpt = np.zeros((4, num_states, 2))  # bernoulli
 
     for idx, tHMMobj in enumerate(tHMMobj_list):  # for each concentration data
         for i in range(num_states):
-            lpt_avg[idx, i, 0] = np.log10(
-                tHMMobj.estimate.E[i].params[2] * tHMMobj.estimate.E[i].params[3]
-            )  # G1
-            lpt_avg[idx, i, 1] = np.log10(
-                tHMMobj.estimate.E[i].params[4] * tHMMobj.estimate.E[i].params[5]
-            )  # G2
+            lpt_avg[idx, i, 0] = np.log10(tHMMobj.estimate.E[i].params[2] * tHMMobj.estimate.E[i].params[3])  # G1
+            lpt_avg[idx, i, 1] = np.log10(tHMMobj.estimate.E[i].params[4] * tHMMobj.estimate.E[i].params[5])  # G2
             # bernoullis
             for j in range(2):
                 bern_lpt[idx, i, j] = tHMMobj.estimate.E[i].params[j]

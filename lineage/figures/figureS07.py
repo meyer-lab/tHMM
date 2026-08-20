@@ -9,19 +9,19 @@ of varying distributions.
 
 import numpy as np
 
-from .common import (
-    getSetup,
-    subplotLabel,
-    commonAnalyze,
-    figureMaker,
-    pi,
-    T,
-    max_desired_num_cells,
-    num_data_points,
-    state1,
-)
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
+from .common import (
+    T,
+    commonAnalyze,
+    figureMaker,
+    getSetup,
+    max_desired_num_cells,
+    num_data_points,
+    pi,
+    state1,
+    subplotLabel,
+)
 
 
 def makeFigure():
@@ -49,10 +49,7 @@ def accuracy():
     """
 
     # Creating a list of populations to analyze over
-    list_of_Es = [
-        [StateDistribution(0.99, 7, a), state1]
-        for a in np.linspace(1, 8, num_data_points)
-    ]
+    list_of_Es = [[StateDistribution(0.99, 7, a), state1] for a in np.linspace(1, 8, num_data_points)]
     list_of_populations = []
     list_of_fpi = []
     for E in list_of_Es:
@@ -63,7 +60,7 @@ def accuracy():
                 pi,
                 T,
                 E,
-                0.5 * max_desired_num_cells,
+                int(0.5 * max_desired_num_cells),
                 censor_condition=3,
                 desired_experiment_time=500,
             )

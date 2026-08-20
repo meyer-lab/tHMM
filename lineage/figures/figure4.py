@@ -1,22 +1,24 @@
-""" This file contains functions for plotting the performance of the model for censored data. """
+"""This file contains functions for plotting the performance of the model for censored data."""
+
+from copy import deepcopy
 
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from copy import deepcopy
-from .common import (
-    getSetup,
-    subplotLabel,
-    commonAnalyze,
-    pi,
-    T,
-    E2,
-    num_data_points,
-    min_num_lineages,
-    max_num_lineages,
-)
+
 from ..LineageTree import LineageTree
 from ..plotTree import plotLineage
+from .common import (
+    E2,
+    T,
+    commonAnalyze,
+    getSetup,
+    max_num_lineages,
+    min_num_lineages,
+    num_data_points,
+    pi,
+    subplotLabel,
+)
 
 scatter_state_1_kws = {
     "alpha": 0.33,
@@ -77,16 +79,12 @@ def accuracy():
     the experiment time.
     """
     # Creating a list of populations to analyze over
-    num_lineages = np.linspace(
-        min_num_lineages, max_num_lineages, num_data_points, dtype=int
-    )
+    num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
     num_cells = np.linspace(5, 31, num_data_points, dtype=int)
     list_of_fpi = [pi] * num_lineages.size
 
     # Adding populations into a holder for analysing
-    list_of_populationsSim = [
-        [cenGen(num_cells[i]) for _ in range(num)] for i, num in enumerate(num_lineages)
-    ]
+    list_of_populationsSim = [[cenGen(num_cells[i]) for _ in range(num)] for i, num in enumerate(num_lineages)]
 
     SecondPopulation = deepcopy(list_of_populationsSim)
     for lin_list in SecondPopulation:
@@ -99,12 +97,8 @@ def accuracy():
                     cells.obs[5] = 1.0
                     assert np.isfinite(cells.obs[3])
 
-    x_Sim, _, output_Sim, _ = commonAnalyze(
-        SecondPopulation, 2, list_of_fpi=list_of_fpi
-    )
-    x_Cen, _, output_Cen, _ = commonAnalyze(
-        list_of_populationsSim, 2, list_of_fpi=list_of_fpi
-    )
+    x_Sim, _, output_Sim, _ = commonAnalyze(SecondPopulation, 2, list_of_fpi=list_of_fpi)
+    x_Cen, _, output_Cen, _ = commonAnalyze(list_of_populationsSim, 2, list_of_fpi=list_of_fpi)
     return x_Sim, output_Sim, x_Cen, output_Cen
 
 
@@ -115,15 +109,11 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
     """
     Accuracy_Sim = output_Sim["state_similarity"]
     Accuracy_Cen = output_Cen["state_similarity"]
-    accuracy_sim_df = pd.DataFrame(
-        columns=["Cell number", "Adjusted Rand Index Accuracy"]
-    )
+    accuracy_sim_df = pd.DataFrame(columns=["Cell number", "Adjusted Rand Index Accuracy"])
     accuracy_sim_df["Cell number"] = x_Sim
     accuracy_sim_df["Adjusted Rand Index Accuracy"] = Accuracy_Sim
 
-    accuracy_cen_df = pd.DataFrame(
-        columns=["Cell number", "Adjusted Rand Index Accuracy"]
-    )
+    accuracy_cen_df = pd.DataFrame(columns=["Cell number", "Adjusted Rand Index Accuracy"])
     accuracy_cen_df["Cell number"] = x_Cen
     accuracy_cen_df["Adjusted Rand Index Accuracy"] = Accuracy_Cen
 

@@ -1,10 +1,10 @@
-""" State distribution class for separated G1 and G2 phase durations as observation. """
+"""State distribution class for separated G1 and G2 phase durations as observation."""
 
 import numpy as np
 
+from ..CellVar import CellVar, Time
 from .stateCommon import basic_censor
 from .StateDistributionGamma import StateDistribution as GammaSD
-from ..CellVar import Time, CellVar
 
 
 class StateDistribution:
@@ -20,9 +20,7 @@ class StateDistribution:
         gamma_scale2: float = 6.0,
     ):  # user has to identify what parameters to use for each state
         """Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have."""
-        self.params = np.array(
-            [bern_p1, bern_p2, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2]
-        )
+        self.params = np.array([bern_p1, bern_p2, gamma_a1, gamma_scale1, gamma_a2, gamma_scale2])
         self.G1 = GammaSD(bern_p=bern_p1, gamma_a=gamma_a1, gamma_scale=gamma_scale1)
         self.G2 = GammaSD(bern_p=bern_p2, gamma_a=gamma_a2, gamma_scale=gamma_scale2)
 

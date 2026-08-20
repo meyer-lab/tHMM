@@ -1,10 +1,12 @@
-""" Unit test file for Viterbi. """
+"""Unit test file for Viterbi."""
 
 import unittest
+
 import numpy as np
-from ..tHMM import tHMM
+
+from ..figures.common import E, T, pi
 from ..LineageTree import LineageTree
-from ..figures.common import pi, T, E
+from ..tHMM import tHMM
 
 
 class TestViterbi(unittest.TestCase):
@@ -18,7 +20,5 @@ class TestViterbi(unittest.TestCase):
 
         for _ in range(5):
             # Generate a random sequence
-            random_log_scores = tHMMobj.log_score(
-                [np.random.randint(0, 2, (2**9) - 1)]
-            )[0]
+            random_log_scores = tHMMobj.log_score([np.random.randint(0, 2, (2**9) - 1)])[0]
             self.assertLessEqual(random_log_scores, model_log_score)

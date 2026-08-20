@@ -1,10 +1,10 @@
-""" This file is to collect those lineages that have the same condition, and have 3 or greater number of cells in their lineages. """
+"""This file is to collect those lineages that have the same condition, and have 3 or greater number of cells in their lineages."""
 
-from .LineageInputOutput import import_exp_data
 from .import_lineage import MCF10A
-from .states.StateDistributionGaPhs import StateDistribution
-from .states.StateDistributionGamma import StateDistribution as StDist
+from .LineageInputOutput import import_exp_data
 from .LineageTree import LineageTree
+from .states.StateDistributionGamma import StateDistribution as StDist
+from .states.StateDistributionGaPhs import StateDistribution
 
 # ----------------------- Control conditions from both old and new versions -----------------------#
 desired_num_states = 2
@@ -27,9 +27,7 @@ def popout_single_lineages(lineages):
 def load_condition(filename):
     return [
         LineageTree(list_of_cells, E)
-        for list_of_cells in import_exp_data(
-            path=f"lineage/data/LineageData/{filename}.xlsx"
-        )
+        for list_of_cells in import_exp_data(path=f"lineage/data/LineageData/{filename}.xlsx")
     ]
 
 
@@ -154,45 +152,31 @@ lpt_250_reps = [
 
 gem04 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_A3_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_A3_1_V4.xlsx")
 ]
 gem042 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_A3_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_A3_2_V4.xlsx")
 ]
 gem043 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_A3_3_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_A3_3_V4.xlsx")
 ]
 gem05 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_A3_1_V5.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00701_A3_1_V5.xlsx")
 ]
 gem052 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_A3_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00701_A3_2_V4.xlsx")
 ]
 gem06 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_A3_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00801_A3_1_V4.xlsx")
 ]
 gem062 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_A3_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00801_A3_2_V4.xlsx")
 ]
 
 Gemcitabine_Control = gem04 + gem05 + gem06 + gem042 + gem052 + gem062 + gem043
@@ -210,39 +194,27 @@ gem_cn_reps = [len(gem04 + gem05 + gem06), len(gem042 + gem052), len(gem062 + ge
 
 gemc33 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_C3_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_C3_1_V4.xlsx")
 ]
 gemc332 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_C3_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_C3_2_V4.xlsx")
 ]
 gemc34 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_C3_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00701_C3_1_V4.xlsx")
 ]
 gemc342 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_C3_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00701_C3_2_V4.xlsx")
 ]
 gemc35 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_C3_1_V5.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00801_C3_1_V5.xlsx")
 ]
 gemc352 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_C3_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00801_C3_2_V4.xlsx")
 ]
 
 Gem5uM = gemc33 + gemc332 + gemc34 + gemc342 + gemc35 + gemc352
@@ -260,95 +232,65 @@ gem_5_reps = [len(gemc33 + gemc332), len(gemc34 + gemc342), len(gemc35 + gemc352
 
 gemc401 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_C4_1_V5.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_C4_1_V5.xlsx")
 ]
 gemc402 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_C4_2_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_C4_2_1_V4.xlsx")
 ]
 gemc403 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_C4_2_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_C4_2_2_V4.xlsx")
 ]
 gemc404 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_C4_3_1_V5.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_C4_3_1_V5.xlsx")
 ]
 gemc405 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_C4_3_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_C4_3_2_V4.xlsx")
 ]
 gemc406 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_C4_4_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_C4_4_V4.xlsx")
 ]
 
 gemc407 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_C4_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00701_C4_1_V4.xlsx")
 ]
 gemc408 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_C4_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00701_C4_2_V4.xlsx")
 ]
 gemc409 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_C4_3_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00701_C4_3_V4.xlsx")
 ]
 gemc410 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_C4_4_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00701_C4_4_V4.xlsx")
 ]
 
 gemc411 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_C4_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00801_C4_1_V4.xlsx")
 ]
 gemc412 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_C4_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00801_C4_2_V4.xlsx")
 ]
 gemc413 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_C4_3_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00801_C4_3_V4.xlsx")
 ]
 gemc414 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_C4_4_1.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00801_C4_4_1.xlsx")
 ]
 gemc415 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_C4_4_2.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00801_C4_4_2.xlsx")
 ]
 
 Gem10uM = (
@@ -395,51 +337,35 @@ len_gm_10 = [
 
 gemD31 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_D3_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_D3_1_V4.xlsx")
 ]
 gemD34 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_D3_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_D3_2_V4.xlsx")
 ]
 gemD37 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00601_D3_3_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00601_D3_3_V4.xlsx")
 ]
 gemD32 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_D3_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00701_D3_1_V4.xlsx")
 ]
 gemD35 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00701_D3_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00701_D3_2_V4.xlsx")
 ]
 gemD33 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_D3_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00801_D3_1_V4.xlsx")
 ]
 gemD36 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_D3_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00801_D3_2_V4.xlsx")
 ]
 gemD38 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00801_D3_3_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00801_D3_3_V4.xlsx")
 ]
 
 Gem30uM = gemD31 + gemD34 + gemD37 + gemD32 + gemD35 + gemD33 + gemD36 + gemD38
@@ -462,39 +388,27 @@ gem_30_reps = [
 
 taxb40 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00602_B6_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00602_B6_1_V4.xlsx")
 ]
 taxb402 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00602_B6_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00602_B6_2_V4.xlsx")
 ]
 taxb41 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00702_B4_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00702_B4_1_V4.xlsx")
 ]
 taxb412 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00702_B4_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00702_B4_2_V4.xlsx")
 ]
 taxb42 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00802_B4_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00802_B4_1_V4.xlsx")
 ]
 taxb422 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00802_B4_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00802_B4_2_V4.xlsx")
 ]
 Tax2uM = taxb40 + taxb402 + taxb41 + taxb412 + taxb42 + taxb422
 
@@ -502,55 +416,39 @@ Tax2uM = taxb40 + taxb402 + taxb41 + taxb412 + taxb42 + taxb422
 
 taxD301 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00602_D3_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00602_D3_1_V4.xlsx")
 ]
 taxD302 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00602_D3_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00602_D3_2_V4.xlsx")
 ]
 
 Tax7uM = taxD301 + taxD302
 # -- PALBOCICLIB 250 uMolars
 palbD11 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00602_D3_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00602_D3_1_V4.xlsx")
 ]
 palbD12 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00702_D1_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00702_D1_1_V4.xlsx")
 ]
 palbD13 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00802_D1_1_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00802_D1_1_V4.xlsx")
 ]
 # replicates
 palbD14 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00602_D3_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00602_D3_2_V4.xlsx")
 ]
 palbD15 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00702_D1_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00702_D1_2_V4.xlsx")
 ]
 palbD16 = [
     LineageTree(list_of_cells, E)
-    for list_of_cells in import_exp_data(
-        path=r"lineage/data/LineageData/AU00802_D1_2_V4.xlsx"
-    )
+    for list_of_cells in import_exp_data(path=r"lineage/data/LineageData/AU00802_D1_2_V4.xlsx")
 ]
 
 Palbo250uM = palbD11 + palbD12 + palbD13 + palbD14 + palbD15 + palbD16
