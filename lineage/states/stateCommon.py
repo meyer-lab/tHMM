@@ -67,6 +67,9 @@ gammaincc = CFUNCTYPE(c_double, c_double, c_double)(addr)
 addr = get_cython_function_address("scipy.special.cython_special", "gammaln")
 gammaln = CFUNCTYPE(c_double, c_double)(addr)
 
+addr = get_cython_function_address("scipy.special.cython_special", "__pyx_fuse_0psi")
+psi = CFUNCTYPE(c_double, c_double)(addr)
+
 
 @njit
 def gamma_LL(logX: arr_type, gamma_obs: arr_type, time_cen: arr_type, gammas: arr_type, param_idx):
@@ -92,6 +95,43 @@ def gamma_LL(logX: arr_type, gamma_obs: arr_type, time_cen: arr_type, gammas: ar
     return outt
 
 
+@njit
+def gamma_LL_grad(logX: arr_type, gamma_obs: arr_type, time_cen: arr_type, gammas: arr_type, param_idx) -> arr_type:
+    """Analytical gradient of gamma_LL with respect to logX."""
+    x = np.exp(logX)
+    a = x[0]
+    glnA = gammaln(a)
+    psiA = psi(a)
+    gobs = gamma_obs / x[param_idx]
+
+    grad = np.zeros_like(logX)
+
+    # Uncensored contribution for theta_0 (log shape):
+    grad[0] = -a * np.dot(gammas * time_cen, np.log(gobs) - psiA)
+
+    # Scale parameter contributions for theta_k (log scales):
+    for i in range(len(gamma_obs)):
+        k = param_idx[i]
+        if time_cen[i] == 1:
+            grad[k] += gammas[i] * (a - gobs[i])
+        else:
+            gamP = gammaincc(a, gobs[i])
+            gamP = np.maximum(gamP, 1e-35)
+            pdf_term = np.exp(a * np.log(gobs[i]) - gobs[i] - glnA)
+            grad[k] -= gammas[i] * (pdf_term / gamP)
+
+    # Censored contribution for theta_0:
+    h = 1e-6
+    for jj, cen in enumerate(time_cen):
+        if cen == 0:
+            gamP_plus = np.maximum(gammaincc(a * np.exp(h), gobs[jj]), 1e-35)
+            gamP_minus = np.maximum(gammaincc(a * np.exp(-h), gobs[jj]), 1e-35)
+            dlogQ_dtheta0 = (np.log(gamP_plus) - np.log(gamP_minus)) / (2 * h)
+            grad[0] -= gammas[jj] * dlogQ_dtheta0
+
+    return grad
+
+
 def gamma_estimator(
     gamma_obs: arr_type,
     time_cen: arr_type,
@@ -101,10 +141,8 @@ def gamma_estimator(
     phase: Literal["all", "G1", "G2"],
 ) -> arr_type:
     """
-    This is a weighted, closed-form estimator for two parameters
-    of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
-    In the phase-specific case, we have 3 linear constraints: scale1 > scale2, scale2 > scale3, scale3 > scale 4.
-    In the non-specific case, we have only 1 constraint: scale1 > scale2 ==> A = np.array([1, 3])
+    This is a weighted estimator for the parameters of the Gamma distribution,
+    estimating shared shape and separate scale parameters across drug concentrations.
     """
     arrgs = (
         gamma_obs,
@@ -126,7 +164,7 @@ def gamma_estimator(
 
     res = minimize(
         gamma_LL,
-        jac="2-point",
+        jac=gamma_LL_grad,
         x0=np.log(x0),
         args=arrgs,
         bounds=bnd,
