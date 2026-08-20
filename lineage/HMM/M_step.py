@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.typing as npt
+from scipy.sparse import csr_array
 
 
 def sum_nonleaf_gammas(leaves_idx, gammas: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
@@ -10,8 +11,8 @@ def sum_nonleaf_gammas(leaves_idx, gammas: npt.NDArray[np.float64]) -> npt.NDArr
 
     This is downward recursion.
 
-    :param lO: the object of lineage tree
-    :param gamma_arr: the gamma values for each lineage
+    :param leaves_idx: leaf cell indices of the lineage tree
+    :param gammas: the gamma values for each lineage
     :return: the sum of gamma values for each state for non-leaf cells.
     """
     # Remove leaves
@@ -22,8 +23,7 @@ def sum_nonleaf_gammas(leaves_idx, gammas: npt.NDArray[np.float64]) -> npt.NDArr
 
 
 def get_all_zetas(
-    leaves_idx: npt.NDArray[np.uintp],
-    cell_to_daughters: npt.NDArray[np.uintp],
+    tree: csr_array,
     beta_array: npt.NDArray[np.float64],
     MSD_array: npt.NDArray[np.float64],
     gammas: npt.NDArray[np.float64],
@@ -33,22 +33,23 @@ def get_all_zetas(
     Sum of the list of all the zeta parent child for all the parent cells for a given state transition pair.
     This is an inner component in calculating the overall transition probability matrix.
 
-    :param lineageObj: the lineage tree of cells
+    :param tree: CSR array representing the lineage tree
     :param beta_array: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
     :param MSD_array: marginal state distribution
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
     :param T: transition probability matrix
     :return: numerator for calculating the transition probabilities
     """
+    if tree.nnz == 0:
+        return np.zeros_like(T)
+
     betaMSD = beta_array / np.clip(MSD_array, np.finfo(float).eps, np.inf)
     TbetaMSD = np.clip(betaMSD @ T.T, np.finfo(float).eps, np.inf)
 
-    cIDXs = np.arange(gammas.shape[0])
-    cIDXs = np.delete(cIDXs, leaves_idx)
-
-    dIDXs = cell_to_daughters[cIDXs, :]
+    parents = np.repeat(np.arange(tree.shape[0]), np.diff(tree.indptr))
+    daughters = tree.indices
 
     # Getting lineage by generation, but it is sorted this way
-    js = gammas[cIDXs, np.newaxis, :] / TbetaMSD[dIDXs, :]
-    holder = np.einsum("ijk,ijl->kl", js, betaMSD[dIDXs, :])
+    js = gammas[parents, :] / TbetaMSD[daughters, :]
+    holder = np.einsum("ik,il->kl", js, betaMSD[daughters, :])
     return holder * T

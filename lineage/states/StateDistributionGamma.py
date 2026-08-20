@@ -4,9 +4,9 @@ from typing import Literal
 
 import numpy as np
 import scipy.stats as sp
+from scipy.sparse import csr_array
 
-from ..CellVar import CellVar, Time
-from .stateCommon import apply_censoring, bern_estimator, gamma_estimator
+from .stateCommon import bern_estimator, censor_lineage_gamma, gamma_estimator
 
 
 class StateDistribution:
@@ -116,61 +116,16 @@ class StateDistribution:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
 
-    def censor_lineage(
+    def censor_lineage_array(
         self,
         censor_condition: int,
-        full_lineage: list[CellVar],
+        tree: csr_array,
+        obs: np.ndarray,
+        states: np.ndarray,
         desired_experiment_time=2e12,
-    ) -> list[CellVar]:
-        """Removes cells based on fate and experimental time bounds."""
-        return apply_censoring(
-            full_lineage,
-            censor_condition,
-            desired_experiment_time,
-            assign_times,
-            fate_censor,
-            time_censor,
-        )
-
-
-def assign_times(full_lineage: list[CellVar]):
-    """Assigns start and end times to cells in generation order."""
-    for ii, cell in enumerate(full_lineage):
-        if ii == 0:
-            cell.time = Time(0, cell.obs[1])
-        else:
-            assert cell.parent is not None
-            assert cell.parent.time is not None
-            cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
-
-
-def fate_censor(cell):
-    """
-    Checks whether a cell has died based on its fate, and if so, it will remove its subtree.
-    Our example is based on the standard requirement that the first observation
-    (index 0) is a measure of the cell's fate (1 being alive, 0 being dead).
-    """
-    if cell.obs[0] == 0:
-        if not cell.isLeafBecauseTerminal():
-            cell.left.observed = False
-            cell.right.observed = False
-
-
-def time_censor(cell, desired_experiment_time: int | float):
-    """
-    Checks whether a cell has lived beyond the experiment end time and if so, it will remove its subtree.
-    Our example is based on the standard requirement that the second observation
-    (index 1) is a measure of the cell's lifetime.
-    """
-    if cell.time.endT > desired_experiment_time:
-        cell.time.endT = desired_experiment_time
-        cell.obs[0] = float("nan")
-        cell.obs[1] = desired_experiment_time - cell.time.startT
-        cell.obs[2] = 0  # censored
-        if not cell.isLeafBecauseTerminal():
-            # the daughters are no longer observed
-            cell.left.observed = False
-            cell.right.observed = False
+    ) -> tuple[csr_array, np.ndarray, np.ndarray]:
+        """Applies censoring to array representation directly."""
+        return censor_lineage_gamma(tree, obs, states, censor_condition, desired_experiment_time)
 
 
 def atonce_estimator(
