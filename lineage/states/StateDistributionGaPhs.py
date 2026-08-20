@@ -3,8 +3,7 @@
 import numpy as np
 from scipy.sparse import csr_array
 
-from ..CellVar import CellVar, Time
-from .stateCommon import apply_censoring, censor_lineage_gaphs
+from .stateCommon import censor_lineage_gaphs
 from .StateDistributionGamma import StateDistribution as GammaSD
 
 
@@ -76,22 +75,6 @@ class StateDistribution:
         # from estimation. This is then stored in the original state distribution object which then gets updated
         # if this function runs again.
 
-    def censor_lineage(
-        self,
-        censor_condition: int,
-        full_lineage: list[CellVar],
-        desired_experiment_time=2e12,
-    ):
-        """Removes cells based on fate and experimental time bounds."""
-        return apply_censoring(
-            full_lineage,
-            censor_condition,
-            desired_experiment_time,
-            assign_times_phases,
-            fate_censor,
-            time_censor,
-        )
-
     def censor_lineage_array(
         self,
         censor_condition: int,
@@ -102,72 +85,3 @@ class StateDistribution:
     ) -> tuple[csr_array, np.ndarray, np.ndarray]:
         """Applies censoring to array representation directly."""
         return censor_lineage_gaphs(tree, obs, states, censor_condition, desired_experiment_time)
-
-
-def assign_times_phases(full_lineage: list[CellVar]):
-    """Assigns start, end, and transition times to cells in generation order."""
-    for ii, cell in enumerate(full_lineage):
-        if ii == 0:
-            cell.time = Time(0, cell.obs[2] + cell.obs[3])
-            cell.time.transition_time = 0 + cell.obs[2]
-        else:
-            assert cell.parent is not None
-            assert cell.parent.time is not None
-
-            cell.time = Time(
-                cell.parent.time.endT,
-                cell.parent.time.endT + cell.obs[2] + cell.obs[3],
-            )
-            cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
-
-
-def fate_censor(cell):
-    """
-    User-defined function that checks whether a cell's subtree should be removed.
-    Our example is based on the standard requirement that the first observation
-    (index 0) is a measure of the cell's fate (1 being alive, 0 being dead).
-    Clearly if a cell has died, its subtree must be removed.
-    """
-    if cell.obs[0] == 0 or cell.obs[1] == 0:
-        if not cell.isLeafBecauseTerminal():
-            cell.left.observed = False
-            cell.right.observed = False
-        if cell.obs[0] == 0:  # dies in G1
-            cell.obs[1] = float("nan")  # unobserved
-            cell.obs[3] = float("nan")  # unobserved
-            cell.obs[5] = float("nan")  # unobserved
-            cell.time.endT = cell.time.startT + cell.obs[2]
-            cell.time.transition_time = cell.time.endT
-        if cell.obs[1] == 0:  # dies in G2
-            cell.time.endT = cell.time.startT + cell.obs[2] + cell.obs[3]
-
-
-def time_censor(cell, desired_experiment_time):
-    """
-    User-defined function that checks whether a cell's subtree should be removed.
-    Our example is based on the standard requirement that the second observation
-    (index 1) is a measure of the cell's lifetime.
-    If a cell has lived beyond a certain experiment time, then its subtree
-    must be removed.
-    """
-    if cell.time.endT > desired_experiment_time:
-        cell.time.endT = desired_experiment_time
-        cell.obs[1] = float("nan")  # unobserved
-        cell.obs[3] = desired_experiment_time - cell.time.transition_time
-        cell.obs[5] = 0  # censored
-        if not cell.isLeafBecauseTerminal():
-            cell.left.observed = False
-            cell.right.observed = False
-
-    if cell.time.transition_time > desired_experiment_time:
-        cell.time.endT = desired_experiment_time
-        cell.time.transition_time = desired_experiment_time
-        cell.obs[0] = float("nan")  # unobserved
-        cell.obs[1] = float("nan")  # unobserved
-        cell.obs[2] = desired_experiment_time - cell.time.startT
-        cell.obs[3] = float("nan")  # unobserved
-        cell.obs[4] = 0  # censored
-        cell.obs[5] = float("nan")  # unobserved
-        if not cell.isLeafBecauseTerminal():
-            cell.left.observed = False
-            cell.right.observed = False

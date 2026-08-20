@@ -232,15 +232,3 @@ def lineage_to_tree(lineage: list[CellVar]) -> csr_array:
     indices = np.array(indices_list, dtype=np.int32)
     data = np.ones(len(indices), dtype=bool)
     return csr_array((data, indices, indptr), shape=(n, n))
-
-
-def cell_to_daughters(lineage: list[CellVar]) -> np.ndarray:
-    """Compatibility helper converting a lineage list to an (N, 2) daughter index array."""
-    tree = lineage_to_tree(lineage)
-    output = np.full((len(lineage), 2), -1, dtype=int)
-    for i in range(len(lineage)):
-        children = tree.indices[tree.indptr[i] : tree.indptr[i + 1]]
-        for j, c in enumerate(children):
-            if j < 2:
-                output[i, j] = c
-    return output
