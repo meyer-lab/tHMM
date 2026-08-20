@@ -132,6 +132,94 @@ def gamma_LL_grad(logX: arr_type, gamma_obs: arr_type, time_cen: arr_type, gamma
     return grad
 
 
+@njit
+def trigamma(x: float) -> float:
+    """Asymptotic expansion for polygamma(1, x)."""
+    ans = 0.0
+    while x < 6.0:
+        ans += 1.0 / (x * x)
+        x += 1.0
+    inv = 1.0 / x
+    inv2 = inv * inv
+    ans += inv + 0.5 * inv2 + inv2 * inv * (1.0 / 6.0 - inv2 * (1.0 / 30.0 - inv2 / 42.0))
+    return ans
+
+
+@njit
+def pava_increasing(y: np.ndarray, w: np.ndarray) -> np.ndarray:
+    """Pool Adjacent Violators Algorithm for increasing monotonicity: y[0] <= y[1] <= ... <= y[K-1]."""
+    K = len(y)
+    val = y.copy()
+    weight = w.copy()
+    blocks = [[i] for i in range(K)]
+
+    i = 0
+    while i < len(blocks) - 1:
+        if val[i] > val[i + 1]:
+            new_w = weight[i] + weight[i + 1]
+            new_v = (val[i] * weight[i] + val[i + 1] * weight[i + 1]) / new_w
+            val[i] = new_v
+            weight[i] = new_w
+            blocks[i].extend(blocks[i + 1])
+            val = np.delete(val, i + 1)
+            weight = np.delete(weight, i + 1)
+            blocks.pop(i + 1)
+            if i > 0:
+                i -= 1
+        else:
+            i += 1
+
+    out = np.zeros(K)
+    for b_idx, block in enumerate(blocks):
+        for elem in block:
+            out[elem] = val[b_idx]
+    return out
+
+
+@njit
+def gamma_mle_closed_form(gamma_obs, gammas, param_idx, K, constrained=True):
+    """1D profile likelihood solver using Minka initialization and Newton-Raphson."""
+    W_k = np.zeros(K)
+    sum_y_k = np.zeros(K)
+    sum_logy_k = np.zeros(K)
+
+    for i in range(len(gamma_obs)):
+        k = param_idx[i] - 1
+        w = gammas[i]
+        y = gamma_obs[i]
+        W_k[k] += w
+        sum_y_k[k] += w * y
+        sum_logy_k[k] += w * np.log(y)
+
+    for k in range(K):
+        if W_k[k] == 0:
+            W_k[k] = 1e-12
+            sum_y_k[k] = 1.0
+            sum_logy_k[k] = 0.0
+
+    y_bar_k = sum_y_k / W_k
+    if constrained:
+        y_bar_k = pava_increasing(y_bar_k, W_k)
+
+    logy_bar_k = sum_logy_k / W_k
+    W_total = np.sum(W_k)
+    s = np.sum(W_k * (np.log(y_bar_k) - logy_bar_k)) / W_total
+    s = max(s, 1e-12)
+
+    a = (3.0 - s + np.sqrt((s - 3.0) ** 2 + 24.0 * s)) / (12.0 * s)
+    a = max(a, 1e-6)
+
+    for _ in range(5):
+        g = np.log(a) - psi(a) - s
+        g_prime = 1.0 / a - trigamma(a)
+        if abs(g_prime) > 1e-12:
+            step = g / g_prime
+            a = max(a - step, 1e-6)
+
+    b_k = y_bar_k / a
+    return a, b_k
+
+
 def gamma_estimator(
     gamma_obs: arr_type,
     time_cen: arr_type,
@@ -144,6 +232,29 @@ def gamma_estimator(
     This is a weighted estimator for the parameters of the Gamma distribution,
     estimating shared shape and separate scale parameters across drug concentrations.
     """
+    has_censored = np.any(time_cen == 0)
+    K = len(x0) - 1
+    constrained = phase != "all"
+
+    # For purely uncensored observations, 1D profile Newton + PAVA is 100% exact and instantaneous
+    if not has_censored:
+        a_est, b_est = gamma_mle_closed_form(gamma_obs, gammas, param_idx, K, constrained=constrained)
+        return np.array([a_est] + list(b_est))
+
+    # For censored observations, use the uncensored closed form to warm-start SLSQP
+    uncen_mask = time_cen == 1
+    if np.sum(uncen_mask) > 10:
+        a_warm, b_warm = gamma_mle_closed_form(
+            gamma_obs[uncen_mask],
+            gammas[uncen_mask],
+            param_idx[uncen_mask],
+            K,
+            constrained=constrained,
+        )
+        x0_used = np.array([a_warm] + list(b_warm))
+    else:
+        x0_used = x0
+
     arrgs = (
         gamma_obs,
         time_cen,
@@ -151,7 +262,7 @@ def gamma_estimator(
         param_idx,
     )
 
-    if phase != "all":  # for constrained optimization
+    if constrained:  # for constrained optimization
         A = np.zeros((3, 5))  # constraint Jacobian
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)
@@ -165,7 +276,7 @@ def gamma_estimator(
     res = minimize(
         gamma_LL,
         jac=gamma_LL_grad,
-        x0=np.log(x0),
+        x0=np.log(x0_used),
         args=arrgs,
         bounds=bnd,
         method="SLSQP",
