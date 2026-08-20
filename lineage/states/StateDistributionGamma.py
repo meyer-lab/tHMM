@@ -6,7 +6,7 @@ import numpy as np
 import scipy.stats as sp
 
 from ..CellVar import CellVar, Time
-from .stateCommon import basic_censor, bern_estimator, gamma_estimator
+from .stateCommon import apply_censoring, bern_estimator, gamma_estimator
 
 
 class StateDistribution:
@@ -122,37 +122,26 @@ class StateDistribution:
         full_lineage: list[CellVar],
         desired_experiment_time=2e12,
     ) -> list[CellVar]:
-        """
-        This function removes those cells that are intended to be removed.
-        These cells include the descendants of a cell that has died, or has lived beyonf the experimental end time.
-        It takes in LineageTree object, walks through all the cells in the output binary tree,
-        applies the censorship to each cell that is supposed to be removed,
-        and returns the lineage of cells that are supposed to be alive and accounted for.
-        """
-        # Assign times
-        # traversing the cells by generation
-        for ii, cell in enumerate(full_lineage):
-            if ii == 0:
-                cell.time = Time(0, cell.obs[1])
-            else:
-                assert cell.parent is not None
-                assert cell.parent.time is not None
+        """Removes cells based on fate and experimental time bounds."""
+        return apply_censoring(
+            full_lineage,
+            censor_condition,
+            desired_experiment_time,
+            assign_times,
+            fate_censor,
+            time_censor,
+        )
 
-                cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
 
-        if censor_condition == 0:
-            return full_lineage
-
-        for cell in full_lineage:
-            if censor_condition in (1, 3):
-                fate_censor(cell)
-
-            if censor_condition in (2, 3):
-                time_censor(cell, desired_experiment_time)
-
-        basic_censor(full_lineage)
-
-        return [c for c in full_lineage if c.observed]
+def assign_times(full_lineage: list[CellVar]):
+    """Assigns start and end times to cells in generation order."""
+    for ii, cell in enumerate(full_lineage):
+        if ii == 0:
+            cell.time = Time(0, cell.obs[1])
+        else:
+            assert cell.parent is not None
+            assert cell.parent.time is not None
+            cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
 
 
 def fate_censor(cell):

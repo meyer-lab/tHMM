@@ -135,12 +135,12 @@ def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list[np.ndarray]:
 
 
 def cell_to_daughters(lineage: list[CellVar]) -> np.ndarray:
+    cell_indices = {cell: idx for idx, cell in enumerate(lineage)}
     output = np.full((len(lineage), 2), -1, dtype=int)
     for ii, cell in enumerate(lineage):
-        if cell.left is not None and cell.left in lineage:
-            output[ii, 0] = lineage.index(cell.left)
-
-        if cell.right is not None and cell.right in lineage:
-            output[ii, 1] = lineage.index(cell.right)
+        if cell.left in cell_indices:
+            output[ii, 0] = cell_indices[cell.left]
+        if cell.right in cell_indices:
+            output[ii, 1] = cell_indices[cell.right]
 
     return output

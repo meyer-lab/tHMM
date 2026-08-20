@@ -25,6 +25,30 @@ def basic_censor(cells: list):
             cell.observed = False
 
 
+def apply_censoring(
+    full_lineage: list,
+    censor_condition: int,
+    desired_experiment_time: float,
+    assign_times_fn,
+    fate_censor_fn,
+    time_censor_fn,
+) -> list:
+    """Applies temporal and fate censorship across a lineage of cells."""
+    assign_times_fn(full_lineage)
+
+    if censor_condition == 0:
+        return full_lineage
+
+    for cell in full_lineage:
+        if censor_condition in (1, 3):
+            fate_censor_fn(cell)
+        if censor_condition in (2, 3):
+            time_censor_fn(cell, desired_experiment_time)
+
+    basic_censor(full_lineage)
+    return [c for c in full_lineage if c.observed]
+
+
 def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
     """A weighted estimator for a Bernoulli distribution."""
     assert bern_obs.shape == gammas.shape

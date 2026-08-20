@@ -3,7 +3,7 @@
 import numpy as np
 
 from ..CellVar import CellVar, Time
-from .stateCommon import basic_censor
+from .stateCommon import apply_censoring
 from .StateDistributionGamma import StateDistribution as GammaSD
 
 
@@ -81,42 +81,32 @@ class StateDistribution:
         full_lineage: list[CellVar],
         desired_experiment_time=2e12,
     ):
-        """
-        This function removes those cells that are intended to be remove
-        from the output binary tree based on emissions.
-        It takes in LineageTree object, walks through all the cells in the output binary tree,
-        applies the pruning to each cell that is supposed to be removed,
-        and returns the censored list of cells.
-        """
-        # Assign times
-        # traversing the cells by generation
-        for ii, cell in enumerate(full_lineage):
-            if ii == 0:
-                cell.time = Time(0, cell.obs[2] + cell.obs[3])
-                cell.time.transition_time = 0 + cell.obs[2]
-            else:
-                assert cell.parent is not None
-                assert cell.parent.time is not None
+        """Removes cells based on fate and experimental time bounds."""
+        return apply_censoring(
+            full_lineage,
+            censor_condition,
+            desired_experiment_time,
+            assign_times_phases,
+            fate_censor,
+            time_censor,
+        )
 
-                cell.time = Time(
-                    cell.parent.time.endT,
-                    cell.parent.time.endT + cell.obs[2] + cell.obs[3],
-                )
-                cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
 
-        if censor_condition == 0:
-            return full_lineage
+def assign_times_phases(full_lineage: list[CellVar]):
+    """Assigns start, end, and transition times to cells in generation order."""
+    for ii, cell in enumerate(full_lineage):
+        if ii == 0:
+            cell.time = Time(0, cell.obs[2] + cell.obs[3])
+            cell.time.transition_time = 0 + cell.obs[2]
+        else:
+            assert cell.parent is not None
+            assert cell.parent.time is not None
 
-        for cell in full_lineage:
-            if censor_condition in (1, 3):
-                fate_censor(cell)
-
-            if censor_condition in (2, 3):
-                time_censor(cell, desired_experiment_time)
-
-        basic_censor(full_lineage)
-
-        return [c for c in full_lineage if c.observed]
+            cell.time = Time(
+                cell.parent.time.endT,
+                cell.parent.time.endT + cell.obs[2] + cell.obs[3],
+            )
+            cell.time.transition_time = cell.parent.time.endT + cell.obs[2]
 
 
 def fate_censor(cell):

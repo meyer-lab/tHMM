@@ -62,6 +62,15 @@ rcParams["font.sans-serif"] = "Arial"
 scatter_kws_list = [scatter_state_1_kws, scatter_state_2_kws]
 
 
+def make_transition_matrix_sweep(num_points: int = num_data_points):
+    """Generates a sweep of biased 2x2 transition matrices and their stationary distributions."""
+    raw_Ts = [np.array([[i, 1.0 - i], [i, 1.0 - i]]) for i in np.linspace(0.01, 0.99, num_points)]
+    biased_Ts = [a + 5 * np.eye(2) for a in raw_Ts]
+    list_of_Ts = [a / np.sum(a, axis=1)[:, np.newaxis] for a in biased_Ts]
+    list_of_fpi = [calculate_stationary(a) for a in list_of_Ts]
+    return list_of_Ts, list_of_fpi
+
+
 def getSetup(figsize, gridd):
     """
     Establish figure set-up with subplots.
