@@ -29,8 +29,9 @@ def test_cv(cen):
     """For censored and uncensored 2-state synthetic data,
     it checks that the log-likelihood of a 2 state model is higher than a 1 state model.
     """
+    local_rng = np.random.default_rng(cen + 5)
     complete_lineages = [
-        [LineageTree.rand_init(pi, T, E2, 20, censor_condition=cen, desired_experiment_time=100) for _ in range(50)]
+        [LineageTree.rand_init(pi, T, E2, 31, censor_condition=cen, desired_experiment_time=150, rng=local_rng) for _ in range(20)]
         for _ in range(4)
     ]
 

@@ -65,8 +65,10 @@ def test_atonce_estimator():
         for sc1 in scales1
     ]
 
+    test_rng = np.random.default_rng(2)
+
     def gen(i):
-        return LineageTree.rand_init(pi, T, E_gamma[i], 2**8, censor_condition=3, desired_experiment_time=250)
+        return LineageTree.rand_init(pi, T, E_gamma[i], 2**8, censor_condition=3, desired_experiment_time=250, rng=test_rng)
 
     lineage_gamma_list = [[gen(i) for _ in range(100)] for i in range(4)]
     solver_gamma_list = [tHMM(lineage_gamma, 1) for lineage_gamma in lineage_gamma_list]

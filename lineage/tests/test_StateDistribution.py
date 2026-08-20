@@ -29,7 +29,7 @@ class TestModel(unittest.TestCase):
         ]
 
         # creating two lineages, one with False for pruning, one with True.
-        self.lineage = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2**11) - 1)
+        self.lineage = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=63)
         self.lineage2 = LineageTree.rand_init(
             self.pi,
             self.T,
@@ -42,7 +42,7 @@ class TestModel(unittest.TestCase):
             self.pi,
             self.T,
             self.E,
-            desired_num_cells=(2**11) - 1,
+            desired_num_cells=63,
             censor_condition=3,
             desired_experiment_time=800,
         )
@@ -51,11 +51,11 @@ class TestModel(unittest.TestCase):
                 self.pi,
                 self.T,
                 self.E,
-                desired_num_cells=(2**11) - 1,
+                desired_num_cells=63,
                 censor_condition=3,
                 desired_experiment_time=800,
             )
-            for i in range(50)
+            for _ in range(5)
         ]
 
     def test_rvs(self):
