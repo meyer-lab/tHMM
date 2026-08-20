@@ -1,9 +1,9 @@
-""" This file plots the trees with their predicted states for lapatinib. """
+"""This file plots the trees with their predicted states for lapatinib."""
 
-from .common import getSetup
-from ..plotTree import plotLineage
 from ..Analyze import Analyze_list
 from ..Lineage_collections import AllGemcitabine
+from ..plotTree import plotLineage
+from .common import getSetup
 
 num_states = 5
 gemc_tHMMobj_list = Analyze_list(AllGemcitabine, num_states, write_states=True)[0]

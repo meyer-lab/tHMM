@@ -1,8 +1,8 @@
-""" This is a file to put together 4 conditions of lapatinib together. """
-
-from .common import getSetup
+"""This is a file to put together 4 conditions of lapatinib together."""
 
 from string import ascii_lowercase
+
+from .common import getSetup
 
 
 def makeFigure():
@@ -23,8 +23,6 @@ def makeFigure():
             fontweight="bold",
             va="top",
         )
-        ax[i].text(
-            0.0, 1.25, titles[i], transform=ax[i].transAxes, fontsize=11, va="top"
-        )
+        ax[i].text(0.0, 1.25, titles[i], transform=ax[i].transAxes, fontsize=11, va="top")
 
     return f

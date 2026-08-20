@@ -1,23 +1,25 @@
-""" Calls the tHMM functions and outputs the parameters needed to generate the Figures. """
+"""Calls the tHMM functions and outputs the parameters needed to generate the Figures."""
 
 import itertools
-from typing import Any, Tuple
+from typing import Any
+
 import numpy as np
 from scipy.optimize import linear_sum_assignment
 from sklearn.metrics import rand_score
-from .tHMM import tHMM
+
 from .BaumWelch import (
-    do_E_step,
     calculate_log_likelihood,
-    do_M_step,
+    do_E_step,
     do_M_E_step,
     do_M_E_step_atonce,
+    do_M_step,
 )
+from .tHMM import tHMM
 
 
 def fit_list(
     tHMMobj_list: list[tHMM], tolerance: float = 1e-6, max_iter: int = 200, rng=None
-) -> Tuple[list[np.ndarray], list[np.ndarray], float]:
+) -> tuple[list[list[np.ndarray]], list[list[list[np.ndarray]]], float]:
     """
     Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
 
@@ -34,10 +36,7 @@ def fit_list(
 
     # Step 0: initialize with random assignments and do an M step
     # when there are no fixed emissions, we need to randomize the start
-    init_gam = [
-        [rng.dirichlet(np.ones(tO.num_states), size=len(lin)) for lin in tO.X]
-        for tO in tHMMobj_list
-    ]
+    init_gam = [[rng.dirichlet(np.ones(tO.num_states), size=len(lin)) for lin in tO.X] for tO in tHMMobj_list]
 
     if len(tHMMobj_list) > 1:  # it means we are fitting several concentrations at once.
         do_M_E_step_atonce(tHMMobj_list, init_gam)
@@ -46,7 +45,7 @@ def fit_list(
 
     # Step 1: first E step
     MSD_list, NF_list, betas_list, gammas_list = map(
-        list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list])
+        list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list], strict=False)
     )
     old_LL = calculate_log_likelihood(NF_list)
 
@@ -54,7 +53,7 @@ def fit_list(
     for _ in range(max_iter):
         do_M_step(tHMMobj_list, MSD_list, betas_list, gammas_list)
         MSD_list, NF_list, betas_list, gammas_list = map(
-            list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list])
+            list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list], strict=False)
         )
         new_LL = calculate_log_likelihood(NF_list)
         if new_LL - old_LL < tolerance:
@@ -67,7 +66,7 @@ def fit_list(
 
 def Analyze_list(
     pop_list: list, num_states: int, fpi=None, fT=None, rng=None, write_states=False
-) -> Tuple[list[tHMM], float, list[np.ndarray]]:
+) -> tuple[list[tHMM], float, list[list[list[np.ndarray]]]]:
     """This function runs the analyze function for the case when we want to fit multiple conditions at the same time.
     :param pop_list: The list of cell populations to run the analyze function on.
     :param num_states: The number of states that we want to run the model for.
@@ -110,7 +109,7 @@ def run_Analyze_over(
     atonce=False,
     list_of_fpi=None,
     list_of_fT=None,
-) -> list[Tuple[list[tHMM], float, list[np.ndarray]]]:
+) -> list[tuple[list[tHMM], float, list[np.ndarray]]]:
     """
     A function that can be parallelized to speed up figure creation.
 
@@ -180,37 +179,23 @@ def Results(tHMMobj: tHMM, LL: float) -> dict[str, Any]:
 
     true_states_by_lineage = [lin.states for lin in tHMMobj.X]
 
-    results_dict["transition_matrix_similarity"] = np.linalg.norm(
-        tHMMobj.estimate.T - tHMMobj.X[0].T
-    )
+    results_dict["transition_matrix_similarity"] = np.linalg.norm(tHMMobj.estimate.T - tHMMobj.X[0].T)
 
-    results_dict["pi_similarity"] = np.linalg.norm(
-        tHMMobj.X[0].pi - tHMMobj.estimate.pi
-    )
+    results_dict["pi_similarity"] = np.linalg.norm(tHMMobj.X[0].pi - tHMMobj.estimate.pi)
 
     # Get the estimated parameter values
-    results_dict["param_estimates"] = [
-        tHMMobj.estimate.E[x].params for x in range(tHMMobj.num_states)
-    ]
+    results_dict["param_estimates"] = [tHMMobj.estimate.E[x].params for x in range(tHMMobj.num_states)]
 
     # Get the true parameter values
-    results_dict["param_trues"] = [
-        tHMMobj.X[0].E[x].params for x in range(tHMMobj.num_states)
-    ]
+    results_dict["param_trues"] = [tHMMobj.X[0].E[x].params for x in range(tHMMobj.num_states)]
 
     # Get the distance between distributions of two states
-    results_dict["distribution distance 0"] = tHMMobj.estimate.E[0].dist(
-        tHMMobj.X[0].E[0]
-    )
-    results_dict["distribution distance 1"] = tHMMobj.estimate.E[1].dist(
-        tHMMobj.X[0].E[1]
-    )
+    results_dict["distribution distance 0"] = tHMMobj.estimate.E[0].dist(tHMMobj.X[0].E[0])
+    results_dict["distribution distance 1"] = tHMMobj.estimate.E[1].dist(tHMMobj.X[0].E[1])
 
     # 2. Calculate accuracy after switching states
     results_dict["state_counter"] = np.bincount(pred_states[0])
-    results_dict["state_proportions"] = [
-        100.0 * i / len(pred_states[0]) for i in results_dict["state_counter"]
-    ]
+    results_dict["state_proportions"] = [100.0 * i / len(pred_states[0]) for i in results_dict["state_counter"]]
     results_dict["state_proportions_0"] = results_dict["state_proportions"][0]
     results_dict["state_similarity"] = 100.0 * rand_score(
         list(itertools.chain(*true_states_by_lineage)),
@@ -223,7 +208,7 @@ def Results(tHMMobj: tHMM, LL: float) -> dict[str, Any]:
     return results_dict
 
 
-def permute_states(tHMMobj: tHMM, switch_map: np.ndarray) -> Tuple[Any, list]:
+def permute_states(tHMMobj: tHMM, switch_map: np.ndarray) -> tuple[Any, list]:
     """
     This function takes the tHMMobj and the predicted states,
     and finds out whether we need to switch the state identities or not based on the likelihood.
@@ -234,9 +219,7 @@ def permute_states(tHMMobj: tHMM, switch_map: np.ndarray) -> Tuple[Any, list]:
     """
     pred_states = tHMMobj.predict()
 
-    pred_states_switched = [
-        np.array([switch_map[st] for sublist in pred_states for st in sublist])
-    ]
+    pred_states_switched = [np.array([switch_map[st] for sublist in pred_states for st in sublist])]
 
     # Rearrange the values in the transition matrix
     tHMMobj.estimate.T = tHMMobj.estimate.T[switch_map, :]

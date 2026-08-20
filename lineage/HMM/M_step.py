@@ -2,9 +2,7 @@ import numpy as np
 import numpy.typing as npt
 
 
-def sum_nonleaf_gammas(
-    leaves_idx, gammas: npt.NDArray[np.float64]
-) -> npt.NDArray[np.float64]:
+def sum_nonleaf_gammas(leaves_idx, gammas: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """
     Sum of the gammas of the cells that are able to divide, that is,
     sum the of the gammas of all the nonleaf cells. It is used in estimating the transition probability matrix.

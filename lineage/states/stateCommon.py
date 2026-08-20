@@ -1,13 +1,14 @@
-""" Common utilities used between states regardless of distribution. """
+"""Common utilities used between states regardless of distribution."""
 
 import warnings
-from typing import Literal
-import numpy as np
-from numba import njit
-import numpy.typing as npt
-from scipy.optimize import minimize, Bounds, LinearConstraint
 from ctypes import CFUNCTYPE, c_double
+from typing import Literal
+
+import numpy as np
+import numpy.typing as npt
+from numba import njit
 from numba.extending import get_cython_function_address
+from scipy.optimize import Bounds, LinearConstraint, minimize
 
 arr_type = npt.NDArray[np.float64]
 
@@ -22,6 +23,30 @@ def basic_censor(cells: list):
     for cell in cells[1:]:
         if not cell.parent.observed:
             cell.observed = False
+
+
+def apply_censoring(
+    full_lineage: list,
+    censor_condition: int,
+    desired_experiment_time: float,
+    assign_times_fn,
+    fate_censor_fn,
+    time_censor_fn,
+) -> list:
+    """Applies temporal and fate censorship across a lineage of cells."""
+    assign_times_fn(full_lineage)
+
+    if censor_condition == 0:
+        return full_lineage
+
+    for cell in full_lineage:
+        if censor_condition in (1, 3):
+            fate_censor_fn(cell)
+        if censor_condition in (2, 3):
+            time_censor_fn(cell, desired_experiment_time)
+
+    basic_censor(full_lineage)
+    return [c for c in full_lineage if c.observed]
 
 
 def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
@@ -42,11 +67,12 @@ gammaincc = CFUNCTYPE(c_double, c_double, c_double)(addr)
 addr = get_cython_function_address("scipy.special.cython_special", "gammaln")
 gammaln = CFUNCTYPE(c_double, c_double)(addr)
 
+addr = get_cython_function_address("scipy.special.cython_special", "__pyx_fuse_0psi")
+psi = CFUNCTYPE(c_double, c_double)(addr)
+
 
 @njit
-def gamma_LL(
-    logX: arr_type, gamma_obs: arr_type, time_cen: arr_type, gammas: arr_type, param_idx
-):
+def gamma_LL(logX: arr_type, gamma_obs: arr_type, time_cen: arr_type, gammas: arr_type, param_idx):
     """Log-likelihood for the optionally censored Gamma distribution.
     The logX is the log transform of the parameters, in case of atonce estimation, it is [shape, scale1, scale2, scale3, scale4].
     """
@@ -69,6 +95,131 @@ def gamma_LL(
     return outt
 
 
+@njit
+def gamma_LL_grad(logX: arr_type, gamma_obs: arr_type, time_cen: arr_type, gammas: arr_type, param_idx) -> arr_type:
+    """Analytical gradient of gamma_LL with respect to logX."""
+    x = np.exp(logX)
+    a = x[0]
+    glnA = gammaln(a)
+    psiA = psi(a)
+    gobs = gamma_obs / x[param_idx]
+
+    grad = np.zeros_like(logX)
+
+    # Uncensored contribution for theta_0 (log shape):
+    grad[0] = -a * np.dot(gammas * time_cen, np.log(gobs) - psiA)
+
+    # Scale parameter contributions for theta_k (log scales):
+    for i in range(len(gamma_obs)):
+        k = param_idx[i]
+        if time_cen[i] == 1:
+            grad[k] += gammas[i] * (a - gobs[i])
+        else:
+            gamP = gammaincc(a, gobs[i])
+            gamP = np.maximum(gamP, 1e-35)
+            pdf_term = np.exp(a * np.log(gobs[i]) - gobs[i] - glnA)
+            grad[k] -= gammas[i] * (pdf_term / gamP)
+
+    # Censored contribution for theta_0:
+    h = 1e-6
+    for jj, cen in enumerate(time_cen):
+        if cen == 0:
+            gamP_plus = np.maximum(gammaincc(a * np.exp(h), gobs[jj]), 1e-35)
+            gamP_minus = np.maximum(gammaincc(a * np.exp(-h), gobs[jj]), 1e-35)
+            dlogQ_dtheta0 = (np.log(gamP_plus) - np.log(gamP_minus)) / (2 * h)
+            grad[0] -= gammas[jj] * dlogQ_dtheta0
+
+    return grad
+
+
+@njit
+def trigamma(x: float) -> float:
+    """Asymptotic expansion for polygamma(1, x)."""
+    ans = 0.0
+    while x < 6.0:
+        ans += 1.0 / (x * x)
+        x += 1.0
+    inv = 1.0 / x
+    inv2 = inv * inv
+    ans += inv + 0.5 * inv2 + inv2 * inv * (1.0 / 6.0 - inv2 * (1.0 / 30.0 - inv2 / 42.0))
+    return ans
+
+
+@njit
+def pava_increasing(y: np.ndarray, w: np.ndarray) -> np.ndarray:
+    """Pool Adjacent Violators Algorithm for increasing monotonicity: y[0] <= y[1] <= ... <= y[K-1]."""
+    K = len(y)
+    val = y.copy()
+    weight = w.copy()
+    blocks = [[i] for i in range(K)]
+
+    i = 0
+    while i < len(blocks) - 1:
+        if val[i] > val[i + 1]:
+            new_w = weight[i] + weight[i + 1]
+            new_v = (val[i] * weight[i] + val[i + 1] * weight[i + 1]) / new_w
+            val[i] = new_v
+            weight[i] = new_w
+            blocks[i].extend(blocks[i + 1])
+            val = np.delete(val, i + 1)
+            weight = np.delete(weight, i + 1)
+            blocks.pop(i + 1)
+            if i > 0:
+                i -= 1
+        else:
+            i += 1
+
+    out = np.zeros(K)
+    for b_idx, block in enumerate(blocks):
+        for elem in block:
+            out[elem] = val[b_idx]
+    return out
+
+
+@njit
+def gamma_mle_closed_form(gamma_obs, gammas, param_idx, K, constrained=True):
+    """1D profile likelihood solver using Minka initialization and Newton-Raphson."""
+    W_k = np.zeros(K)
+    sum_y_k = np.zeros(K)
+    sum_logy_k = np.zeros(K)
+
+    for i in range(len(gamma_obs)):
+        k = param_idx[i] - 1
+        w = gammas[i]
+        y = gamma_obs[i]
+        W_k[k] += w
+        sum_y_k[k] += w * y
+        sum_logy_k[k] += w * np.log(y)
+
+    for k in range(K):
+        if W_k[k] == 0:
+            W_k[k] = 1e-12
+            sum_y_k[k] = 1.0
+            sum_logy_k[k] = 0.0
+
+    y_bar_k = sum_y_k / W_k
+    if constrained:
+        y_bar_k = pava_increasing(y_bar_k, W_k)
+
+    logy_bar_k = sum_logy_k / W_k
+    W_total = np.sum(W_k)
+    s = np.sum(W_k * (np.log(y_bar_k) - logy_bar_k)) / W_total
+    s = max(s, 1e-12)
+
+    a = (3.0 - s + np.sqrt((s - 3.0) ** 2 + 24.0 * s)) / (12.0 * s)
+    a = max(a, 1e-6)
+
+    for _ in range(5):
+        g = np.log(a) - psi(a) - s
+        g_prime = 1.0 / a - trigamma(a)
+        if abs(g_prime) > 1e-12:
+            step = g / g_prime
+            a = max(a - step, 1e-6)
+
+    b_k = y_bar_k / a
+    return a, b_k
+
+
 def gamma_estimator(
     gamma_obs: arr_type,
     time_cen: arr_type,
@@ -78,11 +229,32 @@ def gamma_estimator(
     phase: Literal["all", "G1", "G2"],
 ) -> arr_type:
     """
-    This is a weighted, closed-form estimator for two parameters
-    of the Gamma distribution for estimating shared shape and separate scale parameters of several drug concentrations at once.
-    In the phase-specific case, we have 3 linear constraints: scale1 > scale2, scale2 > scale3, scale3 > scale 4.
-    In the non-specific case, we have only 1 constraint: scale1 > scale2 ==> A = np.array([1, 3])
+    This is a weighted estimator for the parameters of the Gamma distribution,
+    estimating shared shape and separate scale parameters across drug concentrations.
     """
+    has_censored = np.any(time_cen == 0)
+    K = len(x0) - 1
+    constrained = phase != "all"
+
+    # For purely uncensored observations, 1D profile Newton + PAVA is 100% exact and instantaneous
+    if not has_censored:
+        a_est, b_est = gamma_mle_closed_form(gamma_obs, gammas, param_idx, K, constrained=constrained)
+        return np.array([a_est] + list(b_est))
+
+    # For censored observations, use the uncensored closed form to warm-start SLSQP
+    uncen_mask = time_cen == 1
+    if np.sum(uncen_mask) > 10:
+        a_warm, b_warm = gamma_mle_closed_form(
+            gamma_obs[uncen_mask],
+            gammas[uncen_mask],
+            param_idx[uncen_mask],
+            K,
+            constrained=constrained,
+        )
+        x0_used = np.array([a_warm] + list(b_warm))
+    else:
+        x0_used = x0
+
     arrgs = (
         gamma_obs,
         time_cen,
@@ -90,7 +262,7 @@ def gamma_estimator(
         param_idx,
     )
 
-    if phase != "all":  # for constrained optimization
+    if constrained:  # for constrained optimization
         A = np.zeros((3, 5))  # constraint Jacobian
         np.fill_diagonal(A[:, 1:], -1.0)
         np.fill_diagonal(A[:, 2:], 1.0)
@@ -103,8 +275,8 @@ def gamma_estimator(
 
     res = minimize(
         gamma_LL,
-        jac="2-point",
-        x0=np.log(x0),
+        jac=gamma_LL_grad,
+        x0=np.log(x0_used),
         args=arrgs,
         bounds=bnd,
         method="SLSQP",

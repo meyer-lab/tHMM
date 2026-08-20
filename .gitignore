@@ -4,14 +4,14 @@
 **/.pytest_cache
 **/__pycache__/
 nosetests.xml
-**/.mypy_cache
+**/.ruff_cache
 
 # Notebooks
 **.ipynb
 # Exception to the rule
 !/notebooks/*.ipynb
 
-
+.venv/
 venv/
 profile
 profile.svg
@@ -21,3 +21,5 @@ spell.txt
 .vscode/settings.json
 .vscode
 lineage/data/taxol
+output/
+

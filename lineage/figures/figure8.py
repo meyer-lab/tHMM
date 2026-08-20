@@ -5,15 +5,15 @@ BIC for synthetic data.
 """
 
 from concurrent.futures import ProcessPoolExecutor
+
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 
 from ..Analyze import run_Analyze_over
-from ..LineageTree import LineageTree
 from ..BaumWelch import calculate_stationary
-from .figure18 import state0, state1, state2, state3
+from ..LineageTree import LineageTree
 from .common import getSetup, subplotLabel
-
+from .figure18 import state0, state1, state2, state3
 
 desired_num_states = np.arange(1, 6)
 
@@ -47,9 +47,7 @@ def makeFigure():
             pi = calculate_stationary(T)
             if idx < 3:
                 # uncensored lineage generation
-                lineages = [
-                    LineageTree.rand_init(pi, T, e, 2**6 - 1) for _ in range(10)
-                ]
+                lineages = [LineageTree.rand_init(pi, T, e, 2**6 - 1) for _ in range(10)]
             else:
                 # censored lineage creation
                 lineages = [
@@ -66,19 +64,15 @@ def makeFigure():
             tmp.append(exe.submit(run_BIC, lineages))
         BICprom.append(tmp)
     Bic = [[aaa.result() for aaa in ee] for ee in BICprom]
-    BIC = list(map(list, zip(*Bic)))
+    BIC = list(map(list, zip(*Bic, strict=False)))
 
     exe.shutdown()
 
     # Finding proper ylim range for all 4 uncensored graphs and rounding up
-    upper_ylim_uncensored = (
-        int(1 + max([np.max(np.ptp(BIC[i], axis=0)) for i in range(4)]) / 25.0) * 25
-    )
+    upper_ylim_uncensored = int(1 + max([np.max(np.ptp(BIC[i], axis=0)) for i in range(4)]) / 25.0) * 25
 
     # Finding proper ylim range for all 4 censored graphs and rounding up
-    upper_ylim_censored = (
-        int(1 + max([np.max(np.ptp(BIC[i], axis=0)) for i in range(4, 8)]) / 25.0) * 25
-    )
+    upper_ylim_censored = int(1 + max([np.max(np.ptp(BIC[i], axis=0)) for i in range(4, 8)]) / 25.0) * 25
 
     upper_ylim = [upper_ylim_uncensored, upper_ylim_censored]
 
@@ -96,7 +90,7 @@ def run_BIC(lineages: list[LineageTree]) -> np.ndarray:
     """
 
     # Storing BICs into array
-    BICs = np.empty((len(desired_num_states)))
+    BICs = np.empty(len(desired_num_states))
     output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states)
 
     for idx in range(len(desired_num_states)):
@@ -113,7 +107,7 @@ def figure_maker(ax, BIC_Holder, true_state_no, upper_ylim, censored=False):
     """
     Makes figure 8.
     """
-    BIC_holder = list(map(list, zip(*BIC_Holder)))
+    BIC_holder = list(map(list, zip(*BIC_Holder, strict=False)))
 
     # Creating BIC plot and matching gridlines
     ax.set_xlabel("Number of States Predicted")

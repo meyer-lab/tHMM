@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: clean test testprofile testcover docs
+.PHONY: clean test check lint format testprofile docs ty
 flist = $(wildcard lineage/figures/figure*.py)
 
 all: $(patsubst lineage/figures/figure%.py, output/figure%.svg, $(flist))
@@ -9,18 +9,27 @@ output/figure%.svg: lineage/figures/figure%.py
 	if test -r "$@"; then \
 		touch $@; \
 	else \
-		poetry run fbuild $*; \
+		uv run fbuild $*; \
 	fi
 
 test:
-	poetry run pytest -v -s -x
+	uv run pytest -v -s -x
 
-mypy:
-	poetry run mypy --install-types --non-interactive --ignore-missing-imports lineage
+ty:
+	uv run ty check
+
+lint:
+	uv run ruff check .
+
+format:
+	uv run ruff format .
+
+check: lint ty
 
 testprofile:
-	poetry run python3 -m cProfile -o profile -m pytest -s -v -x
+	uv run python3 -m cProfile -o profile -m pytest -s -v -x
 	gprof2dot -f pstats --node-thres=5.0 profile | dot -Tsvg -o profile.svg
 
 clean:
 	git clean -fdx output
+

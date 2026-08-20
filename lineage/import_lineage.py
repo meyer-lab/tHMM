@@ -1,8 +1,10 @@
-""" This file includes functions to import the new lineage data. """
+"""This file includes functions to import the new lineage data."""
 
-import pandas as pd
 import itertools
+
 import numpy as np
+import pandas as pd
+
 from .CellVar import CellVar
 
 ############################
@@ -44,9 +46,7 @@ def import_AU565(path: str) -> list:
             # create a list to store cells belonging to a lineage
             lineage_list: list[CellVar] = [parent_cell]
             for k, val in enumerate(unique_cell_ids):
-                if (
-                    val in parent_ids
-                ):  # if the id of a cell exists in the parent ids, it means the cell divides
+                if val in parent_ids:  # if the id of a cell exists in the parent ids, it means the cell divides
                     parent_index = [
                         indx for indx, value in enumerate(parent_ids) if value == val
                     ]  # find whose mother it is
@@ -89,9 +89,7 @@ def assign_observs_AU565(cell: CellVar, lineage, uniq_id: int) -> CellVar:
     # cell fate: die = 0, divide = 1
     # if the cell has not divided, means either died or reached experiment end time
     if uniq_id not in parent_id:
-        if (
-            np.max(lineage.loc[lineage["trackId"] == uniq_id]["frame"]) == 49
-        ):  # means reached end of experiment
+        if np.max(lineage.loc[lineage["trackId"] == uniq_id]["frame"]) == 49:  # means reached end of experiment
             cell.obs[0] = np.nan  # don't know
             cell.obs[3] = 1  # censored
         else:  # means cell died before experiment ended
@@ -137,21 +135,13 @@ def import_MCF10A(path: str) -> list[list[CellVar]]:
     population = []
     # loop over "lineageId"s
     for _, lineage in df.groupby("lineage"):
-        connection_df = (
-            lineage.loc[:, ["TID", "motherID"]]
-            .sort_values("motherID")
-            .drop_duplicates()
-        )
+        connection_df = lineage.loc[:, ["TID", "motherID"]].sort_values("motherID").drop_duplicates()
 
         # create a list to store cells belonging to a lineage
         lineage_list = []
         for mother, TIDs in connection_df.groupby("motherID"):
             if mother == 0:
-                lineage_list.append(
-                    assign_observs_MCF10A(
-                        CellVar(parent=None), lineage, TIDs["TID"].iloc[0]
-                    )
-                )
+                lineage_list.append(assign_observs_MCF10A(CellVar(parent=None), lineage, TIDs["TID"].iloc[0]))
                 continue
             elif TIDs.shape[0] != 2:
                 lineage_list = []
@@ -160,12 +150,8 @@ def import_MCF10A(path: str) -> list[list[CellVar]]:
             pIDX = int(np.argwhere(connection_df["TID"] == mother)[0][0])
             parent = lineage_list[pIDX]
 
-            a = assign_observs_MCF10A(
-                CellVar(parent=parent), lineage, TIDs["TID"].iloc[0]
-            )
-            b = assign_observs_MCF10A(
-                CellVar(parent=parent), lineage, TIDs["TID"].iloc[1]
-            )
+            a = assign_observs_MCF10A(CellVar(parent=parent), lineage, TIDs["TID"].iloc[0])
+            b = assign_observs_MCF10A(CellVar(parent=parent), lineage, TIDs["TID"].iloc[1])
             parent.left = a
             parent.right = b
 
@@ -176,35 +162,26 @@ def import_MCF10A(path: str) -> list[list[CellVar]]:
     return population
 
 
-def assign_observs_MCF10A(
-    cell: CellVar, lineage: pd.DataFrame, uniq_id: int
-) -> CellVar:
+def assign_observs_MCF10A(cell: CellVar, lineage: pd.DataFrame, uniq_id: int) -> CellVar:
     """Given a cell, the lineage, and the unique id of the cell, it assigns the observations of that cell, and returns it.
     :param cell: a CellVar object to be assigned observations.
     :param lineage: the lineage list of cells that the given cell is from.
     :param uniq_id: the id given to the cell from the experiment.
     """
     # initialize
-    cell.obs = np.array(
-        [1.0, 0.0, 1, 0, 0]
-    )  # [fate, lifetime, censored?, velocity, mean_distance]
+    cell.obs = np.array([1.0, 0.0, 1, 0, 0])  # [fate, lifetime, censored?, velocity, mean_distance]
     t_end = 2880
     # check if cell's lifetime is zero
     if (
-        np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"])
-        - np.min(lineage.loc[lineage["TID"] == uniq_id]["tmin"])
+        np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"]) - np.min(lineage.loc[lineage["TID"] == uniq_id]["tmin"])
     ) / 60 == 0:
         lineage = lineage.loc[lineage["tmin"] < 2880]
         t_end = 2850
     parent_id = lineage["motherID"].unique()
 
     # cell fate: die = 0, divide = 1
-    if (
-        uniq_id not in parent_id
-    ):  # if the cell has not divided, means either died or reached experiment end time
-        if (
-            np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"]) == t_end
-        ):  # means reached end of experiment
+    if uniq_id not in parent_id:  # if the cell has not divided, means either died or reached experiment end time
+        if np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"]) == t_end:  # means reached end of experiment
             cell.obs[0] = np.nan  # don't know
             cell.obs[2] = 0  # censored
         else:  # means cell died before experiment ended
@@ -216,8 +193,7 @@ def assign_observs_MCF10A(
 
     # cell's lifetime
     cell.obs[1] = (
-        np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"])
-        - np.min(lineage.loc[lineage["TID"] == uniq_id]["tmin"])
+        np.max(lineage.loc[lineage["TID"] == uniq_id]["tmin"]) - np.min(lineage.loc[lineage["TID"] == uniq_id]["tmin"])
     ) / 60
     cell.obs[3] = np.mean(lineage.loc[lineage["TID"] == uniq_id]["average_velocity"])
     cell.obs[4] = np.mean(lineage.loc[lineage["TID"] == uniq_id]["distance_mean"])
@@ -259,6 +235,4 @@ def MCF10A(condition: str) -> list[list]:
         return data1 + data2 + data3 + data4 + data5 + data6
 
     else:
-        raise ValueError(
-            "condition does not exist. choose between [PBS, EGF, HGF, OSM]"
-        )
+        raise ValueError("condition does not exist. choose between [PBS, EGF, HGF, OSM]")

@@ -1,10 +1,11 @@
-""" This is a file to put together 4 conditions of gemcitabine together. """
+"""This is a file to put together 4 conditions of gemcitabine together."""
 
 from string import ascii_lowercase
-from .common import getSetup, sort_lins
-from ..plotTree import plotLineage
+
 from ..Analyze import Analyze_list
 from ..Lineage_collections import AllGemcitabine
+from ..plotTree import plotLineage
+from .common import getSetup, sort_lins
 
 num_states = 5
 gemc_tHMMobj_list = Analyze_list(AllGemcitabine, num_states, write_states=True)[0]
@@ -42,8 +43,6 @@ def makeFigure():
             fontweight="bold",
             va="top",
         )
-        ax[i].text(
-            0.0, 1.55, titles[i], transform=ax[i].transAxes, fontsize=20, va="top"
-        )
+        ax[i].text(0.0, 1.55, titles[i], transform=ax[i].transAxes, fontsize=20, va="top")
 
     return f

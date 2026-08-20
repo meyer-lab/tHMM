@@ -1,9 +1,10 @@
-""" This file depicts the distribution of phase lengths versus the states for each concentration of lapatinib. """
+"""This file depicts the distribution of phase lengths versus the states for each concentration of lapatinib."""
 
 from string import ascii_lowercase
-from ..plotTree import plot_networkx, plot_lineage_samples
+
 from ..Analyze import Analyze_list
 from ..Lineage_collections import AllLapatinib
+from ..plotTree import plot_lineage_samples, plot_networkx
 from .common import getSetup, plot_all
 
 concs = ["Control", "Lapatinib 25 nM", "Lapatinib 50 nM", "Lapatinib 250 nM"]

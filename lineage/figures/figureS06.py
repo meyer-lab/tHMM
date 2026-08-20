@@ -9,19 +9,19 @@ of varying distributions.
 
 import numpy as np
 
-from .common import (
-    getSetup,
-    subplotLabel,
-    commonAnalyze,
-    figureMaker,
-    pi,
-    T,
-    max_desired_num_cells,
-    num_data_points,
-    state1,
-)
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
+from .common import (
+    T,
+    commonAnalyze,
+    figureMaker,
+    getSetup,
+    max_desired_num_cells,
+    num_data_points,
+    pi,
+    state1,
+    subplotLabel,
+)
 
 
 def makeFigure():
@@ -48,13 +48,9 @@ def accuracy():
     increasing the Wasserstein divergence between the two states.
     """
     # Creating a list of populations to analyze over
-    list_of_Es = [
-        [StateDistribution(0.99, 8, a), state1]
-        for a in np.linspace(1, 8, num_data_points)
-    ]
+    list_of_Es = [[StateDistribution(0.99, 8, a), state1] for a in np.linspace(1, 8, num_data_points)]
     list_of_populations = [
-        [LineageTree.rand_init(pi, T, E, max_desired_num_cells) for _ in range(4)]
-        for E in list_of_Es
+        [LineageTree.rand_init(pi, T, E, max_desired_num_cells) for _ in range(4)] for E in list_of_Es
     ]
     list_of_fpi = [pi] * len(list_of_Es)
 

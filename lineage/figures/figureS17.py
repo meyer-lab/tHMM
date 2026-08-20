@@ -1,11 +1,11 @@
-""" This file plots the trees with their predicted states for growth factors. """
+"""This file plots the trees with their predicted states for growth factors."""
 
 import numpy as np
-from .common import getSetup, sort_lins
-from ..plotTree import plotLineage_MCF10A
 
-from ..Lineage_collections import GFs
 from ..Analyze import Analyze_list
+from ..Lineage_collections import GFs
+from ..plotTree import plotLineage_MCF10A
+from .common import getSetup, sort_lins
 
 hgf_tHMMobj_list = Analyze_list(GFs, 3, write_states=True)[0]
 

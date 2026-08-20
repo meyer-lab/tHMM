@@ -1,10 +1,11 @@
-""" This is a file to put together 4 conditions of lapatinib together. """
+"""This is a file to put together 4 conditions of lapatinib together."""
 
 from string import ascii_lowercase
-from .common import getSetup, sort_lins
-from ..plotTree import plotLineage
+
 from ..Analyze import Analyze_list
 from ..Lineage_collections import AllLapatinib
+from ..plotTree import plotLineage
+from .common import getSetup, sort_lins
 
 lapt_tHMMobj_list = Analyze_list(AllLapatinib, 4, write_states=True)[0]
 
@@ -40,8 +41,6 @@ def makeFigure():
             fontweight="bold",
             va="top",
         )
-        ax[i].text(
-            0.0, 1.55, titles[i], transform=ax[i].transAxes, fontsize=20, va="top"
-        )
+        ax[i].text(0.0, 1.55, titles[i], transform=ax[i].transAxes, fontsize=20, va="top")
 
     return f

@@ -1,15 +1,16 @@
-""" Plotting the results for HGF. """
-
-""" This file depicts the distribution of phase lengths versus the states for each concentration of lapatinib. """
+"""Plotting the results for HGF. This file depicts the distribution of phase lengths versus the states for each concentration of lapatinib."""
 
 from string import ascii_lowercase
-from matplotlib import gridspec, rcParams, pyplot as plt
-import seaborn as sns
+
 import numpy as np
 import pandas as pd
-from ..Lineage_collections import GFs
+import seaborn as sns
+from matplotlib import gridspec, rcParams
+from matplotlib import pyplot as plt
+
 from ..Analyze import Analyze_list
-from ..plotTree import plot_networkx, plot_lineage_samples
+from ..Lineage_collections import GFs
+from ..plotTree import plot_lineage_samples, plot_networkx
 
 concs = ["PBS", "EGF", "HGF", "OSM"]
 
@@ -142,17 +143,13 @@ def plot2(ax, num_states, tHMMobj_list):
     )
 
     # lapatinib
-    lpt_avg = np.zeros(
-        (4, num_states)
-    )  # the avg lifetime: num_conc x num_states x num_phases
+    lpt_avg = np.zeros((4, num_states))  # the avg lifetime: num_conc x num_states x num_phases
     bern_lpt = np.zeros((4, num_states))  # bernoulli
 
     # print parameters and estimated values
     for idx, tHMMobj in enumerate(tHMMobj_list):  # for each concentration data
         for i in range(num_states):
-            lpt_avg[idx, i] = np.log10(
-                tHMMobj.estimate.E[i].params[1] * tHMMobj.estimate.E[i].params[2]
-            )
+            lpt_avg[idx, i] = np.log10(tHMMobj.estimate.E[i].params[1] * tHMMobj.estimate.E[i].params[2])
             # bernoullis
             bern_lpt[idx, i] = tHMMobj.estimate.E[i].params[0]
 

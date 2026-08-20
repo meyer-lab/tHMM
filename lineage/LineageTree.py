@@ -1,9 +1,11 @@
-""" This file contains the LineageTree class. """
+"""This file contains the LineageTree class."""
 
-from typing import Sequence
+import operator
+from collections.abc import Sequence
+
 import numpy as np
 import numpy.typing as npt
-import operator
+
 from .CellVar import CellVar
 from .states.StateDistributionGamma import StateDistribution as StA
 from .states.StateDistributionGaPhs import StateDistribution as StB
@@ -65,9 +67,7 @@ class LineageTree:
         rng = np.random.default_rng(rng)
 
         # Generate lineage list
-        first_state = rng.choice(
-            pi.size, p=pi
-        )  # roll the dice and yield the state for the first cell
+        first_state = rng.choice(pi.size, p=pi)  # roll the dice and yield the state for the first cell
         first_cell = CellVar(parent=None, state=first_state)  # create first cell
         full_lineage = [first_cell]  # instantiate lineage with first cell
 
@@ -83,15 +83,13 @@ class LineageTree:
         for i_state in range(pi.size):
             cells_in_state = [cell for cell in full_lineage if cell.state == i_state]
             list_of_tuples_of_obs = E[i_state].rvs(size=len(cells_in_state), rng=rng)
-            list_of_tuples_of_obs = list(map(list, zip(*list_of_tuples_of_obs)))
+            list_of_tuples_of_obs = list(map(list, zip(*list_of_tuples_of_obs, strict=False)))
 
             assert len(cells_in_state) == len(list_of_tuples_of_obs)
             for i, cell in enumerate(cells_in_state):
                 cell.obs = list_of_tuples_of_obs[i]
 
-        output_lineage = E[0].censor_lineage(
-            censor_condition, full_lineage, desired_experiment_time
-        )
+        output_lineage = E[0].censor_lineage(censor_condition, full_lineage, desired_experiment_time)
 
         lineageObj = cls(output_lineage, E)
         lineageObj.pi = pi
@@ -137,12 +135,12 @@ def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list[np.ndarray]:
 
 
 def cell_to_daughters(lineage: list[CellVar]) -> np.ndarray:
+    cell_indices = {cell: idx for idx, cell in enumerate(lineage)}
     output = np.full((len(lineage), 2), -1, dtype=int)
     for ii, cell in enumerate(lineage):
-        if cell.left is not None and cell.left in lineage:
-            output[ii, 0] = lineage.index(cell.left)
-
-        if cell.right is not None and cell.right in lineage:
-            output[ii, 1] = lineage.index(cell.right)
+        if cell.left in cell_indices:
+            output[ii, 0] = cell_indices[cell.left]
+        if cell.right in cell_indices:
+            output[ii, 1] = cell_indices[cell.right]
 
     return output

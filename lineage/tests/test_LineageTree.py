@@ -1,7 +1,9 @@
-""" Unit test file. """
+"""Unit test file."""
 
 import unittest
+
 import numpy as np
+
 from ..CellVar import CellVar as c
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
@@ -40,9 +42,7 @@ class TestModel(unittest.TestCase):
         self.E = [state_obj0, state_obj1]
 
         # creating lineages with the various censor conditions
-        self.lineage1 = LineageTree.rand_init(
-            self.pi, self.T, self.E, desired_num_cells=(2**11) - 1
-        )
+        self.lineage1 = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2**11) - 1)
         self.lineage2_fate_censored = LineageTree.rand_init(
             self.pi, self.T, self.E, desired_num_cells=(2**11) - 1, censor_condition=1
         )

@@ -1,11 +1,12 @@
-""" This file is completely user defined. We have provided a general starting point for the user to use as an example. """
+"""This file is completely user defined. We have provided a general starting point for the user to use as an example."""
+
+from typing import Literal
 
 import numpy as np
 import scipy.stats as sp
-from typing import Union, Literal
 
-from .stateCommon import gamma_estimator, basic_censor, bern_estimator
-from ..CellVar import Time, CellVar
+from ..CellVar import CellVar, Time
+from .stateCommon import apply_censoring, bern_estimator, gamma_estimator
 
 
 class StateDistribution:
@@ -13,9 +14,7 @@ class StateDistribution:
     StateDistribution for cells with gamma distributed times.
     """
 
-    def __init__(
-        self, bern_p: float = 0.9, gamma_a: float = 7.0, gamma_scale: float = 4.5
-    ):
+    def __init__(self, bern_p: float = 0.9, gamma_a: float = 7.0, gamma_scale: float = 4.5):
         """Initialization function should take in just in the parameters
         for the observations that comprise the multivariate random variable emission they expect their data to have.
         In this case, we used Gamma distribution for cell lifetime, which has 2 parameters; shape and scale.
@@ -29,12 +28,8 @@ class StateDistribution:
         """User-defined way of calculating a random variable given the parameters of the state stored in their object."""
         # {
         rng = np.random.default_rng(rng)
-        bern_obs = rng.binomial(
-            1, p=self.params[0], size=size
-        )  # bernoulli observations
-        gamma_obs = rng.gamma(
-            self.params[1], scale=self.params[2], size=size
-        )  # gamma observations
+        bern_obs = rng.binomial(1, p=self.params[0], size=size)  # bernoulli observations
+        gamma_obs = rng.gamma(self.params[1], scale=self.params[2], size=size)  # gamma observations
         gamma_obs_censor = [1] * size  # 1 if observed
 
         # } is user-defined in that they have to define and maintain the order of the multivariate random variables.
@@ -47,9 +42,7 @@ class StateDistribution:
         For more information about wasserstein distance, please see https://en.wikipedia.org/wiki/Wasserstein_metric.
         """
         assert isinstance(self, type(other))
-        dist = np.absolute(
-            self.params[1] * self.params[2] - other.params[1] * other.params[2]
-        )
+        dist = np.absolute(self.params[1] * self.params[2] - other.params[1] * other.params[2])
         return dist
 
     def dof(self) -> int:
@@ -70,22 +63,16 @@ class StateDistribution:
         ll = np.zeros(x.shape[0])
 
         # Update uncensored Gamma
-        ll[x[:, 2] == 1] += sp.gamma.logpdf(
-            x[x[:, 2] == 1, 1], a=self.params[1], scale=self.params[2]
-        )
+        ll[x[:, 2] == 1] += sp.gamma.logpdf(x[x[:, 2] == 1, 1], a=self.params[1], scale=self.params[2])
 
         # Update censored Gamma
-        ll[x[:, 2] == 0] += sp.gamma.logsf(
-            x[x[:, 2] == 0, 1], a=self.params[1], scale=self.params[2]
-        )
+        ll[x[:, 2] == 0] += sp.gamma.logsf(x[x[:, 2] == 0, 1], a=self.params[1], scale=self.params[2])
 
         # Remove dead cells
         ll[x[:, 0] == 0] = 0.0
 
         # Update for observed Bernoulli
-        ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(
-            x[np.isfinite(x[:, 0]), 0], self.params[0]
-        )
+        ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
 
         # Log likelihood of negative values should be zero
         ll[x[:, 1] < 0] = 0.0
@@ -110,9 +97,7 @@ class StateDistribution:
 
         # Both unoberved and dead cells should be removed from gamma
         g_mask = np.logical_and(np.isfinite(γ_obs_), bern_obs_.astype("bool"))
-        assert (
-            np.sum(g_mask) > 0
-        ), "All the cells are eliminated from the Gamma estimator."
+        assert np.sum(g_mask) > 0, "All the cells are eliminated from the Gamma estimator."
 
         self.params[0] = bern_estimator(bern_obs, gammas)
         param_idx = np.ones((gammas_[g_mask].size), dtype=int)
@@ -137,39 +122,26 @@ class StateDistribution:
         full_lineage: list[CellVar],
         desired_experiment_time=2e12,
     ) -> list[CellVar]:
-        """
-        This function removes those cells that are intended to be removed.
-        These cells include the descendants of a cell that has died, or has lived beyonf the experimental end time.
-        It takes in LineageTree object, walks through all the cells in the output binary tree,
-        applies the censorship to each cell that is supposed to be removed,
-        and returns the lineage of cells that are supposed to be alive and accounted for.
-        """
-        # Assign times
-        # traversing the cells by generation
-        for ii, cell in enumerate(full_lineage):
-            if ii == 0:
-                cell.time = Time(0, cell.obs[1])
-            else:
-                assert cell.parent is not None
-                assert cell.parent.time is not None
+        """Removes cells based on fate and experimental time bounds."""
+        return apply_censoring(
+            full_lineage,
+            censor_condition,
+            desired_experiment_time,
+            assign_times,
+            fate_censor,
+            time_censor,
+        )
 
-                cell.time = Time(
-                    cell.parent.time.endT, cell.parent.time.endT + cell.obs[1]
-                )
 
-        if censor_condition == 0:
-            return full_lineage
-
-        for cell in full_lineage:
-            if censor_condition in (1, 3):
-                fate_censor(cell)
-
-            if censor_condition in (2, 3):
-                time_censor(cell, desired_experiment_time)
-
-        basic_censor(full_lineage)
-
-        return [c for c in full_lineage if c.observed]
+def assign_times(full_lineage: list[CellVar]):
+    """Assigns start and end times to cells in generation order."""
+    for ii, cell in enumerate(full_lineage):
+        if ii == 0:
+            cell.time = Time(0, cell.obs[1])
+        else:
+            assert cell.parent is not None
+            assert cell.parent.time is not None
+            cell.time = Time(cell.parent.time.endT, cell.parent.time.endT + cell.obs[1])
 
 
 def fate_censor(cell):
@@ -184,7 +156,7 @@ def fate_censor(cell):
             cell.right.observed = False
 
 
-def time_censor(cell, desired_experiment_time: Union[int, float]):
+def time_censor(cell, desired_experiment_time: int | float):
     """
     Checks whether a cell has lived beyond the experiment end time and if so, it will remove its subtree.
     Our example is based on the standard requirement that the second observation
@@ -212,9 +184,7 @@ def atonce_estimator(
     gammas_list is only for one state."""
     # unzipping the list of tuples
     x_data = np.concatenate([np.array(x) for x in x_list], axis=0)
-    param_idx = np.concatenate(
-        [np.full(gam.shape[0], ii + 1) for ii, gam in enumerate(gammas_list)]
-    )
+    param_idx = np.concatenate([np.full(gam.shape[0], ii + 1) for ii, gam in enumerate(gammas_list)])
     gammas = np.concatenate(gammas_list, axis=0)
 
     # CV censored cells should be removed
@@ -234,10 +204,7 @@ def atonce_estimator(
 
     for state_j, distr in enumerate(all_tHMMobj[0].estimate.E):
         if phase == "G1":
-            x0 = np.array(
-                [distr.params[2]]
-                + [tHMMobj.estimate.E[state_j].params[3] for tHMMobj in all_tHMMobj]
-            )
+            x0 = np.array([distr.params[2]] + [tHMMobj.estimate.E[state_j].params[3] for tHMMobj in all_tHMMobj])
             output = gamma_estimator(
                 gamma_obs_masked,
                 gamma_cens_masked,
@@ -257,10 +224,7 @@ def atonce_estimator(
                 tHMMobj.estimate.E[state_j].G1.params[2] = output[i + 1]
 
         elif phase == "G2":
-            x0 = np.array(
-                [distr.params[4]]
-                + [tHMMobj.estimate.E[state_j].params[5] for tHMMobj in all_tHMMobj]
-            )
+            x0 = np.array([distr.params[4]] + [tHMMobj.estimate.E[state_j].params[5] for tHMMobj in all_tHMMobj])
             output = gamma_estimator(
                 gamma_obs_masked,
                 gamma_cens_masked,
@@ -280,10 +244,7 @@ def atonce_estimator(
                 tHMMobj.estimate.E[state_j].G2.params[2] = output[i + 1]
 
         elif phase == "all":
-            x0 = np.array(
-                [distr.params[1]]
-                + [tHMMobj.estimate.E[state_j].params[2] for tHMMobj in all_tHMMobj]
-            )
+            x0 = np.array([distr.params[1]] + [tHMMobj.estimate.E[state_j].params[2] for tHMMobj in all_tHMMobj])
             output = gamma_estimator(
                 gamma_obs_masked,
                 gamma_cens_masked,

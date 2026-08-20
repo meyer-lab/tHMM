@@ -1,14 +1,11 @@
-""" This file contains the methods for the Viterbi algorithm implemented in an a upward recursion. """
+"""This file contains the methods for the Viterbi algorithm implemented in an a upward recursion."""
 
 import numpy as np
-from typing import Tuple
 
 from .LineageTree import get_Emission_Likelihoods
 
 
-def get_deltas(
-    X: list, E: list, T: np.ndarray
-) -> Tuple[list[np.ndarray], list[np.ndarray]]:
+def get_deltas(X: list, E: list, T: np.ndarray) -> tuple[list[np.ndarray], list[np.ndarray]]:
     """
     Delta matrix and base case at the leaves.
     Each element in this N by K matrix is the probability for the leaves :math:`P(x_n = x | z_n = k)`.

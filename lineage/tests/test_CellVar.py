@@ -1,9 +1,10 @@
-""" Unit test file. """
+"""Unit test file."""
 
 import unittest
-import numpy as np
-from ..CellVar import CellVar as c
 
+import numpy as np
+
+from ..CellVar import CellVar as c
 
 # pylint: disable=protected-access
 
@@ -67,6 +68,4 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell.isLeafBecauseTerminal())
         left_cell, right_cell = cell.divide(T)
         self.assertFalse(cell.isLeafBecauseTerminal())
-        self.assertTrue(
-            left_cell.isLeafBecauseTerminal() and right_cell.isLeafBecauseTerminal()
-        )
+        self.assertTrue(left_cell.isLeafBecauseTerminal() and right_cell.isLeafBecauseTerminal())

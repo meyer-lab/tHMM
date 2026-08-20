@@ -1,11 +1,11 @@
-""" This file depicts the distribution of phase lengths versus the states for each concentration of gemcitabine. """
+"""This file depicts the distribution of phase lengths versus the states for each concentration of gemcitabine."""
 
 from string import ascii_lowercase
-from ..plotTree import plot_networkx, plot_lineage_samples
+
 from ..Analyze import Analyze_list
 from ..Lineage_collections import AllGemcitabine
+from ..plotTree import plot_lineage_samples, plot_networkx
 from .common import getSetup, plot_all
-
 
 concs = ["Control", "Gemcitabine 5 nM", "Gemcitabine 10 nM", "Gemcitabine 30 nM"]
 concsValues = ["Control", "5 nM", "10 nM", "30 nM"]

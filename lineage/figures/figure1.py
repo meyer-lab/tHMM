@@ -4,13 +4,14 @@ Purpose: Generates figure 1.
 Figure 1 is the tHMM model and its purpose.
 """
 
-from string import ascii_lowercase
 import random
-import numpy as np
+from string import ascii_lowercase
 
-from .common import getSetup
+from lineage.Lineage_collections import Gem10uM
+from lineage.Lineage_collections import Gemcitabine_Control as control
+
 from ..plotTree import plotLineage
-from lineage.Lineage_collections import Gem10uM, Gemcitabine_Control as control
+from .common import getSetup
 
 
 def makeFigure():
@@ -64,10 +65,9 @@ def figureMaker(ax):
     ax[2].set_title("Gemcitabine 10 nM - random", fontsize=10)
     # lineages
     for i in range(7):
-        Gem10uM[indxs_gem[i]].state = np.nan
-        plotLineage(control[indxs_c1[i]], ax[3 * i], censore=False, color=False)
-        plotLineage(control[indxs_c2[i]], ax[3 * i + 1], censore=False, color=False)
-        plotLineage(Gem10uM[indxs_gem[i]], ax[3 * i + 2], censore=False, color=False)
+        plotLineage(control[indxs_c1[i]], ax[3 * i], censor=False, color=False)
+        plotLineage(control[indxs_c2[i]], ax[3 * i + 1], censor=False, color=False)
+        plotLineage(Gem10uM[indxs_gem[i]], ax[3 * i + 2], censor=False, color=False)
 
     for i in range(24):
         ax[i].axis("off")
