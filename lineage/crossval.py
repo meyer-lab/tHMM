@@ -20,6 +20,7 @@ def hide_observation(lineages: list, percentage: float) -> list:
             if bernoulli.rvs(p=percentage, size=1):
                 # negate the cell observations to mask them
                 cell.obs = [-1 * o for o in cell.obs]
+        new_lineage.obs = np.array([cell.obs for cell in new_lineage.output_lineage])
 
     return new_lineages
 

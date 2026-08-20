@@ -5,6 +5,7 @@ from collections.abc import Sequence
 
 import numpy as np
 import numpy.typing as npt
+from scipy.sparse import csr_array
 
 from .CellVar import CellVar
 from .states.StateDistributionGamma import StateDistribution as StA
@@ -20,7 +21,8 @@ class LineageTree:
     T: npt.NDArray[np.float64]
     leaves_idx: np.ndarray
     output_lineage: list[CellVar]
-    cell_to_daughters: np.ndarray
+    obs: np.ndarray
+    tree: csr_array
     states: np.ndarray
     E: Sequence[StA | StB]
 
@@ -29,12 +31,35 @@ class LineageTree:
         # output_lineage must be sorted according to generation
         self.output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
 
-        self.cell_to_daughters = cell_to_daughters(self.output_lineage)
+        self.tree = lineage_to_tree(self.output_lineage)
 
         # Leaves have no daughters
-        self.leaves_idx = np.nonzero(np.all(self.cell_to_daughters == -1, axis=1))[0]
+        self.leaves_idx = np.nonzero(np.diff(self.tree.indptr) == 0)[0]
 
         self.states = np.array([cell.state for cell in self.output_lineage], dtype=int)
+        self.obs = np.array([cell.obs for cell in self.output_lineage])
+
+    @property
+    def non_leaves_idx(self) -> np.ndarray:
+        """Return array of non-leaf cell indices."""
+        return np.nonzero(np.diff(self.tree.indptr) > 0)[0]
+
+    @property
+    def edges(self) -> tuple[np.ndarray, np.ndarray]:
+        """Return (parents, daughters) edge arrays."""
+        parents = np.repeat(np.arange(self.tree.shape[0]), np.diff(self.tree.indptr))
+        return parents, self.tree.indices
+
+    @property
+    def cell_to_daughters(self) -> np.ndarray:
+        """Compatibility helper returning (N, 2) array of daughter indices."""
+        output = np.full((len(self.output_lineage), 2), -1, dtype=int)
+        for i in range(len(self.output_lineage)):
+            children = self.tree.indices[self.tree.indptr[i] : self.tree.indptr[i + 1]]
+            for j, c in enumerate(children):
+                if j < 2:
+                    output[i, j] = c
+        return output
 
     @classmethod
     def rand_init(
@@ -113,11 +138,11 @@ def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list[np.ndarray]:
 
     for all :math:`x_n` and :math:`z_n` in our observed and hidden state tree
     and for all possible discrete states k.
-    :param tHMMobj: A class object with properties of the lineages of cells
+    :param X: list of lineage trees
     :param E: The emissions likelihood
     :return: The marginal state distribution
     """
-    all_cells = np.array([cell.obs for lineage in X for cell in lineage.output_lineage])
+    all_cells = np.vstack([lineage.obs for lineage in X])
     ELstack = np.zeros((len(all_cells), len(E)))
 
     for k in range(len(E)):  # for each state
@@ -126,7 +151,7 @@ def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list[np.ndarray]:
     EL = []
     ii = 0
     for lineageObj in X:  # for each lineage in our Population
-        nl = len(lineageObj.output_lineage)  # getting the lineage length
+        nl = len(lineageObj)  # getting the lineage length
         EL.append(ELstack[ii : (ii + nl), :])  # append the EL_array for each lineage
 
         ii += nl
@@ -134,13 +159,38 @@ def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list[np.ndarray]:
     return EL
 
 
-def cell_to_daughters(lineage: list[CellVar]) -> np.ndarray:
-    cell_indices = {cell: idx for idx, cell in enumerate(lineage)}
-    output = np.full((len(lineage), 2), -1, dtype=int)
-    for ii, cell in enumerate(lineage):
-        if cell.left in cell_indices:
-            output[ii, 0] = cell_indices[cell.left]
-        if cell.right in cell_indices:
-            output[ii, 1] = cell_indices[cell.right]
+def lineage_to_tree(lineage: list[CellVar]) -> csr_array:
+    """Build a directed adjacency CSR array (parent -> daughter) from a lineage."""
+    n = len(lineage)
+    if n == 0:
+        return csr_array((0, 0), dtype=bool)
 
+    cell_indices = {cell: idx for idx, cell in enumerate(lineage)}
+    indptr = np.zeros(n + 1, dtype=np.int32)
+    indices_list: list[int] = []
+
+    for i, cell in enumerate(lineage):
+        count = 0
+        if cell.left in cell_indices:
+            indices_list.append(cell_indices[cell.left])
+            count += 1
+        if cell.right in cell_indices:
+            indices_list.append(cell_indices[cell.right])
+            count += 1
+        indptr[i + 1] = indptr[i] + count
+
+    indices = np.array(indices_list, dtype=np.int32)
+    data = np.ones(len(indices), dtype=bool)
+    return csr_array((data, indices, indptr), shape=(n, n))
+
+
+def cell_to_daughters(lineage: list[CellVar]) -> np.ndarray:
+    """Compatibility helper converting a lineage list to an (N, 2) daughter index array."""
+    tree = lineage_to_tree(lineage)
+    output = np.full((len(lineage), 2), -1, dtype=int)
+    for i in range(len(lineage)):
+        children = tree.indices[tree.indptr[i] : tree.indptr[i + 1]]
+        for j, c in enumerate(children):
+            if j < 2:
+                output[i, j] = c
     return output
