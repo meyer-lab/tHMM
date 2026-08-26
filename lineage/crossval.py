@@ -1,9 +1,12 @@
-""" Cross validation. """
-import numpy as np
-from scipy.stats import bernoulli
-from scipy.special import logsumexp
-from copy import deepcopy
+"""Cross validation."""
+
 from concurrent.futures import ProcessPoolExecutor
+from copy import deepcopy
+
+import numpy as np
+from scipy.special import logsumexp
+from scipy.stats import bernoulli
+
 from .Analyze import Analyze_list
 
 exe = ProcessPoolExecutor()
@@ -17,6 +20,7 @@ def hide_observation(lineages: list, percentage: float) -> list:
             if bernoulli.rvs(p=percentage, size=1):
                 # negate the cell observations to mask them
                 cell.obs = [-1 * o for o in cell.obs]
+        new_lineage.obs = np.array([cell.obs for cell in new_lineage.output_lineage])
 
     return new_lineages
 
@@ -56,7 +60,7 @@ def output_LL(complete_population, desired_num_states):
     """Given the complete population, it masks 25% of cells and prepares the data for parallel fitting using crossval function."""
     # create training data by hiding 25% of cells in each lineage
     promholder = []
-    for i in range(10):
+    for _i in range(10):
         train_population = [hide_observation(complete_pop, 0.25) for complete_pop in complete_population]
         promholder.append(exe.submit(crossval, train_population, desired_num_states))
 

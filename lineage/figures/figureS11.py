@@ -1,21 +1,13 @@
-""" This is a file to put together 4 conditions of lapatinib together. """
+"""This is a file to put together 4 conditions of lapatinib together."""
 
 from string import ascii_lowercase
-from .common import getSetup, sort_lins
-from ..plotTree import plotLineage
+
 from ..Analyze import Analyze_list
 from ..Lineage_collections import AllLapatinib
+from ..plotTree import plotLineage
+from .common import getSetup, sort_lins
 
-num_states = 4
-lapt_tHMMobj_list = Analyze_list(AllLapatinib, num_states)[0]
-
-lapt_states_list = [tHMMobj.predict() for tHMMobj in lapt_tHMMobj_list]
-
-# assign the predicted states to each cell
-for idx, lapt_tHMMobj in enumerate(lapt_tHMMobj_list):
-    for lin_indx, lin in enumerate(lapt_tHMMobj.X):
-        for cell_indx, cell in enumerate(lin.output_lineage):
-            cell.state = lapt_states_list[idx][lin_indx][cell_indx]
+lapt_tHMMobj_list = Analyze_list(AllLapatinib, 4, write_states=True)[0]
 
 for i in range(4):
     lapt_tHMMobj_list[i].X = sort_lins(lapt_tHMMobj_list[i])
@@ -29,18 +21,26 @@ def makeFigure():
     ax, f = getSetup((15, 45), (170, 4))
 
     for i in range(170):
-        ax[4 * i].axis('off')
-        ax[4 * i + 1].axis('off')
-        ax[4 * i + 2].axis('off')
-        ax[4 * i + 3].axis('off')
+        ax[4 * i].axis("off")
+        ax[4 * i + 1].axis("off")
+        ax[4 * i + 2].axis("off")
+        ax[4 * i + 3].axis("off")
         plotLineage(lapt_tHMMobj_list[0].X[i], ax[4 * i])
         plotLineage(lapt_tHMMobj_list[1].X[i], ax[4 * i + 1])
         plotLineage(lapt_tHMMobj_list[2].X[i], ax[4 * i + 2])
         plotLineage(lapt_tHMMobj_list[3].X[i], ax[4 * i + 3])
 
     for i in range(4):
-        ax[i].axis('off')
-        ax[i].text(-0.2, 1.55, ascii_lowercase[i], transform=ax[i].transAxes, fontsize=20, fontweight="bold", va="top")
+        ax[i].axis("off")
+        ax[i].text(
+            -0.2,
+            1.55,
+            ascii_lowercase[i],
+            transform=ax[i].transAxes,
+            fontsize=20,
+            fontweight="bold",
+            va="top",
+        )
         ax[i].text(0.0, 1.55, titles[i], transform=ax[i].transAxes, fontsize=20, va="top")
 
     return f

@@ -1,8 +1,10 @@
-""" This file plots the BIC for the experimental data. """
+"""This file plots the BIC for the experimental data."""
+
 import numpy as np
 from matplotlib.ticker import MaxNLocator
+
 from ..Analyze import run_Analyze_over
-from ..Lineage_collections import AllLapatinib, AllGemcitabine, GFs
+from ..Lineage_collections import AllGemcitabine, AllLapatinib, GFs
 from .common import getSetup
 
 desired_num_states = np.arange(1, 8)

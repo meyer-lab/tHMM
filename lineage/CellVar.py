@@ -1,8 +1,24 @@
-""" This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively. """
+"""This file contains the class for CellVar which holds the state and observation information in the hidden and observed trees respectively."""
+
 from __future__ import annotations
-import numpy as np
-from typing import Optional
+
 from dataclasses import dataclass
+from typing import Any
+
+import numpy as np
+
+
+@dataclass(init=True, repr=True, eq=True, order=True)
+class Time:
+    """
+    Class that stores all the time related observations in a neater format.
+    This assists in pruning based on experimental time and obtaining
+    attributes of the lineage as a whole like the average growth rate.
+    """
+
+    startT: float
+    endT: float
+    transition_time: float = 0.0
 
 
 class CellVar:
@@ -10,15 +26,16 @@ class CellVar:
     Cell class.
     """
 
-    parent: Optional["CellVar"]
+    parent: CellVar | None
     gen: int
     observed: bool
-    state: Optional[int]
-    obs: Optional[np.ndarray]
-    left: Optional["CellVar"]
-    right: Optional["CellVar"]
+    state: int
+    obs: np.ndarray | list[Any]
+    time: Time | None
+    left: CellVar | None
+    right: CellVar | None
 
-    def __init__(self, parent: Optional["CellVar"], state: Optional[int] = None):
+    def __init__(self, parent: CellVar | None = None, state: int = -1):
         """Instantiates the cell object.
         Contains memeber variables that identify daughter cells
         and parent cells. Also contains the state of the cell.
@@ -34,7 +51,7 @@ class CellVar:
         self.state = state
         self.left = None
         self.right = None
-        self.obs = None
+        self.obs = np.empty(0, dtype=float)
 
     def divide(self, T: np.ndarray, rng=None):
         """
@@ -47,9 +64,7 @@ class CellVar:
         assert T.shape[0] == T.shape[1]
 
         # roll a loaded die according to the row in the transtion matrix
-        left_state, right_state = rng.choice(
-            T.shape[0], size=2, p=T[self.state, :]
-        )
+        left_state, right_state = rng.choice(T.shape[0], size=2, p=T[self.state, :])
         self.left = CellVar(state=left_state, parent=self)
         self.right = CellVar(state=right_state, parent=self)
 
@@ -78,43 +93,3 @@ class CellVar:
 
         # otherwise, it itself is observed and at least one of its daughters is observed
         return False
-
-    def isRootParent(self) -> bool:
-        """
-        Returns true if this cell is the first cell in a lineage.
-        """
-        return self.parent is None
-
-    def get_sister(self):
-        """
-        :Return cell_to_return: The sister of the current cell.
-        """
-        cell_to_return = None
-        if self.parent.left is self:
-            cell_to_return = self.parent.right
-        elif self.parent.right is self:
-            cell_to_return = self.parent.left
-        return cell_to_return
-
-    def get_root_cell(self):
-        """
-        :Return curr_cell: The first cell in the lineage to which this cell belongs.
-        """
-        curr_cell = self
-        while curr_cell.gen > 1:
-            curr_cell = curr_cell.parent
-        assert curr_cell.isRootParent()
-        return curr_cell
-
-
-@dataclass(init=True, repr=True, eq=True, order=True)
-class Time:
-    """
-    Class that stores all the time related observations in a neater format.
-    This assists in pruning based on experimental time and obtaining
-    attributes of the lineage as a whole like the average growth rate.
-    """
-
-    startT: float
-    endT: float
-    transition_time: float = 0.0

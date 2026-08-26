@@ -1,8 +1,16 @@
-""" This file contains the LineageTree class. """
+"""This file contains the LineageTree class."""
+
+import operator
+from collections.abc import Sequence
+
 import numpy as np
 import numpy.typing as npt
-import operator
+from scipy.sparse import csr_array
+
 from .CellVar import CellVar
+from .states.stateCommon import censor_lineage_gamma
+from .states.StateDistributionGamma import StateDistribution as StA
+from .states.StateDistributionGaPhs import StateDistribution as StB
 
 
 class LineageTree:
@@ -12,87 +20,153 @@ class LineageTree:
 
     pi: npt.NDArray[np.float64]
     T: npt.NDArray[np.float64]
-    leaves_idx: npt.NDArray[np.uintp]
-    idx_by_gen: list[np.ndarray]
-    output_lineage: list[CellVar]
-    cell_to_parent: np.ndarray
-    cell_to_daughters: np.ndarray
+    leaves_idx: np.ndarray
+    _output_lineage: list[CellVar] | None
+    obs: np.ndarray
+    tree: csr_array
+    states: np.ndarray
+    E: Sequence[StA | StB]
 
-    def __init__(self, list_of_cells: list, E: list):
+    def __init__(
+        self,
+        list_of_cells: list | csr_array,
+        E: Sequence[StA | StB],
+        obs: np.ndarray | None = None,
+        states: np.ndarray | None = None,
+    ):
         self.E = E
-        # output_lineage must be sorted according to generation
-        self.output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
-        self.idx_by_gen = max_gen(self.output_lineage)
-        # assign times using the state distribution specific time model
-        E[0].assign_times(self.output_lineage)
+        if isinstance(list_of_cells, list):
+            self._output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
+            self.tree = lineage_to_tree(self._output_lineage)
+            self.states = np.array([cell.state for cell in self._output_lineage], dtype=int)
+            self.obs = np.array([cell.obs for cell in self._output_lineage])
+        else:
+            self.tree = list_of_cells
+            self.obs = obs if obs is not None else np.empty((self.tree.shape[0], 0))
+            self.states = states if states is not None else np.full(self.tree.shape[0], -1, dtype=int)
+            self._output_lineage = None
 
-        self.leaves_idx = get_leaves_idx(self.output_lineage)
-        self.cell_to_parent = cell_to_parent(self.output_lineage)
-        self.cell_to_daughters = cell_to_daughters(self.output_lineage)
+        # Leaves have no daughters
+        self.leaves_idx = np.nonzero(np.diff(self.tree.indptr) == 0)[0]
+
+    @property
+    def output_lineage(self) -> list[CellVar]:
+        """Backwards compatibility property constructing CellVar list from arrays."""
+        if self._output_lineage is not None:
+            return self._output_lineage
+        return self._build_cellvar_list()
+
+    def _build_cellvar_list(self) -> list[CellVar]:
+        n = self.tree.shape[0]
+        cells = [CellVar(state=int(self.states[i])) for i in range(n)]
+        for i in range(n):
+            cells[i].obs = self.obs[i].tolist() if hasattr(self.obs[i], "tolist") else self.obs[i]
+            children = self.tree.indices[self.tree.indptr[i] : self.tree.indptr[i + 1]]
+            if len(children) > 0:
+                cells[i].left = cells[children[0]]
+                cells[children[0]].parent = cells[i]
+                cells[children[0]].gen = cells[i].gen + 1
+            if len(children) > 1:
+                cells[i].right = cells[children[1]]
+                cells[children[1]].parent = cells[i]
+                cells[children[1]].gen = cells[i].gen + 1
+        self._output_lineage = cells
+        return cells
+
+    @property
+    def non_leaves_idx(self) -> np.ndarray:
+        """Return array of non-leaf cell indices."""
+        return np.nonzero(np.diff(self.tree.indptr) > 0)[0]
+
+    @property
+    def edges(self) -> tuple[np.ndarray, np.ndarray]:
+        """Return (parents, daughters) edge arrays."""
+        parents = np.repeat(np.arange(self.tree.shape[0]), np.diff(self.tree.indptr))
+        return parents, self.tree.indices
+
+    @property
+    def cell_to_daughters(self) -> np.ndarray:
+        """Compatibility helper returning (N, 2) array of daughter indices."""
+        n = self.tree.shape[0]
+        output = np.full((n, 2), -1, dtype=int)
+        for i in range(n):
+            children = self.tree.indices[self.tree.indptr[i] : self.tree.indptr[i + 1]]
+            for j, c in enumerate(children):
+                if j < 2:
+                    output[i, j] = c
+        return output
 
     @classmethod
     def rand_init(
         cls,
         pi: np.ndarray,
         T: np.ndarray,
-        E: list,
+        E: Sequence[StA | StB],
         desired_num_cells: int,
         censor_condition=0,
         desired_experiment_time=2e12,
         rng=None,
     ):
         r"""
-        Constructor method
+        Constructor method generating pure array representation.
 
-        :param :math:`\pi`: The initial probability matrix; its shape must be the same as the number of states and all of them must sum up to 1.
-        :param T: The transition probability matrix; every row must sum up to 1.
-        :param E: A list containing state distribution objects, the length of it is the same as the number of states.
-        :param desired_num_cells: The desired number of cells we want the lineage to end up with.
-        :param censor_condition: An integer :math:`\in` \{0, 1, 2, 3\} that decides the type of censoring.
-
-        Censoring guide
-        - 0 means no pruning
-        - 1 means censor based on the fate of the cell
-        - 2 means censor based on the length of the experiment
-        - 3 means censor based on both the 'fate' and 'time' conditions
+        :param :math:`\pi`: The initial probability matrix.
+        :param T: The transition probability matrix.
+        :param E: A list containing state distribution objects.
+        :param desired_num_cells: The desired number of cells.
+        :param censor_condition: An integer in {0, 1, 2, 3} deciding censoring type.
         """
         assert pi.size == T.shape[0]
         assert T.shape[0] == T.shape[1]
         rng = np.random.default_rng(rng)
 
-        # Generate lineage list
-        first_state = rng.choice(
-            pi.size, p=pi
-        )  # roll the dice and yield the state for the first cell
-        first_cell = CellVar(parent=None, state=first_state)  # create first cell
-        full_lineage = [first_cell]  # instantiate lineage with first cell
+        # Generate tree connectivity and states
+        states = [int(rng.choice(pi.size, p=pi))]
+        rows: list[int] = []
+        cols: list[int] = []
 
-        for cell in full_lineage:  # letting the first cell proliferate
-            if cell.isLeaf():  # if the cell has no daughters...
-                # make daughters by dividing and assigning states
-                full_lineage.extend(cell.divide(T, rng=rng))
+        curr = 0
+        while len(states) < desired_num_cells:
+            parent_state = states[curr]
+            left_s, right_s = rng.choice(T.shape[0], size=2, p=T[parent_state, :])
+            c1 = len(states)
+            c2 = len(states) + 1
+            states.extend([int(left_s), int(right_s)])
+            rows.extend([curr, curr])
+            cols.extend([c1, c2])
+            curr += 1
 
-            if len(full_lineage) >= desired_num_cells:
-                break
+        n = len(states)
+        states_arr = np.array(states, dtype=int)
+        full_tree = csr_array((np.ones(len(rows), dtype=bool), (rows, cols)), shape=(n, n))
 
-        # Assign observations
-        for i_state in range(pi.size):
-            cells_in_state = [cell for cell in full_lineage if cell.state == i_state]
-            list_of_tuples_of_obs = E[i_state].rvs(size=len(cells_in_state), rng=rng)
-            list_of_tuples_of_obs = list(map(list, zip(*list_of_tuples_of_obs)))
+        # Sample observations from state distributions
+        obs_by_state = {}
+        obs_dim = None
+        for s in range(pi.size):
+            s_idx = np.where(states_arr == s)[0]
+            if len(s_idx) > 0:
+                rvs_out = E[s].rvs(size=len(s_idx), rng=rng)
+                stacked = np.column_stack(rvs_out)
+                obs_by_state[s] = (s_idx, stacked)
+                if obs_dim is None:
+                    obs_dim = stacked.shape[1]
 
-            assert len(cells_in_state) == len(list_of_tuples_of_obs)
-            for i, cell in enumerate(cells_in_state):
-                cell.obs = list_of_tuples_of_obs[i]
+        obs_arr = np.zeros((n, obs_dim or 0), dtype=float)
+        for s_idx, s_obs in obs_by_state.values():
+            obs_arr[s_idx, :] = s_obs
 
-        # assign times using the state distribution specific time model
-        E[0].assign_times(full_lineage)
+        # Apply censoring directly on arrays
+        if hasattr(E[0], "censor_lineage_array"):
+            pruned_tree, pruned_obs, pruned_states = E[0].censor_lineage_array(
+                censor_condition, full_tree, obs_arr, states_arr, desired_experiment_time
+            )
+        else:
+            pruned_tree, pruned_obs, pruned_states = censor_lineage_gamma(
+                full_tree, obs_arr, states_arr, censor_condition, desired_experiment_time
+            )
 
-        output_lineage = E[0].censor_lineage(
-            censor_condition, full_lineage, desired_experiment_time
-        )
-
-        lineageObj = cls(output_lineage, E)
+        lineageObj = cls(pruned_tree, E, obs=pruned_obs, states=pruned_states)
         lineageObj.pi = pi
         lineageObj.T = T
         return lineageObj
@@ -101,10 +175,10 @@ class LineageTree:
         """Defines the length of a lineage by returning the number of cells
         it contains.
         """
-        return len(self.output_lineage)
+        return self.tree.shape[0]
 
 
-def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list:
+def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list[np.ndarray]:
     """
     Emission Likelihood (EL) matrix.
 
@@ -114,13 +188,11 @@ def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list:
 
     for all :math:`x_n` and :math:`z_n` in our observed and hidden state tree
     and for all possible discrete states k.
-    :param tHMMobj: A class object with properties of the lineages of cells
+    :param X: list of lineage trees
     :param E: The emissions likelihood
     :return: The marginal state distribution
     """
-    all_cells = np.array(
-        [cell.obs for lineage in X for cell in lineage.output_lineage]
-    )
+    all_cells = np.vstack([lineage.obs for lineage in X])
     ELstack = np.zeros((len(all_cells), len(E)))
 
     for k in range(len(E)):  # for each state
@@ -129,118 +201,34 @@ def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list:
     EL = []
     ii = 0
     for lineageObj in X:  # for each lineage in our Population
-        nl = len(lineageObj.output_lineage)  # getting the lineage length
-        EL.append(ELstack[ii: (ii + nl), :])  # append the EL_array for each lineage
+        nl = len(lineageObj)  # getting the lineage length
+        EL.append(ELstack[ii : (ii + nl), :])  # append the EL_array for each lineage
 
         ii += nl
 
     return EL
 
 
-def generate_lineage_list(
-    pi: npt.NDArray[np.float64], T: npt.NDArray[np.float64], desired_num_cells: int
-) -> list:
-    """
-    Generates a single lineage tree given Markov variables.
-    This only generates the hidden variables (i.e., the states) in a output binary tree manner.
-    It keeps generating cells in the tree until it reaches the desired number of cells in the lineage.
-    :param pi: An array of the initial probability of a cell being a certain state.
-    :param T: An array of the probability of a cell switching states or remaining in the same state.
-    :param desired_num_cells: The desired number of cells in a lineage.
-    :return full_lineage: A list of the generated cell lineage.
-    """
-    first_state = np.random.choice(
-        pi.size, p=pi
-    )  # roll the dice and yield the state for the first cell
-    first_cell = CellVar(parent=None, state=first_state)  # create first cell
-    full_lineage = [first_cell]  # instantiate lineage with first cell
+def lineage_to_tree(lineage: list[CellVar]) -> csr_array:
+    """Build a directed adjacency CSR array (parent -> daughter) from a lineage."""
+    n = len(lineage)
+    if n == 0:
+        return csr_array((0, 0), dtype=bool)
 
-    for cell in full_lineage:  # letting the first cell proliferate
-        if cell.isLeaf():  # if the cell has no daughters...
-            # make daughters by dividing and assigning states
-            full_lineage.extend(cell.divide(T))
+    cell_indices = {cell: idx for idx, cell in enumerate(lineage)}
+    indptr = np.zeros(n + 1, dtype=np.int32)
+    indices_list: list[int] = []
 
-        if len(full_lineage) >= desired_num_cells:
-            break
-    return full_lineage
+    for i, cell in enumerate(lineage):
+        count = 0
+        if cell.left in cell_indices:
+            indices_list.append(cell_indices[cell.left])
+            count += 1
+        if cell.right in cell_indices:
+            indices_list.append(cell_indices[cell.right])
+            count += 1
+        indptr[i + 1] = indptr[i] + count
 
-
-def output_assign_obs(state: int, full_lineage: list[CellVar], E: list):
-    """
-    Observation assignment give a state.
-    Given the lineageTree object and the intended state, this function assigns the corresponding observations
-    coming from specific distributions for that state.
-    :param state: The integer value of the state that is being observed.
-    :param full_lineage: The list of cells within the lineageTree object.
-    :param E: The list of observations assignments.
-    """
-    cells_in_state = [cell for cell in full_lineage if cell.state == state]
-    list_of_tuples_of_obs = E[state].rvs(size=len(cells_in_state))
-    list_of_tuples_of_obs = list(map(list, zip(*list_of_tuples_of_obs)))
-
-    assert len(cells_in_state) == len(list_of_tuples_of_obs)
-    for i, cell in enumerate(cells_in_state):
-        cell.obs = list_of_tuples_of_obs[i]
-
-
-def max_gen(lineage: list[CellVar]) -> list[np.ndarray]:
-    """
-    Finds the maximal generation in the tree, and cells organized by their generations.
-    This walks through the cells in a given lineage, finds the maximal generation, and the group of cells belonging to a same generation and
-    creates a list of them, appends the lists leading to have a list of the lists of cells in specific generations.
-    :param lineage: The list of cells in a lineageTree object.
-    :return max: The maximal generation in the tree.
-    :return cells_by_gen: The list of lists of cells belonging to the same generation separated by specific generations.
-    """
-    gens = sorted(
-        {cell.gen for cell in lineage}
-    )  # appending the generation of cells in the lineage
-    cells_by_gen: list[np.ndarray] = []
-    for gen in gens:
-        level = np.array(
-            [
-                lineage.index(cell)
-                for cell in lineage
-                if (cell.gen == gen and cell.observed)
-            ],
-            dtype=int,
-        )
-        cells_by_gen.append(level)
-    return cells_by_gen
-
-
-def cell_to_parent(lineage: list[CellVar]) -> np.ndarray:
-    output = np.full(len(lineage), -1, dtype=int)
-    for ii, cell in enumerate(lineage):
-        parent = cell.parent
-        if parent is not None:
-            output[ii] = lineage.index(parent)
-
-    return output
-
-
-def cell_to_daughters(lineage: list[CellVar]) -> np.ndarray:
-    output = np.full((len(lineage), 2), -1, dtype=int)
-    for ii, cell in enumerate(lineage):
-        if cell.left is not None and cell.left in lineage:
-            output[ii, 0] = lineage.index(cell.left)
-
-        if cell.right is not None and cell.right in lineage:
-            output[ii, 1] = lineage.index(cell.right)
-
-    return output
-
-
-def get_leaves_idx(lineage: list[CellVar]) -> npt.NDArray[np.uintp]:
-    """
-    A function to find the leaves and their indexes in the lineage list.
-    :param lineage: The list of cells in a lineageTree object.
-    :return leaf_indices: The list of cell indexes.
-    :return leaves: The last cells in the lineage branch.
-    """
-    leaf_indices = []
-    for index, cell in enumerate(lineage):
-        if cell.isLeaf():
-            assert cell.observed
-            leaf_indices.append(index)  # appending the index of the cells
-    return np.array(leaf_indices, dtype=np.uintp)
+    indices = np.array(indices_list, dtype=np.int32)
+    data = np.ones(len(indices), dtype=bool)
+    return csr_array((data, indices, indptr), shape=(n, n))

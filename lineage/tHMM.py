@@ -1,10 +1,11 @@
-""" This file holds the parameters of our tHMM in the tHMM class. """
+"""This file holds the parameters of our tHMM in the tHMM class."""
 
 from copy import deepcopy
+
 import numpy as np
-from typing import Tuple
-from .Viterbi import Viterbi
+
 from .LineageTree import LineageTree, get_Emission_Likelihoods
+from .Viterbi import Viterbi
 
 
 class estimate:
@@ -46,7 +47,13 @@ class tHMM:
     """Main tHMM class."""
 
     def __init__(
-        self, X: list[LineageTree], num_states: int, fpi=None, fT=None, fE=None, rng=None
+        self,
+        X: list[LineageTree],
+        num_states: int,
+        fpi=None,
+        fT=None,
+        fE=None,
+        rng=None,
     ):
         """Instantiates a tHMM.
         This function uses the following functions and assings them to the cells
@@ -59,12 +66,8 @@ class tHMM:
         self.fT = fT
         self.fE = fE
         self.X = X  # list containing lineages
-        self.num_states = (
-            num_states  # number of discrete hidden states, should be integral
-        )
-        self.estimate = estimate(
-            self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE, rng=rng
-        )
+        self.num_states = num_states  # number of discrete hidden states, should be integral
+        self.estimate = estimate(self.X, self.num_states, fpi=self.fpi, fT=self.fT, fE=self.fE, rng=rng)
 
     def predict(self) -> list:
         """
@@ -75,9 +78,7 @@ class tHMM:
         """
         return Viterbi(self)
 
-    def get_BIC(
-        self, LL: float, num_cells: int, atonce=False, mcf10a=False
-    ) -> Tuple[float, float]:
+    def get_BIC(self, LL: float, num_cells: int, atonce: bool = False, mcf10a: bool = False) -> tuple[float, float]:
         """
         Gets the BIC values. Akaike Information Criterion, used for model selection and deals with the trade off
         between over-fitting and under-fitting.
@@ -109,7 +110,7 @@ class tHMM:
 
         return BIC_value, degrees_of_freedom
 
-    def log_score(self, X_state_tree_sequence: list, pi=None, T=None, E=None) -> list:
+    def log_score(self, X_state_tree_sequence: list, pi=None, T=None, E=None) -> list[float]:
         """
         This function returns the log-likelihood of a possible state assignment
         given the estimated model parameters.
@@ -137,19 +138,15 @@ class tHMM:
 
             # Calculate the joint probability of state and observations
             log_EL_array = np.log(get_Emission_Likelihoods(self.X, E)[idx])
-            log_score += np.sum(
-                log_EL_array[np.arange(log_EL_array.shape[0]), state_tree_sequence]
-            )
+            log_score += np.sum(log_EL_array[np.arange(log_EL_array.shape[0]), state_tree_sequence])
 
             assert np.all(np.isfinite(log_score))
-            log_scores.append(log_score)
+            log_scores.append(float(log_score))
 
         return log_scores
 
 
-def log_T_score(
-    T: np.ndarray, state_tree_sequence: list, lineageObj: LineageTree
-) -> float:
+def log_T_score(T: np.ndarray, state_tree_sequence: list[np.ndarray] | np.ndarray, lineageObj: LineageTree) -> float:
     """
     To calculate the joint probability of state and observations.
     This function calculates the second term.
@@ -162,15 +159,12 @@ def log_T_score(
     :type lineageObj: object
     :return: the log-likelihood of the transition probability matrix
     """
-    log_T_score_holder = 0
+    tree = lineageObj.tree
+    if tree.nnz == 0:
+        return 0.0
+
+    state_seq = np.asarray(state_tree_sequence)
     log_T = np.log(T)
+    parents, daughters = lineageObj.edges
 
-    # we start with the first transition, from the root cell
-    for cIDX, cell in enumerate(lineageObj.output_lineage):
-        if cell.gen > 0 and not cell.isLeaf():
-            cell_state = state_tree_sequence[cIDX]
-            for dIDX in lineageObj.cell_to_daughters[cIDX, :]:
-                daughter_state = state_tree_sequence[dIDX]
-                log_T_score_holder += log_T[cell_state, daughter_state]
-
-    return log_T_score_holder
+    return float(np.sum(log_T[state_seq[parents], state_seq[daughters]]))

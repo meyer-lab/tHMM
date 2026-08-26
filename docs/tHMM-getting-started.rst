@@ -13,117 +13,28 @@ This way, we can quantify phenotypic heterogeneity within a population of cells 
 We first introduce how to synthesize these populations by working up from the basic unit; cells. We then introduce how to synthesize lineages, which are just hierarchical lineage tree groupings of cells based on their family history. Our model ultimately analyzes populations which are groups of one or more lineages that share the same states.
 
 
-1. Synthesizing Cells
----------------------
+1. Lineage Tree Data Model
+---------------------------
 
-Users will rarely ever have to create individual cells, but their
-functionality is presented so the user is familiar with them. Users will
-however, create lineages, and as such, they will have to become
-comfortable with creating transition matrices using ``numpy``.
-Transition matrices define the probabilities of how cells will divide.
-Cells can only be made (new cells as a result of an existing cell
-dividing) when given a transition matrix. We provide an example below.
+Lineage trees in tHMM are represented at the lineage level using a **SciPy CSR sparse array** (representing parent-to-daughter connectivity) alongside **NumPy arrays** for observations, hidden states, and cell lifetimes.
 
-The transition matrix defines the rate at which cells are likely to
-change from one state to another. We use the defintion of a stochastic
-transition rate matrix from Wikipedia, that is, the column index defines
-the state in which we start, and the row defines the state at which we
-end up. That is, if an element at the index of a transition matrix
-:math:`T` at row :math:`i` and at column :math:`j`, is defined as
-:math:`T_{i,j}`, then
+Transition matrices define the probabilities of how cells divide and switch states across generations.
 
-.. math:: T_{i,j} = \mathbb{P}(z = j | z = i).
+The transition matrix defines the rate at which cells change from one state to another. Specifically, if an element of a transition matrix :math:`T` at row :math:`i` and column :math:`j` is defined as :math:`T_{i,j}`, then
 
+.. math:: T_{i,j} = \mathbb{P}(z_{\text{daughter}} = j | z_{\text{parent}} = i).
 
-\ Indexing for this matrix and the states starts at :math:`0`. Usually
-the number of states is represented as the capital letter :math:`K` and
-indexed by the lower-case letter :math:`k`. For most of our examples, we
-will deal with two states, i.e., :math:`K=2`.
+Indexing for states starts at :math:`0`. Usually the number of states is represented as the capital letter :math:`K` and indexed by :math:`k`. For most examples, we deal with two states, i.e., :math:`K=2`.
 
 .. code:: ipython3
 
     import numpy as np
-    # The capital letter T will represent the state transition probability matrix.
-    # This transition matrix, in particular, is the two-dimensional 
-    # identity matrix. Recall that the elements of the transition matrix
-    # represent the probability of transitioning from one state to another.
-    T = np.array([[1.0, 0.0],
-                  [0.0, 1.0]],  dtype="float")
-    # This identity matrix implies that there are no transitions between cells of
-    # state 0 to cells of state 1. It also implies that there are no transitions 
-    # between cells of state 1 to cells of state 0.
-    # Another transition matrix could be the following:
-    #
-    # T = np.array([[0.75, 0.25],
-    #               [0.15, 0.85]], dtype="float")
-    #
-    # Note that the rows of the transition matrix have to sum one, because of the
-    # Law of Total Probability and the Law of Conditional Probability. This will be
-    # expanded on in a later notebook.
 
-Cells are defined by their state, their relationships to other cells,
-and collections of observations. Knowing how to create cells, however,
-is not required by the user. It is beneficial to understand how the
-``CellVar`` class is designed to create objects that store a ``state``,
-its relationships (``left``, ``right``, ``parent``) to other cells, and
-its multivariate observations (``obs``). When cells are created via the
-``member`` function, their familiar relationships are automatically
-assigned. The two daughters are assigned to ``left`` and ``right`` and
-for the daughters, the parent is assigned to ``parent``. Other familiar
-relationships can be accessed through other member variables and
-functions. Note that the first generation is empty (we can see this
-because the ``parent_cell`` is instantiated with ``parent=None`` and
-with ``gen=1`` which means that ``gen=0`` of the lineage contains
-nothing except ``None``). As such, indexing for generations of lineages
-starts at ``1``. We will discuss more about the multivariate
-observations that cells store later; for now, the following exercises
-will focus on the transition matrix and the familiar relationships of
-cells.
-
-.. code:: ipython3
-
-    import numpy as np
-    from lineage.CellVar import CellVar as c
-
-    parent_cell = c(state=0, parent=None)
+    # State transition probability matrix
     T = np.array([[0.75, 0.25],
                   [0.15, 0.85]], dtype="float")
-    left_cell, right_cell = parent_cell.divide(T)
 
---------------
-
-.. code:: ipython3
-
-    print(parent_cell)
-    # <lineage.CellVar.CellVar object at 0x000001A685C55E10>
-    print(left_cell, right_cell)
-    # <lineage.CellVar.CellVar object at 0x000001A6961B3EF0> <lineage.CellVar.CellVar object at 0x000001A69609C978>
-    print(f"\nThe value of the element at (0,0) of the transition rate matrix is {T[0,0]}")
-    # The value of the element at (0,0) of the transition rate matrix is 0.75
-
---------------
-
-The ``gen`` argument for instantiating cells represents the generation
-of the cell which start at 1.
-
-
---------------
-
-
-``parent_cell``, ``left_cell``, and ``right_cell`` define a 3-cell
-lineage, with 2 generations. The first generation has one cell which was
-declared and can be accessed at ``parent_cell``. Calling the member
-function ``divide`` on ``parent_cell`` created two new cells which can
-be accessed at ``left_cell`` and ``right_cell``. The daughter cells of
-any cell can also be accessed using “dot” notation, using the
-member variables, ``left`` and ``right``. The division process
-utilizes the transition matrix. Our code provides some very basic
-printing methods to print out cells. The following code verifies that the ``left_cell`` is actually the left daughter of ``parent_cell``.
-
-.. code:: ipython3
-
-    # Use the `is` keyword to compare Python objects.
-    assert left_cell is parent_cell.left
+Note that the rows of the transition matrix must sum to 1 by the Law of Total Probability.
 
 --------------
 

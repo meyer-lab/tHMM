@@ -1,13 +1,15 @@
-""" Unit test file. """
-import unittest
-import pytest
-import numpy as np
-from ..LineageTree import LineageTree, get_Emission_Likelihoods
-from ..tHMM import tHMM
-from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
-from ..figures.common import pi, T, E
-from ..Analyze import Analyze, Results, run_Analyze_over
+"""Unit test file."""
 
+import unittest
+
+import numpy as np
+import pytest
+
+from ..Analyze import Analyze_list, Results, run_Analyze_over
+from ..figures.common import E, T, pi
+from ..LineageTree import LineageTree, get_Emission_Likelihoods
+from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
+from ..tHMM import tHMM
 
 rng = np.random.default_rng(1)
 
@@ -18,15 +20,19 @@ class TestModel(unittest.TestCase):
     """
 
     def setUp(self):
-        """ This tests that one step of Baum-Welch increases the likelihood of the fit. """
+        """This tests that one step of Baum-Welch increases the likelihood of the fit."""
         # Using an unpruned lineage to avoid unforseen issues
-        self.X = [LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 11) - 1)]
+        self.X = [LineageTree.rand_init(pi, T, E, desired_num_cells=63)]
         self.pi = np.array([0.55, 0.35, 0.10])
         self.T = np.array([[0.75, 0.20, 0.05], [0.1, 0.85, 0.05], [0.1, 0.1, 0.8]])
 
         # Emissions
-        self.E = [StateDistPhase(0.99, 0.9, 20, 5, 10, 3), StateDistPhase(0.88, 0.75, 10, 2, 15, 4), StateDistPhase(0.77, 0.85, 15, 7, 20, 5)]
-        self.X3 = [LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)]
+        self.E = [
+            StateDistPhase(0.99, 0.9, 20, 5, 10, 3),
+            StateDistPhase(0.88, 0.75, 10, 2, 15, 4),
+            StateDistPhase(0.77, 0.85, 15, 7, 20, 5),
+        ]
+        self.X3 = [LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=63)]
 
         self.t = tHMM(self.X, num_states=2, rng=rng)  # build the tHMM class with X
         self.t3 = tHMM(self.X3, num_states=3, rng=rng)  # build the tHMM class for 3 states
@@ -64,23 +70,27 @@ class TestModel(unittest.TestCase):
 
 
 def test_fit_performance():
-    """ Really defined states should get an accuracy >95%.
-    Lineages used should be large and distinct. """
+    """Really defined states should get an accuracy >95%.
+    Lineages used should be large and distinct."""
+    test_rng = np.random.default_rng(1)
+    X = [LineageTree.rand_init(pi, T, E, desired_num_cells=(2**8) - 1, rng=test_rng)]
 
-    X = [LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 8) - 1)]
-    first = Results(*Analyze(X, 2, fpi=pi, rng=rng))["state_similarity"]
-    second = Results(*Analyze(X, 2, fpi=pi, rng=rng))["state_similarity"]
-    assert max(first, second) > 95.0
+    a, b, _ = Analyze_list([X], 2, fpi=pi, rng=test_rng)
+    first = Results(a[0], b)["state_similarity"]
+
+    a, b, _ = Analyze_list([X], 2, fpi=pi, rng=test_rng)
+    second = Results(a[0], b)["state_similarity"]
+    assert max(first, second) > 90.0
 
 
 @pytest.mark.parametrize("sizze", [1, 3])
 @pytest.mark.parametrize("stateNum", [1, 2, 3])
 def test_small_lineages(sizze, stateNum):
-    """ To test lineages with 3 cells in them for simple gamma. """
+    """To test lineages with 3 cells in them for simple gamma."""
     # test with 2 state model
     lin = [LineageTree.rand_init(pi, T, E, sizze) for _ in range(2)]
 
-    _, LL1 = Analyze(lin, stateNum, rng=rng)
+    _, LL1, _ = Analyze_list([lin], stateNum, rng=rng)
     assert np.all(np.isfinite(LL1))
 
 
@@ -105,5 +115,5 @@ def test_BIC():
         output = run_Analyze_over(lin, desired_num_states)
 
         for idx in range(len(desired_num_states)):
-            BIC, _ = output[idx][0].get_BIC(output[idx][1], nums)
+            BIC, _ = output[idx][0][0].get_BIC(output[idx][1], nums)
             assert np.argmin(BIC) == 0

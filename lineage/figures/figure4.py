@@ -1,22 +1,24 @@
-""" This file contains functions for plotting the performance of the model for censored data. """
+"""This file contains functions for plotting the performance of the model for censored data."""
+
+from copy import deepcopy
 
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from copy import deepcopy
-from .common import (
-    getSetup,
-    subplotLabel,
-    commonAnalyze,
-    pi,
-    T,
-    E2,
-    num_data_points,
-    min_num_lineages,
-    max_num_lineages,
-)
+
 from ..LineageTree import LineageTree
 from ..plotTree import plotLineage
+from .common import (
+    E2,
+    T,
+    commonAnalyze,
+    getSetup,
+    max_num_lineages,
+    min_num_lineages,
+    num_data_points,
+    pi,
+    subplotLabel,
+)
 
 scatter_state_1_kws = {
     "alpha": 0.33,
@@ -33,9 +35,23 @@ def regGen(num):
 
 
 def cenGen(num):
-    tmp = LineageTree.rand_init(pi, T, E2, desired_num_cells=num, censor_condition=3, desired_experiment_time=250)
+    tmp = LineageTree.rand_init(
+        pi,
+        T,
+        E2,
+        desired_num_cells=num,
+        censor_condition=3,
+        desired_experiment_time=250,
+    )
     while len(tmp.output_lineage) < 5:
-        tmp = LineageTree.rand_init(pi, T, E2, desired_num_cells=num, censor_condition=3, desired_experiment_time=250)
+        tmp = LineageTree.rand_init(
+            pi,
+            T,
+            E2,
+            desired_num_cells=num,
+            censor_condition=3,
+            desired_experiment_time=250,
+        )
     return tmp
 
 
@@ -103,23 +119,39 @@ def figureMaker3(ax, x_Sim, output_Sim, x_Cen, output_Cen, xlabel="Number of Cel
 
     i = 0
     plotLineage(regGen(45), axes=ax[i], censor=False)
-    ax[i].axis('off')
+    ax[i].axis("off")
 
     i += 1
     plotLineage(cenGen(45), axes=ax[i], censor=True)
-    ax[i].axis('off')
+    ax[i].axis("off")
 
     i += 1
-    ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
-    sns.regplot(x="Cell number", y="Adjusted Rand Index Accuracy", data=accuracy_sim_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
+    ax[i].axhline(y=100, ls="--", c="k", alpha=0.5)
+    sns.regplot(
+        x="Cell number",
+        y="Adjusted Rand Index Accuracy",
+        data=accuracy_sim_df,
+        ax=ax[i],
+        lowess=True,
+        marker="+",
+        scatter_kws=scatter_state_1_kws,
+    )
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=0, top=101)
     ax[i].set_ylabel(r"Adjusted Rand Index Accuracy [%]")
     ax[i].set_title("Censored data, uncensored model")
 
     i += 1
-    ax[i].axhline(y=100, ls='--', c='k', alpha=0.5)
-    sns.regplot(x="Cell number", y="Adjusted Rand Index Accuracy", data=accuracy_cen_df, ax=ax[i], lowess=True, marker='+', scatter_kws=scatter_state_1_kws)
+    ax[i].axhline(y=100, ls="--", c="k", alpha=0.5)
+    sns.regplot(
+        x="Cell number",
+        y="Adjusted Rand Index Accuracy",
+        data=accuracy_cen_df,
+        ax=ax[i],
+        lowess=True,
+        marker="+",
+        scatter_kws=scatter_state_1_kws,
+    )
     ax[i].set_xlabel(xlabel)
     ax[i].set_ylim(bottom=0, top=101)
     ax[i].set_ylabel(r"Adjusted Rand Index Accuracy [%]")

@@ -6,21 +6,22 @@ single lineages (more than one lineage per population)
 with similar proportions of cells in states but
 of varying distributions.
 """
+
 import numpy as np
 
-from .common import (
-    getSetup,
-    subplotLabel,
-    commonAnalyze,
-    figureMaker,
-    pi,
-    T,
-    max_desired_num_cells,
-    num_data_points,
-    state1,
-)
 from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
+from .common import (
+    T,
+    commonAnalyze,
+    figureMaker,
+    getSetup,
+    max_desired_num_cells,
+    num_data_points,
+    pi,
+    state1,
+    subplotLabel,
+)
 
 
 def makeFigure():
@@ -55,7 +56,14 @@ def accuracy():
         population = []
 
         for _ in range(5):
-            tmp_lineage = LineageTree.rand_init(pi, T, E, 0.5 * max_desired_num_cells, censor_condition=3, desired_experiment_time=500)
+            tmp_lineage = LineageTree.rand_init(
+                pi,
+                T,
+                E,
+                int(0.5 * max_desired_num_cells),
+                censor_condition=3,
+                desired_experiment_time=500,
+            )
             if len(tmp_lineage.output_lineage) < 3:
                 pass
             else:

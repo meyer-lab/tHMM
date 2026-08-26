@@ -1,8 +1,10 @@
-""" Unit test file. """
-import unittest
-import numpy as np
-from ..CellVar import CellVar as c
+"""Unit test file."""
 
+import unittest
+
+import numpy as np
+
+from ..CellVar import CellVar as c
 
 # pylint: disable=protected-access
 
@@ -55,18 +57,6 @@ class TestModel(unittest.TestCase):
         self.assertTrue(cell.gen == 1)
         self.assertTrue(left_cell.gen == 2 and right_cell.gen == 2)
 
-    def test_isRootParent(self):
-        """
-        Tests whether the correct root parent asserts work.
-        """
-        T = np.array([[1.0, 0.0], [0.0, 1.0]])
-
-        parent_state = 1
-        cell = c(state=parent_state, parent=None)
-        left_cell, right_cell = cell.divide(T)
-        self.assertTrue(cell.isRootParent())
-        self.assertFalse(left_cell.isRootParent() and right_cell.isRootParent())
-
     def test_isLeafBecauseTerminal(self):
         """
         Tests whether the leaf cells are correctly checked.
@@ -79,26 +69,3 @@ class TestModel(unittest.TestCase):
         left_cell, right_cell = cell.divide(T)
         self.assertFalse(cell.isLeafBecauseTerminal())
         self.assertTrue(left_cell.isLeafBecauseTerminal() and right_cell.isLeafBecauseTerminal())
-
-    def test_get_sister(self):
-        """
-        Tests the relationships between related cells.
-        """
-        T = np.array([[1.0, 0.0], [0.0, 1.0]])
-
-        parent_state = 1
-        cell = c(state=parent_state, parent=None)
-        left_cell, right_cell = cell.divide(T)
-        self.assertTrue(left_cell.get_sister() is right_cell and right_cell.get_sister() is left_cell)
-
-    def test_get_root_cell(self):
-        """
-        Tests the function that returns the root cell.
-        """
-        T = np.array([[1.0, 0.0], [0.0, 1.0]])
-
-        parent_state = 1
-        cell = c(state=parent_state, parent=None)
-        self.assertTrue(cell.get_root_cell() is cell)
-        left_cell, right_cell = cell.divide(T)
-        self.assertTrue(left_cell.get_root_cell() is cell and right_cell.get_root_cell() is cell)

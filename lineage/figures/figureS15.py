@@ -1,9 +1,12 @@
-""" In this file we plot the abundance of states over time for experimental data. """
-import numpy as np
+"""In this file we plot the abundance of states over time for experimental data."""
+
 import math
-from .common import getSetup, subplotLabel
+
+import numpy as np
+
 from ..Analyze import Analyze_list
-from ..Lineage_collections import AllLapatinib, AllGemcitabine
+from ..Lineage_collections import AllGemcitabine, AllLapatinib
+from .common import getSetup, subplotLabel
 
 lapt_tHMMobj_list = Analyze_list(AllLapatinib, 4)[0]
 gemc_tHMMobj_list = Analyze_list(AllGemcitabine, 5)[0]
@@ -11,27 +14,29 @@ gemc_tHMMobj_list = Analyze_list(AllGemcitabine, 5)[0]
 times = np.linspace(0.0, 96.0, 48)
 
 
-def find_state_proportions(lapt_tHMMobj, control=False):
+def find_state_proportions(lapt_tHMMobj, control=None):
     states = np.zeros((len(times), 3))
     for indx, t in enumerate(times):
         st0 = 0
         st1 = 0
         st2 = 0
-        if control:
+        thmm = lapt_tHMMobj.X
+
+        if control is not None:
             thmm = control
-        else:
-            thmm = lapt_tHMMobj.X
 
         for lineage in thmm:
-            for cell in lineage.output_lineage:
+            output_lineage = lineage.E[0].censor_lineage(censor_condition=0, full_lineage=lineage.output_lineage)
+
+            for ii, cell in enumerate(output_lineage):
                 if math.isnan(cell.time.startT):  # left censored. startT = 0
                     cell.time.startT = 0.0
                 if math.isnan(cell.time.endT):  # right censored. endT = 96
                     cell.time.endT = 96.0
                 if cell.time.startT <= t <= cell.time.endT:
-                    if cell.state == 0:
+                    if lineage.states[ii] == 0:
                         st0 += 1
-                    elif cell.state == 1:
+                    elif lineage.states[ii] == 1:
                         st1 += 1
                     else:
                         st2 += 1
@@ -43,7 +48,16 @@ def find_state_proportions(lapt_tHMMobj, control=False):
 
 
 # labels
-concs = ["control", "lapatinib 25 nM", "lapatinib 50 nM", "lapatinib 250 nM", "control", "gemcitabine 5 nM", "gemcitabine 10 nM", "gemcitabine 30 nM"]
+concs = [
+    "control",
+    "lapatinib 25 nM",
+    "lapatinib 50 nM",
+    "lapatinib 250 nM",
+    "control",
+    "gemcitabine 5 nM",
+    "gemcitabine 10 nM",
+    "gemcitabine 30 nM",
+]
 # control
 control_L = find_state_proportions(lapt_tHMMobj_list[0], control=lapt_tHMMobj_list[0].X[0:100])
 
@@ -70,19 +84,75 @@ conc3_G = find_state_proportions(gemc_tHMMobj_list[3])
 
 
 def makeFigure():
-    """ Makes figure S15. """
+    """Makes figure S15."""
 
     ax, f = getSetup((10, 5), (2, 4))
 
-    ax[0].stackplot(times, control_L[:, 0], control_L[:, 1], control_L[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
-    ax[1].stackplot(times, conc1_L[:, 0], conc1_L[:, 1], conc1_L[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
-    ax[2].stackplot(times, conc2_L[:, 0], conc2_L[:, 1], conc2_L[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
-    ax[3].stackplot(times, conc3_L[:, 0], conc3_L[:, 1], conc3_L[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
+    ax[0].stackplot(
+        times,
+        control_L[:, 0],
+        control_L[:, 1],
+        control_L[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
+    ax[1].stackplot(
+        times,
+        conc1_L[:, 0],
+        conc1_L[:, 1],
+        conc1_L[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
+    ax[2].stackplot(
+        times,
+        conc2_L[:, 0],
+        conc2_L[:, 1],
+        conc2_L[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
+    ax[3].stackplot(
+        times,
+        conc3_L[:, 0],
+        conc3_L[:, 1],
+        conc3_L[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
 
-    ax[4].stackplot(times, control_G[:, 0], control_G[:, 1], control_G[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
-    ax[5].stackplot(times, conc1_G[:, 0], conc1_G[:, 1], conc1_G[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
-    ax[6].stackplot(times, conc2_G[:, 0], conc2_G[:, 1], conc2_G[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
-    ax[7].stackplot(times, conc3_G[:, 0], conc3_G[:, 1], conc3_G[:, 2], labels=['state 1', 'state 2', 'state 3'], alpha=0.6)
+    ax[4].stackplot(
+        times,
+        control_G[:, 0],
+        control_G[:, 1],
+        control_G[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
+    ax[5].stackplot(
+        times,
+        conc1_G[:, 0],
+        conc1_G[:, 1],
+        conc1_G[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
+    ax[6].stackplot(
+        times,
+        conc2_G[:, 0],
+        conc2_G[:, 1],
+        conc2_G[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
+    ax[7].stackplot(
+        times,
+        conc3_G[:, 0],
+        conc3_G[:, 1],
+        conc3_G[:, 2],
+        labels=["state 1", "state 2", "state 3"],
+        alpha=0.6,
+    )
 
     for i in range(8):
         ax[i].legend()

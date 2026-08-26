@@ -3,16 +3,17 @@ File: figure8.py
 Purpose: Generates figure 8.
 BIC for synthetic data.
 """
+
 from concurrent.futures import ProcessPoolExecutor
+
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 
 from ..Analyze import run_Analyze_over
-from ..LineageTree import LineageTree
 from ..BaumWelch import calculate_stationary
-from .figure18 import state0, state1, state2, state3
+from ..LineageTree import LineageTree
 from .common import getSetup, subplotLabel
-
+from .figure18 import state0, state1, state2, state3
 
 desired_num_states = np.arange(1, 6)
 
@@ -41,21 +42,29 @@ def makeFigure():
     for _ in range(10):
         tmp = []
         for idx, e in enumerate(E):
-            T = (np.eye(len(e)) + 0.1)
+            T = np.eye(len(e)) + 0.1
             T = T / np.sum(T, axis=1)[:, np.newaxis]
             pi = calculate_stationary(T)
             if idx < 3:
                 # uncensored lineage generation
-                lineages = [LineageTree.rand_init(
-                    pi, T, e, 2**6 - 1) for _ in range(10)]
+                lineages = [LineageTree.rand_init(pi, T, e, 2**6 - 1) for _ in range(10)]
             else:
                 # censored lineage creation
-                lineages = [LineageTree.rand_init(
-                    pi, T, e, 2**6 - 1, censor_condition=3, desired_experiment_time=1200) for _ in range(10)]
-            tmp.append(exe.submit(run_BIC, e, lineages))
+                lineages = [
+                    LineageTree.rand_init(
+                        pi,
+                        T,
+                        e,
+                        2**6 - 1,
+                        censor_condition=3,
+                        desired_experiment_time=1200,
+                    )
+                    for _ in range(10)
+                ]
+            tmp.append(exe.submit(run_BIC, lineages))
         BICprom.append(tmp)
     Bic = [[aaa.result() for aaa in ee] for ee in BICprom]
-    BIC = list(map(list, zip(*Bic)))
+    BIC = list(map(list, zip(*Bic, strict=False)))
 
     exe.shutdown()
 
@@ -69,27 +78,26 @@ def makeFigure():
 
     # Plotting BICs
     for idx, a in enumerate(BIC):
-        figure_maker(ax[idx], a, (idx % 4) + 1,
-                     upper_ylim[int(idx / 4)], idx > 3)
+        figure_maker(ax[idx], a, (idx % 4) + 1, upper_ylim[int(idx / 4)], idx > 3)
     subplotLabel(ax)
     return f
 
 
-def run_BIC(E, lineages):
+def run_BIC(lineages: list[LineageTree]) -> np.ndarray:
     """
     Run's BIC for known lineages with known lineages and stores the output for
     figure drawing.
     """
 
     # Storing BICs into array
-    BICs = np.empty((len(desired_num_states)))
-    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states, parallel=True)
+    BICs = np.empty(len(desired_num_states))
+    output = run_Analyze_over([lineages] * len(desired_num_states), desired_num_states)
 
     for idx in range(len(desired_num_states)):
         nums = 0
-        for lin in output[idx][0].X:
+        for lin in output[idx][0][0].X:
             nums += len(lin.output_lineage)
-        BIC, _ = output[idx][0].get_BIC(output[idx][1], num_cells=nums)
+        BIC, _ = output[idx][0][0].get_BIC(output[idx][1], num_cells=nums)
         BICs[idx] = BIC
     # normalize
     return BICs - np.min(BICs)
@@ -99,7 +107,7 @@ def figure_maker(ax, BIC_Holder, true_state_no, upper_ylim, censored=False):
     """
     Makes figure 8.
     """
-    BIC_holder = list(map(list, zip(*BIC_Holder)))
+    BIC_holder = list(map(list, zip(*BIC_Holder, strict=False)))
 
     # Creating BIC plot and matching gridlines
     ax.set_xlabel("Number of States Predicted")

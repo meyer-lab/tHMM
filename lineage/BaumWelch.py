@@ -1,14 +1,17 @@
-""" Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch. """
+"""Re-calculates the tHMM parameters of pi, T, and emissions using Baum Welch."""
+
+from typing import Any
+
 import numpy as np
-from typing import Tuple
-from .tHMM import tHMM
+
+from .HMM.E_step import get_beta_and_NF, get_gamma, get_MSD
+from .HMM.M_step import get_all_zetas, sum_nonleaf_gammas
 from .LineageTree import get_Emission_Likelihoods
 from .states.StateDistributionGamma import atonce_estimator
-from .HMM.M_step import get_all_zetas, sum_nonleaf_gammas
-from .HMM.E_step import get_leaf_Normalizing_Factors, get_MSD, get_beta, get_gamma
+from .tHMM import tHMM
 
 
-def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
+def do_E_step(tHMMobj: tHMM) -> tuple[list, list, list, list]:
     """
     Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
 
@@ -25,17 +28,19 @@ def do_E_step(tHMMobj: tHMM) -> Tuple[list, list, list, list]:
     EL = get_Emission_Likelihoods(tHMMobj.X, tHMMobj.estimate.E)
 
     for ii, lO in enumerate(tHMMobj.X):
-        MSD.append(
-            get_MSD(lO.cell_to_parent, tHMMobj.estimate.pi, tHMMobj.estimate.T)
-        )
-        NF.append(get_leaf_Normalizing_Factors(lO.leaves_idx, MSD[ii], EL[ii]))
-        betas.append(get_beta(lO.leaves_idx, lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], EL[ii], NF[ii]))
-        gammas.append(get_gamma(lO.cell_to_daughters, tHMMobj.estimate.T, MSD[ii], betas[ii]))
+        MSD.append(get_MSD(lO.tree, tHMMobj.estimate.pi, tHMMobj.estimate.T))
+
+        NF_one, beta = get_beta_and_NF(lO.leaves_idx, lO.tree, tHMMobj.estimate.T, MSD[ii], EL[ii])
+        NF.append(NF_one)
+        betas.append(beta)
+        gammas.append(get_gamma(lO.tree, tHMMobj.estimate.T, MSD[ii], betas[ii]))
 
     return MSD, NF, betas, gammas
 
 
-def calculate_log_likelihood(NF: list) -> float:
+def calculate_log_likelihood(
+    NF: list[np.ndarray] | list[list[np.ndarray]] | list[Any],
+) -> float:
     """
     Calculates log likelihood of NF for each lineage.
 
@@ -106,9 +111,7 @@ def do_M_step(tHMMobj: list[tHMM], MSD: list, betas: list, gammas: list):
 
     if tHMMobj[0].estimate.fE is None:
         assert tHMMobj[0].fE is None
-        if (
-            len(tHMMobj) == 1
-        ):  # means it only performs calculation on one condition at a time.
+        if len(tHMMobj) == 1:  # means it only performs calculation on one condition at a time.
             do_M_E_step(tHMMobj[0], gammas[0])
         else:  # means it performs the calculations on several concentrations at once.
             do_M_E_step_atonce(tHMMobj, gammas)
@@ -161,8 +164,12 @@ def do_M_T_step(
     for i, tt in enumerate(tHMMobj):
         for num, lO in enumerate(tt.X):
             # local T estimate
-            numer_e += get_all_zetas(lO.leaves_idx, lO.cell_to_daughters,
-                betas[i][num], MSD[i][num], gammas[i][num], tt.estimate.T
+            numer_e += get_all_zetas(
+                lO.tree,
+                betas[i][num],
+                MSD[i][num],
+                gammas[i][num],
+                tt.estimate.T,
             )
             denom_e += sum_nonleaf_gammas(lO.leaves_idx, gammas[i][num])
 
@@ -185,10 +192,10 @@ def do_M_E_step(tHMMobj: tHMM, gammas: list[np.ndarray]):
     :type tHMMobj: object
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
     """
-    all_cells = [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
+    cell_arr = np.vstack([lineage.obs for lineage in tHMMobj.X])
     all_gammas = np.vstack(gammas)
     for state_j in range(tHMMobj.num_states):
-        tHMMobj.estimate.E[state_j].estimator(all_cells, all_gammas[:, state_j])
+        tHMMobj.estimate.E[state_j].estimator(cell_arr, all_gammas[:, state_j])
 
 
 def do_M_E_step_atonce(all_tHMMobj: list[tHMM], all_gammas: list[list[np.ndarray]]):
@@ -197,42 +204,25 @@ def do_M_E_step_atonce(all_tHMMobj: list[tHMM], all_gammas: list[list[np.ndarray
     After reshaping, we will have a list of lists for each state.
     This function is specifically written for the experimental data of G1 and S-G2 cell cycle fates and durations.
     """
-    gms = []
-    for gm in all_gammas:
-        gms.append(np.vstack(gm))
+    gms = [np.vstack(gm) for gm in all_gammas]
 
-    all_cells = np.array(
-        [cell.obs for lineage in all_tHMMobj[0].X for cell in lineage.output_lineage]
-    )
-    if len(all_cells[1, :]) == 6:
-        phase = True
-    else:
-        phase = False
+    all_cells_0 = np.vstack([lineage.obs for lineage in all_tHMMobj[0].X])
+    phase = all_cells_0.shape[1] == 6
 
     G1cells = []
     G2cells = []
     cells = []
     for tHMMobj in all_tHMMobj:
-        all_cells = np.array(
-            [cell.obs for lineage in tHMMobj.X for cell in lineage.output_lineage]
-        )
+        all_cells = np.vstack([lineage.obs for lineage in tHMMobj.X])
         if phase:
-            G1cells.append(all_cells[:, np.array([0, 2, 4])])
-            G2cells.append(all_cells[:, np.array([1, 3, 5])])
+            G1cells.append(all_cells[:, [0, 2, 4]])
+            G2cells.append(all_cells[:, [1, 3, 5]])
         else:
             cells.append(all_cells)
 
     # reshape the gammas so that each list in this list of lists is for each state.
-    for j in range(all_tHMMobj[0].num_states):
-        gammas_1st = [array[:, j] for array in gms]
-        if phase:
-            atonce_estimator(
-                all_tHMMobj, G1cells, gammas_1st, "G1", j
-            )  # [shape, scale1, scale2, scale3, scale4] for G1
-            atonce_estimator(
-                all_tHMMobj, G2cells, gammas_1st, "G2", j
-            )  # [shape, scale1, scale2, scale3, scale4] for G2
-        else:
-            atonce_estimator(
-                all_tHMMobj, cells, gammas_1st, "all", j
-            )  # [shape, scale1, scale2]
+    if phase:
+        atonce_estimator(all_tHMMobj, G1cells, gms, "G1")  # [shape, scale1, scale2, scale3, scale4] for G1
+        atonce_estimator(all_tHMMobj, G2cells, gms, "G2")  # [shape, scale1, scale2, scale3, scale4] for G2
+    else:
+        atonce_estimator(all_tHMMobj, cells, gms, "all")  # [shape, scale1, scale2]

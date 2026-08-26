@@ -1,9 +1,11 @@
-""" To plot a summary of cross validation. """
-from .common import getSetup
+"""To plot a summary of cross validation."""
+
 import numpy as np
-from ..LineageTree import LineageTree
-from ..crossval import output_LL
+
 from ..BaumWelch import calculate_stationary
+from ..crossval import output_LL
+from ..LineageTree import LineageTree
+from .common import getSetup
 from .figure18 import state0, state1, state2, state3, state4
 
 desired_num_states = np.arange(1, 8)
@@ -27,7 +29,8 @@ def makeFigure():
         T = T / np.sum(T, axis=1)[:, np.newaxis]
         pi = calculate_stationary(T)
         complete_population = [
-            [LineageTree.rand_init(pi, T, e, 7, censor_condition=3, desired_experiment_time=200) for _ in range(100)] for _ in range(4)
+            [LineageTree.rand_init(pi, T, e, 7, censor_condition=3, desired_experiment_time=200) for _ in range(100)]
+            for _ in range(4)
         ]
 
         output.append(output_LL(complete_population, desired_num_states))
