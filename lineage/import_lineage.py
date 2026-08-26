@@ -245,8 +245,8 @@ def assign_observs_Taxol(cell, cell_lineage, label: int):
     :param cell_lineage: the dataframe of cells in a file.
     :param label: the id given to the cell from the experiment.
     """
-    # initialize
-    cell.obs = [1, 1, 0, 0, 1, 1]  # [G1_fate, S_G2_fate, G1_length, SG2_length, G1_censored?, SG2_censored?]
+    # initialize: [G1_fate, S_G2_fate, G1_length, SG2_length, G1_censored?, SG2_censored?]
+    cell.obs = [1.0, 1.0, 0.0, 0.0, 1.0, 1.0]
     t_end = 5760
 
     all_parent_ids = cell_lineage["parent"].unique()
@@ -256,31 +256,31 @@ def assign_observs_Taxol(cell, cell_lineage, label: int):
     if parent_id == 0:
         cell.gen = 1
 
-    threshold = 0.7 # greater than this ==> SG2
-    G1_df = cell_df.loc[cell_df['Cell_CC_mean_intensity_ratio'] <= threshold]
-    SG2_df = cell_df.loc[cell_df['Cell_CC_mean_intensity_ratio'] > threshold]
+    threshold = 0.7  # greater than this ==> SG2
+    G1_df = cell_df.loc[cell_df["Cell_CC_mean_intensity_ratio"] <= threshold]
+    SG2_df = cell_df.loc[cell_df["Cell_CC_mean_intensity_ratio"] > threshold]
 
     ## G1 calculations:
     if G1_df.empty:
         # means the cell has no G1 component
-        cell.obs[0] = np.nan # if no G1, then there is SG2, so it has definitely transitioned from G1 to SG2
+        cell.obs[0] = np.nan  # if no G1, then there is SG2, so it has definitely transitioned from G1 to SG2
         cell.obs[2] = np.nan
         cell.obs[4] = np.nan
 
     else:
         # G1 length
-        cell.obs[2] = (np.nanmax(G1_df["elapsed_minutes"]) - np.nanmin(G1_df["elapsed_minutes"])) / 60 # G1 duration
-        if np.nanmin(G1_df["elapsed_minutes"]) == 0: # means left censored
+        cell.obs[2] = (np.nanmax(G1_df["elapsed_minutes"]) - np.nanmin(G1_df["elapsed_minutes"])) / 60  # G1 duration
+        if np.nanmin(G1_df["elapsed_minutes"]) == 0:  # means left censored
             cell.obs[4] = 0
-            if not(SG2_df.empty): # has transitioned from G1 -> SG2
+            if not (SG2_df.empty):  # has transitioned from G1 -> SG2
                 cell.obs[0] = 1
 
-        if np.nanmax(G1_df["elapsed_minutes"]) == t_end: # cell existed and the experiment ended
+        if np.nanmax(G1_df["elapsed_minutes"]) == t_end:  # cell existed and the experiment ended
             cell.obs[4] = 0
-            assert not(label in all_parent_ids) # definitely is not a parent because we reached end of exp
+            assert label not in all_parent_ids  # definitely is not a parent because we reached end of exp
             cell.obs[0] = np.nan
 
-        if np.nanmax(G1_df["elapsed_minutes"]) < t_end and SG2_df.empty: # cell died in G1
+        if np.nanmax(G1_df["elapsed_minutes"]) < t_end and SG2_df.empty:  # cell died in G1
             cell.obs[0] = 0
 
     ## SG2 calculations:
@@ -291,25 +291,26 @@ def assign_observs_Taxol(cell, cell_lineage, label: int):
         cell.obs[5] = np.nan
     else:
         # SG2 length
-        cell.obs[3] = (np.nanmax(SG2_df["elapsed_minutes"]) - np.nanmin(SG2_df["elapsed_minutes"])) / 60 # SG2
-        if np.nanmin(SG2_df["elapsed_minutes"]) == 0: # cell existed when the experiment started
+        cell.obs[3] = (np.nanmax(SG2_df["elapsed_minutes"]) - np.nanmin(SG2_df["elapsed_minutes"])) / 60  # SG2
+        if np.nanmin(SG2_df["elapsed_minutes"]) == 0:  # cell existed when the experiment started
             cell.obs[5] = 0
             if label in all_parent_ids:
                 cell.obs[1] = 1
 
-        if np.nanmax(SG2_df["elapsed_minutes"]) == t_end: # cell existed and the experiment ended
+        if np.nanmax(SG2_df["elapsed_minutes"]) == t_end:  # cell existed and the experiment ended
             cell.obs[5] = 0
-            assert not(label in all_parent_ids) # definitely is not a parent because we reached end of exp
+            assert label not in all_parent_ids  # definitely is not a parent because we reached end of exp
             cell.obs[1] = np.nan
 
-        if np.nanmax(SG2_df["elapsed_minutes"]) < t_end and not(label in all_parent_ids): # cell died in SG2
+        if np.nanmax(SG2_df["elapsed_minutes"]) < t_end and label not in all_parent_ids:  # cell died in SG2
             cell.obs[1] = 0
 
     return cell
 
+
 ### The following two functions are used to make a list from labels that belong to the same lineage
 def sep_lineages(data):
-    labels = list(data["label"].unique())
+    list(data["label"].unique())
     all_parent_ids = list(data["parent"].unique())
     root_parent_labels = data.loc[data["parent"] == 0]["label"].unique()
     lin = [[[item]] for item in root_parent_labels]
@@ -318,7 +319,7 @@ def sep_lineages(data):
     xxx = 0
     remains = []
     for value in root_parent_labels:
-        dff = data.loc[data["label"]==value]
+        dff = data.loc[data["label"] == value]
         if len(dff) == 1:
             # print(dff[["label", "well", "field", "time_slice", "row", "column", "plateID"]])
             xxx += 1
@@ -327,14 +328,14 @@ def sep_lineages(data):
             remains.append(value)
 
     for i, val in enumerate(remains):
-        df = data.loc[data["label"]==val] # cell itself
+        df = data.loc[data["label"] == val]  # cell itself
         # if it only appeard in one frame, discard
         assert len(df) > 1
 
         # if it has divided
-        if np.all(df["is_parent"] == True):
+        if np.all(df["is_parent"]):
             assert val in all_parent_ids
-            df_children = data.loc[data["parent"] == val] # cell's children
+            df_children = data.loc[data["parent"] == val]  # cell's children
             # if the cell has two children
             child_labels = list(df_children["label"].unique())
             if len(child_labels) == 2:
@@ -354,20 +355,21 @@ def sep_lineages(data):
 
     return out5
 
+
 def separate_lineages(data, all_parent_ids, ls, k):
     """Given the lineages that only includes up to k generations of cells, add the k+1 generation to those lineages that have it."""
     lss = ls.copy()
     for j, val in enumerate(ls):
         if len(val) == k:
             temp = []
-            k_th = val[k-1]
+            k_th = val[k - 1]
             for i in k_th:
                 if np.isnan(i):
                     temp += [np.nan, np.nan]
                 else:
                     if i in all_parent_ids:
-                        if len(data.loc[data["parent"]==i]["label"].unique()) == 2:
-                            temp += list(data.loc[data["parent"]==i]["label"].unique())
+                        if len(data.loc[data["parent"] == i]["label"].unique()) == 2:
+                            temp += list(data.loc[data["parent"] == i]["label"].unique())
                         else:
                             temp += [np.nan, np.nan]
                     else:
@@ -384,28 +386,27 @@ def separate_lineages(data, all_parent_ids, ls, k):
 def import_taxol_file(filename="HC00801_A1_field_1_level_1.csv"):
     """To import the new Taxol data"""
 
-    data = pd.read_csv("lineage/data/taxol/"+filename)
+    data = pd.read_csv("lineage/data/taxol/" + filename)
 
     lineage_codes = sep_lineages(data)
     lineages = []
-    for i, lin in enumerate(lineage_codes):
-
+    for _i, lin in enumerate(lineage_codes):
         parent_cell = CellVar(parent=None)
         parent_cell = assign_observs_Taxol(parent_cell, data, lin[0][0])
-        lin_temp = [[parent_cell]]
+        lin_temp: list[list[CellVar | float]] = [[parent_cell]]
 
         if len(lin) >= 2:
             for kk in range(1, len(lin)):
-                tmp = [] # for each lineage
-                for ix, l in enumerate(lin[kk]):
-                    if ix % 2 == 1: # only iterate through one of two daughter cells
+                tmp = []  # for each lineage
+                for ix, label in enumerate(lin[kk]):
+                    if ix % 2 == 1:  # only iterate through one of two daughter cells
                         pass
                     else:
-                        if not np.isnan(l):
-                            cell = lin_temp[kk-1][int(ix/2)]
-                            if type(cell) == CellVar:
-                                a = assign_observs_Taxol(CellVar(parent=cell), data, l)
-                                b = assign_observs_Taxol(CellVar(parent=cell), data, lin[kk][ix+1])
+                        if not np.isnan(label):
+                            cell = lin_temp[kk - 1][int(ix / 2)]
+                            if isinstance(cell, CellVar):
+                                a = assign_observs_Taxol(CellVar(parent=cell), data, label)
+                                b = assign_observs_Taxol(CellVar(parent=cell), data, lin[kk][ix + 1])
                                 cell.left = a
                                 cell.right = b
                                 tmp.append([cell.left, cell.right])
@@ -419,10 +420,10 @@ def import_taxol_file(filename="HC00801_A1_field_1_level_1.csv"):
     new_lins = []
     counts_ = 0
     # remove nans
-    for jj, lin in enumerate(lineages):
-        n = [x for x in lin if str(x) != 'nan']
+    for _jj, lin in enumerate(lineages):
+        n = [x for x in lin if isinstance(x, CellVar)]
 
-        for kk, cells in enumerate(n):
+        for cells in n:
             # remove those lineages with cells that have NaN intensity ratio
             if np.all(np.isnan(cells.obs[2:4])):
                 counts_ += 1
@@ -437,16 +438,17 @@ def import_taxol_file(filename="HC00801_A1_field_1_level_1.csv"):
     # remove empty lineages and return
     return [s for s in new_lins if s]
 
+
 def trim_taxol(lineages):
-    """removed messed up lineages. e.g., those that divided but either didn't have G1 or SG2 although were in middle generations.. """
+    """removed messed up lineages. e.g., those that divided but either didn't have G1 or SG2 although were in middle generations.."""
 
     trimed_lineages = copy(lineages)
     counts, countsG1, countsG2 = 0, 0, 0
-    for ix, lin in enumerate(lineages):
+    for _ix, lin in enumerate(lineages):
         rm = 0
         for cell in lin:
             # cells with only one daughter
-            if not(cell.left and cell.right) and not(cell.isLeaf()):
+            if not (cell.left and cell.right) and not (cell.isLeaf()):
                 rm += 1
                 counts += 1
 
@@ -477,43 +479,59 @@ def trim_taxol(lineages):
 
 def import_taxol(HC="HC00801"):
     """Import taxol data by condition"""
-    untreated = [trim_taxol(import_taxol_file(HC + "_A1_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_A1_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_A1_field_4_level_1.csv"))]
+    untreated = [
+        trim_taxol(import_taxol_file(HC + "_A1_field_1_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_A1_field_2_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_A1_field_4_level_1.csv"))
+    ]
 
-    taxol_05 = [trim_taxol(import_taxol_file(HC + "_A2_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_A2_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_A2_field_3_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_A2_field_4_level_1.csv"))]
+    taxol_05 = [
+        trim_taxol(import_taxol_file(HC + "_A2_field_1_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_A2_field_2_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_A2_field_3_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_A2_field_4_level_1.csv"))
+    ]
 
-    taxol_1 = [trim_taxol(import_taxol_file(HC + "_B1_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_B1_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_B1_field_3_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_B1_field_4_level_1.csv"))]
+    taxol_1 = [
+        trim_taxol(import_taxol_file(HC + "_B1_field_1_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_B1_field_2_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_B1_field_3_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_B1_field_4_level_1.csv"))
+    ]
 
-    taxol_15 = [trim_taxol(import_taxol_file(HC + "_B2_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_B2_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_B2_field_3_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_B2_field_4_level_1.csv"))]
+    taxol_15 = [
+        trim_taxol(import_taxol_file(HC + "_B2_field_1_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_B2_field_2_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_B2_field_3_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_B2_field_4_level_1.csv"))
+    ]
 
-    taxol_2 = [trim_taxol(import_taxol_file(HC + "_C1_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_C1_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_C1_field_3_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_C1_field_4_level_1.csv"))]
+    taxol_2 = [
+        trim_taxol(import_taxol_file(HC + "_C1_field_1_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_C1_field_2_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_C1_field_3_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_C1_field_4_level_1.csv"))
+    ]
 
-    taxol_25 = [trim_taxol(import_taxol_file(HC + "_C2_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_C2_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_C2_field_3_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_C2_field_4_level_1.csv"))]
+    taxol_25 = [
+        trim_taxol(import_taxol_file(HC + "_C2_field_1_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_C2_field_2_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_C2_field_3_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_C2_field_4_level_1.csv"))
+    ]
 
-    taxol_3 = [trim_taxol(import_taxol_file(HC + "_D1_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_D1_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_D1_field_3_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_D1_field_4_level_1.csv"))]
+    taxol_3 = [
+        trim_taxol(import_taxol_file(HC + "_D1_field_1_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_D1_field_2_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_D1_field_3_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_D1_field_4_level_1.csv"))
+    ]
 
-    taxol_4 = [trim_taxol(import_taxol_file(HC + "_D2_field_1_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_D2_field_2_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_D2_field_3_level_1.csv")) +
-    trim_taxol(import_taxol_file(HC + "_D2_field_4_level_1.csv"))]
+    taxol_4 = [
+        trim_taxol(import_taxol_file(HC + "_D2_field_1_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_D2_field_2_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_D2_field_3_level_1.csv"))
+        + trim_taxol(import_taxol_file(HC + "_D2_field_4_level_1.csv"))
+    ]
 
     return untreated, taxol_05, taxol_1, taxol_15, taxol_2, taxol_25, taxol_3, taxol_4

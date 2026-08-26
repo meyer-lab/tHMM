@@ -113,7 +113,7 @@ def plotLineage(lineage: LineageTree, axes, censor: bool = True, color: bool = T
         length = root.obs[3]
         assert np.isfinite(length)
     else:
-        length=0.01
+        length = 0.01
     a = [Clade(length)]
 
     # input the root cell

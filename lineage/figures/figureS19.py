@@ -1,14 +1,16 @@
-""" BIC for Taxol data."""
-from ..Lineage_collections import taxols as Taxol_lin_list
-from ..Analyze import run_Analyze_over, Analyze_list
-from .common import getSetup
-from .figure9 import find_BIC
+"""BIC for Taxol data."""
 
 import pickle
+
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 
+from ..Lineage_collections import taxols as Taxol_lin_list
+from .common import getSetup
+from .figure9 import find_BIC
+
 desired_num_states = np.arange(1, 8)
+
 
 def makeFigure():
     """
