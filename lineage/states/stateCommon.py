@@ -396,7 +396,23 @@ def gamma_estimator(
         bounds=bnd,
         method="SLSQP",
         constraints=linc,
+        options={"maxiter": 200},
     )
+
+    if not res.success:
+        # SLSQP occasionally reports non-convergence (e.g. a bad line search direction)
+        # on otherwise well-posed problems; trust-constr is slower but more robust, so
+        # fall back to it from the same warm start before giving up.
+        res = minimize(
+            gamma_LL,
+            jac=gamma_LL_grad,
+            x0=np.log(x0_used),
+            args=arrgs,
+            bounds=bnd,
+            method="trust-constr",
+            constraints=linc,
+            options={"maxiter": 2000},
+        )
 
     assert res.success
     return np.exp(res.x)
