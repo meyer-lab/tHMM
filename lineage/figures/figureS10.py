@@ -4,23 +4,24 @@ Purpose: Generates figure S10.
 Figure S10 analyzes heterogeneous (2 state), censored (by both time and fate),
 populations of lineages (more than one lineage per populations).
 """
+
 import numpy as np
 
+from ..LineageTree import LineageTree
 from .common import (
-    getSetup,
-    subplotLabel,
+    E2,
+    T,
     commonAnalyze,
     figureMaker,
-    pi,
-    T,
-    E2,
-    min_desired_num_cells,
+    getSetup,
     max_experiment_time,
-    min_num_lineages,
     max_num_lineages,
+    min_desired_num_cells,
+    min_num_lineages,
     num_data_points,
+    pi,
+    subplotLabel,
 )
-from ..LineageTree import LineageTree
 
 # Creating a list of populations to analyze over
 num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
@@ -30,7 +31,14 @@ for num in num_lineages:
     population = []
 
     for _ in range(num):
-        tmp_lineage = LineageTree.rand_init(pi, T, E2, min_desired_num_cells, censor_condition=3, desired_experiment_time=2 * max_experiment_time)
+        tmp_lineage = LineageTree.rand_init(
+            pi,
+            T,
+            E2,
+            min_desired_num_cells,
+            censor_condition=3,
+            desired_experiment_time=2 * max_experiment_time,
+        )
         if len(tmp_lineage.output_lineage) < 3:
             pass
         else:

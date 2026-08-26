@@ -1,21 +1,24 @@
-""" Unit test file for Viterbi. """
+"""Unit test file for Viterbi."""
+
 import unittest
+
 import numpy as np
-from ..tHMM import tHMM
+
+from ..figures.common import E, T, pi
 from ..LineageTree import LineageTree
-from ..figures.common import pi, T, E
+from ..tHMM import tHMM
 
 
 class TestViterbi(unittest.TestCase):
-    """ Unit tests for Viterbi. """
+    """Unit tests for Viterbi."""
 
     def test_vt(self):
-        """ This tests that state assignments by Viterbi are maximum likelihood. """
-        X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2 ** 9) - 1)
-        tHMMobj = tHMM([X], num_states=2, fpi=pi, fT=T, fE=E)
+        """This tests that state assignments by Viterbi are maximum likelihood."""
+        X = LineageTree.rand_init(pi, T, E, desired_num_cells=(2**9) - 1)
+        tHMMobj = tHMM([X], num_states=2, fpi=pi, fT=T)
         model_log_score = tHMMobj.log_score(tHMMobj.predict())[0]
 
         for _ in range(5):
             # Generate a random sequence
-            random_log_scores = tHMMobj.log_score([np.random.randint(0, 2, (2 ** 9) - 1)])[0]
+            random_log_scores = tHMMobj.log_score([np.random.randint(0, 2, (2**9) - 1)])[0]
             self.assertLessEqual(random_log_scores, model_log_score)

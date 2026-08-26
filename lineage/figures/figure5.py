@@ -1,19 +1,21 @@
-""" This file contains figures related to how big the experment needs to be. """
+"""This file contains figures related to how big the experment needs to be."""
+
 import numpy as np
+
+from ..LineageTree import LineageTree
 from .common import (
-    getSetup,
-    subplotLabel,
-    pi,
     E2,
     T,
+    commonAnalyze,
+    figureMaker,
+    getSetup,
+    max_num_lineages,
     min_desired_num_cells,
     min_num_lineages,
-    max_num_lineages,
     num_data_points,
-    figureMaker,
-    commonAnalyze
+    pi,
+    subplotLabel,
 )
-from ..LineageTree import LineageTree
 
 # Creating a list of populations to analyze over
 num_lineages = np.linspace(min_num_lineages, max_num_lineages, num_data_points, dtype=int)
@@ -23,7 +25,14 @@ list_of_populations = []
 for indx, num in enumerate(num_lineages):
     population = []
     for _ in range(num):
-        tmp_lineage = LineageTree.rand_init(pi, T, E2, desired_num_cells=min_desired_num_cells, censor_condition=3, desired_experiment_time=experiment_times[indx])
+        tmp_lineage = LineageTree.rand_init(
+            pi,
+            T,
+            E2,
+            desired_num_cells=min_desired_num_cells,
+            censor_condition=3,
+            desired_experiment_time=experiment_times[indx],
+        )
         if len(tmp_lineage.output_lineage) < 3:
             pass
         else:

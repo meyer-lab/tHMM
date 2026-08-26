@@ -1,28 +1,12 @@
-""" This file plots the trees with their predicted states for lapatinib. """
+"""This file plots the trees with their predicted states for lapatinib."""
 
-import pickle
-
-from .common import getSetup
+from ..Analyze import Analyze_list
+from ..Lineage_collections import AllGemcitabine
 from ..plotTree import plotLineage
+from .common import getSetup
 
-# open gemcitabine
-pik1 = open("gemcitabines.pkl", "rb")
-alls = []
-for i in range(7):
-    gemc_tHMMobj_list = []
-    for i in range(4):
-        gemc_tHMMobj_list.append(pickle.load(pik1))
-    alls.append(gemc_tHMMobj_list)
-
-# selected for gemcitabine is 5 states which is index 4.
-gemc_tHMMobj_list = alls[4]
-gemc_states_list = [tHMMobj.predict() for tHMMobj in gemc_tHMMobj_list]
-
-# assign the predicted states to each cell
-for idx, lapt_tHMMobj in enumerate(gemc_tHMMobj_list):
-    for lin_indx, lin in enumerate(lapt_tHMMobj.X):
-        for cell_indx, cell in enumerate(lin.output_lineage):
-            cell.state = gemc_states_list[idx][lin_indx][cell_indx]
+num_states = 5
+gemc_tHMMobj_list = Analyze_list(AllGemcitabine, num_states, write_states=True)[0]
 
 only_lapatinib_control_1 = gemc_tHMMobj_list[0].X[0:100]
 
@@ -34,7 +18,7 @@ def makeFigure():
     ax, f = getSetup((4, 40), (60, 1))
 
     for i in range(60):
-        ax[i].axis('off')
+        ax[i].axis("off")
         plotLineage(only_lapatinib_control_1[i], ax[i])
 
     return f

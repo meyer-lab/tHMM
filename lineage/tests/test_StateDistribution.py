@@ -1,11 +1,14 @@
-""" Unit test file. """
+"""Unit test file."""
+
 import unittest
-import pytest
 from copy import deepcopy
+
 import numpy as np
+import pytest
+
+from ..LineageTree import LineageTree
 from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistributionGaPhs import StateDistribution as StateDistPhase
-from ..LineageTree import LineageTree
 
 
 class TestModel(unittest.TestCase):
@@ -20,13 +23,40 @@ class TestModel(unittest.TestCase):
 
         # Emissions
         self.E = [StateDistribution(0.99, 20, 5), StateDistribution(0.80, 10, 1)]
-        self.E2 = [StateDistPhase(0.99, 0.9, 100, 1, 20, 1.5), StateDistPhase(0.8, 0.75, 100, 0.2, 60, 1)]
+        self.E2 = [
+            StateDistPhase(0.99, 0.9, 100, 1, 20, 1.5),
+            StateDistPhase(0.8, 0.75, 100, 0.2, 60, 1),
+        ]
 
         # creating two lineages, one with False for pruning, one with True.
-        self.lineage = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1)
-        self.lineage2 = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 5.5) - 1, censor_condition=2, desired_experiment_time=50)
-        self.lineage3 = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800)
-        self.population = [LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=(2 ** 11) - 1, censor_condition=3, desired_experiment_time=800) for i in range(50)]
+        self.lineage = LineageTree.rand_init(self.pi, self.T, self.E, desired_num_cells=63)
+        self.lineage2 = LineageTree.rand_init(
+            self.pi,
+            self.T,
+            self.E,
+            desired_num_cells=int((2**5.5) - 1),
+            censor_condition=2,
+            desired_experiment_time=50,
+        )
+        self.lineage3 = LineageTree.rand_init(
+            self.pi,
+            self.T,
+            self.E,
+            desired_num_cells=63,
+            censor_condition=3,
+            desired_experiment_time=800,
+        )
+        self.population = [
+            LineageTree.rand_init(
+                self.pi,
+                self.T,
+                self.E,
+                desired_num_cells=63,
+                censor_condition=3,
+                desired_experiment_time=800,
+            )
+            for _ in range(5)
+        ]
 
     def test_rvs(self):
         """
@@ -46,18 +76,18 @@ class TestModel(unittest.TestCase):
     def test_estimator(self):
         """
         A unittest for the estimator function, by generating 3000 observatons for each of the
-        distribution functions, we use the estimator and compare. """
+        distribution functions, we use the estimator and compare."""
         # Gamma dist.
         tuples_of_obs = self.E[0].rvs(size=5000)
-        tuples_of_obs = list(map(list, zip(*tuples_of_obs)))
-        gammas = np.ones(len(tuples_of_obs))
+        tuples_of_obs = np.vstack(tuples_of_obs).T
+        gammas = np.ones(tuples_of_obs.shape[0])
         estimator_obj = deepcopy(self.E[0])
         estimator_obj.estimator(tuples_of_obs, gammas)
 
         # G1/G2 separated Gamma dist.
         tuples_of_obsPhase = self.E2[0].rvs(size=5000)
-        tuples_of_obsPhase = list(map(list, zip(*tuples_of_obsPhase)))
-        gammas = np.ones(len(tuples_of_obsPhase))
+        tuples_of_obsPhase = np.vstack(tuples_of_obsPhase).T
+        gammas = np.ones(tuples_of_obsPhase.shape[0])
         estimator_objPhase = deepcopy(self.E2[0])
         estimator_objPhase.estimator(tuples_of_obsPhase, gammas)
 
@@ -74,14 +104,13 @@ class TestModel(unittest.TestCase):
         as expected.
         """
         for lin in self.population:
-            for cell in lin.output_lineage:
-                if not cell.isRootParent:
-                    if not cell.parent.observed:
-                        self.assertFalse(cell.observed)
+            for cell in lin.output_lineage[1:]:
+                if not cell.parent.observed:
+                    self.assertFalse(cell.observed)
 
 
 @pytest.mark.parametrize("dist", [StateDistribution, StateDistPhase])
 def test_self_dist_zero(dist):
-    """ Test that the distance from a distribution to itself is zero. """
+    """Test that the distance from a distribution to itself is zero."""
     dd = dist()
     assert dd.dist(dd) == 0.0

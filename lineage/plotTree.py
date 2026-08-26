@@ -1,12 +1,24 @@
-""" This file includes function to plot lineage trees. It relies on the NetworkX and the Bio packages. """
+"""This file includes function to plot lineage trees. It relies on the NetworkX and the Bio packages."""
 
+import networkx as nx
 import numpy as np
 from Bio.Phylo.BaseTree import Clade
-import networkx as nx
+
+from .CellVar import CellVar
 from .figures.common import getSetup
+from .LineageTree import LineageTree
 
 cs = ["lightblue", "orange", "lightgreen", "red", "purple", "grey"]
 stateColors = ["blue", "orange", "green", "red", "purple", "grey"]
+
+
+class PhaseClade(Clade):
+    """Clade with cell cycle phase properties for plotting."""
+
+    G1: float
+    G2: float
+    G1lw: float
+    G2lw: float
 
 
 def plot_lineage_samples(tHMMobj_list, name):
@@ -16,9 +28,9 @@ def plot_lineage_samples(tHMMobj_list, name):
     k = 0
     for i in range(6):
         for objs in tHMMobj_list:
-            ax[k].axis('off')
-            if name == 'figure03':
-                plotLineage_MCF10A(objs.X[i+3], ax[k])
+            ax[k].axis("off")
+            if name == "figure03":
+                plotLineage_MCF10A(objs.X[i + 3], ax[k])
             else:
                 plotLineage(objs.X[i + 3], ax[k])
             k += 1
@@ -26,7 +38,7 @@ def plot_lineage_samples(tHMMobj_list, name):
     f.savefig("lineage/figures/cartoons/" + name + ".svg")
 
 
-def CladeRecursive(cell, a: list, censor: bool, color: bool):
+def CladeRecursive(cell: CellVar, a: list, censor: bool, color: bool):
     """A recurssive function that takes in the root cell and traverses through cells to plot the lineage.
     The width of the lines show the phase of the cells.
     The color of the lines show the state of the cells.
@@ -52,7 +64,7 @@ def CladeRecursive(cell, a: list, censor: bool, color: bool):
         elif np.isnan(cell.obs[3]):
             length = cell.obs[2]
         # Creating the clade and assigning the color
-        my_clade = Clade(branch_length=length, width=1, color=colorr)
+        my_clade = PhaseClade(branch_length=length, width=1, color=colorr)
         # Assigning the line width according to the phase
         my_clade.G1lw = 2.0
         my_clade.G2lw = 1.0
@@ -72,7 +84,7 @@ def CladeRecursive(cell, a: list, censor: bool, color: bool):
             lengths = cell.obs[3]
         else:
             lengths = cell.obs[2] + cell.obs[3]  # both are observed
-        my_clade = Clade(branch_length=lengths, width=1, clades=clades, color=colorr)
+        my_clade = PhaseClade(branch_length=lengths, width=1, clades=clades, color=colorr)
         my_clade.G1lw = 2.0
         my_clade.G2lw = 1.0
         my_clade.G1 = cell.obs[2] if np.isfinite(cell.obs[2]) else 1e-4
@@ -80,10 +92,15 @@ def CladeRecursive(cell, a: list, censor: bool, color: bool):
         return my_clade
 
 
-def plotLineage(lineage, axes, censor=True, color=True):
+def plotLineage(lineage: LineageTree, axes, censor: bool = True, color: bool = True):
     """
     Given a lineage of cells, uses the `CladeRecursive` function to plot the lineage.
     """
+    for ii, cell in enumerate(lineage.output_lineage):
+        cell.state = lineage.states[ii]
+
+        if color:
+            assert cell.state >= 0
 
     root = lineage.output_lineage[0]
     if np.isfinite(root.obs[4]):  # the lineage starts from G1 phase
@@ -105,7 +122,7 @@ def plotLineage(lineage, axes, censor=True, color=True):
     return draw(c, axes=axes)
 
 
-def plotLineage_MCF10A(lineage, axes, censor=True, color=True):
+def plotLineage_MCF10A(lineage: LineageTree, axes, censor: bool = True, color: bool = True):
     """
     Given a lineage of cells, uses the `CladeRecursive` function to plot the lineage.
     """
@@ -140,7 +157,7 @@ def CladeRecursive_MCF10A(cell, a: list, censor: bool, color: bool):
     if cell.isLeaf():
         length = cell.obs[1]
         # Creating the clade and assigning the color
-        my_clade = Clade(branch_length=length, width=1, color=colorr)
+        my_clade = PhaseClade(branch_length=length, width=1, color=colorr)
         # Assigning the line width according to the phase
         my_clade.G1lw = 1.0
         my_clade.G2lw = 1.0
@@ -154,7 +171,7 @@ def CladeRecursive_MCF10A(cell, a: list, censor: bool, color: bool):
         if cell.right is not None and cell.right.observed:
             clades.append(CladeRecursive_MCF10A(cell.right, a, censor, color))
         lengths = cell.obs[1]
-        my_clade = Clade(branch_length=lengths, width=1, clades=clades, color=colorr)
+        my_clade = PhaseClade(branch_length=lengths, width=1, clades=clades, color=colorr)
         my_clade.G1lw = 1.0
         my_clade.G2lw = 1.0
         my_clade.G1 = cell.obs[1]
@@ -182,9 +199,7 @@ def plot_networkx(T: np.ndarray, drug_name: str):
     # add edges
     for i in range(num_states):
         for j in range(num_states):
-            G.add_edge(
-                i, j, penwidth=3 * T[i, j], minlen=1, label=str(np.round(T[i, j], 2))
-            )
+            G.add_edge(i, j, penwidth=3 * T[i, j], minlen=1, label=str(np.round(T[i, j], 2)))
 
     # add graphviz layout options (see https://stackoverflow.com/a/39662097)
     G.graph["edge"] = {"arrowsize": "0.6", "splines": "curved"}
@@ -210,7 +225,7 @@ def draw(
     branch_labels=None,
     label_colors=None,
     *args,
-    **kwargs
+    **kwargs,
 ):
     """Plot the given tree using matplotlib (or pylab).
     The graphic is a rooted tree, drawn with roughly the same algorithm as
@@ -260,8 +275,8 @@ def draw(
             None, the label will be shown in black.
     """
 
-    import matplotlib.pyplot as plt
     import matplotlib.collections as mpcollections
+    import matplotlib.pyplot as plt
 
     # Arrays that store lines for the plot of clades
     horizontal_linecollections = []
@@ -300,9 +315,7 @@ def draw(
 
     else:
         if not callable(branch_labels):
-            raise TypeError(
-                "branch_labels must be either a dict or a callable (function)"
-            )
+            raise TypeError("branch_labels must be either a dict or a callable (function)")
         format_branch_label = branch_labels
 
     # options for displaying label colors.
@@ -342,9 +355,7 @@ def draw(
         """
         maxheight = tree.count_terminals()
         # Rows are defined by the tips
-        heights = {
-            tip: maxheight - i for i, tip in enumerate(reversed(tree.get_terminals()))
-        }
+        heights = {tip: maxheight - i for i, tip in enumerate(reversed(tree.get_terminals()))}
 
         # Internal nodes: place at midpoint of children
         def calc_row(clade):
@@ -352,9 +363,7 @@ def draw(
                 if subclade not in heights:
                     calc_row(subclade)
             # Closure over heights
-            heights[clade] = (
-                heights[clade.clades[0]] + heights[clade.clades[-1]]
-            ) / 2.0
+            heights[clade] = (heights[clade.clades[0]] + heights[clade.clades[-1]]) / 2.0
 
         if tree.root.clades:
             calc_row(tree.root)
@@ -367,7 +376,7 @@ def draw(
         fig = plt.figure()
         axes = fig.add_subplot(1, 1, 1)
     elif not isinstance(axes, plt.matplotlib.axes.Axes):
-        raise ValueError("Invalid argument for axes: %s" % axes)
+        raise ValueError(f"Invalid argument for axes: {axes}")
 
     def draw_clade_lines(
         use_linecollection=False,
@@ -388,17 +397,13 @@ def draw(
             axes.hlines(y_here, x_start, x_here, color=color, lw=lw)
         elif use_linecollection and orientation == "horizontal":
             horizontal_linecollections.append(
-                mpcollections.LineCollection(
-                    [[(x_start, y_here), (x_here, y_here)]], color=color, lw=lw
-                )
+                mpcollections.LineCollection([[(x_start, y_here), (x_here, y_here)]], color=color, lw=lw)
             )
         elif not use_linecollection and orientation == "vertical":
             axes.vlines(x_here, y_bot, y_top, color=color)
         elif use_linecollection and orientation == "vertical":
             vertical_linecollections.append(
-                mpcollections.LineCollection(
-                    [[(x_here, y_bot), (x_here, y_top)]], color=color, lw=lw
-                )
+                mpcollections.LineCollection([[(x_here, y_bot), (x_here, y_top)]], color=color, lw=lw)
             )
 
     def draw_clade(clade, x_start, color, lw):
@@ -435,7 +440,7 @@ def draw(
             axes.text(
                 x_here,
                 y_here,
-                " %s" % label,
+                f" {label}",
                 verticalalignment="center",
                 color=get_label_color(label),
             )
@@ -505,9 +510,9 @@ def draw(
             list(value)
         except TypeError:
             raise ValueError(
-                'Keyword argument "%s=%s" is not in the format '
+                f'Keyword argument "{key}={value}" is not in the format '
                 "pyplot_option_name=(tuple), pyplot_option_name=(tuple, dict),"
-                " or pyplot_option_name=(dict) " % (key, value)
+                " or pyplot_option_name=(dict) "
             ) from None
         if isinstance(value, dict):
             getattr(plt, str(key))(**dict(value))
