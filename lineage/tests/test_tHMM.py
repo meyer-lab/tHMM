@@ -88,7 +88,7 @@ def test_fit_performance():
 def test_small_lineages(sizze, stateNum):
     """To test lineages with 3 cells in them for simple gamma."""
     # test with 2 state model
-    lin = [LineageTree.rand_init(pi, T, E, sizze) for _ in range(2)]
+    lin = [LineageTree.rand_init(pi, T, E, sizze, rng=rng) for _ in range(2)]
 
     _, LL1, _ = Analyze_list([lin], stateNum, rng=rng)
     assert np.all(np.isfinite(LL1))

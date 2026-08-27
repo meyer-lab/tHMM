@@ -55,6 +55,7 @@ def test_BW(cens, nStates):
         desired_num_cells=num_cells,
         desired_experiment_time=expt_time,
         censor_condition=cens,
+        rng=rng,
     )
     tHMMobj = tHMM([X], num_states=nStates)  # build the tHMM class with X
 

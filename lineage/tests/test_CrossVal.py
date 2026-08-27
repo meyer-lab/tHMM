@@ -38,7 +38,7 @@ def test_cv(cen):
         for _ in range(4)
     ]
 
-    train_lineages = [hide_observation(complete_lin, 0.25) for complete_lin in complete_lineages]
+    train_lineages = [hide_observation(complete_lin, 0.25, rng=local_rng) for complete_lin in complete_lineages]
 
-    ll = crossval(train_lineages, np.arange(1, 3))
+    ll = crossval(train_lineages, np.arange(1, 3), rng=local_rng)
     assert ll[0] < ll[1]
