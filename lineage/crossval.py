@@ -12,12 +12,13 @@ from .Analyze import Analyze_list
 exe = ProcessPoolExecutor()
 
 
-def hide_observation(lineages: list, percentage: float) -> list:
+def hide_observation(lineages: list, percentage: float, rng=None) -> list:
     """Taking a list of lineages and the percentage of cells want to be masked, it marks those x% negative."""
+    rng = np.random.default_rng(rng)
     new_lineages = deepcopy(lineages)
     for new_lineage in new_lineages:
         for cell in new_lineage.output_lineage:
-            if bernoulli.rvs(p=percentage, size=1):
+            if bernoulli.rvs(p=percentage, size=1, random_state=rng):
                 # negate the cell observations to mask them
                 cell.obs = [-1 * o for o in cell.obs]
         new_lineage.obs = np.array([cell.obs for cell in new_lineage.output_lineage])
@@ -25,7 +26,7 @@ def hide_observation(lineages: list, percentage: float) -> list:
     return new_lineages
 
 
-def crossval(train_populations: list, num_states: np.ndarray):
+def crossval(train_populations: list, num_states: np.ndarray, rng=None):
     """Perform cross validation for the experimental data which runs in parallel for all states.
     :param train_populations: the populations after applying hide_observation. This includes the list of list of lineages.
     :param hidden_indexes: is a list of list of np.arrays for each lineage,
@@ -33,12 +34,13 @@ def crossval(train_populations: list, num_states: np.ndarray):
     :param hidden_obs: list of list of tuples of observations that have been masked in the train_lineage.
     :param num_states: is a range of states we want to run the cross validation for.
     """
+    rng = np.random.default_rng(rng)
     # fit training data by parallel.
 
     # save the tHMMobj for each number of states that is being run
     LLs = []
     for k in num_states:
-        tHMMobj_list, _, gamma_list = Analyze_list(train_populations, k)
+        tHMMobj_list, _, gamma_list = Analyze_list(train_populations, k, rng=rng)
 
         Logls = 0
         # calculate the log likelihood of hidden observations
