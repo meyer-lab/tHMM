@@ -1,10 +1,12 @@
 """To plot population level of lapatinib from the lineage trees."""
 
-from ..Lineage_collections import AllLapatinib, AllGemcitabine
-from ..LineageTree import get_leaves_idx
-from .common import getSetup
-import numpy as np
 import random
+
+import numpy as np
+
+from ..Lineage_collections import AllGemcitabine, AllLapatinib
+from .common import getSetup
+
 
 def makeFigure():
     """
@@ -19,16 +21,17 @@ def makeFigure():
     plot_each_drug(f, ax[4:], AllGemcitabine, gmc)
     return f
 
+
 def leaves_to_root(lin, ts):
-    """A function to traverse from root to leaves 
-    by randomly selecting a daughter cell at each generation forward, 
+    """A function to traverse from root to leaves
+    by randomly selecting a daughter cell at each generation forward,
     and calculate the time-series counts at G1 and S/G2."""
-    counts = np.zeros((ts.size, 2)) # G1 and S/G2
+    counts = np.zeros((ts.size, 2))  # G1 and S/G2
 
     t_cur = 0.0
 
     # randomly choose one of leaf cells.
-    leaves_idx = get_leaves_idx(lin.output_lineage)
+    leaves_idx = lin.leaves_idx
     lineage = lin.output_lineage
     random_leaf_idx = random.choice(leaves_idx)
 
@@ -39,16 +42,16 @@ def leaves_to_root(lin, ts):
         if c.parent is not None:
             cells.append(c.parent)
 
-    cells.reverse() # order from root to leaf
+    cells.reverse()  # order from root to leaf
 
-    for ii, cell in enumerate(cells): # the number of generations
+    for ii, cell in enumerate(cells):  # the number of generations
         for phase in range(2):
-            bern_obs = cell.obs[phase]
-            gamma_obs = np.nan_to_num(cell.obs[phase+2])
+            gamma_obs = np.nan_to_num(cell.obs[phase + 2])
             idx = (ts > t_cur) & (ts < t_cur + gamma_obs)
-            counts[idx, phase] += 2 ** (ii+1)
+            counts[idx, phase] += 2 ** (ii + 1)
             t_cur += gamma_obs
     return counts
+
 
 def plot_each_drug(f, ax, all_drug, name_list):
     control = all_drug[0]
