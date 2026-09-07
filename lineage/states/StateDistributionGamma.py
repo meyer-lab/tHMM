@@ -99,7 +99,7 @@ class StateDistribution:
         g_mask = np.logical_and(np.isfinite(γ_obs_), bern_obs_.astype("bool"))
         assert np.sum(g_mask) > 0, "All the cells are eliminated from the Gamma estimator."
 
-        self.params[0] = bern_estimator(bern_obs, gammas)
+        self.params[0] = bern_estimator(bern_obs_, gammas_)
         param_idx = np.ones((gammas_[g_mask].size), dtype=int)
 
         self.params[1], self.params[2] = gamma_estimator(
