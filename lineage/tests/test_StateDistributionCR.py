@@ -158,3 +158,35 @@ def test_phase_estimator_recovers_parameters():
     fitted.estimator(obs, np.ones(obs.shape[0]))
 
     np.testing.assert_allclose(fitted.params[2:], truth.params[2:], rtol=0.15)
+
+
+def test_works_through_crossval():
+    """The competing-risks emission drops into the package's own cross validation.
+
+    Two well-separated states should beat one on held-out likelihood, and the run
+    exercises rand_init, censoring, hide_observation and the at-once M step.
+    """
+    from lineage.BaumWelch import calculate_stationary
+    from lineage.crossval import crossval, hide_observation
+    from lineage.LineageTree import LineageTree
+
+    T = np.array([[0.9, 0.1], [0.1, 0.9]])
+    E = [
+        StateDistributionPhase(8.0, 7.0, 4.0, 2.0, death_scale1=400.0, death_a2=3.0, death_scale2=200.0),
+        StateDistributionPhase(6.0, 4.0, 3.0, 5.0, death_scale1=20.0, death_a2=3.0, death_scale2=12.0),
+    ]
+    rng = np.random.default_rng(3)
+
+    populations = [
+        [
+            LineageTree.rand_init(
+                calculate_stationary(T), T, E, 31, censor_condition=3, desired_experiment_time=150, rng=rng
+            )
+            for _ in range(20)
+        ]
+        for _ in range(3)
+    ]
+    train = [hide_observation(pop, 0.25, rng=rng) for pop in populations]
+
+    ll = crossval(train, np.arange(1, 3), rng=rng)
+    assert ll[0] < ll[1]
