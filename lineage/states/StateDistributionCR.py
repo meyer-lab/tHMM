@@ -64,6 +64,96 @@ def event_masks(x: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     return divided, died, censored
 
 
+def exponential_estimator(obs: np.ndarray, events: np.ndarray, weights: np.ndarray, param_idx: np.ndarray, K: int):
+    """Weighted right-censored MLE for exponential scales, one per group.
+
+    With a constant hazard the MLE is total time at risk over events observed, which
+    needs no iteration.  A pseudocount keeps a group with no observed deaths finite.
+    """
+    scales = np.empty(K)
+    for k in range(K):
+        sel = param_idx == (k + 1)
+        at_risk = float(np.dot(weights[sel], obs[sel])) + 1.0
+        n_events = float(np.dot(weights[sel], events[sel])) + 1.0 / K
+        scales[k] = at_risk / n_events
+    return scales
+
+
+def fit_clocks(distributions, x_list: list[np.ndarray], gammas_list: list[np.ndarray], state_j: int):
+    """Fit both clocks of one state, sharing each shape across conditions.
+
+    ``distributions`` is either a single :class:`StateDistribution` or a list of them,
+    one per condition.  The shape parameters are shared across conditions and the
+    scales are free, mirroring how ``atonce_estimator`` treats the Gamma model.
+    """
+    single = not isinstance(distributions, list)
+    dists = [distributions] if single else distributions
+    K = len(x_list)
+
+    x = np.concatenate(x_list, axis=0)
+    weights = np.concatenate([g[:, state_j] for g in gammas_list])
+    idx = np.concatenate([np.full(g.shape[0], k + 1) for k, g in enumerate(gammas_list)])
+
+    divided, died, censored = event_masks(x)
+    timed = divided | died | censored
+    if not np.any(timed):
+        return
+
+    t = np.clip(x[timed, 1], TIME_FLOOR, None)
+    w = weights[timed]
+    idx = idx[timed]
+    div_event = divided[timed].astype(float)
+    death_event = died[timed].astype(float)
+
+    ref = dists[0]
+
+    # Division clock: every timed cell contributes, as an event or as censored.
+    if np.any(div_event > 0.0):
+        x0 = np.array([ref.params[1]] + [d.params[2] for d in dists])
+        out = gamma_estimator(t, div_event, w, idx, x0, phase="all")
+        for k, d in enumerate(dists):
+            d.params[1] = out[0]
+            d.params[2] = out[k + 1]
+
+    # Death clock: same cells, with the roles of event and censoring swapped.
+    if np.any(death_event > 0.0):
+        if ref.fixed_death_shape:
+            scales = exponential_estimator(t, death_event, w, idx, K)
+            for k, d in enumerate(dists):
+                d.params[3] = 1.0
+                d.params[4] = scales[k]
+        else:
+            x0 = np.array([ref.params[3]] + [d.params[4] for d in dists])
+            out = gamma_estimator(t, death_event, w, idx, x0, phase="all")
+            for k, d in enumerate(dists):
+                d.params[3] = out[0]
+                d.params[4] = out[k + 1]
+
+    for d in dists:
+        d.params[0] = d.division_probability()
+
+
+def atonce_estimator(
+    all_tHMMobj: list,
+    x_list: list,
+    gammas_list: list[np.ndarray],
+    phase: Literal["all", "G1", "G2"],
+):
+    """M step across several conditions at once, matching the Gamma model's interface."""
+    x_list = [np.asarray(x) for x in x_list]
+
+    for state_j in range(len(all_tHMMobj[0].estimate.E)):
+        emissions = [tO.estimate.E[state_j] for tO in all_tHMMobj]
+
+        if phase == "all":
+            fit_clocks(emissions, x_list, gammas_list, state_j)
+        else:
+            sub = "G1" if phase == "G1" else "G2"
+            fit_clocks([getattr(e, sub) for e in emissions], x_list, gammas_list, state_j)
+            for e in emissions:
+                e._sync()
+
+
 class StateDistribution:
     """One cell-cycle phase with competing division and death clocks.
 
@@ -73,6 +163,9 @@ class StateDistribution:
     figure code that indexes them positionally continues to work; ``bern_p`` is now
     derived from the two clocks rather than fit.
     """
+
+    #: BaumWelch looks this up on the emission object to pick the right M step.
+    atonce_estimator = staticmethod(atonce_estimator)
 
     def __init__(
         self,
@@ -183,6 +276,9 @@ class StateDistributionPhase:
     :class:`~lineage.states.StateDistributionGaPhs.StateDistribution` exactly.
     """
 
+    #: BaumWelch looks this up on the emission object to pick the right M step.
+    atonce_estimator = staticmethod(atonce_estimator)
+
     def __init__(
         self,
         gamma_a1: float = 7.0,
@@ -239,98 +335,3 @@ class StateDistributionPhase:
         desired_experiment_time=2e12,
     ) -> tuple[csr_array, np.ndarray, np.ndarray]:
         return censor_lineage_gaphs(tree, obs, states, censor_condition, desired_experiment_time)
-
-
-def exponential_estimator(obs: np.ndarray, events: np.ndarray, weights: np.ndarray, param_idx: np.ndarray, K: int):
-    """Weighted right-censored MLE for exponential scales, one per group.
-
-    With a constant hazard the MLE is total time at risk over events observed, which
-    needs no iteration.  A pseudocount keeps a group with no observed deaths finite.
-    """
-    scales = np.empty(K)
-    for k in range(K):
-        sel = param_idx == (k + 1)
-        at_risk = float(np.dot(weights[sel], obs[sel])) + 1.0
-        n_events = float(np.dot(weights[sel], events[sel])) + 1.0 / K
-        scales[k] = at_risk / n_events
-    return scales
-
-
-def fit_clocks(distributions, x_list: list[np.ndarray], gammas_list: list[np.ndarray], state_j: int):
-    """Fit both clocks of one state, sharing each shape across conditions.
-
-    ``distributions`` is either a single :class:`StateDistribution` or a list of them,
-    one per condition.  The shape parameters are shared across conditions and the
-    scales are free, mirroring how ``atonce_estimator`` treats the Gamma model.
-    """
-    single = not isinstance(distributions, list)
-    dists = [distributions] if single else distributions
-    K = len(x_list)
-
-    x = np.concatenate(x_list, axis=0)
-    weights = np.concatenate([g[:, state_j] for g in gammas_list])
-    idx = np.concatenate([np.full(g.shape[0], k + 1) for k, g in enumerate(gammas_list)])
-
-    divided, died, censored = event_masks(x)
-    timed = divided | died | censored
-    if not np.any(timed):
-        return
-
-    t = np.clip(x[timed, 1], TIME_FLOOR, None)
-    w = weights[timed]
-    idx = idx[timed]
-    div_event = divided[timed].astype(float)
-    death_event = died[timed].astype(float)
-
-    ref = dists[0]
-
-    # Division clock: every timed cell contributes, as an event or as censored.
-    if np.any(div_event > 0.0):
-        x0 = np.array([ref.params[1]] + [d.params[2] for d in dists])
-        out = gamma_estimator(t, div_event, w, idx, x0, phase="all")
-        for k, d in enumerate(dists):
-            d.params[1] = out[0]
-            d.params[2] = out[k + 1]
-
-    # Death clock: same cells, with the roles of event and censoring swapped.
-    if np.any(death_event > 0.0):
-        if ref.fixed_death_shape:
-            scales = exponential_estimator(t, death_event, w, idx, K)
-            for k, d in enumerate(dists):
-                d.params[3] = 1.0
-                d.params[4] = scales[k]
-        else:
-            x0 = np.array([ref.params[3]] + [d.params[4] for d in dists])
-            out = gamma_estimator(t, death_event, w, idx, x0, phase="all")
-            for k, d in enumerate(dists):
-                d.params[3] = out[0]
-                d.params[4] = out[k + 1]
-
-    for d in dists:
-        d.params[0] = d.division_probability()
-
-
-def atonce_estimator(
-    all_tHMMobj: list,
-    x_list: list,
-    gammas_list: list[np.ndarray],
-    phase: Literal["all", "G1", "G2"],
-):
-    """M step across several conditions at once, matching the Gamma model's interface."""
-    x_list = [np.asarray(x) for x in x_list]
-
-    for state_j in range(len(all_tHMMobj[0].estimate.E)):
-        emissions = [tO.estimate.E[state_j] for tO in all_tHMMobj]
-
-        if phase == "all":
-            fit_clocks(emissions, x_list, gammas_list, state_j)
-        else:
-            sub = "G1" if phase == "G1" else "G2"
-            fit_clocks([getattr(e, sub) for e in emissions], x_list, gammas_list, state_j)
-            for e in emissions:
-                e._sync()
-
-
-# Let BaumWelch find the right at-once estimator from the emission object itself.
-StateDistribution.atonce_estimator = staticmethod(atonce_estimator)  # type: ignore[attr-defined]
-StateDistributionPhase.atonce_estimator = staticmethod(atonce_estimator)  # type: ignore[attr-defined]
