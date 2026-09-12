@@ -1,6 +1,9 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.12.0,<0.13"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = "."
 
 [project]
 name = "lineage"
@@ -31,6 +34,7 @@ fbuild = "lineage.figures.common:genFigure"
 docs = [
     "Sphinx>=4.5.0",
     "sphinx-autoapi>=1.8.4",
+    "sphinx-rtd-theme>=1.0.0",
 ]
 
 [dependency-groups]
@@ -38,16 +42,18 @@ dev = [
     "pytest>=8.0",
     "pytest-cov>=4.1",
     "pytest-xdist>=2.5.0",
+    "hypothesis>=6.100",
     "ty",
-    "ruff>=0.15.0",
+    "ruff>=0.16.0",
 ]
 
 [tool.ty.src]
-exclude = ["docs/**"]
+exclude = ["docs/**", ".claude/**"]
 
 [tool.ruff]
 line-length = 120
 target-version = "py310"
+extend-exclude = [".claude"]
 
 [tool.ruff.lint]
 select = [
