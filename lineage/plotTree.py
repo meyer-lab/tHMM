@@ -228,13 +228,19 @@ def draw(
     **kwargs,
 ):
     """Plot the given tree using matplotlib (or pylab).
+
     The graphic is a rooted tree, drawn with roughly the same algorithm as
     draw_ascii.
+
     Additional keyword arguments passed into this function are used as pyplot
     options. The input format should be in the form of:
     pyplot_option_name=(tuple), pyplot_option_name=(tuple, dict), or
     pyplot_option_name=(dict).
-    Example using the pyplot options 'axhspan' and 'axvline'::
+
+    Example using the pyplot options 'axhspan' and 'axvline':
+
+    .. code-block:: python
+
         from Bio import Phylo, AlignIO
         from Bio.Phylo.TreeConstruction import DistanceCalculator, DistanceTreeConstructor
         constructor = DistanceTreeConstructor()
@@ -244,35 +250,30 @@ def draw(
         tree = constructor.upgma(dm)
         Phylo.draw(tree, axhspan=((0.25, 7.75), {'facecolor':'0.5'}),
         ... axvline={'x':0, 'ymin':0, 'ymax':1})
+
     Visual aspects of the plot can also be modified using pyplot's own functions
     and objects (via pylab or matplotlib). In particular, the pyplot.rcParams
     object can be used to scale the font size (rcParams["font.size"]) and line
     width (rcParams["lines.linewidth"]).
-    :Parameters:
-        label_func : callable
-            A function to extract a label from a node. By default this is str(),
-            but you can use a different function to select another string
-            associated with each node. If this function returns None for a node,
-            no label will be shown for that node.
-        do_show : bool
-            Whether to show() the plot automatically.
-        show_confidence : bool
-            Whether to display confidence values, if present on the tree.
-        axes : matplotlib/pylab axes
-            If a valid matplotlib.axes.Axes instance, the phylogram is plotted
-            in that Axes. By default (None), a new figure is created.
-        branch_labels : dict or callable
-            A mapping of each clade to the label that will be shown along the
-            branch leading to it. By default this is the confidence value(s) of
-            the clade, taken from the ``confidence`` attribute, and can be
-            easily toggled off with this function's ``show_confidence`` option.
-            But if you would like to alter the formatting of confidence values,
-            or label the branches with something other than confidence, then use
-            this option.
-        label_colors : dict or callable
-            A function or a dictionary specifying the color of the tip label.
-            If the tip label can't be found in the dict or label_colors is
-            None, the label will be shown in black.
+
+    :param label_func: A function to extract a label from a node. By default this is str(),
+        but you can use a different function to select another string
+        associated with each node. If this function returns None for a node,
+        no label will be shown for that node.
+    :param do_show: Whether to show() the plot automatically.
+    :param show_confidence: Whether to display confidence values, if present on the tree.
+    :param axes: If a valid matplotlib.axes.Axes instance, the phylogram is plotted
+        in that Axes. By default (None), a new figure is created.
+    :param branch_labels: A mapping of each clade to the label that will be shown along the
+        branch leading to it. By default this is the confidence value(s) of
+        the clade, taken from the ``confidence`` attribute, and can be
+        easily toggled off with this function's ``show_confidence`` option.
+        But if you would like to alter the formatting of confidence values,
+        or label the branches with something other than confidence, then use
+        this option.
+    :param label_colors: A function or a dictionary specifying the color of the tip label.
+        If the tip label can't be found in the dict or label_colors is
+        None, the label will be shown in black.
     """
 
     import matplotlib.collections as mpcollections

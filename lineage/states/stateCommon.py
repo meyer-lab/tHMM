@@ -176,14 +176,14 @@ def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
     return numerator / denominator
 
 
-addr = get_cython_function_address("scipy.special.cython_special", "gammaincc")
-gammaincc = CFUNCTYPE(c_double, c_double, c_double)(addr)
+_addr_gammaincc = get_cython_function_address("scipy.special.cython_special", "gammaincc")
+gammaincc = CFUNCTYPE(c_double, c_double, c_double)(_addr_gammaincc)
 
-addr = get_cython_function_address("scipy.special.cython_special", "gammaln")
-gammaln = CFUNCTYPE(c_double, c_double)(addr)
+_addr_gammaln = get_cython_function_address("scipy.special.cython_special", "gammaln")
+gammaln = CFUNCTYPE(c_double, c_double)(_addr_gammaln)
 
-addr = get_cython_function_address("scipy.special.cython_special", "__pyx_fuse_0psi")
-psi = CFUNCTYPE(c_double, c_double)(addr)
+_addr_psi = get_cython_function_address("scipy.special.cython_special", "__pyx_fuse_0psi")
+psi = CFUNCTYPE(c_double, c_double)(_addr_psi)
 
 
 @njit
