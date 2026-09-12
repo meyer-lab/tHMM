@@ -939,7 +939,7 @@ dev = [
     { name = "pytest", specifier = ">=8.0" },
     { name = "pytest-cov", specifier = ">=4.1" },
     { name = "pytest-xdist", specifier = ">=2.5.0" },
-    { name = "ruff", specifier = ">=0.15.0" },
+    { name = "ruff", specifier = ">=0.16.0" },
     { name = "ty" },
 ]
 
