@@ -73,5 +73,6 @@ minversion = "6.0"
 testpaths = [
     "lineage/tests",
 ]
+addopts = "-n auto"
 
 
