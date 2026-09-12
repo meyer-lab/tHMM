@@ -23,4 +23,5 @@ spell.txt
 .vscode
 lineage/data/taxol
 output/
+docs/_build/
 
