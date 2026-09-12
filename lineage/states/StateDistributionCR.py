@@ -30,12 +30,23 @@ import numpy as np
 import scipy.stats as sp
 from scipy.integrate import quad
 from scipy.sparse import csr_array
+from scipy.special import gammaincc, gammaln
 
 from .stateCommon import censor_lineage_gamma, censor_lineage_gaphs, gamma_estimator
 
 # Smallest duration fed to a pdf, so that a recorded duration of exactly zero cannot
 # produce a non-finite emission likelihood.
 TIME_FLOOR = 1e-10
+
+
+def _gamma_logpdf(t: np.ndarray, a: float, scale: float) -> np.ndarray:
+    """log Gamma(a, scale) pdf, vectorized directly against scipy.special."""
+    return (a - 1.0) * np.log(t) - t / scale - a * np.log(scale) - gammaln(a)
+
+
+def _gamma_logsf(t: np.ndarray, a: float, scale: float) -> np.ndarray:
+    """log Gamma(a, scale) survival function, vectorized directly against scipy.special."""
+    return np.log(gammaincc(a, t / scale))
 
 
 def event_masks(x: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -197,13 +208,23 @@ class StateDistribution:
         return sp.gamma(a=self.params[3], scale=self.params[4])
 
     def division_probability(self) -> float:
-        """P(the division clock fires first) = int f_D(t) S_X(t) dt."""
-        div, death = self.div_clock, self.death_clock
+        """P(the division clock fires first) = int f_D(t) S_X(t) dt.
+
+        ``quad`` evaluates the integrand at ~100-200 points per call, and this runs
+        once per state per M step. Using the frozen ``rv_continuous`` machinery for
+        each point (as ``div.pdf`` / ``death.sf`` do) costs orders of magnitude more
+        than the arithmetic itself, so the integrand is written directly against
+        ``scipy.special`` instead.
+        """
+        a1, s1 = self.params[1], self.params[2]
+        a2, s2 = self.params[3], self.params[4]
+        log_norm = -gammaln(a1) - a1 * np.log(s1)
 
         def integrand(t):
-            return div.pdf(t) * death.sf(t)
+            logpdf = log_norm + (a1 - 1.0) * np.log(t) - t / s1
+            return np.exp(logpdf) * gammaincc(a2, t / s2)
 
-        upper = div.ppf(1.0 - 1e-9)
+        upper = self.div_clock.ppf(1.0 - 1e-9)
         val = quad(integrand, 0.0, upper, limit=100)[0]
         return float(np.clip(val, 0.0, 1.0))
 
@@ -231,19 +252,26 @@ class StateDistribution:
         return 3 if self.fixed_death_shape else 4
 
     def logpdf(self, x: np.ndarray) -> np.ndarray:
-        """Competing-risks log likelihood of each cell's phase observation."""
+        """Competing-risks log likelihood of each cell's phase observation.
+
+        Called once per state on every E step, over the whole lineage array, so it is
+        vectorized directly against ``scipy.special`` rather than going through the
+        frozen ``rv_continuous`` machinery (``self.div_clock.logpdf`` etc.), which pays
+        generic validation/broadcasting overhead on every call regardless of array size.
+        """
         divided, died, censored = event_masks(x)
         timed = divided | died | censored
         t = np.clip(x[:, 1], TIME_FLOOR, None)
 
-        div, death = self.div_clock, self.death_clock
+        a1, s1 = self.params[1], self.params[2]
+        a2, s2 = self.params[3], self.params[4]
 
         ll = np.zeros(x.shape[0])
         # Every timed cell survived both clocks up to t; the one that fired then
         # swaps its survival term for a density.
-        ll[timed] += div.logsf(t[timed]) + death.logsf(t[timed])
-        ll[divided] += div.logpdf(t[divided]) - div.logsf(t[divided])
-        ll[died] += death.logpdf(t[died]) - death.logsf(t[died])
+        ll[timed] += _gamma_logsf(t[timed], a1, s1) + _gamma_logsf(t[timed], a2, s2)
+        ll[divided] += _gamma_logpdf(t[divided], a1, s1) - _gamma_logsf(t[divided], a1, s1)
+        ll[died] += _gamma_logpdf(t[died], a2, s2) - _gamma_logsf(t[died], a2, s2)
 
         assert not np.any(np.isnan(ll))
         return ll
