@@ -197,21 +197,14 @@ def gamma_observation_rows(draw, min_size: int = 1, max_size: int = 15):
     gamma_scale=st.floats(min_value=0.5, max_value=20.0),
     x=gamma_observation_rows(),
 )
-# Pinned regression example for a bug Hypothesis found: a Bernoulli sentinel of
-# -1 ("unobserved") on a row whose Gamma observation is exactly 0 and uncensored,
+# Regression example for a bug Hypothesis found: a Bernoulli sentinel of -1
+# ("unobserved") on a row whose Gamma observation is exactly 0 and uncensored,
 # combined with a Gamma shape < 1 (where the density diverges to +inf at x=0),
-# produces a (+inf) + (-inf) = NaN log-likelihood.
+# used to produce a (+inf) + (-inf) = NaN log-likelihood, which
+# lineage/__init__.py's np.seterr(all="raise") turned into a crash. Fixed in
+# StateDistributionGamma.logpdf by excluding sentinel rows from the Gamma and
+# Bernoulli terms up front instead of only zeroing them out afterwards.
 @example(bern_p=0.5, gamma_a=0.5, gamma_scale=1.0, x=np.array([[-1.0, 0.0, 1.0]]))
-@pytest.mark.xfail(
-    reason=(
-        "Discovered by property-based testing: because lineage/__init__.py sets "
-        "np.seterr(all='raise'), the NaN described above crashes with "
-        "FloatingPointError instead of silently propagating. See "
-        "StateDistributionGamma.logpdf, which zeroes out negative-Bernoulli rows "
-        "*after* already having accumulated the diverging Gamma term into `ll`."
-    ),
-    strict=True,
-)
 def test_gamma_logpdf_never_produces_nan(bern_p, gamma_a, gamma_scale, x):
     """The log-likelihood must be a well-defined (non-NaN) number for any
     combination of valid parameters and observations, including negative or
