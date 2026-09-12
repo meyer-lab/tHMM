@@ -62,17 +62,27 @@ class StateDistribution:
         """
         ll = np.zeros(x.shape[0])
 
+        # Negative Bernoulli/Gamma observations are sentinels for "unobserved"
+        # and must not contribute to the log-likelihood. Excluding them up
+        # front (rather than only zeroing them out afterwards) avoids ever
+        # combining a diverging Gamma density (e.g. +inf at x=0 for shape < 1)
+        # with a -inf sentinel Bernoulli log-likelihood into a NaN.
+        valid = (x[:, 0] >= 0) & (x[:, 1] >= 0)
+
         # Update uncensored Gamma
-        ll[x[:, 2] == 1] += sp.gamma.logpdf(x[x[:, 2] == 1, 1], a=self.params[1], scale=self.params[2])
+        uncensored = valid & (x[:, 2] == 1)
+        ll[uncensored] += sp.gamma.logpdf(x[uncensored, 1], a=self.params[1], scale=self.params[2])
 
         # Update censored Gamma
-        ll[x[:, 2] == 0] += sp.gamma.logsf(x[x[:, 2] == 0, 1], a=self.params[1], scale=self.params[2])
+        censored = valid & (x[:, 2] == 0)
+        ll[censored] += sp.gamma.logsf(x[censored, 1], a=self.params[1], scale=self.params[2])
 
         # Remove dead cells
         ll[x[:, 0] == 0] = 0.0
 
         # Update for observed Bernoulli
-        ll[np.isfinite(x[:, 0])] += sp.bernoulli.logpmf(x[np.isfinite(x[:, 0]), 0], self.params[0])
+        observed_bern = valid & np.isfinite(x[:, 0])
+        ll[observed_bern] += sp.bernoulli.logpmf(x[observed_bern, 0], self.params[0])
 
         # Log likelihood of negative values should be zero
         ll[x[:, 1] < 0] = 0.0
