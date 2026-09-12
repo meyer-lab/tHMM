@@ -176,18 +176,18 @@ def bern_estimator(bern_obs: np.ndarray, gammas: np.ndarray):
     return numerator / denominator
 
 
-addr = get_cython_function_address("scipy.special.cython_special", "gammaincc")
-gammaincc = CFUNCTYPE(c_double, c_double, c_double)(addr)
+_addr_gammaincc = get_cython_function_address("scipy.special.cython_special", "gammaincc")
+gammaincc = CFUNCTYPE(c_double, c_double, c_double)(_addr_gammaincc)
 
-addr = get_cython_function_address("scipy.special.cython_special", "gammaln")
-gammaln = CFUNCTYPE(c_double, c_double)(addr)
+_addr_gammaln = get_cython_function_address("scipy.special.cython_special", "gammaln")
+gammaln = CFUNCTYPE(c_double, c_double)(_addr_gammaln)
 
 # psi is a fused Cython function with both a complex and a real specialization;
 # __pyx_fuse_0psi is the complex128 one (silently reads garbage for the missing
 # imaginary half when called through this real-valued CFUNCTYPE) and __pyx_fuse_1psi
 # is the real double one we actually want.
-addr = get_cython_function_address("scipy.special.cython_special", "__pyx_fuse_1psi")
-psi = CFUNCTYPE(c_double, c_double)(addr)
+_addr_psi = get_cython_function_address("scipy.special.cython_special", "__pyx_fuse_1psi")
+psi = CFUNCTYPE(c_double, c_double)(_addr_psi)
 
 
 @njit
