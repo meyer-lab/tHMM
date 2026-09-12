@@ -9,6 +9,7 @@ from scipy.sparse import csr_array
 
 from .CellVar import CellVar
 from .states.stateCommon import censor_lineage_gamma
+from .states.StateDistributionCR import StateDistributionPhase as StC
 from .states.StateDistributionGamma import StateDistribution as StA
 from .states.StateDistributionGaPhs import StateDistribution as StB
 
@@ -25,12 +26,12 @@ class LineageTree:
     obs: np.ndarray
     tree: csr_array
     states: np.ndarray
-    E: Sequence[StA | StB]
+    E: Sequence[StA | StB | StC]
 
     def __init__(
         self,
         list_of_cells: list | csr_array,
-        E: Sequence[StA | StB],
+        E: Sequence[StA | StB | StC],
         obs: np.ndarray | None = None,
         states: np.ndarray | None = None,
     ):
@@ -101,7 +102,7 @@ class LineageTree:
         cls,
         pi: np.ndarray,
         T: np.ndarray,
-        E: Sequence[StA | StB],
+        E: Sequence[StA | StB | StC],
         desired_num_cells: int,
         censor_condition=0,
         desired_experiment_time=2e12,

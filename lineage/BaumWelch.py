@@ -15,7 +15,7 @@ def do_E_step(tHMMobj: tHMM) -> tuple[list, list, list, list]:
     """
     Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
 
-    :param tHMMobj: A tHMM object with properties of the lineages of cells, such as
+    :param tHMMobj: A tHMM object with properties of the lineages of cells.
     :return MSD: Marginal state distribution
     :return NF: normalizing factor
     :return betas: beta values (conditional probability of cell states given cell observations)
@@ -45,7 +45,7 @@ def calculate_log_likelihood(
     Calculates log likelihood of NF for each lineage.
 
     :param NF: list of normalizing factors
-    return: the sum of log likelihoods for each lineage
+    :return: the sum of log likelihoods for each lineage
     """
     summ = 0.0
     for N in NF:

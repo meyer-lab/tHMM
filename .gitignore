@@ -13,6 +13,7 @@ nosetests.xml
 
 .venv/
 venv/
+.claude/
 profile
 profile.svg
 .DS_Store

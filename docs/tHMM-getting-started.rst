@@ -26,7 +26,7 @@ The transition matrix defines the rate at which cells change from one state to a
 
 Indexing for states starts at :math:`0`. Usually the number of states is represented as the capital letter :math:`K` and indexed by :math:`k`. For most examples, we deal with two states, i.e., :math:`K=2`.
 
-.. code:: ipython3
+.. code:: python
 
     import numpy as np
 
@@ -41,7 +41,7 @@ Note that the rows of the transition matrix must sum to 1 by the Law of Total Pr
 2. Creating a synthetic lineage
 -------------------------------
 
-.. code:: ipython3
+.. code:: python
 
     from lineage.LineageTree import LineageTree
     from lineage.states.StateDistributionGamma import StateDistribution
@@ -64,7 +64,7 @@ These probabilities must add up to :math:`1` and they should be either
 in a :math:`1`-dimensional list or a :math:`1`-dimensional numpy array.
 An example is shown below.
 
-.. code:: ipython3
+.. code:: python
 
     # pi: the initial probability vector
     pi = np.array([0.6, 0.4], dtype="float")
@@ -130,7 +130,7 @@ The following code block is a standard way to define state distrbutions
 and store them in an emissions list. State distributions are
 instantiated via their parameters.
 
-.. code:: ipython3
+.. code:: python
 
     # E: states are defined as StateDistribution objects
     
@@ -157,7 +157,7 @@ design choices are left up to the user to customize based on their state
 distribution type. Without loss of generality, we provide the following
 example of a full lineage tree.
 
-.. code:: ipython3
+.. code:: python
 
     lineage1 = LineageTree.rand_init(pi, T, E, desired_num_cells=2**5 - 1)
     # These are the minimal arguments required to instantiate lineages
@@ -179,16 +179,17 @@ times.
 -----------------------------------
 
 Our project’s goal is to analyze heterogeneity. We packaged the main
-capability of our codebase into one function ``Analyze``, which runs the
+capability of our codebase into one function ``Analyze_list``, which runs the
 tree-hidden Markov Model on an appropriately formatted dataset. In the
 following example, we analyze the full lineage from above.
 
-.. code:: ipython3
+.. code:: python
 
-    from lineage.Analyze import Analyze
-    
+    from lineage.Analyze import Analyze_list
+
     X = [lineage1] # population just contains one lineage
-    tHMMobj, pred_states_by_lineage, LL = Analyze(X, 2) # find two states
+    tHMMobj_list, LL, gammas = Analyze_list([X], 2) # find two states
+    tHMMobj = tHMMobj_list[0]
 
 Estimated Markov parameters (:math:`\pi`, :math:`T`, :math:`E`)
 
@@ -204,17 +205,17 @@ and transition matrix :math:`T` vector. Note that estimating these also
 get better as more lineages are added (for the :math:`\pi` vector in
 particular) and in general as more cells and more lineages are added.
 
-.. code:: ipython3
+.. code:: python
 
     print(tHMMobj.estimate.pi)
 
-.. code:: ipython3
+.. code:: python
 
     print(tHMMobj.estimate.T)
 
-.. code:: ipython3
+.. code:: python
 
-    for state in range(lineage1.num_states):
+    for state in range(tHMMobj.num_states):
         print("State {}:".format(state))
         print("                    estimated state:", tHMMobj.estimate.E[state])
         print("original parameters given for state:", E[state])
@@ -226,33 +227,35 @@ particular) and in general as more cells and more lineages are added.
 
 The following is an analysis run on a larger set of lineages. We first create 10 lineages and append them to a list to form our cell populations.
 In this case, we are choosing that all lineages should have 35 cells.
-``Analyze()`` takes in the list of populations and the number of states,
-and returns the ``tHMMobject``, the list of assigned states ,(``pred_states_by_lineage``) and the likelihood (``LL``) after running the EM algoithm.
-The instances of ``tHMMobj`` include the information about the distributions corresponding to each state and phenotypie.
-In this case, we are running the ``Analyze`` with 2 states, and we know it is the true number of states,
-because we used ``E`` as the Emissions which we defined as a list with two ``StateDistribution``s.
+``Analyze_list()`` takes in the list of populations and the number of states,
+and returns the list of ``tHMMobject`` s (one per population, ``tHMMobj_list``), the likelihood (``LL``), and the gammas used internally by the EM algorithm.
+The instances of ``tHMMobj`` include the information about the distributions corresponding to each state and phenotype, and,
+when ``write_states=True`` is passed, the Viterbi-predicted state for each cell is stored on each lineage's ``states`` attribute.
+In this case, we are running ``Analyze_list`` with 2 states, and we know it is the true number of states,
+because we used ``E`` as the Emissions which we defined as a list with two ``StateDistribution`` objects.
 
 
-.. code:: ipython3
+.. code:: python
 
     from lineage.Analyze import Analyze_list
 
     Y = []
     for _ in range(10):
         Y.append(LineageTree.rand_init(pi, T, E, desired_num_cells=35))
-    tHMMobj, pred_states_by_lineage, LL = Analyze_list(Y, 2) # find two states
+    tHMMobj_list, LL, gammas = Analyze_list([Y], 2, write_states=True) # find two states
+    tHMMobj = tHMMobj_list[0]
 
-.. code:: ipython3
+.. code:: python
 
     print(tHMMobj.estimate.pi)
 
-.. code:: ipython3
+.. code:: python
 
     print(tHMMobj.estimate.T)
 
-.. code:: ipython3
+.. code:: python
 
-    for state in range(lineage1.num_states):
+    for state in range(tHMMobj.num_states):
         print("State {}:".format(state))
         print("                    estimated state:", tHMMobj.estimate.E[state])
         print("original parameters given for state:", E[state])
@@ -261,11 +264,11 @@ because we used ``E`` as the Emissions which we defined as a list with two ``Sta
 
 The function ``Results()`` provides calculated features when analyzing a synthetic data.
 
-.. code:: ipython3
+.. code:: python
 
     from lineage.Analyze import Results
 
-    results_dict = Results(tHMMobj, pred_states_by_lineage, LL)
+    results_dict = Results(tHMMobj, LL)
     print("total number of cells: ", results_dict["total_number_of_cells"])
     print("\n total number of lineages: ", results_dict["total_number_of_lineages"])
     print("\n transition matrix norm: ", results_dict["transition_matrix_similarity"])
@@ -287,7 +290,7 @@ the difference between the second value and the first value of the daughter cell
     :width: 700
     :alt: Example of a lineage tree from experimental data of G1 and S/G2 cell cycle phase durations.
 
-.. code:: ipython3
+.. code:: python
 
     from lineage.LineageInputOutput import import_exp_data
     from lineage.states.StateDistributionGaPhs import StateDistribution
@@ -304,15 +307,16 @@ the difference between the second value and the first value of the daughter cell
     Control = c1 + c2 + c3 + c4
 
     from lineage.Analyze import Analyze_list
-    tHMMobj_list, pred_states_by_lineage_by_conc, LL = Analyze_list([Control], num_states=3)
-    # in this example, we are ran the model with 3 states.
+    tHMMobj_list, LL, gammas = Analyze_list([Control], num_states=3)
+    # in this example, we ran the model with 3 states.
 
     # finding the number of cells in the lineages:
     total_number_cells = sum([len(lineage.output_lineage) for lineage in tHMMobj_list[0].X])
 
+    bic, dof = tHMMobj_list[0].get_BIC(LL, total_number_cells)
     print("the likelihood of having 3 states: ", LL)
-    print("BIC value for this population: ", [tHMMobj_list[0].get_BIC(LL, total_number_cells)][0])
-    print("The degree of freedom: ", [tHMMobj_list[0].get_BIC(LL, total_number_cells)][1])
+    print("BIC value for this population: ", bic)
+    print("The degree of freedom: ", dof)
 
 To find out the likelihood of having different number of states we can use ``run_Analyze_over()`` 
 with which we can run the model in parallel (by setting `atonce=True`) for different state numbers to minimize the run time.
@@ -321,7 +325,7 @@ To do that, we append the population for the number of states we want to analyze
 The following shows running the model for 1, 2, 3, and 4 states, in parallel, and printing the BIC value for each scenario:
 
 
-.. code:: ipython3
+.. code:: python
 
     from lineage.Analyze import run_Analyze_over
     import numpy as np
@@ -332,6 +336,7 @@ The following shows running the model for 1, 2, 3, and 4 states, in parallel, an
 
     # Run fitting
     output = run_Analyze_over(dataFull, desired_num_states, atonce=True)
-    BICs = np.array([oo[0][0].get_BIC(oo[2], num_cells, atonce=True)[0] for oo in output])
+    # output entries are (tHMMobj_list, LL, gammas) tuples, one per number of states tried
+    BICs = np.array([oo[0][0].get_BIC(oo[1], total_number_cells, atonce=True)[0] for oo in output])
 
     print("Normalized BIC value based on the minimum: ", BICs - np.min(BICs, axis=0))

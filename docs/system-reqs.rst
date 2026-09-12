@@ -22,4 +22,7 @@ OS requirements
 
 Python dependencies
 -------------------
-    `tHMM` requires `virtualenv`. All other required packages can then be installed using `make venv` to establish a virtual environment. The Python packages that will be installed are listed in `requirements.txt`, and can be directly installed using `pip install -r requirements.txt`.
+    `tHMM` requires Python >=3.10 and is built and managed with `uv <https://docs.astral.sh/uv/>`_.
+    Once `uv` is installed, all required packages can be installed into a project-local
+    virtual environment with ``uv sync``, run from the root of the repository.
+    The package's dependencies are listed in ``pyproject.toml``.
