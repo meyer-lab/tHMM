@@ -114,3 +114,33 @@ def test_self_dist_zero(dist):
     """Test that the distance from a distribution to itself is zero."""
     dd = dist()
     assert dd.dist(dd) == 0.0
+
+
+def test_bern_estimator_ignores_masked_cells():
+    """Cross-validation masking must not drag the Bernoulli estimate down.
+
+    hide_observation marks a cell by negating its whole observation, so a hidden
+    dividing cell reads as -1: finite, and therefore counted in the denominator, but
+    never equal to 1 and so missing from the numerator. Estimating from the same
+    filtered arrays the Gamma fit uses keeps it out of both.
+    """
+    rng = np.random.default_rng(0)
+    n, p_true = 20000, 0.9
+    x = np.column_stack(
+        [
+            rng.binomial(1, p_true, n).astype(float),
+            rng.gamma(7.0, 4.5, n),
+            np.ones(n),
+        ]
+    )
+
+    unmasked = StateDistribution()
+    unmasked.estimator(x, np.ones(n))
+
+    masked_x = x.copy()
+    masked_x[rng.random(n) < 0.25] *= -1.0
+    masked = StateDistribution()
+    masked.estimator(masked_x, np.ones(n))
+
+    assert unmasked.params[0] == pytest.approx(p_true, abs=0.01)
+    assert masked.params[0] == pytest.approx(p_true, abs=0.01)
