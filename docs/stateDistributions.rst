@@ -34,7 +34,8 @@ These are assigned as instances of the class object. One can assert that the giv
 actually make sense for the distribution. For example, a normal
 distribution cannot have a negative or zero standard deviation.
 
-.. code:: ipython3
+.. code:: python
+
     import numpy as np
     import scipy.stats as sp
 
@@ -46,7 +47,8 @@ distribution cannot have a negative or zero standard deviation.
         self.gamma_scale = gamma_scale
         self.params = [self.bern_p, self.gamma_a, self.gamma_scale]
 
-.. code:: ipython3
+.. code:: python
+
     #Normal 
     def __init__(self, norm_loc, norm_scale):
         """ Initialization function should take in just in the parameters for the observations that comprise the multivariate random variable emission they expect their data to have. """
@@ -73,7 +75,7 @@ The variables `gamma_obs_censor` and `norm_obs_censor` are created and set to 1 
 We do the censoring later.
 The rvs function returns the observed phenotypes as a tuple of lists.
 
-.. code:: ipython3
+.. code:: python
 
     # Bernoulli/Gamma
     def rvs(self, size: int):
@@ -86,7 +88,8 @@ The rvs function returns the observed phenotypes as a tuple of lists.
         # These tuples of observations will go into the cells in the lineage tree.
         return bern_obs, gamma_obs, gamma_obs_censor
 
-.. code:: ipython3
+.. code:: python
+
     # Normal
     def rvs(self, size):  # user has to identify what the multivariate (or univariate if he or she so chooses) random variable looks like
         """ User-defined way of calculating a random variable given the parameters of the state stored in that observation's object. """
@@ -117,7 +120,8 @@ The fully observed cells are fed to `logpdf` to calculate the likelihood,
 and those cells that have missing information are fed to `logsf`.
 Those cells that died are then removed in the first example that cell's fate matters.
 
-.. code:: ipython3
+.. code:: python
+
     # Bernoulli/Gamma
     def logpdf(self, x: np.ndarray):
         """ User-defined way of calculating the likelihood of the observation stored in a cell.
@@ -138,7 +142,8 @@ Those cells that died are then removed in the first example that cell's fate mat
 
         return ll
 
-.. code:: ipython3
+.. code:: python
+
     # Normal
     def logpdf(self, tuple_of_obs):  # user has to define how to calculate the likelihood
         """ User-defined way of calculating the likelihood of the observation stored in a cell. """
@@ -173,7 +178,7 @@ minimize function of the scipy.optimize to find the parameters and
 the function is located in the lineage/states/stateCommon.py
 
 
-.. code:: ipython3
+.. code:: python
 
     # Bernoulli/Gamma
     def estimator(self, x: list, gammas: np.array):
@@ -201,7 +206,8 @@ the function is located in the lineage/states/stateCommon.py
 
         self.params[1], self.params[2] = gamma_estimator(γ_obs[g_mask], gamma_obs_censor[g_mask], gammas[g_mask], self.params[1:3]) # gamma shape and scale
 
-.. code:: ipython3
+.. code:: python
+
     # Normal
     def estimator(self, x: list, gammas: np.array):
         """ User-defined way of estimating the parameters given a list of the tuples of observations from a group of cells. """
@@ -225,7 +231,7 @@ Now that we have a functioning Gaussian StateDistribution, let's try it
 with the overall model. As in the overview, we first define our initial probability vector and
 the state transition probability matrices.
 
-.. code:: ipython3
+.. code:: python
 
     from lineage.LineageTree import LineageTree
 
@@ -236,7 +242,7 @@ the state transition probability matrices.
 
 Creating the Emissions for two states:
 
-.. code:: ipython3
+.. code:: python
 
     # E: states are defined as StateDistribution objects
     
@@ -255,7 +261,7 @@ Creating the Emissions for two states:
 
 Creating the lineage tree:
 
-.. code:: ipython3
+.. code:: python
 
     lineage1 = LineageTree.rand_init(pi, T, E, desired_num_cells=2**5 - 1)
     # These are the minimal arguments required to instantiate lineages
@@ -266,23 +272,25 @@ Below is the analysis for a single lineage. Note that the state objects
 are merely switched. However, the model fairly accurately predicts the
 transition matrix and state parameters.
 
-.. code:: ipython3
+.. code:: python
 
-    from lineage.Analyze import Analyze
+    from lineage.Analyze import Analyze_list
+
     X = [lineage1] # population just contains one lineage
-    tHMMobj, pred_states_by_lineage, LL = Analyze(X, 2) # find two states
+    tHMMobj_list, LL, gammas = Analyze_list([X], 2, write_states=True) # find two states
+    tHMMobj = tHMMobj_list[0]
 
-.. code:: ipython3
+.. code:: python
 
     print(tHMMobj.estimate.pi)
 
-.. code:: ipython3
+.. code:: python
 
     print(tHMMobj.estimate.T)
 
-.. code:: ipython3
+.. code:: python
 
-    for state in range(lineage1.num_states):
+    for state in range(tHMMobj.num_states):
         print("State {}:".format(state))
         print("                    estimated state:", tHMMobj.estimate.E[state])
         print("original parameters given for state:", E[state])
@@ -304,7 +312,7 @@ latent clocks -- a division clock ``T_D`` and a death clock ``T_X`` -- and what 
 observe is ``min(T_D, T_X)`` together with which one fired. The likelihood has the
 three standard competing-risks cases:
 
-.. code:: ipython3
+.. code:: python
 
     # transition seen at t:   f_D(t) * S_X(t)
     # death seen at t:        f_X(t) * S_D(t)
