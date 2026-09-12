@@ -2,13 +2,6 @@
 tHMM
 ====
 
-.. image:: https://codecov.io/gh/meyer-lab/tHMM/branch/master/graph/badge.svg
-        :target: https://codecov.io/gh/meyer-lab/tHMM
-
-.. image:: https://readthedocs.org/projects/tHMM/badge/?version=latest
-        :target: https://lineage-growth.readthedocs.io/
-
-
 ``tHMM`` is a Python3 package for clustering, visualizing, and analyzing data in the form of lineage trees. This work is now published in Communications Biology https://www.nature.com/articles/s42003-022-04208-9
 
 
@@ -41,7 +34,7 @@ Install the environment and dependencies by running:
 Documentation
 -------------
 
-Please find the documentation at https://thmm.readthedocs.io.
+Please find the documentation at https://meyer-lab.github.io/tHMM/.
 
 License
 -------
