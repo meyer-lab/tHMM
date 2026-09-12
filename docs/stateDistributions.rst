@@ -287,3 +287,51 @@ transition matrix and state parameters.
         print("                    estimated state:", tHMMobj.estimate.E[state])
         print("original parameters given for state:", E[state])
         print("\n")
+
+Competing risks: tying lifetime to fate
+---------------------------------------
+
+The Bernoulli/Gamma example above treats a cell's fate and its lifetime as two
+independent observations, and it discards the lifetime of any cell that dies --
+that is what ``ll[x[:, 0] == 0] = 0.0`` does. It also scores a time-censored cell
+with ``logsf`` of the division clock alone, which states that the cell has not yet
+divided but says nothing about it not having died. Those two choices together leave
+the emission unnormalized: summed over the outcomes of a cell watched to a finite
+horizon, its total probability exceeds one whenever there is censoring.
+
+``lineage.states.StateDistributionCR`` shows the alternative. Each phase carries two
+latent clocks -- a division clock ``T_D`` and a death clock ``T_X`` -- and what we
+observe is ``min(T_D, T_X)`` together with which one fired. The likelihood has the
+three standard competing-risks cases:
+
+.. code:: ipython3
+
+    # transition seen at t:   f_D(t) * S_X(t)
+    # death seen at t:        f_X(t) * S_D(t)
+    # censored at t:          S_D(t) * S_X(t)
+
+    divided, died, censored = event_masks(x)
+    timed = divided | died | censored
+
+    ll = np.zeros(x.shape[0])
+    # every timed cell survived both clocks up to t ...
+    ll[timed] += div.logsf(t[timed]) + death.logsf(t[timed])
+    # ... and whichever clock fired swaps its survival term for a density
+    ll[divided] += div.logpdf(t[divided]) - div.logsf(t[divided])
+    ll[died] += death.logpdf(t[died]) - death.logsf(t[died])
+
+Two things follow. Death times now carry information rather than being thrown away,
+and the division probability stops being a free parameter: it is derived as
+``P(divide) = int f_D(t) S_X(t) dt``, so the fraction of cells that die and the times
+at which they die are forced to agree with each other.
+
+The estimator is no harder than before. In the complete-data likelihood the two
+clocks separate, so each is an independently weighted right-censored fit over exactly
+the same cells -- once with "transition observed" as the event indicator, once with
+"death observed". Both reuse ``gamma_estimator`` from ``stateCommon``.
+
+Choosing the death clock is an empirical question, and the answer differs by phase in
+the Heiser lab data (see ``lineage/figures/figureS18.py``). G1 death times are
+memoryless, so that clock is a one-parameter exponential and the phase costs no more
+degrees of freedom than the Bernoulli/Gamma form did. G2 death times have a strongly
+increasing hazard, so that clock keeps a free shape.

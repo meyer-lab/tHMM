@@ -7,7 +7,7 @@ import numpy as np
 from .HMM.E_step import get_beta_and_NF, get_gamma, get_MSD
 from .HMM.M_step import get_all_zetas, sum_nonleaf_gammas
 from .LineageTree import get_Emission_Likelihoods
-from .states.StateDistributionGamma import atonce_estimator
+from .states.StateDistributionGamma import atonce_estimator as gamma_atonce_estimator
 from .tHMM import tHMM
 
 
@@ -219,6 +219,9 @@ def do_M_E_step_atonce(all_tHMMobj: list[tHMM], all_gammas: list[list[np.ndarray
             G2cells.append(all_cells[:, [1, 3, 5]])
         else:
             cells.append(all_cells)
+
+    # Emission classes may supply their own at-once estimator; fall back to the Gamma one.
+    atonce_estimator = getattr(all_tHMMobj[0].estimate.E[0], "atonce_estimator", gamma_atonce_estimator)
 
     # reshape the gammas so that each list in this list of lists is for each state.
     if phase:
