@@ -7,13 +7,14 @@ import importlib
 import math
 import sys
 import time
+import xml.etree.ElementTree as ET
 from string import ascii_lowercase
 
+import drawsvg as draw
 import matplotlib
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import svgutils.transform as st
 from matplotlib import gridspec, rcParams
 from matplotlib import pyplot as plt
 
@@ -23,6 +24,9 @@ from ..states.StateDistributionGamma import StateDistribution
 from ..states.StateDistributionGaPhs import StateDistribution as phaseStateDist
 
 matplotlib.use("AGG")
+
+ET.register_namespace("", "http://www.w3.org/2000/svg")
+ET.register_namespace("xlink", "http://www.w3.org/1999/xlink")
 
 
 # T: transition probability matrix
@@ -130,19 +134,32 @@ def subplotLabel(axs):
             i += 1
 
 
+def _read_svg(path):
+    """Parse an SVG file, returning its root attributes and inner markup."""
+    root = ET.parse(path).getroot()
+    inner = "".join(ET.tostring(child, encoding="unicode") for child in root)
+    return root.attrib, inner
+
+
 def overlayCartoon(figFile, cartoonFile, x, y, scalee=1, scale_x=1, scale_y=1, rotate=None):
     """Add cartoon to a figure file."""
 
     # Overlay Figure cartoons
-    template = st.fromfile(figFile)
-    cartoon = st.fromfile(cartoonFile).getroot()
+    fig_attrib, fig_inner = _read_svg(figFile)
+    _, cartoon_inner = _read_svg(cartoonFile)
 
-    cartoon.moveto(x, y, scale_x=scalee * scale_x, scale_y=scalee * scale_y)
+    d = draw.Drawing(fig_attrib.get("width"), fig_attrib.get("height"), viewBox=fig_attrib.get("viewBox"))
+    d.append(draw.Raw(fig_inner))
+
+    transform = f"translate({x}, {y}) scale({scalee * scale_x} {scalee * scale_y})"
     if rotate:
-        cartoon.rotate(rotate, x, y)
+        transform += f" rotate({rotate} {x} {y})"
 
-    template.append(cartoon)
-    template.save(figFile)
+    cartoon = draw.Group(transform=transform)
+    cartoon.append(draw.Raw(cartoon_inner))
+    d.append(cartoon)
+
+    d.save_svg(figFile)
 
 
 def genFigure():
