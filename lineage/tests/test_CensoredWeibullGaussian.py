@@ -8,7 +8,7 @@ from hypothesis import strategies as st
 from scipy.integrate import quad
 from scipy.optimize import minimize
 
-from ..Analyze import Analyze_list
+from ..Analyze import Analyze_list, fit_list
 from ..LineageTree import LineageTree
 from ..states.CensoredWeibullGaussian import StateDistribution, censor_lineage_weibull, split_obs
 from ..states.weibullFit import (
@@ -17,7 +17,9 @@ from ..states.weibullFit import (
     gaussian_estimator,
     weibull_estimator,
     weibull_loglik,
+    weibull_logterms,
 )
+from ..tHMM import tHMM
 
 
 @pytest.fixture
@@ -247,6 +249,128 @@ def test_estimator_recovers_parameters(dist):
     fit = StateDistribution()
     fit.estimator(obs, np.ones(t.size))
     np.testing.assert_allclose(fit.params, dist.params, rtol=0.03)
+
+
+# -- truncation ------------------------------------------------------------------
+
+
+def truncated_sample(rng, n, kappa, lam, width, cmax=np.inf):
+    """Lifetimes only seen when they end inside a random window ``(a, a + width)``,
+    optionally right-censored at a follow-up time ``c`` below the window's end."""
+    t = lam * rng.weibull(kappa, 20 * n)
+    a = rng.uniform(0.0, lam, t.size)
+    keep = (t > a) & (t < a + width)
+    t, a = t[keep][:n], a[keep][:n]
+    b = a + width
+    c = np.minimum(a + rng.uniform(0.0, cmax, t.size), b) if np.isfinite(cmax) else b
+    return np.minimum(t, c), (t <= c).astype(float), a, b
+
+
+def test_truncated_logterms_match_scipy(dist):
+    """Events are f(t) / (S(a) - S(b)); censored cells are (S(t) - S(b)) / (S(a) - S(b))."""
+    w = sp.weibull_min(2.5, scale=30.0)
+    t = np.array([20.0, 20.0, 20.0, 20.0, 35.0])
+    ev = np.array([1.0, 0.0, 1.0, 0.0, 1.0])
+    lo = np.array([10.0, 10.0, 0.0, 0.0, 0.0])
+    hi = np.array([40.0, 40.0, 25.0, np.inf, np.inf])
+    den = np.log(w.sf(lo) - w.sf(hi))
+    num = np.where(ev == 1, w.logpdf(t), np.log(w.sf(t) - w.sf(hi)))
+    val, _ = weibull_logterms(t, ev, lo, hi, 2.5, 30.0)
+    np.testing.assert_allclose(val, num - den, rtol=1e-12)
+    # No window is the plain censored likelihood.
+    assert val[3] == pytest.approx(w.logsf(20.0))
+    assert val[4] == pytest.approx(w.logpdf(35.0))
+
+    # The emission reads the window from columns 3-4, NaN meaning no bound.
+    obs = np.column_stack([np.full(5, np.nan), t, ev, np.where(lo > 0, lo, np.nan), hi])
+    np.testing.assert_allclose(dist.logpdf(obs), val, rtol=1e-12)
+    np.testing.assert_allclose(dist.logpdf(obs[3:, :3]), val[3:], rtol=1e-12)
+
+
+def test_truncated_density_is_normalized():
+    def f(t):
+        return np.exp(weibull_logterms(np.array([t]), np.ones(1), np.array([8.0]), np.array([30.0]), 1.7, 20.0)[0][0])
+
+    assert quad(f, 8.0, 30.0)[0] == pytest.approx(1.0, abs=1e-9)
+
+
+def test_truncated_gradient_matches_finite_differences():
+    rng = np.random.default_rng(7)
+    t, d, a, b = truncated_sample(rng, 50, 2.0, 20.0, 15.0, cmax=10.0)
+    b[::3] = np.inf
+    a[::4] = 0.0
+    _, grad = weibull_logterms(t, d, a, b, 2.0, 20.0)
+    h = 1e-6
+    for j, (dk, dl) in enumerate(((h, 0.0), (0.0, h))):
+        up = weibull_logterms(t, d, a, b, 2.0 * np.exp(dk), 20.0 * np.exp(dl))[0]
+        dn = weibull_logterms(t, d, a, b, 2.0 * np.exp(-dk), 20.0 * np.exp(-dl))[0]
+        np.testing.assert_allclose(grad[:, j], (up - dn) / (2 * h), rtol=1e-5, atol=1e-7)
+
+
+@pytest.mark.parametrize("seed", range(3))
+def test_truncated_estimator_is_the_mle(seed):
+    """The numerical fit is a stationary point that beats a general optimizer from several starts."""
+    rng = np.random.default_rng(seed)
+    t, d, a, b = truncated_sample(rng, 300, rng.uniform(1.0, 4.0), rng.uniform(10, 40), 20.0, cmax=15.0)
+    w = rng.uniform(0.0, 1.0, t.size)
+    kappa, lam = weibull_estimator(t, d, w, lo=a, hi=b)
+
+    def nll(p):
+        with np.errstate(all="ignore"):
+            v = -np.dot(w, weibull_logterms(t, d, a, b, np.exp(p[0]), np.exp(p[1]))[0])
+        return v if np.isfinite(v) else np.inf
+
+    best = -nll(np.log([kappa, lam]))
+    for x0 in ([0.0, np.log(np.mean(t))], [1.0, np.log(np.max(t))], [np.log(kappa), np.log(lam)]):
+        res = minimize(nll, x0=x0, method="Nelder-Mead", options={"xatol": 1e-10, "fatol": 1e-12})
+        assert best >= -res.fun - 1e-6
+    grad = w @ weibull_logterms(t, d, a, b, kappa, lam)[1]
+    np.testing.assert_allclose(grad / w.sum(), 0.0, atol=1e-4)
+
+
+def test_truncated_estimator_removes_selection_bias():
+    """Lifetimes selected to end inside a short window are biased toward it; conditioning on
+    the window recovers the generating distribution, and the naive fit does not."""
+    rng = np.random.default_rng(8)
+    t, d, a, b = truncated_sample(rng, 20000, 2.0, 30.0, 15.0)
+    naive = weibull_estimator(t, d, np.ones_like(t))
+    kappa, lam = weibull_estimator(t, d, np.ones_like(t), lo=a, hi=b)
+    assert kappa == pytest.approx(2.0, rel=0.05)
+    assert lam == pytest.approx(30.0, rel=0.05)
+    assert abs(naive[0] - 2.0) > 0.3
+
+
+def test_truncated_events_do_not_force_a_slow_state_to_divide():
+    """For a state far slower than the window, f(t) / (S(a) - S(b)) no longer depends on
+    the scale, so cells that divided only because they were selected on it leave the scale
+    free to stay long, rather than pulling it down to the window as the naive fit does."""
+    rng = np.random.default_rng(9)
+    a = rng.uniform(0.0, 20.0, 200)
+    b = a + 20.0
+    t = rng.uniform(a, b)
+    lam_trunc = weibull_estimator(t, np.ones_like(t), np.ones_like(t), kappa0=3.0, lo=a, hi=b)[1]
+    lam_naive = weibull_estimator(t, np.ones_like(t), np.ones_like(t))[1]
+    assert lam_naive < 30.0
+    assert lam_trunc > 100.0
+
+
+def test_six_column_observations_are_not_split_into_phases():
+    """Truncation columns plus one extra make six, which the Gamma model reads as two
+    phases; this emission fits whole rows whatever their width."""
+    rng = np.random.default_rng(10)
+    E = [StateDistribution(0.0, 0.3, 2.0, 40.0), StateDistribution(1.0, 0.3, 4.0, 20.0)]
+    pops = []
+    for _ in range(2):
+        pop = []
+        for _ in range(10):
+            lin = LineageTree.rand_init(np.array([0.5, 0.5]), np.full((2, 2), 0.5), E, 15, 0, rng=rng)
+            obs = np.column_stack([lin.obs, np.full((len(lin), 2), np.nan), np.zeros(len(lin))])
+            pop.append(LineageTree(lin.tree, E, obs=obs))
+        pops.append(pop)
+    objs = [tHMM(X, num_states=2, rng=rng) for X in pops]
+    fit_list(objs, rng=rng, shared_T=False, estimate_pi=True)
+    means = sorted(e.params[0] for e in objs[0].estimate.E)
+    np.testing.assert_allclose(means, [0.0, 1.0], atol=0.15)
 
 
 # -- lineage censoring ------------------------------------------------------------

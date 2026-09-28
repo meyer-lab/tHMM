@@ -98,6 +98,7 @@ def test_load_lineages(movie_dir):
     assert sorted(zip(parents.tolist(), daughters.tolist(), strict=True)) == [(0, 1), (0, 2), (1, 3), (1, 4)]
 
     obs = lin.obs
+    assert obs.shape[1] == 6
     # Root: born before the drug and seen from birth, so it has a lifetime; it divided.
     assert obs[0, 1] == pytest.approx(70 * FRAME_HOURS) and obs[0, 2] == 1.0
     # Cell 1 divided after 60 frames; its sister was lost and so is censored.
@@ -106,6 +107,11 @@ def test_load_lineages(movie_dir):
     # Granddaughters: one tracked to the end, one lost, both censored.
     assert np.all(obs[3:, 2] == 0.0)
     assert obs[3, 1] == pytest.approx((N_FRAMES - DRUG_FRAME - 70) * FRAME_HOURS)
+    # The root was born 60 frames before the drug and had to divide between the drug and
+    # the last frame; its lifetime is truncated to that window, and it lies inside it.
+    np.testing.assert_allclose(obs[0, 3:5], np.array([60, N_FRAMES - 1 - (DRUG_FRAME - 60)]) * FRAME_HOURS)
+    assert obs[0, 3] <= obs[0, 1] <= obs[0, 4]
+    assert np.all(np.isnan(obs[1:, 3:5]))
 
 
 def test_cell_obs_unborn_and_artifacts():
@@ -143,10 +149,13 @@ def test_shipped_table_loads():
             assert np.all(np.isin(np.bincount(parents, minlength=len(lin))[parents], (1, 2)))
 
 
-def test_load_lineages_without_root_lifetimes(movie_dir):
+def test_load_lineages_root_modes(movie_dir):
     table = build_cell_table(str(movie_dir))
-    [lin] = load_lineages("palbociclib", table, root_lifetimes=False)
-    [full] = load_lineages("palbociclib", table)
-    assert np.all(np.isnan(lin.obs[0, 1:3]))
-    np.testing.assert_array_equal(lin.obs[0, 0], full.obs[0, 0])
-    np.testing.assert_array_equal(lin.obs[1:], full.obs[1:])
+    [trunc] = load_lineages("palbociclib", table)
+    [keep] = load_lineages("palbociclib", table, roots="keep")
+    [drop] = load_lineages("palbociclib", table, roots="drop")
+    assert np.all(np.isnan(drop.obs[0, 1:5])) and np.all(np.isnan(keep.obs[0, 3:5]))
+    np.testing.assert_array_equal(keep.obs[0, :3], trunc.obs[0, :3])
+    for lin in (keep, drop):
+        np.testing.assert_array_equal(lin.obs[0, [0, 5]], trunc.obs[0, [0, 5]])
+        np.testing.assert_array_equal(lin.obs[1:], trunc.obs[1:])

@@ -363,6 +363,13 @@ closed form, and for the Weibull the scale is profiled out in closed form, leavi
 one-dimensional score equation for the shape that is strictly decreasing, and so is
 solved by Newton-Raphson safeguarded with bisection (``lineage.states.weibullFit``).
 
+Two optional columns, ``[x, t, delta, t_lo, t_hi]``, truncate the lifetime to a window.
+They are for cells that are only in the data because of their lifetime, such as a lineage
+root included because it divided after a drug was added: its Weibull factor is divided by
+``S_W(t_lo) - S_W(t_hi)``, the probability of dividing inside the window. NaN means no
+bound. When any weighted lifetime is truncated, the scale no longer has a closed form, and
+the Weibull M step maximizes the likelihood numerically from the closed-form fit.
+
 When several conditions are fit at once, this emission shares its parameters across
 them, so that a state means the same phenotype in every condition. Pass
 ``shared_T=False`` to ``Analyze_list`` to give each condition its own transition matrix,

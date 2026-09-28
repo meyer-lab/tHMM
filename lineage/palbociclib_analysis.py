@@ -27,7 +27,7 @@ from .heritability import (
     order_by_lifetime,
     persistence_half_life,
 )
-from .palbociclib_loader import load_lineages
+from .palbociclib_loader import ROOT_MODES, S_ENTRY_COL, load_lineages
 from .states.CensoredWeibullGaussian import StateDistribution
 
 CONDITIONS = ("control", "palbociclib")
@@ -36,8 +36,6 @@ DOSES_NM = (0.0, 1000.0)
 #: this many hours of birth. The movie only runs ~22.6 h past drug addition, so the 48 h
 #: lead time proposed in the issue cannot be scored on this data.
 HORIZON_H = 12.0
-#: Observation column holding each cell's S-phase entry time (see ``cell_obs``).
-ESCAPE_COL = 3
 OUTPUT = os.path.join("output", "palbociclib_analysis.json")
 
 
@@ -90,6 +88,59 @@ def log(msg: str, t0: float):
     print(f"[{time.time() - t0:7.0f} s] {msg}", file=sys.stderr, flush=True)
 
 
+def bootstrap_summary(sweep, pops, n_boot: int, n_workers: int, rng, point: dict) -> tuple[dict, int]:
+    """Lineage-bootstrap CIs of the :func:`summarize_T` quantities, run in parallel chunks.
+
+    Also reports each dose minus the first for tolerant-state persistence and for the memory
+    eigenvalue (which, unlike T_22, does not move just because the drug shifts how many
+    cells are tolerant).
+    """
+    chunks = [c for c in np.array_split(np.arange(n_boot), n_workers) if c.size]
+    seeds = rng.integers(2**32, size=len(chunks))
+    with ProcessPoolExecutor(len(chunks)) as exe:
+        futs = [exe.submit(bootstrap_transitions, sweep, pops, len(c), s) for c, s in zip(chunks, seeds, strict=True)]
+        boots = np.concatenate([f.result() for f in futs if f.result().size])
+    summaries = [summarize_T(b) for b in boots]
+    boot: dict = {
+        key: percentile_ci(np.array([s[key] for s in summaries], dtype=float))
+        for key in ("T_tolerant", "half_life_tolerant", "half_life_sensitive", "memory_eigenvalue", "memory_half_life")
+    }
+    boot["T"] = percentile_ci(boots)
+    boot["diff"] = {}
+    for key in ("T_tolerant", "memory_eigenvalue"):
+        # One column per dose after the first.
+        d = np.array([[s[key][j] - s[key][0] for j in range(1, len(pops))] for s in summaries])
+        boot["diff"][key] = {
+            "point": [point[key][j] - point[key][0] for j in range(1, len(pops))],
+            "ci": np.percentile(d, [2.5, 97.5], axis=0).T.tolist(),
+            "p_two_sided": [float(min(1.0, 2 * min(np.mean(c <= 0), np.mean(c >= 0)))) for c in d.T],
+        }
+    return boot, int(boots.shape[0])
+
+
+def division_calibration(full_pops, sweep, horizon: float = 20.0) -> list[dict]:
+    """Observed (Kaplan-Meier) against predicted fraction divided by ``horizon`` hours, among
+    cells born into drug -- the cells not selected on their outcome -- for each dose."""
+    from statsmodels.duration.survfunc import SurvfuncRight
+
+    from .BaumWelch import do_E_step
+    from .tHMM import tHMM
+
+    E = sweep.per_dose[0].estimate.E
+    out = []
+    for pop, tO in zip(full_pops, sweep.per_dose, strict=True):
+        fixed = tHMM(pop, len(E), fpi=tO.estimate.pi, fT=tO.estimate.T, fE=E)
+        gam = np.vstack(do_E_step(fixed)[3])
+        obs = np.vstack([lin.obs for lin in pop])
+        m = np.isfinite(obs[:, 1]) & np.concatenate([np.arange(len(lin)) > 0 for lin in pop])
+        km = SurvfuncRight(obs[m, 1], obs[m, 2])
+        w = gam[m].mean(axis=0)
+        S = sum(w[k] * np.exp(-((horizon / e.params[3]) ** e.params[2])) for k, e in enumerate(E))
+        observed = 1.0 - np.interp(horizon, km.surv_times, km.surv_prob) if km.surv_times.size else 0.0
+        out.append({"observed": float(observed), "model": float(1.0 - S)})
+    return out
+
+
 def run(n_boot: int = 200, n_workers: int = 16, seed: int = 0) -> dict:
     rng = np.random.default_rng(seed)
     pops = [load_lineages(c) for c in CONDITIONS]
@@ -121,34 +172,10 @@ def run(n_boot: int = 200, n_workers: int = 16, seed: int = 0) -> dict:
     res["independent_T"] = [tO.estimate.T.tolist() for tO in sweep.independent]
     res["point"] = summarize_T(sweep.T)
 
-    # Bootstrap over lineages, in parallel chunks.
-    chunks = np.array_split(np.arange(n_boot), n_workers)
-    seeds = rng.integers(2**32, size=len(chunks))
-    with ProcessPoolExecutor(n_workers) as exe:
-        futs = [exe.submit(bootstrap_transitions, sweep, pops, len(c), s) for c, s in zip(chunks, seeds, strict=True)]
-        boots = np.concatenate([f.result() for f in futs if f.result().size])
+    res["bootstrap"], res["n_boot"] = bootstrap_summary(sweep, pops, n_boot, n_workers, rng, res["point"])
     log("bootstrap done", t0)
-    summaries = [summarize_T(b) for b in boots]
-    boot: dict = {
-        key: percentile_ci(np.array([s[key] for s in summaries], dtype=float))
-        for key in ("T_tolerant", "half_life_tolerant", "half_life_sensitive", "memory_eigenvalue", "memory_half_life")
-    }
-    boot["T"] = percentile_ci(boots)
-    # Palbociclib minus control, for tolerant-state persistence and for the memory
-    # eigenvalue (which, unlike T_22, does not move just because the drug shifts how
-    # many cells are tolerant).
-    boot["diff"] = {}
-    for key in ("T_tolerant", "memory_eigenvalue"):
-        d = np.array([s[key][1] - s[key][0] for s in summaries])
-        boot["diff"][key] = {
-            "point": res["point"][key][1] - res["point"][key][0],
-            "ci": np.percentile(d, [2.5, 97.5]).tolist(),
-            "p_two_sided": float(min(1.0, 2 * min(np.mean(d <= 0), np.mean(d >= 0)))),
-        }
-    res["bootstrap"] = boot
-    res["n_boot"] = int(boots.shape[0])
 
-    cv = cross_validated_scores(sweep, pops, horizon=HORIZON_H, n_folds=5, escape_col=ESCAPE_COL, rng=rng)
+    cv = cross_validated_scores(sweep, pops, horizon=HORIZON_H, n_folds=5, escape_col=S_ENTRY_COL, rng=rng)
     log("cross-validated forecasts done", t0)
     res["auc"] = auc_table(cv, n_boot=1000, rng=rng)
     pairs = cv["pairs"]
@@ -171,45 +198,27 @@ SENSITIVITY_OUTPUT = os.path.join("output", "palbociclib_sensitivity.json")
 
 
 def sensitivity(n_workers: int = 16, seed: int = 1) -> dict:
-    """Refit the dose sweep without the roots' lifetimes, which are selected on dividing.
+    """Refit the dose sweep under each treatment of the roots' lifetimes, which are selected
+    on dividing (see :func:`.palbociclib_loader.build_lineages`).
 
     Also reports how well each fit reproduces division among cells born into drug, the
-    cells not selected on their outcome: the observed fraction divided by 20 h (Kaplan-Meier)
-    against the fraction the fitted states predict.
+    cells not selected on their outcome (see :func:`division_calibration`).
     """
-    from statsmodels.duration.survfunc import SurvfuncRight
-
-    from .BaumWelch import do_E_step
-    from .tHMM import tHMM
-
     rng = np.random.default_rng(seed)
+    full = [load_lineages(c, roots="keep") for c in CONDITIONS]
     out: dict = {}
-    for label, keep in (("with_root_lifetimes", True), ("without_root_lifetimes", False)):
-        pops = [load_lineages(c, root_lifetimes=keep) for c in CONDITIONS]
+    for mode in ROOT_MODES:
+        pops = [load_lineages(c, roots=mode) for c in CONDITIONS]
         sweep = dose_sweep(pops, list(DOSES_NM), num_states=2, n_starts=12, n_jobs=n_workers, rng=rng)
-        E = sweep.per_dose[0].estimate.E
-        entry = {
+        out[mode] = {
             "LL": {k: float(v) for k, v in sweep.LL.items()},
             "lrt": sweep.lrt,
-            "emissions": [e.params.tolist() for e in E],
+            "emissions": [e.params.tolist() for e in sweep.per_dose[0].estimate.E],
             "pi": [tO.estimate.pi.tolist() for tO in sweep.per_dose],
             "point": summarize_T(sweep.T),
-            "divided_by_20h": [],
+            # Always scored on the same cells, whichever way the roots were fit.
+            "divided_by_20h": division_calibration(full, sweep),
         }
-        # Always score division on the full data, whichever lineages were fit.
-        full = [load_lineages(c) for c in CONDITIONS]
-        for pop, tO in zip(full, sweep.per_dose, strict=True):
-            fixed = tHMM(pop, 2, fpi=tO.estimate.pi, fT=tO.estimate.T, fE=E)
-            gam = np.vstack(do_E_step(fixed)[3])
-            obs = np.vstack([lin.obs for lin in pop])
-            m = np.isfinite(obs[:, 1]) & np.concatenate([np.arange(len(lin)) > 0 for lin in pop])
-            km = SurvfuncRight(obs[m, 1], obs[m, 2])
-            w = gam[m].mean(axis=0)
-            S20 = sum(w[k] * np.exp(-((20.0 / e.params[3]) ** e.params[2])) for k, e in enumerate(E))
-            entry["divided_by_20h"].append(
-                {"observed": float(1.0 - np.interp(20.0, km.surv_times, km.surv_prob)), "model": float(1.0 - S20)}
-            )
-        out[label] = entry
     return out
 
 

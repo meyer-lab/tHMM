@@ -17,7 +17,15 @@ Under hidden state ``k`` the two are conditionally independent,
     P(x, t, \\delta \\mid z = k) = \\mathcal{N}(x \\mid \\mu_k, \\sigma_k^2)\\,
         f_W(t \\mid \\lambda_k, \\kappa_k)^{\\delta}\\, S_W(t \\mid \\lambda_k, \\kappa_k)^{1 - \\delta},
 
-with :math:`S_W(t) = \\exp(-(t/\\lambda)^\\kappa)`. Treating death as censoring of the
+with :math:`S_W(t) = \\exp(-(t/\\lambda)^\\kappa)`.
+
+Two optional columns, ``[x, t, delta, t_lo, t_hi]``, truncate the lifetime: the cell is
+only in the data because its lifetime fell in ``(t_lo, t_hi)``, and the Weibull factor is
+divided by :math:`S_W(t_{lo}) - S_W(t_{hi})` (see :mod:`.weibullFit`). NaN means no bound.
+This is the case for lineage roots that were selected by dividing inside a time window.
+Any further columns are carried along and ignored.
+
+Treating death as censoring of the
 division clock is the cause-specific-hazard reading of a competing risk: it fits the
 division hazard correctly, but says nothing about the death hazard.
 
@@ -29,9 +37,21 @@ import numpy as np
 from scipy.sparse import csr_array
 from scipy.special import gamma as gamma_fn
 
-from .weibullFit import TIME_FLOOR, gaussian_estimator, weibull_estimator
+from .weibullFit import gaussian_estimator, weibull_estimator, weibull_logterms
 
 LOG_2PI = np.log(2.0 * np.pi)
+
+#: Observation columns of the optional lower and upper lifetime truncation bounds.
+TRUNC_COLS = (3, 4)
+
+
+def truncation_bounds(x: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Per-row truncation window ``(lo, hi)``, ``(0, inf)`` where there is none."""
+    n = x.shape[0]
+    if x.shape[1] <= TRUNC_COLS[1]:
+        return np.zeros(n), np.full(n, np.inf)
+    lo, hi = x[:, TRUNC_COLS[0]], x[:, TRUNC_COLS[1]]
+    return np.where(np.isfinite(lo), lo, 0.0), np.where(np.isfinite(hi), hi, np.inf)
 
 
 def split_obs(x: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -88,8 +108,15 @@ def fit_emission(dist, x: np.ndarray, weights: np.ndarray):
         dist.params[0], dist.params[1] = gaussian_estimator(x[has_x, 0], weights[has_x], dist.min_sigma)
 
     if np.sum(weights[timed]) > 0.0:
+        lo, hi = truncation_bounds(x[timed])
         dist.params[2], dist.params[3] = weibull_estimator(
-            x[timed, 1], uncen[timed].astype(float), weights[timed], kappa0=dist.params[2]
+            x[timed, 1],
+            uncen[timed].astype(float),
+            weights[timed],
+            kappa0=dist.params[2],
+            lo=lo,
+            hi=hi,
+            lam0=dist.params[3],
         )
 
 
@@ -120,6 +147,8 @@ class StateDistribution:
 
     #: BaumWelch looks this up on the emission object to pick the right M step.
     atonce_estimator = staticmethod(atonce_estimator)
+    #: Observation rows are never split into cell-cycle phases, whatever their width.
+    split_phases = False
 
     def __init__(self, mu: float = 1.0, sigma: float = 0.3, kappa: float = 3.0, lam: float = 20.0, min_sigma=1e-3):
         """
@@ -162,10 +191,8 @@ class StateDistribution:
         ll[has_x] += -0.5 * (LOG_2PI + z * z) - np.log(sigma)
 
         timed = uncen | cen
-        logt = np.log(np.clip(x[timed, 1], TIME_FLOOR, None)) - np.log(lam)
-        # Every timed cell survived to t; an observed division adds the hazard at t.
-        ll[timed] -= np.exp(kappa * logt)
-        ll[uncen] += (np.log(kappa) - np.log(lam) + (kappa - 1.0) * logt)[uncen[timed]]
+        lo, hi = truncation_bounds(x[timed])
+        ll[timed] += weibull_logterms(x[timed, 1], uncen[timed].astype(float), lo, hi, kappa, lam)[0]
 
         assert not np.any(np.isnan(ll))
         return ll

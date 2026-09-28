@@ -104,13 +104,14 @@ def makeFigure():
     ax[3].bar(xpos + width / 2, no_memory, width, label=r"$T_{22}$, no-memory model", color="#bbbbbb")
     ax[3].errorbar(xpos, lam, yerr=np.vstack([lam - lam_lo, lam_hi - lam]), fmt="ko", capsize=3, label=r"$\lambda_2$")
     ax[3].set_xticks(xpos, list(CONDITIONS))
-    ax[3].set_ylim(0, 1)
+    ax[3].axhline(0.0, color="k", lw=0.5)
+    ax[3].set_ylim(-1, 1)
     ax[3].set_ylabel("probability / eigenvalue")
     ax[3].legend(fontsize=7)
     diff = res["bootstrap"]["diff"]["memory_eigenvalue"]
     ax[3].set_title(
         f"heritability LRT p = {res['lrt']['heritability']['p']:.1e}\n"
-        rf"$\Delta\lambda_2$ = {diff['point']:.2f} [{diff['ci'][0]:.2f}, {diff['ci'][1]:.2f}]",
+        rf"$\Delta\lambda_2$ = {diff['point'][0]:.2f} [{diff['ci'][0][0]:.2f}, {diff['ci'][0][1]:.2f}]",
         fontsize=8,
     )
 

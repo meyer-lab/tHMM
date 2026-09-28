@@ -21,9 +21,22 @@ Substituting it back leaves a one-dimensional score equation for the shape,
 whose derivative :math:`g'(\\kappa) = -1/\\kappa^2 - \\mathrm{Var}_\\kappa(\\log t)` is strictly
 negative. The root is therefore unique, and Newton-Raphson safeguarded by a bisection
 bracket converges to it from any start.
+
+A duration can also be *truncated*: only seen because it fell in a window
+:math:`(a_i, b_i)`, as for a cell that enters the data only by dividing inside the movie.
+Its likelihood is then conditional on the window,
+
+.. math::
+
+    \\frac{f(t_i)^{\\delta_i}\\,[S(t_i) - S(b_i)]^{1 - \\delta_i}}{S(a_i) - S(b_i)},
+
+which no longer lets the scale be profiled out in closed form. When any weighted duration
+is truncated, :func:`weibull_estimator` maximizes the likelihood numerically over
+:math:`(\\log\\kappa, \\log\\lambda)`, starting from the closed-form fit.
 """
 
 import numpy as np
+from scipy.optimize import minimize
 
 #: Shape parameters are kept inside this range. The lower end is far below any
 #: biologically meaningful hazard; the upper end catches the degenerate case where every
@@ -103,32 +116,127 @@ def weibull_shape_root(
     return float(np.exp(theta))
 
 
+def _cum_hazard(t: np.ndarray, kappa: float, lam: float) -> tuple[np.ndarray, np.ndarray]:
+    """Cumulative hazard :math:`H = (t/\\lambda)^\\kappa` and its gradient in
+    :math:`(\\log\\kappa, \\log\\lambda)`; ``t`` may be 0 or infinite."""
+    with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
+        z = np.log(t) - np.log(lam)
+        H = np.exp(kappa * z)
+        dH = np.stack([np.where(np.isfinite(z) & (H > 0.0), kappa * z * H, 0.0), -kappa * H], axis=-1)
+    return H, dH
+
+
+def _log_sf_diff(Hu, dHu, Hv, dHv) -> tuple[np.ndarray, np.ndarray]:
+    """:math:`\\log[S(u) - S(v)]` for :math:`u < v` (``v`` may be infinite), and its gradient."""
+    d = Hu - Hv
+    one_minus_r = -np.expm1(d)
+    dHv = np.where(np.isfinite(Hv)[:, None], dHv, 0.0)
+    val = -Hu + np.log(one_minus_r)
+    grad = (-dHu + np.exp(d)[:, None] * dHv) / one_minus_r[:, None]
+    return val, grad
+
+
+def weibull_logterms(
+    t: np.ndarray, events: np.ndarray, lo: np.ndarray, hi: np.ndarray, kappa: float, lam: float
+) -> tuple[np.ndarray, np.ndarray]:
+    """Per-duration Weibull log likelihood, right-censored and truncated to ``(lo, hi)``.
+
+    ``lo = 0`` and ``hi = inf`` give the plain censored likelihood.
+
+    :return: the log likelihoods, and their gradients in :math:`(\\log\\kappa, \\log\\lambda)`
+    """
+    t = np.clip(t, TIME_FLOOR, None)
+    Ht, dHt = _cum_hazard(t, kappa, lam)
+    z = np.log(t) - np.log(lam)
+
+    val = np.empty(t.size)
+    grad = np.empty((t.size, 2))
+    ev = events == 1.0
+    val[ev] = np.log(kappa) - np.log(lam) + (kappa - 1.0) * z[ev] - Ht[ev]
+    grad[ev] = np.column_stack([1.0 + kappa * z[ev], np.full(np.sum(ev), -kappa)]) - dHt[ev]
+
+    Hhi, dHhi = _cum_hazard(hi, kappa, lam)
+    cen = ~ev
+    val[cen], grad[cen] = _log_sf_diff(Ht[cen], dHt[cen], Hhi[cen], dHhi[cen])
+
+    trunc = (lo > 0.0) | np.isfinite(hi)
+    if np.any(trunc):
+        Hlo, dHlo = _cum_hazard(lo[trunc], kappa, lam)
+        den_val, den_grad = _log_sf_diff(Hlo, dHlo, Hhi[trunc], dHhi[trunc])
+        val[trunc] -= den_val
+        grad[trunc] -= den_grad
+    return val, grad
+
+
 def weibull_estimator(
     t: np.ndarray,
     events: np.ndarray,
     weights: np.ndarray,
     kappa0: float = 1.0,
+    lo: np.ndarray | None = None,
+    hi: np.ndarray | None = None,
+    lam0: float | None = None,
 ) -> tuple[float, float]:
-    """Weighted MLE of a right-censored Weibull distribution.
+    """Weighted MLE of a right-censored, optionally truncated, Weibull distribution.
 
     :param t: durations, all nonnegative and finite
     :param events: 1 where the event was observed, 0 where the duration is right-censored
     :param weights: nonnegative observation weights (e.g. posterior state probabilities)
     :param kappa0: starting shape, typically the previous M step's value
+    :param lo: lower truncation bounds (0 for none), with ``lo < t``
+    :param hi: upper truncation bounds (inf for none), with ``t <= hi``
+    :param lam0: previous scale. With truncation the fit is numerical, and starting from
+        ``(kappa0, lam0)`` when that beats the closed-form start keeps EM monotone.
     :return: ``(kappa, lam)``, the shape and scale
     """
     t = np.asarray(t, dtype=float)
     events = np.asarray(events, dtype=float)
     w = np.asarray(weights, dtype=float)
-    assert t.shape == events.shape == w.shape
+    lo = np.zeros_like(t) if lo is None else np.asarray(lo, dtype=float)
+    hi = np.full_like(t, np.inf) if hi is None else np.asarray(hi, dtype=float)
+    assert t.shape == events.shape == w.shape == lo.shape == hi.shape
     assert np.all(np.isfinite(t)) and np.all(t >= 0.0)
     assert np.all(w >= 0.0)
 
     keep = w > 0.0
-    t, events, w = np.clip(t[keep], TIME_FLOOR, None), events[keep], w[keep]
+    t, events, w, lo, hi = t[keep], events[keep], w[keep], lo[keep], hi[keep]
     if t.size == 0:
         return float(kappa0), 1.0
 
+    kappa, lam = _closed_form(np.clip(t, TIME_FLOOR, None), events, w, kappa0)
+    if np.all(lo <= 0.0) and np.all(np.isinf(hi)):
+        return kappa, lam
+    return _truncated_fit(t, events, w, lo, hi, [(kappa, lam), (kappa0, lam0)])
+
+
+def _truncated_fit(t, events, w, lo, hi, starts) -> tuple[float, float]:
+    """Numerical MLE over (log kappa, log lam) from the best of ``starts``."""
+    t_ref = float(np.max(t))
+    bounds = [np.log(KAPPA_BOUNDS), np.log(t_ref) + np.log([1.0 / MAX_SCALE_RATIO, MAX_SCALE_RATIO])]
+    wsum = np.sum(w)
+
+    def nll(theta):
+        with np.errstate(all="ignore"):
+            val, grad = weibull_logterms(t, events, lo, hi, np.exp(theta[0]), np.exp(theta[1]))
+            f, g = -np.dot(w, val) / wsum, -(w @ grad) / wsum
+        # An extreme step can overflow the hazard; reject it so the line search backs off.
+        if not (np.isfinite(f) and np.all(np.isfinite(g))):
+            return np.inf, np.zeros(2)
+        return f, g
+
+    thetas = [
+        np.clip(np.log([k, lam]), [b[0] for b in bounds], [b[1] for b in bounds])
+        for k, lam in starts
+        if lam is not None
+    ]
+    theta0 = min(thetas, key=lambda th: nll(th)[0])
+    res = minimize(nll, theta0, jac=True, method="L-BFGS-B", bounds=bounds)
+    theta = res.x if res.fun <= nll(theta0)[0] else theta0
+    return float(np.exp(theta[0])), float(np.exp(theta[1]))
+
+
+def _closed_form(t: np.ndarray, events: np.ndarray, w: np.ndarray, kappa0: float) -> tuple[float, float]:
+    """Censored (untruncated) MLE, with the scale profiled out."""
     # Work with durations relative to the longest one so that t**kappa cannot overflow.
     t_ref = float(np.max(t))
     logu = np.log(t / t_ref)
