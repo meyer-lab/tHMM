@@ -343,3 +343,36 @@ the Heiser lab data (see ``lineage/figures/figureS18.py``). G1 death times are
 memoryless, so that clock is a one-parameter exponential and the phase costs no more
 degrees of freedom than the Bernoulli/Gamma form did. G2 death times have a strongly
 increasing hazard, so that clock keeps a free shape.
+
+Example: a biosensor readout with a right-censored Weibull lifetime
+-------------------------------------------------------------------
+
+``lineage.states.CensoredWeibullGaussian`` pairs a continuous single-cell readout with a
+lifetime that is often cut short by the end of imaging. Each cell's observation is
+``[x, t, delta]``: the readout (for example the maximum rate of CDK2 activation in G1),
+how long the cell was followed, and whether its division was seen. Under state ``k``
+
+.. code:: python
+
+    # P(x, t, delta | z = k) = N(x | mu_k, sigma_k) * f_W(t)**delta * S_W(t)**(1 - delta)
+    # with the Weibull survival S_W(t) = exp(-(t / lam_k) ** kappa_k)
+
+A NaN readout or lifetime simply drops that factor, and a negative lifetime marks a
+cell hidden for cross validation. The M step is exact: the Gaussian has its weighted
+closed form, and for the Weibull the scale is profiled out in closed form, leaving a
+one-dimensional score equation for the shape that is strictly decreasing, and so is
+solved by Newton-Raphson safeguarded with bisection (``lineage.states.weibullFit``).
+
+Two optional columns, ``[x, t, delta, t_lo, t_hi]``, truncate the lifetime to a window.
+They are for cells that are only in the data because of their lifetime, such as a lineage
+root included because it divided after a drug was added: its Weibull factor is divided by
+``S_W(t_lo) - S_W(t_hi)``, the probability of dividing inside the window. NaN means no
+bound. When any weighted lifetime is truncated, the scale no longer has a closed form, and
+the Weibull M step maximizes the likelihood numerically from the closed-form fit.
+
+When several conditions are fit at once, this emission shares its parameters across
+them, so that a state means the same phenotype in every condition. Pass
+``shared_T=False`` to ``Analyze_list`` to give each condition its own transition matrix,
+and ``independent_T=True`` to force every row of ``T`` to be equal (daughters' states
+independent of their mother's). ``lineage.heritability`` builds the dose-sweep
+likelihood-ratio tests and half-lives on top of these options.
