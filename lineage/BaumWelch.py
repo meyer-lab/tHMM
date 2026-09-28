@@ -71,7 +71,15 @@ def calculate_stationary(T: np.ndarray) -> np.ndarray:
     return w / np.sum(w)
 
 
-def do_M_step(tHMMobj: list[tHMM], MSD: list, betas: list, gammas: list):
+def do_M_step(
+    tHMMobj: list[tHMM],
+    MSD: list,
+    betas: list,
+    gammas: list,
+    shared_T: bool = True,
+    independent_T: bool = False,
+    estimate_pi: bool = False,
+):
     """
     Calculates the maximization step of the Baum Welch algorithm
     given output of the expectation step.
@@ -83,31 +91,33 @@ def do_M_step(tHMMobj: list[tHMM], MSD: list, betas: list, gammas: list):
     :param MSD: The marginal state distribution P(z_n = k)
     :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
+    :param shared_T: when fitting several conditions at once, estimate one transition matrix
+        for all of them (the default) or a separate one for each. Emissions are fit jointly either way.
+    :param independent_T: constrain every row of T to be identical, so that a daughter's
+        state does not depend on its mother's; the null model for heritability.
     """
     # the first object is representative of the whole population.
     # If thmmObj[0] satisfies this "if", then all the objects in this population do.
     if tHMMobj[0].estimate.fT is None:
         assert tHMMobj[0].fT is None
-        T = do_M_T_step(tHMMobj, MSD, betas, gammas)
-        # the following line will replace line 89 in case we want to have equal transitions between all states.
-        # T = np.ones((gammas[0][0].shape[1], gammas[0][0].shape[1])) / gammas[0][0].shape[1]
+        if shared_T:
+            T = do_M_T_step(tHMMobj, MSD, betas, gammas, independent_T)
 
-        # all the objects in the population have the same T
-        for t in tHMMobj:
-            t.estimate.T = T
+            # all the objects in the population have the same T
+            for t in tHMMobj:
+                t.estimate.T = T
+        else:
+            for i, t in enumerate(tHMMobj):
+                t.estimate.T = do_M_T_step([t], [MSD[i]], [betas[i]], [gammas[i]], independent_T)
 
-    if tHMMobj[0].estimate.fpi is None:
-        pi = calculate_stationary(tHMMobj[0].estimate.T)
-    elif tHMMobj[0].estimate.fpi is True:
-        # True indicates that pi should be set based on the stationary distribution of T
-        assert tHMMobj[0].fpi is True
-        pi = calculate_stationary(tHMMobj[0].estimate.T)
-    else:
-        pi = tHMMobj[0].fpi
-
-    # all the objects in the population have the same pi
-    for t in tHMMobj:
-        t.estimate.pi = pi
+    for i, t in enumerate(tHMMobj):
+        if estimate_pi and t.estimate.fpi is None:
+            t.estimate.pi = do_M_pi_step([t], [gammas[i]])
+        elif t.estimate.fpi is None or t.estimate.fpi is True:
+            # True indicates that pi should be set based on the stationary distribution of T
+            t.estimate.pi = calculate_stationary(t.estimate.T)
+        else:
+            t.estimate.pi = t.fpi
 
     if tHMMobj[0].estimate.fE is None:
         assert tHMMobj[0].fE is None
@@ -134,6 +144,8 @@ def do_M_pi_step(tHMMobj: list[tHMM], gammas: list[np.ndarray]) -> np.ndarray:
             # local pi estimate
             pi_e += gammas[i][num][0, :]
 
+    # A small pseudocount keeps an unused state from getting exactly zero prior mass.
+    pi_e += 1e-3
     return pi_e / np.sum(pi_e)
 
 
@@ -142,6 +154,7 @@ def do_M_T_step(
     MSD: list[list[np.ndarray]],
     betas: list[list[np.ndarray]],
     gammas: list[list[np.ndarray]],
+    independent_T: bool = False,
 ) -> np.ndarray:
     """
     Calculates the M-step of the Baum Welch algorithm
@@ -154,6 +167,8 @@ def do_M_T_step(
     :param MSD: The marginal state distribution P(z_n = k)
     :param betas: beta values. The conditional probability of states, given observations of the sub-tree rooted in cell_n
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
+    :param independent_T: constrain all rows of T to be equal. The expected transition counts
+        are then pooled over mother states, which is the constrained MLE.
     """
     n = tHMMobj[0].num_states
 
@@ -173,7 +188,10 @@ def do_M_T_step(
             )
             denom_e += sum_nonleaf_gammas(lO.leaves_idx, gammas[i][num])
 
-    T_estimate = numer_e / denom_e[:, np.newaxis]
+    if independent_T:
+        T_estimate = np.tile(numer_e.sum(axis=0), (n, 1))
+    else:
+        T_estimate = numer_e / denom_e[:, np.newaxis]
     T_estimate /= T_estimate.sum(axis=1)[:, np.newaxis]
 
     assert np.all(np.isfinite(T_estimate))
