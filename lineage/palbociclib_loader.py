@@ -189,7 +189,9 @@ def cell_obs(df: pd.DataFrame) -> np.ndarray:
     )
 
 
-def load_lineages(condition: str, table: pd.DataFrame | None = None, E=None) -> list[LineageTree]:
+def load_lineages(
+    condition: str, table: pd.DataFrame | None = None, E=None, root_lifetimes: bool = True
+) -> list[LineageTree]:
     """Lineages of cells born after drug addition in one condition.
 
     Each lineage is rooted at a cell that divided after the drug went on; its daughters,
@@ -202,6 +204,10 @@ def load_lineages(condition: str, table: pd.DataFrame | None = None, E=None) -> 
     :param condition: ``"control"``, ``"palbociclib"``, ``"MEKi"``, or ``"Nutlin"``
     :param table: a table from :func:`build_cell_table`; defaults to :data:`CELL_TABLE`
     :param E: emissions to attach to the lineages (only used as a template for fitting)
+    :param root_lifetimes: keep the roots' lifetimes. Roots are only in the data because
+        they divided before the movie ended, so their lifetimes are selected on the
+        outcome; pass False to drop them (keeping the roots' biosensor readings) as a
+        sensitivity check on that selection.
     """
     if table is None:
         table = pd.read_csv(CELL_TABLE)
@@ -236,5 +242,7 @@ def load_lineages(condition: str, table: pd.DataFrame | None = None, E=None) -> 
             if root not in movie.index:
                 # A mother with no usable sensor frames at all is kept for her topology only.
                 obs[0, :] = np.nan
+            if not root_lifetimes:
+                obs[0, 1:3] = np.nan
             lineages.append(LineageTree(tree, E, obs=obs))
     return lineages
