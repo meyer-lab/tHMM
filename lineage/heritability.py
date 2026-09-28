@@ -19,6 +19,7 @@ zero -- no memory -- when every row of ``T`` is the same. :func:`dose_sweep` tes
 null directly with a likelihood-ratio test.
 """
 
+from collections.abc import Callable
 from concurrent.futures import ProcessPoolExecutor
 from copy import deepcopy
 from dataclasses import dataclass, field
@@ -118,6 +119,11 @@ def _random_fit(pop_list, num_states, shared_T, independent_T, estimate_pi, seed
     return objs, LL
 
 
+def _warm_fit(pop_list, template, shared_T, independent_T, estimate_pi, seed):
+    objs, LL, _ = refit(pop_list, template, shared_T, independent_T, estimate_pi, rng=seed)
+    return objs, LL
+
+
 def fit_best(
     pop_list: list,
     num_states: int,
@@ -136,19 +142,21 @@ def fit_best(
     time course they are cells from before the drug -- and the stationary tie also
     breaks the monotonicity of EM, which the likelihood-ratio tests rely on.
 
-    :param n_jobs: run the random restarts in this many processes
+    :param n_jobs: run the random restarts and warm starts in this many processes
     """
     rng = np.random.default_rng(rng)
-    seeds = rng.integers(2**32, size=n_starts)
+    seeds = rng.integers(2**32, size=n_starts + len(starts))
     args = (pop_list, num_states, shared_T, independent_T, estimate_pi)
-    if n_jobs > 1:
-        with ProcessPoolExecutor(min(n_jobs, n_starts)) as exe:
-            fits = list(exe.map(_random_fit, *zip(*[(*args, s) for s in seeds], strict=True)))
+    jobs: list[tuple[Callable, tuple]] = [(_random_fit, (*args, s)) for s in seeds[:n_starts]]
+    jobs += [
+        (_warm_fit, (pop_list, st, shared_T, independent_T, estimate_pi, s))
+        for st, s in zip(starts, seeds[n_starts:], strict=True)
+    ]
+    if n_jobs > 1 and len(jobs) > 1:
+        with ProcessPoolExecutor(min(n_jobs, len(jobs))) as exe:
+            fits = [f.result() for f in [exe.submit(fn, *a) for fn, a in jobs]]
     else:
-        fits = [_random_fit(*args, s) for s in seeds]
-    for s in starts:
-        objs, LL, _ = refit(pop_list, s, shared_T, independent_T, estimate_pi, rng=rng)
-        fits.append((objs, LL))
+        fits = [fn(*a) for fn, a in jobs]
     return max(fits, key=lambda f: f[1])
 
 
@@ -207,11 +215,22 @@ def dose_sweep(
     shared = fit_best(pops_by_dose, K, shared_T=True, **kw)
     indep = fit_best(pops_by_dose, K, shared_T=False, independent_T=True, **kw)
     per_dose = fit_best(pops_by_dose, K, shared_T=False, starts=(shared[0], indep[0]), **kw)
-    shared = fit_best(pops_by_dose, K, shared_T=True, starts=(shared[0], per_dose[0]), n_starts=0, rng=rng)
-    indep = fit_best(
-        pops_by_dose, K, shared_T=False, independent_T=True, starts=(indep[0], per_dose[0]), n_starts=0, rng=rng
+    shared = fit_best(
+        pops_by_dose, K, shared_T=True, starts=(shared[0], per_dose[0]), n_starts=0, n_jobs=n_jobs, rng=rng
     )
-    per_dose = fit_best(pops_by_dose, K, shared_T=False, starts=(per_dose[0], shared[0], indep[0]), n_starts=0, rng=rng)
+    indep = fit_best(
+        pops_by_dose,
+        K,
+        shared_T=False,
+        independent_T=True,
+        starts=(indep[0], per_dose[0]),
+        n_starts=0,
+        n_jobs=n_jobs,
+        rng=rng,
+    )
+    per_dose = fit_best(
+        pops_by_dose, K, shared_T=False, starts=(per_dose[0], shared[0], indep[0]), n_starts=0, n_jobs=n_jobs, rng=rng
+    )
 
     for fit in (per_dose, shared, indep):
         order_by_lifetime(fit[0])

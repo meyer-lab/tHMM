@@ -1,7 +1,7 @@
 """Issue #1016: heritability of palbociclib escape in Spencer-lab MCF10A lineages.
 
 Run as ``OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m lineage.palbociclib_analysis
-[n_boot]``. The fits run in parallel worker processes, so BLAS's own threads should be
+[n_boot | sensitivity]``. The fits run in parallel worker processes, so BLAS's own threads should be
 pinned to one, or the workers oversubscribe the machine. Results are written to
 ``output/palbociclib_analysis.json`` and drawn by :mod:`lineage.figures.figure22`.
 
@@ -86,6 +86,10 @@ def percentile_ci(samples: np.ndarray) -> list:
     return [np.asarray(lo).tolist(), np.asarray(hi).tolist()]
 
 
+def log(msg: str, t0: float):
+    print(f"[{time.time() - t0:7.0f} s] {msg}", file=sys.stderr, flush=True)
+
+
 def run(n_boot: int = 200, n_workers: int = 16, seed: int = 0) -> dict:
     rng = np.random.default_rng(seed)
     pops = [load_lineages(c) for c in CONDITIONS]
@@ -102,8 +106,10 @@ def run(n_boot: int = 200, n_workers: int = 16, seed: int = 0) -> dict:
 
     t0 = time.time()
     res["state_selection"] = select_states(pops, n_jobs=n_workers, rng=rng)
+    log("state selection done", t0)
 
     sweep = dose_sweep(pops, list(DOSES_NM), num_states=2, n_starts=12, n_jobs=n_workers, rng=rng)
+    log("dose sweep done", t0)
     res["LL"] = {k: float(v) for k, v in sweep.LL.items()}
     res["lrt"] = sweep.lrt
     res["emissions"] = [e.params.tolist() for e in sweep.per_dose[0].estimate.E]
@@ -121,6 +127,7 @@ def run(n_boot: int = 200, n_workers: int = 16, seed: int = 0) -> dict:
     with ProcessPoolExecutor(n_workers) as exe:
         futs = [exe.submit(bootstrap_transitions, sweep, pops, len(c), s) for c, s in zip(chunks, seeds, strict=True)]
         boots = np.concatenate([f.result() for f in futs if f.result().size])
+    log("bootstrap done", t0)
     summaries = [summarize_T(b) for b in boots]
     boot: dict = {
         key: percentile_ci(np.array([s[key] for s in summaries], dtype=float))
@@ -142,6 +149,7 @@ def run(n_boot: int = 200, n_workers: int = 16, seed: int = 0) -> dict:
     res["n_boot"] = int(boots.shape[0])
 
     cv = cross_validated_scores(sweep, pops, horizon=HORIZON_H, n_folds=5, escape_col=ESCAPE_COL, rng=rng)
+    log("cross-validated forecasts done", t0)
     res["auc"] = auc_table(cv, n_boot=1000, rng=rng)
     pairs = cv["pairs"]
     res["pairs"] = {
@@ -159,10 +167,63 @@ def run(n_boot: int = 200, n_workers: int = 16, seed: int = 0) -> dict:
     return res
 
 
+SENSITIVITY_OUTPUT = os.path.join("output", "palbociclib_sensitivity.json")
+
+
+def sensitivity(n_workers: int = 16, seed: int = 1) -> dict:
+    """Refit the dose sweep without the roots' lifetimes, which are selected on dividing.
+
+    Also reports how well each fit reproduces division among cells born into drug, the
+    cells not selected on their outcome: the observed fraction divided by 20 h (Kaplan-Meier)
+    against the fraction the fitted states predict.
+    """
+    from statsmodels.duration.survfunc import SurvfuncRight
+
+    from .BaumWelch import do_E_step
+    from .tHMM import tHMM
+
+    rng = np.random.default_rng(seed)
+    out: dict = {}
+    for label, keep in (("with_root_lifetimes", True), ("without_root_lifetimes", False)):
+        pops = [load_lineages(c, root_lifetimes=keep) for c in CONDITIONS]
+        sweep = dose_sweep(pops, list(DOSES_NM), num_states=2, n_starts=12, n_jobs=n_workers, rng=rng)
+        E = sweep.per_dose[0].estimate.E
+        entry = {
+            "LL": {k: float(v) for k, v in sweep.LL.items()},
+            "lrt": sweep.lrt,
+            "emissions": [e.params.tolist() for e in E],
+            "pi": [tO.estimate.pi.tolist() for tO in sweep.per_dose],
+            "point": summarize_T(sweep.T),
+            "divided_by_20h": [],
+        }
+        # Always score division on the full data, whichever lineages were fit.
+        full = [load_lineages(c) for c in CONDITIONS]
+        for pop, tO in zip(full, sweep.per_dose, strict=True):
+            fixed = tHMM(pop, 2, fpi=tO.estimate.pi, fT=tO.estimate.T, fE=E)
+            gam = np.vstack(do_E_step(fixed)[3])
+            obs = np.vstack([lin.obs for lin in pop])
+            m = np.isfinite(obs[:, 1]) & np.concatenate([np.arange(len(lin)) > 0 for lin in pop])
+            km = SurvfuncRight(obs[m, 1], obs[m, 2])
+            w = gam[m].mean(axis=0)
+            S20 = sum(w[k] * np.exp(-((20.0 / e.params[3]) ** e.params[2])) for k, e in enumerate(E))
+            entry["divided_by_20h"].append(
+                {"observed": float(1.0 - np.interp(20.0, km.surv_times, km.surv_prob)), "model": float(1.0 - S20)}
+            )
+        out[label] = entry
+    return out
+
+
 if __name__ == "__main__":
-    n_boot = int(sys.argv[1]) if len(sys.argv) > 1 else 200
-    out = run(n_boot=n_boot)
-    os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
-    with open(OUTPUT, "w") as f:
-        json.dump(out, f, indent=1, default=float)
-    print(json.dumps({k: v for k, v in out.items() if not k.startswith("roc_")}, indent=1, default=float))
+    if len(sys.argv) > 1 and sys.argv[1] == "sensitivity":
+        out = sensitivity()
+        os.makedirs(os.path.dirname(SENSITIVITY_OUTPUT), exist_ok=True)
+        with open(SENSITIVITY_OUTPUT, "w") as f:
+            json.dump(out, f, indent=1, default=float)
+        print(json.dumps(out, indent=1, default=float))
+    else:
+        n_boot = int(sys.argv[1]) if len(sys.argv) > 1 else 200
+        out = run(n_boot=n_boot)
+        os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
+        with open(OUTPUT, "w") as f:
+            json.dump(out, f, indent=1, default=float)
+        print(json.dumps({k: v for k, v in out.items() if not k.startswith("roc_")}, indent=1, default=float))

@@ -141,3 +141,12 @@ def test_shipped_table_loads():
             assert np.all(parents < daughters)
             # Two daughters, or one when the sister never had a usable sensor frame.
             assert np.all(np.isin(np.bincount(parents, minlength=len(lin))[parents], (1, 2)))
+
+
+def test_load_lineages_without_root_lifetimes(movie_dir):
+    table = build_cell_table(str(movie_dir))
+    [lin] = load_lineages("palbociclib", table, root_lifetimes=False)
+    [full] = load_lineages("palbociclib", table)
+    assert np.all(np.isnan(lin.obs[0, 1:3]))
+    np.testing.assert_array_equal(lin.obs[0, 0], full.obs[0, 0])
+    np.testing.assert_array_equal(lin.obs[1:], full.obs[1:])
