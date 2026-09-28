@@ -224,8 +224,9 @@ def do_M_E_step_atonce(all_tHMMobj: list[tHMM], all_gammas: list[list[np.ndarray
     """
     gms = [np.vstack(gm) for gm in all_gammas]
 
-    all_cells_0 = np.vstack([lineage.obs for lineage in all_tHMMobj[0].X])
-    phase = all_cells_0.shape[1] == 6
+    E0 = all_tHMMobj[0].estimate.E[0]
+    # Six-column observations are G1 and S-G2 phases, unless the emission says otherwise.
+    phase = getattr(E0, "split_phases", all_tHMMobj[0].X[0].obs.shape[1] == 6)
 
     G1cells = []
     G2cells = []
@@ -239,7 +240,7 @@ def do_M_E_step_atonce(all_tHMMobj: list[tHMM], all_gammas: list[list[np.ndarray
             cells.append(all_cells)
 
     # Emission classes may supply their own at-once estimator; fall back to the Gamma one.
-    atonce_estimator = getattr(all_tHMMobj[0].estimate.E[0], "atonce_estimator", gamma_atonce_estimator)
+    atonce_estimator = getattr(E0, "atonce_estimator", gamma_atonce_estimator)
 
     # reshape the gammas so that each list in this list of lists is for each state.
     if phase:

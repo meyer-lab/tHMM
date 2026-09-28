@@ -2,6 +2,7 @@
 
 import numpy as np
 import pytest
+from scipy.sparse import csr_array
 
 from ..Analyze import Analyze_list
 from ..BaumWelch import calculate_log_likelihood, calculate_stationary, do_E_step, do_M_E_step, do_M_step
@@ -194,3 +195,54 @@ def test_forecast_auc(heritable_sweep):
         assert row["lo"] <= row["auc"] <= row["hi"]
     # The mother's observation carries her state, and states are heritable.
     assert table["tHMM"]["auc"] > 0.6
+
+
+# -- selected roots ------------------------------------------------------------------
+
+
+def selected_root_lineages(rng, n, T, window=25.0, pre=20.0):
+    """Roots born up to ``pre`` h before a drug and kept only if they divide within
+    ``window`` h after it, as in a drug time course; each root's two daughters are followed
+    to the end of the window. The root's truncation window is in observation columns 3-4."""
+    E_slow = [StateDistribution(0.1, 0.1, 2.0, 300.0), StateDistribution(0.5, 0.1, 4.0, 20.0)]
+    tree = csr_array((np.ones(2, bool), ([0, 0], [1, 2])), shape=(3, 3))
+    lins = []
+    while len(lins) < n:
+        z = rng.choice(2)
+        x, t, _ = E_slow[z].rvs(1, rng=rng)
+        b = rng.uniform(0.0, pre)
+        if not (b <= t[0] <= b + window):
+            continue
+        rows = [[x[0], t[0], 1.0, b, b + window]]
+        rem = b + window - t[0]
+        for _ in range(2):
+            zd = rng.choice(2, p=T[z])
+            xd, td, _ = E_slow[zd].rvs(1, rng=rng)
+            rows.append([xd[0], min(td[0], rem), float(td[0] <= rem), np.nan, np.nan])
+        lins.append(LineageTree(tree, E_slow, obs=np.array(rows)))
+    return lins
+
+
+def test_truncated_roots_keep_the_slow_state_slow():
+    """A slow-dividing state enters the data only through roots selected on dividing
+    inside the window. Taken at face value, those lifetimes pull the state's lifetime
+    down to the window; conditioned on the window, it stays long."""
+    rng = np.random.default_rng(11)
+    T = np.array([[0.8, 0.2], [0.3, 0.7]])
+    lins = selected_root_lineages(rng, 600, T)
+    fits = {}
+    for mode in ("truncate", "keep"):
+        pop = [LineageTree(lin.tree, lin.E, obs=lin.obs.copy()) for lin in lins]
+        if mode == "keep":
+            for lin in pop:
+                lin.obs[0, 3:5] = np.nan
+        [tO], _, _ = Analyze_list([pop], 2, estimate_pi=True, restarts=1, rng=rng)
+        order = np.argsort([e.params[0] for e in tO.estimate.E])
+        fits[mode] = (tO.estimate.T[np.ix_(order, order)], tO.estimate.E[order[0]])
+
+    T_trunc, slow_trunc = fits["truncate"]
+    slow_keep = fits["keep"][1]
+    assert slow_trunc.mean_lifetime() > 100.0
+    assert slow_keep.mean_lifetime() < 40.0
+    # Few slow roots are ever selected, so only the fast state's row is well identified.
+    np.testing.assert_allclose(T_trunc[1], T[1], atol=0.1)

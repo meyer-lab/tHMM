@@ -105,19 +105,27 @@ def s_phase_entry(cdk2: np.ndarray, skip: int = 5) -> float:
     return float((above[0] + skip) * FRAME_HOURS) if above.size else np.nan
 
 
-def extract_movie(path: str) -> pd.DataFrame:
-    """One row per cell of a single ``tracedata`` movie."""
+def extract_movie(
+    path: str, n_frames: int = N_FRAMES, nuc_col: int = NUC_COL, cyto_col: int = CYTO_COL
+) -> pd.DataFrame:
+    """One row per cell of a single ``tracedata`` movie.
+
+    :param nuc_col, cyto_col: tracedata columns (0-based) of the DHB nuclear and
+        cytoplasmic-ring intensities, which differ between deposits
+    """
     import scipy.io as sio
 
     m = sio.loadmat(path)
     trace, mother = m["tracedata"], m["genealogy"].ravel()
-    assert trace.shape[1] == N_FRAMES
-    cdk2 = trace[:, :, CYTO_COL] / trace[:, :, NUC_COL]
+    assert trace.shape[1] == n_frames
+    with np.errstate(divide="ignore", invalid="ignore"):
+        cdk2 = trace[:, :, cyto_col] / trace[:, :, nuc_col]
+    cdk2[~np.isfinite(cdk2)] = np.nan
 
     present = np.isfinite(cdk2)
     seen = present.any(axis=1)
     first = np.argmax(present, axis=1)
-    last = N_FRAMES - 1 - np.argmax(present[:, ::-1], axis=1)
+    last = n_frames - 1 - np.argmax(present[:, ::-1], axis=1)
     has_mother = np.isfinite(mother)
     divided = np.zeros(mother.size, dtype=bool)
     divided[mother[has_mother].astype(int) - 1] = True
@@ -166,15 +174,21 @@ def build_cell_table(fig3a_dir: str, post_drug_only: bool = True) -> pd.DataFram
     return pd.concat(tables, ignore_index=True)
 
 
+#: Observation column holding each cell's S-phase entry time (see :func:`cell_obs`).
+S_ENTRY_COL = 5
+
+
 def cell_obs(df: pd.DataFrame) -> np.ndarray:
-    """Observation rows ``[cdk2_rate, lifetime_h, divided, s_entry_h]`` for cells in ``df``.
+    """Observation rows ``[cdk2_rate, lifetime_h, divided, t_lo, t_hi, s_entry_h]`` for cells in ``df``.
 
     A cell whose birth was not seen has no defined lifetime or G1 feature, so both are
     NaN, as is an implausible activation rate (see :data:`MAX_RATE`). Otherwise the lifetime runs from birth to division, or to the last frame the cell
     was tracked, where it is right-censored. That treats cells lost from tracking the same
     as cells still undivided at the end of the movie, which assumes the loss is unrelated
-    to when the cell would have divided. The fourth column is ignored by the emission and
-    only used to define escape for :mod:`lineage.early_biomarker`.
+    to when the cell would have divided. ``t_lo`` and ``t_hi`` are the lifetime truncation
+    window, NaN here and set for lineage roots by :func:`build_lineages`. The last column
+    is ignored by the emission and only used to define escape for
+    :mod:`lineage.early_biomarker`.
     """
     born = (df["mother"] > 0).to_numpy()
     life = ((df["last"] - df["first"] + 1) * FRAME_HOURS).to_numpy(dtype=float)
@@ -184,65 +198,84 @@ def cell_obs(df: pd.DataFrame) -> np.ndarray:
             np.where(np.abs(rate) <= MAX_RATE, rate, np.nan),
             np.where(born, life, np.nan),
             np.where(born, df["divided"].to_numpy(dtype=float), np.nan),
+            np.full((len(df), 2), np.nan),
             df["s_entry_h"].to_numpy(dtype=float),
         ]
     )
 
 
-def load_lineages(
-    condition: str, table: pd.DataFrame | None = None, E=None, root_lifetimes: bool = True
-) -> list[LineageTree]:
-    """Lineages of cells born after drug addition in one condition.
+#: How :func:`build_lineages` treats the lifetimes of lineage roots.
+ROOT_MODES = ("truncate", "keep", "drop")
 
-    Each lineage is rooted at a cell that divided after the drug went on; its daughters,
+
+def build_lineages(
+    movie: pd.DataFrame, drug_frame: int, n_frames: int, E, roots: str = "truncate"
+) -> list[LineageTree]:
+    """Lineages of cells born at or after ``drug_frame`` in one movie's cell table.
+
+    Each lineage is rooted at a cell that divided at or after ``drug_frame``; its daughters,
     and any of their descendants, were born into drug. The root keeps its own observation
     when its birth was seen (its G1 was before the drug), so the root-to-daughter
     transitions describe how a cell's pre-treatment state carries into its daughters'
-    response. About 1-3% of mothers have a single daughter here, where the sister never
-    had a usable sensor frame; she is left out rather than imputed.
+    response. A mother with a single daughter here (the sister never had a usable sensor
+    frame) keeps just the one, rather than an imputed sister.
+
+    :param roots: a root is only in the data because it divided between ``drug_frame`` and
+        the end of the movie, so its lifetime is selected on the outcome. ``"truncate"``
+        (the default) conditions the root's lifetime on that window, which is the exact
+        likelihood given selection; ``"keep"`` ignores the selection; ``"drop"`` removes the
+        roots' lifetimes (keeping their biosensor readings).
+    """
+    assert roots in ROOT_MODES
+    movie = movie.set_index("cell")
+    post = movie[(movie["mother"] > 0) & (movie["first"] >= drug_frame)]
+    children: dict[int, list[int]] = {}
+    for cell, mom in zip(post.index, post["mother"], strict=True):
+        children.setdefault(int(mom), []).append(int(cell))
+
+    lineages = []
+    for root in sorted(m for m in children if m not in post.index):
+        # Breadth-first, so that every mother precedes her daughters.
+        order, parent_pos = [root], [-1]
+        k = 0
+        while k < len(order):
+            for c in sorted(children.get(order[k], [])):
+                order.append(c)
+                parent_pos.append(k)
+            k += 1
+
+        n = len(order)
+        tree = csr_array((np.ones(n - 1, dtype=bool), (np.array(parent_pos[1:]), np.arange(1, n))), shape=(n, n))
+        obs = cell_obs(movie.reindex(order).reset_index())
+        if root not in movie.index:
+            # A mother with no usable sensor frames at all is kept for her topology only.
+            obs[0, :] = np.nan
+        elif roots == "drop":
+            obs[0, 1:3] = np.nan
+        elif roots == "truncate" and np.isfinite(obs[0, 1]):
+            # Daughters born in [drug_frame, n_frames - 1] means a lifetime, in frames,
+            # between these bounds.
+            first = movie.loc[root, "first"]
+            obs[0, 3:5] = np.array([drug_frame - first, n_frames - 1 - first]) * FRAME_HOURS
+        lineages.append(LineageTree(tree, E, obs=obs))
+    return lineages
+
+
+def load_lineages(
+    condition: str, table: pd.DataFrame | None = None, E=None, roots: str = "truncate"
+) -> list[LineageTree]:
+    """Lineages of cells born after drug addition in one condition (see :func:`build_lineages`).
 
     :param condition: ``"control"``, ``"palbociclib"``, ``"MEKi"``, or ``"Nutlin"``
     :param table: a table from :func:`build_cell_table`; defaults to :data:`CELL_TABLE`
     :param E: emissions to attach to the lineages (only used as a template for fitting)
-    :param root_lifetimes: keep the roots' lifetimes. Roots are only in the data because
-        they divided before the movie ended, so their lifetimes are selected on the
-        outcome; pass False to drop them (keeping the roots' biosensor readings) as a
-        sensitivity check on that selection.
     """
     if table is None:
         table = pd.read_csv(CELL_TABLE)
     if E is None:
         E = [StateDistribution()]
     table = table[table["condition"] == condition]
-
     lineages = []
     for _, movie in table.groupby("movie", sort=True):
-        movie = movie.set_index("cell")
-        post = movie[(movie["mother"] > 0) & (movie["first"] >= DRUG_FRAME)]
-        children: dict[int, list[int]] = {}
-        for cell, mom in zip(post.index, post["mother"], strict=True):
-            children.setdefault(int(mom), []).append(int(cell))
-
-        roots = sorted(m for m in children if m not in post.index)
-        for root in roots:
-            # Breadth-first, so that every mother precedes her daughters.
-            order, parent_pos = [root], [-1]
-            k = 0
-            while k < len(order):
-                for c in sorted(children.get(order[k], [])):
-                    order.append(c)
-                    parent_pos.append(k)
-                k += 1
-
-            n = len(order)
-            rows = np.array(parent_pos[1:])
-            cols = np.arange(1, n)
-            tree = csr_array((np.ones(n - 1, dtype=bool), (rows, cols)), shape=(n, n))
-            obs = cell_obs(movie.reindex(order).reset_index())
-            if root not in movie.index:
-                # A mother with no usable sensor frames at all is kept for her topology only.
-                obs[0, :] = np.nan
-            if not root_lifetimes:
-                obs[0, 1:3] = np.nan
-            lineages.append(LineageTree(tree, E, obs=obs))
+        lineages += build_lineages(movie, DRUG_FRAME, N_FRAMES, E, roots)
     return lineages
