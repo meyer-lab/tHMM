@@ -80,8 +80,24 @@ Observations:
 
 **Comparison with BDMM-Prime on a 100-cell tree** (`bdmm_comparison.py`, `results/bdmm_thmm.json`). Both methods get the same simulated 100-leaf time tree, the true tip types (4 types), and the same branch lengths.
 
-- **tHMM:** fits in 0.4 s, with emissions fixed at near-indicators of the tip type. A 200-replicate parametric bootstrap takes 165 s, and its 95% intervals cover all 12 true rates. The four large rates are recovered in the right order: 0→1 at 0.69 (true 0.45), 1→0 at 0.27 (0.15), 1→2 at 0.26 (0.30), 2→3 at 0.14 (0.24). With only 34 true switches on the tree, the small rates go to the zero boundary.
-- **BDMM-Prime:** BDMM_RESULTS_PLACEHOLDER
+- **tHMM:** fits in 0.4 s, with emissions fixed at near-indicators of the tip type. A 200-replicate parametric bootstrap takes 165 s. Its 95% intervals cover all 12 true rates, but they are very wide on a tree this small. The four large rates are recovered in the right order: 0→1 at 0.69 (true 0.45), 1→0 at 0.27 (0.15), 1→2 at 0.26 (0.30), 2→3 at 0.14 (0.24). With only 34 true switches on the tree, the small rates go to the zero boundary.
+- **BDMM-Prime** (BEAST 2.7.7, BDMM-Prime 2.7.2; XML and summary in `bdmm/`):
+  - **Setup:** fixed tree; the standard BDMM likelihood integrated over type histories; shared birth rate; no death; ρ = 1; Exponential(mean 0.3) priors on the 12 type-change rates; estimated root frequencies.
+  - **Runtime:** about 2.2–2.6 ms per MCMC state. Mixing was excellent (single-chain ESS > 2,400 over 2.5M states), so ESS > 200 needs about 200k states, roughly 7–10 minutes for one chain. The full 4-chain run took 107 minutes.
+  - **Accuracy:** its 95% HPDs cover all 12 true rates, but they are wide. The rates out of the rare type 3 sit near the prior median (0.21–0.27 against true 0.015–0.03), and the root type is not identified.
+
+| rate | true | tHMM MLE [bootstrap 95%] | BDMM-Prime median [95% HPD] |
+|---|---|---|---|
+| 0→1 | 0.45 | 0.69 [0.01, 3.1] | 0.51 [0.10, 0.95] |
+| 1→0 | 0.15 | 0.27 [0.00, 2.5] | 0.29 [0.04, 0.59] |
+| 1→2 | 0.30 | 0.26 [0.00, 3.4] | 0.20 [0.03, 0.41] |
+| 2→3 | 0.24 | 0.14 [0.00, 2.7] | 0.13 [0.00, 0.38] |
+| rates out of type 3 | 0.015–0.03 | 0.00–0.01 | 0.21–0.27 (prior-driven) |
+
+  On the same information the two methods are about equally accurate for the well-determined rates. The tHMM is about 1,000× faster than even a minimal BDMM-Prime run. It also scales linearly to the 14k-cell KP-Tracer trees, where BDMM-type inference is not practical. The trade-offs:
+  - The tHMM conditions on the tree and does not model type-dependent birth or death, which BDMM does.
+  - Its intervals come from a parametric bootstrap, not a posterior. On 100 cells they are much wider than the HPDs, because each refit of a 12-rate model to about 34 switches occasionally explodes one rate, and nothing like BDMM-Prime's prior holds rates down.
+  - Its maximum-likelihood rates for rarely visited states sit on the zero boundary, where BDMM-Prime's are prior-driven.
 
 ## KP-Tracer analysis
 
