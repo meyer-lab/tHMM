@@ -28,6 +28,7 @@ uv run python kptracer_analysis.py fit 12        # anchored (fixed emissions), u
 uv run python kptracer_analysis.py bootstrap anchored
 uv run python kptracer_analysis.py compare
 uv run --with matplotlib python make_figures.py
+uv run python bdmm_comparison.py                 # tHMM side of the BDMM-Prime comparison (bdmm/ holds the BEAST XML)
 ```
 
 `results/*.pkl` are large intermediates and are git-ignored. The CSV summaries and `figures/` are committed.
