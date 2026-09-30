@@ -25,3 +25,6 @@ lineage/data/taxol
 output/
 docs/_build/
 
+
+# KP-Tracer analysis intermediates (large; regenerate with analysis/kptracer scripts)
+analysis/kptracer/results/*.pkl

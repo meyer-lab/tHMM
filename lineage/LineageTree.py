@@ -26,16 +26,25 @@ class LineageTree:
     obs: np.ndarray
     tree: csr_array
     states: np.ndarray
-    E: Sequence[StA | StB | StC]
+    branch_lengths: np.ndarray | None
+    names: np.ndarray | None
+    E: Sequence
 
     def __init__(
         self,
         list_of_cells: list | csr_array,
-        E: Sequence[StA | StB | StC],
+        E: Sequence,
         obs: np.ndarray | None = None,
         states: np.ndarray | None = None,
+        branch_lengths: np.ndarray | None = None,
     ):
+        """
+        :param branch_lengths: Optional length of the edge leading into each cell (0 for the root).
+            Division-resolved lineages leave this as None and use a single transition matrix per edge.
+        """
         self.E = E
+        self.branch_lengths = branch_lengths
+        self.names = None  # node names, set when loaded from a named phylogeny
         if isinstance(list_of_cells, list):
             self._output_lineage = sorted(list_of_cells, key=operator.attrgetter("gen"))
             self.tree = lineage_to_tree(self._output_lineage)
@@ -179,6 +188,43 @@ class LineageTree:
         return self.tree.shape[0]
 
 
+def get_log_Emission_Likelihoods(X: list[LineageTree], E: list) -> list[np.ndarray]:
+    """
+    Log emission likelihood matrix, :math:`\\log P(x_n = x | z_n = k)`, for each lineage.
+
+    Unobserved cells (e.g. internal nodes of a reconstructed phylogeny) should return 0 from ``logpdf``.
+
+    :param X: list of lineage trees
+    :param E: The emission distributions, one per state
+    :return: One N by K array per lineage
+    """
+    all_cells = np.vstack([lineage.obs for lineage in X])
+    logEL = np.column_stack([E[k].logpdf(all_cells) for k in range(len(E))])
+    assert not np.any(np.isnan(logEL))
+    splits = np.cumsum([len(lineageObj) for lineageObj in X])[:-1]
+    return np.split(logEL, splits)
+
+
+def get_scaled_Emission_Likelihoods(X: list[LineageTree], E: list) -> tuple[list[np.ndarray], list[np.ndarray]]:
+    """
+    Emission likelihoods rescaled per cell so that the largest entry in each row is 1.
+
+    High-dimensional observations easily have likelihoods far below the smallest double, so the
+    per-cell maximum log-likelihood is subtracted before exponentiating. Scaling a cell's row by a
+    constant leaves beta and gamma unchanged and only scales that cell's normalizing factor, so the
+    log-likelihood is ``sum(log(NF)) + sum(offsets)``.
+
+    :return: The scaled EL arrays and the per-cell log offsets, one of each per lineage.
+    """
+    EL, offsets = [], []
+    for logEL in get_log_Emission_Likelihoods(X, E):
+        off = np.max(logEL, axis=1)
+        assert np.all(np.isfinite(off)), "Some cells are impossible under every state."
+        EL.append(np.exp(logEL - off[:, np.newaxis]))
+        offsets.append(off)
+    return EL, offsets
+
+
 def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list[np.ndarray]:
     """
     Emission Likelihood (EL) matrix.
@@ -188,25 +234,15 @@ def get_Emission_Likelihoods(X: list[LineageTree], E: list) -> list[np.ndarray]:
     :math:`P(x_n = x | z_n = k)`,
 
     for all :math:`x_n` and :math:`z_n` in our observed and hidden state tree
-    and for all possible discrete states k.
+    and for all possible discrete states k. This underflows for high-dimensional
+    observations; use :func:`get_scaled_Emission_Likelihoods` there.
+
     :param X: list of lineage trees
     :param E: The emissions likelihood
     :return: The marginal state distribution
     """
-    all_cells = np.vstack([lineage.obs for lineage in X])
-    ELstack = np.zeros((len(all_cells), len(E)))
-
-    for k in range(len(E)):  # for each state
-        ELstack[:, k] = np.exp(E[k].logpdf(all_cells))
-        assert np.all(np.isfinite(ELstack[:, k]))
-    EL = []
-    ii = 0
-    for lineageObj in X:  # for each lineage in our Population
-        nl = len(lineageObj)  # getting the lineage length
-        EL.append(ELstack[ii : (ii + nl), :])  # append the EL_array for each lineage
-
-        ii += nl
-
+    EL = [np.exp(logEL) for logEL in get_log_Emission_Likelihoods(X, E)]
+    assert all(np.all(np.isfinite(el)) for el in EL)
     return EL
 
 
