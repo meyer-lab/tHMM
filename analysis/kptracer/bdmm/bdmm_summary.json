@@ -1,0 +1,142 @@
+{
+ "wall_seconds": 6445.654667854309,
+ "wall_seconds_per_chain": [
+  6375.539113044739,
+  6445.653131723404,
+  6400.728255271912,
+  6434.687438011169
+ ],
+ "seconds_per_million_samples": 2565.6607938051225,
+ "n_chains": 4,
+ "chain_length_per_chain": 2500000,
+ "log_every": 500,
+ "n_samples": 18004,
+ "n_samples_note": "post-burnin logged samples pooled across chains (10% burnin per chain); MCMC states per chain = 2.5e6",
+ "ess_min": 10432.411489106,
+ "ess_median": 11367.911747273869,
+ "ess_per_rate_pooled": [
+  13897.41471443144,
+  10432.411489106,
+  11084.62202576015,
+  15691.542288148514,
+  12320.547834141229,
+  11485.265527526453,
+  11758.14957153604,
+  11250.557967021283,
+  15326.36107722986,
+  11094.206628933782,
+  11035.891382524755,
+  10621.721846149254
+ ],
+ "ess_min_single_chain": 2440.0118219268766,
+ "ess_median_single_chain": 2897.048763724237,
+ "rhat_max": 1.0003411175377643,
+ "hpd_coverage": "12/12",
+ "rates_true": [
+  [
+   0.0,
+   0.44999999999999996,
+   0.06,
+   0.015
+  ],
+  [
+   0.15000000000000002,
+   0.0,
+   0.30000000000000004,
+   0.015
+  ],
+  [
+   0.015,
+   0.06,
+   0.0,
+   0.24
+  ],
+  [
+   0.015,
+   0.015,
+   0.03,
+   0.0
+  ]
+ ],
+ "rates_median": [
+  [
+   0.0,
+   0.5103131085784036,
+   0.07671978415025725,
+   0.043024337623377054
+  ],
+  [
+   0.28687421600480206,
+   0.0,
+   0.1979957382949188,
+   0.0361916114083121
+  ],
+  [
+   0.07348354619177175,
+   0.13039641620359893,
+   0.0,
+   0.13211403694655444
+  ],
+  [
+   0.21424332632389226,
+   0.24762393891238374,
+   0.2726695768798638,
+   0.0
+  ]
+ ],
+ "rates_lo": [
+  [
+   0.0,
+   0.1021538212235079,
+   2.308699221686512e-05,
+   8.110066720244403e-07
+  ],
+  [
+   0.0421476778310851,
+   0.0,
+   0.0282492062121519,
+   6.580723324512174e-06
+  ],
+  [
+   4.293625169993541e-06,
+   3.7391719475294177e-06,
+   0.0,
+   0.0003033097511343714
+  ],
+  [
+   9.367528010825216e-06,
+   3.5701304171177952e-06,
+   8.712950332777805e-07,
+   0.0
+  ]
+ ],
+ "rates_hi": [
+  [
+   0.0,
+   0.9490902173754688,
+   0.2951695575057029,
+   0.1862328181528537
+  ],
+  [
+   0.5915360122563034,
+   0.0,
+   0.413992040097056,
+   0.1535975800165734
+  ],
+  [
+   0.322119548035203,
+   0.4841343296266506,
+   0.0,
+   0.3766452595871318
+  ],
+  [
+   0.9030265762202508,
+   1.0474542475169335,
+   1.0592085015999635,
+   0.0
+  ]
+ ],
+ "beast_version": "2.7.7 (BEAST.base/BEAST.app 2.7.7, bundled JRE)",
+ "bdmm_prime_version": "2.7.2",
+ "notes": "Likelihood: BDMM-Prime BirthDeathMigrationDistribution (Kuehnert et al. 2016 ODE likelihood, integrated over unobserved type histories; not a mapped/typed-tree likelihood). Tree FIXED: loaded from tree100.nwk via TreeParser, not in the MCMC state, no tree operators. TreeParser adjustTipHeights=true was required: tips in the Newick differ by up to 3e-6 due to 6-decimal rounding, and BDMM-Prime otherwise does not treat them as rho-sampled (logP=-Inf). conditionOnRoot=true, processLength = root height (no stem). Model: 4 types (tip types from tip_types.tsv), single shared birth rate (LogNormal(0,1) prior), death=0, psi sampling rate=0, rho=1 at present, 12 migration rates (BDMM-Prime forward-time, row-major off-diagonal order from->to) with iid Exponential(mean 0.3) priors, root type frequencies (startTypePriorProbs) estimated with Dirichlet(1,1,1,1). Operators: single-element ScaleOperator on migration rates, scaleAll on migration rates, ScaleOperator on birth rate, DeltaExchange on root freqs. Run: 4 independent chains (seeds 1001-1004) run concurrently, 2.5e6 states each, log every 500, 10% burnin; BDMM-Prime internal parallelize=true (~1.8 cores/chain; host shared with another heavy job). wall_seconds = wall time for all 4 concurrent chains; a single chain alone is ~same speed (~2.2-2.8 ms/state). ESS via arviz 0.x bulk ESS (pooled over chains and for chain 1 alone). Mixing is good: single-chain ESS>2400 for all rates, so ESS>200 would need only ~2e5 states (~10 min single chain). Accuracy caveat: with 100 tips the posteriors are wide and prior-sensitive; all 12 true rates lie inside the 95% HPD, but rates out of rare types (esp. type 3) are essentially prior-dominated (median ~0.21-0.27 vs Exp(0.3) prior median 0.21). Installation: BEAST 2.7.7 Linux tarball (bundled JRE); packagemanager -add into ~/.beast failed (write error), so packages were installed with -dir /home/asm/data/bdmm/pkgs; the package manager also pulled BEAST.base/app 2.7.8 which conflicted with the bundled 2.7.7 and were removed. Run with beast -packagedir /home/asm/data/bdmm/pkgs."
+}

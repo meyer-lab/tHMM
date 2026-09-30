@@ -53,3 +53,30 @@ def get_all_zetas(
     js = gammas[parents, :] / TbetaMSD[daughters, :]
     holder = np.einsum("ik,il->kl", js, betaMSD[daughters, :])
     return holder * T
+
+
+def get_edge_posteriors(
+    tree: csr_array,
+    beta_array: npt.NDArray[np.float64],
+    MSD_array: npt.NDArray[np.float64],
+    gammas: npt.NDArray[np.float64],
+    T: npt.NDArray[np.float64],
+) -> tuple[np.ndarray, np.ndarray, npt.NDArray[np.float64]]:
+    """
+    Edge-wise joint posterior :math:`P(z_p = k, z_c = l | X)` for every parent-child edge.
+
+    :param T: transition matrix, shared (K by K) or per edge (N by K by K, indexed by the child)
+    :return: parents, children, and an (edges by K by K) array of joint posteriors; each slice sums to 1.
+    """
+    parents = np.repeat(np.arange(tree.shape[0]), np.diff(tree.indptr))
+    daughters = tree.indices
+    K = beta_array.shape[1]
+    if tree.nnz == 0:
+        return parents, daughters, np.zeros((0, K, K))
+
+    Te = T[daughters] if T.ndim == 3 else np.broadcast_to(T, (len(daughters), K, K))
+    betaMSD = beta_array[daughters] / np.clip(MSD_array[daughters], np.finfo(float).eps, np.inf)
+    TbetaMSD = np.clip(np.einsum("ekl,el->ek", Te, betaMSD), np.finfo(float).eps, np.inf)
+    js = gammas[parents, :] / TbetaMSD
+    xi = js[:, :, np.newaxis] * Te * betaMSD[:, np.newaxis, :]
+    return parents, daughters, xi
