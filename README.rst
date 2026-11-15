@@ -29,7 +29,27 @@ Install the environment and dependencies by running:
 
     $ uv sync
 
+Quick start
+-----------
 
+Run the test suite, or use any of the package's modules directly:
+
+.. code-block:: console
+
+    $ uv run pytest
+    $ uv run python -c "from lineage.LineageTree import LineageTree"
+
+Citation
+--------
+
+If you use ``tHMM`` in your work, please cite:
+
+    Mohammadi F, Visagan S, Gross SM, Karginov L, Lagarde JC, Heiser LM, Meyer AS.
+    A lineage tree-based hidden Markov model quantifies cellular heterogeneity and plasticity.
+    *Communications Biology* 5, 1258 (2022).
+    https://doi.org/10.1038/s42003-022-04208-9
+
+Citation metadata is also available in ``CITATION.cff``.
 
 Documentation
 -------------
