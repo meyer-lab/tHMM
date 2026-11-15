@@ -10,9 +10,10 @@ from ..LineageTree import LineageTree
 
 def test_hide_obs():
     """Test that we are correctly hiding observations."""
-    complete_lineages = [LineageTree.rand_init(pi, T, E2, 31) for _ in range(10)]
+    rng = np.random.default_rng(0)
+    complete_lineages = [LineageTree.rand_init(pi, T, E2, 31, rng=rng) for _ in range(10)]
 
-    train_lineages = hide_observation(complete_lineages, 0.25)
+    train_lineages = hide_observation(complete_lineages, 0.25, rng=rng)
 
     negatives, total = 0, 0
     for lin in train_lineages:
