@@ -18,7 +18,14 @@ from .tHMM import tHMM
 
 
 def fit_list(
-    tHMMobj_list: list[tHMM], tolerance: float = 1e-6, max_iter: int = 200, rng=None
+    tHMMobj_list: list[tHMM],
+    tolerance: float = 1e-6,
+    max_iter: int = 200,
+    rng=None,
+    shared_T: bool = True,
+    independent_T: bool = False,
+    random_init: bool = True,
+    estimate_pi: bool = False,
 ) -> tuple[list[list[np.ndarray]], list[list[list[np.ndarray]]], float]:
     """
     Runs the tHMM function through Baum Welch fitting for a list containing a set of data for different concentrations.
@@ -26,6 +33,11 @@ def fit_list(
     :param tHMMobj_list: all lineage trees we want to fit at once
     :param tolerance: the stopping criteria for fitting. when the likelihood does not change more than tolerance from one step to the other, the fitting converges.
     :param max_iter: the maximum number of iterations for fitting
+    :param shared_T: fit one transition matrix across all populations, rather than one each
+    :param independent_T: constrain the rows of T to be equal (daughter state independent of mother state)
+    :param random_init: start from a random soft state assignment; when False, start EM from
+        the parameters already stored on each tHMM's ``estimate`` (a warm start)
+    :param estimate_pi: fit each population's root-state distribution freely (see ``do_M_step``)
     :return MSD_list: marginal state distributions for all populations we fit at once
     :return NF: normalizing factor
     :return betas: beta values (conditional probability of cell states given cell observations)
@@ -36,22 +48,23 @@ def fit_list(
 
     # Step 0: initialize with random assignments and do an M step
     # when there are no fixed emissions, we need to randomize the start
-    init_gam = [[rng.dirichlet(np.ones(tO.num_states), size=len(lin)) for lin in tO.X] for tO in tHMMobj_list]
+    if random_init:
+        init_gam = [[rng.dirichlet(np.ones(tO.num_states), size=len(lin)) for lin in tO.X] for tO in tHMMobj_list]
 
-    if len(tHMMobj_list) > 1:  # it means we are fitting several concentrations at once.
-        do_M_E_step_atonce(tHMMobj_list, init_gam)
-    else:  # means we are fitting one condition at a time.
-        do_M_E_step(tHMMobj_list[0], init_gam[0])
+        if len(tHMMobj_list) > 1:  # it means we are fitting several concentrations at once.
+            do_M_E_step_atonce(tHMMobj_list, init_gam)
+        else:  # means we are fitting one condition at a time.
+            do_M_E_step(tHMMobj_list[0], init_gam[0])
 
     # Step 1: first E step
     MSD_list, NF_list, betas_list, gammas_list = map(
         list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list], strict=False)
     )
-    old_LL = calculate_log_likelihood(NF_list)
+    old_LL = new_LL = calculate_log_likelihood(NF_list)
 
     # first stopping condition check
     for _ in range(max_iter):
-        do_M_step(tHMMobj_list, MSD_list, betas_list, gammas_list)
+        do_M_step(tHMMobj_list, MSD_list, betas_list, gammas_list, shared_T, independent_T, estimate_pi)
         MSD_list, NF_list, betas_list, gammas_list = map(
             list, zip(*[do_E_step(tHMM) for tHMM in tHMMobj_list], strict=False)
         )
@@ -65,11 +78,24 @@ def fit_list(
 
 
 def Analyze_list(
-    pop_list: list, num_states: int, fpi=None, fT=None, rng=None, write_states=False
+    pop_list: list,
+    num_states: int,
+    fpi=None,
+    fT=None,
+    rng=None,
+    write_states=False,
+    shared_T: bool = True,
+    independent_T: bool = False,
+    estimate_pi: bool = False,
+    restarts: int = 5,
 ) -> tuple[list[tHMM], float, list[list[list[np.ndarray]]]]:
     """This function runs the analyze function for the case when we want to fit multiple conditions at the same time.
     :param pop_list: The list of cell populations to run the analyze function on.
     :param num_states: The number of states that we want to run the model for.
+    :param shared_T: see :func:`fit_list`
+    :param independent_T: see :func:`fit_list`
+    :param estimate_pi: see :func:`fit_list`
+    :param restarts: number of additional random restarts; the best fit is kept
     :return tHMMobj_list: The tHMMobj after fitting corresponding to the given LineageTree population.
     :return pred_states_by_lineage_by_conc: The list of cells in each lineage with states assigned to each cell.
     :return LL: The log-likelihood of the fitted model.
@@ -79,13 +105,17 @@ def Analyze_list(
     tHMMobj_list = [
         tHMM(X, num_states=num_states, fpi=fpi, fT=fT, rng=rng) for X in pop_list
     ]  # build the tHMM class with X
-    _, gammas, LL = fit_list(tHMMobj_list, rng=rng)
+    _, gammas, LL = fit_list(
+        tHMMobj_list, rng=rng, shared_T=shared_T, independent_T=independent_T, estimate_pi=estimate_pi
+    )
 
-    for _ in range(5):
+    for _ in range(restarts):
         tHMMobj_list2 = [
             tHMM(X, num_states=num_states, fpi=fpi, fT=fT, rng=rng) for X in pop_list
         ]  # build the tHMM class with X
-        _, gammas2, LL2 = fit_list(tHMMobj_list2, rng=rng)
+        _, gammas2, LL2 = fit_list(
+            tHMMobj_list2, rng=rng, shared_T=shared_T, independent_T=independent_T, estimate_pi=estimate_pi
+        )
 
         if LL2 > LL:
             tHMMobj_list = tHMMobj_list2
