@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use tHMM in your work, please cite the article below."
+title: "tHMM"
+abstract: "Python package for clustering, visualizing, and analyzing data in the form of lineage trees using a lineage tree-based hidden Markov model."
+type: software
+authors:
+  - name: "Meyer Lab"
+license: MIT
+repository-code: "https://github.com/meyer-lab/tHMM"
+url: "https://meyer-lab.github.io/tHMM/"
+preferred-citation:
+  type: article
+  title: "A lineage tree-based hidden Markov model quantifies cellular heterogeneity and plasticity"
+  authors:
+    - family-names: Mohammadi
+      given-names: Farnaz
+    - family-names: Visagan
+      given-names: Shakthi
+    - family-names: Gross
+      given-names: Sean M.
+    - family-names: Karginov
+      given-names: Luka
+    - family-names: Lagarde
+      given-names: J. C.
+    - family-names: Heiser
+      given-names: Laura M.
+    - family-names: Meyer
+      given-names: Aaron S.
+  journal: "Communications Biology"
+  volume: 5
+  issue: 1
+  start: 1258
+  year: 2022
+  month: 11
+  doi: "10.1038/s42003-022-04208-9"
+  identifiers:
+    - type: other
+      value: "PMID:36396800"
