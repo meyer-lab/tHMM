@@ -11,23 +11,26 @@ from .states.StateDistributionGamma import atonce_estimator as gamma_atonce_esti
 from .tHMM import tHMM
 
 
-def do_E_step(tHMMobj: tHMM) -> tuple[list, list, list, list]:
+def do_E_step(tHMMobj: tHMM, lineages: list | None = None) -> tuple[list, list, list, list]:
     """
     Calculate MSD, EL, NF, gamma, beta, LL from tHMM model.
 
     :param tHMMobj: A tHMM object with properties of the lineages of cells.
+    :param lineages: optional subset of ``tHMMobj.X`` to run the E step on (e.g. a
+        mini-batch). Defaults to every lineage.
     :return MSD: Marginal state distribution
     :return NF: normalizing factor
     :return betas: beta values (conditional probability of cell states given cell observations)
     :return gammas: gamma values (used to calculate the downward reursion)
     """
+    X = tHMMobj.X if lineages is None else lineages
     MSD = list()
     NF = list()
     betas = list()
     gammas = list()
-    EL = get_Emission_Likelihoods(tHMMobj.X, tHMMobj.estimate.E)
+    EL = get_Emission_Likelihoods(X, tHMMobj.estimate.E)
 
-    for ii, lO in enumerate(tHMMobj.X):
+    for ii, lO in enumerate(X):
         MSD.append(get_MSD(lO.tree, tHMMobj.estimate.pi, tHMMobj.estimate.T))
 
         NF_one, beta = get_beta_and_NF(lO.leaves_idx, lO.tree, tHMMobj.estimate.T, MSD[ii], EL[ii])
@@ -96,6 +99,17 @@ def do_M_step(tHMMobj: list[tHMM], MSD: list, betas: list, gammas: list):
         for t in tHMMobj:
             t.estimate.T = T
 
+    do_M_pi_E_step(tHMMobj, gammas)
+
+
+def do_M_pi_E_step(tHMMobj: list[tHMM], gammas: list):
+    """
+    The part of the M step that follows the transition matrix update: set pi (from the
+    stationary distribution of T unless it is fixed) and refit the emissions.
+
+    ``gammas`` only enter the emission estimators as per-cell weights, so any
+    non-negative weights of the same shape (e.g. stochastic-EM running averages) work.
+    """
     if tHMMobj[0].estimate.fpi is None:
         pi = calculate_stationary(tHMMobj[0].estimate.T)
     elif tHMMobj[0].estimate.fpi is True:
@@ -156,24 +170,45 @@ def do_M_T_step(
     :param gammas: gamma values. The conditional probability of states, given the observation of the whole tree
     """
     n = tHMMobj[0].num_states
-
-    # One pseudocount spread across states
-    numer_e = np.full((n, n), 0.1 / n)
-    denom_e = np.ones(n) + 0.1
+    numer_e = np.zeros((n, n))
+    denom_e = np.zeros(n)
 
     for i, tt in enumerate(tHMMobj):
-        for num, lO in enumerate(tt.X):
-            # local T estimate
-            numer_e += get_all_zetas(
-                lO.tree,
-                betas[i][num],
-                MSD[i][num],
-                gammas[i][num],
-                tt.estimate.T,
-            )
-            denom_e += sum_nonleaf_gammas(lO.leaves_idx, gammas[i][num])
+        numer, denom = T_sufficient_stats(tt.X, MSD[i], betas[i], gammas[i], tt.estimate.T)
+        numer_e += numer
+        denom_e += denom
 
-    T_estimate = numer_e / denom_e[:, np.newaxis]
+    return T_from_stats(numer_e, denom_e)
+
+
+def T_sufficient_stats(
+    lineages: list,
+    MSD: list[np.ndarray],
+    betas: list[np.ndarray],
+    gammas: list[np.ndarray],
+    T: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Additive sufficient statistics of the transition matrix over a set of lineages:
+    the expected parent-to-daughter transition counts (numerator) and the summed
+    non-leaf, non-root gammas (denominator). Being sums over lineages, they can be
+    accumulated over mini-batches.
+    """
+    n = T.shape[0]
+    numer_e = np.zeros((n, n))
+    denom_e = np.zeros(n)
+
+    for num, lO in enumerate(lineages):
+        numer_e += get_all_zetas(lO.tree, betas[num], MSD[num], gammas[num], T)
+        denom_e += sum_nonleaf_gammas(lO.leaves_idx, gammas[num])
+
+    return numer_e, denom_e
+
+
+def T_from_stats(numer: np.ndarray, denom: np.ndarray) -> np.ndarray:
+    """Transition matrix from its sufficient statistics, with one pseudocount spread across states."""
+    n = numer.shape[0]
+    T_estimate = (numer + 0.1 / n) / (denom + 1.1)[:, np.newaxis]
     T_estimate /= T_estimate.sum(axis=1)[:, np.newaxis]
 
     assert np.all(np.isfinite(T_estimate))

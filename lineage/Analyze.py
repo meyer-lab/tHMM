@@ -1,7 +1,7 @@
 """Calls the tHMM functions and outputs the parameters needed to generate the Figures."""
 
 import itertools
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 from scipy.optimize import linear_sum_assignment
@@ -14,6 +14,7 @@ from .BaumWelch import (
     do_M_E_step_atonce,
     do_M_step,
 )
+from .StochasticEM import fit_list_stochastic
 from .tHMM import tHMM
 
 
@@ -65,27 +66,41 @@ def fit_list(
 
 
 def Analyze_list(
-    pop_list: list, num_states: int, fpi=None, fT=None, rng=None, write_states=False
+    pop_list: list,
+    num_states: int,
+    fpi=None,
+    fT=None,
+    rng=None,
+    write_states=False,
+    method: Literal["batch", "stochastic"] = "batch",
+    n_init: int = 6,
+    **fit_kwargs,
 ) -> tuple[list[tHMM], float, list[list[list[np.ndarray]]]]:
     """This function runs the analyze function for the case when we want to fit multiple conditions at the same time.
     :param pop_list: The list of cell populations to run the analyze function on.
     :param num_states: The number of states that we want to run the model for.
+    :param method: "batch" for full-batch Baum-Welch (:func:`fit_list`), or "stochastic"
+        for mini-batch Baum-Welch with EMA statistics
+        (:func:`~lineage.StochasticEM.fit_list_stochastic`).
+    :param n_init: number of random restarts; the fit with the best log-likelihood is kept.
+    :param fit_kwargs: passed on to the fitting function.
     :return tHMMobj_list: The tHMMobj after fitting corresponding to the given LineageTree population.
     :return pred_states_by_lineage_by_conc: The list of cells in each lineage with states assigned to each cell.
     :return LL: The log-likelihood of the fitted model.
     """
     rng = np.random.default_rng(rng)
+    fit = {"batch": fit_list, "stochastic": fit_list_stochastic}[method]
 
     tHMMobj_list = [
         tHMM(X, num_states=num_states, fpi=fpi, fT=fT, rng=rng) for X in pop_list
     ]  # build the tHMM class with X
-    _, gammas, LL = fit_list(tHMMobj_list, rng=rng)
+    _, gammas, LL = fit(tHMMobj_list, rng=rng, **fit_kwargs)
 
-    for _ in range(5):
+    for _ in range(n_init - 1):
         tHMMobj_list2 = [
             tHMM(X, num_states=num_states, fpi=fpi, fT=fT, rng=rng) for X in pop_list
         ]  # build the tHMM class with X
-        _, gammas2, LL2 = fit_list(tHMMobj_list2, rng=rng)
+        _, gammas2, LL2 = fit(tHMMobj_list2, rng=rng, **fit_kwargs)
 
         if LL2 > LL:
             tHMMobj_list = tHMMobj_list2
